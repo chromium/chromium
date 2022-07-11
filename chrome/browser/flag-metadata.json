@@ -4966,12 +4966,12 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 106
   },
   {
     "name": "paint-preview-startup",
     "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 106
   },
   {
     "name": "partial-split",
