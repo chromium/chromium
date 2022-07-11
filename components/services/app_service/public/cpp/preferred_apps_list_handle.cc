@@ -8,7 +8,12 @@
 namespace apps {
 
 PreferredAppsListHandle::PreferredAppsListHandle() = default;
-PreferredAppsListHandle::~PreferredAppsListHandle() = default;
+
+PreferredAppsListHandle::~PreferredAppsListHandle() {
+  for (auto& obs : observers_) {
+    obs.OnPreferredAppsListWillBeDestroyed(this);
+  }
+}
 
 void PreferredAppsListHandle::AddObserver(Observer* observer) {
   DCHECK(observer);
