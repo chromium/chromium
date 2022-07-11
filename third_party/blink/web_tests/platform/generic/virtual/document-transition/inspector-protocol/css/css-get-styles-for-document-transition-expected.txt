@@ -64,6 +64,7 @@ The test verifies functionality of querying style information for document-trans
                 }
             }
         ]
+        parentLayoutNodeId : 1
         pseudoElements : [
             [0] : {
                 matches : [

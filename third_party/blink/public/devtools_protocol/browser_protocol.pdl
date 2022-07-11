@@ -1811,6 +1811,8 @@ experimental domain CSS
       optional array of InheritedPseudoElementMatches inheritedPseudoElements
       # A list of CSS keyframed animations matching this node.
       optional array of CSSKeyframesRule cssKeyframesRules
+      # Id of the first parent element that does not have display: contents.
+      experimental optional DOM.NodeId parentLayoutNodeId
 
   # Returns all media queries parsed by the rendering engine.
   command getMediaQueries

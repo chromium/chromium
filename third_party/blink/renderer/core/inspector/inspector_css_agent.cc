@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
@@ -985,7 +986,8 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
     Maybe<protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*
         inherited_pseudo_id_matches,
     Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*
-        css_keyframes_rules) {
+        css_keyframes_rules,
+    Maybe<int>* parentLayoutNodeId) {
   Response response = AssertEnabled();
   if (!response.IsSuccess())
     return response;
@@ -1101,6 +1103,13 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
   }
 
   *css_keyframes_rules = AnimationsForNode(element, animating_element);
+
+  auto* parentLayoutNode = LayoutTreeBuilderTraversal::LayoutParent(*element);
+  if (parentLayoutNode) {
+    if (int boundNodeId = dom_agent_->BoundNodeId(parentLayoutNode))
+      *parentLayoutNodeId = boundNodeId;
+  }
+
   return Response::Success();
 }
 
