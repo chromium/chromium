@@ -729,6 +729,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.FuzzyMatchConversion.{SubProvider}" units="counts"
+    expires_after="M115">
+  <owner>orinj@chromium.org</owner>
+  <owner>jdonnelly-team@google.com</owner>
+  <summary>
+    Fuzzy match conversion produces modified matches from other synchronous
+    autocomplete providers (sub-providers) using alternative inputs: what the
+    user might have typed, the automatic corrections. This metric is logged once
+    per sub-provider per omnibox input if and only if the fuzzy provider runs a
+    search (not all omnibox inputs result in search) and finds any corrections
+    (this includes the zero case where corrections are found but produce no
+    matches). Logs for each fuzzy sub-provider the number of correction matches
+    converted to fuzzy provider matches for a single omnibox input. This
+    measures how many 'best' matches (among all the sub-provider's matches for a
+    specific correction) are converted from this sub-provider, summed for the
+    various corrections of a single user input (will not exceed
+    `provider_max_matches_` even in unlikely extreme cases). This is useful in
+    evaluating the efficacy of various sub-providers for fuzzy matching.
+  </summary>
+  <token key="SubProvider">
+    <variant name="Bookmark" summary="Bookmark conversion count"/>
+    <variant name="HistoryQuick" summary="HistoryQuick conversion count"/>
+  </token>
+</histogram>
+
 <histogram name="Omnibox.HoverTime" units="ms" expires_after="2021-10-31">
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>

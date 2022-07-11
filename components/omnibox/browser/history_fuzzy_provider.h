@@ -195,11 +195,9 @@ class HistoryFuzzyProvider : public HistoryProvider,
   // Performs the autocomplete matching and scoring.
   void DoAutocomplete();
 
-  // Adds one match for the given corrected `text`.
-  void AddMatchForText(std::u16string text);
-
-  // Add multiple matches, converting them to fuzzy suggestions in the process.
-  void AddConvertedMatches(const ACMatches& matches);
+  // Add the best matches, converting them to fuzzy suggestions in the process.
+  // Returns the number of matches actually added.
+  int AddConvertedMatches(const ACMatches& matches);
 
   // Main thread callback to receive trie of URLs loaded from database.
   void OnUrlsLoaded(fuzzy::Node node);
@@ -214,6 +212,9 @@ class HistoryFuzzyProvider : public HistoryProvider,
   // Removes deleted (or all) URLs from trie.
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
+
+  // Record UMA histogram data for measuring usefulness of sub-providers.
+  void RecordMatchConversion(const char* name, int count);
 
   AutocompleteInput autocomplete_input_;
 
