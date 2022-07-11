@@ -5745,6 +5745,7 @@ test("unit_tests") {
     "//components/reporting/resources:resource_interface",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/storage:test_support",
+    "//components/reporting/storage_selector:storage_selector",
     "//components/reporting/util:backoff_settings",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",

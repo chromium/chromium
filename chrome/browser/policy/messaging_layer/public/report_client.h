@@ -19,8 +19,6 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
-#include "components/reporting/storage_selector/storage_selector.h"
-#include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {

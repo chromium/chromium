@@ -53,11 +53,6 @@ enum class StorageQueueOperationKind {
 // sequencing id to be eliminated.
 class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
  public:
-  // Callback type for UploadInterface provider for this queue.
-  using AsyncStartUploaderCb = base::RepeatingCallback<void(
-      UploaderInterface::UploadReason,
-      UploaderInterface::UploaderInterfaceResultCb)>;
-
   // Creates StorageQueue instance with the specified options, and returns it
   // with the |completion_cb| callback. |async_start_upload_cb| is a factory
   // callback that instantiates UploaderInterface every time the queue starts
@@ -65,7 +60,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // near future - upon explicit Flush request).
   static void Create(
       const QueueOptions& options,
-      AsyncStartUploaderCb async_start_upload_cb,
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       scoped_refptr<EncryptionModuleInterface> encryption_module,
       scoped_refptr<CompressionModule> compression_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
@@ -226,7 +221,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Private constructor, to be called by Create factory method only.
   StorageQueue(scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
                const QueueOptions& options,
-               AsyncStartUploaderCb async_start_upload_cb,
+               UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
                scoped_refptr<EncryptionModuleInterface> encryption_module,
                scoped_refptr<CompressionModule> compression_module);
 
@@ -392,7 +387,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   base::RepeatingTimer upload_timer_;
 
   // Upload provider callback.
-  const AsyncStartUploaderCb async_start_upload_cb_;
+  const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
   // Encryption module.
   scoped_refptr<EncryptionModuleInterface> encryption_module_;

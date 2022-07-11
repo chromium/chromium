@@ -34,7 +34,7 @@ class EncryptedReportingUploadProvider {
       base::OnceCallback<void(policy::CloudPolicyClient*,
                               UploadClient::CreatedCallback)>;
 
-  explicit EncryptedReportingUploadProvider(
+  EncryptedReportingUploadProvider(
       UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
       UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
       GetCloudPolicyClientCallback build_cloud_policy_client_cb =

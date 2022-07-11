@@ -14,10 +14,8 @@
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "components/reporting/util/task_runner_context.h"
 
 namespace reporting {
 
