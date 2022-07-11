@@ -5,6 +5,7 @@
 #include "media/audio/system_glitch_reporter.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 
 namespace media {
 
@@ -50,6 +51,10 @@ void SystemGlitchReporter::UpdateStats(base::TimeDelta glitch_duration) {
   ++callback_count_;
 
   if (glitch_duration.is_positive()) {
+    TRACE_EVENT_INSTANT1("audio", "OsGlitchDetected", TRACE_EVENT_SCOPE_THREAD,
+                         "glitch_duration_ms",
+                         glitch_duration.InMilliseconds());
+
     if (callback_count_ <= kCallbacksPerLogPeriod)
       early_glitch_detected_ = true;
 
