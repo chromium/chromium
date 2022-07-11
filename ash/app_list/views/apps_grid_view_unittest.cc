@@ -5779,5 +5779,45 @@ TEST_F(AppsGridViewTest, PulsingBlocksShowDuringAppListSync) {
   EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
 }
 
+// Tests that right clicking an app will remove focus from other apps within the
+// apps grid. See https://crbug.com/1146365.
+TEST_P(AppsGridViewClamshellTest, VerifyFocusRemovedWhenLeftClickingOtherApp) {
+  model_->PopulateApps(3);
+  UpdateLayout();
+
+  views::View* first_app = test_api_->GetViewAtModelIndex(0);
+  views::View* last_app = test_api_->GetViewAtModelIndex(2);
+
+  // Move focus to the last app
+  last_app->RequestFocus();
+  ASSERT_TRUE(last_app->HasFocus());
+
+  SimulateRightClickOrLongPressAt(first_app->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(last_app->HasFocus());
+}
+
+// Tests that right clicking an app will remove focus from the title name of a
+// folder. See https://crbug.com/1146365.
+TEST_P(AppsGridViewClamshellTest,
+       VerifyFocusRemovedWhenLeftClickingOtherAppForFolder) {
+  // Create a folder with a couple items.
+  model_->CreateAndPopulateFolderWithApps(2);
+  UpdateLayout();
+
+  // Open the folder item.
+  test_api_->PressItemAt(0);
+  ASSERT_TRUE(folder_apps_grid_view());
+
+  // Force focus on the title name of the folder.
+  app_list_folder_view()->FocusNameInput();
+  ASSERT_TRUE(app_list_folder_view()->folder_header_view()->HasTextFocus());
+
+  // Right click on another element.
+  AppListItemView* const item_view =
+      GetItemViewInAppsGridAt(0, folder_apps_grid_view());
+  SimulateRightClickOrLongPressAt(item_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(app_list_folder_view()->folder_header_view()->HasTextFocus());
+}
+
 }  // namespace test
 }  // namespace ash

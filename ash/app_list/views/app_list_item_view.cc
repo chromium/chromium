@@ -50,6 +50,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/focus/focus_manager.h"
 
 namespace ash {
 
@@ -695,6 +696,10 @@ void AppListItemView::OnContextMenuModelReceived(
 
   menu_show_initiated_from_key_ = source_type == ui::MENU_SOURCE_KEYBOARD;
 
+  // Clear the existing focus in other elements to prevenn having a focus
+  // indicator on other non-selected views.
+  GetFocusManager()->ClearFocus();
+
   if (!grid_delegate_->IsSelectedView(this))
     grid_delegate_->ClearSelectedView();
 
@@ -1166,6 +1171,9 @@ void AppListItemView::OnMenuClosed() {
   // Keep the item focused if the menu was shown via keyboard.
   if (!menu_show_initiated_from_key_)
     OnBlur();
+
+  // Restore the last focused view when exiting the menu.
+  GetFocusManager()->RestoreFocusedView();
 }
 
 void AppListItemView::OnSyncDragEnd() {
