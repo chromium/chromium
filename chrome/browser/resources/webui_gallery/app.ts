@@ -31,6 +31,10 @@ export class WebuiGalleryAppElement extends PolymerElement {
               url: 'cr_a11y_announcer_demo.html',
             },
             {
+              name: 'cr-action-menu demo',
+              url: 'cr_action_menu_demo.html',
+            },
+            {
               name: 'cr-button demo',
               url: 'cr_button_demo.html',
             },

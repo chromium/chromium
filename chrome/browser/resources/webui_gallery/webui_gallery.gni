@@ -6,6 +6,7 @@
 web_component_files = [
   "app.ts",
   "demos/cr_a11y_announcer_demo_component.ts",
+  "demos/cr_action_menu_demo_component.ts",
   "demos/cr_dialog_demo_component.ts",
 ]
 

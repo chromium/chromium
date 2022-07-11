@@ -5,8 +5,11 @@
 @import 'chrome://resources/css/text_defaults_md.css';
 
 body {
+  box-sizing: border-box;
+  height: 100%;
   margin: 0;
   padding: 16px;
+  width: 100%;
 }
 
 h1 {
@@ -25,6 +28,10 @@ h1 {
 .row {
   display: flex;
   gap: 16px;
+}
+
+.row.center {
+  align-items: center;
 }
 
 .flex {
