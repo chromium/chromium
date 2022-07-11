@@ -69,6 +69,7 @@ class Keyboard : public ui::EventHandler,
   void OnSurfaceFocused(Surface* gained_focus,
                         Surface* lost_focus,
                         bool has_focused_surface) override;
+  void OnKeyboardModifierUpdated() override;
 
   // Overridden from ash::KeyboardControllerObserver:
   void OnKeyboardEnableFlagsChanged(

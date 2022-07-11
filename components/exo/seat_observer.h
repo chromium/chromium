@@ -30,6 +30,9 @@ class SeatObserver {
   virtual void OnPointerCaptureDisabled(Pointer* pointer,
                                         aura::Window* capture_window) {}
 
+  // Called when the keyboard modifiers is updated.
+  virtual void OnKeyboardModifierUpdated() {}
+
  protected:
   virtual ~SeatObserver() = default;
 };

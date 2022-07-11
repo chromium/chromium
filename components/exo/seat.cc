@@ -422,6 +422,10 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   xkb_tracker_->UpdateKeyboardModifiers(event->flags());
+  for (auto& observer_list : priority_observer_list_) {
+    for (auto& observer : observer_list)
+      observer.OnKeyboardModifierUpdated();
+  }
 #endif
 }
 

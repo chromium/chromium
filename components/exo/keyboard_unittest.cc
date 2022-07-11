@@ -201,8 +201,6 @@ TEST_F(KeyboardTest, OnKeyboardEnter) {
   // Set up expectation for the key release.
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
       .WillOnce(testing::Return(true));
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kShiftMask | kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
       OnKeyboardEnter(
@@ -1050,8 +1048,6 @@ TEST_F(KeyboardTest, AckKeyboardKey) {
   // to ShellSurface.
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   // Press KEY_W with Ctrl.
-  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
-                                 kControlMask | kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(*shell_surface.get(), AcceleratorPressed(ui::Accelerator(
                                         ui::VKEY_W, ui::EF_CONTROL_DOWN,
                                         ui::Accelerator::KeyState::PRESSED)))

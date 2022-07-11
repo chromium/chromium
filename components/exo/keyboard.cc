@@ -294,11 +294,6 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
       !focus_->window()->GetProperty(aura::client::kSkipImeProcessing) &&
       ConsumedByIme(focus_->window(), *event);
 
-  // Always update modifiers.
-  // XkbTracker must be updated in the Seat, before calling this method.
-  // Ensured by the observer registration order.
-  delegate_->OnKeyboardModifiers(seat_->xkb_tracker()->GetModifiers());
-
   // Currently, physical keycode is tracked in Seat, assuming that the
   // Keyboard::OnKeyEvent is called between Seat::WillProcessEvent and
   // Seat::DidProcessEvent. However, if IME is enabled, it is no longer true,
@@ -410,6 +405,12 @@ void Keyboard::OnSurfaceFocused(Surface* gained_focus,
           : nullptr;
   if (gained_focus_surface != focus_)
     SetFocus(gained_focus_surface);
+}
+
+void Keyboard::OnKeyboardModifierUpdated() {
+  // XkbTracker must be updated in the Seat, before calling this method.
+  if (focus_)
+    delegate_->OnKeyboardModifiers(seat_->xkb_tracker()->GetModifiers());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
