@@ -14,6 +14,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
@@ -537,6 +538,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->use_cups_for_printing = GetUseCupsForPrinting();
   params->use_floss_bluetooth = floss::features::IsFlossEnabled();
   params->is_current_user_device_owner = GetIsCurrentUserOwner();
+  params->do_not_mux_extension_app_ids = !apps::ShouldMuxExtensionIds();
 
   return params;
 }

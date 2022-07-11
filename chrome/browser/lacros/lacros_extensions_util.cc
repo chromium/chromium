@@ -51,7 +51,10 @@ bool DemuxId(const std::string& muxed_id,
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
   Profile* matching_profile = nullptr;
   for (auto* profile : profiles) {
-    if (profile->GetBaseName().value() == profile_basename) {
+    bool is_sentinel_and_main_profile =
+        profile_basename == "" && profile->IsMainProfile();
+    if (is_sentinel_and_main_profile ||
+        (profile->GetBaseName().value() == profile_basename)) {
       matching_profile = profile;
       break;
     }

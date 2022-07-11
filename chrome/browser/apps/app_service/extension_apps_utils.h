@@ -25,8 +25,21 @@ void EnableHostedAppsInLacrosForTesting();
 #endif  // IS_CHROMEOS_LACROS
 
 #if BUILDFLAG(IS_CHROMEOS)
+// Extension id muxing was necessary for two reasons:
+// * Apps installed in different lacros profiles would need to report as
+//   different entities to the app service.
+// * Apps installed in the primary lacros profile could be duplicates of
+//   apps installed in ash-chrome.
+// Lacros multi-profile will not support app-service integration in the
+// near future so the first point is not applicable. Now that every
+// extension runs in at most one of lacros or ash, the second point is also
+// no longer applicable. Thus, we will disable extension id muxing entirely for
+// now.
+bool ShouldMuxExtensionIds();
+
 // Returns a muxed id that consists of the profile base name joined to the
-// extension id.
+// extension id. If ShouldMuxExtensionIds() returns false, then no muxing will
+// occur.
 std::string MuxId(const Profile* profile, const std::string& extension_id);
 
 // Takes |muxed_id| and extracts the corresponding profile name and extension id
@@ -35,6 +48,10 @@ std::string MuxId(const Profile* profile, const std::string& extension_id);
 // ["Default", "plfjlfohfjjpmmifkbcmalnmcebkklkh"]. For Chrome app id
 // "plfjlfohfjjpmmifkbcmalnmcebkklkh", returns
 // ["plfjlfohfjjpmmifkbcmalnmcebkklkh"].
+// An empty string in place of the profile name is a sentinel value that implies
+// Default profile.
+//
+// If ShouldMuxExtensionIds() returns false, then no demuxing will occur.
 std::vector<std::string> DemuxId(const std::string& muxed_id);
 
 // Returns the real app id for Chrome apps or extensions. E.g. for Chrome app id

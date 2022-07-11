@@ -830,8 +830,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 48
-// Next id: 48
+// Next version: 49
+// Next id: 49
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1124,6 +1124,15 @@ struct BrowserInitParams {
   // Tells lacros whether the currently logged in user is the device owner.
   [MinVersion=47]
   bool is_current_user_device_owner@47;
+
+  // When this is set to true, Lacros will not mux extension app ids. The
+  // original reason for muxing was to avoid collision between lacros and ash
+  // apps with the same id. This is no longer possible with the extension keep
+  // list feature. This parameter is structured so that if ash is too old to
+  // support this feature, the default value of false maintains pre-existing
+  // behavior.
+  [MinVersion=48]
+  bool do_not_mux_extension_app_ids@48;
 };
 
 // Parameters to specify OpenUrl behavior.

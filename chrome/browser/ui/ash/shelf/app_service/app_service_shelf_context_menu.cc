@@ -85,20 +85,14 @@ extensions::LaunchType ConvertLaunchTypeCommandToExtensionLaunchType(
   }
 }
 
-bool IsStandaloneBrowserExtensionAppId(const std::string& app_id) {
-  return apps::DemuxId(app_id).size() == 2;
-}
-
 std::string GetAppId(const ash::ShelfID& shelf_id) {
-  std::string app_id;
-  if (IsStandaloneBrowserExtensionAppId(shelf_id.app_id))
-    return shelf_id.app_id;
-
-  // Remove the ARC shelf grouy prefix.
+  // Remove the ARC shelf group prefix.
   const arc::ArcAppShelfId arc_shelf_id =
       arc::ArcAppShelfId::FromString(shelf_id.app_id);
-  DCHECK(arc_shelf_id.valid());
-  return arc_shelf_id.app_id();
+  if (arc_shelf_id.valid())
+    return arc_shelf_id.app_id();
+
+  return shelf_id.app_id;
 }
 
 }  // namespace

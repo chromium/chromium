@@ -29,6 +29,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/prefs_migration_uma.h"
@@ -744,6 +745,11 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
   // No sync ids should begin with the lacros prefix, as it isn't stable.
   DCHECK(!base::StartsWith(sync_id, kLacrosChromeAppPrefix));
 
+  // No muxing is necessary.
+  if (!apps::ShouldMuxExtensionIds()) {
+    return sync_id;
+  }
+
   // If Lacros is not publishing chrome apps, no transformation is necessary.
   if (!IsStandaloneBrowserPublishingChromeApps())
     return sync_id;
@@ -754,6 +760,7 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
   if (extensions::ExtensionAppRunsInAsh(sync_id))
     return sync_id;
 
+  // All the muxing code can be removed once Ash is past M104.
   std::string transformed_app_id = kLacrosChromeAppPrefix + sync_id;
 
   // If this is an ash extension app, we add a fixed prefix. This is based on
@@ -780,6 +787,12 @@ std::string ChromeShelfPrefs::GetSyncId(const std::string& shelf_id) {
     return app_constants::kChromeAppId;
   }
 
+  // No muxing is necessary.
+  if (!apps::ShouldMuxExtensionIds()) {
+    return shelf_id;
+  }
+
+  // All the muxing code can be removed once Ash is past M104.
   // If Lacros is not publishing chrome apps, no transformation is necessary.
   if (!IsStandaloneBrowserPublishingChromeApps())
     return shelf_id;
