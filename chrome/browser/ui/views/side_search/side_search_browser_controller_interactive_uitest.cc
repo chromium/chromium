@@ -359,8 +359,17 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
 //   3. Have the side panel open B in the tab.
 //   4. Navigating backwards from B should skip back to A2.
 //   5. Navigating backwards from A2 should skip back to the tab's initial page.
-IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
-                       RedirectedPagesOpenedFromTheSidePanelAreSkippable) {
+// Flaky on Mac: https://crbug.com/1340387
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RedirectedPagesOpenedFromTheSidePanelAreSkippable \
+  DISABLED_RedirectedPagesOpenedFromTheSidePanelAreSkippable
+#else
+#define MAYBE_RedirectedPagesOpenedFromTheSidePanelAreSkippable \
+  RedirectedPagesOpenedFromTheSidePanelAreSkippable
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SideSearchBrowserControllerTest,
+    MAYBE_RedirectedPagesOpenedFromTheSidePanelAreSkippable) {
   // Start with the side panel in a toggled open state. The side panel will
   // intercept non-matching search URLs and redirect these to the tab contents.
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
@@ -1133,8 +1142,16 @@ IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
   EXPECT_TRUE(global_panel->GetVisible());
 }
 
+// Flaky on Mac: https://crbug.com/1340387
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ContextualPanelsDoNotClobberGlobalPanels \
+  DISABLED_ContextualPanelsDoNotClobberGlobalPanels
+#else
+#define MAYBE_ContextualPanelsDoNotClobberGlobalPanels \
+  ContextualPanelsDoNotClobberGlobalPanels
+#endif
 IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
-                       ContextualPanelsDoNotClobberGlobalPanels) {
+                       MAYBE_ContextualPanelsDoNotClobberGlobalPanels) {
   SetupBrowserForClobberingTests(browser());
   auto* global_panel = GetGlobalSidePanelFor(browser());
   auto* side_search_panel = GetSidePanelFor(browser());
@@ -1272,8 +1289,16 @@ IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
   }
 }
 
+// Flaky on Mac: https://crbug.com/1340387
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClosingTheGlobalPanelClosesAllBrowserPanels \
+  DISABLED_ClosingTheGlobalPanelClosesAllBrowserPanels
+#else
+#define MAYBE_ClosingTheGlobalPanelClosesAllBrowserPanels \
+  ClosingTheGlobalPanelClosesAllBrowserPanels
+#endif
 IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
-                       ClosingTheGlobalPanelClosesAllBrowserPanels) {
+                       MAYBE_ClosingTheGlobalPanelClosesAllBrowserPanels) {
   SetupBrowserForClobberingTests(browser());
   auto* global_panel = GetGlobalSidePanelFor(browser());
   auto* side_search_panel = GetSidePanelFor(browser());
