@@ -1169,8 +1169,9 @@ class ClipboardHistoryWebContentsBrowserTest : public InProcessBrowserTest {
 // Verifies that the images rendered from the copied web contents should
 // show in the clipboard history menu. Switching the auto resize mode is covered
 // in this test case.
+// Flaky: crbug/1224777
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
-                       VerifyHTMLRendering) {
+                       DISABLED_VerifyHTMLRendering) {
   // Load the web page which contains images and text.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/image-and-text.html")));
