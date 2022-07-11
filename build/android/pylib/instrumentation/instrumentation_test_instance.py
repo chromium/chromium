@@ -708,6 +708,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._external_shard_index = args.test_launcher_shard_index
     self._total_external_shards = args.test_launcher_total_shards
 
+    self._is_unit_test = False
+    self._initializeUnitTestFlag(args)
+
   def _initializeApkAttributes(self, args, error_func):
     if args.apk_under_test:
       apk_under_test_path = args.apk_under_test
@@ -951,6 +954,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._approve_app_links_package = app_links[0]
     self._approve_app_links_domain = app_links[1]
 
+  def _initializeUnitTestFlag(self, args):
+    self._is_unit_test = args.is_unit_test
+
   @property
   def additional_apks(self):
     return self._additional_apks
@@ -1002,6 +1008,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def flags(self):
     return self._flags
+
+  @property
+  def is_unit_test(self):
+    return self._is_unit_test
 
   @property
   def junit3_runner_class(self):

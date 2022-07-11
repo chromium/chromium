@@ -584,6 +584,11 @@ def AddInstrumentationTestOptions(parser):
       type=float,
       help='Factor by which timeouts should be scaled.')
   parser.add_argument(
+      '--is-unit-test',
+      action='store_true',
+      help=('Specify the test suite as composed of unit tests, blocking '
+            'certain operations.'))
+  parser.add_argument(
       '-w', '--wait-for-java-debugger', action='store_true',
       help='Wait for java debugger to attach before running any application '
            'code. Also disables test timeouts and sets retries=0.')

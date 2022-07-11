@@ -677,6 +677,7 @@ template("test_runner_script") {
   testonly = true
   _test_name = invoker.test_name
   _test_type = invoker.test_type
+  _is_unit_test = defined(invoker.is_unit_test) && invoker.is_unit_test
   _incremental_apk = defined(invoker.incremental_apk) && invoker.incremental_apk
 
   _runtime_deps =
@@ -763,6 +764,10 @@ template("test_runner_script") {
       "@WrappedPath(.)",
       "--wrapper-script-args",
     ]
+
+    if (_is_unit_test) {
+      executable_args += [ "--is-unit-test" ]
+    }
 
     if (_runtime_deps) {
       deps += [ ":$_runtime_deps_target" ]

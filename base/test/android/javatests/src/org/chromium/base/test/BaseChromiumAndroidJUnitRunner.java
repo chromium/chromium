@@ -41,6 +41,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
 import org.chromium.base.test.util.CallbackHelper;
@@ -75,6 +76,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList";
     private static final String LIST_TESTS_PACKAGE_FLAG =
             "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestListPackage";
+    private static final String IS_UNIT_TEST_FLAG =
+            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.IsUnitTest";
     /**
      * This flag is supported by AndroidJUnitRunner.
      *
@@ -171,6 +174,10 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void onStart() {
         Bundle arguments = InstrumentationRegistry.getArguments();
+        if (arguments.getString(IS_UNIT_TEST_FLAG) != null) {
+            LibraryLoader.setBrowserProcessStartupBlockedForTesting();
+        }
+
         if (shouldListTests()) {
             Log.w(TAG,
                     String.format("Runner will list out tests info in JSON without running tests. "

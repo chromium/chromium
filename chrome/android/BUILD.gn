@@ -3120,6 +3120,7 @@ template("chrome_test_apk_tmpl") {
                              "enable_lint",
                              "enforce_resource_overlays_in_tests",
                              "extra_args",
+                             "is_unit_test",
                              "shared_libraries",
                            ])
 
@@ -3266,6 +3267,9 @@ chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
 
   # Required by //build/config/android/test/resource_overlay:javatests
   enforce_resource_overlays_in_tests = true
+
+  # Causes tests that try to start the browser process to fail
+  is_unit_test = true
 }
 
 # TODO(crbug.com/1238057): Rename to chrome_public_integration_test_apk

@@ -3915,6 +3915,7 @@ if (enable_java_templates) {
                                "extra_args",
                                "fake_modules",
                                "ignore_all_data_deps",
+                               "is_unit_test",
                                "modules",
                                "proguard_mapping_path",
                                "use_webview_provider",
@@ -4046,6 +4047,7 @@ if (enable_java_templates) {
                                    "data_deps",
                                    "deps",
                                    "extra_args",
+                                   "is_unit_test",
                                    "proguard_configs",
                                  ])
     }
@@ -4074,6 +4076,7 @@ if (enable_java_templates) {
                                "deps",
                                "extra_args",
                                "ignore_all_data_deps",
+                               "is_unit_test",
                                "modules",
                                "never_incremental",
                                "public_deps",

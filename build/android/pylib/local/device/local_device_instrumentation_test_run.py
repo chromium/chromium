@@ -99,6 +99,9 @@ EXTRA_TRACE_FILE = ('org.chromium.base.test.BaseJUnit4ClassRunner.TraceFile')
 _EXTRA_TEST_LIST = (
     'org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList')
 
+_EXTRA_TEST_IS_UNIT = (
+    'org.chromium.base.test.BaseChromiumAndroidJUnitRunner.IsUnitTest')
+
 _EXTRA_PACKAGE_UNDER_TEST = ('org.chromium.chrome.test.pagecontroller.rules.'
                              'ChromeUiApplicationTestRule.PackageUnderTest')
 
@@ -636,6 +639,9 @@ class LocalDeviceInstrumentationTestRun(
   #override
   def _RunTest(self, device, test):
     extras = {}
+
+    if self._test_instance.is_unit_test:
+      extras[_EXTRA_TEST_IS_UNIT] = 'true'
 
     # Provide package name under test for apk_under_test.
     if self._test_instance.apk_under_test:
