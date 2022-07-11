@@ -49,7 +49,7 @@
 #ifndef BUILD_BUILD_CONFIG_H_
 #define BUILD_BUILD_CONFIG_H_
 
-#include "build/buildflag.h"
+#include "build/buildflag.h"  // IWYU pragma: export
 
 // A set of macros to use for platform detection.
 #if defined(__native_client__)
