@@ -48,10 +48,11 @@ WebLayerClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
   return sb_service->GetSafeBrowsingUIManager();
 }
 
-safe_browsing::ClientSideDetectionService*
+base::WeakPtr<safe_browsing::ClientSideDetectionService>
 WebLayerClientSideDetectionHostDelegate::GetClientSideDetectionService() {
   return ClientSideDetectionServiceFactory::GetForBrowserContext(
-      web_contents_->GetBrowserContext());
+             web_contents_->GetBrowserContext())
+      ->GetWeakPtr();
 }
 
 void WebLayerClientSideDetectionHostDelegate::AddReferrerChain(

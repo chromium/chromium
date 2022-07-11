@@ -314,7 +314,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
     csd_host_ =
         ChromeClientSideDetectionHostDelegate::CreateHost(web_contents());
-    csd_host_->set_client_side_detection_service(csd_service_.get());
+    csd_host_->set_client_side_detection_service(csd_service_->GetWeakPtr());
     csd_host_->set_ui_manager(ui_manager_.get());
     csd_host_->set_database_manager(database_manager_.get());
     csd_host_->set_tick_clock_for_testing(&clock_);

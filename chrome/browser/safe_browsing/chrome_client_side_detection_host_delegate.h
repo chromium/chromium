@@ -36,7 +36,8 @@ class ChromeClientSideDetectionHostDelegate
   scoped_refptr<SafeBrowsingDatabaseManager> GetSafeBrowsingDBManager()
       override;
   scoped_refptr<BaseUIManager> GetSafeBrowsingUIManager() override;
-  ClientSideDetectionService* GetClientSideDetectionService() override;
+  base::WeakPtr<ClientSideDetectionService> GetClientSideDetectionService()
+      override;
   void AddReferrerChain(ClientPhishingRequest* verdict,
                         GURL current_url,
                         const content::GlobalRenderFrameHostId&

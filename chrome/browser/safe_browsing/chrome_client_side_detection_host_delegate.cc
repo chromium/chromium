@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -81,10 +82,12 @@ ChromeClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
   return sb_service ? sb_service->ui_manager() : nullptr;
 }
 
-ClientSideDetectionService*
+base::WeakPtr<ClientSideDetectionService>
 ChromeClientSideDetectionHostDelegate::GetClientSideDetectionService() {
-  return ClientSideDetectionServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  ClientSideDetectionService* service =
+      ClientSideDetectionServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  return service ? service->GetWeakPtr() : nullptr;
 }
 
 void ChromeClientSideDetectionHostDelegate::AddReferrerChain(

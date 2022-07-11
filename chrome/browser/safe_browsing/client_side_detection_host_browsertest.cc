@@ -69,6 +69,10 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
     request_callback_ = closure;
   }
 
+  base::WeakPtr<ClientSideDetectionService> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   ClientPhishingRequest saved_request_;
   ClientReportPhishingRequestCallback saved_callback_;
@@ -76,6 +80,7 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   std::string access_token_;
   std::string client_side_model_;
   base::RepeatingClosure request_callback_;
+  base::WeakPtrFactory<ClientSideDetectionService> weak_factory_{this};
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -151,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   std::unique_ptr<ClientSideDetectionHost> csd_host =
       ChromeClientSideDetectionHostDelegate::CreateHost(
           browser()->tab_strip_model()->GetActiveWebContents());
-  csd_host->set_client_side_detection_service(&fake_csd_service);
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
   csd_host->set_ui_manager(mock_ui_manager.get());
 
   fake_csd_service.SendModelToRenderers();
@@ -198,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   std::unique_ptr<ClientSideDetectionHost> csd_host =
       ChromeClientSideDetectionHostDelegate::CreateHost(
           browser()->tab_strip_model()->GetActiveWebContents());
-  csd_host->set_client_side_detection_service(&fake_csd_service);
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
   csd_host->set_ui_manager(mock_ui_manager.get());
 
   fake_csd_service.SendModelToRenderers();

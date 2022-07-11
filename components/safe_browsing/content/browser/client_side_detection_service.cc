@@ -472,4 +472,9 @@ void ClientSideDetectionService::SetPhishingModel(
   }
 }
 
+base::WeakPtr<ClientSideDetectionService>
+ClientSideDetectionService::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace safe_browsing

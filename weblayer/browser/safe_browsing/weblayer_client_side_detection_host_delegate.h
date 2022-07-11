@@ -36,8 +36,8 @@ class WebLayerClientSideDetectionHostDelegate
   GetSafeBrowsingDBManager() override;
   scoped_refptr<safe_browsing::BaseUIManager> GetSafeBrowsingUIManager()
       override;
-  safe_browsing::ClientSideDetectionService* GetClientSideDetectionService()
-      override;
+  base::WeakPtr<safe_browsing::ClientSideDetectionService>
+  GetClientSideDetectionService() override;
   void AddReferrerChain(safe_browsing::ClientPhishingRequest* verdict,
                         GURL current_url,
                         const content::GlobalRenderFrameHostId&

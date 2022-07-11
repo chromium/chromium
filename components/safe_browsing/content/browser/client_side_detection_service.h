@@ -156,6 +156,9 @@ class ClientSideDetectionService
   // Sends a model to each renderer.
   void SetPhishingModel(content::RenderProcessHost* rph);
 
+  // Returns a WeakPtr for this service.
+  base::WeakPtr<ClientSideDetectionService> GetWeakPtr();
+
  private:
   friend class ClientSideDetectionServiceTest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
