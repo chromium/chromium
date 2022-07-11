@@ -13,11 +13,15 @@ package metrics;
 
 // Chrome-specific version of searchbox_stats.proto containing a strict subset
 // of the fields in searchbox_stats.proto.
+//
 // This proto is serialized and sent over by Chrome as a Base64-encoded URL
 // param for logging. Note that this proto is not itself persisted in logs. It
 // is instead decoded and deserialized into the searchbox_stats.proto which is
-// persisted in logs. Field types, IDs, labels, annotations, optional-ness, and
-// default values MUST match those of their counterparts.
+// persisted in logs.
+//
+// Field types, IDs, labels, annotations, optional-ness, and default values MUST
+// match those of their counterparts.
+//
 // See searchbox_stats.proto for documentation of these fields and do not
 // duplicate comments here.
 message ChromeSearchboxStats {
@@ -38,4 +42,10 @@ message ChromeSearchboxStats {
     optional int32 int_value = 3;
   }
   repeated ExperimentStatsV2 experiment_stats_v2 = 60;
+  message GroupInfo {
+    optional uint32 groups_set_index = 1;
+    optional uint32 side_type = 2;
+    optional uint32 why_this_result_reason = 3;
+  }
+  repeated GroupInfo group_infos = 103;
 }
