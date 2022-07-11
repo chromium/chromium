@@ -30,10 +30,11 @@ _DISABLED_ALWAYS = [
     "InlinedApi",  # Constants are copied so they are always available.
     "LintBaseline",  # Don't warn about using baseline.xml files.
     "MissingApplicationIcon",  # False positive for non-production targets.
+    "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
     "SwitchIntDef",  # Many C++ enums are not used at all in java.
+    "Typos",  # Strings are committed in English first and later translated.
     "UniqueConstants",  # Chromium enums allow aliases.
     "UnusedAttribute",  # Chromium apks have various minSdkVersion values.
-    "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
 ]
 
 # These checks are not useful for test targets and adds an unnecessary burden
