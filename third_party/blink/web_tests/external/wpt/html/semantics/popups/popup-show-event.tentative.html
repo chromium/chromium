@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Pop-up show event</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div popup></div>
+
+<script>
+test(() => {
+  let frameCount = 0;
+  requestAnimationFrame(() => {++frameCount;});
+  const popUp = document.querySelector('[popup]');
+  const testText = 'Show Event Occurred';
+  popUp.addEventListener('show',() => {
+    popUp.textContent = testText;
+  })
+  popUp.offsetHeight;
+  assert_equals(popUp.textContent,"");
+  assert_equals(frameCount,0);
+  popUp.showPopUp();
+  popUp.offsetHeight;
+  assert_equals(popUp.textContent,testText);
+  assert_equals(frameCount,0,'nothing should be rendered before the pop-up is updated');
+  popUp.hidePopUp(); // Cleanup
+},'Ensure the `show` event can be used to populate content before the pop-up renders');
+</script>

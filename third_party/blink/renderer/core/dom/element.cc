@@ -2556,6 +2556,17 @@ void Element::showPopUp(ExceptionState& exception_state) {
     }
   }
 
+  // Fire the show event (bubbles, not cancelable).
+  Event* event = Event::CreateBubble(event_type_names::kShow);
+  event->SetTarget(this);
+  auto result = DispatchEvent(*event);
+  DCHECK_EQ(result, DispatchEventResult::kNotCanceled);
+
+  // The 'show' event handler could have changed this pop-up, e.g. by changing
+  // its type, removing it from the document, or calling showPopUp().
+  if (!HasValidPopupAttribute() || !isConnected() || popupOpen())
+    return;
+
   GetPopupData()->setAnimationFinishedListener(nullptr);
   GetPopupData()->setPreviouslyFocusedElement(
       should_restore_focus ? document.FocusedElement() : nullptr);
@@ -2575,11 +2586,6 @@ void Element::showPopUp(ExceptionState& exception_state) {
   PseudoStateChanged(CSSSelector::kPseudoTopLayer);
 
   SetPopupFocusOnShow();
-  // Fire the show event (bubbles, not cancelable).
-  Event* event = Event::CreateBubble(event_type_names::kShow);
-  event->SetTarget(this);
-  auto result = DispatchEvent(*event);
-  DCHECK_EQ(result, DispatchEventResult::kNotCanceled);
 }
 
 // static
