@@ -391,6 +391,14 @@ void V8SetReturnValue(const CallbackInfo& info,
 
 template <typename CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info,
+                      const v8::Local<v8::Object> value,
+                      const ScriptWrappable* receiver,
+                      V8ReturnValue::MaybeCrossOriginWindow) {
+  info.GetReturnValue().Set(value);
+}
+
+template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info,
                       const ScriptWrappable* value,
                       v8::Local<v8::Context> creation_context) {
   if (UNLIKELY(!value))
