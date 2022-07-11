@@ -43,6 +43,7 @@ namespace network {
 namespace {
 
 constexpr int kMaxTotalSize = 8 * 1024;
+constexpr int kMaxPerEntrySize = 4 * 1024;
 
 struct LoaderPair {
   LoaderPair() : client(std::make_unique<TestURLLoaderClient>()) {}
@@ -103,7 +104,8 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kNetworkServiceMemoryCache,
-        {{"max_total_size", base::NumberToString(kMaxTotalSize)}});
+        {{"max_total_size", base::NumberToString(kMaxTotalSize)},
+         {"max_per_entry_size", base::NumberToString(kMaxPerEntrySize)}});
   }
 
   ~NetworkServiceMemoryCacheTest() override = default;
@@ -395,7 +397,7 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_Expired) {
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_ResponseTooLarge) {
   ResourceRequest request = CreateRequest(
-      base::StringPrintf("/cacheable?body-size=%d", kMaxTotalSize + 1));
+      base::StringPrintf("/cacheable?body-size=%d", kMaxPerEntrySize + 1));
   StoreResponseToMemoryCache(request);
 
   ASSERT_FALSE(CanServeFromMemoryCache(request));
@@ -470,7 +472,7 @@ TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, EvictLeastRecentlyUsed) {
-  const int kBodySize = kMaxTotalSize / 2;
+  const int kBodySize = kMaxPerEntrySize;
 
   // Stores two responses to consume the full budget of the in-memory cache.
   ResourceRequest request1 = CreateRequest(
@@ -616,8 +618,8 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_DisableLoadTiming) {
 TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
   constexpr uint32_t kReadDataSize = 512;
   // Arbitrary response body size larger than `kReadDataSize`.
-  constexpr int kBodySize = 4 * 1024 + 659;
-  DCHECK_GE(kMaxTotalSize, kBodySize);
+  constexpr int kBodySize = 2 * 1024 + 659;
+  DCHECK_GE(kMaxPerEntrySize, kBodySize);
 
   ResourceRequest request =
       CreateRequest(base::StringPrintf("/cacheable?body-size=%d", kBodySize));

@@ -32,9 +32,12 @@ namespace network {
 
 namespace {
 
-// TODO(https://crbug.com/1339708): Adjust the default size based on stats.
+// TODO(https://crbug.com/1339708): Adjust these parameters based on stats.
 const base::FeatureParam<int> kNetworkServiceMemoryCacheMaxTotalSize{
     &features::kNetworkServiceMemoryCache, "max_total_size", 64 * 1024 * 1024};
+const base::FeatureParam<int> kNetworkServiceMemoryCacheMaxPerEntrySize{
+    &features::kNetworkServiceMemoryCache, "max_per_entry_size",
+    4 * 1024 * 1024};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -81,7 +84,9 @@ struct NetworkServiceMemoryCache::Entry {
 
 NetworkServiceMemoryCache::NetworkServiceMemoryCache()
     : entries_(CacheMap::NO_AUTO_EVICT),
-      max_total_bytes_(kNetworkServiceMemoryCacheMaxTotalSize.Get()) {
+      max_total_bytes_(kNetworkServiceMemoryCacheMaxTotalSize.Get()),
+      max_per_entry_bytes_(kNetworkServiceMemoryCacheMaxPerEntrySize.Get()) {
+  DCHECK_GE(max_total_bytes_, max_per_entry_bytes_);
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE,
       base::BindRepeating(&NetworkServiceMemoryCache::OnMemoryPressure,
@@ -179,9 +184,7 @@ void NetworkServiceMemoryCache::StoreResponse(
       /*min=*/1, /*exclusive_max=*/50000000,
       /*buckets=*/50);
 
-  // TODO(https://crbug.com/1339708): Consider not storing a large response to
-  // improve cache hit rate.
-  if (max_total_bytes_ < data.size())
+  if (max_per_entry_bytes_ < data.size())
     return;
 
   auto prev = entries_.Peek(cache_key);

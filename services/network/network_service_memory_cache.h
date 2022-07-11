@@ -122,6 +122,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
 
   CacheMap entries_;
   const size_t max_total_bytes_;
+  const size_t max_per_entry_bytes_;
   size_t total_bytes_ = 0;
 
   std::set<std::unique_ptr<NetworkServiceMemoryCacheURLLoader>,
