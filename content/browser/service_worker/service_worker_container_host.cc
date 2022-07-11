@@ -883,7 +883,6 @@ void ServiceWorkerContainerHost::CompleteWebWorkerPreparation(
 
 void ServiceWorkerContainerHost::UpdateUrls(
     const GURL& url,
-    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -891,7 +890,6 @@ void ServiceWorkerContainerHost::UpdateUrls(
 
   DCHECK(!url.has_ref());
   url_ = url;
-  site_for_cookies_ = site_for_cookies;
   top_frame_origin_ = top_frame_origin;
   key_ = storage_key;
 
@@ -1715,8 +1713,7 @@ void ServiceWorkerContainerHost::InheritControllerFrom(
             GetClientType());
   DCHECK(blob_url.SchemeIsBlob());
 
-  UpdateUrls(blob_url, net::SiteForCookies::FromUrl(blob_url),
-             creator_host.top_frame_origin(), creator_host.key());
+  UpdateUrls(blob_url, creator_host.top_frame_origin(), creator_host.key());
 
   // Let `scope_match_url_for_blob_client_` be the creator's url for scope match
   // because a client should be handled by the service worker of its creator.

@@ -315,8 +315,7 @@ ServiceWorkerJobTest::CreateRegistrationWithControllee(const GURL& script_url,
   observer.RunUntilActivated(registration->installing_version(), runner);
 
   ServiceWorkerContainerHost* container_host = CreateControllee();
-  container_host->UpdateUrls(scope_url, net::SiteForCookies::FromUrl(scope_url),
-                             url::Origin::Create(scope_url),
+  container_host->UpdateUrls(scope_url, url::Origin::Create(scope_url),
                              blink::StorageKey(url::Origin::Create(scope_url)));
   container_host->SetControllerRegistration(registration,
                                             /*notify_controllerchange=*/false);
@@ -1324,8 +1323,7 @@ TEST_F(ServiceWorkerJobTest, AddRegistrationToMatchingerHosts) {
 
   // Make an in-scope client.
   ServiceWorkerContainerHost* client = CreateControllee();
-  client->UpdateUrls(in_scope, net::SiteForCookies::FromUrl(in_scope),
-                     url::Origin::Create(in_scope),
+  client->UpdateUrls(in_scope, url::Origin::Create(in_scope),
                      blink::StorageKey(url::Origin::Create(in_scope)));
 
   // Make an in-scope reserved client.
@@ -1334,15 +1332,13 @@ TEST_F(ServiceWorkerJobTest, AddRegistrationToMatchingerHosts) {
                                           /*are_ancestors_secure=*/true);
   base::WeakPtr<ServiceWorkerContainerHost> reserved_client =
       host_and_info->host;
-  reserved_client->UpdateUrls(in_scope, net::SiteForCookies::FromUrl(in_scope),
-                              url::Origin::Create(in_scope),
+  reserved_client->UpdateUrls(in_scope, url::Origin::Create(in_scope),
                               blink::StorageKey(url::Origin::Create(in_scope)));
 
   // Make an out-scope client.
   ServiceWorkerContainerHost* out_scope_client = CreateControllee();
   out_scope_client->UpdateUrls(
-      out_scope, net::SiteForCookies::FromUrl(out_scope),
-      url::Origin::Create(out_scope),
+      out_scope, url::Origin::Create(out_scope),
       blink::StorageKey(url::Origin::Create(out_scope)));
 
   // Make a new registration.

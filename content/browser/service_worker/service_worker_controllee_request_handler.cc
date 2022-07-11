@@ -195,7 +195,6 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
   storage_key_ = storage_key;
 
   container_host_->UpdateUrls(stripped_url_,
-                              tentative_resource_request.site_for_cookies,
                               // TODO(1199077): Use top_frame_origin from
                               // `storage_key_` instead, since that is populated
                               // also for workers.

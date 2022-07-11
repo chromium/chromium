@@ -210,10 +210,9 @@ class ServiceWorkerVersionTest : public testing::Test {
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
             &remote_endpoint);
-    container_host->UpdateUrls(
-        registration_->scope(),
-        net::SiteForCookies::FromUrl(registration_->scope()),
-        registration_->key().origin(), registration_->key());
+    container_host->UpdateUrls(registration_->scope(),
+                               registration_->key().origin(),
+                               registration_->key());
     container_host->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
     EXPECT_TRUE(version_->HasControllee());
@@ -494,10 +493,9 @@ TEST_F(ServiceWorkerVersionTest, Doom) {
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
           &remote_endpoint);
-  container_host->UpdateUrls(
-      registration_->scope(),
-      net::SiteForCookies::FromUrl(registration_->scope()),
-      registration_->key().origin(), registration_->key());
+  container_host->UpdateUrls(registration_->scope(),
+                             registration_->key().origin(),
+                             registration_->key());
   container_host->SetControllerRegistration(registration_, false);
   EXPECT_TRUE(version_->HasControllee());
   EXPECT_TRUE(container_host->controller());
@@ -1302,10 +1300,9 @@ TEST_F(ServiceWorkerVersionTest,
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       std::move(host_and_info->host);
   remote_endpoint.BindForWindow(std::move(host_and_info->info));
-  container_host->UpdateUrls(
-      registration_->scope(),
-      net::SiteForCookies::FromUrl(registration_->scope()),
-      registration_->key().origin(), registration_->key());
+  container_host->UpdateUrls(registration_->scope(),
+                             registration_->key().origin(),
+                             registration_->key());
   container_host->SetControllerRegistration(
       registration_, false /* notify_controllerchange */);
   EXPECT_TRUE(version_->HasControllee());

@@ -1162,8 +1162,8 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
           if (container_host) {
             container_host->SetControllerRegistration(
                 nullptr, /*notify_controllerchange=*/false);
-            container_host->UpdateUrls(GURL(), net::SiteForCookies(),
-                                       absl::nullopt, blink::StorageKey());
+            container_host->UpdateUrls(GURL(), absl::nullopt,
+                                       blink::StorageKey());
           }
         }
       }

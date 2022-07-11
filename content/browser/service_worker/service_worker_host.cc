@@ -45,7 +45,6 @@ ServiceWorkerHost::ServiceWorkerHost(
   container_host_->set_service_worker_host(this);
   container_host_->UpdateUrls(
       version_->script_url(),
-      net::SiteForCookies::FromUrl(version_->script_url()),
       url::Origin::Create(version_->key().top_level_site().GetURL()),
       version_->key());
 }

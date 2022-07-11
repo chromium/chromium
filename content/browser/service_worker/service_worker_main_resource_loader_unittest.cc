@@ -501,8 +501,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
           /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
           &container_endpoints_);
       container_host_->UpdateUrls(
-          request->url, net::SiteForCookies::FromUrl(request->url),
-          url::Origin::Create(request->url),
+          request->url, url::Origin::Create(request->url),
           blink::StorageKey(url::Origin::Create(request->url)));
       container_host_->AddMatchingRegistration(registration_.get());
       container_host_->SetControllerRegistration(
@@ -641,7 +640,6 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, NoActiveWorker) {
       &container_endpoints_);
   container_host_->UpdateUrls(
       GURL("https://example.com/"),
-      net::SiteForCookies::FromUrl(GURL("https://example.com/")),
       url::Origin::Create(GURL("https://example.com/")),
       blink::StorageKey(url::Origin::Create(GURL("https://example.com/"))));
 

@@ -271,8 +271,7 @@ TEST_F(ServiceWorkerContextCoreTest,
 
   // Add a controlled client.
   ServiceWorkerContainerHost* container_host = CreateControllee();
-  container_host->UpdateUrls(scope, net::SiteForCookies::FromUrl(scope), origin,
-                             key);
+  container_host->UpdateUrls(scope, origin, key);
   container_host->SetControllerRegistration(registration,
                                             /*notify_controllerchange=*/false);
 

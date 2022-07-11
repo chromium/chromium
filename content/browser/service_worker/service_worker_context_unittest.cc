@@ -1092,8 +1092,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoints.back());
-  container_host1->UpdateUrls(kOrigin1, net::SiteForCookies::FromUrl(kOrigin1),
-                              url::Origin::Create(kOrigin1), kKey1);
+  container_host1->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1), kKey1);
 
   // Host2 : process_id=2, origin2.
   remote_endpoints.emplace_back();
@@ -1103,8 +1102,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoints.back());
-  container_host2->UpdateUrls(kOrigin2, net::SiteForCookies::FromUrl(kOrigin2),
-                              url::Origin::Create(kOrigin2), kKey2);
+  container_host2->UpdateUrls(kOrigin2, url::Origin::Create(kOrigin2), kKey2);
 
   // Host3 : process_id=2, origin1.
   remote_endpoints.emplace_back();
@@ -1114,8 +1112,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
                                   /*mock frame_routing_id=*/1),
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoints.back());
-  container_host3->UpdateUrls(kOrigin1, net::SiteForCookies::FromUrl(kOrigin1),
-                              url::Origin::Create(kOrigin1), kKey1);
+  container_host3->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1), kKey1);
 
   // Host4 : process_id=2, origin2, for ServiceWorker.
   blink::mojom::ServiceWorkerRegistrationOptions registration_opt;
