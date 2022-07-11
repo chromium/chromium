@@ -19,6 +19,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/color_analysis.h"
+#include "ui/gfx/color_utils.h"
 
 namespace ash {
 
@@ -32,6 +34,36 @@ DarkLightModeControllerImpl* g_instance = nullptr;
 constexpr OobeDialogState kStatesSupportingDarkTheme[] = {
     OobeDialogState::MARKETING_OPT_IN, OobeDialogState::THEME_SELECTION};
 
+// Gets the themed background color. The color will be set to `user_color` of
+// ColorProvider::Key and then can be assigned to Shield and Base layers for
+// dark/light mode feature. The algorithm to calculate the color and scope to
+// apply the color will change on Material Next project.
+SkColor GetThemedBackgroundColor(bool use_dark_color) {
+  const SkColor default_color =
+      use_dark_color ? gfx::kGoogleGrey900 : SK_ColorWHITE;
+  if (!Shell::HasInstance())
+    return default_color;
+
+  WallpaperControllerImpl* wallpaper_controller =
+      Shell::Get()->wallpaper_controller();
+  if (!wallpaper_controller)
+    return default_color;
+
+  color_utils::LumaRange luma_range = use_dark_color
+                                          ? color_utils::LumaRange::DARK
+                                          : color_utils::LumaRange::LIGHT;
+  SkColor muted_color =
+      wallpaper_controller->GetProminentColor(color_utils::ColorProfile(
+          luma_range, color_utils::SaturationRange::MUTED));
+  if (muted_color == kInvalidWallpaperColor)
+    return default_color;
+
+  return color_utils::GetResultingPaintColor(
+      SkColorSetA(use_dark_color ? SK_ColorBLACK : SK_ColorWHITE,
+                  SK_AlphaOPAQUE * 0.5f),
+      muted_color);
+}
+
 // Refresh colors of the system on the current color mode. Not only the SysUI,
 // but also all the other components like WebUI. And since
 // DarkLightModeController is kind of NativeTheme of ChromeOS. This will trigger
@@ -40,14 +72,17 @@ constexpr OobeDialogState kStatesSupportingDarkTheme[] = {
 // wallpaper changes as the background color is calculated from current
 // wallpaper.
 void RefreshColorsOnColorMode(bool is_dark_mode_enabled) {
+  const SkColor themed_color = GetThemedBackgroundColor(is_dark_mode_enabled);
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   native_theme->set_use_dark_colors(is_dark_mode_enabled);
+  native_theme->set_user_color(themed_color);
   native_theme->NotifyOnNativeThemeUpdated();
 
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
   native_theme_web->set_preferred_color_scheme(
       is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
                            : ui::NativeTheme::PreferredColorScheme::kLight);
+  native_theme_web->set_user_color(themed_color);
   native_theme_web->NotifyOnNativeThemeUpdated();
 }
 
