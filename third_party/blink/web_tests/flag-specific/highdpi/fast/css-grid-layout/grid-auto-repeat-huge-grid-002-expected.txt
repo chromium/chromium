@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that we don't get more than kGridMaxTracks repetitions even on very wide grids with gaps. assert_equals: expected 30 but got 20
-FAIL Test that we don't get more than kGridMaxTracks repetitions even on very tall grids with gaps. assert_equals: expected 30 but got 20
-Harness: the test ran to completion.
-

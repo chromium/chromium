@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Test that timezonechange event handler API is present in window
-PASS Test that the timezonechange event fires on window.ontimezonechange
-PASS Test that the timezonechange event fires on window.addEventListener('timezonechange')
-PASS Test that the timezonechange event fires on body ontimezonechange attribute
-PASS Test that the timezonechange event fires on body ontimezonechange attribute XOR window.ontimezonechange
-PASS Test properties of the fired event.
-Harness: the test ran to completion.
-

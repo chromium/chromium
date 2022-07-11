@@ -1,5 +1,0 @@
-Following character should be rendered as an exlamation.
-
-あ
-character height is 17
-FAIL

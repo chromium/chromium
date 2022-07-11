@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Inline web fonts should be loaded synchronously when used. assert_equals: expected 250 but got 253
-Harness: the test ran to completion.
-

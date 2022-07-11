@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Ensures that the font family can be dynamically changed.
-PASS Ensures that the font size can be dynamically changed.
-Harness: the test ran to completion.
-

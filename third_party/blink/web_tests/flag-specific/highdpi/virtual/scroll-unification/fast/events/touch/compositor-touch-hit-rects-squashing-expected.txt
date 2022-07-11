@@ -1,9 +1,0 @@
-This test verifies the hit test regions given to the compositor for composited layer squashing.
-
-behind: layer(78x78) has hit test rect (0,0 78x78)
-
-middle: layer(79x79) has hit test rect (1,1 78x78)
-
-top: layer(79x79) has hit test rect (1,1 78x78)
-
-

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Tests that the scrolled element gets overscroll event after fully scrolling by touch.
-Harness: the test ran to completion.
-
