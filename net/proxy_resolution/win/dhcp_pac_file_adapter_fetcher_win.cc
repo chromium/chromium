@@ -194,9 +194,9 @@ DhcpPacFileAdapterFetcher::ImplCreateScriptFetcher() {
   return PacFileFetcherImpl::Create(url_request_context_);
 }
 
-DhcpPacFileAdapterFetcher::DhcpQuery*
+scoped_refptr<DhcpPacFileAdapterFetcher::DhcpQuery>
 DhcpPacFileAdapterFetcher::ImplCreateDhcpQuery() {
-  return new DhcpQuery();
+  return base::MakeRefCounted<DhcpQuery>();
 }
 
 base::TimeDelta DhcpPacFileAdapterFetcher::ImplGetTimeout() const {

@@ -506,13 +506,15 @@ scoped_refptr<base::TaskRunner> DhcpPacFileFetcherWin::GetTaskRunner() {
   return task_runner_;
 }
 
-DhcpPacFileAdapterFetcher* DhcpPacFileFetcherWin::ImplCreateAdapterFetcher() {
-  return new DhcpPacFileAdapterFetcher(url_request_context_, task_runner_);
+std::unique_ptr<DhcpPacFileAdapterFetcher>
+DhcpPacFileFetcherWin::ImplCreateAdapterFetcher() {
+  return std::make_unique<DhcpPacFileAdapterFetcher>(url_request_context_,
+                                                     task_runner_);
 }
 
-DhcpPacFileFetcherWin::AdapterQuery*
+scoped_refptr<DhcpPacFileFetcherWin::AdapterQuery>
 DhcpPacFileFetcherWin::ImplCreateAdapterQuery() {
-  return new AdapterQuery();
+  return base::MakeRefCounted<AdapterQuery>();
 }
 
 base::TimeDelta DhcpPacFileFetcherWin::ImplGetMaxWait() {

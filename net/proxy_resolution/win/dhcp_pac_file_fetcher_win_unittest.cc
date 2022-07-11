@@ -177,8 +177,8 @@ class DelayingDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
     ~DelayingDhcpQuery() override {}
   };
 
-  DhcpQuery* ImplCreateDhcpQuery() override {
-    return new DelayingDhcpQuery();
+  scoped_refptr<DhcpQuery> ImplCreateDhcpQuery() override {
+    return base::MakeRefCounted<DelayingDhcpQuery>();
   }
 };
 
@@ -188,9 +188,10 @@ class DelayingDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   explicit DelayingDhcpPacFileFetcherWin(URLRequestContext* context)
       : DhcpPacFileFetcherWin(context) {}
 
-  DhcpPacFileAdapterFetcher* ImplCreateAdapterFetcher() override {
-    return new DelayingDhcpPacFileAdapterFetcher(url_request_context(),
-                                                 GetTaskRunner());
+  std::unique_ptr<DhcpPacFileAdapterFetcher> ImplCreateAdapterFetcher()
+      override {
+    return std::make_unique<DelayingDhcpPacFileAdapterFetcher>(
+        url_request_context(), GetTaskRunner());
   }
 };
 
@@ -298,9 +299,9 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   // |ImplCreateAdapterFetcher()|, and its name to the list of adapters
   // returned by ImplGetCandidateAdapterNames.
   void PushBackAdapter(const std::string& adapter_name,
-                       DhcpPacFileAdapterFetcher* fetcher) {
+                       std::unique_ptr<DhcpPacFileAdapterFetcher> fetcher) {
     adapter_query_->mock_adapter_names_.push_back(adapter_name);
-    adapter_fetchers_.push_back(fetcher);
+    adapter_fetchers_.push_back(std::move(fetcher));
   }
 
   void ConfigureAndPushBackAdapter(const std::string& adapter_name,
@@ -312,17 +313,18 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
         url_request_context(), GetTaskRunner());
     adapter_fetcher->Configure(
         did_finish, result, pac_script, fetch_delay.InMilliseconds());
-    PushBackAdapter(adapter_name, adapter_fetcher.release());
+    PushBackAdapter(adapter_name, std::move(adapter_fetcher));
   }
 
-  DhcpPacFileAdapterFetcher* ImplCreateAdapterFetcher() override {
+  std::unique_ptr<DhcpPacFileAdapterFetcher> ImplCreateAdapterFetcher()
+      override {
     ++num_fetchers_created_;
-    return adapter_fetchers_[next_adapter_fetcher_index_++];
+    return std::move(adapter_fetchers_[next_adapter_fetcher_index_++]);
   }
 
-  AdapterQuery* ImplCreateAdapterQuery() override {
+  scoped_refptr<AdapterQuery> ImplCreateAdapterQuery() override {
     DCHECK(adapter_query_.get());
-    return adapter_query_.get();
+    return adapter_query_;
   }
 
   base::TimeDelta ImplGetMaxWait() override {
@@ -334,15 +336,6 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   }
 
   void ResetTestState() {
-    // Delete any adapter fetcher objects we didn't hand out.
-    std::vector<DhcpPacFileAdapterFetcher*>::const_iterator it =
-        adapter_fetchers_.begin();
-    for (; it != adapter_fetchers_.end(); ++it) {
-      if (num_fetchers_created_-- <= 0) {
-        delete (*it);
-      }
-    }
-
     next_adapter_fetcher_index_ = 0;
     num_fetchers_created_ = 0;
     adapter_fetchers_.clear();
@@ -359,7 +352,7 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   // Ownership gets transferred to the implementation class via
   // ImplCreateAdapterFetcher, but any objects not handed out are
   // deleted on destruction.
-  std::vector<DhcpPacFileAdapterFetcher*> adapter_fetchers_;
+  std::vector<std::unique_ptr<DhcpPacFileAdapterFetcher>> adapter_fetchers_;
 
   scoped_refptr<MockAdapterQuery> adapter_query_;
 
@@ -436,7 +429,7 @@ void TestNormalCaseURLConfiguredOneAdapter(FetcherClient* client) {
   auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
       context.get(), client->GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
-  client->fetcher_.PushBackAdapter("a", adapter_fetcher.release());
+  client->fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsOk());
@@ -608,7 +601,7 @@ void TestImmediateCancel(FetcherClient* client) {
   auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
       context.get(), client->GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
-  client->fetcher_.PushBackAdapter("a", adapter_fetcher.release());
+  client->fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client->RunTest();
   client->fetcher_.Cancel();
   client->RunMessageLoopUntilWorkerDone();
@@ -669,7 +662,7 @@ TEST(DhcpPacFileFetcherWin, OnShutdown) {
   auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
       context.get(), client.GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
-  client.fetcher_.PushBackAdapter("a", adapter_fetcher.release());
+  client.fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client.RunTest();
 
   client.fetcher_.OnShutdown();

@@ -110,8 +110,8 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
   };
 
   // Virtual methods introduced to allow unit testing.
-  virtual DhcpPacFileAdapterFetcher* ImplCreateAdapterFetcher();
-  virtual AdapterQuery* ImplCreateAdapterQuery();
+  virtual std::unique_ptr<DhcpPacFileAdapterFetcher> ImplCreateAdapterFetcher();
+  virtual scoped_refptr<AdapterQuery> ImplCreateAdapterQuery();
   virtual base::TimeDelta ImplGetMaxWait();
   virtual void ImplOnGetCandidateAdapterNamesDone() {}
 
