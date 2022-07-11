@@ -53,7 +53,6 @@ TAG_HEADER = """\
 #         angle-vulkan ]
 # Skia Renderer
 # tags: [ skia-renderer-dawn
-#         skia-renderer-disabled
 #         skia-renderer-gl
 #         skia-renderer-vulkan ]
 # SwiftShader

@@ -40,7 +40,6 @@
 #         angle-vulkan ]
 # Skia Renderer
 # tags: [ skia-renderer-dawn
-#         skia-renderer-disabled
 #         skia-renderer-gl
 #         skia-renderer-vulkan ]
 # SwiftShader
@@ -169,7 +168,6 @@ crbug.com/1129879 [ fuchsia ] Pixel_Video_Media_Stream_Incompatible_Stride [ Ski
 
 # WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
 crbug.com/976495 [ linux skia-renderer-gl ] Pixel_WebGPU* [ Skip ]
-crbug.com/976495 [ linux skia-renderer-disabled ] Pixel_WebGPU* [ Skip ]
 crbug.com/976497 [ android ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ chromeos ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
@@ -177,7 +175,6 @@ crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
 # WebGPU SwiftShader tests are only supported on Linux with SkiaRenderer Vulkan.
 crbug.com/1307787 [ linux skia-renderer-gl ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ linux skia-renderer-dawn ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
-crbug.com/1307787 [ linux skia-renderer-disabled ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ android ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ chromeos ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ fuchsia ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
@@ -185,7 +182,6 @@ crbug.com/1307787 [ mac ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ win ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ linux skia-renderer-gl ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ linux skia-renderer-dawn ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
-crbug.com/1307787 [ linux skia-renderer-disabled ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ android ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ chromeos ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ fuchsia ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
@@ -221,8 +217,6 @@ crbug.com/1203317 [ mac ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Skip ]
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 
 crbug.com/1298943 [ chromeos skia-renderer-gl chromeos-board-amd64-generic ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
-
-crbug.com/1299016 [ chromeos chromeos-board-kevin passthrough skia-renderer-disabled ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
 
 ###################
 # Failures/Flakes #

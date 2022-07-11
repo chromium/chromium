@@ -146,6 +146,8 @@ def GetCommandDecoder(gpu_info: tgi.GPUInfo) -> str:
 
 def GetSkiaRenderer(gpu_feature_status: typing.Dict[str, str],
                     extra_browser_args: typing.List[str]) -> str:
+  # TODO(crbug.com/1343379): Remove skia-renderer-disabled tag once unittests
+  # are updated to not produce it.
   retval = 'skia-renderer-disabled'
   skia_renderer_enabled = (
       gpu_feature_status
