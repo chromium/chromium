@@ -8,6 +8,7 @@ BUTTON:Element Classes
 BUTTON:New Style Rule
 BUTTON:Toggle common rendering emulations
 BUTTON:Show Computed Styles sidebar
+DIV:element.style, css selector
 BUTTON:Select an element in the page to inspect it
 DIV#tab-elements:Elements
 DIV:More tabs
@@ -26,6 +27,7 @@ BUTTON:Open Issues to view 1 issue: 1 possible improvement
 DIV:More tabs
 DIV#tab-elements:Elements
 BUTTON:Select an element in the page to inspect it
+DIV:element.style, css selector
 BUTTON:Show Computed Styles sidebar
 BUTTON:Toggle common rendering emulations
 BUTTON:New Style Rule

@@ -26,6 +26,9 @@ external/wpt/infrastructure/reftest/reftest_multiple_mismatch-0.html [ Failure ]
 external/wpt/infrastructure/reftest/reftest_multiple_mismatch-1.html [ Failure ]
 accessibility/slot-poison.html [ Failure ]
 
+# Temporarily disabled for a DevTools roll.
+crbug.com/1343290 http/tests/devtools/elements/elements-tab-stops.js [ Failure Pass ]
+
 # Temporarily disabled for DevTools.
 crbug.com/1304217 http/tests/devtools/text-source-map.js [ Skip ]
 crbug.com/1304217 http/tests/devtools/runtime/runtime-getProperties.js [ Skip ] # Bug 1325812
