@@ -104,10 +104,12 @@ bool HasSyncError(const std::string& response) {
 AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
     Profile* profile,
     const std::string& access_code,
-    LoggerImpl* logger)
+    LoggerImpl* logger,
+    signin::IdentityManager* identity_manager)
     : profile_(profile),
       access_code_(access_code),
       logger_(logger),
+      identity_manager_(identity_manager),
       endpoint_fetcher_(CreateEndpointFetcher(access_code)) {
   DCHECK(profile_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -117,10 +119,12 @@ AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
     Profile* profile,
     const std::string& access_code,
     LoggerImpl* logger,
+    signin::IdentityManager* identity_manager,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher)
     : profile_(profile),
       access_code_(access_code),
       logger_(logger),
+      identity_manager_(identity_manager),
       endpoint_fetcher_(std::move(endpoint_fetcher)) {
   DCHECK(profile_);
 }
@@ -268,7 +272,7 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
       kDiscoveryOAuthConsumerName,
       GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})), kGetMethod,
       kContentType, discovery_scopes, kTimeoutMs, kEmptyPostData,
-      kTrafficAnnotation, IdentityManagerFactory::GetForProfile(profile_));
+      kTrafficAnnotation, identity_manager_);
 }
 
 void AccessCodeCastDiscoveryInterface::ValidateDiscoveryAccessCode(

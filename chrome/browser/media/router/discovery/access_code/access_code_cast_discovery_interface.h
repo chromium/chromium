@@ -38,14 +38,8 @@ class AccessCodeCastDiscoveryInterface {
 
   AccessCodeCastDiscoveryInterface(Profile* profile,
                                    const std::string& access_code,
-                                   LoggerImpl* logger);
-
-  // Used for tests. Can be used if caller constructs their own EndpointFetcher.
-  AccessCodeCastDiscoveryInterface(
-      Profile* profile,
-      const std::string& access_code,
-      LoggerImpl* logger,
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+                                   LoggerImpl* logger,
+                                   signin::IdentityManager* identity_manager);
 
   virtual ~AccessCodeCastDiscoveryInterface();
 
@@ -69,6 +63,14 @@ class AccessCodeCastDiscoveryInterface {
 
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       const std::string& access_code);
+
+  // Used for tests. Can be used if caller constructs their own EndpointFetcher.
+  AccessCodeCastDiscoveryInterface(
+      Profile* profile,
+      const std::string& access_code,
+      LoggerImpl* logger,
+      signin::IdentityManager* identity_manager,
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
   void SetDeviceCapabilitiesField(
       chrome_browser_media::proto::DeviceCapabilities* device_proto,
@@ -94,6 +96,8 @@ class AccessCodeCastDiscoveryInterface {
   const std::string access_code_;
 
   const raw_ptr<LoggerImpl> logger_;
+
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
 

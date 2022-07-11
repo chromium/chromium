@@ -258,6 +258,8 @@ class AccessCodeCastSinkService : public KeyedService,
     task_runner_ = task_runner;
   }
 
+  void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
+
   // Owns us via the KeyedService mechanism.
   const raw_ptr<Profile> profile_;
 
@@ -301,6 +303,8 @@ class AccessCodeCastSinkService : public KeyedService,
   std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 
   raw_ptr<PrefService> prefs_;
+
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   // This registrar monitors for user prefs changes.
   std::unique_ptr<PrefChangeRegistrar> user_prefs_registrar_;

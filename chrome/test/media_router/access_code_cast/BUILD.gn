@@ -12,6 +12,8 @@ static_library("access_code_cast_integration_base") {
   deps = [
     "//base/test:test_support",
     "//chrome/browser/media/router:router",
+    "//chrome/browser/media/router:test_support",
+    "//chrome/browser/media/router/discovery:discovery",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
     "//chrome/browser/profiles:profile",
@@ -24,6 +26,7 @@ static_library("access_code_cast_integration_base") {
     "//components/keyed_service/content:content",
     "//components/media_router/browser:browser",
     "//components/media_router/browser:test_support",
+    "//components/media_router/common:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/user_manager:user_manager",
     "//content/test:test_support",

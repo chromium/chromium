@@ -21,6 +21,7 @@
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -92,7 +93,8 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       cast_media_sink_service_impl_(cast_media_sink_service_impl),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
       network_monitor_(network_monitor),
-      prefs_(prefs) {
+      prefs_(prefs),
+      identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   DCHECK(profile_) << "The profile does not exist.";
   DCHECK(prefs_)
       << "Prefs could not be fetched from the profile for some reason.";
@@ -124,6 +126,7 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       // successful requests.
       false,
   };
+
   if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
     // We don't need to post this task per the DiscoveryNetworkMonitor's
     // promise: "All observers will be notified of network changes on the thread
@@ -210,13 +213,13 @@ void AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode(
   // Check to see if route was created by an access code sink.
   CastDiscoveryType type = sink->cast_data().discovery_type;
   if (type != CastDiscoveryType::kAccessCodeManualEntry &&
-        type != CastDiscoveryType::kAccessCodeRememberedDevice) {
+      type != CastDiscoveryType::kAccessCodeRememberedDevice) {
     return;
   }
 
   media_router_->GetLogger()->LogInfo(
-    mojom::LogCategory::kDiscovery, kLoggerComponent,
-    "An Access Code Cast route has ended.", sink->id(), "", "");
+      mojom::LogCategory::kDiscovery, kLoggerComponent,
+      "An Access Code Cast route has ended.", sink->id(), "", "");
 
   // There are two possible cases here. The common case is that a route for
   // the specified sink has been terminated by local or remote user
@@ -235,15 +238,15 @@ void AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode(
     std::move(it->second).Run(AddSinkResultCode::OK, sink->id());
     pending_callbacks_.erase(sink->id());
   } else {
-      // Need to pause just a little bit before attempting to remove the sink.
-      // Sometimes sinks terminate their routes and immediately start another
-      // (tab content transitions for example), so wait just a little while
-      // before checking to see if removing the route makes sense.
-      task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&AccessCodeCastSinkService::OnAccessCodeRouteRemoved,
-                         weak_ptr_factory_.GetWeakPtr(), sink),
-          kExpirationDelay);
+    // Need to pause just a little bit before attempting to remove the sink.
+    // Sometimes sinks terminate their routes and immediately start another
+    // (tab content transitions for example), so wait just a little while
+    // before checking to see if removing the route makes sense.
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AccessCodeCastSinkService::OnAccessCodeRouteRemoved,
+                       weak_ptr_factory_.GetWeakPtr(), sink),
+        kExpirationDelay);
   }
 }
 
@@ -278,7 +281,7 @@ void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
                                              AddSinkResultCallback callback) {
   discovery_server_interface_ =
       std::make_unique<AccessCodeCastDiscoveryInterface>(
-          profile_, access_code, media_router_->GetLogger());
+          profile_, access_code, media_router_->GetLogger(), identity_manager_);
   discovery_server_interface_->ValidateDiscoveryAccessCode(
       base::BindOnce(&AccessCodeCastSinkService::OnAccessCodeValidated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -287,6 +290,9 @@ void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
 void AccessCodeCastSinkService::AddSinkToMediaRouter(
     const MediaSinkInternal& sink,
     AddSinkResultCallback add_sink_callback) {
+  DCHECK(cast_media_sink_service_impl_)
+      << "Must have a valid CastMediaSinkServiceImpl!";
+
   // Check to see if the media sink already exists in the media router.
   base::PostTaskAndReplyWithResult(
       cast_media_sink_service_impl_->task_runner().get(), FROM_HERE,
@@ -487,6 +493,12 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
   }
   pref_updater_->UpdateDevicesDict(*sink);
   pref_updater_->UpdateDeviceAddedTimeDict(sink->id());
+}
+
+void AccessCodeCastSinkService::SetIdentityManagerForTesting(
+    signin::IdentityManager* identity_manager) {
+  DCHECK(identity_manager);
+  identity_manager_ = identity_manager;
 }
 
 void AccessCodeCastSinkService::InitAllStoredDevices() {
