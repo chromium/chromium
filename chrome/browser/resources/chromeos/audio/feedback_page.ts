@@ -43,8 +43,8 @@ export class FeedbackPage extends Page {
     if (this.inputFeedbackMap.has('audioUrl')) {
       const url = this.inputFeedbackMap.get('audioUrl');
       if (url) {
-        const downloadBtn = <HTMLAnchorElement>$('download-btn');
-        const inputAudio = <HTMLAudioElement>$('test-input-audio');
+        const downloadBtn = $('download-btn') as HTMLAnchorElement;
+        const inputAudio = $('test-input-audio') as HTMLAudioElement;
         inputAudio.src = url;
         downloadBtn.href = url;
         downloadBtn.download =
@@ -70,7 +70,7 @@ export class FeedbackPage extends Page {
     3. Any specific behavior you notice during the testing process?: \n
     4. audio info: `;
     this.audioInfoString = guidedQuestions + infoString;
-    (<HTMLTextAreaElement>$('audio-info')).value = this.audioInfoString;
+    ($('audio-info') as HTMLTextAreaElement).value = this.audioInfoString;
   }
 
   mapToObject(map: Map<string, any>) {

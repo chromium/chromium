@@ -56,14 +56,24 @@ export class InputPage extends Page {
   }
 
   visualize() {
-    const pairs = [
-      {'canvas': $('channel-l'), 'analyser': this.analyserLeft},
-      {'canvas': $('channel-r'), 'analyser': this.analyserRight},
-    ];
+    const pairs: Array<{
+      canvas: HTMLCanvasElement,
+      analyser: AnalyserNode | undefined,
+    }> =
+        [
+          {
+            canvas: $('channel-l') as HTMLCanvasElement,
+            analyser: this.analyserLeft
+          },
+          {
+            canvas: $('channel-r') as HTMLCanvasElement,
+            analyser: this.analyserRight
+          },
+        ];
     const draw = () => {
       this.animationRequestId = requestAnimationFrame(draw);
       for (const channel of pairs) {
-        const canvas = <HTMLCanvasElement>channel['canvas'];
+        const canvas = channel['canvas'];
         const canvasContext = canvas.getContext('2d');
         const analyser = channel['analyser'];
 

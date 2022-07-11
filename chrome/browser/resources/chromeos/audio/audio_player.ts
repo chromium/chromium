@@ -22,18 +22,16 @@ export class AudioPlayer extends HTMLElement {
     this.sampleIdx = 0;
     this.audioContext = null;
     this.timerId = null;
-    const clone = (<HTMLTemplateElement>$('audioPlayer-template'))
+    const clone = ($('audioPlayer-template') as HTMLTemplateElement)
                       .content.cloneNode(true);
-    this.audioDiv = <HTMLDivElement>(<HTMLElement>clone).querySelector('div');
+    this.audioDiv = (clone as HTMLElement).querySelector('div')!;
     this.audioPlay =
-        <HTMLButtonElement>(this.audioDiv.querySelector('#play-btn'));
+        this.audioDiv.querySelector('#play-btn') as HTMLButtonElement;
     this.audioQuery =
-        <HTMLDivElement>(this.audioDiv.querySelector('#output-qs'));
-    this.audioNameTag =
-        <HTMLParagraphElement>(this.audioDiv.querySelectorAll('p')[0]);
-    this.audioExpectation =
-        <HTMLParagraphElement>(this.audioDiv.querySelectorAll('p')[1]);
-    this.prevLink = <HTMLButtonElement>(this.audioDiv.querySelector('#back'));
+        this.audioDiv.querySelector('#output-qs') as HTMLDivElement;
+    this.audioNameTag = this.audioDiv.querySelectorAll('p')[0]!;
+    this.audioExpectation = this.audioDiv.querySelectorAll('p')[1]!;
+    this.prevLink = this.audioDiv.querySelector('#back') as HTMLButtonElement;
     this.prevLink.textContent = '< Back';
     this.prevLink.addEventListener('click', () => {
       this.handleBackClick();
@@ -68,9 +66,9 @@ export class AudioPlayer extends HTMLElement {
 
   setButtons() {
     const yesLink =
-        <HTMLButtonElement>(this.audioQuery.querySelector('#output-yes'));
+        this.audioQuery.querySelector('#output-yes') as HTMLButtonElement;
     const noLink =
-        <HTMLButtonElement>(this.audioQuery.querySelector('#output-no'));
+        this.audioQuery.querySelector('#output-no') as HTMLButtonElement;
 
     yesLink.addEventListener('click', () => this.handleResponse(true));
     noLink.addEventListener('click', () => this.handleResponse(false));

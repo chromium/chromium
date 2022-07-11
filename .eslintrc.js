@@ -79,6 +79,11 @@ module.exports = {
         default: 'array-simple',
       }],
 
+      // https://google.github.io/styleguide/tsguide.html#type-assertions-syntax
+      '@typescript-eslint/consistent-type-assertions': ['error', {
+         assertionStyle: 'as',
+      }],
+
       // https://google.github.io/styleguide/jsguide.html#naming
       '@typescript-eslint/naming-convention': [
         'error',
