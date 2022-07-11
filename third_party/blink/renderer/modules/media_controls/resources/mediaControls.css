@@ -1281,6 +1281,15 @@ video::cue(i) {
     font-style: italic;
 }
 
+/*
+ * ::-webkit-media-text-track-container needs to create new formatting context
+ * because LayoutMedia is a legacy object, and
+ * ::-webkit-media-text-track-container can be a LayoutNG object.
+ */
+audio::-webkit-media-text-track-container {
+    overflow: hidden;
+}
+
 /**
  * Overlay cast button
  */

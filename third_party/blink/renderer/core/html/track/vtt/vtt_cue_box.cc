@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -124,6 +125,9 @@ LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
   // have positioning information.
   if (style.GetPosition() == EPosition::kRelative)
     return HTMLDivElement::CreateLayoutObject(style, legacy);
+
+  if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled())
+    return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
 
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByVTTCue);
   return MakeGarbageCollected<LayoutVTTCue>(this, snap_to_lines_position_);
