@@ -1067,6 +1067,7 @@ ci.builder(
     # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
+    # Target luci-chromium-ci-bionic-us-central1-c-1000-ssd-hm32-*.
     os = os.LINUX_DEFAULT,
     cores = 32,
     ssd = True,
@@ -1086,10 +1087,11 @@ ci.builder(
     # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
+    use_clang_coverage = True,
+    # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
     os = os.LINUX_DEFAULT,
     cores = 16,
     ssd = True,
-    use_clang_coverage = True,
 )
 
 # Sync specs with win10_chromium_x64_rel_ng-compilator
@@ -1106,10 +1108,12 @@ ci.builder(
     # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
+    use_clang_coverage = True,
+    # Target luci-chromium-ci-win10-us-east1-d-1500-ssd-32-*.
     os = os.WINDOWS_DEFAULT,
     cores = 32,
     ssd = True,
-    use_clang_coverage = True,
+    free_space = builders.free_space.high,
 )
 
 ci.builder(
