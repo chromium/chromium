@@ -190,7 +190,7 @@ void PepperMediaDeviceManager::CancelOpenDevice(int request_id) {
 }
 
 void PepperMediaDeviceManager::CloseDevice(const std::string& label) {
-  if (!GetMediaStreamDeviceObserver()->RemoveStream(
+  if (!GetMediaStreamDeviceObserver()->RemoveStreams(
           blink::WebString::FromUTF8(label)))
     return;
 

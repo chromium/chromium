@@ -161,7 +161,7 @@ class MODULES_EXPORT UserMediaProcessor
   void GotAllVideoInputFormatsForDevice(
       UserMediaRequest* user_media_request,
       const String& label,
-      const String& device_id,
+      const Vector<String>& device_ids,
       const Vector<media::VideoCaptureFormat>& formats);
 
   gfx::Size GetScreenSize();

@@ -23,19 +23,18 @@ MediaStreamDevices WebMediaStreamDeviceObserver::GetNonScreenCaptureDevices() {
   return observer_->GetNonScreenCaptureDevices();
 }
 
-void WebMediaStreamDeviceObserver::AddStream(
+void WebMediaStreamDeviceObserver::AddStreams(
     const WebString& label,
-    const MediaStreamDevices& audio_devices,
-    const MediaStreamDevices& video_devices,
+    const mojom::blink::StreamDevicesSet& stream_devices_set,
     OnDeviceStoppedCb on_device_stopped_cb,
     OnDeviceChangedCb on_device_changed_cb,
     OnDeviceRequestStateChangeCb on_device_request_state_change_cb,
     OnDeviceCaptureHandleChangeCb on_device_capture_handle_change_cb) {
-  observer_->AddStream(label, audio_devices, video_devices,
-                       std::move(on_device_stopped_cb),
-                       std::move(on_device_changed_cb),
-                       std::move(on_device_request_state_change_cb),
-                       std::move(on_device_capture_handle_change_cb));
+  observer_->AddStreams(label, stream_devices_set,
+                        std::move(on_device_stopped_cb),
+                        std::move(on_device_changed_cb),
+                        std::move(on_device_request_state_change_cb),
+                        std::move(on_device_capture_handle_change_cb));
 }
 
 void WebMediaStreamDeviceObserver::AddStream(const WebString& label,
@@ -43,8 +42,8 @@ void WebMediaStreamDeviceObserver::AddStream(const WebString& label,
   observer_->AddStream(label, device);
 }
 
-bool WebMediaStreamDeviceObserver::RemoveStream(const WebString& label) {
-  return observer_->RemoveStream(label);
+bool WebMediaStreamDeviceObserver::RemoveStreams(const WebString& label) {
+  return observer_->RemoveStreams(label);
 }
 void WebMediaStreamDeviceObserver::RemoveStreamDevice(
     const MediaStreamDevice& device) {

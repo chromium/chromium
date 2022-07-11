@@ -46,9 +46,11 @@ MediaStreamDeviceObserver::~MediaStreamDeviceObserver() {}
 MediaStreamDevices MediaStreamDeviceObserver::GetNonScreenCaptureDevices() {
   MediaStreamDevices video_devices;
   for (const auto& stream_it : label_stream_map_) {
-    for (const auto& video_device : stream_it.value.video_devices) {
-      if (!IsScreenCaptureMediaType(video_device.type))
-        video_devices.push_back(video_device);
+    for (const auto& stream : stream_it.value) {
+      for (const auto& video_device : stream.video_devices) {
+        if (!IsScreenCaptureMediaType(video_device.type))
+          video_devices.push_back(video_device);
+      }
     }
   }
   return video_devices;
@@ -66,14 +68,16 @@ void MediaStreamDeviceObserver::OnDeviceStopped(
     // time as the underlying media device is unplugged from the system.
     return;
   }
-  Stream* stream = &it->value;
-  if (IsAudioInputMediaType(device.type))
-    RemoveStreamDeviceFromArray(device, &stream->audio_devices);
-  else
-    RemoveStreamDeviceFromArray(device, &stream->video_devices);
 
-  if (stream->on_device_stopped_cb)
-    stream->on_device_stopped_cb.Run(device);
+  for (Stream& stream : it->value) {
+    if (IsAudioInputMediaType(device.type))
+      RemoveStreamDeviceFromArray(device, &stream.audio_devices);
+    else
+      RemoveStreamDeviceFromArray(device, &stream.video_devices);
+
+    if (stream.on_device_stopped_cb)
+      stream.on_device_stopped_cb.Run(device);
+  }
 
   // |it| could have already been invalidated in the function call above. So we
   // need to check if |label| is still in |label_stream_map_| again.
@@ -83,8 +87,19 @@ void MediaStreamDeviceObserver::OnDeviceStopped(
   it = label_stream_map_.find(label);
   if (it == label_stream_map_.end())
     return;
-  stream = &it->value;
-  if (stream->audio_devices.empty() && stream->video_devices.empty())
+
+  Vector<Stream>& streams = it->value;
+  auto* stream_it = streams.begin();
+  while (stream_it != it->value.end()) {
+    Stream& stream = *stream_it;
+    if (stream.audio_devices.empty() && stream.video_devices.empty()) {
+      stream_it = it->value.erase(stream_it);
+    } else {
+      ++stream_it;
+    }
+  }
+
+  if (it->value.IsEmpty())
     label_stream_map_.erase(it);
 }
 
@@ -102,8 +117,11 @@ void MediaStreamDeviceObserver::OnDeviceChanged(
     // time as the underlying media device is unplugged from the system.
     return;
   }
+  // OnDeviceChanged cannot only happen in combination with getDisplayMediaSet,
+  // which is the only API that handles multiple streams at once.
+  DCHECK_EQ(1u, it->value.size());
 
-  Stream* stream = &it->value;
+  Stream* stream = &it->value[0];
   if (stream->on_device_changed_cb)
     stream->on_device_changed_cb.Run(old_device, new_device);
 
@@ -134,10 +152,14 @@ void MediaStreamDeviceObserver::OnDeviceRequestStateChange(
     // time as the underlying media device is unplugged from the system.
     return;
   }
-  Stream* stream = &it->value;
 
-  if (stream->on_device_request_state_change_cb)
-    stream->on_device_request_state_change_cb.Run(device, new_state);
+  for (Stream& stream : it->value) {
+    if (stream.ContainsDevice(device) &&
+        stream.on_device_request_state_change_cb) {
+      stream.on_device_request_state_change_cb.Run(device, new_state);
+      break;
+    }
+  }
 }
 
 void MediaStreamDeviceObserver::OnDeviceCaptureHandleChange(
@@ -152,8 +174,12 @@ void MediaStreamDeviceObserver::OnDeviceCaptureHandleChange(
     // time as the underlying media device is unplugged from the system.
     return;
   }
-  Stream* stream = &it->value;
+  // OnDeviceCaptureHandleChange cannot only happen in combination with
+  // getDisplayMediaSet, which is the only API that handles multiple streams
+  // at once.
+  DCHECK_EQ(1u, it->value.size());
 
+  Stream* stream = &it->value[0];
   if (stream->on_device_capture_handle_change_cb) {
     stream->on_device_capture_handle_change_cb.Run(device);
   }
@@ -165,10 +191,9 @@ void MediaStreamDeviceObserver::BindMediaStreamDeviceObserverReceiver(
   receiver_.Bind(std::move(receiver));
 }
 
-void MediaStreamDeviceObserver::AddStream(
+void MediaStreamDeviceObserver::AddStreams(
     const String& label,
-    const blink::MediaStreamDevices& audio_devices,
-    const blink::MediaStreamDevices& video_devices,
+    const mojom::blink::StreamDevicesSet& stream_devices_set,
     WebMediaStreamDeviceObserver::OnDeviceStoppedCb on_device_stopped_cb,
     WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb,
     WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
@@ -177,17 +202,26 @@ void MediaStreamDeviceObserver::AddStream(
         on_device_capture_handle_change_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  Stream stream;
-  stream.on_device_stopped_cb = std::move(on_device_stopped_cb);
-  stream.on_device_changed_cb = std::move(on_device_changed_cb);
-  stream.on_device_request_state_change_cb =
-      std::move(on_device_request_state_change_cb);
-  stream.on_device_capture_handle_change_cb =
-      std::move(on_device_capture_handle_change_cb);
-  stream.audio_devices = audio_devices;
-  stream.video_devices = video_devices;
-
-  label_stream_map_.Set(label, stream);
+  Vector<Stream> streams;
+  for (const mojom::blink::StreamDevicesPtr& stream_devices_ptr :
+       stream_devices_set.stream_devices) {
+    const mojom::blink::StreamDevices& stream_devices = *stream_devices_ptr;
+    Stream stream;
+    stream.on_device_stopped_cb = on_device_stopped_cb;
+    stream.on_device_changed_cb = on_device_changed_cb;
+    stream.on_device_request_state_change_cb =
+        on_device_request_state_change_cb;
+    stream.on_device_capture_handle_change_cb =
+        on_device_capture_handle_change_cb;
+    if (stream_devices.audio_device.has_value()) {
+      stream.audio_devices.push_back(stream_devices.audio_device.value());
+    }
+    if (stream_devices.video_device.has_value()) {
+      stream.video_devices.push_back(stream_devices.video_device.value());
+    }
+    streams.emplace_back(std::move(stream));
+  }
+  label_stream_map_.Set(label, streams);
 }
 
 void MediaStreamDeviceObserver::AddStream(const String& label,
@@ -202,10 +236,10 @@ void MediaStreamDeviceObserver::AddStream(const String& label,
   else
     NOTREACHED();
 
-  label_stream_map_.Set(label, stream);
+  label_stream_map_.Set(label, Vector<Stream>{std::move(stream)});
 }
 
-bool MediaStreamDeviceObserver::RemoveStream(const String& label) {
+bool MediaStreamDeviceObserver::RemoveStreams(const String& label) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = label_stream_map_.find(label);
@@ -224,14 +258,24 @@ void MediaStreamDeviceObserver::RemoveStreamDevice(
   bool device_found = false;
   Vector<String> streams_to_remove;
   for (auto& entry : label_stream_map_) {
-    MediaStreamDevices& audio_devices = entry.value.audio_devices;
-    MediaStreamDevices& video_devices = entry.value.video_devices;
+    for (auto* stream_it = entry.value.begin();
+         stream_it != entry.value.end();) {
+      Stream& stream = *stream_it;
+      MediaStreamDevices& audio_devices = stream.audio_devices;
+      MediaStreamDevices& video_devices = stream.video_devices;
+      if (RemoveStreamDeviceFromArray(device, &audio_devices) ||
+          RemoveStreamDeviceFromArray(device, &video_devices)) {
+        device_found = true;
+      }
+      if (audio_devices.empty() && video_devices.empty()) {
+        stream_it = entry.value.erase(stream_it);
+      } else {
+        ++stream_it;
+      }
+    }
 
-    if (RemoveStreamDeviceFromArray(device, &audio_devices) ||
-        RemoveStreamDeviceFromArray(device, &video_devices)) {
-      device_found = true;
-      if (audio_devices.empty() && video_devices.empty())
-        streams_to_remove.push_back(entry.key);
+    if (device_found && entry.value.size() == 0) {
+      streams_to_remove.push_back(entry.key);
     }
   }
   DCHECK(device_found);
@@ -244,10 +288,13 @@ base::UnguessableToken MediaStreamDeviceObserver::GetAudioSessionId(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = label_stream_map_.find(label);
-  if (it == label_stream_map_.end() || it->value.audio_devices.empty())
+  if (it == label_stream_map_.end() || it->value.IsEmpty() ||
+      it->value[0].audio_devices.empty())
     return base::UnguessableToken();
 
-  return it->value.audio_devices[0].session_id();
+  // It is assumed that all devices belong to the same request and
+  // therefore have the same session id.
+  return it->value[0].audio_devices[0].session_id();
 }
 
 base::UnguessableToken MediaStreamDeviceObserver::GetVideoSessionId(
@@ -255,10 +302,30 @@ base::UnguessableToken MediaStreamDeviceObserver::GetVideoSessionId(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = label_stream_map_.find(label);
-  if (it == label_stream_map_.end() || it->value.video_devices.empty())
+  if (it == label_stream_map_.end() || it->value.IsEmpty() ||
+      it->value[0].video_devices.empty())
     return base::UnguessableToken();
 
-  return it->value.video_devices[0].session_id();
+  // It is assumed that all devices belong to the same request and
+  // therefore have the same session id.
+  return it->value[0].video_devices[0].session_id();
+}
+
+bool MediaStreamDeviceObserver::Stream::ContainsDevice(
+    const MediaStreamDevice& device) const {
+  for (blink::MediaStreamDevice stream_device : audio_devices) {
+    if (device.IsSameDevice(stream_device)) {
+      return true;
+    }
+  }
+
+  for (blink::MediaStreamDevice stream_device : video_devices) {
+    if (device.IsSameDevice(stream_device)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace blink
