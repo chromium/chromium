@@ -265,10 +265,11 @@ void ActionLabel::OnFocus() {
   LabelButton::OnFocus();
   if (IsUnbound()) {
     static_cast<ActionView*>(parent())->ShowErrorMsg(
-        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING), this);
+        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING), this,
+        /*ax_annouce=*/false);
   } else {
     static_cast<ActionView*>(parent())->ShowLabelFocusInfoMsg(
-        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY));
+        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY), this);
   }
 }
 

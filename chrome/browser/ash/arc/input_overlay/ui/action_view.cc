@@ -8,6 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace arc {
 namespace input_overlay {
@@ -99,9 +100,16 @@ void ActionView::RemoveEditMenu() {
 }
 
 void ActionView::ShowErrorMsg(const base::StringPiece& message,
-                              ActionLabel* editing_label) {
+                              ActionLabel* editing_label,
+                              bool ax_annouce) {
   display_overlay_controller_->AddEditMessage(message, MessageType::kError);
   SetDisplayMode(DisplayMode::kEditedError, editing_label);
+  if (ax_annouce) {
+    GetViewAccessibility().AnnounceText(base::UTF8ToUTF16(message));
+  } else {
+    editing_label->GetViewAccessibility().OverrideDescription(
+        base::UTF8ToUTF16(message));
+  }
 }
 
 void ActionView::ShowInfoMsg(const base::StringPiece& message,
@@ -109,9 +117,12 @@ void ActionView::ShowInfoMsg(const base::StringPiece& message,
   display_overlay_controller_->AddEditMessage(message, MessageType::kInfo);
 }
 
-void ActionView::ShowLabelFocusInfoMsg(const base::StringPiece& message) {
+void ActionView::ShowLabelFocusInfoMsg(const base::StringPiece& message,
+                                       ActionLabel* editing_label) {
   display_overlay_controller_->AddEditMessage(message,
                                               MessageType::kInfoLabelFocus);
+  editing_label->GetViewAccessibility().OverrideDescription(
+      base::UTF8ToUTF16(message));
 }
 
 void ActionView::RemoveMessage() {
@@ -143,7 +154,7 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
        ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
       IsReservedDomCode(code)) {
     ShowErrorMsg(l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS),
-                 editing_label);
+                 editing_label, /*ax_annouce=*/true);
     return true;
   }
 
