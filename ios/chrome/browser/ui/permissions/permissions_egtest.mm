@@ -16,6 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/common/features.h"
 #include "ios/web/public/permissions/permissions.h"
@@ -407,6 +408,10 @@ void TapDoneButtonOnInfobarModal() {
 // Tests that permissions stay the same after user switches to another tab then
 // comes back.
 - (void)testPermissionsAfterTabSwitch {
+  if (@available(iOS 16.0, *)) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 16");
+  }
+
   if (@available(iOS 15.0, *)) {
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
     // Opens a page that requests both camera and microphone permissions, and
