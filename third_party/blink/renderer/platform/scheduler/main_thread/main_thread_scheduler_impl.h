@@ -174,7 +174,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 #endif
   [[nodiscard]] std::unique_ptr<ThreadScheduler::RendererPauseHandle>
   PauseRenderer() override;
-  bool IsHighPriorityWorkAnticipated() override;
   bool ShouldYieldForHighPriorityWork() override;
   bool CanExceedIdleDeadlineIfRequired() const override;
   void AddTaskObserver(base::TaskObserver* task_observer) override;
@@ -222,6 +221,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void DidHandleInputEventOnMainThread(const WebInputEvent& web_input_event,
                                        WebInputEventResult result);
   void DidAnimateForInputOnCompositorThread();
+
+  // Returns true if the scheduler has reason to believe that high priority work
+  // may soon arrive on the main thread, e.g., if gesture events were observed
+  // recently.
+  // Must be called from the main thread.
+  bool IsHighPriorityWorkAnticipated();
 
   // Use a separate task runner so that IPC tasks are not logged via the same
   // task queue that executes them. Otherwise this would result in an infinite

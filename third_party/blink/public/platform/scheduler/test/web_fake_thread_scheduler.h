@@ -32,7 +32,6 @@ class WebFakeThreadScheduler : public WebThreadScheduler {
   void PauseTimersForAndroidWebView() override;
   void ResumeTimersForAndroidWebView() override;
 #endif
-  bool IsHighPriorityWorkAnticipated() override;
   void Shutdown() override;
   void SetTopLevelBlameContext(
       base::trace_event::BlameContext* blame_context) override;

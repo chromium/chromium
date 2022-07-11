@@ -42,10 +42,6 @@ WebFakeThreadScheduler::GetCurrentAgentGroupScheduler() {
   return nullptr;
 }
 
-bool WebFakeThreadScheduler::IsHighPriorityWorkAnticipated() {
-  return false;
-}
-
 void WebFakeThreadScheduler::SetRendererHidden(bool hidden) {}
 
 void WebFakeThreadScheduler::SetRendererBackgrounded(bool backgrounded) {}

@@ -88,11 +88,6 @@ WebThreadScheduler::PauseRenderer() {
   return nullptr;
 }
 
-bool WebThreadScheduler::IsHighPriorityWorkAnticipated() {
-  NOTREACHED();
-  return false;
-}
-
 void WebThreadScheduler::SetTopLevelBlameContext(
     base::trace_event::BlameContext* blame_context) {
   NOTREACHED();

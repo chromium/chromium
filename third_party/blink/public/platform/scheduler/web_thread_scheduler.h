@@ -132,12 +132,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // Handle should be destroyed before the renderer.
   [[nodiscard]] virtual std::unique_ptr<RendererPauseHandle> PauseRenderer();
 
-  // Returns true if the scheduler has reason to believe that high priority work
-  // may soon arrive on the main thread, e.g., if gesture events were observed
-  // recently.
-  // Must be called from the main thread.
-  virtual bool IsHighPriorityWorkAnticipated();
-
   // Sets the default blame context to which top level work should be
   // attributed in this renderer. |blame_context| must outlive this scheduler.
   virtual void SetTopLevelBlameContext(

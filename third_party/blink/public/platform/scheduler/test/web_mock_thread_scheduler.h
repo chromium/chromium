@@ -47,7 +47,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(ResumeTimersForAndroidWebView, void());
 #endif
   MOCK_METHOD0(OnNavigate, void());
-  MOCK_METHOD0(IsHighPriorityWorkAnticipated, bool());
   MOCK_METHOD1(AddTaskObserver, void(base::TaskObserver*));
   MOCK_METHOD1(RemoveTaskObserver, void(base::TaskObserver*));
   MOCK_METHOD0(Shutdown, void());
