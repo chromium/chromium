@@ -321,14 +321,14 @@ MachVMRegionResult GetTopInfo(mach_port_t task,
                               mach_vm_address_t* address,
                               vm_region_top_info_data_t* info) {
   mach_msg_type_number_t info_count = VM_REGION_TOP_INFO_COUNT;
-  mach_port_t object_name;
-  kern_return_t kr = mach_vm_region(task, address, size, VM_REGION_TOP_INFO,
-                                    reinterpret_cast<vm_region_info_t>(info),
-                                    &info_count, &object_name);
   // The kernel always returns a null object for VM_REGION_TOP_INFO, but
   // balance it with a deallocate in case this ever changes. See 10.9.2
   // xnu-2422.90.20/osfmk/vm/vm_map.c vm_map_region.
-  mach_port_deallocate(task, object_name);
+  mac::ScopedMachSendRight object_name;
+  kern_return_t kr =
+      mach_vm_region(task, address, size, VM_REGION_TOP_INFO,
+                     reinterpret_cast<vm_region_info_t>(info), &info_count,
+                     mac::ScopedMachSendRight::Receiver(object_name).get());
   return ParseOutputFromMachVMRegion(kr);
 }
 
@@ -337,14 +337,14 @@ MachVMRegionResult GetBasicInfo(mach_port_t task,
                                 mach_vm_address_t* address,
                                 vm_region_basic_info_64* info) {
   mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT_64;
-  mach_port_t object_name;
-  kern_return_t kr = mach_vm_region(
-      task, address, size, VM_REGION_BASIC_INFO_64,
-      reinterpret_cast<vm_region_info_t>(info), &info_count, &object_name);
   // The kernel always returns a null object for VM_REGION_BASIC_INFO_64, but
   // balance it with a deallocate in case this ever changes. See 10.9.2
   // xnu-2422.90.20/osfmk/vm/vm_map.c vm_map_region.
-  mach_port_deallocate(task, object_name);
+  mac::ScopedMachSendRight object_name;
+  kern_return_t kr =
+      mach_vm_region(task, address, size, VM_REGION_BASIC_INFO_64,
+                     reinterpret_cast<vm_region_info_t>(info), &info_count,
+                     mac::ScopedMachSendRight::Receiver(object_name).get());
   return ParseOutputFromMachVMRegion(kr);
 }
 
