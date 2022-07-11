@@ -2269,7 +2269,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
 // On most platforms, there is a legacy policy
 // kUnsafelyTreatInsecureOriginAsSecure which has been replaced by
-// kOverrideSecurityRestrictionsOnInsecureOrigins. The legacy policy was never
+// kOverrideSecurityRestrictionsOnInsecureOrigin. The legacy policy was never
 // supported on ChromeOS or Android, so on those platforms, simply use the new
 // one.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
