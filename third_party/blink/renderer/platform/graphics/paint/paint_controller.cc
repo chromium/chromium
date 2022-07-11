@@ -384,10 +384,12 @@ void PaintController::CheckNewChunkId(const PaintChunk::Id& id) {
 
 void PaintController::CheckNewChunk() {
 #if DCHECK_IS_ON()
-  auto& chunks = new_paint_artifact_->PaintChunks();
-  if (chunks.back().is_cacheable) {
-    AddToIdIndexMap(chunks.back().id, chunks.size() - 1,
-                    new_paint_chunk_id_index_map_);
+  if (usage_ == kMultiplePaints) {
+    auto& chunks = new_paint_artifact_->PaintChunks();
+    if (chunks.back().is_cacheable) {
+      AddToIdIndexMap(chunks.back().id, chunks.size() - 1,
+                      new_paint_chunk_id_index_map_);
+    }
   }
 #endif
 

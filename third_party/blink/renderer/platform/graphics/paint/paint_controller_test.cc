@@ -1964,6 +1964,34 @@ TEST_P(PaintControllerTest, TransientPaintControllerIncompleteCycle) {
   paint_controller = nullptr;
 }
 
+TEST_P(PaintControllerTest, AllowDuplicatedIdForTransientPaintController) {
+  auto paint_controller =
+      std::make_unique<PaintController>(PaintController::kTransient);
+  GraphicsContext context(*paint_controller);
+  FakeDisplayItemClient& client =
+      *MakeGarbageCollected<FakeDisplayItemClient>("client");
+  {
+    CommitCycleScope cycle_scope(*paint_controller);
+    InitRootChunk(*paint_controller);
+    {
+      paint_controller->SetWillForceNewChunk(true);
+      ScopedPaintChunkProperties p(*paint_controller,
+                                   DefaultPaintChunkProperties(), client,
+                                   kBackgroundType);
+      DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 50, 50));
+    }
+    {
+      paint_controller->SetWillForceNewChunk(true);
+      ScopedPaintChunkProperties p(*paint_controller,
+                                   DefaultPaintChunkProperties(), client,
+                                   kBackgroundType);
+      DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 50, 50));
+    }
+  }
+  EXPECT_EQ(2u, paint_controller->GetDisplayItemList().size());
+  EXPECT_EQ(2u, paint_controller->PaintChunks().size());
+}
+
 TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled())
     return;
