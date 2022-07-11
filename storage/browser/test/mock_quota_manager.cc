@@ -8,12 +8,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/test_waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -36,10 +38,6 @@ MockQuotaManager::BucketData::BucketData(MockQuotaManager::BucketData&&) =
     default;
 MockQuotaManager::BucketData& MockQuotaManager::BucketData::operator=(
     MockQuotaManager::BucketData&&) = default;
-
-MockQuotaManager::StorageInfo::StorageInfo()
-    : usage(0), quota(std::numeric_limits<int64_t>::max()) {}
-MockQuotaManager::StorageInfo::~StorageInfo() = default;
 
 MockQuotaManager::MockQuotaManager(
     bool is_incognito,
@@ -80,10 +78,11 @@ void MockQuotaManager::UpdateOrCreateBucket(
 QuotaErrorOr<BucketInfo> MockQuotaManager::GetOrCreateBucketSync(
     const BucketInitParams& params) {
   QuotaErrorOr<BucketInfo> bucket;
-  base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                             base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::TestWaitableEvent waiter(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
   UpdateOrCreateBucket(params, base::BindOnce(
-                                   [](base::WaitableEvent* waiter,
+                                   [](base::TestWaitableEvent* waiter,
                                       QuotaErrorOr<BucketInfo>* sync_bucket,
                                       QuotaErrorOr<BucketInfo> result_bucket) {
                                      *sync_bucket = std::move(result_bucket);
@@ -145,15 +144,40 @@ void MockQuotaManager::GetBucket(
 void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
                                         StorageType type,
                                         UsageAndQuotaCallback callback) {
-  StorageInfo& info = usage_and_quota_map_[std::make_pair(storage_key, type)];
-  std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, info.usage,
-                          info.quota);
+  int64_t quota = quota_map_[std::make_pair(storage_key, type)].quota;
+  int64_t usage = 0;
+
+  if (usage_map_.empty()) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, usage, quota);
+    return;
+  }
+
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      usage_map_.size(), base::BindLambdaForTesting([&]() {
+        std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, usage,
+                                quota);
+      }));
+  for (const auto& entry : usage_map_) {
+    GetBucketById(
+        entry.first,
+        base::BindLambdaForTesting([this, &storage_key, type, &barrier_closure,
+                                    &usage](QuotaErrorOr<BucketInfo> result) {
+          if (result.ok()) {
+            storage::BucketLocator bucket_locator = result->ToBucketLocator();
+            if (bucket_locator.storage_key == storage_key &&
+                bucket_locator.type == type) {
+              usage += usage_map_[bucket_locator.id].usage;
+            }
+          }
+          barrier_closure.Run();
+        }));
+  }
 }
 
 void MockQuotaManager::SetQuota(const StorageKey& storage_key,
                                 StorageType type,
                                 int64_t quota) {
-  usage_and_quota_map_[std::make_pair(storage_key, type)].quota = quota;
+  quota_map_[std::make_pair(storage_key, type)].quota = quota;
 }
 
 bool MockQuotaManager::AddBucket(const BucketInfo& bucket,
@@ -330,10 +354,8 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindAndUpdateBucket(
   return QuotaError::kNotFound;
 }
 
-void MockQuotaManager::UpdateUsage(const StorageKey& storage_key,
-                                   StorageType type,
-                                   int64_t delta) {
-  usage_and_quota_map_[std::make_pair(storage_key, type)].usage += delta;
+void MockQuotaManager::UpdateUsage(const BucketId& bucket_id, int64_t delta) {
+  usage_map_[bucket_id].usage += delta;
 }
 
 void MockQuotaManager::DidGetBucket(

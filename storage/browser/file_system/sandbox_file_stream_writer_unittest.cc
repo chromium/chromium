@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
-#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "storage/browser/file_system/file_stream_writer_test.h"
 
 #include <stdint.h>
@@ -157,16 +157,16 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
   }
 
   quota_usage_and_info GetUsageAndQuotaSync() {
-    quota_usage_and_info info;
+    base::test::TestFuture<blink::mojom::QuotaStatusCode, int64_t, int64_t>
+        future;
     quota_manager_->GetUsageAndQuota(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        blink::mojom::StorageType::kTemporary,
-        base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode status,
-                                       int64_t usage, int64_t quota) {
-          info.status = status;
-          info.usage = usage;
-          info.quota = quota;
-        }));
+        blink::mojom::StorageType::kTemporary, future.GetCallback());
+
+    quota_usage_and_info info;
+    info.status = future.Get<0>();
+    info.usage = future.Get<1>();
+    info.quota = future.Get<2>();
     return info;
   }
 

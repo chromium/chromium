@@ -50,9 +50,10 @@ class MockQuotaManager : public QuotaManager {
       const BucketInitParams& bucket_params,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 
-  // Overrides QuotaManager's implementation that maintains an internal
-  // container of created buckets and avoids going to the DB.
-  // NOTE: the asychonrous version of this method `GetOrCreateBucket` is
+  // Synchronous wrapper around `UpdateOrCreateBucket`, which overrides
+  // QuotaManager's implementation that maintains an internal container of
+  // created buckets and avoids going to the DB.
+  // NOTE: the asynchronous version of this method `UpdateOrCreateBucket` is
   // preferred; only use this synchronous version where asynchronous bucket
   // retrieval is not possible.
   QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
@@ -79,9 +80,10 @@ class MockQuotaManager : public QuotaManager {
                  base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 
   // Overrides QuotaManager's implementation. The internal usage data is
-  // updated when MockQuotaManagerProxy::NotifyStorageModified() is
-  // called.  The internal quota value can be updated by calling
-  // a helper method MockQuotaManagerProxy::SetQuota().
+  // updated when `MockQuotaManagerProxy::NotifyStorageModified()` or
+  // `MockQuotaManagerProxy::NotifyBucketModified()` is called. The internal
+  // quota value can be updated by calling a helper method
+  // `MockQuotaManager::SetQuota()`.
   void GetUsageAndQuota(const blink::StorageKey& storage_key,
                         blink::mojom::StorageType type,
                         UsageAndQuotaCallback callback) override;
@@ -168,6 +170,7 @@ class MockQuotaManager : public QuotaManager {
 
  private:
   friend class MockQuotaManagerProxy;
+  FRIEND_TEST_ALL_PREFIXES(MockQuotaManagerTest, QuotaAndUsage);
 
   // Contains the essential bits of information about a bucket that the
   // MockQuotaManager needs to understand for time-based deletion:
@@ -190,16 +193,14 @@ class MockQuotaManager : public QuotaManager {
     base::Time modified;
   };
 
-  // Contains the essential information for each storage key for usage/quota
-  // testing. (Ideally this should probably merged into the above struct, but
-  // for regular usage/quota testing we hardly need modified time but only want
-  // to keep usage and quota information, so this struct exists.
-  struct StorageInfo {
-    StorageInfo();
-    ~StorageInfo();
-    int64_t usage;
-    int64_t quota;
-    blink::mojom::UsageBreakdownPtr usage_breakdown;
+  // Structure to support tracking quota per storage key.
+  struct StorageKeyQuota {
+    int64_t quota = std::numeric_limits<int64_t>::max();
+  };
+
+  // Structure to support tracking usage per bucket.
+  struct BucketUsage {
+    int64_t usage = 0;
   };
 
   QuotaErrorOr<BucketInfo> FindBucketById(const BucketId& bucket_id);
@@ -213,9 +214,7 @@ class MockQuotaManager : public QuotaManager {
       blink::mojom::StorageType type);
 
   // This must be called via MockQuotaManagerProxy.
-  void UpdateUsage(const blink::StorageKey& storage_key,
-                   blink::mojom::StorageType type,
-                   int64_t delta);
+  void UpdateUsage(const BucketId& bucket_id, int64_t delta);
 
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                     QuotaErrorOr<BucketInfo> result);
@@ -234,8 +233,10 @@ class MockQuotaManager : public QuotaManager {
 
   // The list of stored buckets that have been added via AddBucket.
   std::vector<BucketData> buckets_;
-  std::map<std::pair<blink::StorageKey, blink::mojom::StorageType>, StorageInfo>
-      usage_and_quota_map_;
+  std::map<std::pair<blink::StorageKey, blink::mojom::StorageType>,
+           StorageKeyQuota>
+      quota_map_;
+  std::map<BucketId, BucketUsage> usage_map_;
 
   // Tracks number of times NotifyFailedWrite has been called per storage key.
   std::map<const blink::StorageKey, int> write_error_tracker_;

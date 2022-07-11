@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/url_request/url_request.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -42,10 +43,6 @@ namespace {
 
 const char kOrigin[] = "http://example.com";
 const FileSystemType kFileSystemType = kFileSystemTypeTest;
-
-void AssertStatusEq(base::File::Error expected, base::File::Error actual) {
-  ASSERT_EQ(expected, actual);
-}
 
 }  // namespace
 
@@ -79,9 +76,10 @@ class FileSystemOperationImplWriteTest : public testing::Test {
         quota_manager_->proxy(), data_dir_.GetPath());
     blob_storage_context_ = std::make_unique<BlobStorageContext>();
 
+    base::test::TestFuture<base::File::Error> future;
     file_system_context_->operation_runner()->CreateFile(
-        URLForPath(virtual_path_), true /* exclusive */,
-        base::BindOnce(&AssertStatusEq, base::File::FILE_OK));
+        URLForPath(virtual_path_), true /* exclusive */, future.GetCallback());
+    ASSERT_EQ(base::File::FILE_OK, future.Get());
 
     static_cast<TestFileSystemBackend*>(
         file_system_context_->GetFileSystemBackend(kFileSystemType))
@@ -233,9 +231,12 @@ TEST_F(FileSystemOperationImplWriteTest, TestWriteInvalidFile) {
 
 TEST_F(FileSystemOperationImplWriteTest, TestWriteDir) {
   base::FilePath virtual_dir_path(FILE_PATH_LITERAL("d"));
+
+  base::test::TestFuture<base::File::Error> future;
   file_system_context_->operation_runner()->CreateDirectory(
       URLForPath(virtual_dir_path), true /* exclusive */, false /* recursive */,
-      base::BindOnce(&AssertStatusEq, base::File::FILE_OK));
+      future.GetCallback());
+  ASSERT_EQ(base::File::FILE_OK, future.Get());
 
   ScopedTextBlob blob(blob_storage_context(), "blob:writedir",
                       "It\'ll not be written, too.");

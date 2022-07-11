@@ -192,8 +192,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // updated.  If a `callback` is provided then `callback_task_runner` must
   // also be provided.  If the quota manager runs on `callback_task_runner`,
   // then the `callback` may be invoked synchronously.
-  // TODO(crbug.com/1208141): Remove when all usages have updated to use
-  // NotifyBucketModified.
+  // TODO(https://crbug.com/1202167): Remove when all usages have updated to use
+  // `NotifyBucketModified()`.
   virtual void NotifyStorageModified(
       QuotaClientType client_id,
       const blink::StorageKey& storage_key,
