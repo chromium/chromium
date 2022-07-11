@@ -266,13 +266,15 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     session_ = std::make_unique<HttpNetworkSession>(params, session_context);
     factory_ = static_cast<HttpStreamFactory*>(session_->http_stream_factory());
     if (create_job_controller_) {
-      job_controller_ = new HttpStreamFactory::JobController(
+      auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
           factory_, &request_delegate_, session_.get(), &job_factory_,
           request_info, is_preconnect_, false /* is_websocket */,
           enable_ip_based_pooling_, enable_alternative_services_,
           delay_main_job_with_available_spdy_session_, SSLConfig(),
           SSLConfig());
-      HttpStreamFactoryPeer::AddJobController(factory_, job_controller_);
+      job_controller_ = job_controller.get();
+      HttpStreamFactoryPeer::AddJobController(factory_,
+                                              std::move(job_controller));
     }
   }
 
@@ -523,15 +525,15 @@ class JobControllerReconsiderProxyAfterErrorTest
 
   std::unique_ptr<HttpStreamRequest> CreateJobController(
       const HttpRequestInfo& request_info) {
-    HttpStreamFactory::JobController* job_controller =
-        new HttpStreamFactory::JobController(
-            factory_, &request_delegate_, session_.get(), &default_job_factory_,
-            request_info, is_preconnect_, false /* is_websocket */,
-            enable_ip_based_pooling_, enable_alternative_services_,
-            delay_main_job_with_available_spdy_session_, SSLConfig(),
-            SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-    return job_controller->Start(
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+        factory_, &request_delegate_, session_.get(), &default_job_factory_,
+        request_info, is_preconnect_, false /* is_websocket */,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    auto* job_controller_ptr = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
+    return job_controller_ptr->Start(
         &request_delegate_, nullptr, net_log_with_source_,
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
   }
@@ -2731,22 +2733,22 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
     request_info.network_isolation_key = other_network_isolation_key;
     MockHttpStreamRequestDelegate request_delegate;
-    HttpStreamFactory::JobController* job_controller =
-        new HttpStreamFactory::JobController(
-            factory_, &request_delegate, session_.get(), &job_factory_,
-            request_info, is_preconnect_, false /* is_websocket */,
-            enable_ip_based_pooling_, enable_alternative_services_,
-            delay_main_job_with_available_spdy_session_, SSLConfig(),
-            SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-    job_controller->Preconnect(/*num_streams=*/5);
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+        factory_, &request_delegate, session_.get(), &job_factory_,
+        request_info, is_preconnect_, false /* is_websocket */,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    auto* job_controller_ptr = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
+    job_controller_ptr->Preconnect(/*num_streams=*/5);
     // Five jobs should be started.
-    EXPECT_TRUE(job_controller->main_job());
-    EXPECT_FALSE(job_controller->alternative_job());
+    EXPECT_TRUE(job_controller_ptr->main_job());
+    EXPECT_FALSE(job_controller_ptr->alternative_job());
     EXPECT_EQ(HttpStreamFactory::PRECONNECT,
-              job_controller->main_job()->job_type());
-    EXPECT_EQ(
-        5, HttpStreamFactoryJobPeer::GetNumStreams(job_controller->main_job()));
+              job_controller_ptr->main_job()->job_type());
+    EXPECT_EQ(5, HttpStreamFactoryJobPeer::GetNumStreams(
+                     job_controller_ptr->main_job()));
 
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
@@ -2836,17 +2838,16 @@ TEST_P(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
   // Create and start a preconnect request, which should start watching the
   // SpdySessionPool.
   MockHttpStreamRequestDelegate preconnect_request_delegate;
-  HttpStreamFactory::JobController* job_controller =
-      new HttpStreamFactory::JobController(
-          factory_, &preconnect_request_delegate, session_.get(), &job_factory_,
-          request_info, true /* is_preconnect */, false /* is_websocket */,
-          enable_ip_based_pooling_, enable_alternative_services_,
-          delay_main_job_with_available_spdy_session_, SSLConfig(),
-          SSLConfig());
-  HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-  job_controller->Preconnect(1);
-  EXPECT_TRUE(job_controller->main_job());
-  EXPECT_FALSE(job_controller->alternative_job());
+  auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &preconnect_request_delegate, session_.get(), &job_factory_,
+      request_info, true /* is_preconnect */, false /* is_websocket */,
+      enable_ip_based_pooling_, enable_alternative_services_,
+      delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+  auto* job_controller_ptr = job_controller.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller));
+  job_controller_ptr->Preconnect(1);
+  EXPECT_TRUE(job_controller_ptr->main_job());
+  EXPECT_FALSE(job_controller_ptr->alternative_job());
 
   // The non-preconnect request should create an H2 session, which the
   // preconnect then sees, and the preconnect request should complete and be
@@ -2960,16 +2961,18 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
   // Create and start a preconnect request [2].
   MockHttpStreamRequestDelegate preconnect_request_delegate;
-  HttpStreamFactory::JobController* preconnect_job_controller =
-      new HttpStreamFactory::JobController(
+  auto preconnect_job_controller =
+      std::make_unique<HttpStreamFactory::JobController>(
           factory_, &preconnect_request_delegate, session_.get(), &job_factory_,
           other_request_info, /*is_preconnect=*/true,
           /*is_websocket=*/false, /*enable_ip_based_pooling=*/true,
           enable_alternative_services_,
           delay_main_job_with_available_spdy_session_, SSLConfig(),
           SSLConfig());
-  HttpStreamFactoryPeer::AddJobController(factory_, preconnect_job_controller);
-  preconnect_job_controller->Preconnect(1);
+  auto* preconnect_job_controller_ptr = preconnect_job_controller.get();
+  HttpStreamFactoryPeer::AddJobController(factory_,
+                                          std::move(preconnect_job_controller));
+  preconnect_job_controller_ptr->Preconnect(1);
   base::RunLoop().RunUntilIdle();
 
   // The SpdySession is available for IP based pooling when the host resolution
@@ -2991,17 +2994,17 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   // Create and start a second non-preconnect request [3].
   {
     MockHttpStreamRequestDelegate request_delegate;
-    HttpStreamFactory::JobController* job_controller =
-        new HttpStreamFactory::JobController(
-            factory_, &request_delegate, session_.get(), &job_factory_,
-            other_request_info, /*is_preconnect=*/false,
-            /*is_websocket=*/false, /*enable_ip_based_pooling=*/true,
-            enable_alternative_services_,
-            delay_main_job_with_available_spdy_session_, SSLConfig(),
-            SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+        factory_, &request_delegate, session_.get(), &job_factory_,
+        other_request_info, /*is_preconnect=*/false,
+        /*is_websocket=*/false, /*enable_ip_based_pooling=*/true,
+        enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    auto* job_controller_ptr = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
     std::unique_ptr<HttpStreamRequest> second_stream_request =
-        job_controller->Start(
+        job_controller_ptr->Start(
             &request_delegate,
             /*websocket_handshake_stream_create_helper=*/nullptr,
             NetLogWithSource(), HttpStreamRequest::HTTP_STREAM,
@@ -3063,19 +3066,19 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequests) {
   for (int i = 0; i < kNumRequests; ++i) {
     request_delegates.emplace_back(
         std::make_unique<MockHttpStreamRequestDelegate>());
-    HttpStreamFactory::JobController* job_controller =
-        new HttpStreamFactory::JobController(
-            factory_, request_delegates[i].get(), session_.get(), &job_factory_,
-            request_info, is_preconnect_, false /* is_websocket */,
-            enable_ip_based_pooling_, enable_alternative_services_,
-            delay_main_job_with_available_spdy_session_, SSLConfig(),
-            SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-    auto request = job_controller->Start(
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+        factory_, request_delegates[i].get(), session_.get(), &job_factory_,
+        request_info, is_preconnect_, false /* is_websocket */,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    auto* job_controller_ptr = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
+    auto request = job_controller_ptr->Start(
         request_delegates[i].get(), nullptr, net_log_with_source_,
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
-    EXPECT_TRUE(job_controller->main_job());
-    EXPECT_FALSE(job_controller->alternative_job());
+    EXPECT_TRUE(job_controller_ptr->main_job());
+    EXPECT_FALSE(job_controller_ptr->alternative_job());
     requests.push_back(std::move(request));
   }
 
@@ -3150,20 +3153,20 @@ TEST_F(JobControllerLimitMultipleH2Requests,
       }
       request_delegates.emplace_back(
           std::make_unique<MockHttpStreamRequestDelegate>());
-      HttpStreamFactory::JobController* job_controller =
-          new HttpStreamFactory::JobController(
-              factory_, request_delegates[i].get(), session_.get(),
-              &job_factory_, request_info, is_preconnect_,
-              false /* is_websocket */, enable_ip_based_pooling_,
-              enable_alternative_services_,
-              delay_main_job_with_available_spdy_session_, SSLConfig(),
-              SSLConfig());
-      HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-      auto request = job_controller->Start(
+      auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+          factory_, request_delegates[i].get(), session_.get(), &job_factory_,
+          request_info, is_preconnect_, false /* is_websocket */,
+          enable_ip_based_pooling_, enable_alternative_services_,
+          delay_main_job_with_available_spdy_session_, SSLConfig(),
+          SSLConfig());
+      auto* job_controller_ptr = job_controller.get();
+      HttpStreamFactoryPeer::AddJobController(factory_,
+                                              std::move(job_controller));
+      auto request = job_controller_ptr->Start(
           request_delegates[i].get(), nullptr, net_log_with_source_,
           HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
-      EXPECT_TRUE(job_controller->main_job());
-      EXPECT_FALSE(job_controller->alternative_job());
+      EXPECT_TRUE(job_controller_ptr->main_job());
+      EXPECT_FALSE(job_controller_ptr->alternative_job());
       requests.push_back(std::move(request));
     }
   }
@@ -3228,19 +3231,19 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequestsFirstRequestHang) {
   for (int i = 0; i < kNumRequests; ++i) {
     request_delegates.push_back(
         std::make_unique<MockHttpStreamRequestDelegate>());
-    HttpStreamFactory::JobController* job_controller =
-        new HttpStreamFactory::JobController(
-            factory_, request_delegates[i].get(), session_.get(), &job_factory_,
-            request_info, is_preconnect_, false /* is_websocket */,
-            enable_ip_based_pooling_, enable_alternative_services_,
-            delay_main_job_with_available_spdy_session_, SSLConfig(),
-            SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-    auto request = job_controller->Start(
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+        factory_, request_delegates[i].get(), session_.get(), &job_factory_,
+        request_info, is_preconnect_, false /* is_websocket */,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    auto* job_controller_ptr = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
+    auto request = job_controller_ptr->Start(
         request_delegates[i].get(), nullptr, net_log_with_source_,
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
-    EXPECT_TRUE(job_controller->main_job());
-    EXPECT_FALSE(job_controller->alternative_job());
+    EXPECT_TRUE(job_controller_ptr->main_job());
+    EXPECT_FALSE(job_controller_ptr->alternative_job());
     requests.push_back(std::move(request));
   }
 
@@ -3302,19 +3305,19 @@ TEST_F(JobControllerLimitMultipleH2Requests,
   for (int i = 0; i < kNumRequests; ++i) {
     request_delegates.emplace_back(
         std::make_unique<MockHttpStreamRequestDelegate>());
-    HttpStreamFactory::JobController* job_controller =
-        new HttpStreamFactory::JobController(
-            factory_, request_delegates[i].get(), session_.get(), &job_factory_,
-            request_info, is_preconnect_, false /* is_websocket */,
-            enable_ip_based_pooling_, enable_alternative_services_,
-            delay_main_job_with_available_spdy_session_, SSLConfig(),
-            SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-    auto request = job_controller->Start(
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+        factory_, request_delegates[i].get(), session_.get(), &job_factory_,
+        request_info, is_preconnect_, false /* is_websocket */,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    auto* job_controller_ptr = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
+    auto request = job_controller_ptr->Start(
         request_delegates[i].get(), nullptr, net_log_with_source_,
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
-    EXPECT_TRUE(job_controller->main_job());
-    EXPECT_FALSE(job_controller->alternative_job());
+    EXPECT_TRUE(job_controller_ptr->main_job());
+    EXPECT_FALSE(job_controller_ptr->alternative_job());
     requests.push_back(std::move(request));
   }
   // Cancel the first one.
@@ -3358,17 +3361,17 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultiplePreconnects) {
   for (int i = 0; i < kNumRequests; ++i) {
     request_delegates.emplace_back(
         std::make_unique<MockHttpStreamRequestDelegate>());
-    HttpStreamFactory::JobController* job_controller =
-        new HttpStreamFactory::JobController(
-            factory_, request_delegates[i].get(), session_.get(), &job_factory_,
-            request_info, is_preconnect_, false /* is_websocket */,
-            enable_ip_based_pooling_, enable_alternative_services_,
-            delay_main_job_with_available_spdy_session_, SSLConfig(),
-            SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-    job_controller->Preconnect(1);
-    EXPECT_TRUE(job_controller->main_job());
-    EXPECT_FALSE(job_controller->alternative_job());
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+        factory_, request_delegates[i].get(), session_.get(), &job_factory_,
+        request_info, is_preconnect_, false /* is_websocket */,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    auto* job_controller_ptr = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
+    job_controller_ptr->Preconnect(1);
+    EXPECT_TRUE(job_controller_ptr->main_job());
+    EXPECT_FALSE(job_controller_ptr->alternative_job());
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
@@ -3407,19 +3410,19 @@ TEST_F(JobControllerLimitMultipleH2Requests, H1NegotiatedForFirstRequest) {
   for (int i = 0; i < 2; ++i) {
     request_delegates.emplace_back(
         std::make_unique<MockHttpStreamRequestDelegate>());
-    HttpStreamFactory::JobController* job_controller =
-        new HttpStreamFactory::JobController(
-            factory_, request_delegates[i].get(), session_.get(), &job_factory_,
-            request_info, is_preconnect_, false /* is_websocket */,
-            enable_ip_based_pooling_, enable_alternative_services_,
-            delay_main_job_with_available_spdy_session_, SSLConfig(),
-            SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-    auto request = job_controller->Start(
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+        factory_, request_delegates[i].get(), session_.get(), &job_factory_,
+        request_info, is_preconnect_, false /* is_websocket */,
+        enable_ip_based_pooling_, enable_alternative_services_,
+        delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+    auto* job_controller_ptr = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
+    auto request = job_controller_ptr->Start(
         request_delegates[i].get(), nullptr, net_log_with_source_,
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
-    EXPECT_TRUE(job_controller->main_job());
-    EXPECT_FALSE(job_controller->alternative_job());
+    EXPECT_TRUE(job_controller_ptr->main_job());
+    EXPECT_FALSE(job_controller_ptr->alternative_job());
     requests.push_back(std::move(request));
   }
 
@@ -3470,20 +3473,19 @@ TEST_F(JobControllerLimitMultipleH2Requests, QuicJobNotThrottled) {
 
   // Use default job factory so that Resume() is not mocked out.
   HttpStreamFactory::JobFactory default_job_factory;
-  HttpStreamFactory::JobController* job_controller =
-      new HttpStreamFactory::JobController(
-          factory_, &request_delegate_, session_.get(), &default_job_factory,
-          request_info, is_preconnect_, false /* is_websocket */,
-          enable_ip_based_pooling_, enable_alternative_services_,
-          delay_main_job_with_available_spdy_session_, SSLConfig(),
-          SSLConfig());
-  HttpStreamFactoryPeer::AddJobController(factory_, job_controller);
-  request_ =
-      job_controller->Start(&request_delegate_, nullptr, net_log_with_source_,
-                            HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
+  auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
+      factory_, &request_delegate_, session_.get(), &default_job_factory,
+      request_info, is_preconnect_, false /* is_websocket */,
+      enable_ip_based_pooling_, enable_alternative_services_,
+      delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
+  auto* job_controller_ptr = job_controller.get();
+  HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller));
+  request_ = job_controller_ptr->Start(
+      &request_delegate_, nullptr, net_log_with_source_,
+      HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
 
-  EXPECT_TRUE(job_controller->main_job());
-  EXPECT_TRUE(job_controller->alternative_job());
+  EXPECT_TRUE(job_controller_ptr->main_job());
+  EXPECT_TRUE(job_controller_ptr->alternative_job());
   EXPECT_CALL(request_delegate_, OnStreamReadyImpl(_, _, _));
   base::RunLoop().RunUntilIdle();
   auto entries = net_log_observer_.GetEntries();
@@ -3575,7 +3577,7 @@ class HttpStreamFactoryJobControllerPreconnectTest
     factory_ = session_->http_stream_factory();
     request_info_.method = "GET";
     request_info_.url = GURL("https://www.example.com");
-    job_controller_ = new HttpStreamFactory::JobController(
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
         factory_, &request_delegate_, session_.get(), &job_factory_,
         request_info_, /* is_preconnect = */ true,
         /* is_websocket = */ false,
@@ -3583,7 +3585,9 @@ class HttpStreamFactoryJobControllerPreconnectTest
         /* enable_alternative_services = */ true,
         /* delay_main_job_with_available_spdy_session = */ true, SSLConfig(),
         SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller_);
+    job_controller_ = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
   }
 
  protected:
@@ -3885,12 +3889,15 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
 
   std::unique_ptr<HttpStreamRequest> CreateJobControllerAndStart(
       const HttpRequestInfo& request_info) {
-    job_controller_ = new HttpStreamFactory::JobController(
+    auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
         factory_, &request_delegate_, session_.get(), &default_job_factory_,
         request_info, is_preconnect_, false /* is_websocket */,
         enable_ip_based_pooling_, enable_alternative_services_,
         delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
-    HttpStreamFactoryPeer::AddJobController(factory_, job_controller_);
+
+    job_controller_ = job_controller.get();
+    HttpStreamFactoryPeer::AddJobController(factory_,
+                                            std::move(job_controller));
     return job_controller_->Start(
         &request_delegate_, nullptr, net_log_with_source_,
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);

@@ -28,8 +28,8 @@ class HttpStreamFactoryPeer {
  public:
   static void AddJobController(
       HttpStreamFactory* factory,
-      HttpStreamFactory::JobController* job_controller) {
-    factory->job_controller_set_.insert(base::WrapUnique(job_controller));
+      std::unique_ptr<HttpStreamFactory::JobController> job_controller) {
+    factory->job_controller_set_.insert(std::move(job_controller));
   }
 
   static bool IsJobControllerDeleted(HttpStreamFactory* factory) {
