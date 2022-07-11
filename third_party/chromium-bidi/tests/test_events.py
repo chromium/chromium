@@ -191,7 +191,6 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                 "type": "string",
                 "value": "abc"
             }, {
-                "handle": any_string,
                 "type": "object",
                 "value": [
                     ["id", {
@@ -199,7 +198,6 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                         "value": 1
                     }]]
             }, {
-                "handle": any_string,
                 "type": "object",
                 "value": [[
                     "font-size", {

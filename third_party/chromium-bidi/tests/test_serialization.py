@@ -24,7 +24,9 @@ async def assertSerialization(websocket, context_id, js_str_object,
         "params": {
             "expression": f"({js_str_object})",
             "target": {"context": context_id},
-            "awaitPromise": False, }})
+            "awaitPromise": False,
+            "resultOwnership": "root"
+        }})
 
     # Compare ignoring `handle`.
     recursive_compare(expected_serialized_object, result["result"])
@@ -45,7 +47,8 @@ async def assertDeserializationAndSerialization(websocket, context_id,
                 "type": "undefined"},
             "arguments": [serialized_object],
             "awaitPromise": False,
-            "target": {"context": context_id}}})
+            "target": {"context": context_id},
+            "resultOwnership": "root"}})
     # Compare ignoring `handle`.
     recursive_compare(expected_serialized_object, result["result"])
 

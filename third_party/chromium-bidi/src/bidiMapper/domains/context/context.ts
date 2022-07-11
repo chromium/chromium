@@ -88,12 +88,14 @@ export abstract class Context {
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
-    awaitPromise: boolean
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult>;
 
   abstract scriptEvaluate(
     expression: string,
-    awaitPromise: boolean
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult>;
 
   abstract waitInitialized(): Promise<void>;
@@ -132,7 +134,8 @@ export abstract class Context {
         type: 'undefined',
       },
       _arguments,
-      true
+      true,
+      'root'
     );
 
     // TODO(sadym): handle type properly.

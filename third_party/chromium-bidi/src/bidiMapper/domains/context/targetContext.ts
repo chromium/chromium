@@ -98,17 +98,23 @@ export class TargetContext extends Context {
 
   public async scriptEvaluate(
     expression: string,
-    awaitPromise: boolean
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     await this.waitInitialized();
-    return this.#scriptEvaluator.scriptEvaluate(expression, awaitPromise);
+    return this.#scriptEvaluator.scriptEvaluate(
+      expression,
+      awaitPromise,
+      resultOwnership
+    );
   }
 
   public async callFunction(
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
-    awaitPromise: boolean
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
     await this.waitInitialized();
     return {
@@ -116,7 +122,8 @@ export class TargetContext extends Context {
         functionDeclaration,
         _this,
         _arguments,
-        awaitPromise
+        awaitPromise,
+        resultOwnership
       ),
     };
   }

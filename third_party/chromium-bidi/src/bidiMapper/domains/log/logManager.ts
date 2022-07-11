@@ -59,7 +59,7 @@ export class LogManager {
     this._cdpClient.Runtime.on('consoleAPICalled', async (params) => {
       const args = await Promise.all(
         params.args.map(async (arg) => {
-          return await this._serializer?.serializeCdpObject(arg);
+          return await this._serializer?.serializeCdpObject(arg, 'none');
         })
       );
 

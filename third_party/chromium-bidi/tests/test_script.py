@@ -24,7 +24,8 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
         "params": {
             "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -72,7 +73,8 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
         "params": {
             "expression": "(()=>{const a=()=>{throw new Error('foo');}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -121,6 +123,7 @@ async def test_script_evaluateDontWaitPromise_promiseReturned(websocket,
         "params": {
             "expression": "Promise.resolve('SOME_RESULT')",
             "awaitPromise": False,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     # Compare ignoring `handle`.
@@ -162,6 +165,7 @@ async def test_script_evaluateWaitPromise_resultReturned(websocket, context_id):
         "params": {
             "expression": "Promise.resolve('SOME_RESULT')",
             "awaitPromise": True,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     # Compare ignoring `handle`.
@@ -192,6 +196,7 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(
                 changeObjectAfterCurrentJsThread();
                 return someObject; })()""",
             "awaitPromise": True,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     # Verify the object wasn't changed.
@@ -217,7 +222,8 @@ async def test_script_evaluateInteractsWithDom_resultReceived(websocket,
         "params": {
             "expression": "'!!@@##, ' + window.location.href",
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -241,7 +247,8 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
                 "value": 42
             }],
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -300,6 +307,7 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
                 "value": 42
             }],
             "awaitPromise": False,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     recursive_compare({
@@ -318,6 +326,7 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
         "params": {
             "expression": "({SOME_PROPERTY:'SOME_VALUE'})",
             "awaitPromise": True,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     handle = result["result"]["handle"]
@@ -330,7 +339,8 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
                 "handle": handle
             }],
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -352,6 +362,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultRe
                 "value": 1
             },
             "awaitPromise": True,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     recursive_compare({
@@ -374,6 +385,7 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_pro
                 "value": 1
             },
             "awaitPromise": False,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     recursive_compare({
@@ -396,6 +408,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_result
                 "value": 1
             },
             "awaitPromise": True,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     recursive_compare({
@@ -418,6 +431,7 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_p
                 "value": 1
             },
             "awaitPromise": False,
+            "resultOwnership": "root",
             "target": {"context": context_id}}})
 
     recursive_compare({
@@ -440,7 +454,8 @@ async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnore
                 "value": 1
             },
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -462,7 +477,8 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
                 "value": 1
             },
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -485,7 +501,8 @@ async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_th
                 "value": 42
             },
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -520,7 +537,8 @@ async def test_script_callFunctionWithNode_resultReceived(websocket,
             "arguments": [{
                 "handle": handle}],
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,
@@ -538,7 +556,8 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket,
         "params": {
             "expression": "window.open()",
             "target": {"context": context_id},
-            "awaitPromise": True}})
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
 
     recursive_compare({
         "realm": any_string,

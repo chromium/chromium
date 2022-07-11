@@ -38,9 +38,11 @@ export class ScriptEvaluator {
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.
    * @param cdpObject CDP remote object to be serialized.
+   * @param resultOwnership indicates desired OwnershipModel.
    */
   public async serializeCdpObject(
-    cdpObject: Protocol.Runtime.RemoteObject
+    cdpObject: Protocol.Runtime.RemoteObject,
+    resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await this.#cdpClient.Runtime.callFunctionOn({
@@ -50,7 +52,7 @@ export class ScriptEvaluator {
         generateWebDriverValue: true,
         objectId: await this.#getDummyContextId(),
       });
-    return ScriptEvaluator.#cdpToBidiValue(cdpWebDriverValue);
+    return await this.#cdpToBidiValue(cdpWebDriverValue, resultOwnership);
   }
 
   /**
@@ -90,7 +92,8 @@ export class ScriptEvaluator {
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
-    awaitPromise: boolean
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.ScriptResult> {
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
@@ -121,21 +124,26 @@ export class ScriptEvaluator {
       return {
         exceptionDetails: await this.#serializeCdpExceptionDetails(
           cdpCallFunctionResult.exceptionDetails,
-          this.#callFunctionStacktraceLineOffset
+          this.#callFunctionStacktraceLineOffset,
+          resultOwnership
         ),
         realm: 'TODO: ADD',
       };
     }
 
     return {
-      result: ScriptEvaluator.#cdpToBidiValue(cdpCallFunctionResult),
+      result: await this.#cdpToBidiValue(
+        cdpCallFunctionResult,
+        resultOwnership
+      ),
       realm: 'TODO: ADD',
     };
   }
 
   async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
-    lineOffset: number
+    lineOffset: number,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.ExceptionDetails> {
     const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
       (frame) => ({
@@ -150,7 +158,8 @@ export class ScriptEvaluator {
 
     const exception = await this.serializeCdpObject(
       // Exception should always be there.
-      cdpExceptionDetails.exception!
+      cdpExceptionDetails.exception!,
+      resultOwnership
     );
 
     const text = await this.stringifyObject(cdpExceptionDetails.exception!);
@@ -168,11 +177,12 @@ export class ScriptEvaluator {
     };
   }
 
-  static #cdpToBidiValue(
+  async #cdpToBidiValue(
     cdpValue:
       | Protocol.Runtime.CallFunctionOnResponse
-      | Protocol.Runtime.EvaluateResponse
-  ): CommonDataTypes.RemoteValue {
+      | Protocol.Runtime.EvaluateResponse,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<CommonDataTypes.RemoteValue> {
     // This relies on the CDP to implement proper BiDi serialization, except
     // objectIds+handles.
     const cdpWebDriverValue = cdpValue.result.webDriverValue!;
@@ -180,14 +190,22 @@ export class ScriptEvaluator {
       return cdpWebDriverValue as CommonDataTypes.RemoteValue;
     }
 
+    const objectId = cdpValue.result.objectId;
     const bidiValue = cdpWebDriverValue as any;
-    bidiValue.handle = cdpValue.result.objectId;
+
+    if (resultOwnership === 'root') {
+      bidiValue.handle = objectId;
+    } else {
+      await this.#cdpClient.Runtime.releaseObject({ objectId });
+    }
+
     return bidiValue as CommonDataTypes.RemoteValue;
   }
 
   public async scriptEvaluate(
     expression: string,
-    awaitPromise: boolean
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     let cdpEvaluateResult = await this.#cdpClient.Runtime.evaluate({
       expression,
@@ -201,7 +219,8 @@ export class ScriptEvaluator {
         result: {
           exceptionDetails: await this.#serializeCdpExceptionDetails(
             cdpEvaluateResult.exceptionDetails,
-            this.#evaluateStacktraceLineOffset
+            this.#evaluateStacktraceLineOffset,
+            resultOwnership
           ),
           realm: 'TODO: ADD',
         },
@@ -210,7 +229,7 @@ export class ScriptEvaluator {
 
     return {
       result: {
-        result: ScriptEvaluator.#cdpToBidiValue(cdpEvaluateResult),
+        result: await this.#cdpToBidiValue(cdpEvaluateResult, resultOwnership),
         realm: 'TODO: ADD',
       },
     };

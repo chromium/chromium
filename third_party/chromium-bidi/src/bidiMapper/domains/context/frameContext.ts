@@ -53,14 +53,16 @@ export class FrameContext extends Context {
     functionDeclaration: string,
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
-    awaitPromise: boolean
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
     throw new UnknownErrorResponse('Not implemented');
   }
 
   scriptEvaluate(
     expression: string,
-    awaitPromise: boolean
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
     throw new UnknownErrorResponse('Not implemented');
   }

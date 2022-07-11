@@ -431,6 +431,7 @@ export namespace Script {
   export type Target = zod.infer<typeof TargetSchema>;
 
   const OwnershipModelSchema = zod.enum(['root', 'none']);
+  export type OwnershipModel = zod.infer<typeof OwnershipModelSchema>;
 
   // ScriptEvaluateParameters = {
   //   expression: text;
