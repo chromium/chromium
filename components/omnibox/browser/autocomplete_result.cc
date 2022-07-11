@@ -322,12 +322,12 @@ void AutocompleteResult::SortAndCull(
     size_t num_regular_suggestions = 0;
     base::EraseIf(matches_,
                   [&num_regular_suggestions, num_matches](const auto& match) {
-                    // Trim suggestions without headers to the specified limit.
+                    // Trim suggestions without group IDs to the given limit.
                     if (!match.suggestion_group_id.has_value()) {
                       num_regular_suggestions++;
                       return num_regular_suggestions > num_matches;
                     }
-                    // Do not trim suggestions with headers.
+                    // Do not trim suggestions with group IDs.
                     return false;
                   });
   } else {
@@ -344,11 +344,7 @@ void AutocompleteResult::SortAndCull(
     GroupSuggestionsBySearchVsURL(std::next(matches_.begin()), matches_.end());
   }
 
-  // Grouping and Demoting Matches with Headers needs to be done only after
-  // matches are grouped by Search and URL type to ensure that URLs don't sink
-  // to the bottom of the suggestions list, and surface below the Matches with
-  // headers.
-  GroupAndDemoteMatchesWithHeaders();
+  GroupAndDemoteMatchesInGroups();
 
   // If we have a default match, run some sanity checks. Skip these checks if
   // the default match has no |destination_url|. An example of this is the
@@ -381,33 +377,32 @@ void AutocompleteResult::SortAndCull(
   }
 }
 
-void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
-  constexpr int kNoHeaderSuggestionGroupId = -1;
-
+void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
   // Create a map from suggestion group ID to the index it first appears.
-  // Reserve the first spot for matches without headers.
-  std::map<int, int> group_id_index_map = {{kNoHeaderSuggestionGroupId, 0}};
+  // Reserve the first spot for matches without group IDs.
+  std::map<int, int> group_id_index_map = {{kInvalidSuggestionGroupId, 0}};
   for (auto it = matches_.begin(); it != matches_.end(); ++it) {
     if (it->suggestion_group_id.has_value()) {
-      // Record group IDs and header strings, if available, into the
-      // additional_info field for chrome://omnibox.
-      int group_id = it->suggestion_group_id.value();
-      it->RecordAdditionalInfo("suggestion_group_id", group_id);
-      const std::u16string header = GetHeaderForSuggestionGroup(group_id);
-      if (!header.empty()) {
-        it->RecordAdditionalInfo("header string", header);
+      const int group_id = it->suggestion_group_id.value();
+
+      if (suggestion_groups_map_.find(group_id) !=
+          suggestion_groups_map_.end()) {
+        // Record suggestion group information into the additional_info field
+        // for chrome://omnibox.
+        it->RecordAdditionalInfo("group id", group_id);
+        it->RecordAdditionalInfo("group header",
+                                 GetHeaderForSuggestionGroup(group_id));
       } else {
-        // Strip group IDs for which there is no header string from the matches.
-        // Otherwise, these matches may be shown at the bottom with an empty
-        // header row. They should instead be treated as ordinary matches with
-        // no group ID.
+        // Strip group IDs from the matches for which there is no suggestion
+        // group information. These matches should instead be treated as
+        // ordinary matches with no group IDs.
         it->suggestion_group_id.reset();
       }
     }
 
-    int group_id = it->suggestion_group_id.value_or(kNoHeaderSuggestionGroupId);
+    int group_id = it->suggestion_group_id.value_or(kInvalidSuggestionGroupId);
     // Use the 1-based index of the match to record the first appearance of its
-    // group ID since 0 is reserved for matches without headers. We are
+    // group ID since 0 is reserved for matches without group IDs. We are
     // interested in the relative values of these indices only and their
     // absolute values hardly matter.
     int index = std::distance(matches_.begin(), it) + 1;
@@ -415,7 +410,7 @@ void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
     group_id_index_map.insert(std::pair<int, int>(group_id, index));
   }
 
-  // No need to group and demote matches with headers if none exists.
+  // No need to group and demote matches with group IDs if none exists.
   if (group_id_index_map.size() == 1)
     return;
 
@@ -423,12 +418,11 @@ void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
   // while preserving the existing order of matches with the same group ID.
   std::stable_sort(
       matches_.begin(), matches_.end(),
-      [&group_id_index_map, kNoHeaderSuggestionGroupId](const auto& a,
-                                                        const auto& b) {
+      [&group_id_index_map](const auto& a, const auto& b) {
         const int a_group_id =
-            a.suggestion_group_id.value_or(kNoHeaderSuggestionGroupId);
+            a.suggestion_group_id.value_or(kInvalidSuggestionGroupId);
         const int b_group_id =
-            b.suggestion_group_id.value_or(kNoHeaderSuggestionGroupId);
+            b.suggestion_group_id.value_or(kInvalidSuggestionGroupId);
         return group_id_index_map[a_group_id] < group_id_index_map[b_group_id];
       });
 }
@@ -777,8 +771,7 @@ size_t AutocompleteResult::CalculateNumMatchesPerUrlCount(
 
 void AutocompleteResult::Reset() {
   matches_.clear();
-  headers_map_.clear();
-  hidden_group_ids_.clear();
+  suggestion_groups_map_.clear();
 #if BUILDFLAG(IS_ANDROID)
   java_result_.Reset();
 #endif
@@ -947,9 +940,9 @@ AutocompleteResult::GetMatchDedupComparators() const {
 
 std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
     int suggestion_group_id) const {
-  const auto& it = headers_map_.find(suggestion_group_id);
-  if (it != headers_map_.end())
-    return it->second;
+  const auto& it = suggestion_groups_map_.find(suggestion_group_id);
+  if (it != suggestion_groups_map_.end())
+    return it->second.header;
   return std::u16string();
 }
 
@@ -966,17 +959,17 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
     return false;
 
   DCHECK_EQ(user_preference, omnibox::SuggestionGroupVisibility::DEFAULT);
-  return base::Contains(hidden_group_ids_, suggestion_group_id);
+  const auto& it = suggestion_groups_map_.find(suggestion_group_id);
+  if (it != suggestion_groups_map_.end())
+    return it->second.hidden;
+  return false;
 }
 
-void AutocompleteResult::MergeHeadersMap(
-    const SearchSuggestionParser::HeadersMap& headers_map) {
-  headers_map_.insert(headers_map.begin(), headers_map.end());
-}
-
-void AutocompleteResult::MergeHiddenGroupIds(
-    const std::vector<int>& hidden_group_ids) {
-  hidden_group_ids_.insert(hidden_group_ids.begin(), hidden_group_ids.end());
+void AutocompleteResult::MergeSuggestionGroupsMap(
+    const SuggestionGroupsMap& suggestion_groups_map) {
+  for (const auto& entry : suggestion_groups_map) {
+    suggestion_groups_map_[entry.first].MergeFrom(entry.second);
+  }
 }
 
 // static

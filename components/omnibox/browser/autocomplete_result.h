@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/suggestion_group.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -112,23 +113,27 @@ class AutocompleteResult {
                    TemplateURLService* template_url_service,
                    const AutocompleteMatch* preserve_default_match = nullptr);
 
-  // Ensures that matches with headers, i.e., matches with a suggestion_group_id
-  // value, are grouped together at the bottom of result set based on their
-  // suggestion_group_id values and in the order the group IDs first appear.
-  // Certain types of remote zero-prefix matches need to appear under a header
-  // for transparency reasons. This information is sent to Chrome by the server.
-  // Also it is possible for zero-prefix matches from different providers (e.g.,
-  // local and remote) to mix and match. Hence, we group matches with the same
-  // headers and demote them to the bottom of the result set to ensure, one,
-  // matches without headers appear at the top of the result set, and two, there
-  // are no interleaving headers whether this is caused by bad server data or by
-  // mixing of local and remote zero-prefix suggestions.
-  // Note that prior to grouping and demoting the matches with headers, we strip
-  // all match group IDs that don't have an equivalent header string;
-  // essentially treating those matches as if they did not belong to any
-  // suggestion group.
+  // Ensures that matches with a suggestion_group_id value, are grouped together
+  // at the bottom of result set based on the order in which their group IDs
+  // first appear in the result set. This is done for two reasons:
+  //
+  // 1) Certain groups of remote zero-prefix matches need to appear under a
+  // header for transparency reasons. These optional headers are uniquely
+  // identified by the group IDs. Also it is possible for zero-prefix matches
+  // from different providers (e.g., local and remote) to mix and match. Hence,
+  // after mixing and sorting the matches, we group the ones with the same
+  // group ID and demote them to the bottom of the result set to ensure, one,
+  // matches without group IDs (and thus headers) appear at the top of the
+  // result set, and two, there are no interleaving headers; whether caused by
+  // bad server data or by mixing of local and remote zero-prefix suggestions.
+  //
+  // 2) Certain groups of non-zero-prefix matches, such as those produced by the
+  // HistoryClusterProvider, must appear at the bottom of the result set.
+  // Setting a group ID on those matches ensures they sink to the bottom of the
+  // result set.
+  //
   // Called after matches are deduped and sorted and before they are culled.
-  void GroupAndDemoteMatchesWithHeaders();
+  void GroupAndDemoteMatchesInGroups();
 
   // Sets |action| in matches that have Pedal-triggering text.
   void AttachPedalsToMatches(const AutocompleteInput& input,
@@ -185,11 +190,9 @@ class AutocompleteResult {
       const ACMatches& matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
-  const SearchSuggestionParser::HeadersMap& headers_map() const {
-    return headers_map_;
+  const SuggestionGroupsMap& suggestion_groups_map() const {
+    return suggestion_groups_map_;
   }
-
-  const std::set<int>& hidden_group_ids() const { return hidden_group_ids_; }
 
   // Clears the matches for this result set.
   void Reset();
@@ -230,7 +233,7 @@ class AutocompleteResult {
   std::vector<MatchDedupComparator> GetMatchDedupComparators() const;
 
   // Gets the header string associated with |suggestion_group_id|. Returns an
-  // empty string if no header is found.
+  // empty string if no suggestion group is found.
   std::u16string GetHeaderForSuggestionGroup(int suggestion_group_id) const;
 
   // Returns whether or not |suggestion_group_id| should be collapsed in the UI.
@@ -239,9 +242,13 @@ class AutocompleteResult {
   bool IsSuggestionGroupHidden(PrefService* prefs,
                                int suggestion_group_id) const;
 
-  void MergeHeadersMap(const SearchSuggestionParser::HeadersMap& headers_map);
-
-  void MergeHiddenGroupIds(const std::vector<int>& hidden_group_ids);
+  // Updates |suggestion_groups_map_| with the suggestion groups information
+  // from |suggeston_groups_map|. Followed by GroupAndDemoteMatchesInGroups()
+  // which sorts the matches based on the order in which their groups first
+  // appear while preserving the existing order of matches within the same
+  // group.
+  void MergeSuggestionGroupsMap(
+      const SuggestionGroupsMap& suggeston_groups_map);
 
   // This method implements a stateful stable partition. Matches which are
   // search types, and their submatches regardless of type, are shifted
@@ -327,11 +334,8 @@ class AutocompleteResult {
 
   ACMatches matches_;
 
-  // The server supplied map of suggestion group IDs to header labels.
-  SearchSuggestionParser::HeadersMap headers_map_;
-
-  // The server supplied list of group IDs that should be hidden-by-default.
-  std::set<int> hidden_group_ids_;
+  // The map of suggestion group IDs to suggestion groups information.
+  SuggestionGroupsMap suggestion_groups_map_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.

@@ -30,7 +30,6 @@
 
 AutocompleteProvider::AutocompleteProvider(Type type)
     : provider_max_matches_(OmniboxFieldTrial::GetProviderMaxMatches(type)),
-      done_(true),
       type_(type) {}
 
 // static
@@ -99,6 +98,7 @@ void AutocompleteProvider::Stop(bool clear_cached_results,
   done_ = true;
   if (clear_cached_results) {
     matches_.clear();
+    suggestion_groups_map_.clear();
   }
 }
 

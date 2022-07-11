@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/suggestion_group.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
@@ -113,9 +114,6 @@ constexpr char kTypeIntFieldNumber[] = "4";
 constexpr char kStringValueFieldNumber[] = "2";
 
 }  // namespace
-
-// Value chosen based on SuggestionGroupIds::INVALID in suggestion_config.proto.
-const int SearchSuggestionParser::kInvalidSuggestionGroupId = -1;
 
 // SearchSuggestionParser::Result ----------------------------------------------
 
@@ -384,8 +382,7 @@ void SearchSuggestionParser::Results::Clear() {
   field_trial_triggered = false;
   experiment_stats_v2s.clear();
   relevances_from_server = false;
-  headers_map.clear();
-  hidden_group_ids.clear();
+  suggestion_groups_map.clear();
 }
 
 bool SearchSuggestionParser::Results::HasServerProvidedScores() const {
@@ -553,7 +550,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         for (auto it : headers->DictItems()) {
           int suggestion_group_id;
           base::StringToInt(it.first, &suggestion_group_id);
-          results->headers_map[suggestion_group_id] =
+          results->suggestion_groups_map[suggestion_group_id].header =
               base::UTF8ToUTF16(it.second.GetString());
         }
       }
@@ -562,7 +559,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       if (hidden_group_ids) {
         for (const auto& value : hidden_group_ids->GetListDeprecated()) {
           if (value.is_int())
-            results->hidden_group_ids.emplace_back(value.GetInt());
+            results->suggestion_groups_map[value.GetInt()].hidden = true;
         }
       }
     }

@@ -1764,11 +1764,10 @@ TEST_F(AutocompleteResultTest, SortAndCullKeepGroupedSuggestionsLast) {
                           TestSchemeClassifier());
   AutocompleteResult result;
 
-  SearchSuggestionParser::HeadersMap headers_map;
-  headers_map[1] = u"1";
-  headers_map[2] = u"2";
-  result.MergeHeadersMap(headers_map);
-
+  SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[1].header = u"1";
+  suggestion_groups_map[2].header = u"2";
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
   result.AppendMatches(matches);
   result.SortAndCull(input, template_url_service_.get());
 
@@ -1819,11 +1818,10 @@ TEST_F(AutocompleteResultTest, SortAndCull_NoRetainSuggestionsWithHeaders) {
                           TestSchemeClassifier());
   AutocompleteResult result;
 
-  SearchSuggestionParser::HeadersMap headers_map;
-  headers_map[1] = u"1";
-  headers_map[2] = u"2";
-  result.MergeHeadersMap(headers_map);
-
+  SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[1].header = u"1";
+  suggestion_groups_map[2].header = u"2";
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
   result.AppendMatches(matches);
   result.SortAndCull(input, template_url_service_.get());
 
@@ -1866,11 +1864,10 @@ TEST_F(AutocompleteResultTest,
                           TestSchemeClassifier());
   AutocompleteResult result;
 
-  SearchSuggestionParser::HeadersMap headers_map;
-  headers_map[1] = u"1";
-  headers_map[2] = u"2";
-  result.MergeHeadersMap(headers_map);
-
+  SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[1].header = u"1";
+  suggestion_groups_map[2].header = u"2";
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
   result.AppendMatches(matches);
   result.SortAndCull(input, template_url_service_.get());
 
@@ -1920,11 +1917,10 @@ TEST_F(AutocompleteResultTest,
                           TestSchemeClassifier());
   AutocompleteResult result;
 
-  SearchSuggestionParser::HeadersMap headers_map;
-  headers_map[1] = u"1";
-  headers_map[2] = u"2";
-  result.MergeHeadersMap(headers_map);
-
+  SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[1].header = u"1";
+  suggestion_groups_map[2].header = u"2";
+  result.MergeSuggestionGroupsMap(suggestion_groups_map);
   result.AppendMatches(matches);
   result.SortAndCull(input, template_url_service_.get());
 
@@ -1932,7 +1928,9 @@ TEST_F(AutocompleteResultTest,
       {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {3, 1, 1098, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      // Group <1> is scored higher
       {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
+      // Group <2> is scored lower
       {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
       {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
       {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},

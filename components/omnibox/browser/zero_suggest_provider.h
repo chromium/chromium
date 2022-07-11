@@ -84,17 +84,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
     return results_.experiment_stats_v2s;
   }
 
-  // Returns the map of suggestion group IDs to headers corresponding to the
-  // latest |results_|.
-  const SearchSuggestionParser::HeadersMap& headers_map() const {
-    return results_.headers_map;
-  }
-
-  // Returns the hidden group IDs corresponding to the latest |results_|.
-  const std::vector<int> hidden_group_ids() const {
-    return results_.hidden_group_ids;
-  }
-
   ResultType GetResultTypeRunningForTesting() const {
     return result_type_running_;
   }

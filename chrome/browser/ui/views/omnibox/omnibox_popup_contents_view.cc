@@ -356,8 +356,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
     const AutocompleteMatch& match = GetMatchAtIndex(i);
     std::u16string current_row_header =
         edit_model_->result().GetHeaderForSuggestionGroup(
-            match.suggestion_group_id.value_or(
-                SearchSuggestionParser::kInvalidSuggestionGroupId));
+            match.suggestion_group_id.value_or(kInvalidSuggestionGroupId));
     if (!current_row_header.empty() &&
         current_row_header != previous_row_header) {
       row_view->ShowHeader(match.suggestion_group_id.value(),

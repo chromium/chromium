@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/browser/suggestion_group.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "url/gurl.h"
@@ -36,9 +37,6 @@ class SearchSuggestionParser {
   SearchSuggestionParser() = delete;
   SearchSuggestionParser(const SearchSuggestionParser&) = delete;
   SearchSuggestionParser& operator=(const SearchSuggestionParser&) = delete;
-
-  // Indicates a missing suggestion group Id.
-  static const int kInvalidSuggestionGroupId;
 
   // The Result classes are intermediate representations of AutocompleteMatches,
   // simply containing relevance-ranked search and navigation suggestions.
@@ -212,10 +210,10 @@ class SearchSuggestionParser {
     // Optional additional parameters to be added to the search URL.
     std::string additional_query_params_;
 
-    // The suggestion group Id based on the SuggestionGroupIds enum in
-    // suggestion_config.proto
-    // Used to look up the header this suggestion must appear under from the
-    // server supplied map of suggestion group Ids to headers.
+    // The suggestion group ID based on the SuggestionGroupIds enum in
+    // suggestion_config.proto. Used to look up the suggestion group info this
+    // suggestion belong to such as the header text this suggestion must appear
+    // under.
     // Note: Use kInvalidSuggestionGroupId in place of a missing suggestion
     // group Id when this is to be converted to a primitive type.
     absl::optional<int> suggestion_group_id_;
@@ -285,7 +283,6 @@ class SearchSuggestionParser {
     ACMatchClassifications description_class_;
   };
 
-  typedef std::map<int, std::u16string> HeadersMap;
   typedef std::vector<SuggestResult> SuggestResults;
   typedef std::vector<NavigationResult> NavigationResults;
   typedef std::vector<metrics::ChromeSearchboxStats::ExperimentStatsV2>
@@ -339,11 +336,8 @@ class SearchSuggestionParser {
     // If the relevance values of the results are from the server.
     bool relevances_from_server;
 
-    // The server supplied map of suggestion group IDs to header labels.
-    HeadersMap headers_map;
-
-    // The server supplied list of group IDs that should be hidden-by-default.
-    std::vector<int> hidden_group_ids;
+    // The server supplied map of suggestion group IDs to suggestion group info.
+    SuggestionGroupsMap suggestion_groups_map;
   };
 
   // Converts JSON loaded by a SimpleURLLoader into UTF-8 and returns the

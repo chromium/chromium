@@ -821,6 +821,7 @@ void AutocompleteController::UpdateResult(
     if (!ShouldRunProvider(provider.get()))
       continue;
     result_.AppendMatches(provider->matches());
+    result_.MergeSuggestionGroupsMap(provider->suggestion_groups_map());
   }
 
   bool perform_tab_match = true;
@@ -833,8 +834,6 @@ void AutocompleteController::UpdateResult(
 
   if (perform_tab_match)
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
-
-  UpdateHeaderInfoFromZeroSuggestProvider(&result_);
 
   // Sort the matches and trim to a small number of "best" matches.
   const AutocompleteMatch* preserve_default_match = nullptr;
@@ -977,24 +976,6 @@ void AutocompleteController::UpdateAssociatedKeywords(
       match.associated_keyword.reset();
     }
   }
-}
-
-void AutocompleteController::UpdateHeaderInfoFromZeroSuggestProvider(
-    AutocompleteResult* result) {
-  // Currently, we only populate the AutocompleteResult's header labels from
-  // ZeroSuggestProvider. Even if another provider has header metadata, we
-  // currently ignore it. This means that as-you-type suggestions will NEVER
-  // show headers in the UI. For now, this is hacky, but intended.
-  //
-  // TODO(tommycli): Stop special casing ZeroSuggestProvider here.
-  if (!zero_suggest_provider_)
-    return;
-
-  // Merge the new header info with the existing one rather than replacing it.
-  // We might end up using the existing matches fully or partially if there are
-  // not enough new ones. Thus, we should also keep the existing header info.
-  result->MergeHeadersMap(zero_suggest_provider_->headers_map());
-  result->MergeHiddenGroupIds(zero_suggest_provider_->hidden_group_ids());
 }
 
 void AutocompleteController::UpdateKeywordDescriptions(

@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
+#include "components/omnibox/browser/suggestion_group.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class AutocompleteInput;
@@ -275,6 +276,12 @@ class AutocompleteProvider
   // method and include the response in their estimate.
   virtual size_t EstimateMemoryUsage() const;
 
+  // Returns a map of suggestion group IDs to suggestion group information
+  // corresponding to |matches_|.
+  const SuggestionGroupsMap& suggestion_groups_map() const {
+    return suggestion_groups_map_;
+  }
+
   // Returns a suggested upper bound for how many matches this provider should
   // return.
   size_t provider_max_matches() const { return provider_max_matches_; }
@@ -392,7 +399,10 @@ class AutocompleteProvider
   const size_t provider_max_matches_;
 
   ACMatches matches_;
-  bool done_;
+  // A map of suggestion group IDs to suggestion group information corresponding
+  // to |matches_|.
+  SuggestionGroupsMap suggestion_groups_map_{};
+  bool done_{true};
 
   Type type_;
 };

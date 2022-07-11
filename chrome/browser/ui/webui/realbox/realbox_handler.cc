@@ -122,15 +122,14 @@ constexpr char kShareIconResourceName[] = "realbox/icons/share.svg";
 #endif
 
 base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr>
-CreateSuggestionGroupsMap(
-    const AutocompleteResult& result,
-    PrefService* prefs,
-    const SearchSuggestionParser::HeadersMap& headers_map) {
+CreateSuggestionGroupsMap(const AutocompleteResult& result,
+                          PrefService* prefs,
+                          const SuggestionGroupsMap& suggestion_groups_map) {
   base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr> result_map;
-  for (const auto& pair : headers_map) {
+  for (const auto& pair : suggestion_groups_map) {
     realbox::mojom::SuggestionGroupPtr suggestion_group =
         realbox::mojom::SuggestionGroup::New();
-    suggestion_group->header = pair.second;
+    suggestion_group->header = pair.second.header;
     suggestion_group->hidden =
         result.IsSuggestionGroupHidden(prefs, pair.first);
     suggestion_group->show_group_a11y_label = l10n_util::GetStringFUTF16(
@@ -213,8 +212,8 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                                                      description_class.style));
     }
     mojom_match->destination_url = match.destination_url;
-    mojom_match->suggestion_group_id = match.suggestion_group_id.value_or(
-        SearchSuggestionParser::kInvalidSuggestionGroupId);
+    mojom_match->suggestion_group_id =
+        match.suggestion_group_id.value_or(kInvalidSuggestionGroupId);
     const bool is_bookmarked =
         bookmark_model->IsBookmarked(match.destination_url);
     mojom_match->icon_url =
@@ -281,7 +280,8 @@ realbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
     bookmarks::BookmarkModel* bookmark_model,
     PrefService* prefs) {
   return realbox::mojom::AutocompleteResult::New(
-      input, CreateSuggestionGroupsMap(result, prefs, result.headers_map()),
+      input,
+      CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, bookmark_model));
 }
 

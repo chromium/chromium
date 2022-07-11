@@ -423,6 +423,7 @@ AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
 
 void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {
   matches_.clear();
+  suggestion_groups_map_.clear();
 
   TemplateURLService* template_url_service = client()->GetTemplateURLService();
   DCHECK(template_url_service);
@@ -460,6 +461,11 @@ void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {
       results_.navigation_results);
   for (const auto& nav_result : nav_results) {
     matches_.push_back(NavigationToMatch(nav_result));
+  }
+
+  // Update the suggestion groups information from the server response.
+  for (const auto& entry : results_.suggestion_groups_map) {
+    suggestion_groups_map_[entry.first].MergeFrom(entry.second);
   }
 }
 

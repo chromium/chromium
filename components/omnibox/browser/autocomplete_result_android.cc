@@ -91,18 +91,17 @@ ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
   if (java_result_)
     return ScopedJavaLocalRef<jobject>(java_result_);
 
-  const size_t groups_count = headers_map_.size();
+  const size_t groups_count = suggestion_groups_map_.size();
 
   std::vector<int> group_ids(groups_count);
   std::vector<std::u16string> group_names(groups_count);
   bool group_collapsed_states[groups_count];
 
   size_t index = 0;
-  for (const auto& group_header : headers_map_) {
-    group_ids[index] = group_header.first;
-    group_names[index] = group_header.second;
-    group_collapsed_states[index] =
-        base::Contains(hidden_group_ids_, group_header.first);
+  for (const auto& suggestion_group : suggestion_groups_map_) {
+    group_ids[index] = suggestion_group.first;
+    group_names[index] = suggestion_group.second.header;
+    group_collapsed_states[index] = suggestion_group.second.hidden;
     ++index;
   }
 

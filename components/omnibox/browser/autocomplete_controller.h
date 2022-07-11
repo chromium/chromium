@@ -283,13 +283,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // relevance before this is called.
   void UpdateAssociatedKeywords(AutocompleteResult* result);
 
-  // Updates |result| with the suggestion group ID to header string mapping as
-  // well as the set of hidden suggestion group IDs.
-  // Called for zero-prefix suggestions only. This call is followed by
-  // AutocompleteResult::GroupAndDemoteMatchesWithHeaders() which groups and
-  // demotes matches with suggestion group IDs to the bottom of the result set.
-  void UpdateHeaderInfoFromZeroSuggestProvider(AutocompleteResult* result);
-
   // For each group of contiguous matches from the same TemplateURL, show the
   // provider name as a description on the first match in the group. Starter
   // Pack matches show their URLs as descriptions instead of the provider name.

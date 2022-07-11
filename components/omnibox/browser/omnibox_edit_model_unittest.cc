@@ -740,7 +740,9 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
-  result->MergeHeadersMap({{7, u"header"}});
+  SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[7].header = u"header";
+  result->MergeSuggestionGroupsMap(suggestion_groups_map);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
@@ -822,7 +824,9 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
-  result->MergeHeadersMap({{7, u"header"}});
+  SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[7].header = u"header";
+  result->MergeSuggestionGroupsMap(suggestion_groups_map);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
@@ -888,7 +892,9 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(matches);
-  result->MergeHeadersMap({{7, u"header"}});
+  SuggestionGroupsMap suggestion_groups_map;
+  suggestion_groups_map[7].header = u"header";
+  result->MergeSuggestionGroupsMap(suggestion_groups_map);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
 

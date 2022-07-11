@@ -657,9 +657,8 @@ struct AutocompleteMatch {
   std::u16string description_for_shortcuts;
   ACMatchClassifications description_class_for_shortcuts;
 
-  // The optional suggestion group Id based on the SuggestionGroupIds enum in
-  // suggestion_config.proto. Used to look up the header text this match must
-  // appear under from ACResult.
+  // The optional suggestion group Id. Used to look up the suggestion group info
+  // such as the header text this match must appear under from ACResult.
   //
   // If this value exists, it should always be positive and nonzero. In Java and
   // JavaScript, -1 is used as a sentinel value, but should never occur in C++.

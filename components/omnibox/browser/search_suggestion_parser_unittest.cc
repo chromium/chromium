@@ -368,8 +368,7 @@ TEST(SearchSuggestionParserTest, ParseHeaderInfo) {
       /*is_keyword_result=*/false, &results));
 
   // Parse integers, and only integers, out of the "h" metadata list.
-  ASSERT_EQ(1U, results.hidden_group_ids.size());
-  ASSERT_EQ(40007, results.hidden_group_ids[0]);
+  ASSERT_TRUE(results.suggestion_groups_map[40007].hidden);
 
   {
     const auto& suggestion_result = results.suggest_results[0];
