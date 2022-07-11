@@ -28,25 +28,67 @@ static_library("test_support") {
 }
 
 if (is_android) {
-  android_library("website_parent_approval_java") {
-    deps = [
-      "//base:base_java",
-      "//base:jni_java",
-      "//build/android:build_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//ui/android:ui_no_recycler_view_java",
-      "//url:gurl_java",
+  android_resources("java_resources") {
+    sources = [
+      "android/java/res/drawable/ic_family_link.xml",
+      "android/java/res/layout/website_approval_bottom_sheet.xml",
+      "android/java/res/values/dimens.xml",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
+  android_library("parent_auth_delegate_java") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegate.java",
-      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java",
-      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegateImpl.java",
+    ]
+    deps = [
+      "//base:base_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_java",
     ]
 
     # Add the actual implementation where necessary so that downstream targets
     # can provide their own implementations.
     jar_excluded_patterns = [ "*/ParentAuthDelegateImpl.class" ]
+  }
+
+  android_library("parent_auth_delegate_impl_java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegateImpl.java" ]
+    deps = [
+      ":parent_auth_delegate_java",
+      "//base:base_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_java",
+    ]
+  }
+
+  android_library("website_parent_approval_java") {
+    deps = [
+      ":java_resources",
+      ":parent_auth_delegate_java",
+      "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/signin/services/android:java",
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/browser_ui/bottomsheet/android:java",
+      "//components/signin/public/android:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_java",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalCoordinator.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalMediator.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalProperties.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalSheetContent.java",
+      "android/java/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalViewBinder.java",
+    ]
+    resources_package = "org.chromium.chrome.browser.supervised_user"
   }
 
   generate_jni("jni_headers") {
