@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -85,16 +86,6 @@ void WriteDebugProto(const std::string& serialized_proto,
     LOG(ERROR) << "Could not write debug proto to: " << path;
 }
 
-std::string GetStringAttribute(const screenai::UiElement& ui_element,
-                               const std::string& attribute_name) {
-  for (int i = 0; i < ui_element.attributes_size(); i++) {
-    const auto& attrib = ui_element.attributes(i);
-    if (attrib.has_name() && attrib.name() == attribute_name)
-      return attrib.string_value();
-  }
-  return std::string();
-}
-
 template <class T>
 void ExpectBoundingBoxes(const T& box1,
                          const T& box2,
@@ -155,6 +146,43 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
                                screenai::ViewHierarchy& expected) {
   EXPECT_EQ(generated.ui_elements_size(), expected.ui_elements_size());
 
+  // These attributes are included in Screen2x for research purposes and are not
+  // used in production. Chrome does not add them.
+  const std::set<std::string> kUnsupportedAttributes = {
+      "/axnode/backend_dom_id",
+      "/axnode/child_ids",
+      "/axnode/description",
+      "/axnode/frameId",
+      "/axnode/ignored",
+      "/axnode/ignoredReasons",
+      "/axnode/name",
+      "/axnode/parentId",
+      "/axnode/properties",
+      "/axnode/role",
+      "/extras/styles/background-image",
+      "/extras/styles/background-size",
+      "/extras/styles/clip",
+      "/extras/styles/color",
+      "/extras/styles/direction",
+      "/extras/styles/font-size",
+      "/extras/styles/font-style",
+      "/extras/styles/font-weight",
+      "/extras/styles/list-style-type",
+      "/extras/styles/margin-bottom",
+      "/extras/styles/margin-left",
+      "/extras/styles/margin-right",
+      "/extras/styles/margin-top",
+      "/extras/styles/opacity",
+      "/extras/styles/padding-bottom",
+      "/extras/styles/padding-left",
+      "/extras/styles/padding-right",
+      "/extras/styles/padding-top",
+      "/extras/styles/position",
+      "/extras/styles/text-align",
+      "/extras/styles/text-decoration",
+      "/extras/styles/z-index",
+  };
+
   // Bounding boxes can have a one pixel difference threshold as there might be
   // different approaches in rounding floats to integers.
   // To compare |bounding_box_pixels| values which represent bounding boxes in
@@ -181,8 +209,6 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
     EXPECT_EQ(generated_uie.id(), expected_uie.id());
     EXPECT_EQ(generated_uie.type(), expected_uie.type());
     EXPECT_EQ(generated_uie.parent_id(), expected_uie.parent_id());
-    EXPECT_EQ(GetStringAttribute(generated_uie, "text"),
-              GetStringAttribute(expected_uie, "text"));
 
     EXPECT_EQ(generated_uie.child_ids_size(), expected_uie.child_ids_size());
     int min_length =
@@ -199,28 +225,39 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
                         kPixelDifferenceThreshold);
 
     // Attributes may have different orders in the two protos.
-    std::map<std::string, int> attribute_index;
+    std::map<std::string, int> attribute_indices_map;
     for (int j = 0; j < expected_uie.attributes_size(); j++)
-      attribute_index[expected_uie.attributes(j).name()] = j;
+      attribute_indices_map[expected_uie.attributes(j).name()] = j;
 
     for (int j = 0; j < generated_uie.attributes_size(); j++) {
       const ::screenai::UiElementAttribute& generated_attrib =
           generated_uie.attributes(j);
 
       const auto& expected_attrib_index =
-          attribute_index.find(generated_attrib.name());
-      EXPECT_NE(expected_attrib_index, attribute_index.end())
-          << "Could not find attribute: " << generated_attrib.name();
-      if (expected_attrib_index != attribute_index.end()) {
+          attribute_indices_map.find(generated_attrib.name());
+      bool attribute_found_in_expected =
+          (expected_attrib_index != attribute_indices_map.end());
+
+      if (attribute_found_in_expected) {
         ExpectAttributes(generated_attrib, expected_uie.attributes(
                                                expected_attrib_index->second));
+        // Remove expected attributes from |attribute_indices_map|, leaving
+        // missing attributes for reporting.
+        attribute_indices_map.erase(expected_attrib_index);
+        continue;
       }
+      // TODO(https://crbug.com/1278249): Follow up why visibility is
+      // sometimes not passed.
+      if (generated_attrib.name() != "/extras/styles/visibility")
+        EXPECT_TRUE(attribute_found_in_expected) << generated_attrib.name();
     }
 
-    // TODO(https://crbug.com/1278249): Ensure all expected attributes are
-    // generated.
-    // EXPECT_EQ(generated_uie.attributes().size(),
-    //           expected_uie.attributes().size());
+    for (const auto& item : attribute_indices_map) {
+      bool attribute_needed_and_not_generated =
+          (item.second != -1 &&
+           !base::Contains(kUnsupportedAttributes, item.first));
+      EXPECT_FALSE(attribute_needed_and_not_generated) << item.first;
+    }
   }
 }
 
@@ -393,7 +430,7 @@ TEST_F(ProtoConvertorTest, PreOrderTreeGeneration) {
 }
 
 TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
-  // TODO(https://crbug.com/1278249): Add more tests.
+  // TODO(https://crbug.com/1278249): Add more test cases.
   const base::FilePath kInputJsonPath =
       GetTestFilePath("sample_01_ax_tree.json");
   const base::FilePath kExpectedProtoPath =
@@ -429,6 +466,16 @@ TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
   // Compare protos.
   ASSERT_NO_FATAL_FAILURE(ExpectViewHierarchyProtos(generated_view_hierarchy,
                                                     expected_view_hierarchy));
+}
+
+TEST_F(ProtoConvertorTest, Screen2xRoleConversionTest) {
+  for (int i = static_cast<int>(ax::mojom::Role::kMinValue);
+       i <= static_cast<int>(ax::mojom::Role::kMaxValue); i++) {
+    auto chrome_role = static_cast<ax::mojom::Role>(i);
+    const std::string screen2x_role =
+        screen_ai::GetScreen2xRoleFromChromeRoleForTesting(chrome_role);
+    EXPECT_EQ(chrome_role, ui::RoleFromStringForTesting(screen2x_role));
+  }
 }
 
 }  // namespace screen_ai

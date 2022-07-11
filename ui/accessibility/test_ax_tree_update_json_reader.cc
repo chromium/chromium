@@ -128,9 +128,6 @@ void ParseAxNodeProperties(ui::AXNodeData& node_data,
 // class will be removed after Screen2X starts using Chrome for training data
 // proto generation.
 ax::mojom::Role RoleFromString(std::string role) {
-  // TODO(https://crbug.com/1278249): Consider using
-  // GetScreen2xRoleFromChromeRole in proto_convertor.cc or add test to ensure
-  // the conversions match.
   if (role == "combobox")
     role = "comboBoxGrouping";
   else if (role == "contentinfo")
@@ -299,8 +296,10 @@ void ParseStyle(ui::AXNodeData& node_data, const base::Value& style) {
   } else if (name == "text-decoration") {
     // Not used. eg, "underline 1px sold rgb(0,0,0)"
   } else if (name == "visibility") {
-    // Not used.
-    DCHECK_EQ(value, "visible");
+    if (value == "invisible")
+      node_data.AddState(ax::mojom::State::kInvisible);
+    else
+      DCHECK_EQ(value, "visible");
   } else if (name == "z-index") {
     // Not used.
     DCHECK(value == "auto" || value == "1" || value == "1000") << value;
@@ -369,6 +368,10 @@ AXTreeUpdate AXTreeUpdateFromJSON(const base::Value& json) {
   tree_update.root_id = AddNode(tree_update, json.GetList().front());
 
   return tree_update;
+}
+
+ax::mojom::Role RoleFromStringForTesting(std::string role) {
+  return RoleFromString(role);
 }
 
 }  // namespace ui

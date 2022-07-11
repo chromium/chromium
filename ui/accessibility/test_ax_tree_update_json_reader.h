@@ -17,5 +17,6 @@ namespace ui {
 // http://google3/knowledge/cerebra/sense/im2query/screenai/screen2x/crawl/web/crawler.ts
 AXTreeUpdate AXTreeUpdateFromJSON(const base::Value& json);
 
+ax::mojom::Role RoleFromStringForTesting(std::string role);
 }  // namespace ui
 #endif  // UI_ACCESSIBILITY_TEST_AX_TREE_UPDATE_JSON_READER_H_

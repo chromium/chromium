@@ -397,8 +397,8 @@ void AddSubTree(const std::vector<ui::AXNodeData>& nodes,
 }
 
 // Converts a Chrome role to a Screen2x role as text.
-// TODO(https://crbug.com/1278249): Remove after Screen2x proto generation
-// for training is done directly by Chrome.
+// TODO(https://crbug.com/1341655): Remove if Screen2x training protos are
+// generated directly by Chrome and both use a similar naming system.
 std::string GetScreen2xRoleFromChromeRole(ax::mojom::Role role) {
   // Some roles have different texts in Screen2x.
   static base::flat_map<ax::mojom::Role, std::string> exceptions_map = {
@@ -419,6 +419,35 @@ std::string GetScreen2xRoleFromChromeRole(ax::mojom::Role role) {
 
   const auto& item = exceptions_map.find(role);
   return item == exceptions_map.end() ? ui::ToString(role) : item->second;
+}
+
+// TODO(https://crbug.com/1278249): Consider merging the following functions
+// into a template, e.g. using std::is_same.
+void AddAttribute(const std::string& name,
+                  int value,
+                  screenai::UiElement& ui_element) {
+  screenai::UiElementAttribute attrib;
+  attrib.set_name(name);
+  attrib.set_int_value(value);
+  ui_element.add_attributes()->Swap(&attrib);
+}
+
+void AddAttribute(const std::string& name,
+                  const char* value,
+                  screenai::UiElement& ui_element) {
+  screenai::UiElementAttribute attrib;
+  attrib.set_name(name);
+  attrib.set_string_value(value);
+  ui_element.add_attributes()->Swap(&attrib);
+}
+
+void AddAttribute(const std::string& name,
+                  const std::string& value,
+                  screenai::UiElement& ui_element) {
+  screenai::UiElementAttribute attrib;
+  attrib.set_name(name);
+  attrib.set_string_value(value);
+  ui_element.add_attributes()->Swap(&attrib);
 }
 
 }  // namespace
@@ -584,80 +613,80 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
   for (int node_index : nodes_order) {
     const ui::AXNodeData& node = snapshot.nodes[node_index];
     const ui::AXNodeID& ax_node_id = node.id;
-    screenai::UiElement* uie = view_hierarchy.add_ui_elements();
-    screenai::UiElementAttribute* attrib = nullptr;
+    screenai::UiElement uie;
 
     // ID.
-    uie->set_id(new_id[ax_node_id]);
-
-    // Text.
-    attrib = uie->add_attributes();
-    attrib->set_name("text");
-    attrib->set_string_value(
-        node.GetStringAttribute(ax::mojom::StringAttribute::kName));
-
-    // Class Name.
-    // This is a fixed constant for Chrome requests to Screen2x.
-    attrib = uie->add_attributes();
-    attrib->set_name("class_name");
-    attrib->set_string_value("chrome.unicorn");
-
-    // Role.
-    attrib = uie->add_attributes();
-    attrib->set_name("chrome_role");
-    attrib->set_string_value(GetScreen2xRoleFromChromeRole(node.role));
-
-    // AXNode ID.
-    attrib = uie->add_attributes();
-    attrib->set_name("/axnode/node_id");
-    attrib->set_int_value(ax_node_id);
+    uie.set_id(new_id[ax_node_id]);
 
     // Child IDs.
-    attrib = uie->add_attributes();
-    attrib->set_name("/axnode/child_ids");
-    for (const ui::AXNodeID& id : node.child_ids) {
-      attrib->mutable_int_list_value()->add_value(id);
-      uie->add_child_ids(new_id[id]);
-    }
+    for (const ui::AXNodeID& id : node.child_ids)
+      uie.add_child_ids(new_id[id]);
+
+    // Attributes.
+    // TODO(https://crbug.com/1278249): Get attribute strings from a Google3
+    // export, also the experimental ones for the unittest.
+    AddAttribute("/axnode/node_id", static_cast<int>(ax_node_id), uie);
+    const std::string& display_value =
+        node.GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
+    if (!display_value.empty())
+      AddAttribute("/extras/styles/display", display_value, uie);
+    AddAttribute("/extras/styles/visibility",
+                 node.IsInvisible() ? "invisible" : "visible", uie);
+
+    // This is a fixed constant for Chrome requests to Screen2x.
+    AddAttribute("class_name", "chrome.unicorn", uie);
+    AddAttribute("chrome_role", GetScreen2xRoleFromChromeRole(node.role), uie);
+    AddAttribute("text",
+                 node.GetStringAttribute(ax::mojom::StringAttribute::kName),
+                 uie);
 
     // Type and parent.
     if (node.id == snapshot.root_id) {
-      uie->set_type(screenai::UiElementType::ROOT);
-      uie->set_parent_id(-1);
+      uie.set_type(screenai::UiElementType::ROOT);
+      uie.set_parent_id(-1);
     } else {
-      uie->set_type(screenai::UiElementType::VIEW);
-      uie->set_parent_id(new_id[child_id_to_parent_id[ax_node_id]]);
+      uie.set_type(screenai::UiElementType::VIEW);
+      uie.set_parent_id(new_id[child_id_to_parent_id[ax_node_id]]);
     }
 
     // TODO(https://crbug.com/1278249): Bounding box and Bounding Box Pixels
-    // do not consider offset container, ransforms, device scaling, clipping,
+    // do not consider offset container, transforms, device scaling, clipping,
     // offscreen state, etc. This should be fixed the same way the data is
     // created for training Screen2x models.
+    // This is most likely wrong for iframes. Offset containers are directly
+    // encoded into the accessibility tree; the platform accessibility tree
+    // merges all child trees so it looks like one unified tree. We're missing
+    // that here if Screen2x trains on the unified accessibility tree. We should
+    // either ensure they train only on a single accessibility tree not
+    // including iframes or ensure the snapshot grabs all child trees.
 
     // Bounding Box.
-    uie->mutable_bounding_box()->set_top(node.relative_bounds.bounds.y() /
-                                         snapshot_height);
-    uie->mutable_bounding_box()->set_left(node.relative_bounds.bounds.x() /
-                                          snapshot_width);
-    uie->mutable_bounding_box()->set_bottom(
-        node.relative_bounds.bounds.bottom() / snapshot_height);
-    uie->mutable_bounding_box()->set_right(node.relative_bounds.bounds.right() /
-                                           snapshot_width);
+    screenai::BoundingBox* bounding_box = new screenai::BoundingBox;
+    bounding_box->set_top(node.relative_bounds.bounds.y() / snapshot_height);
+    bounding_box->set_left(node.relative_bounds.bounds.x() / snapshot_width);
+    bounding_box->set_bottom(node.relative_bounds.bounds.bottom() /
+                             snapshot_height);
+    bounding_box->set_right(node.relative_bounds.bounds.right() /
+                            snapshot_width);
+    uie.set_allocated_bounding_box(bounding_box);
 
     // Bounding Box Pixels.
-    uie->mutable_bounding_box_pixels()->set_top(
-        node.relative_bounds.bounds.y());
-    uie->mutable_bounding_box_pixels()->set_left(
-        node.relative_bounds.bounds.x());
-    uie->mutable_bounding_box_pixels()->set_bottom(
-        node.relative_bounds.bounds.bottom());
-    uie->mutable_bounding_box_pixels()->set_right(
-        node.relative_bounds.bounds.right());
+    screenai::BoundingBoxPixels* bounding_box_pixels =
+        new screenai::BoundingBoxPixels();
+    bounding_box_pixels->set_top(node.relative_bounds.bounds.y());
+    bounding_box_pixels->set_left(node.relative_bounds.bounds.x());
+    bounding_box_pixels->set_bottom(node.relative_bounds.bounds.bottom());
+    bounding_box_pixels->set_right(node.relative_bounds.bounds.right());
+    uie.set_allocated_bounding_box_pixels(bounding_box_pixels);
 
-    // TODO(https://crbug.com/1278249): Add non-essential values.
+    view_hierarchy.add_ui_elements()->Swap(&uie);
   }
 
   return view_hierarchy.SerializeAsString();
+}
+
+std::string GetScreen2xRoleFromChromeRoleForTesting(ax::mojom::Role role) {
+  return GetScreen2xRoleFromChromeRole(role);
 }
 
 }  // namespace screen_ai
