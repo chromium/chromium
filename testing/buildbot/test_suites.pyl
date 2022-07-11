@@ -491,7 +491,6 @@
         'experiment_percentage': 100,
       },
       'cast_graphics_unittests': {},
-      'exo_unittests': {},
       'views_unittests': {
         'experiment_percentage': 100,
       },
