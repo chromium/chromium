@@ -92,6 +92,18 @@ COMPONENT_EXPORT(APP_TYPES)
 LaunchSource ConvertMojomLaunchSourceToLaunchSource(
     apps::mojom::LaunchSource mojom_launch_source);
 
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::LaunchSource ConvertLaunchSourceToMojomLaunchSource(
+    LaunchSource launch_source);
+
+COMPONENT_EXPORT(APP_TYPES)
+WindowInfoPtr ConvertMojomWindowInfoToWindowInfo(
+    const apps::mojom::WindowInfoPtr& mojom_window_info);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::WindowInfoPtr ConvertWindowInfoToMojomWindowInfo(
+    const WindowInfoPtr& mojom_window_info);
+
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_

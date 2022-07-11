@@ -78,4 +78,113 @@ LaunchSource ConvertMojomLaunchSourceToLaunchSource(
   }
 }
 
+apps::mojom::LaunchSource ConvertLaunchSourceToMojomLaunchSource(
+    LaunchSource install_source) {
+  switch (install_source) {
+    case LaunchSource::kUnknown:
+      return apps::mojom::LaunchSource::kUnknown;
+    case LaunchSource::kFromAppListGrid:
+      return apps::mojom::LaunchSource::kFromAppListGrid;
+    case LaunchSource::kFromAppListGridContextMenu:
+      return apps::mojom::LaunchSource::kFromAppListGridContextMenu;
+    case LaunchSource::kFromAppListQuery:
+      return apps::mojom::LaunchSource::kFromAppListQuery;
+    case LaunchSource::kFromAppListQueryContextMenu:
+      return apps::mojom::LaunchSource::kFromAppListQueryContextMenu;
+    case LaunchSource::kFromAppListRecommendation:
+      return apps::mojom::LaunchSource::kFromAppListRecommendation;
+    case LaunchSource::kFromParentalControls:
+      return apps::mojom::LaunchSource::kFromParentalControls;
+    case LaunchSource::kFromShelf:
+      return apps::mojom::LaunchSource::kFromShelf;
+    case LaunchSource::kFromFileManager:
+      return apps::mojom::LaunchSource::kFromFileManager;
+    case LaunchSource::kFromLink:
+      return apps::mojom::LaunchSource::kFromLink;
+    case LaunchSource::kFromOmnibox:
+      return apps::mojom::LaunchSource::kFromOmnibox;
+    case LaunchSource::kFromChromeInternal:
+      return apps::mojom::LaunchSource::kFromChromeInternal;
+    case LaunchSource::kFromKeyboard:
+      return apps::mojom::LaunchSource::kFromKeyboard;
+    case LaunchSource::kFromOtherApp:
+      return apps::mojom::LaunchSource::kFromOtherApp;
+    case LaunchSource::kFromMenu:
+      return apps::mojom::LaunchSource::kFromMenu;
+    case LaunchSource::kFromInstalledNotification:
+      return apps::mojom::LaunchSource::kFromInstalledNotification;
+    case LaunchSource::kFromTest:
+      return apps::mojom::LaunchSource::kFromTest;
+    case LaunchSource::kFromArc:
+      return apps::mojom::LaunchSource::kFromArc;
+    case LaunchSource::kFromSharesheet:
+      return apps::mojom::LaunchSource::kFromSharesheet;
+    case LaunchSource::kFromReleaseNotesNotification:
+      return apps::mojom::LaunchSource::kFromReleaseNotesNotification;
+    case LaunchSource::kFromFullRestore:
+      return apps::mojom::LaunchSource::kFromFullRestore;
+    case LaunchSource::kFromSmartTextContextMenu:
+      return apps::mojom::LaunchSource::kFromSmartTextContextMenu;
+    case LaunchSource::kFromDiscoverTabNotification:
+      return apps::mojom::LaunchSource::kFromDiscoverTabNotification;
+    case LaunchSource::kFromManagementApi:
+      return apps::mojom::LaunchSource::kFromManagementApi;
+    case LaunchSource::kFromKiosk:
+      return apps::mojom::LaunchSource::kFromKiosk;
+    case LaunchSource::kFromCommandLine:
+      return apps::mojom::LaunchSource::kFromCommandLine;
+    case LaunchSource::kFromBackgroundMode:
+      return apps::mojom::LaunchSource::kFromBackgroundMode;
+    case LaunchSource::kFromNewTabPage:
+      return apps::mojom::LaunchSource::kFromNewTabPage;
+    case LaunchSource::kFromIntentUrl:
+      return apps::mojom::LaunchSource::kFromIntentUrl;
+    case LaunchSource::kFromOsLogin:
+      return apps::mojom::LaunchSource::kFromOsLogin;
+    case LaunchSource::kFromProtocolHandler:
+      return apps::mojom::LaunchSource::kFromProtocolHandler;
+    case LaunchSource::kFromUrlHandler:
+      return apps::mojom::LaunchSource::kFromUrlHandler;
+  }
+}
+
+WindowInfoPtr ConvertMojomWindowInfoToWindowInfo(
+    const apps::mojom::WindowInfoPtr& mojom_window_info) {
+  if (!mojom_window_info) {
+    return nullptr;
+  }
+
+  auto window_info = std::make_unique<WindowInfo>();
+  window_info->window_id = mojom_window_info->window_id;
+  window_info->state = mojom_window_info->state;
+  window_info->display_id = mojom_window_info->display_id;
+  if (mojom_window_info->bounds) {
+    window_info->bounds = gfx::Rect{
+        mojom_window_info->bounds->x, mojom_window_info->bounds->y,
+        mojom_window_info->bounds->width, mojom_window_info->bounds->height};
+  }
+  return window_info;
+}
+
+apps::mojom::WindowInfoPtr ConvertWindowInfoToMojomWindowInfo(
+    const WindowInfoPtr& window_info) {
+  if (!window_info) {
+    return nullptr;
+  }
+
+  auto mojom_window_info = apps::mojom::WindowInfo::New();
+  mojom_window_info->window_id = window_info->window_id;
+  mojom_window_info->state = window_info->state;
+  mojom_window_info->display_id = window_info->display_id;
+  if (window_info->bounds.has_value()) {
+    auto mojom_rect = apps::mojom::Rect::New();
+    mojom_rect->x = window_info->bounds->x();
+    mojom_rect->y = window_info->bounds->y();
+    mojom_rect->width = window_info->bounds->width();
+    mojom_rect->height = window_info->bounds->height();
+    mojom_window_info->bounds = std::move(mojom_rect);
+  }
+  return mojom_window_info;
+}
+
 }  // namespace apps

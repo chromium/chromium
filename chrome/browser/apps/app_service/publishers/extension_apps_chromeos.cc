@@ -206,8 +206,9 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                            /*prefer_container=*/false);
     auto window_info = apps::MakeWindowInfo(params.display_id);
     LaunchExtension(
-        params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
-        params.launch_source, std::move(window_info), base::DoNothing());
+        params.app_id, event_flags, std::move(params.intent),
+        ConvertMojomLaunchSourceToLaunchSource(params.launch_source),
+        ConvertMojomWindowInfoToWindowInfo(window_info), base::DoNothing());
   }
 }
 
@@ -238,27 +239,29 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(
   } else {
     DCHECK(extension->is_extension());
     // TODO(petermarshall): Set Arc flag as above?
-    LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
-                    std::move(window_info), std::move(callback));
+    LaunchExtension(app_id, event_flags, ConvertMojomIntentToIntent(intent),
+                    ConvertMojomLaunchSourceToLaunchSource(launch_source),
+                    ConvertMojomWindowInfoToWindowInfo(window_info),
+                    std::move(callback));
   }
 }
 
 void ExtensionAppsChromeOs::LaunchExtension(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info,
+    IntentPtr intent,
+    LaunchSource launch_source,
+    WindowInfoPtr window_info,
     LaunchAppWithIntentCallback callback) {
   const auto* extension = MaybeGetExtension(app_id);
   DCHECK(extension);
 
   std::vector<storage::FileSystemURL> file_urls;
-  if (intent->files) {
+  if (!intent->files.empty()) {
     storage::FileSystemContext* file_system_context =
         file_manager::util::GetFileSystemContextForSourceURL(profile(),
                                                              extension->url());
-    for (const mojom::IntentFilePtr& file : intent->files.value()) {
+    for (const IntentFilePtr& file : intent->files) {
       file_urls.push_back(
           file_system_context->CrackURLInFirstPartyContext(file->url));
     }
