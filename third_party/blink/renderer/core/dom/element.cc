@@ -6649,7 +6649,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   StyleRequest style_request;
   style_request.pseudo_id = pseudo_element_specifier;
   style_request.type = StyleRequest::kForComputedStyle;
-  if (StyleResolver::UsesHighlightPseudoInheritance(pseudo_element_specifier)) {
+  if (UsesHighlightPseudoInheritance(pseudo_element_specifier)) {
     const ComputedStyle* highlight_element_style = nullptr;
     ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this);
     if (parent && parent->GetComputedStyle()->HighlightData()) {
@@ -7023,7 +7023,7 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
     const AtomicString& pseudo_argument) {
   // Highlight pseudos are resolved into StyleHighlightData during originating
   // style recalc, and should never be stored in StyleCachedData.
-  DCHECK(!StyleResolver::UsesHighlightPseudoInheritance(pseudo_id));
+  DCHECK(!UsesHighlightPseudoInheritance(pseudo_id));
 
   const ComputedStyle* style = GetComputedStyle();
 
@@ -7049,7 +7049,7 @@ scoped_refptr<ComputedStyle> Element::UncachedStyleForPseudoElement(
     const StyleRequest& request) {
   // Highlight pseudos are resolved into StyleHighlightData during originating
   // style recalc, where we have the actual StyleRecalcContext.
-  DCHECK(!StyleResolver::UsesHighlightPseudoInheritance(request.pseudo_id));
+  DCHECK(!UsesHighlightPseudoInheritance(request.pseudo_id));
 
   return StyleForPseudoElement(
       StyleRecalcContext::FromInclusiveAncestors(*this), request);

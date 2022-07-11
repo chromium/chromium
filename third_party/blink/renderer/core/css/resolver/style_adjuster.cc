@@ -883,10 +883,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // The computed value of currentColor for highlight pseudos is the
   // color that would have been used if no highlights were applied,
   // i.e. the originating element's color.
-  if (((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-        state.IsForHighlight()) ||
-       state.IsForCustomHighlight()) &&
-      style.ColorIsCurrentColor() && state.OriginatingElementStyle()) {
+  if (state.UsesHighlightPseudoInheritance() && style.ColorIsCurrentColor() &&
+      state.OriginatingElementStyle()) {
     style.SetColor(state.OriginatingElementStyle()->GetColor());
   }
 

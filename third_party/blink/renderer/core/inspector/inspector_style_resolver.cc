@@ -98,7 +98,7 @@ InspectorStyleResolver::InspectorStyleResolver(
          pseudo_id = static_cast<PseudoId>(pseudo_id + 1)) {
       // Only highlight pseudos can be inherited.
       if (!PseudoElement::IsWebExposed(pseudo_id, element_) ||
-          !StyleResolver::UsesHighlightPseudoInheritance(pseudo_id))
+          !UsesHighlightPseudoInheritance(pseudo_id))
         continue;
 
       RuleIndexList* matched_rules = style_resolver.PseudoCSSRulesForElement(

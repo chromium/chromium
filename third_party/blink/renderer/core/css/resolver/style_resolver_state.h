@@ -168,7 +168,9 @@ class CORE_EXPORT StyleResolverState {
     return originating_element_style_.get();
   }
   bool IsForHighlight() const { return is_for_highlight_; }
-  bool IsForCustomHighlight() const { return is_for_custom_highlight_; }
+  bool UsesHighlightPseudoInheritance() const {
+    return uses_highlight_pseudo_inheritance_;
+  }
 
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
 
@@ -228,8 +230,9 @@ class CORE_EXPORT StyleResolverState {
   scoped_refptr<const ComputedStyle> originating_element_style_;
   // True if we are resolving styles for a highlight pseudo-element.
   const bool is_for_highlight_;
-  // True if we are resolving styles for a custom highlight pseudo-element.
-  const bool is_for_custom_highlight_;
+  // True if this is a highlight style request, and highlight inheritance
+  // should be used for this highlight pseudo.
+  const bool uses_highlight_pseudo_inheritance_;
 
   // True if the base style can be cached to optimize style recalculations for
   // animation updates or transition retargeting.

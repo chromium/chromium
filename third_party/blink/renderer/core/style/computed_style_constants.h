@@ -32,6 +32,7 @@
 #include <cstdint>
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -106,6 +107,15 @@ inline bool IsHighlightPseudoElement(PseudoId pseudo_id) {
     default:
       return false;
   }
+}
+
+inline bool UsesHighlightPseudoInheritance(PseudoId pseudo_id) {
+  // ::highlight() pseudos use highlight inheritance rather than originating
+  // inheritance even if highlight inheritance is not enabled for the other
+  // pseudos.
+  return ((IsHighlightPseudoElement(pseudo_id) &&
+           RuntimeEnabledFeatures::HighlightInheritanceEnabled()) ||
+          pseudo_id == PseudoId::kPseudoIdHighlight);
 }
 
 inline bool IsTransitionPseudoElement(PseudoId pseudo_id) {

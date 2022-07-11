@@ -231,7 +231,7 @@ static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
       continue;
     // Highlight pseudo styles are stored in StyleHighlightData, and compared
     // like any other inherited field, yielding Difference::kInherited.
-    if (StyleResolver::UsesHighlightPseudoInheritance(pseudo_id))
+    if (UsesHighlightPseudoInheritance(pseudo_id))
       continue;
     const ComputedStyle* new_pseudo_style =
         new_style.GetCachedPseudoElementStyle(pseudo_id);

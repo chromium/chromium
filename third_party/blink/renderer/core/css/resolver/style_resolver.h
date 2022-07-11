@@ -167,8 +167,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   static bool CanReuseBaseComputedStyle(const StyleResolverState& state);
 
-  static bool UsesHighlightPseudoInheritance(PseudoId);
-
   static const CSSValue* ComputeValue(Element* element,
                                       const CSSPropertyName&,
                                       const CSSValue&);

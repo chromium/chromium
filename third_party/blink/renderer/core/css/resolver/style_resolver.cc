@@ -1681,8 +1681,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     if (state.Style()->StyleType() == kPseudoIdMarker)
       filter = filter.Add(CSSProperty::kValidForMarker, false);
     if (IsHighlightPseudoElement(state.Style()->StyleType())) {
-      if (StyleResolver::UsesHighlightPseudoInheritance(
-              state.Style()->StyleType())) {
+      if (UsesHighlightPseudoInheritance(state.Style()->StyleType())) {
         filter = filter.Add(CSSProperty::kValidForHighlight, false);
       } else {
         filter = filter.Add(CSSProperty::kValidForHighlightLegacy, false);
@@ -1929,15 +1928,6 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   }
 
   return true;
-}
-
-bool StyleResolver::UsesHighlightPseudoInheritance(PseudoId pseudo_id) {
-  // ::highlight() pseudos use highlight inheritance rather than originating
-  // inheritance even if highlight inheritance is not enabled for the other
-  // pseudos.
-  return ((IsHighlightPseudoElement(pseudo_id) &&
-           RuntimeEnabledFeatures::HighlightInheritanceEnabled()) ||
-          pseudo_id == PseudoId::kPseudoIdHighlight);
 }
 
 const CSSValue* StyleResolver::ComputeValue(
