@@ -35,12 +35,10 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -586,13 +584,8 @@ void DemoSession::OnSessionStateChanged() {
   }
 }
 
-void LaunchDemoSystemWebApp() {
-  // SystemWebAppManager won't run this callback if the profile is destroyed,
-  // so we don't need to worry about there being no active user profile
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DEMO_MODE);
-}
-
+// TODO(b/231761044): Launch the Demo Mode SWA after the component has
+// been successfully loaded
 void DemoSession::OnDemoAppComponentLoaded(
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
@@ -602,9 +595,6 @@ void DemoSession::OnDemoAppComponentLoaded(
     return;
   }
   demo_app_component_path_ = path;
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
-      FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));
 }
 
 void DemoSession::ShowSplashScreen() {
