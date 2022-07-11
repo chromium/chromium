@@ -50,7 +50,7 @@ bool CanServePrefetchRequest(
 }  // namespace
 
 StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
-    StreamingSearchPrefetchRequest* streaming_prefetch_request,
+    SearchPrefetchRequest* streaming_prefetch_request,
     Profile* profile,
     bool navigation_prefetch,
     std::unique_ptr<network::ResourceRequest> resource_request,

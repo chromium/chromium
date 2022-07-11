@@ -21,7 +21,6 @@
 #include "chrome/browser/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
-#include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -230,8 +229,8 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url,
     return false;
   }
 
-  std::unique_ptr<BaseSearchPrefetchRequest> prefetch_request =
-      std::make_unique<StreamingSearchPrefetchRequest>(
+  std::unique_ptr<SearchPrefetchRequest> prefetch_request =
+      std::make_unique<SearchPrefetchRequest>(
           search_terms, url, navigation_prefetch,
           base::BindOnce(&SearchPrefetchService::ReportFetchResult,
                          base::Unretained(this)));
@@ -276,7 +275,7 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (prefetches_.find(match_search_terms) == prefetches_.end()) {
     return;
   }
-  BaseSearchPrefetchRequest& prefetch = *prefetches_[match_search_terms];
+  SearchPrefetchRequest& prefetch = *prefetches_[match_search_terms];
   prefetch.RecordClickTime();
 
   if (prefetch.current_status() != SearchPrefetchStatus::kCanBeServed &&
@@ -391,7 +390,7 @@ SearchPrefetchService::TakePrefetchResponseFromDiskCache(
   }
 
   return std::make_unique<CacheAliasSearchPrefetchURLLoader>(
-      profile_, BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch(),
+      profile_, SearchPrefetchRequest::NetworkAnnotationForPrefetch(),
       prefetch_cache_[navigation_url_without_ref].first);
 }
 
@@ -740,7 +739,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   }
 }
 
-std::map<std::u16string, std::unique_ptr<BaseSearchPrefetchRequest>>::iterator
+std::map<std::u16string, std::unique_ptr<SearchPrefetchRequest>>::iterator
 SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     const network::ResourceRequest& tentative_resource_request,
     SearchPrefetchServingReasonRecorder& recorder) {

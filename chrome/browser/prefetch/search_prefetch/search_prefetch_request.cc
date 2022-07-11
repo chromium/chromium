@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_request.h"
 
 #include <vector>
 
@@ -13,6 +13,9 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
+#include "chrome/browser/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
+#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -109,7 +112,7 @@ std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
 
 }  // namespace
 
-BaseSearchPrefetchRequest::BaseSearchPrefetchRequest(
+SearchPrefetchRequest::SearchPrefetchRequest(
     const std::u16string& prefetch_search_terms,
     const GURL& prefetch_url,
     bool navigation_prefetch,
@@ -119,11 +122,11 @@ BaseSearchPrefetchRequest::BaseSearchPrefetchRequest(
       navigation_prefetch_(navigation_prefetch),
       report_error_callback_(std::move(report_error_callback)) {}
 
-BaseSearchPrefetchRequest::~BaseSearchPrefetchRequest() = default;
+SearchPrefetchRequest::~SearchPrefetchRequest() = default;
 
 // static
 net::NetworkTrafficAnnotationTag
-BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch() {
+SearchPrefetchRequest::NetworkAnnotationForPrefetch() {
   return net::DefineNetworkTrafficAnnotation("search_prefetch_service", R"(
         semantics {
           sender: "Search Prefetch Service"
@@ -159,8 +162,8 @@ BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch() {
         })");
 }
 
-bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
-  TRACE_EVENT0("loading", "BaseSearchPrefetchRequest::StartPrefetchRequest");
+bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
+  TRACE_EVENT0("loading", "SearchPrefetchRequest::StartPrefetchRequest");
   net::NetworkTrafficAnnotationTag network_traffic_annotation =
       NetworkAnnotationForPrefetch();
 
@@ -244,7 +247,7 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   {
     TRACE_EVENT0(
         "loading",
-        "BaseSearchPrefetchRequest::StartPrefetchRequest.ExecuteThrottles");
+        "SearchPrefetchRequest::StartPrefetchRequest.ExecuteThrottles");
     for (auto& throttle : throttles) {
       CheckForCancelledOrPausedDelegate cancel_or_pause_delegate;
       throttle->set_delegate(&cancel_or_pause_delegate);
@@ -252,7 +255,7 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       {
         TRACE_EVENT0(
             "loading",
-            "BaseSearchPrefetchRequest::StartPrefetchRequest.WillStartRequest");
+            "SearchPrefetchRequest::StartPrefetchRequest.WillStartRequest");
         throttle->WillStartRequest(resource_request.get(), &should_defer);
       }
 
@@ -286,7 +289,7 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   return true;
 }
 
-bool BaseSearchPrefetchRequest::ShouldBeCancelledOnResultChanges() const {
+bool SearchPrefetchRequest::ShouldBeCancelledOnResultChanges() const {
   static constexpr auto CancelableStatus =
       base::MakeFixedFlatSet<SearchPrefetchStatus>({
           SearchPrefetchStatus::kInFlight,
@@ -296,7 +299,7 @@ bool BaseSearchPrefetchRequest::ShouldBeCancelledOnResultChanges() const {
   return base::Contains(CancelableStatus, current_status_);
 }
 
-void BaseSearchPrefetchRequest::CancelPrefetch() {
+void SearchPrefetchRequest::CancelPrefetch() {
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
          current_status_ == SearchPrefetchStatus::kCanBeServed ||
          current_status_ == SearchPrefetchStatus::kPrerendered);
@@ -305,7 +308,7 @@ void BaseSearchPrefetchRequest::CancelPrefetch() {
   StopPrerender();
 }
 
-void BaseSearchPrefetchRequest::MaybeStartPrerenderSearchResult(
+void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
     PrerenderManager& prerender_manager,
     const GURL& prerender_url) {
   // Prerendering is supposed to be requested after prefetch received a servable
@@ -358,7 +361,7 @@ void BaseSearchPrefetchRequest::MaybeStartPrerenderSearchResult(
   }
 }
 
-void BaseSearchPrefetchRequest::ErrorEncountered() {
+void SearchPrefetchRequest::ErrorEncountered() {
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
          current_status_ == SearchPrefetchStatus::kCanBeServed ||
          current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
@@ -368,7 +371,7 @@ void BaseSearchPrefetchRequest::ErrorEncountered() {
   StopPrerender();
 }
 
-void BaseSearchPrefetchRequest::OnServableResponseCodeReceived() {
+void SearchPrefetchRequest::OnServableResponseCodeReceived() {
   servable_response_code_received_ = true;
   // TODO(https://crbug.com/1295170): Do not start prerendering if this request
   // is about to expire.
@@ -382,36 +385,36 @@ void BaseSearchPrefetchRequest::OnServableResponseCodeReceived() {
   }
 }
 
-void BaseSearchPrefetchRequest::MarkPrefetchAsServable() {
+void SearchPrefetchRequest::MarkPrefetchAsServable() {
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight);
   current_status_ = SearchPrefetchStatus::kCanBeServed;
 }
 
-void BaseSearchPrefetchRequest::MarkPrefetchAsPrerendered() {
+void SearchPrefetchRequest::MarkPrefetchAsPrerendered() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed ||
          current_status_ == SearchPrefetchStatus::kComplete);
   current_status_ = SearchPrefetchStatus::kPrerendered;
 }
 
-void BaseSearchPrefetchRequest::MarkPrefetchAsPrerenderActivated() {
+void SearchPrefetchRequest::MarkPrefetchAsPrerenderActivated() {
   DCHECK(current_status_ == SearchPrefetchStatus::kPrerenderedAndClicked ||
          current_status_ == SearchPrefetchStatus::kPrerendered);
   current_status_ = SearchPrefetchStatus::kPrerenderActivated;
 }
 
-void BaseSearchPrefetchRequest::ResetPrerenderUpgrader() {
+void SearchPrefetchRequest::ResetPrerenderUpgrader() {
   prerender_manager_ = nullptr;
   prerender_url_ = GURL();
 }
 
-void BaseSearchPrefetchRequest::MarkPrefetchAsComplete() {
+void SearchPrefetchRequest::MarkPrefetchAsComplete() {
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
          current_status_ == SearchPrefetchStatus::kCanBeServed ||
          current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked);
   current_status_ = SearchPrefetchStatus::kComplete;
 }
 
-void BaseSearchPrefetchRequest::MarkPrefetchAsClicked() {
+void SearchPrefetchRequest::MarkPrefetchAsClicked() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed ||
          current_status_ == SearchPrefetchStatus::kPrerendered);
   if (current_status_ == SearchPrefetchStatus::kCanBeServed) {
@@ -421,7 +424,7 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsClicked() {
   }
 }
 
-void BaseSearchPrefetchRequest::MarkPrefetchAsServed() {
+void SearchPrefetchRequest::MarkPrefetchAsServed() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
          current_status_ == SearchPrefetchStatus::kComplete);
   current_status_ = SearchPrefetchStatus::kPrefetchServedForRealNavigation;
@@ -429,11 +432,39 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsServed() {
                       base::TimeTicks::Now() - time_clicked_);
 }
 
-void BaseSearchPrefetchRequest::RecordClickTime() {
+void SearchPrefetchRequest::RecordClickTime() {
   time_clicked_ = base::TimeTicks::Now();
 }
 
-void BaseSearchPrefetchRequest::StopPrerender() {
+std::unique_ptr<SearchPrefetchURLLoader>
+SearchPrefetchRequest::TakeSearchPrefetchURLLoader() {
+  streaming_url_loader_->ClearOwnerPointer();
+
+  return std::move(streaming_url_loader_);
+}
+
+void SearchPrefetchRequest::StartPrefetchRequestInternal(
+    Profile* profile,
+    std::unique_ptr<network::ResourceRequest> resource_request,
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+    base::OnceCallback<void(bool)> report_error_callback) {
+  TRACE_EVENT0("loading",
+               "SearchPrefetchRequest::StartPrefetchRequestInternal");
+  profile_ = profile;
+  network_traffic_annotation_ =
+      std::make_unique<net::NetworkTrafficAnnotationTag>(
+          network_traffic_annotation);
+  prefetch_url_ = resource_request->url;
+  streaming_url_loader_ = std::make_unique<StreamingSearchPrefetchURLLoader>(
+      this, profile, navigation_prefetch_, std::move(resource_request),
+      network_traffic_annotation, std::move(report_error_callback));
+}
+
+void SearchPrefetchRequest::StopPrefetch() {
+  streaming_url_loader_.reset();
+}
+
+void SearchPrefetchRequest::StopPrerender() {
   if (prerender_manager_) {
     prerender_manager_->StopPrerenderSearchResult(prefetch_search_terms_);
     prerender_manager_ = nullptr;

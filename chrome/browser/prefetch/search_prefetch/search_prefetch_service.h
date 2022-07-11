@@ -16,7 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_request.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/search_engines/template_url_data.h"
@@ -215,7 +215,7 @@ class SearchPrefetchService : public KeyedService,
   void SaveToPrefs() const;
 
   // Retrieved the started prefetches by search_terms.
-  std::map<std::u16string, std::unique_ptr<BaseSearchPrefetchRequest>>::iterator
+  std::map<std::u16string, std::unique_ptr<SearchPrefetchRequest>>::iterator
   RetrieveSearchTermsInMemoryCache(
       const network::ResourceRequest& tentative_resource_request,
       SearchPrefetchServingReasonRecorder& recorder);
@@ -234,8 +234,7 @@ class SearchPrefetchService : public KeyedService,
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
-  std::map<std::u16string, std::unique_ptr<BaseSearchPrefetchRequest>>
-      prefetches_;
+  std::map<std::u16string, std::unique_ptr<SearchPrefetchRequest>> prefetches_;
 
   // A group of timers to expire |prefetches_| based on the same key.
   std::map<std::u16string, std::unique_ptr<base::OneShotTimer>>

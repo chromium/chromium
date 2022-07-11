@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BASE_SEARCH_PREFETCH_REQUEST_H_
-#define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BASE_SEARCH_PREFETCH_REQUEST_H_
+#ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_REQUEST_H_
+#define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_REQUEST_H_
 
 #include <memory>
 
@@ -15,6 +15,7 @@
 class PrerenderManager;
 class Profile;
 class SearchPrefetchURLLoader;
+class StreamingSearchPrefetchURLLoader;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -66,20 +67,19 @@ enum class SearchPrefetchStatus {
 // - Starting prerendering upon the request succeeding to upgrade prefetch to
 //   prerender after the Search Prefetch Service tells it that the prefetched
 //   term is prerenderable.
-// Implementors should provide the fetch and storage functionality as well as
-// updating |current_status_|.
-class BaseSearchPrefetchRequest {
+// - A container for a StreamingSearchPrefetchURLLoader, to support
+// |TakeSearchPrefetchURLLoader()|
+//   more easily.
+class SearchPrefetchRequest {
  public:
-  BaseSearchPrefetchRequest(
-      const std::u16string& prefetch_search_terms,
-      const GURL& prefetch_url,
-      bool navigation_prefetch,
-      base::OnceCallback<void(bool)> report_error_callback);
-  virtual ~BaseSearchPrefetchRequest();
+  SearchPrefetchRequest(const std::u16string& prefetch_search_terms,
+                        const GURL& prefetch_url,
+                        bool navigation_prefetch,
+                        base::OnceCallback<void(bool)> report_error_callback);
+  ~SearchPrefetchRequest();
 
-  BaseSearchPrefetchRequest(const BaseSearchPrefetchRequest&) = delete;
-  BaseSearchPrefetchRequest& operator=(const BaseSearchPrefetchRequest&) =
-      delete;
+  SearchPrefetchRequest(const SearchPrefetchRequest&) = delete;
+  SearchPrefetchRequest& operator=(const SearchPrefetchRequest&) = delete;
 
   // The NTA for any search prefetch request.
   static net::NetworkTrafficAnnotationTag NetworkAnnotationForPrefetch();
@@ -90,12 +90,12 @@ class BaseSearchPrefetchRequest {
   // throttles).
   bool StartPrefetchRequest(Profile* profile);
 
-  // Marks a prefetch as canceled and stops any ongoing fetch.
-  void CancelPrefetch();
-
   // Returns true if this request should be canceled when the Autocomplete
   // suggestion no longer lists this search prefetch.
   bool ShouldBeCancelledOnResultChanges() const;
+
+  // Marks a prefetch as canceled and stops any ongoing fetch.
+  void CancelPrefetch();
 
   // Called when SearchPrefetchService receives the hint that this prefetch
   // request can be upgraded to a prerender attempt.
@@ -104,9 +104,6 @@ class BaseSearchPrefetchRequest {
 
   // Called when the prefetch encounters an error.
   void ErrorEncountered();
-
-  // Called when the prefetch encounters an error.
-  void ErrorEncounteredUsingFallback();
 
   // Called on the URL loader receives servable response.
   void OnServableResponseCodeReceived();
@@ -141,30 +138,32 @@ class BaseSearchPrefetchRequest {
   // prefetch.
   void RecordClickTime();
 
+  // Takes ownership of underlying data/objects needed to serve the response.
+  std::unique_ptr<SearchPrefetchURLLoader> TakeSearchPrefetchURLLoader();
+
   // Whether the request was started as a navigation prefetch (as opposed to a
   // suggestion prefetch).
   bool navigation_prefetch() const { return navigation_prefetch_; }
-
-  // Starts and begins processing |resource_request|.
-  virtual void StartPrefetchRequestInternal(
-      Profile* profile,
-      std::unique_ptr<network::ResourceRequest> resource_request,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      base::OnceCallback<void(bool)> report_error_callback) = 0;
-
-  // Stops the on-going prefetch and should mark |current_status_|
-  // appropriately.
-  virtual void StopPrefetch() = 0;
 
   SearchPrefetchStatus current_status() const { return current_status_; }
 
   const GURL& prefetch_url() const { return prefetch_url_; }
 
-  // Takes ownership of underlying data/objects needed to serve the response.
-  virtual std::unique_ptr<SearchPrefetchURLLoader>
-  TakeSearchPrefetchURLLoader() = 0;
+ private:
+  // Starts and begins processing |resource_request|.
+  void StartPrefetchRequestInternal(
+      Profile* profile,
+      std::unique_ptr<network::ResourceRequest> resource_request,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      base::OnceCallback<void(bool)> report_error_callback);
 
- protected:
+  // Stops the on-going prefetch and should mark |current_status_|
+  // appropriately.
+  void StopPrefetch();
+
+  // Cancels ongoing and pending prerender.
+  void StopPrerender();
+
   // Whether the request has received a servable response. See
   // `CanServePrefetchRequest` in ./streaming_search_prefetch_url_loader.cc for
   // the definition of servable response.
@@ -188,6 +187,11 @@ class BaseSearchPrefetchRequest {
   // Whether this is for a navigation-time prefetch.
   bool navigation_prefetch_;
 
+  std::unique_ptr<net::NetworkTrafficAnnotationTag> network_traffic_annotation_;
+
+  // The ongoing prefetch request. Null before and after the fetch.
+  std::unique_ptr<StreamingSearchPrefetchURLLoader> streaming_url_loader_;
+
   // Called when there is a network/server error on the prefetch request.
   base::OnceCallback<void(bool)> report_error_callback_;
 
@@ -198,9 +202,7 @@ class BaseSearchPrefetchRequest {
   // response.
   base::WeakPtr<PrerenderManager> prerender_manager_;
 
- private:
-  // Cancels ongoing and pending prerender.
-  void StopPrerender();
+  base::raw_ptr<Profile> profile_;
 };
 
-#endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BASE_SEARCH_PREFETCH_REQUEST_H_
+#endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_REQUEST_H_
