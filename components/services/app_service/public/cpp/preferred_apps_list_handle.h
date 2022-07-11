@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -63,32 +62,13 @@ class PreferredAppsListHandle {
 
     // Called when the PreferredAppsList object (the thing that this observer
     // observes) will be destroyed. In response, the observer, |this|, should
-    // call "cache->RemoveObserver(this)", whether directly or indirectly (e.g.
-    // via base::ScopedObservation::Remove or via Observe(nullptr)).
+    // call "handle->RemoveObserver(this)", whether directly or indirectly (e.g.
+    // via base::ScopedObservation::Reset).
     virtual void OnPreferredAppsListWillBeDestroyed(
         PreferredAppsListHandle* handle) = 0;
 
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-
    protected:
-    // Use this constructor when the observer |this| is tied to a single
-    // PreferredAppsList for its entire lifetime, or until the observee (the
-    // PreferredAppsList) is destroyed, whichever comes first.
-    explicit Observer(PreferredAppsListHandle* handle);
-
-    // Use this constructor when the observer |this| wants to observe a
-    // PreferredAppsList for part of its lifetime. It can then call Observe() to
-    // start and stop observing.
-    Observer();
-    ~Observer() override;
-
-    // Start observing a different PreferredAppsList. |cache| may be nullptr,
-    // meaning to stop observing.
-    void Observe(PreferredAppsListHandle* handle);
-
-   private:
-    raw_ptr<PreferredAppsListHandle> handle_ = nullptr;
+    ~Observer() override = default;
   };
 
   void AddObserver(Observer* observer);
