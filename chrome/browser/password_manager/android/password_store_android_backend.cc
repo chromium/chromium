@@ -680,7 +680,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // If the user is experiencing an error unresolvable by Chrome or by the
     // user, unenroll the user from the UPM experience.
     int api_error = error.api_error_code.value();
-
     if (IsUnrecoverableError(
             static_cast<AndroidBackendAPIErrorCode>(api_error))) {
       if (!prefs_->GetBoolean(
@@ -689,6 +688,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
             "PasswordManager.UnenrolledFromUPMDueToErrors", true);
         prefs_->SetBoolean(
             prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, true);
+        LOG(ERROR) << "Unenrolled from UPM due to error with code: "
+                   << api_error;
       }
 
       // Reset migration prefs so when the user can join the experiment again,

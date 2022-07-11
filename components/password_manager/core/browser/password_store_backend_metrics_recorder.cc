@@ -87,6 +87,9 @@ void PasswordStoreBackendMetricsRecorder::RecordErrorCode(
   if (backend_error.type == AndroidBackendErrorType::kExternalError) {
     DCHECK(backend_error.api_error_code.has_value());
     RecordApiErrorCode(backend_error.api_error_code.value());
+    LOG(ERROR) << "Password Manager API call for " << metric_infix_
+               << " failed with error code: "
+               << backend_error.api_error_code.value();
   }
 }
 
