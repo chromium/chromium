@@ -6,6 +6,8 @@
 
 namespace apps {
 
+WindowInfo::WindowInfo(int64_t display_id) : display_id(display_id) {}
+
 LaunchSource ConvertMojomLaunchSourceToLaunchSource(
     apps::mojom::LaunchSource mojom_install_source) {
   switch (mojom_install_source) {

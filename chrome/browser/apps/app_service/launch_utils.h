@@ -84,6 +84,7 @@ int GetSessionIdForRestoreFromWebContents(
 
 // Helper to create apps::mojom::WindowInfoPtr using |display_id|, which is the
 // id of the display from which the app is launched.
+// TODO(crbug.com/1253250): Remove. Prefer the non mojom WindowInfo.
 apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

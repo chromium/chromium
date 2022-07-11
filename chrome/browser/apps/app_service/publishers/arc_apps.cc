@@ -476,8 +476,8 @@ void OnContentUrlResolved(const base::FilePath& file_path,
 // fetches a new ARC session id, and sets to window_id for |window_info|.
 apps::WindowInfoPtr SetSessionId(apps::WindowInfoPtr window_info) {
   if (!window_info) {
-    window_info = std::make_unique<apps::WindowInfo>();
-    window_info->display_id = display::kInvalidDisplayId;
+    window_info =
+        std::make_unique<apps::WindowInfo>(display::kInvalidDisplayId);
   }
 
   if (window_info->window_id != -1) {

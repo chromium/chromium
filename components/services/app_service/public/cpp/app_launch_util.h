@@ -74,10 +74,13 @@ enum class LaunchContainer {
 };
 
 // The window information to launch an app.
-struct WindowInfo {
+struct COMPONENT_EXPORT(APP_TYPES) WindowInfo {
+  WindowInfo() = default;
+  explicit WindowInfo(int64_t display_id);
+
   int32_t window_id = -1;
   int32_t state = 0;
-  int32_t display_id = -1;
+  int64_t display_id = -1;
   absl::optional<gfx::Rect> bounds;
 };
 
