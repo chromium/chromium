@@ -36,6 +36,14 @@ class WindowFloatTest : public AshTestBase {
 
   ~WindowFloatTest() override = default;
 
+  // Creates a floated application window.
+  std::unique_ptr<aura::Window> CreateFloatedWindow() {
+    std::unique_ptr<aura::Window> floated_window = CreateAppWindow();
+    PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+    DCHECK(WindowState::Get(floated_window.get())->IsFloated());
+    return floated_window;
+  }
+
   void SetUp() override {
     // Ensure float feature is enabled.
     scoped_feature_list_.InitAndEnableFeature(
@@ -72,6 +80,33 @@ TEST_F(WindowFloatTest, WindowFloatingSwitch) {
   wm::ActivateWindow(window_2.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(controller->IsFloated(window_2.get()));
+}
+
+// Tests that a floated window animates to and from overview.
+TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
+  std::unique_ptr<aura::Window> floated_window = CreateFloatedWindow();
+  std::unique_ptr<aura::Window> maximized_window = CreateTestWindow();
+
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  WindowState::Get(maximized_window.get())->OnWMEvent(&maximize_event);
+
+  // Activate 'maximized_window'. If the other window was not floated, then it
+  // would be hidden behind the maximized window and not animate.
+  wm::ActivateWindow(maximized_window.get());
+
+  // Enter overview, both windows should animate when entering overview, since
+  // both are visible to the user.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ToggleOverview();
+  EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
+
+  // Both windows should animate when exiting overview as well.
+  WaitForOverviewEnterAnimation();
+  ToggleOverview();
+  EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
 }
 
 using TabletWindowFloatTest = WindowFloatTest;
@@ -171,13 +206,9 @@ TEST_F(TabletWindowFloatTest, Rotation) {
   // calculate floating window bounds.
   UpdateDisplay("1800x1000");
 
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
-  wm::ActivateWindow(window.get());
-
-  // Enter tablet mode and float `window`.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  ASSERT_TRUE(Shell::Get()->float_controller()->IsFloated(window.get()));
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
   const gfx::Rect no_rotation_bounds = window->bounds();
 
   // Set the primary display as the internal display so that the orientation
@@ -220,19 +251,13 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
-  std::unique_ptr<aura::Window> window = CreateAppWindow();
-  wm::ActivateWindow(window.get());
-
-  // Enter tablet mode and float `window`.
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  ASSERT_TRUE(Shell::Get()->float_controller()->IsFloated(window.get()));
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
 
   // Exiting immersive mode because of float does not seem to trigger a layout
   // like it does in production code. Here we force a layout, otherwise the
   // client view will remain the size of the widget, and dragging it will give
-  // use HTCLIENT.
+  // us HTCLIENT.
   auto* frame = NonClientFrameViewAsh::Get(window.get());
-  NonClientFrameViewAsh::Get(window.get())->GetHeaderView();
   frame->Layout();
 
   const int padding = FloatController::kFloatWindowPaddingDp;
@@ -270,36 +295,6 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(gfx::Point(padding, 1600 - shelf_size - padding),
             window->bounds().bottom_left());
-}
-
-// Tests that a floated window animates to and from overview.
-TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
-  std::unique_ptr<aura::Window> floated_window = CreateTestWindow();
-  std::unique_ptr<aura::Window> maximized_window = CreateTestWindow();
-
-  wm::ActivateWindow(floated_window.get());
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
-  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
-  WindowState::Get(maximized_window.get())->OnWMEvent(&maximize_event);
-
-  // Activate 'maximized_window'. If the other window was not floated, then it
-  // would be hidden behind the maximized window and not animate.
-  wm::ActivateWindow(maximized_window.get());
-
-  // Enter overview, both windows should animate when entering overview, since
-  // both are visible to the user.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  ToggleOverview();
-  EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
-
-  // Both windows should animate when exiting overview as well.
-  WaitForOverviewEnterAnimation();
-  ToggleOverview();
-  EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
 }
 
 }  // namespace ash

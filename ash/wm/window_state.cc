@@ -356,14 +356,6 @@ bool WindowState::IsUserPositionable() const {
   return window_util::IsWindowUserPositionable(window_);
 }
 
-bool WindowState::HasMaximumWidthOrHeight() const {
-  if (!window_->delegate())
-    return false;
-
-  const gfx::Size max_size = window_->delegate()->GetMaximumSize();
-  return max_size.width() || max_size.height();
-}
-
 bool WindowState::CanMaximize() const {
   bool can_maximize = (window_->GetProperty(aura::client::kResizeBehaviorKey) &
                        aura::client::kResizeBehaviorCanMaximize) != 0;
@@ -750,7 +742,6 @@ void WindowState::SetAndClearRestoreBounds() {
 WindowState::WindowState(aura::Window* window)
     : window_(window),
       bounds_changed_by_user_(false),
-      can_consume_system_keys_(false),
       unminimize_to_restore_bounds_(false),
       hide_shelf_when_fullscreen_(true),
       autohide_shelf_when_maximized_or_fullscreen_(false),

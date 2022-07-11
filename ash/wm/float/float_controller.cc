@@ -55,6 +55,13 @@ bool IsLandscapeOrientationForWindow(aura::Window* window) {
   return chromeos::IsLandscapeOrientation(orientation);
 }
 
+// Updates `window`'s bounds while in tablet mode.
+void UpdateWindowBoundsForTablet(aura::Window* window) {
+  WindowState* window_state = WindowState::Get(window);
+  DCHECK(window_state);
+  TabletModeWindowState::UpdateWindowPosition(window_state, /*animate=*/true);
+}
+
 }  // namespace
 
 FloatController::FloatController() = default;
@@ -164,9 +171,7 @@ void FloatController::OnDragCompleted(
                             : MagnetismCorner::kBottomRight;
   }
 
-  WindowState* window_state = WindowState::Get(float_window_);
-  DCHECK(window_state);
-  TabletModeWindowState::UpdateWindowPosition(window_state, /*animate=*/true);
+  UpdateWindowBoundsForTablet(float_window_);
 }
 
 void FloatController::OnWindowDestroying(aura::Window* window) {
@@ -258,9 +263,7 @@ void FloatController::MaybeUpdateWindowUIAndBoundsForTablet(
 
   // TODO(sophiewen): Update rounded corners and shadow.
 
-  WindowState* window_state = WindowState::Get(window);
-  DCHECK(window_state);
-  TabletModeWindowState::UpdateWindowPosition(window_state, /*animate=*/true);
+  UpdateWindowBoundsForTablet(window);
 }
 
 }  // namespace ash
