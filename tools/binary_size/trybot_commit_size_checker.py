@@ -192,7 +192,7 @@ def _ExtractForTestingSymbolsFromSingleMapping(mapping_path):
     proguard_mapping_lines = f.readlines()
     current_class_orig = None
     for line in proguard_mapping_lines:
-      if line.isspace():
+      if line.isspace() or '#' in line:
         continue
       if not line.startswith(' '):
         match = _PROGUARD_CLASS_MAPPING_RE.search(line)
