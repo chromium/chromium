@@ -8724,8 +8724,6 @@ bool Element::IsDocumentElement() const {
 }
 
 bool Element::IsReplacedElementRespectingCSSOverflow() const {
-  // TODO(khushalsagar): Add the following elements:
-  // 1) HTMLFrameOwnerElement
   // See https://github.com/w3c/csswg-drafts/issues/7144 for details on enabling
   // ink overflow for replaced elements.
   if (GetPseudoId() == kPseudoIdPageTransitionIncomingImage ||
@@ -8739,7 +8737,8 @@ bool Element::IsReplacedElementRespectingCSSOverflow() const {
          IsA<HTMLImageElement>(this) ||
          (IsA<SVGSVGElement>(this) &&
           To<SVGSVGElement>(this)->IsOutermostSVGSVGElement() &&
-          !IsDocumentElement());
+          !IsDocumentElement()) ||
+         IsA<HTMLFrameOwnerElement>(this);
 }
 
 const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {

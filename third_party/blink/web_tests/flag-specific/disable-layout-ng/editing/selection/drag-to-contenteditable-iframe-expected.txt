@@ -15,7 +15,7 @@ layer at (0,0) size 800x600
           LayoutListMarker {::marker} at (-18,0) size 7x19: bullet
           LayoutText {#text} at (0,0) size 288x19
             text run at (0,0) width 288: "Abe should be outside the frame and inside it."
-layer at (0,0) size 208x208
+layer at (0,0) size 208x208 clip at (4,4) size 200x200
   LayoutIFrame {IFRAME} at (0,0) size 208x208 [border: (4px solid #000000)]
     layer at (0,0) size 200x200
       LayoutView at (0,0) size 200x200

@@ -439,9 +439,14 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
   const auto* client = content->GetLayoutObject()->View();
   EXPECT_THAT(
       GetRasterInvalidationTracking()->Invalidations(),
-      UnorderedElementsAre(RasterInvalidationInfo{
-          client->Id(), client->DebugName(), gfx::Rect(0, 100, 100, 100),
-          PaintInvalidationReason::kIncremental}));
+      UnorderedElementsAre(
+          RasterInvalidationInfo{client->Id(), client->DebugName(),
+                                 gfx::Rect(0, 100, 100, 100),
+                                 PaintInvalidationReason::kIncremental},
+          RasterInvalidationInfo{client->PaintingLayer()->Id(),
+                                 client->PaintingLayer()->DebugName(),
+                                 gfx::Rect(0, 100, 100, 100),
+                                 PaintInvalidationReason::kIncremental}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
@@ -513,10 +518,16 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewGradientResize) {
   UpdateAllLifecyclePhasesForTest();
   // The iframe doesn't have anything visible by itself, so we only issue
   // raster invalidation for the frame contents.
-  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
-              UnorderedElementsAre(RasterInvalidationInfo{
-                  client->Id(), client->DebugName(), gfx::Rect(0, 0, 100, 200),
-                  PaintInvalidationReason::kBackground}));
+  EXPECT_THAT(
+      GetRasterInvalidationTracking()->Invalidations(),
+      UnorderedElementsAre(
+          RasterInvalidationInfo{client->Id(), client->DebugName(),
+                                 gfx::Rect(0, 0, 100, 200),
+                                 PaintInvalidationReason::kBackground},
+          RasterInvalidationInfo{client->PaintingLayer()->Id(),
+                                 client->PaintingLayer()->DebugName(),
+                                 gfx::Rect(0, 100, 100, 100),
+                                 PaintInvalidationReason::kIncremental}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 

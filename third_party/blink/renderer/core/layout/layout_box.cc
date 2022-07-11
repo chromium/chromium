@@ -2906,7 +2906,10 @@ PhysicalRect LayoutBox::OverflowClipRect(
 
     // Videos need to be pre-snapped so that they line up with the
     // display_rect and can enable hardware overlays.
-    if (IsVideo())
+    // Embedded objects are always sized to fit the content rect, but they
+    // could overflow by 1px due to pre-snapping. Adjust clip rect to
+    // match pre-snapped box as a special case.
+    if (IsVideo() || IsLayoutEmbeddedContent())
       clip_rect = LayoutReplaced::PreSnappedRectForPersistentSizing(clip_rect);
 
     if (HasNonVisibleOverflow()) {
