@@ -1236,8 +1236,13 @@ bool LayoutReplaced::RespectsCSSOverflow() const {
 }
 
 bool LayoutReplaced::ClipsToContentBox() const {
-  if (!RespectsCSSOverflow())
+  if (!RespectsCSSOverflow()) {
+    // If an svg is clipped, it is guaranteed to be clipped to the element's
+    // content box.
+    if (IsSVGRoot())
+      return GetOverflowClipAxes() == kOverflowClipBothAxis;
     return true;
+  }
 
   // TODO(khushalsagar): There can be more cases where the content clips to
   // content box. For instance, when padding is 0 and the reference box is the

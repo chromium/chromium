@@ -54,6 +54,17 @@ String OverflowForReplacedElementRules() {
                    IDR_UASTYLE_OVERFLOW_REPLACED_CSS)
              : "";
 }
+
+String OverflowForSVGRules() {
+  if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled())
+    return "";
+
+  return String(R"CSS(svg:not(:root) {
+    overflow: clip;
+    overflow-clip-margin: content-box;
+        })CSS");
+}
+
 }  // namespace
 
 CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
@@ -251,7 +262,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   // FIXME: We should assert that the sheet only styles SVG elements.
   if (element.IsSVGElement() && !svg_style_sheet_) {
     svg_style_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_SVG_CSS));
+        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_SVG_CSS) +
+                     OverflowForSVGRules());
     AddRulesToDefaultStyleSheets(svg_style_sheet_, NamespaceType::kSVG);
     changed_default_style = true;
   }

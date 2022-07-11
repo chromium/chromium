@@ -180,6 +180,7 @@
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -8724,8 +8725,7 @@ bool Element::IsDocumentElement() const {
 
 bool Element::IsReplacedElementRespectingCSSOverflow() const {
   // TODO(khushalsagar): Add the following elements:
-  // 1) SVGElement
-  // 2) HTMLFrameOwnerElement
+  // 1) HTMLFrameOwnerElement
   // See https://github.com/w3c/csswg-drafts/issues/7144 for details on enabling
   // ink overflow for replaced elements.
   if (GetPseudoId() == kPseudoIdPageTransitionIncomingImage ||
@@ -8736,7 +8736,10 @@ bool Element::IsReplacedElementRespectingCSSOverflow() const {
     return false;
 
   return IsA<HTMLVideoElement>(this) || IsA<HTMLCanvasElement>(this) ||
-         IsA<HTMLImageElement>(this);
+         IsA<HTMLImageElement>(this) ||
+         (IsA<SVGSVGElement>(this) &&
+          To<SVGSVGElement>(this)->IsOutermostSVGSVGElement() &&
+          !IsDocumentElement());
 }
 
 const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {

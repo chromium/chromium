@@ -103,8 +103,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     return local_to_border_box_transform_;
   }
 
-  bool ShouldApplyViewportClip() const;
-
   void RecalcVisualOverflow() override;
 
   bool HasNonIsolatedBlendingDescendants() const final;
@@ -118,12 +116,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   }
 
  private:
-  OverflowClipAxes ComputeOverflowClipAxes() const override {
-    NOT_DESTROYED();
-    if (ShouldApplyViewportClip())
-      return kOverflowClipBothAxis;
-    return LayoutReplaced::ComputeOverflowClipAxes();
-  }
+  OverflowClipAxes ComputeOverflowClipAxes() const override;
   LayoutRect ComputeContentsVisualOverflow() const;
 
   LayoutObjectChildList* VirtualChildren() override {

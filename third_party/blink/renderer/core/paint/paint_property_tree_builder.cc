@@ -1858,7 +1858,7 @@ static bool NeedsOverflowClipForReplacedContents(
   // <svg> may optionally allow overflow. If an overflow clip is required,
   // always create it without checking whether the actual content overflows.
   if (replaced.IsSVGRoot())
-    return To<LayoutSVGRoot>(replaced).ShouldApplyViewportClip();
+    return To<LayoutSVGRoot>(replaced).ClipsToContentBox();
 
   // A replaced element with border-radius always clips the content.
   if (replaced.StyleRef().HasBorderRadius())

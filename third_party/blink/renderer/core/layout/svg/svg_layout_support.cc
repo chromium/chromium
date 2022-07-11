@@ -149,7 +149,7 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
   }
 
   // Apply initial viewport clip.
-  if (svg_root.ShouldApplyViewportClip()) {
+  if (svg_root.ClipsToContentBox()) {
     PhysicalRect clip_rect(svg_root.OverflowClipRect(PhysicalOffset()));
     if (visual_rect_flags & kEdgeInclusive) {
       if (!result_rect.InclusiveIntersect(clip_rect))
