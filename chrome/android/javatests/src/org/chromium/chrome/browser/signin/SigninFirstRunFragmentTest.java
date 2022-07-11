@@ -708,7 +708,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
 
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
+        clickOnUmaDialogLinkAndWait();
 
         onView(withText(R.string.signin_fre_uma_dialog_title))
                 .inRoot(isDialog())
@@ -734,7 +734,7 @@ public class SigninFirstRunFragmentTest {
     public void testFragmentWhenDismissingUmaDialog() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
+        clickOnUmaDialogLinkAndWait();
 
         onView(withText(R.string.done)).perform(click());
 
@@ -746,7 +746,7 @@ public class SigninFirstRunFragmentTest {
     public void testDismissButtonWhenAllowCrashUploadTurnedOff() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
+        clickOnUmaDialogLinkAndWait();
         onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
         onView(withText(R.string.done)).perform(click());
 
@@ -761,11 +761,11 @@ public class SigninFirstRunFragmentTest {
     public void testUmaDialogSwitchIsOffWhenAllowCrashUploadWasTurnedOffBefore() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         launchActivityWithFragment();
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
+        clickOnUmaDialogLinkAndWait();
         onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isChecked())).perform(click());
         onView(withText(R.string.done)).perform(click());
 
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
+        clickOnUmaDialogLinkAndWait();
 
         onView(withId(R.id.fre_uma_dialog_switch))
                 .check(matches(not(isChecked())))
@@ -783,7 +783,7 @@ public class SigninFirstRunFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
-        onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
+        clickOnUmaDialogLinkAndWait();
         onView(withId(R.id.fre_uma_dialog_switch)).perform(click());
         onView(withText(R.string.done)).perform(click());
 
@@ -1150,6 +1150,15 @@ public class SigninFirstRunFragmentTest {
             signinProgressSpinner.setIndeterminateDrawable(new ColorDrawable(
                     SemanticColorUtils.getDefaultBgColor(mFragment.getContext())));
         });
+    }
+
+    /**
+     * The dialog does not open instantly, and if we do not wait we get a small percentage of
+     * flakes. See https://crbug.com/1343519.
+     */
+    private void clickOnUmaDialogLinkAndWait() {
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
+        ViewUtils.onViewWaiting(withText(R.string.done)).check(matches(isDisplayed()));
     }
 
     private ViewAction clickOnUmaDialogLink() {
