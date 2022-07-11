@@ -39,6 +39,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_paths.h"
@@ -51,6 +52,7 @@
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -776,6 +778,23 @@ class BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest
         password_manager::features::kEnablePasswordsAccountStorage);
   }
 
+  void ClearSiteDataAndWait(
+      const url::Origin& origin,
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+    base::RunLoop loop;
+    content::ClearSiteData(base::BindRepeating(
+                               [](content::BrowserContext* browser_context) {
+                                 return browser_context;
+                               },
+                               base::Unretained(GetBrowser()->profile())),
+                           origin,
+                           /*clear_cookies=*/true, /*clear_storage=*/true,
+                           /*clear_cache=*/true,
+                           /*avoid_closing_connections=*/true,
+                           cookie_partition_key, loop.QuitClosure());
+    loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -848,6 +867,63 @@ IN_PROC_BROWSER_TEST_F(
   }
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
       prefs, &sync_service));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest,
+    ClearSiteData) {
+  PrefService* prefs = GetBrowser()->profile()->GetPrefs();
+
+  CoreAccountInfo account;
+  account.email = "name@account.com";
+  account.gaia = "name";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+
+  syncer::TestSyncService sync_service;
+  sync_service.SetHasSyncConsent(false);
+  sync_service.SetAccountInfo(account);
+  ASSERT_EQ(sync_service.GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+
+  const GURL kFirstPartyURL("https://google.com");
+  const GURL kCrossSiteURL("https://example.com");
+
+  const struct {
+    const url::Origin origin;
+    const absl::optional<net::CookiePartitionKey> cookie_partition_key;
+    bool expects_opted_in;
+  } test_cases[] = {
+      {
+          url::Origin::Create(kFirstPartyURL),
+          absl::nullopt,
+          false,
+      },
+      {
+          url::Origin::Create(kCrossSiteURL),
+          absl::nullopt,
+          true,
+      },
+      {
+          url::Origin::Create(kFirstPartyURL),
+          net::CookiePartitionKey::FromURLForTesting(kFirstPartyURL),
+          false,
+      },
+      {
+          url::Origin::Create(kFirstPartyURL),
+          net::CookiePartitionKey::FromURLForTesting(kCrossSiteURL),
+          true,
+      },
+  };
+  for (const auto& test_case : test_cases) {
+    password_manager::features_util::OptInToAccountStorage(prefs,
+                                                           &sync_service);
+
+    ClearSiteDataAndWait(test_case.origin, test_case.cookie_partition_key);
+
+    ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
+                  prefs, &sync_service),
+              test_case.expects_opted_in);
+  }
 }
 
 // Parameterized to run tests for different deletion time ranges.

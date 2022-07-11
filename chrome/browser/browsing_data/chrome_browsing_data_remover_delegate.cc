@@ -1101,7 +1101,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // Remove omnibox zero-suggest cache results and Search Prefetch cached
   // results only when their respective URLs are in the filter.
   if ((remove_mask & (content::BrowsingDataRemover::DATA_TYPE_CACHE |
-                      content::BrowsingDataRemover::DATA_TYPE_COOKIES))) {
+                      content::BrowsingDataRemover::DATA_TYPE_COOKIES)) &&
+      !filter_builder->IsCrossSiteClearSiteData()) {
     // If there is no template service or DSE, clear the caches.
     bool should_clear_zero_suggest_and_session_token = true;
     bool should_clear_search_prefetch = true;
