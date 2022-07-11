@@ -65,9 +65,7 @@
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     _popupView = std::move(popupView);
-    if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
-      self.pedalExtractor = [[PedalSectionExtractor alloc] init];
-    }
+    self.pedalExtractor = [[PedalSectionExtractor alloc] init];
   }
   return self;
 }
@@ -158,14 +156,16 @@
         [[OmniboxPopupViewController alloc] init];
     popupViewController.imageRetriever = self.mediator;
     popupViewController.faviconRetriever = self.mediator;
-    popupViewController.delegate = self.mediator;
+    popupViewController.delegate = self.pedalExtractor;
     popupViewController.dataSource = self.mediator;
     popupViewController.incognito = isIncognito;
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:popupViewController
                      forProtocol:@protocol(OmniboxSuggestionCommands)];
 
-    self.mediator.consumer = popupViewController;
+    self.mediator.consumer = self.pedalExtractor;
+    self.pedalExtractor.dataSink = popupViewController;
+    self.pedalExtractor.delegate = self.mediator;
 
     self.popupViewController = popupViewController;
   }

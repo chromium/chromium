@@ -37,9 +37,6 @@ class OmniboxPopupMediatorDelegate {
   virtual void OnMatchSelectedForAppending(const AutocompleteMatch& match) = 0;
   virtual void OnMatchSelectedForDeletion(const AutocompleteMatch& match) = 0;
   virtual void OnScroll() = 0;
-  virtual void OnHighlightCanceled() = 0;
-
-  virtual void OnMatchHighlighted(size_t row) = 0;
 };
 
 @interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,

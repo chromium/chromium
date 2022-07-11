@@ -51,7 +51,6 @@ using base::UserMetricsAction;
 
 OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                WebOmniboxEditController* controller,
-                               id<OmniboxLeftImageConsumer> left_image_consumer,
                                ChromeBrowserState* browser_state,
                                id<OmniboxCommands> omnibox_focuser)
     : OmniboxView(controller,
@@ -61,7 +60,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                       : nullptr),
       field_(field),
       controller_(controller),
-      left_image_consumer_(left_image_consumer),
       omnibox_focuser_(omnibox_focuser),
       ignore_popup_updates_(false),
       popup_provider_(nullptr) {
@@ -713,20 +711,6 @@ int OmniboxViewIOS::GetOmniboxTextLength() const {
 }
 
 #pragma mark - OmniboxPopupViewSuggestionsDelegate
-
-void OmniboxViewIOS::OnSelectedMatchImageChanged(
-    bool has_match,
-    AutocompleteMatchType::Type match_type,
-    absl::optional<SuggestionAnswer::AnswerType> answer_type,
-    GURL favicon_url) {
-  if (has_match) {
-    [left_image_consumer_ setLeftImageForAutocompleteType:match_type
-                                               answerType:answer_type
-                                               faviconURL:favicon_url];
-  } else {
-    [left_image_consumer_ setDefaultLeftImage];
-  }
-}
 
 void OmniboxViewIOS::OnResultsChanged(const AutocompleteResult& result) {
   if (ignore_popup_updates_) {

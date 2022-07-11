@@ -207,6 +207,11 @@ UIColor* DimColorIncognito() {
   }
 }
 
+- (NSAttributedString*)omniboxPreviewText {
+  return [[NSAttributedString alloc]
+      initWithString:base::SysUTF16ToNSString(_match.fill_into_edit)];
+}
+
 // The primary purpose of this list is to omit the "what you typed" types, since
 // those are simply the input in the omnibox and copying the text back to the
 // omnibox would be a noop. However, this list also omits other types that are
@@ -247,6 +252,19 @@ UIColor* DimColorIncognito() {
 
 - (id<OmniboxPedal>)pedal {
   return self.pedalData;
+}
+
+- (UIImage*)matchTypeIcon {
+  return GetOmniboxSuggestionIconForAutocompleteMatchType(
+      _match.type, /* is_starred */ false);
+}
+
+- (BOOL)isMatchTypeSearch {
+  return AutocompleteMatch::IsSearchType(_match.type);
+}
+
+- (CrURL*)destinationUrl {
+  return [[CrURL alloc] initWithGURL:_match.destination_url];
 }
 
 #pragma mark tail suggest

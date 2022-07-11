@@ -7,10 +7,12 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -88,33 +90,31 @@
 
 #pragma mark - PopupMatchPreviewDelegate
 
-- (void)setPreviewMatchText:(NSAttributedString*)text image:(id)image {
-  // TODO: image?
+- (void)setPreviewSuggestion:(id<AutocompleteSuggestion>)suggestion
+               isFirstUpdate:(BOOL)isFirstUpdate {
+  // On first update, don't set the preview text, as omnibox will automatically
+  // receive the suggestion as inline autocomplete through OmniboxViewIOS.
+  if (!isFirstUpdate) {
+    [self.consumer updateText:suggestion.omniboxPreviewText];
+  }
 
-  [self.consumer updateText:text];
-}
+  // When no suggestion is previewed, just show the default image.
+  if (!suggestion) {
+    [self setDefaultLeftImage];
+    return;
+  }
 
-#pragma mark - OmniboxLeftImageConsumer
-
-- (void)setLeftImageForAutocompleteType:(AutocompleteMatchType::Type)matchType
-                             answerType:
-                                 (absl::optional<SuggestionAnswer::AnswerType>)
-                                     answerType
-                             faviconURL:(GURL)faviconURL {
-  UIImage* image = GetOmniboxSuggestionIconForAutocompleteMatchType(
-      matchType, /* is_starred */ false);
-  [self.consumer updateAutocompleteIcon:image];
-
+  // Set the suggestion image, or load it if necessary.
+  [self.consumer updateAutocompleteIcon:suggestion.matchTypeIcon];
   __weak OmniboxMediator* weakSelf = self;
-
-  if (AutocompleteMatch::IsSearchType(matchType)) {
+  if ([suggestion isMatchTypeSearch]) {
     // Show Default Search Engine favicon.
     [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
       [weakSelf.consumer updateAutocompleteIcon:image];
     }];
   } else {
     // Show favicon.
-    [self loadFaviconByPageURL:faviconURL
+    [self loadFaviconByPageURL:suggestion.destinationUrl.gurl
                     completion:^(UIImage* image) {
                       [weakSelf.consumer updateAutocompleteIcon:image];
                     }];

@@ -15,18 +15,6 @@ enum class WindowOpenDisposition;
 
 class OmniboxPopupViewSuggestionsDelegate {
  public:
-  // Called whenever the selected image has changed.
-  // has_match indicates if there is a selected match. When there's no selected
-  // match (for example, on NTP with no zero suggest, there's no default match),
-  // values in match_type, answer_type, and favicon_url are invalid and a
-  // default image should be used instead. Current UI should only use
-  // `matchType`; new UI may use `answerType` and `faviconURL` if available.
-  virtual void OnSelectedMatchImageChanged(
-      bool has_match,
-      AutocompleteMatchType::Type match_type,
-      absl::optional<SuggestionAnswer::AnswerType> answer_type,
-      GURL favicon_url) = 0;
-
   // Called when results are updated.
   virtual void OnResultsChanged(const AutocompleteResult& result) = 0;
   // Called whenever the popup is scrolled.

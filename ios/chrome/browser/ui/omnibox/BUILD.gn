@@ -7,7 +7,6 @@ source_set("omnibox") {
 
   sources = [
     "location_bar_delegate.h",
-    "omnibox_left_image_consumer.h",
     "web_omnibox_edit_controller.cc",
     "web_omnibox_edit_controller.h",
   ]
@@ -175,6 +174,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/omnibox/popup",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_ui_protocols",
     "//ios/chrome/browser/ui/orchestrator:orchestrator",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",

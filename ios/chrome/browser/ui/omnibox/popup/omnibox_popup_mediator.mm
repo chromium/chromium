@@ -145,13 +145,11 @@ const CGFloat kOmniboxIconSize = 16;
 
 - (void)autocompleteResultConsumerCancelledHighlighting:
     (id<AutocompleteResultConsumer>)sender {
-  _delegate->OnHighlightCanceled();
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
                    didHighlightRow:(NSUInteger)row
                          inSection:(NSUInteger)section {
-  _delegate->OnMatchHighlighted(row);
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender

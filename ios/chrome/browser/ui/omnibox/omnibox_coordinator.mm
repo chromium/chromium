@@ -110,8 +110,8 @@
   id<OmniboxCommands> focuser =
       static_cast<id<OmniboxCommands>>(self.browser->GetCommandDispatcher());
   _editView = std::make_unique<OmniboxViewIOS>(
-      self.textField, self.editController, self.mediator,
-      self.browser->GetBrowserState(), focuser);
+      self.textField, self.editController, self.browser->GetBrowserState(),
+      focuser);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
@@ -215,13 +215,9 @@
   self.returnDelegate = [[ForwardingReturnDelegate alloc] init];
   self.returnDelegate.acceptDelegate = _editView.get();
 
-  if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
-    coordinator.pedalExtractor.matchPreviewDelegate = self.mediator;
-    coordinator.pedalExtractor.acceptDelegate = self.returnDelegate;
-    self.viewController.returnKeyDelegate = coordinator.pedalExtractor;
-  } else {
-    self.viewController.returnKeyDelegate = self.returnDelegate;
-  }
+  coordinator.pedalExtractor.matchPreviewDelegate = self.mediator;
+  coordinator.pedalExtractor.acceptDelegate = self.returnDelegate;
+  self.viewController.returnKeyDelegate = coordinator.pedalExtractor;
 
   return coordinator;
 }

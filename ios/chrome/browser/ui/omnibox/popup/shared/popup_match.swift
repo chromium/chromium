@@ -82,6 +82,10 @@ extension PopupMatch {
     let numberOfLines: Int
     let isTailSuggestion = false
     let commonPrefix = ""
+    let matchTypeIcon: UIImage? = nil
+    let isMatchTypeSearch = false
+    let omniboxPreviewText: NSAttributedString? = nil
+    let destinationUrl: CrURL? = nil
 
     init(
       text: String, detailText: String? = nil, isAppendable: Bool = false, isTabMatch: Bool = false,

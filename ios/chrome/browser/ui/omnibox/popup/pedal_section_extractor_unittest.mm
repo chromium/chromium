@@ -29,6 +29,11 @@ void Wait(NSTimeInterval timeout) {
 
 class PedalSectionExtractorTest : public PlatformTest {
  protected:
+  void ExpectPreviewSuggestion(id suggestion, BOOL is_first_update) {
+    [[preview_delegate_ expect] setPreviewSuggestion:suggestion
+                                       isFirstUpdate:is_first_update];
+  }
+
   void SetUp() override {
     PlatformTest::SetUp();
     extractor_ = [[PedalSectionExtractor alloc] init];
@@ -60,6 +65,7 @@ TEST_F(PedalSectionExtractorTest, ForwardsWhenNoPedals) {
       [AutocompleteSuggestionGroupImpl groupWithTitle:@""
                                           suggestions:@[ mockSuggestion ]];
 
+  ExpectPreviewSuggestion(mockSuggestion, YES);
   [[data_sink_ expect] updateMatches:@[ group ] preselectedMatchGroupIndex:0];
 
   [extractor_ updateMatches:@[ group ] preselectedMatchGroupIndex:0];
@@ -101,6 +107,7 @@ TEST_F(PedalSectionExtractorTest, ExtractsPedalsIntoSeparateSection) {
   [[[data_sink_ stub] andDo:verifyGroups] updateMatches:[OCMArg any]
                              preselectedMatchGroupIndex:1];
 
+  ExpectPreviewSuggestion(mockSuggestionNoPedal, YES);
   [extractor_ updateMatches:@[ group ] preselectedMatchGroupIndex:0];
 
   [data_sink_ verify];
@@ -126,6 +133,8 @@ TEST_F(PedalSectionExtractorTest, Debounce) {
   // Showing a result with pedals passes a pedal to the sink.
 
   [[data_sink_ expect] updateMatches:[OCMArg any] preselectedMatchGroupIndex:1];
+  ExpectPreviewSuggestion(mockSuggestionNoPedal, YES);
+
   [extractor_ updateMatches:@[ group ] preselectedMatchGroupIndex:0];
   [data_sink_ verify];
 
@@ -136,6 +145,7 @@ TEST_F(PedalSectionExtractorTest, Debounce) {
 
   // Updating with no pedals continues to pass a pedal to the sink.
 
+  ExpectPreviewSuggestion(mockSuggestionNoPedal, YES);
   [[data_sink_ expect] updateMatches:[OCMArg any] preselectedMatchGroupIndex:1];
   [extractor_ updateMatches:@[ groupNoPedals ] preselectedMatchGroupIndex:0];
 
@@ -152,6 +162,7 @@ TEST_F(PedalSectionExtractorTest, Debounce) {
   // Now updating from no pedals to no pedals, nothing happens
   [[data_sink_ expect] updateMatches:@[ groupNoPedals ]
           preselectedMatchGroupIndex:0];
+  ExpectPreviewSuggestion(mockSuggestionNoPedal, YES);
   [extractor_ updateMatches:@[ groupNoPedals ] preselectedMatchGroupIndex:0];
 
   [data_sink_ verify];
@@ -183,6 +194,7 @@ TEST_F(PedalSectionExtractorTest, DontDebounceEmptyList) {
   // Showing a result with pedals passes a pedal to the sink.
 
   [[data_sink_ expect] updateMatches:[OCMArg any] preselectedMatchGroupIndex:1];
+  ExpectPreviewSuggestion(mockSuggestionNoPedal, YES);
   [extractor_ updateMatches:@[ group ] preselectedMatchGroupIndex:0];
   [data_sink_ verify];
 
@@ -194,6 +206,7 @@ TEST_F(PedalSectionExtractorTest, DontDebounceEmptyList) {
   // Updating with no pedals continues to pass a pedal to the sink.
 
   [[data_sink_ expect] updateMatches:[OCMArg any] preselectedMatchGroupIndex:1];
+  ExpectPreviewSuggestion(mockSuggestionNoPedal, YES);
   [extractor_ updateMatches:@[ groupNoPedals ] preselectedMatchGroupIndex:0];
 
   [data_sink_ verify];
@@ -209,6 +222,7 @@ TEST_F(PedalSectionExtractorTest, DontDebounceEmptyList) {
   // Now updating from no pedals to no suggestions at all, the update goes
   // through.
   [[data_sink_ expect] updateMatches:@[] preselectedMatchGroupIndex:0];
+  ExpectPreviewSuggestion(nil, YES);
   [extractor_ updateMatches:@[] preselectedMatchGroupIndex:0];
 
   [data_sink_ verify];
@@ -242,6 +256,18 @@ TEST_F(PedalSectionExtractorTest, ForwardsIrrelevantMethods) {
 // Tests in this class start with a pedal and a regular match.
 class PedalSectionExtractorHighlightTest : public PedalSectionExtractorTest {
  protected:
+  void ExpectPedalPreviewSuggestion(BOOL is_first_update) {
+    void (^verifyPreviewMatch)(NSInvocation*) = ^(NSInvocation* invocation) {
+      __unsafe_unretained id<AutocompleteSuggestion> match = nil;
+      [invocation getArgument:&match atIndex:2];
+      EXPECT_TRUE([match.text.string isEqualToString:@"pedal title"]);
+    };
+
+    [[[preview_delegate_ expect] andDo:verifyPreviewMatch]
+        setPreviewSuggestion:[OCMArg any]
+               isFirstUpdate:is_first_update];
+  }
+
   void SetUp() override {
     PedalSectionExtractorTest::SetUp();
 
@@ -249,65 +275,61 @@ class PedalSectionExtractorHighlightTest : public PedalSectionExtractorTest {
         [OCMockObject mockForProtocol:@protocol(OmniboxReturnDelegate)];
     extractor_.acceptDelegate = return_delegate_;
 
-    id mockSuggestionNoPedal =
+    mock_suggestion_no_pedal_ =
         [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
-    [[[mockSuggestionNoPedal stub] andReturn:nil] pedal];
+    [[[mock_suggestion_no_pedal_ stub] andReturn:nil] pedal];
 
     mock_pedal_ = [OCMockObject mockForProtocol:@protocol(OmniboxPedal)];
     [[[mock_pedal_ stub] andReturn:@"pedal title"] title];
-    id mockSuggestionWithPedal =
+    mock_suggestion_with_pedal_ =
         [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
-    [[[mockSuggestionWithPedal stub] andReturn:mock_pedal_] pedal];
+    [[[mock_suggestion_with_pedal_ stub] andReturn:mock_pedal_] pedal];
 
     AutocompleteSuggestionGroupImpl* group = [AutocompleteSuggestionGroupImpl
         groupWithTitle:@""
-           suggestions:@[ mockSuggestionNoPedal, mockSuggestionWithPedal ]];
+           suggestions:@[
+             mock_suggestion_no_pedal_, mock_suggestion_with_pedal_
+           ]];
 
     [[data_sink_ expect] updateMatches:[OCMArg any]
             preselectedMatchGroupIndex:1];
+    ExpectPreviewSuggestion(mock_suggestion_no_pedal_, YES);
     [extractor_ updateMatches:@[ group ] preselectedMatchGroupIndex:0];
+    [preview_delegate_ verify];
   }
 
   OCMockObject<OmniboxPedal>* mock_pedal_;
   OCMockObject<OmniboxReturnDelegate>* return_delegate_;
+  id mock_suggestion_no_pedal_;
+  id mock_suggestion_with_pedal_;
 };
 
-// Highlighting is forwarded, except for when pedal is highlighted, in which
-// case reproduce the highlighting side effects and pretend there's no
-// highlight.
-TEST_F(PedalSectionExtractorHighlightTest, highlightForwarding) {
+// Test highlighting: highlighting sets the preview correctly, even for pedals.
+TEST_F(PedalSectionExtractorHighlightTest, highlightsPedalsAndSuggestions) {
   // When the first suggestion is highlighted in the popup, pretend there's no
   // pedal section at index 0.
-  [[delegate_ expect] autocompleteResultConsumer:extractor_
-                                 didHighlightRow:0
-                                       inSection:0];
+  ExpectPreviewSuggestion(mock_suggestion_no_pedal_, NO);
   [extractor_ autocompleteResultConsumer:nil didHighlightRow:0 inSection:1];
-  [delegate_ verify];
+  [preview_delegate_ verify];
 
   // Same for second suggestion
-  [[delegate_ expect] autocompleteResultConsumer:extractor_
-                                 didHighlightRow:1
-                                       inSection:0];
+  ExpectPreviewSuggestion(mock_suggestion_with_pedal_, NO);
   [extractor_ autocompleteResultConsumer:nil didHighlightRow:1 inSection:1];
-  [delegate_ verify];
+  [preview_delegate_ verify];
 
   // When the pedal is highlighted in the popup, pretend the highlighting has
   // went away. Then fake the highlighting by updating the match preview.
-  [[preview_delegate_ expect]
-      setPreviewMatchText:[[NSAttributedString alloc]
-                              initWithString:@"pedal title"]
-                    image:nil];
+  ExpectPedalPreviewSuggestion(NO);
   [[delegate_ expect]
       autocompleteResultConsumerCancelledHighlighting:extractor_];
   [extractor_ autocompleteResultConsumer:nil didHighlightRow:0 inSection:0];
-  [delegate_ verify];
   [preview_delegate_ verify];
 
   // When the highlighting is cancelled, forward this.
+  ExpectPreviewSuggestion(nil, NO);
   [[delegate_ expect]
       autocompleteResultConsumerCancelledHighlighting:extractor_];
   [extractor_ autocompleteResultConsumerCancelledHighlighting:extractor_];
-  [delegate_ verify];
 }
 
 TEST_F(PedalSectionExtractorHighlightTest, ForwardsTrailingButton) {
@@ -330,7 +352,7 @@ TEST_F(PedalSectionExtractorHighlightTest, ForwardsDeletion) {
   [delegate_ verify];
 }
 
-// Return button is forwarded, unless a pedal is selected.
+// Return button is equivalent to selection, unless a pedal is selected.
 // When a pedal is selected, it's immediately executed.
 TEST_F(PedalSectionExtractorHighlightTest, ReturnButton) {
   __block BOOL pedalTriggered = NO;
@@ -341,33 +363,32 @@ TEST_F(PedalSectionExtractorHighlightTest, ReturnButton) {
   [[[mock_pedal_ stub] andReturn:pedalBlock] action];
 
   // When the first suggestion is highlighted in the popup, and return is
-  // pressed, the return is forwarded and the pedal is not triggered.
-  [[delegate_ expect] autocompleteResultConsumer:extractor_
-                                 didHighlightRow:0
-                                       inSection:0];
+  // pressed, the delegate receives a selection event and the pedal is not
+  // triggered.
+  ExpectPreviewSuggestion(mock_suggestion_no_pedal_, NO);
   [extractor_ autocompleteResultConsumer:nil didHighlightRow:0 inSection:1];
-  [[return_delegate_ expect] omniboxReturnPressed:nil];
+  [[delegate_ expect] autocompleteResultConsumer:[OCMArg any]
+                                    didSelectRow:0
+                                       inSection:0];
   [extractor_ omniboxReturnPressed:nil];
   [delegate_ verify];
   [return_delegate_ verify];
   EXPECT_EQ(pedalTriggered, NO);
 
   // Same for second suggestion
-  [[delegate_ expect] autocompleteResultConsumer:extractor_
-                                 didHighlightRow:1
+  ExpectPreviewSuggestion(mock_suggestion_with_pedal_, NO);
+  [[delegate_ expect] autocompleteResultConsumer:[OCMArg any]
+                                    didSelectRow:1
                                        inSection:0];
   [extractor_ autocompleteResultConsumer:nil didHighlightRow:1 inSection:1];
-  [[return_delegate_ expect] omniboxReturnPressed:nil];
   [extractor_ omniboxReturnPressed:nil];
   [delegate_ verify];
   [return_delegate_ verify];
+  [preview_delegate_ verify];
   EXPECT_EQ(pedalTriggered, NO);
 
   // Highlight the pedal
-  [[preview_delegate_ expect]
-      setPreviewMatchText:[[NSAttributedString alloc]
-                              initWithString:@"pedal title"]
-                    image:nil];
+  ExpectPedalPreviewSuggestion(NO);
   [[delegate_ expect]
       autocompleteResultConsumerCancelledHighlighting:extractor_];
   [extractor_ autocompleteResultConsumer:nil didHighlightRow:0 inSection:0];
@@ -375,6 +396,7 @@ TEST_F(PedalSectionExtractorHighlightTest, ReturnButton) {
   [preview_delegate_ verify];
 
   // Cancel highlighting and hit return. This should be forwarded.
+  ExpectPreviewSuggestion(nil, NO);
   [[delegate_ expect]
       autocompleteResultConsumerCancelledHighlighting:extractor_];
   [extractor_ autocompleteResultConsumerCancelledHighlighting:extractor_];
@@ -385,10 +407,7 @@ TEST_F(PedalSectionExtractorHighlightTest, ReturnButton) {
   EXPECT_EQ(pedalTriggered, NO);
 
   // Highlight the pedal again.
-  [[preview_delegate_ expect]
-      setPreviewMatchText:[[NSAttributedString alloc]
-                              initWithString:@"pedal title"]
-                    image:nil];
+  ExpectPedalPreviewSuggestion(NO);
   [[delegate_ expect]
       autocompleteResultConsumerCancelledHighlighting:extractor_];
   [extractor_ autocompleteResultConsumer:nil didHighlightRow:0 inSection:0];

@@ -49,40 +49,10 @@ OmniboxPopupViewIOS::~OmniboxPopupViewIOS() {
   edit_model_->set_popup_view(nullptr);
 }
 
-// Set left image to globe or magnifying glass depending on which autocomplete
-// option is highlighted.
-void OmniboxPopupViewIOS::UpdateEditViewIcon() {
-  const AutocompleteResult& result = model()->result();
-
-  // Use default icon as a fallback
-  if (model()->GetPopupSelection().line == OmniboxPopupSelection::kNoMatch) {
-    delegate_->OnSelectedMatchImageChanged(/*has_match=*/false,
-                                           AutocompleteMatchType::NUM_TYPES,
-                                           absl::nullopt, GURL());
-    return;
-  }
-
-  const AutocompleteMatch& match =
-      result.match_at(model()->GetPopupSelection().line);
-
-  absl::optional<SuggestionAnswer::AnswerType> optAnswerType = absl::nullopt;
-  if (match.answer && match.answer->type() > 0 &&
-      match.answer->type() <
-          SuggestionAnswer::AnswerType::ANSWER_TYPE_TOTAL_COUNT) {
-    optAnswerType =
-        static_cast<SuggestionAnswer::AnswerType>(match.answer->type());
-  }
-  delegate_->OnSelectedMatchImageChanged(/*has_match=*/true, match.type,
-                                         optAnswerType, match.destination_url);
-}
-
 void OmniboxPopupViewIOS::UpdatePopupAppearance() {
   const AutocompleteResult& result = model()->result();
 
   [mediator_ updateWithResults:result];
-  if ([mediator_ isOpen]) {
-    UpdateEditViewIcon();
-  }
 
   delegate_->OnResultsChanged(result);
 }
@@ -114,18 +84,6 @@ void OmniboxPopupViewIOS::SetSemanticContentAttribute(
 
 bool OmniboxPopupViewIOS::IsStarredMatch(const AutocompleteMatch& match) const {
   return edit_model_->IsStarredMatch(match);
-}
-
-void OmniboxPopupViewIOS::OnHighlightCanceled() {
-  model()->SetPopupSelection(
-      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), true, true);
-}
-
-void OmniboxPopupViewIOS::OnMatchHighlighted(size_t row) {
-  model()->SetPopupSelection(OmniboxPopupSelection(row), false, true);
-  if ([mediator_ isOpen]) {
-    UpdateEditViewIcon();
-  }
 }
 
 void OmniboxPopupViewIOS::OnMatchSelected(

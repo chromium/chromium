@@ -34,6 +34,9 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* originalResult;
 @property(nonatomic, assign) NSInteger highlightedPedalIndex;
+// Currently highlighted index path, if any.
+// This is index path in `consumer` numeration, not in `originalResult` one.
+@property(nonatomic, assign) NSIndexPath* highlightedIndexPath;
 
 @end
 
@@ -53,7 +56,17 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
     preselectedMatchGroupIndex:(NSInteger)groupIndex {
   NSMutableArray* extractedPedals = [[NSMutableArray alloc] init];
   self.highlightedPedalIndex = NSNotFound;
+  self.highlightedIndexPath = nil;
   self.originalResult = result;
+
+  if (result.count > 0 && result[groupIndex].suggestions.count > 0) {
+    id<AutocompleteSuggestion> preselectedSuggestion =
+        result[groupIndex].suggestions[0];
+    [self.matchPreviewDelegate setPreviewSuggestion:preselectedSuggestion
+                                      isFirstUpdate:YES];
+  } else {
+    [self.matchPreviewDelegate setPreviewSuggestion:nil isFirstUpdate:YES];
+  }
 
   NSInteger totalSuggestionCount = 0;
   for (id<AutocompleteSuggestionGroup> group in result) {
@@ -110,22 +123,23 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 - (void)autocompleteResultConsumerCancelledHighlighting:
     (id<AutocompleteResultConsumer>)sender {
   self.highlightedPedalIndex = NSNotFound;
+  self.highlightedIndexPath = nil;
   [self.delegate autocompleteResultConsumerCancelledHighlighting:self];
+  [self.matchPreviewDelegate setPreviewSuggestion:nil isFirstUpdate:NO];
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
                    didHighlightRow:(NSUInteger)row
                          inSection:(NSUInteger)section {
+  self.highlightedIndexPath = [NSIndexPath indexPathForRow:row
+                                                 inSection:section];
   if (self.extractedPedals.count > 0) {
     if (section == 0) {
-      id<OmniboxPedal> pedal = self.extractedPedals[row];
       [self.delegate autocompleteResultConsumerCancelledHighlighting:self];
-
       [self.matchPreviewDelegate
-          setPreviewMatchText:[[NSAttributedString alloc]
-                                  initWithString:pedal.title]
-                        image:nil];
-
+          setPreviewSuggestion:[[PedalSuggestionWrapper alloc]
+                                   initWithPedal:self.extractedPedals[row]]
+                 isFirstUpdate:NO];
       self.highlightedPedalIndex = row;
       return;
     } else {
@@ -134,9 +148,9 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
     }
   }
 
-  [self.delegate autocompleteResultConsumer:self
-                            didHighlightRow:row
-                                  inSection:section];
+  id<AutocompleteSuggestion> match =
+      self.originalResult[section].suggestions[row];
+  [self.matchPreviewDelegate setPreviewSuggestion:match isFirstUpdate:NO];
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
@@ -210,6 +224,14 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
     if (pedal.action) {
       pedal.action();
     }
+    return;
+  }
+
+  if (self.highlightedIndexPath) {
+    // Pretend that the consumer actually selected the highlighted row.
+    [self autocompleteResultConsumer:nil
+                        didSelectRow:self.highlightedIndexPath.row
+                           inSection:self.highlightedIndexPath.section];
     return;
   }
 

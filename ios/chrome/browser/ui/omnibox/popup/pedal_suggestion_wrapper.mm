@@ -77,4 +77,20 @@
   return self.innerPedal;
 }
 
+- (UIImage*)matchTypeIcon {
+  return nil;
+}
+
+- (BOOL)isMatchTypeSearch {
+  return true;
+}
+
+- (CrURL*)destinationUrl {
+  return nil;
+}
+
+- (NSAttributedString*)omniboxPreviewText {
+  return self.text;
+}
+
 @end

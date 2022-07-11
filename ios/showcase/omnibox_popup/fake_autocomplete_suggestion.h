@@ -28,6 +28,11 @@
 @property(nonatomic) BOOL isTailSuggestion;
 @property(nonatomic, readonly) NSString* commonPrefix;
 
+@property(nonatomic) NSAttributedString* omniboxPreviewText;
+@property(nonatomic) UIImage* matchTypeIcon;
+@property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
+@property(nonatomic) CrURL* destinationUrl;
+
 // Simple suggestion with text.
 + (instancetype)simpleSuggestion;
 

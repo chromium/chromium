@@ -9,6 +9,7 @@
 
 @protocol OmniboxIcon;
 @protocol OmniboxPedal;
+@class CrURL;
 
 // Represents an autocomplete suggestion in UI.
 @protocol AutocompleteSuggestion <NSObject>
@@ -33,9 +34,22 @@
 // Suggested number of lines to format `detailText`.
 @property(nonatomic, readonly) NSInteger numberOfLines;
 
+// Text to use in the omnibox when the suggestion is highlighted.
+// Effectively an accessor for fill_into_edit.
+@property(nonatomic, readonly) NSAttributedString* omniboxPreviewText;
+
 @property(nonatomic, readonly) id<OmniboxIcon> icon;
 
 @property(nonatomic, readonly) id<OmniboxPedal, OmniboxIcon> pedal;
+
+// Icon corresponding to the suggestion's autocomplete match type, e.g.
+// History, Search, or Stock.
+// Ignores `starred` status of the suggestion.
+@property(nonatomic, readonly) UIImage* matchTypeIcon;
+// Whether this is a search suggestion (as opposed to URL suggestion)
+@property(nonatomic, readonly, getter=isMatchTypeSearch) BOOL matchTypeSearch;
+// For URL suggestions, the URL that the match represents.
+@property(nonatomic, readonly) CrURL* destinationUrl;
 
 #pragma mark tail suggest
 

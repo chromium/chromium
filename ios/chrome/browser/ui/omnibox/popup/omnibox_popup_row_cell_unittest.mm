@@ -29,6 +29,10 @@
 @property(nonatomic, assign) BOOL isTailSuggestion;
 @property(nonatomic, assign) NSString* commonPrefix;
 @property(nonatomic, assign) id<OmniboxPedal, OmniboxIcon> pedal;
+@property(nonatomic, strong) NSAttributedString* omniboxPreviewText;
+@property(nonatomic, strong) UIImage* matchTypeIcon;
+@property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
+@property(nonatomic, strong) CrURL* destinationUrl;
 @end
 
 @implementation FakeAutocompleteMatch
