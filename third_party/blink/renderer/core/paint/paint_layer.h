@@ -215,8 +215,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* FirstChild() const { return first_; }
   PaintLayer* LastChild() const { return last_; }
 
-  const PaintLayer* CommonAncestor(const PaintLayer*) const;
-
   // TODO(wangxianzhu): Find a better name for it. 'paintContainer' might be
   // good but we can't use it for now because it conflicts with
   // PaintInfo::paintContainer.
