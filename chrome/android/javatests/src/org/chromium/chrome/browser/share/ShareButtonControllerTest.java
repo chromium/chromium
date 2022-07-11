@@ -92,7 +92,7 @@ public final class ShareButtonControllerTest {
         View experimentalButton = mActivityTestRule.getActivity()
                                           .getToolbarManager()
                                           .getToolbarLayoutForTesting()
-                                          .getOptionalButtonView();
+                                          .getOptionalButtonViewForTesting();
         if (experimentalButton != null) {
             String shareString =
                     mActivityTestRule.getActivity().getResources().getString(R.string.share);
@@ -108,7 +108,7 @@ public final class ShareButtonControllerTest {
         View experimentalButton = mActivityTestRule.getActivity()
                                           .getToolbarManager()
                                           .getToolbarLayoutForTesting()
-                                          .getOptionalButtonView();
+                                          .getOptionalButtonViewForTesting();
 
         if (!mButtonExpected) {
             assertTrue(
@@ -144,7 +144,7 @@ public final class ShareButtonControllerTest {
         View optionalButton = mActivityTestRule.getActivity()
                                       .getToolbarManager()
                                       .getToolbarLayoutForTesting()
-                                      .getOptionalButtonView();
+                                      .getOptionalButtonViewForTesting();
         if (!mButtonExpected) {
             assertTrue(optionalButton == null || View.GONE == optionalButton.getVisibility());
         } else {
@@ -163,7 +163,7 @@ public final class ShareButtonControllerTest {
         View experimentalButton = mActivityTestRule.getActivity()
                                           .getToolbarManager()
                                           .getToolbarLayoutForTesting()
-                                          .getOptionalButtonView();
+                                          .getOptionalButtonViewForTesting();
 
         ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
             @Override

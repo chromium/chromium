@@ -39,7 +39,6 @@
     <dimen name="location_bar_url_action_padding">8dp</dimen>
 
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
-    <dimen name="toolbar_optional_button_animation_translation">10dp</dimen>
 
     <!-- Omnibox suggestions -->
     <dimen name="omnibox_suggestion_header_margin_start">

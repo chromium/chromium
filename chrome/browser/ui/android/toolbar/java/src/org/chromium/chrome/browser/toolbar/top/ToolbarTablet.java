@@ -672,6 +672,9 @@ public class ToolbarTablet
             ApiCompatibilityUtils.setImageTintList(mOptionalButton, null);
         }
 
+        if (buttonSpec.getIPHCommandBuilder() != null) {
+            buttonSpec.getIPHCommandBuilder().setAnchorView(mOptionalButton);
+        }
         mOptionalButton.setOnClickListener(buttonSpec.getOnClickListener());
         if (buttonSpec.getOnLongClickListener() == null) {
             mOptionalButton.setLongClickable(false);
@@ -697,7 +700,7 @@ public class ToolbarTablet
 
     @Override
     @VisibleForTesting
-    public View getOptionalButtonView() {
+    public View getOptionalButtonViewForTesting() {
         return mOptionalButton;
     }
 

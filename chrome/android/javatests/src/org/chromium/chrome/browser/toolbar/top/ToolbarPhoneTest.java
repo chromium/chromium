@@ -130,7 +130,8 @@ public class ToolbarPhoneTest {
             mToolbar.updateButtonVisibility();
         });
 
-        int padding = mToolbar.findViewById(R.id.optional_toolbar_button).getPaddingStart();
+        int padding =
+                mToolbar.findViewById(R.id.optional_toolbar_button_container).getPaddingStart();
         assertEquals("Optional button's padding should be 0 when menu button is not visible", 0,
                 padding);
 
@@ -138,7 +139,7 @@ public class ToolbarPhoneTest {
         // toolbar_phone_optional_button_padding padding.
         doReturn(true).when(mMenuButtonCoordinator).isVisible();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateButtonVisibility(); });
-        padding = mToolbar.findViewById(R.id.optional_toolbar_button).getPaddingStart();
+        padding = mToolbar.findViewById(R.id.optional_toolbar_button_container).getPaddingStart();
         int expectedPadding = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
                 R.dimen.toolbar_phone_optional_button_padding);
         assertEquals(

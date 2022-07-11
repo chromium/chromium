@@ -49,16 +49,30 @@ public class OptionalButtonCoordinator {
         int COLLAPSING_ACTION_CHIP = 4;
     }
 
-    public OptionalButtonCoordinator(View view, UserEducationHelper userEducationHelper) {
+    /**
+     * Creates a new instance of OptionalButtonCoordinator
+     * @param view An instance of OptionalButtonView to bind to.
+     * @param userEducationHelper Used to display highlight the button with IPH if needed.
+     * @param transitionRoot ViewGroup that contains all the views that will be affected by our
+     *         transitions.
+     * @param isAnimationAllowedPredicate A BooleanProvider that is called before all transitions to
+     *         determine if said transition should be animated or not.
+     */
+    public OptionalButtonCoordinator(View view, UserEducationHelper userEducationHelper,
+            ViewGroup transitionRoot, BooleanSupplier isAnimationAllowedPredicate) {
         mUserEducationHelper = userEducationHelper;
-        PropertyModel model = new PropertyModel.Builder(OptionalButtonProperties.ALL_KEYS)
-                                      .with(OptionalButtonProperties.TRANSITION_FINISHED_CALLBACK,
-                                              this::onTransitionFinishedCallback)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(OptionalButtonProperties.ALL_KEYS)
+                        .with(OptionalButtonProperties.TRANSITION_FINISHED_CALLBACK,
+                                this::onTransitionFinishedCallback)
+                        .with(OptionalButtonProperties.TRANSITION_ROOT, transitionRoot)
+                        .with(OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE,
+                                isAnimationAllowedPredicate)
+                        .build();
 
         assert view instanceof OptionalButtonView;
 
-        this.mView = (OptionalButtonView) view;
+        mView = (OptionalButtonView) view;
 
         PropertyModelChangeProcessor.create(model, mView, OptionalButtonViewBinder::bind);
 
@@ -69,28 +83,8 @@ public class OptionalButtonCoordinator {
         mMediator.setPaddingStart(paddingStart);
     }
 
-    /**
-     * Sets the ViewGroup that contains all the views that will be affected by our transitions. It
-     * has to be the parent view because the action chip width changes affect our sibling views.
-     * @param transitionRoot
-     */
-    public void setTransitionRoot(ViewGroup transitionRoot) {
-        mMediator.setTransitionRoot(transitionRoot);
-    }
-
     public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
         mMediator.setOnBeforeHideTransitionCallback(onBeforeHideTransitionCallback);
-    }
-
-    /**
-     * Sets a callable that returns a boolean, this is called before any icon updates to ensure that
-     * the containing view is in a state that allows animations. If animations aren't allowed then
-     * the icon update is done instantly without any animation. Even if animations are not allowed
-     * all callbacks are called instantly in order.
-     * @param isAnimationAllowedPredicate
-     */
-    public void setIsAnimationAllowedPredicate(BooleanSupplier isAnimationAllowedPredicate) {
-        mMediator.setIsAnimationAllowedPredicate(isAnimationAllowedPredicate);
     }
 
     /**

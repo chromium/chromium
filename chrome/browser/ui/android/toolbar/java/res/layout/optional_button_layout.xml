@@ -3,11 +3,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- TODO(salg): Remove tools:ignore once this resource is used in non-test code. -->
 <org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources"
     android:paddingStart="@dimen/toolbar_phone_optional_button_padding"
     android:layout_height="match_parent"
     android:layout_width="52dp">

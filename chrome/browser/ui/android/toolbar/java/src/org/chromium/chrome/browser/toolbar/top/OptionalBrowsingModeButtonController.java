@@ -109,12 +109,12 @@ public class OptionalBrowsingModeButtonController {
     private void setCurrentOptionalButton(ButtonDataProvider provider, ButtonData buttonData) {
         mCurrentProvider = provider;
         mToolbarLayout.updateOptionalButton(buttonData);
-        if (buttonData.getButtonSpec().getIPHCommandBuilder() != null) {
+        // ToolbarPhone's optional button has animated transitions and it takes care of showing IPH
+        // on its own.
+        if (buttonData.getButtonSpec().getIPHCommandBuilder() != null
+                && !(mToolbarLayout instanceof ToolbarPhone)) {
             mUserEducationHelper.requestShowIPH(
-                    buttonData.getButtonSpec()
-                            .getIPHCommandBuilder()
-                            .setAnchorView(mToolbarLayout.getOptionalButtonView())
-                            .build());
+                    buttonData.getButtonSpec().getIPHCommandBuilder().build());
         }
     }
 

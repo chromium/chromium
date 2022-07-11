@@ -823,7 +823,7 @@ public abstract class ToolbarLayout
      * @return Optional button view.
      */
     @VisibleForTesting
-    public View getOptionalButtonView() {
+    public View getOptionalButtonViewForTesting() {
         return null;
     }
 

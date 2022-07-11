@@ -20,9 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.FrameLayout;
-
-import androidx.test.core.app.ApplicationProvider;
+import android.view.ViewGroup;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
@@ -49,6 +48,10 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 @RunWith(BaseRobolectricTestRunner.class)
 public class OptionalButtonCoordinatorTest {
     @Mock
+    private ViewGroup mMockRootView;
+    @Mock
+    private BooleanSupplier mMockIsAnimationAllowedDelegate;
+    @Mock
     private OptionalButtonView mMockOptionalButtonView;
     @Mock
     private UserEducationHelper mMockUserEducationHelper;
@@ -62,17 +65,8 @@ public class OptionalButtonCoordinatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mOptionalButtonCoordinator =
-                new OptionalButtonCoordinator(mMockOptionalButtonView, mMockUserEducationHelper);
-    }
-
-    @Test
-    public void testSetTransitionRoot() {
-        FrameLayout transitionRoot = new FrameLayout(ApplicationProvider.getApplicationContext());
-
-        mOptionalButtonCoordinator.setTransitionRoot(transitionRoot);
-
-        verify(mMockOptionalButtonView).setTransitionRoot(transitionRoot);
+        mOptionalButtonCoordinator = new OptionalButtonCoordinator(mMockOptionalButtonView,
+                mMockUserEducationHelper, mMockRootView, mMockIsAnimationAllowedDelegate);
     }
 
     @Test

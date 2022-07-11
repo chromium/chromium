@@ -42,12 +42,11 @@
 
         <ViewStub
             android:id="@+id/optional_button_stub"
-            android:inflatedId="@+id/optional_toolbar_button"
-            android:layout="@layout/optional_toolbar_button"
-            style="@style/ToolbarButton"
-            android:paddingStart="@dimen/toolbar_phone_optional_button_padding"
-            android:visibility="gone" />
-
+            android:inflatedId="@+id/optional_toolbar_button_container"
+            android:layout_gravity="top"
+            android:visibility="gone"
+            android:layout_width="52dp"
+            style="@style/ToolbarButton" />
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarButton"
