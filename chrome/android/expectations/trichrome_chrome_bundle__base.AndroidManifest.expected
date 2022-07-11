@@ -435,22 +435,6 @@
         android:label="@string/settings"
         android:theme="@style/Theme.Chromium.Settings">
     </activity>  # DIFF-ANCHOR: d32b85df
-    <activity  # DIFF-ANCHOR: 44158f9b
-        android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:enabled="false"
-        android:excludeFromRecents="true"
-        android:exported="true"
-        android:icon="@drawable/ic_devices_48dp"
-        android:label="@string/shared_clipboard_share_activity_title"
-        android:noHistory="true"
-        android:theme="@style/Theme.Chromium.Activity.TranslucentNoAnimations">
-      <intent-filter>  # DIFF-ANCHOR: 4ee601b7
-        <action android:name="android.intent.action.SEND"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <data android:mimeType="text/plain"/>
-      </intent-filter>  # DIFF-ANCHOR: 4ee601b7
-    </activity>  # DIFF-ANCHOR: 44158f9b
     <activity  # DIFF-ANCHOR: fbf1ba15
         android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"

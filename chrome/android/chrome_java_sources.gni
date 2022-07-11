@@ -1007,8 +1007,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandler.java",
   "java/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallUma.java",
   "java/src/org/chromium/chrome/browser/sharing/shared_clipboard/SharedClipboardMessageHandler.java",
-  "java/src/org/chromium/chrome/browser/sharing/shared_clipboard/SharedClipboardMetrics.java",
-  "java/src/org/chromium/chrome/browser/sharing/shared_clipboard/SharedClipboardShareActivity.java",
   "java/src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandler.java",
   "java/src/org/chromium/chrome/browser/signin/SigninBridge.java",
   "java/src/org/chromium/chrome/browser/signin/SigninCheckerProvider.java",

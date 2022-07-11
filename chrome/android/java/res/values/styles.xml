@@ -32,10 +32,6 @@
     <style name="Theme.Chromium.Activity" parent="Theme.Chromium.WithWindowAnimation" />
     <!-- This is distinct from Theme.Chromium.Activity.Fullscreen.Transparent, which makes the
          payment handler window overlap the bottom nav bar. -->
-    <style name="Theme.Chromium.Activity.Translucent" parent="Base.Theme.Chromium">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
     <style name="Base.Theme.Chromium.Activity.Fullscreen" parent="Theme.BrowserUI.DayNight" />
     <style name="Theme.Chromium.Activity.Fullscreen"
         parent="Base.Theme.Chromium.Activity.Fullscreen" />
@@ -68,18 +64,6 @@
 
     <style name="Theme.Chromium.Webapp.Translucent" parent="Theme.Chromium.Webapp">
         <item name="android:windowIsTranslucent">true</item>
-    </style>
-
-    <style name="Theme.Chromium.Activity.TranslucentNoAnimations" parent="Theme.Chromium.Activity.Translucent">
-        <!-- Transparent status bar -->
-        <item name="android:statusBarColor" tools:targetApi="21">@android:color/transparent</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <!-- Dim background -->
-        <item name="android:backgroundDimEnabled">true</item>
-        <!-- Disable default animations -->
-        <item name="android:windowEnterAnimation">@null</item>
-        <item name="android:windowExitAnimation">@null</item>
-        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="Base.Theme.Chromium.Settings" parent="Theme.Chromium">

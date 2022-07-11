@@ -4649,15 +4649,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SHARING_SENDING_NOTIFICATION_TITLE" desc="Title text displayed in a sharing sending notification.">
         Sharing to <ph name="DEVICE_NAME">%1$s<ex>Pixel 3</ex></ph>
       </message>
-      <message name="IDS_SHARING_NO_DEVICES_AVAILABLE_TITLE" desc="Text to show when no device targets are available for sharing.">
-        Turn on sync to share across devices
-      </message>
-      <message name="IDS_SHARING_NO_DEVICES_AVAILABLE_TEXT" desc="Text to show when no device targets are available for sharing.">
-        To share something from your phone to another device, turn on sync in Chrome settings on both devices
-      </message>
-      <message name="IDS_SHARING_CHROME_SETTINGS" desc="Text shown in a button when user has turned off sync.">
-        Go to Chrome settings
-      </message>
 
       <!-- Sharing Hub -->
       <message name="IDS_SHARING_HUB_NO_DEVICES_AVAILABLE_TEXT" desc="Text to show when no device targets are available for sharing.">
@@ -4748,9 +4739,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SHARED_CLIPBOARD_NOTIFICATION_TEXT" desc="Content text displayed in a shared clipboard notification.">
         Copied to your clipboard
-      </message>
-      <message name="IDS_SHARED_CLIPBOARD_SHARE_ACTIVITY_TITLE" desc="Title of the Shared Clipboard Share activity that will appear in the Android share dialog.">
-        Send text to Your Devices
       </message>
 
       <!-- Sms Fetcher -->

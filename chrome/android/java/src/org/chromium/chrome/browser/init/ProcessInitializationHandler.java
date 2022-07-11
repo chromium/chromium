@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
-import org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
@@ -437,9 +436,6 @@ public class ProcessInitializationHandler {
 
         deferredStartupHandler.addDeferredTask(
                 () -> IncognitoTabLauncher.updateComponentEnabledState());
-
-        deferredStartupHandler.addDeferredTask(
-                () -> SharedClipboardShareActivity.updateComponentEnabledState());
         deferredStartupHandler.addDeferredTask(
                 () -> OfflineContentAvailabilityStatusProvider.getInstance());
         deferredStartupHandler.addDeferredTask(

@@ -85,23 +85,6 @@
           </intent-filter>
         </activity>
 
-        <activity
-          android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity"
-          android:icon="@drawable/ic_devices_48dp"
-          android:label="@string/shared_clipboard_share_activity_title"
-          android:enabled="false"
-          android:excludeFromRecents="true"
-          android:exported="true"
-          android:noHistory="true"
-          android:theme="@style/Theme.Chromium.Activity.TranslucentNoAnimations"
-          android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
-          <intent-filter>
-              <action android:name="android.intent.action.SEND" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <data android:mimeType="text/plain" />
-          </intent-filter>
-        </activity>
-
         <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
             android:exported="true">
             <intent-filter>
