@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/oauth2/profile_auth_servers_sync_bridge.h"
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -38,23 +39,36 @@ class MockProfileAuthServersSyncBridgeObserver
     : public ProfileAuthServersSyncBridge::Observer {
  public:
   MOCK_METHOD(void, OnProfileAuthorizationServersInitialized, (), (override));
+  MOCK_METHOD(void,
+              OnProfileAuthorizationServersUpdate,
+              (std::set<chromeos::Uri>, std::set<chromeos::Uri>),
+              (override));
 };
 
 class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
  protected:
-  PrintingOAuth2ProfileAuthServersSyncBridgeTest() = default;
+  PrintingOAuth2ProfileAuthServersSyncBridgeTest() {
+    DCHECK_EQ(uri_1u_.GetLastParsingError().status,
+              chromeos::Uri::ParserStatus::kNoErrors);
+    DCHECK_EQ(uri_2u_.GetLastParsingError().status,
+              chromeos::Uri::ParserStatus::kNoErrors);
+    DCHECK_EQ(uri_3u_.GetLastParsingError().status,
+              chromeos::Uri::ParserStatus::kNoErrors);
+    DCHECK_EQ(uri_4u_.GetLastParsingError().status,
+              chromeos::Uri::ParserStatus::kNoErrors);
+  }
 
-  void CreateBridge() {
+  void CreateBridge(const std::vector<std::string>& uris = {}) {
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(false));
+    SaveToLocalStore(uris);
     bridge_ = ProfileAuthServersSyncBridge::CreateForTesting(
         &mock_observer_, mock_processor_.CreateForwardingProcessor(),
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
             store_.get()));
     base::RunLoop loop;
     EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersInitialized())
-        .Times(1)
-        .WillOnce([&loop] { loop.Quit(); });
+        .WillOnce([&loop]() { loop.Quit(); });
     loop.Run();
   }
 
@@ -104,91 +118,135 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     return uris;
   }
 
+  // Example URIs for testing.
+  const std::string uri_1_ = "https://a.b.c/123";
+  const std::string uri_2_ = "https://def:123/gh";
+  const std::string uri_3_ = "https://xyz/ab";
+  const std::string uri_4_ = "https://ala.ma.kota/psa?moze";
+  const chromeos::Uri uri_1u_ = chromeos::Uri(uri_1_);
+  const chromeos::Uri uri_2u_ = chromeos::Uri(uri_2_);
+  const chromeos::Uri uri_3u_ = chromeos::Uri(uri_3_);
+  const chromeos::Uri uri_4u_ = chromeos::Uri(uri_4_);
+
+  testing::StrictMock<MockProfileAuthServersSyncBridgeObserver> mock_observer_;
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  std::unique_ptr<ProfileAuthServersSyncBridge> bridge_;
+
+ private:
+  void SaveToLocalStore(const std::vector<std::string>& uris) {
+    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+        store_->CreateWriteBatch();
+    for (const std::string& uri : uris) {
+      sync_pb::PrintersAuthorizationServerSpecifics specifics;
+      specifics.set_uri(uri);
+      batch->WriteData(uri, specifics.SerializeAsString());
+    }
+
+    base::RunLoop loop;
+    store_->CommitWriteBatch(
+        std::move(batch),
+        base::BindLambdaForTesting(
+            [&loop](const absl::optional<syncer::ModelError>& error) {
+              DCHECK(!error);
+              loop.Quit();
+            }));
+    loop.Run();
+  }
+
   // In memory model type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_ =
       syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
-  testing::StrictMock<MockProfileAuthServersSyncBridgeObserver> mock_observer_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<ProfileAuthServersSyncBridge> bridge_;
 };
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, Initialization) {
+  EXPECT_CALL(mock_processor_, ModelReadyToSync(testing::_));
   CreateBridge();
 }
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, MergeSyncData) {
-  const std::string uri_1 = "https://a.b.c/123";
-  const std::string uri_2 = "https://d.e.f:123/g/h/i";
-  CreateBridge();
-  DoInitialMerge({uri_1, uri_2});
+  EXPECT_CALL(mock_observer_,
+              OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_3u_},
+                                                  std::set<chromeos::Uri>{}));
+  CreateBridge({uri_1_, uri_3_});
+
+  EXPECT_CALL(mock_processor_, Put(uri_3_, testing::_, testing::_));
+  EXPECT_CALL(mock_observer_,
+              OnProfileAuthorizationServersUpdate(std::set{uri_2u_},
+                                                  std::set<chromeos::Uri>{}));
+  DoInitialMerge({uri_1_, uri_2_});
 
   const std::vector<std::string> uris = GetAllData();
-  EXPECT_EQ(uris, (std::vector{uri_1, uri_2}));
+  EXPECT_EQ(uris, (std::vector{uri_1_, uri_2_, uri_3_}));
 }
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
        ServersAddedWhenSyncDisabled) {
-  const std::string uri_1 = "https://a.b.c/123";
   CreateBridge();
-  bridge_->AddAuthorizationServer(chromeos::Uri(uri_1));
+  bridge_->AddAuthorizationServer(uri_1u_);
 
   const std::vector<std::string> uris = GetAllData();
-  EXPECT_EQ(uris, std::vector{uri_1});
+  EXPECT_EQ(uris, std::vector{uri_1_});
 }
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
        ServersAddedAfterInitialMerge) {
-  const std::string uri_1 = "https://a.b.c/123";
-  const std::string uri_2 = "https://d.e.f:123/g/h/i";
   CreateBridge();
-  DoInitialMerge({uri_2});
-  bridge_->AddAuthorizationServer(chromeos::Uri(uri_1));
+  EXPECT_CALL(mock_observer_,
+              OnProfileAuthorizationServersUpdate(std::set{uri_2u_},
+                                                  std::set<chromeos::Uri>{}));
+  DoInitialMerge({uri_2_});
+  EXPECT_CALL(mock_processor_, Put(uri_1_, testing::_, testing::_));
+  bridge_->AddAuthorizationServer(uri_1u_);
 
   const std::vector<std::string> uris = GetAllData();
-  EXPECT_EQ(uris, (std::vector{uri_1, uri_2}));
+  EXPECT_EQ(uris, (std::vector{uri_1_, uri_2_}));
 }
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
        ServersAddedBeforeInitialMerge) {
-  const std::string uri_1 = "https://a.b.c/123";
-  const std::string uri_2 = "https://d.e.f:123/g/h/i";
   CreateBridge();
-  bridge_->AddAuthorizationServer(chromeos::Uri(uri_1));
-  DoInitialMerge({uri_2});
+  bridge_->AddAuthorizationServer(uri_1u_);
+  EXPECT_CALL(mock_processor_, Put(uri_1_, testing::_, testing::_));
+  EXPECT_CALL(mock_observer_,
+              OnProfileAuthorizationServersUpdate(std::set{uri_2u_},
+                                                  std::set<chromeos::Uri>{}));
+  DoInitialMerge({uri_2_});
 
   const std::vector<std::string> uris = GetAllData();
-  EXPECT_EQ(uris, (std::vector{uri_1, uri_2}));
+  EXPECT_EQ(uris, (std::vector{uri_1_, uri_2_}));
 }
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, ApplySyncChanges) {
-  const std::string uri_1 = "https://a.b.c/123";
-  const std::string uri_2 = "https://def:123/gh";
-  const std::string uri_3 = "https://xyz/ab";
   CreateBridge();
   DoInitialMerge({});
 
-  DoApplySyncChanges(/*added=*/{uri_1, uri_2}, /*deleted=*/{});
+  EXPECT_CALL(mock_observer_,
+              OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_2u_},
+                                                  std::set<chromeos::Uri>{}));
+  DoApplySyncChanges(/*added=*/{uri_1_, uri_2_}, /*deleted=*/{});
   std::vector<std::string> uris = GetAllData();
-  EXPECT_EQ(uris, (std::vector{uri_1, uri_2}));
+  EXPECT_EQ(uris, (std::vector{uri_1_, uri_2_}));
 
-  DoApplySyncChanges(/*added=*/{uri_3}, /*deleted=*/{uri_1});
+  EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersUpdate(
+                                  std::set{uri_3u_}, std::set{uri_1u_}));
+  DoApplySyncChanges(/*added=*/{uri_3_}, /*deleted=*/{uri_1_});
   uris = GetAllData();
-  EXPECT_EQ(uris, (std::vector{uri_2, uri_3}));
+  EXPECT_EQ(uris, (std::vector{uri_2_, uri_3_}));
 }
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, GetData) {
-  const std::string uri_1 = "https://a.b.c/123";
-  const std::string uri_2 = "https://def:123/gh";
-  const std::string uri_3 = "https://xyz/ab";
   CreateBridge();
-  DoInitialMerge({uri_1, uri_2});
+  EXPECT_CALL(mock_observer_,
+              OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_2u_},
+                                                  std::set<chromeos::Uri>{}));
+  DoInitialMerge({uri_1_, uri_2_});
 
   std::unique_ptr<syncer::DataBatch> output;
   base::MockOnceCallback<void(std::unique_ptr<syncer::DataBatch> data_batch)>
       callback;
   EXPECT_CALL(callback, Run).WillOnce(MoveArg(&output));
-  bridge_->GetData({uri_1, uri_3}, callback.Get());
+  bridge_->GetData({uri_1_, uri_3_}, callback.Get());
 
   ASSERT_TRUE(output);
   std::vector<syncer::KeyAndData> data;
@@ -196,11 +254,24 @@ TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, GetData) {
     data.push_back(output->Next());
   }
   ASSERT_EQ(data.size(), 1);
-  EXPECT_EQ(data[0].first, uri_1);
+  EXPECT_EQ(data[0].first, uri_1_);
   ASSERT_TRUE(data[0].second);
   EXPECT_EQ(
       data[0].second->specifics.mutable_printers_authorization_server()->uri(),
-      uri_1);
+      uri_1_);
+}
+
+TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest,
+       OnProfileAuthorizationServersUpdate) {
+  CreateBridge();
+  EXPECT_CALL(mock_observer_,
+              OnProfileAuthorizationServersUpdate(std::set{uri_1u_, uri_2u_},
+                                                  std::set<chromeos::Uri>{}));
+  DoInitialMerge({uri_1_, uri_2_});
+
+  EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersUpdate(
+                                  std::set{uri_3u_}, std::set{uri_2u_}));
+  DoApplySyncChanges(/*added=*/{uri_1_, uri_3_}, /*deleted=*/{uri_2_, uri_4_});
 }
 
 }  // namespace

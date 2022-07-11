@@ -30,15 +30,25 @@ class MetadataChangeList;
 namespace ash::printing::oauth2 {
 
 // This class is the bridge responsible for the synchronization of the list of
-// trusted Authorization Servers between the user's profile and local storage.
+// trusted Authorization Servers between the user's profile and this client.
 class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   class Observer {
    public:
     // This method is called when the sync bridge is ready to process calls to
-    // AddAuthorizationServer(...). This method is called only once and it is
-    // always the first method called on the observer by the sync bridge.
+    // AddAuthorizationServer(). This method is called only once.
     virtual void OnProfileAuthorizationServersInitialized() = 0;
+
+    // This method is called when new data from the user's profile is loaded
+    // (either from the local store or from the sync server). This includes
+    // loading of the initial list of servers as well as any changes that occur
+    // on other clients. Each change reported by this method is represented by
+    // two disjoint sets of URIs:
+    //  * `added` - the set of URIs added to the list of trusted servers; and
+    //  * `deleted` - the set of URIs removed from the list.
+    virtual void OnProfileAuthorizationServersUpdate(
+        std::set<chromeos::Uri> added,
+        std::set<chromeos::Uri> deleted) = 0;
 
    protected:
     virtual ~Observer() = default;
@@ -62,11 +72,17 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
 
   ~ProfileAuthServersSyncBridge() override;
 
-  // This method must be called when new Authorization Server is added to the
-  // list of trusted Authorization Servers.
+  // This method must be called when a new Authorization Server is added to the
+  // list of trusted Authorization Servers on this client. The new record will
+  // be saved in the user's profile. This method DOES NOT trigger a call to the
+  // Observer's method OnProfileAuthorizationServersUpdate() on this client and
+  // the added record WILL NOT be included in the changes reported by any call
+  // to OnProfileAuthorizationServersUpdate() on this client. This method MUST
+  // NOT be called before the Observer receives the call to
+  // OnProfileAuthorizationServersInitialized().
   void AddAuthorizationServer(const chromeos::Uri& server);
 
-  // Implementation of ModelTypeSyncBridge interface.
+  // Implementation of ModelTypeSyncBridge interface. For internal use only.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   absl::optional<syncer::ModelError> MergeSyncData(
@@ -102,6 +118,10 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
   // Callback to handle commit errors.
   void OnCommit(const absl::optional<syncer::ModelError>& error);
 
+  // Notifies the observer about changes.
+  void NotifyObserver(const std::set<std::string>& added,
+                      const std::set<std::string>& deleted);
+
   // This is set to true when the object is ready to use. Use the callback
   // from the Observer to check this. This field is used only for internal
   // validation.
@@ -110,7 +130,7 @@ class ProfileAuthServersSyncBridge : public syncer::ModelTypeSyncBridge {
   // The current trusted list of Authorization Servers URIs.
   std::set<std::string> servers_uris_;
 
-  // The local storage.
+  // The local store.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   raw_ptr<Observer> const observer_;

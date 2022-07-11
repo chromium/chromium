@@ -50,6 +50,20 @@ std::unique_ptr<syncer::EntityData> ToEntityDataPtr(const std::string& uri) {
   return entity_data;
 }
 
+std::set<chromeos::Uri> ToSetOfUris(const std::set<std::string>& strs) {
+  std::set<chromeos::Uri> uris;
+  for (const std::string& str : strs) {
+    chromeos::Uri uri(str);
+    if (uri.GetLastParsingError().status !=
+        chromeos::Uri::ParserStatus::kNoErrors) {
+      LOG(WARNING) << "Failed to parse URI in ProfileAuthServersSyncBridge";
+      continue;
+    }
+    uris.insert(std::move(uri));
+  }
+  return uris;
+}
+
 }  // namespace
 
 std::unique_ptr<ProfileAuthServersSyncBridge>
@@ -138,7 +152,8 @@ void ProfileAuthServersSyncBridge::OnReadAllData(
     servers_uris_.insert(specifics.uri());
   }
 
-  // Data loaded. Load metadata.
+  // Data loaded. Notify the observer and load metadata.
+  NotifyObserver(servers_uris_, /*deleted=*/{});
   store_->ReadAllMetadata(
       base::BindOnce(&ProfileAuthServersSyncBridge::OnReadAllMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -165,34 +180,39 @@ absl::optional<syncer::ModelError> ProfileAuthServersSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // Every local URI is considered unsynced until the contrary is proven, i.e.
-  // until the same URI is seen in the incoming |entity_data|.
+  // until the same URI is seen in the incoming `entity_data`.
   std::set<std::string> unsynced_local_uris = servers_uris_;
+  std::set<std::string> added_local_uris;
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     const sync_pb::PrintersAuthorizationServerSpecifics& specifics =
         change->data().specifics.printers_authorization_server();
-    const std::string remote_uri = specifics.uri();
+    const std::string& remote_uri = specifics.uri();
     DCHECK_EQ(change->storage_key(), remote_uri);
     auto [unused, is_new] = servers_uris_.insert(remote_uri);
     if (is_new) {
+      added_local_uris.insert(remote_uri);
       batch->WriteData(remote_uri, specifics.SerializeAsString());
     } else {
       unsynced_local_uris.erase(remote_uri);
     }
   }
 
+  // Send unmatched local URIs to the server.
   for (const std::string& uri : unsynced_local_uris) {
     change_processor()->Put(uri, ToEntityDataPtr(uri),
                             metadata_change_list.get());
   }
 
+  // Save new local URIs to the local store.
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
       std::move(batch), base::BindOnce(&ProfileAuthServersSyncBridge::OnCommit,
                                        weak_ptr_factory_.GetWeakPtr()));
 
+  NotifyObserver(added_local_uris, /*deleted=*/{});
   return absl::nullopt;
 }
 
@@ -200,26 +220,33 @@ absl::optional<syncer::ModelError>
 ProfileAuthServersSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  std::set<std::string> added_local_uris;
+  std::set<std::string> deleted_local_uris;
+
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
-    const std::string uri = change->storage_key();
+    const std::string& uri = change->storage_key();
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
-      batch->DeleteData(uri);
-      servers_uris_.erase(uri);
+      if (servers_uris_.erase(uri)) {
+        batch->DeleteData(uri);
+        deleted_local_uris.insert(uri);
+      }
     } else {
-      batch->WriteData(uri, change->data()
-                                .specifics.printers_authorization_server()
-                                .SerializeAsString());
-      servers_uris_.insert(uri);
+      if (servers_uris_.insert(uri).second) {  // true <=> uri wasn't there
+        batch->WriteData(uri, change->data()
+                                  .specifics.printers_authorization_server()
+                                  .SerializeAsString());
+        added_local_uris.insert(uri);
+      }
     }
   }
-
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   store_->CommitWriteBatch(
       std::move(batch), base::BindOnce(&ProfileAuthServersSyncBridge::OnCommit,
                                        weak_ptr_factory_.GetWeakPtr()));
 
+  NotifyObserver(added_local_uris, deleted_local_uris);
   return absl::nullopt;
 }
 
@@ -260,6 +287,19 @@ void ProfileAuthServersSyncBridge::OnCommit(
     LOG(WARNING) << "Failed to commit operation to store in "
                     "ProfileAuthServersSyncBridge";
     change_processor()->ReportError(*error);
+  }
+}
+
+void ProfileAuthServersSyncBridge::NotifyObserver(
+    const std::set<std::string>& added,
+    const std::set<std::string>& deleted) {
+  // Convert std::set<std::string> to std::set<chromeos::Uri>.
+  std::set<chromeos::Uri> added_uris = ToSetOfUris(added);
+  std::set<chromeos::Uri> deleted_uris = ToSetOfUris(deleted);
+  // Call the observer.
+  if (!added_uris.empty() || !deleted_uris.empty()) {
+    observer_->OnProfileAuthorizationServersUpdate(std::move(added_uris),
+                                                   std::move(deleted_uris));
   }
 }
 
