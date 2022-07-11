@@ -30,7 +30,7 @@
 namespace web {
 namespace {
 
-const char kBaseScriptName[] = "base";
+const char kBaseScriptName[] = "gcrweb";
 const char kCommonScriptName[] = "common";
 const char kMessageScriptName[] = "message";
 const char kPluginPlaceholderScriptName[] = "plugin_placeholder";
