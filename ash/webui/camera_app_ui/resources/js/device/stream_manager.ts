@@ -9,6 +9,7 @@ import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {speak} from '../spoken_msg.js';
 import {ErrorLevel, ErrorType, Facing, VideoConfig} from '../type.js';
+import {sleep} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
@@ -235,19 +236,23 @@ export class StreamManager {
   }
 
   /**
-   * Enumerates all available devices and gets their MediaDeviceInfo.
+   * Enumerates all available devices and gets their MediaDeviceInfo. Retry at
+   * one-second intervals if devices length is zero.
    */
   private async enumerateDevices(): Promise<MediaDeviceInfo[]> {
-    const devices = (await navigator.mediaDevices.enumerateDevices())
-                        .filter((device) => device.kind === 'videoinput');
-
     const deviceType = loadTimeData.getDeviceType();
     const shouldHaveBuiltinCamera =
         deviceType === 'chromebook' || deviceType === 'chromebase';
-    if (devices.length === 0 && shouldHaveBuiltinCamera) {
-      throw new Error('Device list empty.');
+    let attempts = 5;
+    while (attempts--) {
+      const devices = (await navigator.mediaDevices.enumerateDevices())
+                          .filter((device) => device.kind === 'videoinput');
+      if (!shouldHaveBuiltinCamera || devices.length > 0) {
+        return devices;
+      }
+      await sleep(1000);
     }
-    return devices;
+    throw new Error('Device list empty.');
   }
 
   /**
