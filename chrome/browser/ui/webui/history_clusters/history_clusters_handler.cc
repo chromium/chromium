@@ -397,6 +397,11 @@ void HistoryClustersHandler::RemoveVisits(
 
 void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
     std::vector<mojom::URLVisitPtr> visits) {
+  // Sometimes WebUI passes an empty vector, and TabStripModel::AddToNewGroup
+  // requires a non-empty vector (Fixes https://crbug.com/1339140)
+  if (visits.empty()) {
+    return;
+  }
   const auto* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     return;
