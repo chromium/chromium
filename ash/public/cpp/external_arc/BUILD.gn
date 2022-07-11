@@ -28,6 +28,8 @@ static_library("external_arc") {
     "message_center/arc_notification_surface_manager_impl.h",
     "message_center/arc_notification_view.cc",
     "message_center/arc_notification_view.h",
+    "message_center/metrics_utils.cc",
+    "message_center/metrics_utils.h",
     "overlay/arc_overlay_controller.cc",
     "overlay/arc_overlay_controller.h",
     "overlay/arc_overlay_controller_impl.cc",

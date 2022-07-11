@@ -1370,6 +1370,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Notifications.ActionEnabled" enum="BooleanEnabled"
+    expires_after="2022-09-27">
+  <owner>yaoqq@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records whether at least one action button is enabled or not for an Arc
+    notification when the notification is created.
+  </summary>
+</histogram>
+
+<histogram name="Arc.Notifications.Style" enum="ArcNotificationStyle"
+    expires_after="2022-09-27">
+  <owner>yaoqq@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>Records the style of an Arc notification when it's created.</summary>
+</histogram>
+
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
     expires_after="2022-12-04">
   <owner>mhasank@google.com</owner>

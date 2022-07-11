@@ -4361,6 +4361,17 @@ Unknown properties are collapsed to zero. -->
   <int value="39" label="Disconnect host VPN"/>
 </enum>
 
+<enum name="ArcNotificationStyle">
+  <int value="0" label="No Style"/>
+  <int value="1" label="Big Picture Style"/>
+  <int value="2" label="Big Text Style"/>
+  <int value="3" label="Messaging Style"/>
+  <int value="4" label="Inbox Style"/>
+  <int value="5" label="Media Style"/>
+  <int value="6" label="Decorated Custom View Style"/>
+  <int value="7" label="Decorated Media Custom View Style"/>
+</enum>
+
 <enum name="ArcNoWindowReason">
   <int value="0" label="NoHandler"/>
   <int value="1" label="NoHandler (from crash)"/>

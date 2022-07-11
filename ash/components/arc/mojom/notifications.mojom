@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 26
+// Next MinVersion: 27
 
 module arc.mojom;
 
@@ -91,6 +91,21 @@ struct ArcNotificationFlags {
   uint32 value;
 };
 
+// These values represent the styles for large-format notifications.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum ArcNotificationStyle {
+  NO_STYLE = 0,
+  BIG_PICTURE_STYLE = 1,
+  BIG_TEXT_STYLE = 2,
+  MESSAGING_STYLE = 3,
+  INBOX_STYLE = 4,
+  MEDIA_STYLE = 5,
+  DECORATED_CUSTOM_VIEW_STYLE = 6,
+  DECORATED_MEDIA_CUSTOM_VIEW_STYLE = 7,
+};
+
 struct ArcNotificationData {
   // Identifier of notification
   string key;
@@ -164,6 +179,11 @@ struct ArcNotificationData {
   ArcBitmap? snapshot_image_public;
   [MinVersion=23]
   bool is_media_notification;
+  [MinVersion=26]
+  ArcNotificationStyle style;
+  // True if there's at least one action button enabled for the notification.
+  [MinVersion=26]
+  bool is_action_enabled;
 };
 
 struct ArcDoNotDisturbStatus {

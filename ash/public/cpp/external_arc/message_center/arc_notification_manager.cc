@@ -13,6 +13,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_delegate.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item_impl.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
+#include "ash/public/cpp/external_arc/message_center/metrics_utils.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
 #include "ash/system/message_center/message_view_factory.h"
@@ -219,6 +220,9 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     auto result = items_.insert(std::make_pair(key, std::move(item)));
     DCHECK(result.second);
     it = result.first;
+
+    metrics_utils::LogArcNotificationStyle(data->style);
+    metrics_utils::LogArcNotificationActionEnabled(data->is_action_enabled);
   }
 
   std::string app_id =
