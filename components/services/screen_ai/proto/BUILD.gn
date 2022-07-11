@@ -7,9 +7,15 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   sources = [
     "chrome_screen_ai.proto",
-    "dimension.proto",
     "view_hierarchy.proto",
   ]
+}
+
+proto_library("view_hierarchy_proto_descriptor") {
+  sources = [ "view_hierarchy.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "view_hierarchy.descriptor"
 }
 
 source_set("proto_convertors") {

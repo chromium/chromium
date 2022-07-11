@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
+#include "components/services/screen_ai/proto/test_proto_loader.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -64,7 +65,7 @@ int GetAxNodeID(const ::screenai::UiElement& ui_element) {
 base::FilePath GetTestFilePath(const base::StringPiece file_name) {
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
-  return path.Append(FILE_PATH_LITERAL("components/test/data/screen_ai"))
+  return path.AppendASCII("components/test/data/screen_ai")
       .AppendASCII(file_name);
 }
 
@@ -259,6 +260,23 @@ void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
       EXPECT_FALSE(attribute_needed_and_not_generated) << item.first;
     }
   }
+}
+
+void LoadViewHierarchyTextProto(const base::FilePath& file_path,
+                                screenai::ViewHierarchy& proto) {
+  std::string file_content;
+  ASSERT_TRUE(base::ReadFileToString(file_path, &file_content))
+      << "Failed to read expected proto from " << file_path;
+
+  base::FilePath descriptor_path;
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &descriptor_path));
+  descriptor_path = descriptor_path.AppendASCII(
+      "gen/components/services/screen_ai/proto/view_hierarchy.descriptor");
+
+  test_proto_loader::TestProtoLoader loader;
+  ASSERT_TRUE(loader.ParseFromText(descriptor_path, file_content, proto))
+      << "Failed to parse expected proto.";
 }
 
 }  // namespace
@@ -457,11 +475,9 @@ TEST_F(ProtoConvertorTest, ViewHierarchyProtoGenerationTest) {
   WriteDebugProto(serialized_proto, "proto_convertor_output.pbtxt");
 
   // Load expected Proto.
-  ASSERT_TRUE(base::ReadFileToString(kExpectedProtoPath, &file_content))
-      << "Failed to read expected proto from " << kExpectedProtoPath;
   screenai::ViewHierarchy expected_view_hierarchy;
-  ASSERT_TRUE(expected_view_hierarchy.ParseFromString(file_content))
-      << "Failed to parse expected proto.";
+  ASSERT_NO_FATAL_FAILURE(
+      LoadViewHierarchyTextProto(kExpectedProtoPath, expected_view_hierarchy));
 
   // Compare protos.
   ASSERT_NO_FATAL_FAILURE(ExpectViewHierarchyProtos(generated_view_hierarchy,

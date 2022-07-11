@@ -22,7 +22,6 @@
 #include "base/numerics/clamped_math.h"
 #include "base/ranges/ranges.h"
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
-#include "components/services/screen_ai/proto/dimension.pb.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

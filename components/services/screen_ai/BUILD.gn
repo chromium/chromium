@@ -40,27 +40,34 @@ if (!is_mac) {
   }
 }
 
-bundle_data("unit_tests_bundle_data") {
+group("unit_tests_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
-  sources = [
+  data = [
+    "$root_gen_dir/components/services/screen_ai/proto/view_hierarchy.descriptor",
     "//components/test/data/screen_ai/sample_01_ax_tree.json",
     "//components/test/data/screen_ai/sample_01_expected_proto.pbtxt",
   ]
-
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+  deps = [
+    "//components/services/screen_ai/proto:view_hierarchy_proto_descriptor",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "proto/proto_convertor_unittest.cc" ]
+  sources = [
+    "proto/proto_convertor_unittest.cc",
+    "proto/test_proto_loader.cc",
+    "proto/test_proto_loader.h",
+  ]
+
+  data_deps = [ ":unit_tests_data" ]
 
   deps = [
-    ":unit_tests_bundle_data",
     "//components/services/screen_ai/proto",
     "//components/services/screen_ai/proto:proto_convertors",
     "//testing/gtest",
+    "//third_party/protobuf:protobuf_full",
     "//ui/accessibility:test_support",
   ]
 }
