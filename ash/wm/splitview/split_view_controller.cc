@@ -783,7 +783,7 @@ SplitViewController::~SplitViewController() {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   if (Shell::Get()->accessibility_controller())
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
-  EndSplitView();
+  EndSplitView(EndReason::kRootWindowDestroyed);
 }
 
 bool SplitViewController::InSplitViewMode() const {
@@ -1316,8 +1316,11 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
   // the resize. This can happen, for example, on the transition back to
   // clamshell mode or when a task is minimized during a resize. Likewise, if
   // split view is ending during the divider snap animation, then clean that up.
+  // But if the split view is ending due to the destroy of `root_window_`, we
+  // should skip the resize.
   const bool is_divider_animating = IsDividerAnimating();
-  if (is_resizing_ || is_divider_animating) {
+  if ((is_resizing_ || is_divider_animating) &&
+      end_reason != EndReason::kRootWindowDestroyed) {
     is_resizing_ = false;
     if (is_divider_animating) {
       // Don't call StopAndShoveAnimatedDivider as it will call observers.
