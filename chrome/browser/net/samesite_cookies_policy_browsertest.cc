@@ -97,9 +97,8 @@ class SameSiteCookiesPolicyTest : public PolicyTest,
     EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", page));
   }
 
-  void ExpectFrameContent(content::RenderFrameHost* frame,
-                          const std::string& expected) {
-    storage::test::ExpectFrameContent(frame, expected);
+  std::string GetFrameContent(content::RenderFrameHost* frame) {
+    return storage::test::GetFrameContent(frame);
   }
 
   bool IsSchemefulSameSiteEnabled() { return GetParam(); }
@@ -250,15 +249,15 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
   //
   // Start by navigating to an insecure page with an iframe.
   NavigateToHttpPageWithFrame("a.test");
-  storage::test::ExpectCookiesOnHost(browser()->profile(),
-                                     GetURL("a.test", false /* secure */),
-                                     "strictcookie=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(),
+                                GetURL("a.test", false /* secure */)),
+            "strictcookie=1");
 
   // Then navigate the frame to a secure page and check to see if the cookie is
   // sent.
   NavigateFrameToHttps("a.test", "/echoheader?cookie");
   // The legacy cookie should have been sent.
-  ExpectFrameContent(GetChildFrame(), "strictcookie=1");
+  EXPECT_EQ(GetFrameContent(GetChildFrame()), "strictcookie=1");
 }
 
 IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
@@ -276,16 +275,16 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
   // Start by navigating to an insecure page with an iframe. The cookie will
   // always be present because it is a same-schemeful-site context.
   NavigateToHttpPageWithFrame("a.test");
-  storage::test::ExpectCookiesOnHost(browser()->profile(),
-                                     GetURL("a.test", false /* secure */),
-                                     "strictcookie=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(),
+                                GetURL("a.test", false /* secure */)),
+            "strictcookie=1");
 
   // Then navigate the frame to a secure page and check to see if the cookie is
   // sent.
   NavigateFrameToHttps("a.test", "/echoheader?cookie");
   // The cookie will be sent only if Schemeful Same-Site is not active.
-  ExpectFrameContent(GetChildFrame(),
-                     IsSchemefulSameSiteEnabled() ? "None" : "strictcookie=1");
+  EXPECT_EQ(GetFrameContent(GetChildFrame()),
+            IsSchemefulSameSiteEnabled() ? "None" : "strictcookie=1");
 }
 
 IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
@@ -309,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
   ASSERT_TRUE(
       NavigateToURLFromRenderer(GetPrimaryMainFrame(), secure_echo_url));
 
-  ExpectFrameContent(GetPrimaryMainFrame(), "strictcookie=1");
+  EXPECT_EQ(GetFrameContent(GetPrimaryMainFrame()), "strictcookie=1");
 }
 
 IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
@@ -328,8 +327,8 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
   ASSERT_TRUE(
       NavigateToURLFromRenderer(GetPrimaryMainFrame(), secure_echo_url));
 
-  ExpectFrameContent(GetPrimaryMainFrame(),
-                     IsSchemefulSameSiteEnabled() ? "None" : "strictcookie=1");
+  EXPECT_EQ(GetFrameContent(GetPrimaryMainFrame()),
+            IsSchemefulSameSiteEnabled() ? "None" : "strictcookie=1");
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SameSiteCookiesPolicyTest, ::testing::Bool());
