@@ -42,10 +42,6 @@ namespace {
 const int kElevatedHostTimeoutSeconds = 300;
 #endif  // BUILDFLAG(IS_WIN)
 
-// redirect_uri to use when authenticating service accounts (service account
-// codes are obtained "out-of-band", i.e., not through an OAuth redirect).
-const char* kServiceAccountRedirectUri = "oob";
-
 // Features supported in addition to the base protocol.
 const char* kSupportedFeatures[] = {
     "pairingRegistry",
@@ -457,11 +453,13 @@ void Me2MeNativeMessagingHost::ProcessGetCredentialsFromAuthCode(
     return;
   }
 
+  // Pass an empty redirect_uri value since it's not needed when exchanging
+  // robot auth codes. See b/231442487 for more details.
+  std::string redirect_uri;
   gaia::OAuthClientInfo oauth_client_info = {
-    google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST),
-    google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST),
-    kServiceAccountRedirectUri
-  };
+      google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST),
+      google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST),
+      redirect_uri};
 
   oauth_client_->GetCredentialsFromAuthCode(
       oauth_client_info, std::move(*auth_code), need_user_email,

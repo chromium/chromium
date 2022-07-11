@@ -178,7 +178,9 @@ void HostStarter::OnHostRegistered(const std::string& authorization_code) {
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
   oauth_client_info_.client_secret =
       google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
-  oauth_client_info_.redirect_uri = "oob";
+  // Clear the redirect_uri field since it's not needed for robot auth codes.
+  // See b/231442487 for more details.
+  oauth_client_info_.redirect_uri.clear();
   oauth_client_->GetTokensFromAuthCode(oauth_client_info_, authorization_code,
                                        kMaxGetTokensRetries, this);
 }
