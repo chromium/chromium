@@ -684,8 +684,7 @@ void HTMLCanvasElement::Reset() {
     if (layout_object->IsCanvas()) {
       if (old_size != Size())
         To<LayoutHTMLCanvas>(layout_object)->CanvasSizeChanged();
-      if (had_resource_provider)
-        layout_object->SetShouldDoFullPaintInvalidation();
+      layout_object->SetShouldDoFullPaintInvalidation();
     }
   }
 }
