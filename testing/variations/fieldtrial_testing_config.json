@@ -9184,19 +9184,19 @@
             ],
             "experiments": [
                 {
-                    "name": "CompactInOldSpace",
+                    "name": "CompactInOldSpace_V1",
                     "disable_features": [
                         "V8UseMapSpace"
                     ]
                 },
                 {
-                    "name": "CompactInMapSpace",
+                    "name": "CompactInMapSpace_V1",
                     "enable_features": [
                         "V8CompactMaps"
                     ]
                 },
                 {
-                    "name": "Control"
+                    "name": "Control_V1"
                 }
             ]
         }
