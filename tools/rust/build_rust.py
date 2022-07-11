@@ -90,6 +90,8 @@ TEST_SUITES = [
 EXCLUDED_TESTS = [
     # Temporarily disabled due to https://github.com/rust-lang/rust/issues/94322
     'src/test/ui/numeric/numeric-cast.rs',
+    # Temporarily disabled due to https://github.com/rust-lang/rust/issues/96497
+    'src/test/codegen/issue-96497-slice-size-nowrap.rs',
 ]
 
 
@@ -355,10 +357,13 @@ def main():
         stamp.write('rustc %s-dev (%s chromium)\n' %
                     (rust_version, GetPackageVersion()))
 
+    return 0
+
+    # TODO(crbug.com/1342708): fix vendoring and re-enable.
     # x.py installed library sources to our toolchain directory. We also need to
     # copy the vendor directory so Chromium checkouts have all the deps needed
     # to build std.
-    shutil.copytree(RUST_SRC_VENDOR_DIR, RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR)
+    # shutil.copytree(RUST_SRC_VENDOR_DIR, RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR)
 
 
 if __name__ == '__main__':
