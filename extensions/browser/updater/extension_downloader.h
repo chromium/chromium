@@ -129,6 +129,8 @@ class ExtensionDownloader {
   void SetBackoffPolicyForTesting(
       const net::BackoffEntry::Policy* backoff_policy);
 
+  ManifestFetchData* GetActiveManifestFetchForTesting();
+
   // Sets a test delegate to use by any instances of this class. The |delegate|
   // should outlive all instances.
   static void set_test_delegate(ExtensionDownloaderTestDelegate* delegate);

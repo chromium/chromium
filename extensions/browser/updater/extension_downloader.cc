@@ -367,6 +367,10 @@ void ExtensionDownloader::SetBackoffPolicyForTesting(
   manifests_queue_.set_backoff_policy(backoff_policy);
 }
 
+ManifestFetchData* ExtensionDownloader::GetActiveManifestFetchForTesting() {
+  return manifests_queue_.active_request();
+}
+
 void ExtensionDownloader::UpdateURLStats(const GURL& update_url,
                                          Manifest::Type extension_type) {
   if (update_url.DomainIs(kGoogleDotCom)) {
@@ -476,21 +480,12 @@ void ExtensionDownloader::StartUpdateCheck(
     }
   }
 
-  if (manifests_queue_.active_request() &&
-      manifests_queue_.active_request()->full_url() == fetch_data->full_url()) {
-    NotifyExtensionsDownloadStageChanged(
-        extension_ids,
-        ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST);
-    manifests_queue_.active_request()->Merge(std::move(fetch_data));
-  } else {
-    UMA_HISTOGRAM_COUNTS_1M(
-        "Extensions.UpdateCheckUrlLength",
-        fetch_data->full_url().possibly_invalid_spec().length());
+  // In case the request with the same URL is already in-flight, we'll merge
+  // ours into it in `OnManifestLoadComplete`.
 
-    NotifyExtensionsDownloadStageChanged(
-        extension_ids, ExtensionDownloaderDelegate::Stage::QUEUED_FOR_MANIFEST);
-    manifests_queue_.ScheduleRequest(std::move(fetch_data));
-  }
+  NotifyExtensionsDownloadStageChanged(
+      extension_ids, ExtensionDownloaderDelegate::Stage::QUEUED_FOR_MANIFEST);
+  manifests_queue_.ScheduleRequest(std::move(fetch_data));
 }
 
 network::mojom::URLLoaderFactory* ExtensionDownloader::GetURLLoaderFactoryToUse(
@@ -733,6 +728,21 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
 
 void ExtensionDownloader::OnManifestLoadComplete(
     std::unique_ptr<std::string> response_body) {
+  // There is a chance that some other request has exactly some URL, so we won't
+  // fetch it twice.
+  std::vector<std::unique_ptr<ManifestFetchData>> duplicates =
+      manifests_queue_.erase_if(base::BindRepeating(
+          [](const GURL& full_url, const ManifestFetchData& fetch) {
+            return fetch.full_url() == full_url;
+          },
+          manifests_queue_.active_request()->full_url()));
+  for (std::unique_ptr<ManifestFetchData>& fetch : duplicates) {
+    NotifyExtensionsDownloadStageChanged(
+        fetch->GetExtensionIds(),
+        ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST);
+    manifests_queue_.active_request()->Merge(std::move(fetch));
+  }
+
   // Move loader from class-wide field to the local variable in order to make
   // ExtensionDownloader reentrable.
   std::unique_ptr<network::SimpleURLLoader> loader =
@@ -1106,16 +1116,9 @@ void ExtensionDownloader::FetchUpdatedExtension(
     }
   }
 
-  if (extensions_queue_.active_request() &&
-      extensions_queue_.active_request()->url == fetch_data->url) {
-    delegate_->OnExtensionDownloadStageChanged(
-        fetch_data->id, ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX);
-    extensions_queue_.active_request()->associated_tasks.insert(
-        extensions_queue_.active_request()->associated_tasks.end(),
-        std::make_move_iterator(fetch_data->associated_tasks.begin()),
-        std::make_move_iterator(fetch_data->associated_tasks.end()));
-    return;
-  }
+  // In case the request with the same URL is already in-flight, we'll merge
+  // ours into it in `OnExtensionLoadComplete`.
+
   absl::optional<base::FilePath> cached_crx_path =
       GetCachedExtension(fetch_data->id, fetch_data->package_hash,
                          fetch_data->version, /*manifest_fetch_failed*/ false);
@@ -1275,6 +1278,22 @@ void ExtensionDownloader::StartExtensionLoader() {
 }
 
 void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
+  // There is a chance that some other request has exactly some URL, so we won't
+  // fetch it twice.
+  std::vector<std::unique_ptr<ExtensionFetch>> duplicates =
+      extensions_queue_.erase_if(base::BindRepeating(
+          [](const ExtensionFetch* active_fetch, const ExtensionFetch& fetch) {
+            return fetch.url == active_fetch->url;
+          },
+          extensions_queue_.active_request()));
+  for (std::unique_ptr<ExtensionFetch>& fetch : duplicates) {
+    delegate_->OnExtensionDownloadStageChanged(
+        fetch->id, ExtensionDownloaderDelegate::Stage::DOWNLOADING_CRX);
+    extensions_queue_.active_request()->associated_tasks.insert(
+        extensions_queue_.active_request()->associated_tasks.end(),
+        std::make_move_iterator(fetch->associated_tasks.begin()),
+        std::make_move_iterator(fetch->associated_tasks.end()));
+  }
   GURL url = extension_loader_->GetFinalURL();
   int net_error = extension_loader_->NetError();
   int response_code = -1;

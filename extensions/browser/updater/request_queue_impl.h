@@ -141,6 +141,28 @@ typename RequestQueue<T>::iterator RequestQueue<T>::end() {
 }
 
 template <typename T>
+std::vector<std::unique_ptr<T>> RequestQueue<T>::erase_if(
+    base::RepeatingCallback<bool(const T&)> condition) {
+  std::vector<std::unique_ptr<T>> erased_fetches;
+  for (size_t i = 0; i < pending_requests_.size();) {
+    if (condition.Run(*pending_requests_[i].fetch)) {
+      erased_fetches.emplace_back(std::move(pending_requests_[i].fetch));
+      std::swap(pending_requests_[i],
+                pending_requests_[pending_requests_.size() - 1]);
+      pending_requests_.pop_back();
+    } else {
+      i++;
+    }
+  }
+  // We need to maintain a heap structure on pending request in order to extract
+  // first ones, but removing might break this structure.
+  std::make_heap(pending_requests_.begin(), pending_requests_.end(),
+                 CompareRequests);
+
+  return erased_fetches;
+}
+
+template <typename T>
 void RequestQueue<T>::set_backoff_policy(
     const net::BackoffEntry::Policy* backoff_policy) {
   backoff_policy_ = backoff_policy;

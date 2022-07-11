@@ -703,4 +703,91 @@ TEST_F(ExtensionDownloaderTest, TestMultipleRequestsSameExtension) {
   testing::Mock::VerifyAndClearExpectations(&delegate);
 }
 
+// Tests that update manifest fetches with the same URLs will be actually
+// merged.
+TEST_F(ExtensionDownloaderTest, TestUpdateManifestURLMerged) {
+  ExtensionDownloaderTestHelper helper;
+
+  ExtensionDownloaderTask task1 = CreateDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
+  task1.request_id = 1;
+  ExtensionDownloaderTask task2 = CreateDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
+  task2.request_id = 2;
+
+  int number_of_fetches = 0;
+  helper.test_url_loader_factory().SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url.spec() == "https://example.com/extension1.crx") {
+          helper.test_url_loader_factory().AddResponse(request.url.spec(), "",
+                                                       net::HTTP_OK);
+          return;
+        }
+        number_of_fetches++;
+        helper.test_url_loader_factory().AddResponse(
+            request.url.spec(),
+            CreateUpdateManifest(
+                {std::make_tuple(kTestExtensionId, "1.0",
+                                 "https://example.com/extension1.crx")}),
+            net::HTTP_OK);
+      }));
+
+  helper.downloader().AddPendingExtension(std::move(task1));
+  helper.downloader().StartAllPending(nullptr);
+  // We expect the downloader to merge two requests when the first one will be
+  // processed. For that we ensure that the first one becomes active before we
+  // add the second one.
+  EXPECT_NE(helper.downloader().GetActiveManifestFetchForTesting(), nullptr);
+  helper.downloader().AddPendingExtension(std::move(task2));
+  helper.downloader().StartAllPending(nullptr);
+
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(number_of_fetches, 1);
+}
+
+// Tests that extension fetches with the same URLs will be actually merged.
+TEST_F(ExtensionDownloaderTest, TestExtensionURLMerged) {
+  ExtensionDownloaderTestHelper helper;
+
+  ExtensionDownloaderTask task1 = CreateDownloaderTask(
+      kTestExtensionId, GURL("https://example.com/update1"));
+  task1.request_id = 1;
+  ExtensionDownloaderTask task2 = CreateDownloaderTask(
+      kTestExtensionId, GURL("https://example.com/update2"));
+  task2.request_id = 2;
+
+  int number_of_fetches = 0;
+  helper.test_url_loader_factory().SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (request.url.spec() == "https://example.com/extension1.crx") {
+          number_of_fetches++;
+          // Don't reply on this request immediately, make sure that manifest
+          // fetches will happen first.
+          return;
+        }
+        helper.test_url_loader_factory().AddResponse(
+            request.url.spec(),
+            CreateUpdateManifest(
+                {std::make_tuple(kTestExtensionId, "1.0",
+                                 "https://example.com/extension1.crx")}),
+            net::HTTP_OK);
+      }));
+
+  MockExtensionDownloaderDelegate& delegate = helper.delegate();
+  EXPECT_CALL(delegate, IsExtensionPending(kTestExtensionId))
+      .WillRepeatedly(Return(true));
+
+  helper.downloader().AddPendingExtension(std::move(task1));
+  helper.downloader().AddPendingExtension(std::move(task2));
+  helper.downloader().StartAllPending(nullptr);
+
+  content::RunAllTasksUntilIdle();
+  helper.test_url_loader_factory().AddResponse(
+      "https://example.com/extension1.crx", "", net::HTTP_OK);
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(number_of_fetches, 1);
+}
+
 }  // namespace extensions

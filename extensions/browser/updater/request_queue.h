@@ -79,6 +79,11 @@ class RequestQueue {
   iterator begin();
   iterator end();
 
+  // Checks all pending requests in the queue for the given condition, removes
+  // from the queue and returns the ones for which the condition returned true.
+  std::vector<std::unique_ptr<T>> erase_if(
+      const base::RepeatingCallback<bool(const T&)> condition);
+
   // Change the backoff policy used by the queue.
   void set_backoff_policy(const net::BackoffEntry::Policy* backoff_policy);
 
