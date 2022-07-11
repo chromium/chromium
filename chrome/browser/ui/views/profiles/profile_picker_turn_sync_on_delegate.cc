@@ -159,6 +159,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
+  sync_disabled_ = true;
+
   if (IsLacrosPrimaryProfileFirstRun(profile_)) {
     // The primary profile first run experience is silently skipped if sync is
     // disabled (there's no point to promo a feature that cannot get enabled).
@@ -169,7 +171,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
     return;
   }
   sync_confirmation_callback_ = std::move(callback);
-  sync_disabled_ = true;
   ShowEnterpriseWelcome(is_managed_account
                             ? EnterpriseProfileWelcomeUI::ScreenType::
                                   kEntepriseAccountSyncDisabled

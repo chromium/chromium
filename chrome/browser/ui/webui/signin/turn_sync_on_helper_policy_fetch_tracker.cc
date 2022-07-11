@@ -14,10 +14,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "content/public/browser/storage_partition.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif
-
 namespace {
 class PolicyFetchTracker
     : public TurnSyncOnHelperPolicyFetchTracker,
@@ -125,6 +121,8 @@ class PolicyFetchTracker
 class LacrosPrimaryProfilePolicyFetchTracker
     : public TurnSyncOnHelperPolicyFetchTracker {
  public:
+  explicit LacrosPrimaryProfilePolicyFetchTracker(Profile* profile)
+      : profile_(profile) {}
   ~LacrosPrimaryProfilePolicyFetchTracker() override = default;
 
   void SwitchToProfile(Profile* new_profile) override {
@@ -149,10 +147,10 @@ class LacrosPrimaryProfilePolicyFetchTracker
 
  private:
   bool IsManagedProfile() {
-    const enterprise_management::PolicyData* policy =
-        policy::PolicyLoaderLacros::main_user_policy_data();
-    return policy && policy->has_managed_by();
+    return profile_->GetProfilePolicyConnector()->IsManaged();
   }
+
+  Profile* profile_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace
@@ -163,7 +161,7 @@ TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
     const AccountInfo& account_info) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (profile->IsMainProfile()) {
-    return std::make_unique<LacrosPrimaryProfilePolicyFetchTracker>();
+    return std::make_unique<LacrosPrimaryProfilePolicyFetchTracker>(profile);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::make_unique<PolicyFetchTracker>(profile, account_info);
