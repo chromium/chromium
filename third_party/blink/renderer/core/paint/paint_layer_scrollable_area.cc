@@ -2023,29 +2023,6 @@ bool PaintLayerScrollableArea::IsLocalPointInResizeControl(
   return ResizerCornerRect(resizer_hit_test_type).Contains(local_point);
 }
 
-bool PaintLayerScrollableArea::HitTestResizerInFragments(
-    const PaintLayerFragments& layer_fragments,
-    const HitTestLocation& hit_test_location) const {
-  if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
-      !GetLayoutBox()->CanResize())
-    return false;
-
-  if (layer_fragments.IsEmpty())
-    return false;
-
-  for (int i = layer_fragments.size() - 1; i >= 0; --i) {
-    const PaintLayerFragment& fragment = layer_fragments.at(i);
-    if (fragment.background_rect.Intersects(hit_test_location)) {
-      gfx::Rect resizer_corner_rect = ResizerCornerRect(kResizerForPointer);
-      resizer_corner_rect.Offset(ToRoundedVector2d(fragment.layer_offset));
-      if (resizer_corner_rect.Contains(hit_test_location.RoundedPoint()))
-        return true;
-    }
-  }
-
-  return false;
-}
-
 void PaintLayerScrollableArea::UpdateResizerStyle(
     const ComputedStyle* old_style) {
   // Change of resizer status affects HasOverlayOverflowControls(). Invalid

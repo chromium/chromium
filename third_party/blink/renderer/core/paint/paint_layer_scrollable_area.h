@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -432,9 +431,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
                                    ResizerHitTestType) const;
 
   bool HitTestOverflowControls(HitTestResult&, const gfx::Point& local_point);
-
-  bool HitTestResizerInFragments(const PaintLayerFragments&,
-                                 const HitTestLocation&) const;
 
   // Returns the new offset, after scrolling, of the given rect in absolute
   // coordinates, clipped by the parent's client rect.

@@ -2306,6 +2306,37 @@ TEST_P(ScrollbarsTest, OverlayScrollbarHitTest) {
   EXPECT_FALSE(hit_test_result.GetScrollbar());
 }
 
+TEST_P(ScrollbarsTest, RecorderedOverlayScrollbarHitTest) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+  // Skip this test if scrollbars don't allow hit testing on the platform.
+  if (!WebView().GetPage()->GetScrollbarTheme().AllowsHitTest())
+    return;
+
+  SimRequest resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0; }</style>
+    <div id="target" style="width: 200px; height: 200px; overflow: scroll">
+      <div id="stacked" style="position: relative; height: 400px">
+      </div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* target = GetDocument().getElementById("target")->GetLayoutBox();
+  target->GetScrollableArea()->SetScrollbarsHiddenForTesting(false);
+  ASSERT_TRUE(target->Layer()->NeedsReorderOverlayOverflowControls());
+
+  // Hit test on and off the main frame scrollbar.
+  HitTestResult result = HitTest(195, 5);
+  EXPECT_TRUE(result.GetScrollbar());
+  EXPECT_EQ(target->GetNode(), result.InnerNode());
+  result = HitTest(150, 5);
+  EXPECT_FALSE(result.GetScrollbar());
+  EXPECT_EQ(GetDocument().getElementById("stacked"), result.InnerNode());
+}
+
 TEST_P(ScrollbarsTest, AllowMiddleButtonPressOnScrollbar) {
   // This test requires that scrollbars take up space.
   ENABLE_OVERLAY_SCROLLBARS(false);

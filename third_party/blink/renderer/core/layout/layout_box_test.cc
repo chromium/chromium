@@ -1975,6 +1975,36 @@ TEST_P(LayoutBoxTest, ScrollsWithViewportFixedPositionInsideTransform) {
   EXPECT_FALSE(GetLayoutBoxByElementId("target")->IsFixedToView());
 }
 
+TEST_P(LayoutBoxTest, HitTestResizerWithTextAreaChild) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <div id="target"
+         style="width: 100px; height: 100px; overflow: auto; resize: both">
+      <textarea id="textarea"
+          style="width: 100%; height: 100%; resize: none"></textarea>
+    </div>
+  )HTML");
+
+  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(99, 99));
+  EXPECT_TRUE(HitTest(1, 1)->IsDescendantOrShadowDescendantOf(
+      GetDocument().getElementById("textarea")));
+}
+
+TEST_P(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <div id="target" style="position: relative; width: 100px; height: 100px;
+                            overflow: auto; resize: both">
+      <textarea id="textarea"
+          style="width: 100%; height: 100%; resize: none"></textarea>
+    </div>
+  )HTML");
+
+  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(99, 99));
+  EXPECT_TRUE(HitTest(1, 1)->IsDescendantOrShadowDescendantOf(
+      GetDocument().getElementById("textarea")));
+}
+
 class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
                                              public PaintTestConfigurations {
  protected:

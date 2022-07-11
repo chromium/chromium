@@ -683,7 +683,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                            bool applied_transform = false,
                            HitTestingTransformState* = nullptr,
                            double* z_offset = nullptr,
-                           bool check_resizer_only = false);
+                           bool overflow_controls_only = false);
   PaintLayer* HitTestLayerByApplyingTransform(
       const PaintLayer& transform_container,
       const PaintLayerFragment* container_fragment,
@@ -692,7 +692,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const HitTestRecursionData& recursion_data,
       HitTestingTransformState*,
       double* z_offset,
-      bool check_resizer_only,
+      bool overflow_controls_only,
       const PhysicalOffset& translation_offset = PhysicalOffset());
   PaintLayer* HitTestChildren(
       PaintLayerIteration,
@@ -734,7 +734,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const HitTestRecursionData&,
       HitTestingTransformState*,
       double* z_offset,
-      bool check_resizer_only,
+      bool overflow_controls_only,
       ShouldRespectOverflowClipType);
   bool HitTestClippedOutByClipPath(const PaintLayer& root_layer,
                                    const HitTestLocation&) const;

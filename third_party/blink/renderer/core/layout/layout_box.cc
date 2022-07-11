@@ -2490,9 +2490,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
   if (!MayIntersect(result, hit_test_location, accumulated_offset))
     return false;
 
-  bool should_hit_test_self = IsInSelfHitTestingPhase(phase);
-
-  if (should_hit_test_self &&
+  if (phase == HitTestPhase::kForeground && !HasSelfPaintingLayer() &&
       HitTestOverflowControl(result, hit_test_location, accumulated_offset))
     return true;
 
@@ -2525,7 +2523,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
     return false;
 
   // Now hit test ourselves.
-  if (should_hit_test_self &&
+  if (IsInSelfHitTestingPhase(phase) &&
       VisibleToHitTestRequest(result.GetHitTestRequest())) {
     PhysicalRect bounds_rect;
     if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {

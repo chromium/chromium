@@ -1457,7 +1457,7 @@ PaintLayer* PaintLayer::HitTestLayer(
     bool applied_transform,
     HitTestingTransformState* container_transform_state,
     double* z_offset,
-    bool check_resizer_only) {
+    bool overflow_controls_only) {
   const FragmentData* container_fragment_data =
       container_fragment ? container_fragment->fragment_data : nullptr;
   const auto& container_layout_object = transform_container.GetLayoutObject();
@@ -1529,7 +1529,8 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (use_transform && !applied_transform) {
     return HitTestTransformedLayerInFragments(
         transform_container, container_fragment, result, recursion_data,
-        container_transform_state, z_offset, check_resizer_only, clip_behavior);
+        container_transform_state, z_offset, overflow_controls_only,
+        clip_behavior);
   }
 
   // Don't hit test the clip-path area when checking for occlusion. This is
@@ -1631,22 +1632,21 @@ PaintLayer* PaintLayer::HitTestLayer(
                        container_fragment_data);
     }
 
-    // See if the hit test pos is inside the resizer of current layer. This
-    // should be done before walking child layers to avoid that the resizer
-    // clickable area is obscured by the positive child layers.
-    if (scrollable_area_ && scrollable_area_->HitTestResizerInFragments(
-                                layer_fragments, recursion_data.location)) {
-      if (Node* node_for_resizer = layout_object.NodeForHitTest())
-        result.SetInnerNode(node_for_resizer);
+    // See if the hit test pos is inside the overflow controls of current layer.
+    // This should be done before walking child layers to avoid that the
+    // overflow controls are obscured by the positive child layers.
+    if (scrollable_area_ &&
+        GetLayoutBox()->HitTestOverflowControl(
+            result, recursion_data.location, layer_fragments[0].layer_offset)) {
       return this;
     }
   }
 
-  if (check_resizer_only)
+  if (overflow_controls_only)
     return nullptr;
 
-  // See if the hit test pos is inside the resizer of the child layers which
-  // has reordered the painting of the overlay overflow controls.
+  // See if the hit test pos is inside the overflow controls of the child
+  // layers that have reordered the painting of the overlay overflow controls.
   if (stacking_node_) {
     for (auto& layer : base::Reversed(
              stacking_node_->OverlayOverflowControlsReorderedList())) {
@@ -1654,7 +1654,7 @@ PaintLayer* PaintLayer::HitTestLayer(
                               recursion_data, /*applied_transform*/ false,
                               container_transform_state,
                               z_offset_for_descendants_ptr,
-                              /*check_resizer_only*/ true)) {
+                              /*overflow_controls_only*/ true)) {
         return layer;
       }
     }
@@ -1805,6 +1805,7 @@ bool PaintLayer::HitTestFragmentsWithPhase(
       continue;
 
     inside_clip_rect = true;
+
     if (UNLIKELY(GetLayoutObject().IsLayoutInline() &&
                  GetLayoutObject().CanTraversePhysicalFragments())) {
       // When hit-testing an inline that has a layer, we'll search for it in
@@ -1837,7 +1838,7 @@ PaintLayer* PaintLayer::HitTestTransformedLayerInFragments(
     const HitTestRecursionData& recursion_data,
     HitTestingTransformState* container_transform_state,
     double* z_offset,
-    bool check_resizer_only,
+    bool overflow_controls_only,
     ShouldRespectOverflowClipType clip_behavior) {
   const FragmentData* container_fragment_data =
       container_fragment ? container_fragment->fragment_data : nullptr;
@@ -1855,7 +1856,7 @@ PaintLayer* PaintLayer::HitTestTransformedLayerInFragments(
     PaintLayer* hit_layer = HitTestLayerByApplyingTransform(
         transform_container, container_fragment, fragment, result,
         recursion_data, container_transform_state, z_offset,
-        check_resizer_only);
+        overflow_controls_only);
     if (hit_layer)
       return hit_layer;
   }
@@ -1871,7 +1872,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
     const HitTestRecursionData& recursion_data,
     HitTestingTransformState* root_transform_state,
     double* z_offset,
-    bool check_resizer_only,
+    bool overflow_controls_only,
     const PhysicalOffset& translation_offset) {
   // Create a transform state to accumulate this transform.
   HitTestingTransformState new_transform_state = CreateLocalTransformState(
@@ -1910,7 +1911,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
                                                        : nullptr;
   return HitTestLayer(*this, new_container_fragment, result, new_recursion_data,
                       /*applied_transform*/ true, &new_transform_state,
-                      z_offset, check_resizer_only);
+                      z_offset, overflow_controls_only);
 }
 
 bool PaintLayer::HitTestFragmentWithPhase(

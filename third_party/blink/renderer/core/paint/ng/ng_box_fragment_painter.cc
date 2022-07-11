@@ -1907,22 +1907,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
                              physical_offset))
     return false;
 
-  bool pointer_events_bounding_box = false;
-  bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.phase);
-  if (hit_test_self) {
-    // Table row and table section are never a hit target.
-    // SVG <text> is not a hit target except if 'pointer-events: bounding-box'.
-    if (PhysicalFragment().IsTableNGRow() ||
-        PhysicalFragment().IsTableNGSection()) {
-      hit_test_self = false;
-    } else if (fragment.IsSvgText()) {
-      pointer_events_bounding_box =
-          fragment.Style().UsedPointerEvents() == EPointerEvents::kBoundingBox;
-      hit_test_self = pointer_events_bounding_box;
-    }
-  }
-
-  if (hit_test_self && box_fragment_.IsScrollContainer() &&
+  if (hit_test.phase == HitTestPhase::kForeground &&
+      !box_fragment_.HasSelfPaintingLayer() &&
       HitTestOverflowControl(hit_test, physical_offset))
     return true;
 
@@ -1969,6 +1955,21 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   if (style.HasBorderRadius() &&
       HitTestClippedOutByBorder(hit_test.location, physical_offset))
     return false;
+
+  bool pointer_events_bounding_box = false;
+  bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.phase);
+  if (hit_test_self) {
+    // Table row and table section are never a hit target.
+    // SVG <text> is not a hit target except if 'pointer-events: bounding-box'.
+    if (PhysicalFragment().IsTableNGRow() ||
+        PhysicalFragment().IsTableNGSection()) {
+      hit_test_self = false;
+    } else if (fragment.IsSvgText()) {
+      pointer_events_bounding_box =
+          fragment.Style().UsedPointerEvents() == EPointerEvents::kBoundingBox;
+      hit_test_self = pointer_events_bounding_box;
+    }
+  }
 
   // Now hit test ourselves.
   if (hit_test_self) {
