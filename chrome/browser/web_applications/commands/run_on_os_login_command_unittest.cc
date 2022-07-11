@@ -78,493 +78,6 @@ class TestOsIntegrationManager : public FakeOsIntegrationManager {
 
 }  // namespace
 
-class RunOnOsLoginCommandUnitTest : public WebAppTest {
- public:
-  RunOnOsLoginCommandUnitTest() = default;
-  RunOnOsLoginCommandUnitTest(const RunOnOsLoginCommandUnitTest&) = delete;
-  RunOnOsLoginCommandUnitTest& operator=(const RunOnOsLoginCommandUnitTest&) =
-      delete;
-  ~RunOnOsLoginCommandUnitTest() override = default;
-
-  void SetUp() override {
-    WebAppTest::SetUp();
-
-    auto* provider = FakeWebAppProvider::Get(profile());
-    auto os_integration_manager = std::make_unique<TestOsIntegrationManager>(
-        profile(), /*app_shortcut_manager=*/nullptr,
-        /*file_handler_manager=*/nullptr,
-        /*protocol_handler_manager=*/nullptr,
-        /*url_handler_manager*/ nullptr);
-    os_integration_manager_ = os_integration_manager.get();
-    provider_ = provider;
-    provider->SetOsIntegrationManager(std::move(os_integration_manager));
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
-  WebAppProvider* provider() { return provider_; }
-
-  FakeOsIntegrationManager& fake_os_integration_manager() {
-    return *os_integration_manager_;
-  }
-
-  AppId RegisterApp(const GURL& start_url = GURL("https://example.com/path")) {
-    auto web_app = test::CreateWebApp(start_url);
-    AppId app_id = web_app->app_id();
-    web_app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->CreateApp(std::move(web_app));
-    }
-    return app_id;
-  }
-
- private:
-  raw_ptr<FakeOsIntegrationManager> os_integration_manager_ = nullptr;
-  raw_ptr<WebAppProvider> provider_ = nullptr;
-};
-
-TEST_F(RunOnOsLoginCommandUnitTest, PersistRunOnOsLoginUserChoice) {
-  const AppId app_id = RegisterApp();
-
-  // If an app is not installed, validate we don't attempt to register with the
-  // OS.
-  PersistRunOnOsLoginUserChoice(
-      &provider()->registrar(), &provider()->os_integration_manager(),
-      &provider()->sync_bridge(), "FakeAppId", RunOnOsLoginMode::kWindowed);
-  EXPECT_EQ(0u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-  EXPECT_EQ(
-      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-
-  // RunOnOsLoginMode::kNotRun should be the default, validate we don't attempt
-  // to register with the OS.
-  PersistRunOnOsLoginUserChoice(
-      &provider()->registrar(), &provider()->os_integration_manager(),
-      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
-  EXPECT_EQ(0u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-  EXPECT_EQ(
-      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-
-  // Validate that toggling to kWindowed invokes the OsIntegrationManager, and
-  // that repeated calls do not.
-  PersistRunOnOsLoginUserChoice(
-      &provider()->registrar(), &provider()->os_integration_manager(),
-      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
-  EXPECT_EQ(1u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-
-  PersistRunOnOsLoginUserChoice(
-      &provider()->registrar(), &provider()->os_integration_manager(),
-      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
-  EXPECT_EQ(1u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-
-  // Validate that toggling back to kNotRun invokes the OsIntegrationManager.
-  PersistRunOnOsLoginUserChoice(
-      &provider()->registrar(), &provider()->os_integration_manager(),
-      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
-  EXPECT_EQ(1u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-  EXPECT_EQ(
-      1u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-}
-
-TEST_F(RunOnOsLoginCommandUnitTest,
-       PersistRunOnOsLoginUserChoiceAppNotLocallyInstalled) {
-  const AppId app_id = RegisterApp();
-
-  // Simulate the app not locally installed.
-  {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
-    update->UpdateApp(app_id)->SetIsLocallyInstalled(false);
-  }
-
-  PersistRunOnOsLoginUserChoice(
-      &provider()->registrar(), &provider()->os_integration_manager(),
-      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
-  EXPECT_EQ(0u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-  EXPECT_EQ(
-      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-
-  // Simulate the app locally installed.
-  {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
-    update->UpdateApp(app_id)->SetIsLocallyInstalled(true);
-  }
-
-  PersistRunOnOsLoginUserChoice(
-      &provider()->registrar(), &provider()->os_integration_manager(),
-      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
-  EXPECT_EQ(1u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-  EXPECT_EQ(
-      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-}
-
-TEST_F(RunOnOsLoginCommandUnitTest,
-       PersistRunOnOsLoginUserChoiceForAlreadyInstalledApp) {
-  // |web_app->run_on_os_login_os_integration_state()| returns an optional
-  // value. A null value can be returned if a web app was installed prior to the
-  // completion of the work associated with https://crbug.com/1280773. This test
-  // validates that both states are handled properly.
-
-  // If the user has configured an app to run during os-login, and there
-  // is no os integration state recorded, then confirm that the
-  // OSIntegrationManager is invoked when expected.
-  {
-    auto web_app = test::CreateWebApp(GURL("https://windowed.example/"));
-    const AppId app_id = web_app->app_id();
-    web_app->SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->CreateApp(std::move(web_app));
-    }
-
-    // Validate we don't attempt to register with the OS.
-    PersistRunOnOsLoginUserChoice(
-        &provider()->registrar(), &provider()->os_integration_manager(),
-        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
-    EXPECT_EQ(
-        0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        0u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-
-    // Validate we do attempt to unregister with the OS.
-    PersistRunOnOsLoginUserChoice(
-        &provider()->registrar(), &provider()->os_integration_manager(),
-        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
-    EXPECT_EQ(
-        0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        1u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-
-  // If the user has not configured an app to run during os-login, and there
-  // is no os integration state recorded, then confirm that the
-  // OSIntegrationManager is invoked when expected.
-  {
-    auto web_app = test::CreateWebApp(GURL("https://allowed.example/"));
-    const AppId app_id = web_app->app_id();
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->CreateApp(std::move(web_app));
-    }
-
-    // Validate we don't attempt to unregister with the OS.
-    PersistRunOnOsLoginUserChoice(
-        &provider()->registrar(), &provider()->os_integration_manager(),
-        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
-    EXPECT_EQ(
-        0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        1u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-
-    // Validate we do attempt to register with the OS.
-    PersistRunOnOsLoginUserChoice(
-        &provider()->registrar(), &provider()->os_integration_manager(),
-        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
-    EXPECT_EQ(
-        1u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        1u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-}
-
-TEST_F(RunOnOsLoginCommandUnitTest, SyncRunOnOsLoginOsIntegrationState) {
-  const char kWebAppSettingWithDefaultConfiguration[] = R"([
-    {
-      "manifest_id": "https://windowed.example/",
-      "run_on_os_login": "run_windowed"
-    },
-    {
-      "manifest_id": "https://allowed.example/",
-      "run_on_os_login": "allowed"
-    },
-    {
-      "manifest_id": "*",
-      "run_on_os_login": "blocked"
-    }
-  ])";
-
-  test::SetWebAppSettingsListPref(profile(),
-                                  kWebAppSettingWithDefaultConfiguration);
-  provider()->policy_manager().RefreshPolicySettingsForTesting();
-
-  // This app falls under the default configuration, and the app has not
-  // previously been registered to run-on-os-login.
-  {
-    const AppId app_id = RegisterApp();
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        0u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-
-  // This app falls under the default configuration, and the app has been
-  // previously been registered to run-on-os-login.
-  {
-    const AppId app_id = RegisterApp(GURL("https://test.example/"));
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
-          RunOnOsLoginMode::kWindowed);
-    }
-
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        1u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-
-  // This app has a specific policy that forces an app to run during os login.
-  {
-    const AppId app_id = RegisterApp(GURL("https://windowed.example/"));
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        1u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        1u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-    EXPECT_EQ(RunOnOsLoginMode::kWindowed,
-              provider()->registrar().GetAppRunOnOsLoginMode(app_id).value);
-  }
-
-  // This app has a specific policy that allows the user to change the
-  // run-on-os-login state.
-  {
-    const AppId app_id = RegisterApp(GURL("https://allowed.example/"));
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        1u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        1u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-    EXPECT_EQ(RunOnOsLoginMode::kNotRun,
-              provider()->registrar().GetAppRunOnOsLoginMode(app_id).value);
-
-    PersistRunOnOsLoginUserChoice(
-        &provider()->registrar(), &provider()->os_integration_manager(),
-        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
-    EXPECT_EQ(
-        2u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        1u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-
-    PersistRunOnOsLoginUserChoice(
-        &provider()->registrar(), &provider()->os_integration_manager(),
-        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
-    EXPECT_EQ(
-        2u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        2u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-}
-
-TEST_F(RunOnOsLoginCommandUnitTest,
-       SyncRunOnOsLoginOsIntegrationStateForAlreadyInstalledApp) {
-  // |web_app->run_on_os_login_os_integration_state()| returns an optional
-  // value. A null value can be returned if a web app was installed prior to the
-  // completion of the work associated with https://crbug.com/1280773. This test
-  // validates that both states are handled properly.
-  const char kWebAppSettingWithDefaultConfiguration[] = R"([
-    {
-      "manifest_id": "https://windowed.example/",
-      "run_on_os_login": "run_windowed"
-    },
-    {
-      "manifest_id": "https://allowed.example/",
-      "run_on_os_login": "allowed"
-    },
-    {
-      "manifest_id": "https://allowed2.example/",
-      "run_on_os_login": "allowed"
-    },
-    {
-      "manifest_id": "*",
-      "run_on_os_login": "blocked"
-    }
-  ])";
-
-  test::SetWebAppSettingsListPref(profile(),
-                                  kWebAppSettingWithDefaultConfiguration);
-  provider()->policy_manager().RefreshPolicySettingsForTesting();
-
-  // This app falls under the default configuration, and the app has not
-  // previously been registered to run-on-os-login.
-  {
-    auto web_app = test::CreateWebApp(GURL("https://example.com/path"));
-    const AppId app_id = web_app->app_id();
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->CreateApp(std::move(web_app));
-    }
-
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        1u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-
-  // This app falls under the default configuration, and the app has been
-  // previously been registered to run-on-os-login.
-  {
-    auto web_app = test::CreateWebApp(GURL("https://test.example/"));
-    const AppId app_id = web_app->app_id();
-    web_app->SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->CreateApp(std::move(web_app));
-    }
-
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        2u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-
-  // This app has a specific policy that forces an app to run during os login.
-  {
-    auto web_app = test::CreateWebApp(GURL("https://windowed.example/"));
-    const AppId app_id = web_app->app_id();
-    web_app->SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->CreateApp(std::move(web_app));
-    }
-
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        1u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        2u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-
-  // This app has a specific policy that allows the user to change the
-  // run-on-os-login state. The user has configured this app to run during OS
-  // login.
-  {
-    auto web_app = test::CreateWebApp(GURL("https://allowed.example/"));
-    const AppId app_id = web_app->app_id();
-    web_app->SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->CreateApp(std::move(web_app));
-    }
-
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        2u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        2u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-
-  // This app has a specific policy that allows the user to change the
-  // run-on-os-login state. The user has not configured this app to run during
-  // OS login.
-  {
-    auto web_app = test::CreateWebApp(GURL("https://allowed2.example/"));
-    const AppId app_id = web_app->app_id();
-    web_app->SetRunOnOsLoginMode(RunOnOsLoginMode::kNotRun);
-    {
-      ScopedRegistryUpdate update(&provider()->sync_bridge());
-      update->CreateApp(std::move(web_app));
-    }
-
-    SyncRunOnOsLoginOsIntegrationState(&provider()->registrar(),
-                                       &provider()->os_integration_manager(),
-                                       app_id);
-    EXPECT_EQ(
-        2u, fake_os_integration_manager().num_register_run_on_os_login_calls());
-    EXPECT_EQ(
-        3u,
-        fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-  }
-}
-
-TEST_F(RunOnOsLoginCommandUnitTest,
-       SyncRunOnOsLoginOsIntegrationStateAppNotLocallyInstalled) {
-  const char kWebAppSettingWithDefaultConfiguration[] = R"([
-    {
-      "manifest_id": "https://windowed.example/",
-      "run_on_os_login": "run_windowed"
-    },
-    {
-      "manifest_id": "https://allowed.example/",
-      "run_on_os_login": "allowed"
-    },
-    {
-      "manifest_id": "*",
-      "run_on_os_login": "blocked"
-    }
-  ])";
-
-  test::SetWebAppSettingsListPref(profile(),
-                                  kWebAppSettingWithDefaultConfiguration);
-  provider()->policy_manager().RefreshPolicySettingsForTesting();
-
-  const AppId app_id = RegisterApp(GURL("https://windowed.example/"));
-
-  // Simulate the app not locally installed.
-  {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
-    update->UpdateApp(app_id)->SetIsLocallyInstalled(false);
-  }
-
-  SyncRunOnOsLoginOsIntegrationState(
-      &provider()->registrar(), &provider()->os_integration_manager(), app_id);
-  EXPECT_EQ(0u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-  EXPECT_EQ(
-      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-
-  // Simulate the app locally installed.
-  {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
-    update->UpdateApp(app_id)->SetIsLocallyInstalled(true);
-  }
-
-  SyncRunOnOsLoginOsIntegrationState(
-      &provider()->registrar(), &provider()->os_integration_manager(), app_id);
-  EXPECT_EQ(1u,
-            fake_os_integration_manager().num_register_run_on_os_login_calls());
-  EXPECT_EQ(
-      0u, fake_os_integration_manager().num_unregister_run_on_os_login_calls());
-}
-
 class RunOnOsLoginCommandTest : public WebAppTest {
  public:
   void SetUp() override {
@@ -771,6 +284,49 @@ TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
                 .value());
 }
 
+TEST_F(RunOnOsLoginCommandTest, RepeatedCallsDoNotCauseRepeatedOSRegistration) {
+  auto web_app = test::CreateWebApp();
+  const AppId app_id = web_app->app_id();
+  RegisterApp(std::move(web_app));
+
+  base::RunLoop loop1;
+  provider()->command_manager().ScheduleCommand(
+      RunOnOsLoginCommand::CreateForSetLoginMode(
+          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
+          RunOnOsLoginMode::kWindowed, loop1.QuitClosure()));
+  loop1.Run();
+  EXPECT_EQ(1u, os_integration_manager()->num_register_run_on_os_login_calls());
+
+  base::RunLoop loop2;
+  provider()->command_manager().ScheduleCommand(
+      RunOnOsLoginCommand::CreateForSetLoginMode(
+          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
+          RunOnOsLoginMode::kWindowed, loop2.QuitClosure()));
+  loop2.Run();
+  // Count should still be 1 because repeated calls cause command to end early
+  // as success.
+  EXPECT_EQ(1u, os_integration_manager()->num_register_run_on_os_login_calls());
+}
+
+TEST_F(RunOnOsLoginCommandTest, NotRunDoesNotAtemptOSRegistration) {
+  auto web_app = test::CreateWebApp();
+  const AppId app_id = web_app->app_id();
+  RegisterApp(std::move(web_app));
+
+  base::RunLoop loop;
+  provider()->command_manager().ScheduleCommand(
+      RunOnOsLoginCommand::CreateForSetLoginMode(
+          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
+          RunOnOsLoginMode::kNotRun, loop.QuitClosure()));
+  loop.Run();
+
+  // OS registration should not be attempted if the default state of Run On OS
+  // Login mode is kNotRun.
+  EXPECT_EQ(0u, os_integration_manager()->num_register_run_on_os_login_calls());
+  EXPECT_EQ(0u,
+            os_integration_manager()->num_unregister_run_on_os_login_calls());
+}
+
 TEST_F(RunOnOsLoginCommandTest, SyncCommandAndUninstallOSHooks) {
   auto web_app = test::CreateWebApp();
   const AppId app_id = web_app->app_id();
@@ -780,7 +336,6 @@ TEST_F(RunOnOsLoginCommandTest, SyncCommandAndUninstallOSHooks) {
     update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
         RunOnOsLoginMode::kWindowed);
   }
-  base::HistogramTester tester;
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
@@ -885,6 +440,71 @@ TEST_F(RunOnOsLoginCommandTest, AbortCommandOnPolicyBlockedApp) {
   tester.ExpectBucketCount(
       "WebApp.RunOnOsLogin.CommandCompletionState",
       RunOnOsLoginCommandCompletionState::kNotAllowedByPolicy, 1);
+}
+
+TEST_F(RunOnOsLoginCommandTest, VerifySetWorksOnAppWithNoStateDefined) {
+  auto web_app = test::CreateWebApp();
+  const AppId app_id = web_app->app_id();
+  // Run on OS Login state in the web_app DB is not defined.
+  {
+    ScopedRegistryUpdate update(&sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+
+  base::RunLoop loop1;
+  provider()->command_manager().ScheduleCommand(
+      RunOnOsLoginCommand::CreateForSetLoginMode(
+          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
+          RunOnOsLoginMode::kNotRun, loop1.QuitClosure()));
+  loop1.Run();
+
+  // kNotRun should not invoke any calls.
+  EXPECT_EQ(0u, os_integration_manager()->num_register_run_on_os_login_calls());
+  EXPECT_EQ(0u,
+            os_integration_manager()->num_unregister_run_on_os_login_calls());
+
+  base::RunLoop loop2;
+  provider()->command_manager().ScheduleCommand(
+      RunOnOsLoginCommand::CreateForSetLoginMode(
+          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
+          RunOnOsLoginMode::kWindowed, loop2.QuitClosure()));
+  loop2.Run();
+
+  // kWindowed should invoke 1 register call.
+  EXPECT_EQ(1u, os_integration_manager()->num_register_run_on_os_login_calls());
+  EXPECT_EQ(0u,
+            os_integration_manager()->num_unregister_run_on_os_login_calls());
+}
+
+TEST_F(RunOnOsLoginCommandTest, VerifySyncWorksOnAppWithNoStateDefined) {
+  auto web_app = test::CreateWebApp(GURL("https:/default.example/"));
+  const AppId app_id = web_app->app_id();
+  {
+    ScopedRegistryUpdate update(&sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+
+  const char kWebAppSettingWithDefaultConfiguration[] = R"([
+    {
+      "manifest_id": "https://default.example/",
+      "run_on_os_login": "allowed"
+    }
+  ])";
+
+  test::SetWebAppSettingsListPref(profile(),
+                                  kWebAppSettingWithDefaultConfiguration);
+  WebAppPolicyManager& policy_manager = provider()->policy_manager();
+  policy_manager.RefreshPolicySettingsForTesting();
+
+  base::RunLoop loop;
+  provider()->command_manager().ScheduleCommand(
+      RunOnOsLoginCommand::CreateForSyncLoginMode(
+          &registrar(), os_integration_manager(), app_id, loop.QuitClosure()));
+  loop.Run();
+
+  EXPECT_EQ(0u, os_integration_manager()->num_register_run_on_os_login_calls());
+  EXPECT_EQ(1u,
+            os_integration_manager()->num_unregister_run_on_os_login_calls());
 }
 
 }  // namespace web_app
