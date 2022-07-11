@@ -149,7 +149,9 @@ export class Dictation {
   startDictation_() {
     this.active_ = true;
     this.startTone_.play();
-    this.setStopTimeout_(Dictation.Timeouts.NO_FOCUSED_IME_MS);
+    this.setStopTimeout_(
+        Dictation.Timeouts.NO_FOCUSED_IME_MS,
+        'Dictation stopped automatically: No focused IME');
     this.inputController_.connect(() => this.maybeStartSpeechRecognition_());
   }
 
@@ -210,14 +212,20 @@ export class Dictation {
   /**
    * Sets the timeout to stop Dictation.
    * @param {number} durationMs
+   * @param {string?} debugInfo Optional debugging information for why Dictation
+   *     stopped automatically.
    * @private
    */
-  setStopTimeout_(durationMs) {
+  setStopTimeout_(durationMs, debugInfo) {
     if (this.stopTimeoutId_ !== null) {
       clearTimeout(this.stopTimeoutId_);
     }
-    this.stopTimeoutId_ =
-        setTimeout(() => this.stopDictation_(/*notify=*/ true), durationMs);
+    this.stopTimeoutId_ = setTimeout(() => {
+      this.stopDictation_(/*notify=*/ true);
+      if (debugInfo) {
+        console.log(debugInfo);
+      }
+    }, durationMs);
   }
 
   /**
