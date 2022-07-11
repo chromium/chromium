@@ -586,6 +586,7 @@ test("components_unittests") {
   if (enable_basic_printing) {
     deps += [
       "//components/printing/browser/print_to_pdf:unit_tests",
+      "//components/printing/common:unit_tests",
       "//components/services/print_compositor:unit_tests",
     ]
   }
