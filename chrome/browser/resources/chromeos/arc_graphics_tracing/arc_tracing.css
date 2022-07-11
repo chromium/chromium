@@ -84,7 +84,7 @@
 }
 
 .arc-events-band-title span {
-  flex: 1;
+  padding-inline-end: 12px;
   padding-top: 4px;
 }
 
@@ -166,6 +166,14 @@
 
 .hidden.arc-events-band-title::before {
   content: '\002B';
+}
+
+.hidden.arc-events-band-title input {
+  display: none;
+}
+
+.hidden.arc-events-band-title label {
+  display: none;
 }
 
 .hidden.arc-events-band {

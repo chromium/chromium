@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <array>
+
 #include "base/bind.h"
 #include "base/cpu.h"
 #include "base/files/file_enumerator.h"
@@ -201,7 +203,6 @@ struct OneValueReaderInfo {
   SystemReader reader = SystemReader::kTotal;
   int64_t* value = nullptr;
   int64_t default_value = 0;
-  bool error_reported = false;
 };
 
 struct ArcSystemStatCollector::SystemReadersContext {
@@ -662,16 +663,17 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
 
   OneValueReaderInfo one_value_readers[] = {
       {SystemReader::kCpuTemperature, &context->current_frame.cpu_temperature,
-       std::numeric_limits<int>::min(), false},
-      {SystemReader::kCpuFrequency, &context->current_frame.cpu_frequency, 0,
-       false},
+       std::numeric_limits<int>::min()},
+      {SystemReader::kCpuFrequency, &context->current_frame.cpu_frequency, 0},
       {SystemReader::kPackagePowerConstraint,
-       &context->current_frame.package_power_constraint, 0, false},
-      {SystemReader::kCpuEnergy, &context->current_frame.cpu_energy, 0, false},
-      {SystemReader::kGpuEnergy, &context->current_frame.gpu_energy, 0, false},
-      {SystemReader::kMemoryEnergy, &context->current_frame.memory_energy, 0,
-       false},
+       &context->current_frame.package_power_constraint, 0},
+      {SystemReader::kCpuEnergy, &context->current_frame.cpu_energy, 0},
+      {SystemReader::kGpuEnergy, &context->current_frame.gpu_energy, 0},
+      {SystemReader::kMemoryEnergy, &context->current_frame.memory_energy, 0},
   };
+
+  static bool one_value_readers_error_reported[std::size(one_value_readers)] = {
+      false};
 
   for (size_t i = 0; i < std::size(one_value_readers); ++i) {
     if (!context->system_readers[one_value_readers[i].reader].is_valid() ||
@@ -679,11 +681,11 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
             context->system_readers[one_value_readers[i].reader].get(),
             kOneValueColumns, one_value_readers[i].value)) {
       *one_value_readers[i].value = one_value_readers[i].default_value;
-      if (one_value_readers[i].error_reported)
+      if (one_value_readers_error_reported[i])
         continue;
       LOG(ERROR) << "Failed to read one value system stat: "
                  << one_value_readers[i].reader;
-      one_value_readers[i].error_reported = true;
+      one_value_readers_error_reported[i] = true;
     }
   }
 

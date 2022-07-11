@@ -449,19 +449,23 @@ class SVG {
 
   // Creates text element in the |svg| with provided attributes.
   static addText(svg, x, y, fontSize, textContent, anchor, transform) {
-    var text = document.createElementNS(svgNS, 'text');
-    text.setAttributeNS(null, 'x', x);
-    text.setAttributeNS(null, 'y', y);
-    text.setAttributeNS(null, 'fill', 'black');
-    text.setAttributeNS(null, 'font-size', fontSize);
-    if (anchor) {
-      text.setAttributeNS(null, 'text-anchor', anchor);
+    const lines = textContent.split('\n');
+    for (var i = 0; i < lines.length; ++i) {
+      var text = document.createElementNS(svgNS, 'text');
+      text.setAttributeNS(null, 'x', x);
+      text.setAttributeNS(null, 'y', y);
+      text.setAttributeNS(null, 'fill', 'black');
+      text.setAttributeNS(null, 'font-size', fontSize);
+      if (anchor) {
+        text.setAttributeNS(null, 'text-anchor', anchor);
+      }
+      if (transform) {
+        text.setAttributeNS(null, 'transform', transform);
+      }
+      text.appendChild(document.createTextNode(lines[i]));
+      svg.appendChild(text);
+      y += fontSize;
     }
-    if (transform) {
-      text.setAttributeNS(null, 'transform', transform);
-    }
-    text.appendChild(document.createTextNode(textContent));
-    svg.appendChild(text);
     return text;
   }
 }
@@ -471,7 +475,7 @@ class SVG {
  * content.
  */
 class EventBandTitle {
-  constructor(parent, title, className, opt_iconContent) {
+  constructor(parent, anchor, title, className, opt_iconContent) {
     this.div = document.createElement('div');
     this.div.classList.add(className);
     if (opt_iconContent) {
@@ -485,7 +489,11 @@ class EventBandTitle {
     this.controlledItems = [];
     this.div.onclick = this.onClick_.bind(this);
     this.parent = parent;
-    this.parent.appendChild(this.div);
+    if (anchor && anchor.nextSibling) {
+      this.parent.insertBefore(this.div, anchor.nextSibling);
+    } else {
+      this.parent.appendChild(this.div);
+    }
   }
 
   /**
@@ -525,6 +533,7 @@ class EventBands {
     this.bands = [];
     this.charts = [];
     this.globalEvents = [];
+    this.tooltips = [];
     this.vsyncEvents = null;
     this.resolution = resolution;
     this.minTimestamp = minTimestamp;
@@ -542,8 +551,9 @@ class EventBands {
     this.svg.classList.add(className);
 
     this.setTooltip_();
+    this.title = title;
     title.addContolledItems(this.svg);
-    title.parent.appendChild(this.svg);
+    title.parent.insertBefore(this.svg, title.div.nextSibling);
 
     // Set of constants, used for rendering content.
     this.fontSize = 12;
@@ -791,6 +801,84 @@ class EventBands {
   }
 
   /**
+   * This adds text to chart.
+   *
+   * @param {string} text to display.
+   * @param {number} x horizontal position in the chart.
+   * @param {number} y vertical position the chart.
+   * @param {string} anchor align of the text relative to x.
+   */
+  addChartText(text, x, y, anchor) {
+    SVG.addText(this.svg, x, y, this.fontSize, text, anchor);
+  }
+
+  /**
+   * This adds bar as rectangle to the chart.
+   *
+   * @param {number} x horizontal position in the chart.
+   * @param {number} y vertical position in the chart.
+   * @param {number} width horizontal dimension of the bar.
+   * @param {number} height vertical dimension of the bar.
+   * @param {string} color of the bar.
+   */
+  addChartBar(x, y, width, height, color) {
+    SVG.addRect(this.svg, x, y, width, height, color, 1.0 /* opacity */);
+  }
+
+  /**
+   * This adds popup tooltip for the fixed area in the chart.
+   *
+   * @param {number} x horizontal position of the tooltip area in the chart.
+   * @param {number} y vertical position of the tooltip area in the chart.
+   * @param {number} width of the tooltip area.
+   * @param {number} height of the tooltip area.
+   * @param {string} tooltip text to display.
+   * @param {number} tooltipWidth of the tooltip window.
+   * @param {number} tooltipHeight of the tooltip window.
+   */
+  addChartTooltip(x, y, width, height, tooltip, tooltipWidth, tooltipHeight) {
+    this.tooltips.push({
+      left: x,
+      top: y,
+      right: x + width - 1,
+      bottom: y + height - 1,
+      tooltip: tooltip,
+      tooltipWidth: tooltipWidth,
+      tooltipHeight: tooltipHeight
+    });
+  }
+
+  /**
+   * This adds HTML input element to the title of the section.
+   *
+   * @param {string} type specifies input type, like radio.
+   * @param {string} text label for the input.
+   * @param {boolean} checked if radio should be initially checked.
+   * @param {function} handler callback for input change.
+   */
+  createTitleInput(type, text, checked, handler) {
+    const input = document.createElement('input');
+    input.onclick = handler;
+    input.setAttribute('type', type);
+    if (type == 'button') {
+      input.setAttribute('value', text);
+    }
+    if (checked) {
+      input.checked = true;
+    }
+    this.title.addContolledItems(input);
+    this.title.div.appendChild(input);
+    if (type == 'button') {
+      return;
+    }
+    const label = document.createElement('label');
+    label.onclick = handler;
+    label.appendChild(document.createTextNode(text));
+    this.title.addContolledItems(label);
+    this.title.div.appendChild(label);
+  }
+
+  /**
    * This adds sources of events to the last chart as a bars.
    *
    * @param {Events[]} sources is array of groupped source of events to add.
@@ -952,20 +1040,31 @@ class EventBands {
     var eventX = event.offsetX - paddingLeft;
     var eventY = event.offsetY - paddingTop;
 
-    if (eventX < this.bandOffsetX) {
-      this.tooltip.classList.remove('active');
-      return;
-    }
-
     var svg = document.createElementNS(svgNS, 'svg');
     svg.setAttributeNS(
         'http://www.w3.org/2000/xmlns/', 'xmlns:xlink',
         'http://www.w3.org/1999/xlink');
     this.tooltip.appendChild(svg);
 
+    for (const areaTooltip of this.tooltips) {
+      if (areaTooltip.left <= eventX && areaTooltip.top <= eventY &&
+          areaTooltip.right >= eventX && areaTooltip.bottom >= eventY) {
+        SVG.addText(
+            svg, this.horizontalGap, this.verticalGap + this.fontSize,
+            this.fontSize, areaTooltip.tooltip);
+        this.showTooltipForEvent_(
+            event, svg, areaTooltip.tooltipHeight, areaTooltip.tooltipWidth);
+        return;
+      }
+    }
+
+    if (eventX < this.bandOffsetX) {
+      this.tooltip.classList.remove('active');
+      return;
+    }
+
     var eventTimestamp = this.offsetToTime(eventX - this.bandOffsetX);
 
-    var updated = false;
     var width = 220;
     var yOffset = this.verticalGap;
 
@@ -1421,7 +1520,8 @@ class CpuDetailedInfoView extends DetailedInfoView {
         Object.keys(eventsPerTid).length +
         ' active processes/threads. Total cpu usage: ' + totalUsage.toFixed(2) +
         '%.';
-    var title = new EventBandTitle(this.overlay, cpuInfo, 'arc-cpu-view-title');
+    var title = new EventBandTitle(
+        this.overlay, undefined, cpuInfo, 'arc-cpu-view-title');
     var bands = new EventBands(
         title, 'arc-events-cpu-detailed-band',
         overviewBand.resolution / zoomFactor, minTimestamp, maxTimestamp);
@@ -1757,10 +1857,14 @@ class Events {
  * @param {number} height of the chart in pixels.
  * @param {number} gridLinesCount number of extra intermediate grid lines, 0 i
  *                 not required.
+ * @param {HTMLElement} anchor insert point. View will be added after this.
+ *                             may be optional.
+ *
  */
 function createChart(
-    parent, title, resolution, duration, height, gridLinesCount) {
-  var titleBands = new EventBandTitle(parent, title, 'arc-events-band-title');
+    parent, title, resolution, duration, height, gridLinesCount, anchor) {
+  var titleBands =
+      new EventBandTitle(parent, anchor, title, 'arc-events-band-title');
   var bands =
       new EventBands(titleBands, 'arc-events-band', resolution, 0, duration);
   bands.setWidth(bands.timestampToOffset(duration));

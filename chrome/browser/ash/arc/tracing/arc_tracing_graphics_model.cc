@@ -970,8 +970,13 @@ BufferToEvents GetChromeEvents(
   // provide the reliable way of requesting the needed information, let scan
   // |common_model| for top level events and determine the hierarchy of
   // interesting events dynamically.
-  const ArcTracingModel::TracingEventPtrs top_level_events =
+  ArcTracingModel::TracingEventPtrs top_level_events =
       common_model.Select("toplevel:");
+  // Add root events. In simplified overview tracing they may appear as root
+  // events.
+  ArcTracingModel::TracingEventPtrs root_events = common_model.GetRoots();
+  top_level_events.insert(top_level_events.end(), root_events.begin(),
+                          root_events.end());
   std::vector<const ArcTracingEvent*> route;
   std::string barrier_flush_query;
   const ArcTracingEventMatcher barrier_flush_matcher(kBarrierFlushMatcher);
