@@ -30,12 +30,6 @@ struct DecoderWrapperConfig;
 // Default timeout used when waiting for events.
 constexpr base::TimeDelta kDefaultEventWaitTimeout = base::Seconds(30);
 
-enum class VideoPlayerState : size_t {
-  kUninitialized = 0,
-  kIdle,
-  kDecoding,
-};
-
 enum class VideoPlayerEvent : size_t {
   kInitialized,
   kFrameDecoded,
@@ -114,9 +108,15 @@ class VideoPlayer {
   size_t GetFrameDecodedCount() const;
 
  private:
+  enum class VideoPlayerState : size_t {
+    kUninitialized = 0,
+    kIdle,
+    kDecoding,
+  };
+
   VideoPlayer();
 
-  bool CreateDecoderClient(
+  bool CreateWrapper(
       const DecoderWrapperConfig& config,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
@@ -125,8 +125,8 @@ class VideoPlayer {
   // whether the decoder client should continue decoding frames.
   bool NotifyEvent(VideoPlayerEvent event);
 
-  VideoPlayerState video_player_state_ = VideoPlayerState::kUninitialized;
-  std::unique_ptr<DecoderWrapper> decoder_client_;
+  VideoPlayerState state_ = VideoPlayerState::kUninitialized;
+  std::unique_ptr<DecoderWrapper> decoder_wrapper_;
 
   // The timeout used when waiting for events.
   base::TimeDelta event_timeout_ = kDefaultEventWaitTimeout;
