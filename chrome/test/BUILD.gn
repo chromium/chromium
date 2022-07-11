@@ -5426,6 +5426,7 @@ test("unit_tests") {
     "../browser/visibility_timer_tab_helper_unittest.cc",
     "../browser/vr/vr_tab_helper_unittest.cc",
     "../browser/webid/federated_identity_account_keyed_permission_context_unittest.cc",
+    "../browser/webid/federated_identity_api_permission_context_unittest.cc",
     "../common/chrome_content_client_unittest.cc",
     "../common/chrome_paths_unittest.cc",
     "../common/crash_keys_unittest.cc",

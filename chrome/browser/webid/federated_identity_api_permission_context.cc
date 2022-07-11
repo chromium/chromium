@@ -64,8 +64,19 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
 
 void FederatedIdentityApiPermissionContext::RecordDismissAndEmbargo(
     const url::Origin& rp_origin) {
+  const GURL rp_url = rp_origin.GetURL();
+  // If content setting is allowed for `rp_url`, reset it.
+  // See crbug.com/1340127 for why the resetting is not conditional on the
+  // default content setting state.
+  const ContentSetting setting = host_content_settings_map_->GetContentSetting(
+      rp_url, rp_url, ContentSettingsType::FEDERATED_IDENTITY_API);
+  if (setting == CONTENT_SETTING_ALLOW) {
+    host_content_settings_map_->SetContentSettingDefaultScope(
+        rp_url, rp_url, ContentSettingsType::FEDERATED_IDENTITY_API,
+        CONTENT_SETTING_DEFAULT);
+  }
   permission_autoblocker_->RecordDismissAndEmbargo(
-      rp_origin.GetURL(), ContentSettingsType::FEDERATED_IDENTITY_API,
+      rp_url, ContentSettingsType::FEDERATED_IDENTITY_API,
       false /* dismissed_prompt_was_quiet */);
 }
 
