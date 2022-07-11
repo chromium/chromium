@@ -393,12 +393,13 @@ class AutocompleteProviderTest : public testing::Test {
       metrics::OmniboxEventProto::PageClassification classification) {
     controller_->input_.current_page_classification_ = classification;
   }
-  void add_zero_suggest_provider_experiment_stat(
-      const base::Value& experiment_stat) {
-    auto& experiment_stats =
-        const_cast<SearchSuggestionParser::ExperimentStats&>(
-            controller_->zero_suggest_provider_->experiment_stats());
-    experiment_stats.push_back(experiment_stat.Clone());
+  void add_zero_suggest_provider_experiment_stats_v2(
+      const metrics::ChromeSearchboxStats::ExperimentStatsV2&
+          experiment_stat_v2) {
+    auto& experiment_stats_v2s =
+        const_cast<SearchSuggestionParser::ExperimentStatsV2s&>(
+            controller_->zero_suggest_provider_->experiment_stats_v2s());
+    experiment_stats_v2s.push_back(experiment_stat_v2);
   }
   void add_zero_suggest_provider_headers_map(
       const SearchSuggestionParser::HeadersMap& headers_map) {
@@ -1269,16 +1270,19 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_AssistedQueryStatsOnly) {
   // Test experiment stats set.
   match.search_terms_args->assisted_query_stats =
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  add_zero_suggest_provider_experiment_stat(
-      base::test::ParseJson(R"json({"2":"0:67","4":10001})json"));
+  metrics::ChromeSearchboxStats::ExperimentStatsV2 experiment_stats_v2;
+  experiment_stats_v2.set_type_int(10001);
+  experiment_stats_v2.set_string_value("0:67");
+  add_zero_suggest_provider_experiment_stats_v2(experiment_stats_v2);
   url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//aqs=chrome.0.69i57j69i58j5l2j0l3j69i59.2456j1j4.10001i0,67&",
             url.path());
 
   match.search_terms_args->assisted_query_stats =
       "chrome.0.69i57j69i58j5l2j0l3j69i59";
-  add_zero_suggest_provider_experiment_stat(
-      base::test::ParseJson(R"json({"2":"54:67","4":10001})json"));
+  experiment_stats_v2.set_type_int(10001);
+  experiment_stats_v2.set_string_value("54:67");
+  add_zero_suggest_provider_experiment_stats_v2(experiment_stats_v2);
   url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ(
       "//"
@@ -1383,8 +1387,10 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL_SearchboxStatsOnly) {
   }
 
   // Test experiment stats v2 set.
-  add_zero_suggest_provider_experiment_stat(
-      base::test::ParseJson(R"json({"2":"0:67","4":10001})json"));
+  metrics::ChromeSearchboxStats::ExperimentStatsV2 experiment_stats_v2;
+  experiment_stats_v2.set_type_int(10001);
+  experiment_stats_v2.set_string_value("0:67");
+  add_zero_suggest_provider_experiment_stats_v2(experiment_stats_v2);
   url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDCRIEMCw2NyCRTg&",
             url.path());

@@ -745,38 +745,27 @@ void AutocompleteController::
   // Append the ExperimentStatsV2 to the AQS parameter to be logged in
   // searchbox_stats.proto's experiment_stats_v2 field.
   if (zero_suggest_provider_) {
-    // The field number for the experiment stat type specified as an int
-    // in ExperimentStatsV2.
-    constexpr char kTypeIntFieldNumber[] = "4";
-    // The field number for the string value in ExperimentStatsV2.
-    constexpr char kStringValueFieldNumber[] = "2";
-    std::vector<std::string> experiment_stats_v2;
-    for (const auto& experiment_stat :
-         zero_suggest_provider_->experiment_stats()) {
-      DCHECK(experiment_stat.is_dict());
-      absl::optional<int> type_int =
-          experiment_stat.FindIntPath(kTypeIntFieldNumber);
-      const std::string* string_value =
-          experiment_stat.FindStringPath(kStringValueFieldNumber);
-      if (type_int && string_value) {
-        // The string value consists of suggestion type/subtype pairs which are
-        // delimited with colons. Replace colons with commas as expected by the
-        // Searchbox logging flow.
-        std::string value = *string_value;
-        std::replace(value.begin(), value.end(), ':', ',');
-        // 'i' is used as a delimiter between experiment stat type and value.
-        experiment_stats_v2.push_back(base::NumberToString(*type_int) + "i" +
-                                      value);
-        auto* experiment_stats_v2_proto =
-            match->search_terms_args->searchbox_stats.add_experiment_stats_v2();
-        experiment_stats_v2_proto->set_type_int(*type_int);
-        experiment_stats_v2_proto->set_string_value(value);
-      }
+    std::vector<std::string> experiment_stats_v2_strings;
+    for (const auto& experiment_stat_v2 :
+         zero_suggest_provider_->experiment_stats_v2s()) {
+      // The string value consists of suggestion type/subtype pairs delimited
+      // with colons. However, the SearchboxStats logging flow expects
+      // suggestion type/subtype pairs to be delimited with commas instead.
+      std::string value = experiment_stat_v2.string_value();
+      std::replace(value.begin(), value.end(), ':', ',');
+      // The SearchboxStats logging flow expects experiment stats type and value
+      // to be delimited with 'i'.
+      experiment_stats_v2_strings.push_back(
+          base::NumberToString(experiment_stat_v2.type_int()) + "i" + value);
+      auto* reported_experiment_stats_v2 =
+          match->search_terms_args->searchbox_stats.add_experiment_stats_v2();
+      reported_experiment_stats_v2->set_type_int(experiment_stat_v2.type_int());
+      reported_experiment_stats_v2->set_string_value(value);
     }
-    if (!experiment_stats_v2.empty()) {
+    if (!experiment_stats_v2_strings.empty()) {
       // 'j' is used as a delimiter between individual experiment stat entries.
       match->search_terms_args->assisted_query_stats +=
-          "." + base::JoinString(experiment_stats_v2, "j");
+          "." + base::JoinString(experiment_stats_v2_strings, "j");
     }
   }
 

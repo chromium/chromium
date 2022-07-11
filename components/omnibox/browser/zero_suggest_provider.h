@@ -79,8 +79,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
 
   // Returns the list of experiment stats corresponding to the latest |results_|
   // to be logged to SearchboxStats as part of a GWS experiment, if any.
-  const SearchSuggestionParser::ExperimentStats& experiment_stats() const {
-    return results_.experiment_stats;
+  const SearchSuggestionParser::ExperimentStatsV2s& experiment_stats_v2s()
+      const {
+    return results_.experiment_stats_v2s;
   }
 
   // Returns the map of suggestion group IDs to headers corresponding to the

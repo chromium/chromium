@@ -16,6 +16,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "url/gurl.h"
 
 class AutocompleteInput;
@@ -287,7 +288,8 @@ class SearchSuggestionParser {
   typedef std::map<int, std::u16string> HeadersMap;
   typedef std::vector<SuggestResult> SuggestResults;
   typedef std::vector<NavigationResult> NavigationResults;
-  typedef std::vector<base::Value> ExperimentStats;
+  typedef std::vector<metrics::ChromeSearchboxStats::ExperimentStatsV2>
+      ExperimentStatsV2s;
 
   // A simple structure bundling most of the information (including
   // both SuggestResults and NavigationResults) returned by a call to
@@ -330,9 +332,9 @@ class SearchSuggestionParser {
     // If the active suggest field trial (if any) has triggered.
     bool field_trial_triggered;
 
-    // The list of experiment stats which needs to be logged to SearchboxStats
-    // as part of a GWS experiment, if any.
-    ExperimentStats experiment_stats;
+    // The ExperimentStatsV2 containing GWS experiment details, if any. To be
+    // logged to SearchboxStats.
+    ExperimentStatsV2s experiment_stats_v2s;
 
     // If the relevance values of the results are from the server.
     bool relevances_from_server;

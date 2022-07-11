@@ -121,7 +121,12 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
           }],
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "ENTITY"],
-        "google:verbatimrelevance": 851
+        "google:verbatimrelevance": 851,
+        "google:experimentstats": [
+          {"2":"0:67","4":10001},
+          {"2":"54:67","4":10002},
+          {"2":"0:54","4":10003}
+          ]
       }])";
   absl::optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
@@ -138,6 +143,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
   ASSERT_EQ(true, results.field_trial_triggered);
   // The "google:verbatimrelevance".
   ASSERT_EQ(851, results.verbatim_relevance);
+  ASSERT_EQ(2U, results.suggest_results.size());
   {
     const auto& suggestion_result = results.suggest_results[0];
     ASSERT_EQ(u"christmas", suggestion_result.suggestion());
@@ -152,6 +158,22 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
     ASSERT_EQ(u"American author", suggestion_result.annotation());
     ASSERT_EQ("#424242", suggestion_result.image_dominant_color());
     ASSERT_EQ(GURL("http://example.com/a.png"), suggestion_result.image_url());
+  }
+  ASSERT_EQ(3U, results.experiment_stats_v2s.size());
+  {
+    const auto& experiment_stats_v2 = results.experiment_stats_v2s[0];
+    ASSERT_EQ(10001, experiment_stats_v2.type_int());
+    ASSERT_EQ("0:67", experiment_stats_v2.string_value());
+  }
+  {
+    const auto& experiment_stats_v2 = results.experiment_stats_v2s[1];
+    ASSERT_EQ(10002, experiment_stats_v2.type_int());
+    ASSERT_EQ("54:67", experiment_stats_v2.string_value());
+  }
+  {
+    const auto& experiment_stats_v2 = results.experiment_stats_v2s[2];
+    ASSERT_EQ(10003, experiment_stats_v2.type_int());
+    ASSERT_EQ("0:54", experiment_stats_v2.string_value());
   }
 }
 

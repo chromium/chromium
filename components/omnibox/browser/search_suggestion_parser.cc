@@ -106,6 +106,12 @@ std::string FindStringKeyOrEmpty(const base::Value& value, std::string key) {
   return ptr ? *ptr : "";
 }
 
+// The field number for the experiment stat type specified as an int
+// in ExperimentStatsV2.
+constexpr char kTypeIntFieldNumber[] = "4";
+// The field number for the string value in ExperimentStatsV2.
+constexpr char kStringValueFieldNumber[] = "2";
+
 }  // namespace
 
 // Value chosen based on SuggestionGroupIds::INVALID in suggestion_config.proto.
@@ -375,6 +381,11 @@ void SearchSuggestionParser::Results::Clear() {
   navigation_results.clear();
   verbatim_relevance = -1;
   metadata.clear();
+  field_trial_triggered = false;
+  experiment_stats_v2s.clear();
+  relevances_from_server = false;
+  headers_map.clear();
+  hidden_group_ids.clear();
 }
 
 bool SearchSuggestionParser::Results::HasServerProvidedScores() const {
@@ -511,12 +522,28 @@ bool SearchSuggestionParser::ParseSuggestResults(
         extras.FindBoolKey("google:fieldtrialtriggered");
     results->field_trial_triggered = field_trial_triggered.value_or(false);
 
-    results->experiment_stats.clear();
-    const base::Value* experiment_stats =
-        extras.FindListKey("google:experimentstats");
-    if (experiment_stats) {
-      for (const auto& experiment_stat : experiment_stats->GetListDeprecated())
-        results->experiment_stats.push_back(experiment_stat.Clone());
+    results->experiment_stats_v2s.clear();
+    const base::Value::List* experiment_stats_v2s_list =
+        extras.FindListKey("google:experimentstats")->GetIfList();
+    if (experiment_stats_v2s_list) {
+      for (const auto& experiment_stats_v2_value : *experiment_stats_v2s_list) {
+        const base::Value::Dict* experiment_stats_v2_dict =
+            experiment_stats_v2_value.GetIfDict();
+        if (!experiment_stats_v2_dict) {
+          continue;
+        }
+        absl::optional<int> type_int =
+            experiment_stats_v2_dict->FindInt(kTypeIntFieldNumber);
+        const auto* string_value =
+            experiment_stats_v2_dict->FindString(kStringValueFieldNumber);
+        if (!type_int || !string_value) {
+          continue;
+        }
+        metrics::ChromeSearchboxStats::ExperimentStatsV2 experiment_stats_v2;
+        experiment_stats_v2.set_type_int(*type_int);
+        experiment_stats_v2.set_string_value(*string_value);
+        results->experiment_stats_v2s.push_back(std::move(experiment_stats_v2));
+      }
     }
 
     const base::Value* header_texts = extras.FindDictKey("google:headertexts");
@@ -562,8 +589,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
       subtype_identifiers = nullptr;
     }
 
-    // Store the metadata that came with the response in case we need to pass it
-    // along with the prefetch query to Instant.
+    // Store the metadata that came with the response in case we need to pass
+    // it along with the prefetch query to Instant.
     JSONStringValueSerializer json_serializer(&results->metadata);
     json_serializer.Serialize(extras);
   }
