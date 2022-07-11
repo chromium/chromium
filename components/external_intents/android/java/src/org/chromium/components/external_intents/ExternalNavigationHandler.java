@@ -62,8 +62,6 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.NavigationController;
-import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -2268,29 +2266,12 @@ public class ExternalNavigationHandler {
                 && mDelegate.getWindowAndroid().canRequestPermission(permissionNeeded);
     }
 
-    @Nullable
-    // TODO(https://crbug.com/1194721): Investigate whether or not we can use
-    // getLastCommittedUrl() instead of the NavigationController. Or maybe we can just replace this
-    // with ExternalNavigationParams#getReferrerUrl?
-    private GURL getReferrerUrl() {
-        if (!mDelegate.hasValidTab() || mDelegate.getWebContents() == null) return null;
-
-        NavigationController nController = mDelegate.getWebContents().getNavigationController();
-        int index = nController.getLastCommittedEntryIndex();
-        if (index == -1) return null;
-
-        NavigationEntry entry = nController.getEntryAtIndex(index);
-        if (entry == null) return null;
-
-        return entry.getUrl();
-    }
-
     /**
      * @return whether this navigation is from the search results page.
      */
     @VisibleForTesting
     protected boolean isSerpReferrer() {
-        GURL referrerUrl = getReferrerUrl();
+        GURL referrerUrl = getLastCommittedUrl();
         if (referrerUrl == null || referrerUrl.isEmpty()) return false;
 
         return UrlUtilitiesJni.get().isGoogleSearchUrl(referrerUrl.getSpec());
@@ -2301,7 +2282,7 @@ public class ExternalNavigationHandler {
      */
     @VisibleForTesting
     protected boolean isGoogleReferrer() {
-        GURL referrerUrl = getReferrerUrl();
+        GURL referrerUrl = getLastCommittedUrl();
         if (referrerUrl == null || referrerUrl.isEmpty()) return false;
 
         return UrlUtilitiesJni.get().isGoogleSubDomainUrl(referrerUrl.getSpec());
