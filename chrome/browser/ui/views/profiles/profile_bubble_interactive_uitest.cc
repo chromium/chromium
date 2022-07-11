@@ -121,9 +121,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
                        InterceptionBubbleFocus) {
   // Create the inteerception bubble, owned by the view hierarchy.
   DiceWebSigninInterceptionBubbleView* bubble =
-      new DiceWebSigninInterceptionBubbleView(
-          browser()->profile(), GetAvatarButton(), GetTestBubbleParameters(),
-          base::DoNothing());
+      new DiceWebSigninInterceptionBubbleView(browser(), GetAvatarButton(),
+                                              GetTestBubbleParameters(),
+                                              base::DoNothing());
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   widget->Show();
   // The bubble takes focus when it is displayed.

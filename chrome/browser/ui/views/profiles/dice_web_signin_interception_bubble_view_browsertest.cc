@@ -22,10 +22,13 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -208,8 +211,8 @@ class DiceWebSigninInterceptionBubblePixelTest
     observer.StartWatchingNewWebContents();
 
     bubble_handle_ = DiceWebSigninInterceptionBubbleView::CreateBubble(
-        browser()->profile(), GetAvatarButton(browser()),
-        GetTestBubbleParameters(), base::DoNothing());
+        browser(), GetAvatarButton(browser()), GetTestBubbleParameters(),
+        base::DoNothing());
 
     observer.Wait();
   }
@@ -313,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   base::HistogramTester histogram_tester;
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
       new DiceWebSigninInterceptionBubbleView(
-          browser()->profile(), GetAvatarButton(), GetTestBubbleParameters(),
+          browser(), GetAvatarButton(), GetTestBubbleParameters(),
           base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
                              OnInterceptionComplete,
                          base::Unretained(this))));
@@ -342,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // `bubble` is owned by the view hierarchy.
   DiceWebSigninInterceptionBubbleView* bubble =
       new DiceWebSigninInterceptionBubbleView(
-          browser()->profile(), GetAvatarButton(), GetTestBubbleParameters(),
+          browser(), GetAvatarButton(), GetTestBubbleParameters(),
           base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
                              OnInterceptionComplete,
                          base::Unretained(this)));
@@ -374,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // `bubble` is owned by the view hierarchy.
   DiceWebSigninInterceptionBubbleView* bubble =
       new DiceWebSigninInterceptionBubbleView(
-          browser()->profile(), GetAvatarButton(), GetTestBubbleParameters(),
+          browser(), GetAvatarButton(), GetTestBubbleParameters(),
           base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
                              OnInterceptionComplete,
                          base::Unretained(this)));
@@ -437,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // and will outlive it.
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
       new DiceWebSigninInterceptionBubbleView(
-          new_profile, GetAvatarButton(), GetTestBubbleParameters(),
+          new_browser, GetAvatarButton(), GetTestBubbleParameters(),
           base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
                              OnInterceptionComplete,
                          base::Unretained(this))));
@@ -471,4 +474,62 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kIgnored, 1);
   histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
   histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
+}
+
+class DiceWebSigninInterceptionBubbleV2BrowserTest
+    : public DiceWebSigninInterceptionBubbleBrowserTest {
+ public:
+  DiceWebSigninInterceptionBubbleV2BrowserTest() = default;
+
+  DiceWebSigninInterceptor::Delegate::BubbleParameters
+  GetTestBubbleParametersForManagedProfile() {
+    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters =
+        GetTestBubbleParameters();
+    bubble_parameters.show_managed_disclaimer = true;
+    return bubble_parameters;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{kSigninInterceptBubbleV2};
+};
+
+// Tests that clicking the Learn More link in the bubble opens the page in a new
+// tab.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleV2BrowserTest,
+                       OpenLearnMoreLinkInNewTab) {
+  const GURL bubble_url("chrome://signin-dice-web-intercept/");
+  const GURL learn_more_url = google_util::AppendGoogleLocaleParam(
+      GURL(chrome::kSigninInterceptManagedDisclaimerLearnMoreURL),
+      g_browser_process->GetApplicationLocale());
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      new DiceWebSigninInterceptionBubbleView(
+          browser(), GetAvatarButton(),
+          GetTestBubbleParametersForManagedProfile(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
+  widget->Show();
+
+  content::WebContents* bubble_web_contents =
+      bubble->GetBubbleWebContentsForTesting();
+  DCHECK(bubble_web_contents);
+  content::WaitForLoadStop(bubble_web_contents);
+  EXPECT_EQ(bubble_web_contents->GetVisibleURL(), bubble_url);
+
+  content::TestNavigationObserver new_tab_observer(nullptr);
+  new_tab_observer.StartWatchingNewWebContents();
+
+  ASSERT_TRUE(content::ExecJs(
+      bubble_web_contents,
+      "document.querySelector('dice-web-signin-intercept-app').shadowRoot."
+      "querySelector('#managedDisclaimerText a').click();"));
+  new_tab_observer.Wait();
+
+  content::WebContents* new_tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(new_tab_web_contents, bubble_web_contents);
+  EXPECT_EQ(new_tab_web_contents->GetVisibleURL(), learn_more_url);
+  EXPECT_FALSE(widget->IsClosed());
 }
