@@ -552,9 +552,7 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_POSIX)
-  registry->RegisterBooleanPref(
-      prefs::kNtlmV2Enabled,
-      base::FeatureList::IsEnabled(features::kNtlmV2Enabled));
+  registry->RegisterBooleanPref(prefs::kNtlmV2Enabled, true);
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID)

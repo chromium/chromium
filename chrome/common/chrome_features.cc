@@ -701,12 +701,6 @@ const base::Feature kNotificationDurationLongForRequireInteraction{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_POSIX)
-// Enables NTLMv2, which implicitly disables NTLMv1.
-const base::Feature kNtlmV2Enabled{"NtlmV2Enabled",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 const base::Feature kOnConnectNative{"OnConnectNative",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
