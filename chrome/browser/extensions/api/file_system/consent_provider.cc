@@ -64,6 +64,7 @@ void DialogResultToConsent(
       std::move(callback).Run(
           file_system_api::ConsentProvider::CONSENT_GRANTED);
       break;
+    // The following is wired to both Cancel and Close callbacks.
     case ui::DIALOG_BUTTON_CANCEL:
       std::move(callback).Run(
           file_system_api::ConsentProvider::CONSENT_REJECTED);

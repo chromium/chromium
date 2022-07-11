@@ -73,6 +73,8 @@ RequestFileSystemDialogView::RequestFileSystemDialogView(
                                    ui::DIALOG_BUTTON_OK));
   SetCancelCallback(base::BindOnce(run_callback, base::Unretained(this),
                                    ui::DIALOG_BUTTON_CANCEL));
+  SetCloseCallback(base::BindOnce(run_callback, base::Unretained(this),
+                                  ui::DIALOG_BUTTON_CANCEL));
   SetModalType(ui::MODAL_TYPE_CHILD);
 
   DCHECK(!callback_.is_null());
