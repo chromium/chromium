@@ -269,12 +269,11 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   curtain_local_user_session_ =
       root->FindBoolKey(kCurtainLocalUserSession).value_or(false);
 
-#if !defined(NDEBUG)
   if (base::FeatureList::IsEnabled(
           remoting::features::kForceCrdAdminRemoteAccess)) {
+    CRD_LOG(WARNING) << "Forcing remote access";
     curtain_local_user_session_ = true;
   }
-#endif  // !defined(NDEBUG)
 
   if (curtain_local_user_session_ &&
       !base::FeatureList::IsEnabled(
