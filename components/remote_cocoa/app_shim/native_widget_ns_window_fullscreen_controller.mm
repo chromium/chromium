@@ -7,14 +7,14 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "ui/base/base_window.h"
+#include "ui/base/cocoa/nswindow_test_util.h"
 
 namespace remote_cocoa {
 
 namespace {
 
 bool IsFakeForTesting() {
-  return ui::BaseWindow::IsFullscreenFakedForTesting();
+  return ui::NSWindowFakedForTesting::IsEnabled();
 }
 
 }  // namespace

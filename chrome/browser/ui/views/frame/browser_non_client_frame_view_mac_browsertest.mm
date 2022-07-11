@@ -190,7 +190,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest,
   prefs->SetBoolean(prefs::kShowFullscreenToolbar, false);
 
   chrome::ToggleFullscreenMode(browser);
-  fake_fullscreen.FinishTransition();
   EXPECT_FALSE(frame_view_test_api.needs_layout());
 
   prefs->SetBoolean(prefs::kShowFullscreenToolbar, true);

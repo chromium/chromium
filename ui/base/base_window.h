@@ -36,12 +36,6 @@ class COMPONENT_EXPORT(UI_BASE) BaseWindow {
   // Minimized).
   static bool IsRestored(const BaseWindow& window);
 
-  // IsFullscreenFakedForTesting is set by tests that are not written robustly
-  // to asynchronous transitions to fullscreen (e.g, by using
-  // ScopedFakeNSWindowFullscreen on macOS).
-  static void SetFullscreenFakedForTesting(bool);
-  static bool IsFullscreenFakedForTesting();
-
   // Return a platform dependent identifier for this window.
   virtual gfx::NativeWindow GetNativeWindow() const = 0;
 

@@ -39,6 +39,21 @@ class COMPONENT_EXPORT(UI_BASE) NSWindowFullscreenNotificationWaiter {
   static NSWindowFullscreenNotificationWaiter* instance_;
 };
 
+class COMPONENT_EXPORT(UI_BASE) NSWindowFakedForTesting {
+ public:
+  // This is set by tests that are not written robustly to asynchronous
+  // transitions to fullscreen (e.g, by using ScopedFakeNSWindowFullscreen on
+  // macOS).
+  static void SetEnabled(bool);
+  static bool IsEnabled();
+
+ private:
+  static bool enabled_;
+};
+
+// static void SetFullscreenFakedForTesting(bool);
+// static bool IsFullscreenFakedForTesting();
+
 }  // namespace ui
 
 #endif  // UI_BASE_COCOA_NSWINDOW_TEST_UTIL_H_

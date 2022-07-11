@@ -1009,10 +1009,7 @@ test("ui_base_unittests") {
     ]
 
     if (is_mac) {
-      sources += [
-        "test/scoped_fake_nswindow_fullscreen_unittest.mm",
-        "test/view_tree_validator_unittest.mm",
-      ]
+      sources += [ "test/view_tree_validator_unittest.mm" ]
     }
   }
 

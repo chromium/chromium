@@ -63,4 +63,17 @@ void NSWindowFullscreenNotificationWaiter::NotifyFullscreenTransitionComplete(
 NSWindowFullscreenNotificationWaiter*
     NSWindowFullscreenNotificationWaiter::instance_ = nullptr;
 
+// static
+void NSWindowFakedForTesting::SetEnabled(bool enabled) {
+  enabled_ = enabled;
+}
+
+// static
+bool NSWindowFakedForTesting::IsEnabled() {
+  return enabled_;
+}
+
+// static
+bool NSWindowFakedForTesting::enabled_ = false;
+
 }  // namespace ui
