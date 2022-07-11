@@ -105,7 +105,8 @@ PermissionRequestChip::~PermissionRequestChip() = default;
 
 views::View* PermissionRequestChip::CreateBubble() {
   prompt_bubble_ = new PermissionPromptBubbleView(
-      browser_, delegate_, chip_shown_time_, PermissionPromptStyle::kChip);
+      browser_, delegate_->GetWeakPtr(), chip_shown_time_,
+      PermissionPromptStyle::kChip);
   RecordChipButtonPressed();
 
   return prompt_bubble_;

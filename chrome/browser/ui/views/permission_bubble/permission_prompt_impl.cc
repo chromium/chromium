@@ -315,8 +315,9 @@ void PermissionPromptImpl::ShowQuietIcon() {
 
 void PermissionPromptImpl::ShowBubble() {
   prompt_style_ = PermissionPromptStyle::kBubbleOnly;
-  prompt_bubble_ = new PermissionPromptBubbleView(
-      browser_, delegate_, permission_requested_time_, prompt_style_);
+  prompt_bubble_ =
+      new PermissionPromptBubbleView(browser_, delegate_->GetWeakPtr(),
+                                     permission_requested_time_, prompt_style_);
   prompt_bubble_->Show();
   prompt_bubble_->GetWidget()->AddObserver(this);
 }

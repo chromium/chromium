@@ -57,6 +57,11 @@ bool TestPermissionBubbleViewDelegate::WasCurrentRequestAlreadyDisplayed() {
   return false;
 }
 
+base::WeakPtr<permissions::PermissionPrompt::Delegate>
+TestPermissionBubbleViewDelegate::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() = default;
 
 PermissionBubbleBrowserTest::~PermissionBubbleBrowserTest() = default;
