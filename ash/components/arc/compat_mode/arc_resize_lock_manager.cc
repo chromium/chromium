@@ -300,8 +300,7 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
     ShowSplashScreenDialog(window, is_fully_locked);
   }
 
-  if (!is_fully_locked &&
-      base::FeatureList::IsEnabled(arc::kCompatSnapFeature)) {
+  if (!is_fully_locked) {
     window->SetProperty(ash::kUnresizableSnappedSizeKey,
                         new gfx::Size(GetPortraitPhoneSizeWidth(), 0));
   } else {

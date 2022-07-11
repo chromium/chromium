@@ -473,31 +473,6 @@ TEST_F(ArcResizeLockManagerTest, TestCompatWindowSnap) {
   EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
 }
 
-// TODO(b/215063759): Remove this test after the launch.
-// Tests that compatible window snapping is properly disabled if the flag is
-// disabled.
-TEST_F(ArcResizeLockManagerTest, TestCompatWindowSnapWithFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature({arc::kCompatSnapFeature});
-
-  auto arc_window = CreateFakeWindow(true);
-  arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
-  arc_window->SetProperty(aura::client::kResizeBehaviorKey,
-                          aura::client::kResizeBehaviorNone);
-
-  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
-  EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
-
-  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::NONE);
-  EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
-
-  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
-  EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
-}
-
 // Test that the splash screen dialog is shown properly.
 TEST_F(ArcResizeLockManagerTest, ShowSplashScreen) {
   auto arc_window = CreateFakeWindow(true);

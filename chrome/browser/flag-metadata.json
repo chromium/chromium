@@ -193,11 +193,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "arc-compat-snap",
-    "owners": [ "toshikikikuchi" ],
-    "expiry_milestone": 104
-  },
-  {
     "name": "arc-custom-tabs-experiment",
     "owners": [ "hashimoto", "dominickn" ],
     "expiry_milestone": 95

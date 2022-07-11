@@ -4352,10 +4352,6 @@ const char kArcAccountRestrictionsName[] = "Enable ARC account restrictions";
 const char kArcAccountRestrictionsDescription[] =
     "ARC account restrictions feature for multi-profile account consistency";
 
-const char kArcCompatSnapName[] = "Enable ARC compatible window snapping";
-const char kArcCompatSnapDesc[] =
-    "Allow snapping ARC resize-locked windows with the compatible size.";
-
 const char kArcCustomTabsExperimentName[] =
     "Enable Custom Tabs experiment for ARC";
 const char kArcCustomTabsExperimentDescription[] =

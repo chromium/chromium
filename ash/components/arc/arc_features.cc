@@ -11,10 +11,6 @@ namespace arc {
 const base::Feature kBootCompletedBroadcastFeature{
     "ArcBootCompletedBroadcast", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls experimental Compat snap feature for ARC.
-const base::Feature kCompatSnapFeature{"ArcCompatSnapFeature",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls experimental Custom Tabs feature for ARC.
 const base::Feature kCustomTabsExperimentFeature{
     "ArcCustomTabsExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
