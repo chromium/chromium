@@ -37,6 +37,9 @@ void ResetUserApprovedAccountListManager();
 // signed-in state.
 void SignInWithoutSync(ChromeIdentity* identity);
 
+// Resets all the selected data types to be turned on in the sync engine.
+void ResetSyncSelectedDataTypes();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_APP_SIGNIN_TEST_UTIL_H_
