@@ -587,8 +587,9 @@ NSString* const kSuggestionSuffix = @" ••••••••";
                                 /*log_debug_data*/ true)) {
     return NO;
   }
-  if (![fieldType isEqual:kPasswordFieldType])
+  if (![fieldType isEqual:kPasswordFieldType]) {
     return NO;
+  }
   const PasswordFormGenerationData* generationData =
       [self formForGenerationFromFormID:formIdentifier];
   if (!generationData) {
