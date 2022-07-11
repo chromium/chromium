@@ -36,21 +36,22 @@ constexpr int kCpuUsageRefreshIntervalInSeconds = 1;
 constexpr int kMemoryUsageRefreshIntervalInSeconds = 10;
 constexpr int kMilliampsInAnAmp = 1000;
 
-void PopulateBoardName(const healthd::SystemInfo& system_info,
+void PopulateBoardName(const healthd::SystemInfoV2& system_info_v2,
                        mojom::SystemInfo& out_system_info) {
-  const absl::optional<std::string>& product_name = system_info.product_name;
+  out_system_info.board_name = system_info_v2.os_info->code_name;
+}
 
-  if (!product_name.has_value()) {
-    DVLOG(1) << "No board name in SystemInfo response.";
+void PopulateMarketingName(const healthd::SystemInfoV2& system_info_v2,
+                           mojom::SystemInfo& out_system_info) {
+  const absl::optional<std::string>& marketing_name =
+      system_info_v2.os_info->marketing_name;
+
+  if (!marketing_name.has_value()) {
+    DVLOG(1) << "No marketing name in SystemInfoV2 response.";
     return;
   }
 
-  out_system_info.board_name = product_name.value();
-}
-
-void PopulateMarketingName(const healthd::SystemInfo& system_info,
-                           mojom::SystemInfo& out_system_info) {
-  out_system_info.marketing_name = system_info.marketing_name;
+  out_system_info.marketing_name = marketing_name.value();
 }
 
 void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
@@ -83,13 +84,14 @@ void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
       total_max_ghz / physical_cpus[0]->logical_cpus.size();
 }
 
-void PopulateVersionInfo(const healthd::SystemInfo& system_info,
+void PopulateVersionInfo(const healthd::SystemInfoV2& system_info,
                          mojom::SystemInfo& out_system_info) {
-  const std::string full_version = system_info.os_version->release_milestone +
-                                   '.' + system_info.os_version->build_number +
-                                   '.' + system_info.os_version->patch_number;
+  const std::string full_version =
+      system_info.os_info->os_version->release_milestone + '.' +
+      system_info.os_info->os_version->build_number + '.' +
+      system_info.os_info->os_version->patch_number;
   out_system_info.version_info = mojom::VersionInfo::New(
-      system_info.os_version->release_milestone, full_version);
+      system_info.os_info->os_version->release_milestone, full_version);
 }
 
 void PopulateMemorySize(const healthd::MemoryInfo& memory_info,
@@ -387,7 +389,7 @@ void SystemDataProvider::OnSystemInfoProbeResponse(
     return;
   }
 
-  const healthd::SystemInfo* system_info_ptr =
+  const healthd::SystemInfoV2* system_info_ptr =
       diagnostics::GetSystemInfo(*info_ptr);
   if (system_info_ptr) {
     PopulateBoardName(*system_info_ptr, *system_info.get());
