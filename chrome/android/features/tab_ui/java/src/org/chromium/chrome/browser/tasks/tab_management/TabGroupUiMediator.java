@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_DISMISS_COUNTER_ABANDONED;
 import static org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.UNDO_DISMISS_SNACKBAR_DURATION;
 
 import android.content.Context;
@@ -20,7 +19,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -46,7 +44,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
-import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -426,8 +423,6 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController, B
                 RecordUserAction.record("TabStrip.UserDismissed");
                 if (ConditionalTabStripUtils.shouldShowSnackbarForDismissal()) {
                     mSnackbarManager.showSnackbar(mUndoClosureSnackBar);
-                } else {
-                    showOptOutInfoBarForTab(mTabModelSelector.getCurrentTab());
                 }
             };
             mModel.set(TabGroupUiProperties.LEFT_BUTTON_DRAWABLE_ID, R.drawable.btn_close);
@@ -597,38 +592,6 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController, B
             RecordHistogram.recordEnumeratedHistogram("TabStrip.ReasonToShow", reason,
                     ConditionalTabStripUtils.ReasonToShow.NUM_ENTRIES);
         }
-    }
-
-    private void showOptOutInfoBarForTab(Tab tab) {
-        // TODO(yuezhanggg): The simple confirmation info bar cannot live across different tabs. Use
-        // a customized info bar since the opt-out info bar should always show until users'
-        // reactions.
-        SimpleConfirmInfoBarBuilder.Listener listener = new SimpleConfirmInfoBarBuilder.Listener() {
-            @Override
-            public void onInfoBarDismissed() {}
-
-            @Override
-            public boolean onInfoBarButtonClicked(boolean isPrimary) {
-                if (!isPrimary) {
-                    ConditionalTabStripUtils.setOptOutIndicator(true);
-                }
-                // When user has reacted to the info bar, the dismiss counter is no longer needed.
-                ConditionalTabStripUtils.setContinuousDismissCount(
-                        CONDITIONAL_TAB_STRIP_DISMISS_COUNTER_ABANDONED);
-                return false;
-            }
-
-            @Override
-            public boolean onInfoBarLinkClicked() {
-                return false;
-            }
-        };
-        String message = mContext.getString(R.string.tab_strip_info_bar_question);
-        String primaryText = mContext.getString(R.string.tab_strip_info_bar_reshow);
-        String secondaryText = mContext.getString(R.string.tab_strip_info_bar_no_reshow);
-        SimpleConfirmInfoBarBuilder.create(tab.getWebContents(), listener,
-                InfoBarIdentifier.CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID, mContext, 0, message,
-                primaryText, secondaryText, null, true);
     }
 
     // SnackbarManager.SnackbarController implementation.
