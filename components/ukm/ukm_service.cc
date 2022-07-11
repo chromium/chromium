@@ -19,6 +19,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
@@ -32,7 +33,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
-#include "third_party/zlib/google/compression_utils.h"
 
 namespace ukm {
 
@@ -120,19 +120,11 @@ template <typename Predicate>
 void PurgeDataFromUnsentLogStore(metrics::UnsentLogStore* ukm_log_store,
                                  Predicate source_purging_condition) {
   for (size_t index = 0; index < ukm_log_store->size(); index++) {
-    // Uncompress log data from store back into a Report.
-    const std::string& compressed_log_data =
-        ukm_log_store->GetLogAtIndex(index);
-    std::string uncompressed_log_data;
-    // TODO(crbug/1086910): Use the utilities in log_decoder.h instead.
-    const bool uncompress_successful = compression::GzipUncompress(
-        compressed_log_data, &uncompressed_log_data);
-    DCHECK(uncompress_successful);
+    // Decode log data from store back into a Report.
     Report report;
-
-    const bool report_parse_successful =
-        report.ParseFromString(uncompressed_log_data);
-    DCHECK(report_parse_successful);
+    bool decode_success = metrics::DecodeLogDataToProto(
+        ukm_log_store->GetLogAtIndex(index), &report);
+    DCHECK(decode_success);
 
     std::unordered_set<SourceId> relevant_source_ids;
 
