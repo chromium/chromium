@@ -521,14 +521,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style, Element* element) {
   DCHECK(style.OverflowX() != EOverflow::kVisible ||
          style.OverflowY() != EOverflow::kVisible);
 
-  if (element && element->IsReplacedElementRespectingCSSOverflow()) {
-    // Replaced elements support only 2 overflow configs: visible and clip. All
-    // values other than visible map to clip.
-    if (style.OverflowX() != EOverflow::kVisible)
-      style.SetOverflowX(EOverflow::kClip);
-    if (style.OverflowY() != EOverflow::kVisible)
-      style.SetOverflowY(EOverflow::kClip);
-  } else if (style.IsDisplayTableBox()) {
+  if (style.IsDisplayTableBox()) {
     // Tables only support overflow:hidden and overflow:visible and ignore
     // anything else, see https://drafts.csswg.org/css2/visufx.html#overflow. As
     // a table is not a block container box the rules for resolving conflicting
