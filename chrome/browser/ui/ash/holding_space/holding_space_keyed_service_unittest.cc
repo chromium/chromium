@@ -622,7 +622,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
   EXPECT_EQ(primary_holding_space_model,
             primary_holding_space_service->model_for_testing());
 
-  base::Value persisted_holding_space_items(base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items;
 
   // Verify persistent storage is updated when adding each type of item.
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -638,7 +638,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     persisted_holding_space_items.Append(holding_space_item->Serialize());
     primary_holding_space_model->AddItem(std::move(holding_space_item));
 
-    EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+    EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }
@@ -648,11 +648,10 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     const auto* holding_space_item =
         primary_holding_space_model->items()[0].get();
 
-    persisted_holding_space_items.EraseListIter(
-        persisted_holding_space_items.GetListDeprecated().begin());
+    persisted_holding_space_items.erase(persisted_holding_space_items.begin());
     primary_holding_space_model->RemoveItem(holding_space_item->id());
 
-    EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+    EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }
@@ -676,12 +675,12 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
 
   // Initially, both the model and persistent storage should be empty.
   EXPECT_EQ(holding_space_model->items().size(), 0u);
-  EXPECT_EQ(GetProfile()
-                ->GetPrefs()
-                ->GetList(HoldingSpacePersistenceDelegate::kPersistencePath)
-                ->GetListDeprecated()
-                .size(),
-            0u);
+  EXPECT_EQ(
+      GetProfile()
+          ->GetPrefs()
+          ->GetValueList(HoldingSpacePersistenceDelegate::kPersistencePath)
+          .size(),
+      0u);
 
   // Add a finalized item to holding space. Because the item is finalized, it
   // should immediately be added to persistent storage.
@@ -694,11 +693,11 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
   auto* finalized_holding_space_item_ptr = finalized_holding_space_item.get();
   holding_space_model->AddItem(std::move(finalized_holding_space_item));
 
-  base::Value persisted_holding_space_items(base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items;
   persisted_holding_space_items.Append(
       finalized_holding_space_item_ptr->Serialize());
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 
@@ -715,7 +714,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
       in_progress_holding_space_item.get();
   holding_space_model->AddItem(std::move(in_progress_holding_space_item));
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 
@@ -733,7 +732,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
   persisted_holding_space_items.Append(
       finalized_holding_space_item_ptr->Serialize());
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 
@@ -743,11 +742,11 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
   holding_space_model->UpdateItem(finalized_holding_space_item_ptr->id())
       ->SetBackingFile(file_path, GetFileSystemUrl(GetProfile(), file_path));
 
-  ASSERT_EQ(persisted_holding_space_items.GetListDeprecated().size(), 2u);
-  persisted_holding_space_items.GetListDeprecated()[1u] =
+  ASSERT_EQ(persisted_holding_space_items.size(), 2u);
+  persisted_holding_space_items[1u] =
       finalized_holding_space_item_ptr->Serialize();
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 
@@ -757,7 +756,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
   holding_space_model->UpdateItem(in_progress_holding_space_item_ptr->id())
       ->SetBackingFile(file_path, GetFileSystemUrl(GetProfile(), file_path));
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 
@@ -767,7 +766,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
       ->SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/75, /*total_bytes=*/100));
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 
@@ -777,12 +776,12 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
       ->SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100));
 
-  ASSERT_EQ(persisted_holding_space_items.GetListDeprecated().size(), 2u);
+  ASSERT_EQ(persisted_holding_space_items.size(), 2u);
   persisted_holding_space_items.Insert(
-      persisted_holding_space_items.GetListDeprecated().begin() + 1u,
+      persisted_holding_space_items.begin() + 1u,
       in_progress_holding_space_item_ptr->Serialize());
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 }
@@ -810,7 +809,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
       file_manager::util::GetFileManagerFileSystemContext(GetProfile());
   ASSERT_TRUE(context);
 
-  base::Value persisted_holding_space_items(base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items;
 
   // Verify persistent storage is updated when adding each type of item.
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -832,7 +831,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
     // Add the holding space item to the model and verify persistence.
     persisted_holding_space_items.Append(holding_space_item->Serialize());
     primary_holding_space_model->AddItem(std::move(holding_space_item));
-    EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+    EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }
@@ -868,9 +867,8 @@ TEST_F(HoldingSpaceKeyedServiceTest,
               new_file_path.BaseName().LossyDisplayName());
 
     // Verify that persistence has been updated.
-    persisted_holding_space_items.GetListDeprecated()[i] =
-        holding_space_item->Serialize();
-    ASSERT_EQ(*GetProfile()->GetPrefs()->GetList(
+    persisted_holding_space_items[i] = holding_space_item->Serialize();
+    ASSERT_EQ(GetProfile()->GetPrefs()->GetValueList(
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
 
@@ -907,9 +905,8 @@ TEST_F(HoldingSpaceKeyedServiceTest,
               new_file_path.BaseName().LossyDisplayName());
 
     // Verify that persistence has been updated.
-    persisted_holding_space_items.GetListDeprecated()[i] =
-        holding_space_item->Serialize();
-    ASSERT_EQ(*GetProfile()->GetPrefs()->GetList(
+    persisted_holding_space_items[i] = holding_space_item->Serialize();
+    ASSERT_EQ(GetProfile()->GetPrefs()->GetValueList(
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }
@@ -950,7 +947,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
   };
   std::map<HoldingSpaceItem::Type, TestCase> test_config;
 
-  base::Value persisted_holding_space_items(base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items;
 
   // Configure holding space state for the test. For each item adds two holding
   // space items to the model - "src" and "dst" (during the test, the src item's
@@ -983,11 +980,11 @@ TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
     ASSERT_NE(test_case.src.item_id, test_case.dst.item_id);
   }
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items);
 
-  base::Value final_persisted_holding_space_items(base::Value::Type::LIST);
+  base::Value::List final_persisted_holding_space_items;
   // Runs the test logic.
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
     const TestCase& test_case = test_config[type];
@@ -1056,7 +1053,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
     final_persisted_holding_space_items.Append(item->Serialize());
   }
 
-  EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             final_persisted_holding_space_items);
 }
@@ -1074,14 +1071,12 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::Value persisted_holding_space_items_after_restoration(
-      base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items_after_restoration;
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        base::Value persisted_holding_space_items_before_restoration(
-            base::Value::Type::LIST);
+        base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1124,7 +1119,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            base::Value::ToUniquePtrValue(
+            std::make_unique<base::Value>(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1155,7 +1150,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
   }
 
   // Verify persisted holding space items.
-  EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
+  EXPECT_EQ(secondary_profile->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_restoration);
 }
@@ -1179,16 +1174,13 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
   std::vector<std::string> initialized_items_before_delayed_mount;
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::Value persisted_holding_space_items_after_restoration(
-      base::Value::Type::LIST);
-  base::Value persisted_holding_space_items_after_delayed_mount(
-      base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items_after_restoration;
+  base::Value::List persisted_holding_space_items_after_delayed_mount;
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        base::Value persisted_holding_space_items_before_restoration(
-            base::Value::Type::LIST);
+        base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1249,7 +1241,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            base::Value::ToUniquePtrValue(
+            std::make_unique<base::Value>(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1282,7 +1274,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   EXPECT_EQ(initialized_items_before_delayed_mount, initialized_items);
 
   // Verify persisted holding space items.
-  EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
+  EXPECT_EQ(secondary_profile->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_restoration);
 
@@ -1313,7 +1305,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   }
 
   // Verify persisted holding space items.
-  EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
+  EXPECT_EQ(secondary_profile->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_delayed_mount);
 }
@@ -1338,14 +1330,12 @@ TEST_F(HoldingSpaceKeyedServiceTest,
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::Value persisted_holding_space_items_after_delayed_mount(
-      base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items_after_delayed_mount;
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        base::Value persisted_holding_space_items_before_restoration(
-            base::Value::Type::LIST);
+        base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1398,7 +1388,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            base::Value::ToUniquePtrValue(
+            std::make_unique<base::Value>(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1442,7 +1432,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   }
 
   // Verify persisted holding space items.
-  EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
+  EXPECT_EQ(secondary_profile->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_delayed_mount);
 }
@@ -1469,16 +1459,13 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
   std::vector<std::string> initialized_items_before_delayed_mount;
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::Value persisted_holding_space_items_after_restoration(
-      base::Value::Type::LIST);
-  base::Value persisted_holding_space_items_after_delayed_mount(
-      base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items_after_restoration;
+  base::Value::List persisted_holding_space_items_after_delayed_mount;
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        base::Value persisted_holding_space_items_before_restoration(
-            base::Value::Type::LIST);
+        base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1507,7 +1494,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            base::Value::ToUniquePtrValue(
+            std::make_unique<base::Value>(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1535,7 +1522,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   EXPECT_EQ(initialized_items_before_delayed_mount, initialized_items);
 
   // Verify persisted holding space items.
-  EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
+  EXPECT_EQ(secondary_profile->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_restoration);
 
@@ -1564,7 +1551,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
   }
 
   // Verify persisted holding space items.
-  EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
+  EXPECT_EQ(secondary_profile->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_delayed_mount);
 }
@@ -1598,21 +1585,21 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
   holding_space_service->AddDownload(HoldingSpaceItem::Type::kDownload,
                                      file_path_3);
 
-  EXPECT_EQ(3u, GetProfile()
-                    ->GetPrefs()
-                    ->GetList(HoldingSpacePersistenceDelegate::kPersistencePath)
-                    ->GetListDeprecated()
-                    .size());
+  EXPECT_EQ(
+      3u, GetProfile()
+              ->GetPrefs()
+              ->GetValueList(HoldingSpacePersistenceDelegate::kPersistencePath)
+              .size());
   EXPECT_EQ(3u, holding_space_model->items().size());
 
   test_mount_1.reset();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1u, GetProfile()
-                    ->GetPrefs()
-                    ->GetList(HoldingSpacePersistenceDelegate::kPersistencePath)
-                    ->GetListDeprecated()
-                    .size());
+  EXPECT_EQ(
+      1u, GetProfile()
+              ->GetPrefs()
+              ->GetValueList(HoldingSpacePersistenceDelegate::kPersistencePath)
+              .size());
   ASSERT_EQ(1u, holding_space_model->items().size());
   EXPECT_EQ(file_path_2, holding_space_model->items()[0]->file_path());
 }
@@ -1629,15 +1616,13 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
   HoldingSpaceModel::ItemList restored_holding_space_items;
-  base::Value persisted_holding_space_items_after_restoration(
-      base::Value::Type::LIST);
+  base::Value::List persisted_holding_space_items_after_restoration;
   base::Time last_creation_time = base::Time::Now();
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
-        base::Value persisted_holding_space_items_before_restoration(
-            base::Value::Type::LIST);
+        base::Value::List persisted_holding_space_items_before_restoration;
 
         // Persist some holding space items of each type.
         for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
@@ -1672,7 +1657,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            base::Value::ToUniquePtrValue(
+            std::make_unique<base::Value>(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1709,7 +1694,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
   }
 
   // Verify persisted holding space items.
-  EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
+  EXPECT_EQ(secondary_profile->GetPrefs()->GetValueList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_restoration);
 }

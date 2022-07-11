@@ -151,11 +151,11 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
         network_handler_test_helper_->device_test();
 
     std::string lock_pin = is_locked ? shill::kSIMLockPin : "";
-    base::Value sim_lock_status(base::Value::Type::DICTIONARY);
-    sim_lock_status.SetKey(shill::kSIMLockTypeProperty, base::Value(lock_pin));
+    base::Value::Dict sim_lock_status;
+    sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_pin);
     device_test->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMLockStatusProperty,
-        std::move(sim_lock_status), /*notify_changed=*/true);
+        base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -196,21 +196,19 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     service_test->SetServiceProperty(
         kCellular1ServicePath, shill::kActivationStateProperty,
         base::Value(shill::kActivationStateActivated));
-    base::Value sim_lock_status(base::Value::Type::DICTIONARY);
-    sim_lock_status.SetKey(shill::kSIMLockTypeProperty,
-                           base::Value(shill::kSIMLockPin));
+    base::Value::Dict sim_lock_status;
+    sim_lock_status.Set(shill::kSIMLockTypeProperty, shill::kSIMLockPin);
     device_test->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMLockStatusProperty,
-        std::move(sim_lock_status), /*notify_changed=*/true);
-    base::Value::ListStorage sim_slot_infos;
-    base::Value slot_info_item(base::Value::Type::DICTIONARY);
-    slot_info_item.SetKey(shill::kSIMSlotInfoICCID,
-                          base::Value(kCellular1Iccid));
-    slot_info_item.SetBoolKey(shill::kSIMSlotInfoPrimary, true);
-    sim_slot_infos.push_back(std::move(slot_info_item));
+        base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
+    base::Value::List sim_slot_infos;
+    base::Value::Dict slot_info_item;
+    slot_info_item.Set(shill::kSIMSlotInfoICCID, kCellular1Iccid);
+    slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
+    sim_slot_infos.Append(std::move(slot_info_item));
     device_test->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMSlotInfoProperty,
-        base::Value(sim_slot_infos), /*notify_changed=*/true);
+        base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
 
     base::RunLoop().RunUntilIdle();
   }

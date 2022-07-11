@@ -458,11 +458,11 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
                                         "true");
     manifest_platform_app.Set(extensions::manifest_keys::kPlatformAppBackground,
                               std::make_unique<base::DictionaryValue>());
-    auto scripts = std::make_unique<base::ListValue>();
-    scripts->Append("main.js");
+    base::Value::List scripts;
+    scripts.Append("main.js");
     manifest_platform_app.Set(
         extensions::manifest_keys::kPlatformAppBackgroundScripts,
-        std::move(scripts));
+        std::make_unique<base::Value>(std::move(scripts)));
 
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildTestSyncService));

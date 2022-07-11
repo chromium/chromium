@@ -2578,12 +2578,12 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
       ->FlushMojoCallsForTesting();
 
   // Set policy to pin the web app.
-  base::DictionaryValue entry;
-  entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
-               base::Value(app_url.spec()));
-  base::ListValue policy_value;
+  base::Value::Dict entry;
+  entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
+  base::Value::List policy_value;
   policy_value.Append(std::move(entry));
-  profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
+  profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+                                 std::move(policy_value));
 
   // Check web app is pinned and fixed.
   ASSERT_EQ(shelf_model()->item_count(), 2);
@@ -2607,12 +2607,12 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
   // Set policy to pin the web app.
-  base::DictionaryValue entry;
-  entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
-               base::Value(app_url.spec()));
-  base::ListValue policy_value;
+  base::Value::Dict entry;
+  entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
+  base::Value::List policy_value;
   policy_value.Append(std::move(entry));
-  profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
+  profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+                                 std::move(policy_value));
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->FlushMojoCallsForTesting();
 
@@ -2648,12 +2648,12 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
       web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
 
   // Set policy to pin the non existent web app.
-  base::DictionaryValue entry;
-  entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
-               base::Value(app_url.spec()));
-  base::ListValue policy_value;
+  base::Value::Dict entry;
+  entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
+  base::Value::List policy_value;
   policy_value.Append(std::move(entry));
-  profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
+  profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+                                 std::move(policy_value));
 
   // Check web app policy is ignored.
   EXPECT_EQ(shelf_model()->item_count(), 1);
@@ -2672,20 +2672,20 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppInstallForceList) {
   install_observer.BeginListening();
 
   {
-    base::DictionaryValue entry;
-    entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
-                 base::Value(kAppUrl));
-    base::ListValue policy_value;
+    base::Value::Dict entry;
+    entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, kAppUrl);
+    base::Value::List policy_value;
     policy_value.Append(std::move(entry));
-    profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps,
-                               std::move(policy_value));
+    profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+                                   std::move(policy_value));
   }
   {
-    base::Value item(base::Value::Type::DICTIONARY);
-    item.SetKey(web_app::kUrlKey, base::Value(kAppUrl));
-    base::Value list(base::Value::Type::LIST);
+    base::Value::Dict item;
+    item.Set(web_app::kUrlKey, kAppUrl);
+    base::Value::List list;
     list.Append(std::move(item));
-    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+    profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                   std::move(list));
   }
 
   const web_app::AppId app_id = install_observer.Wait();
@@ -3101,12 +3101,13 @@ class FilesSystemWebAppPinnedTest : public ShelfPlatformAppBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {
   // Setup: the customer pins Files Chrome App (ID:hhaomji...).
-  base::DictionaryValue entry;
-  entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
-               base::Value(file_manager::kFileManagerAppId));
-  base::ListValue policy_value;
+  base::Value::Dict entry;
+  entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
+            file_manager::kFileManagerAppId);
+  base::Value::List policy_value;
   policy_value.Append(std::move(entry));
-  profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
+  profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
+                                 std::move(policy_value));
 
   // Ensure shelf is updated.
   WaitForSystemAppsSynchronized();

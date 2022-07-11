@@ -653,10 +653,9 @@ void ChromeShelfPrefs::EnsureChromePinned(
 }
 
 bool ChromeShelfPrefs::DidAddDefaultApps(PrefService* pref_service) {
-  const auto* layouts_rolled =
-      pref_service->GetList(GetShelfDefaultPinLayoutPref());
-  DCHECK(layouts_rolled);
-  return !layouts_rolled->GetListDeprecated().empty();
+  const auto& layouts_rolled =
+      pref_service->GetValueList(GetShelfDefaultPinLayoutPref());
+  return !layouts_rolled.empty();
 }
 
 bool ChromeShelfPrefs::ShouldAddDefaultApps(PrefService* pref_service) {
