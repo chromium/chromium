@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   <variant name="document"/>
   <variant name="embed"/>
   <variant name="empty"/>
+  <variant name="fencedframe"/>
   <variant name="font"/>
   <variant name="frame"/>
   <variant name="iframe"/>

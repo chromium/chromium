@@ -8,10 +8,12 @@ namespace network {
 
 // These strings are used in histograms, so do not change the values without
 // updating/deprecating histograms which use RequestDestination.
+
 const char* RequestDestinationToString(
     network::mojom::RequestDestination dest) {
   switch (dest) {
     case network::mojom::RequestDestination::kEmpty:
+      // See https://crbug.com/1121493
       return "";
     case network::mojom::RequestDestination::kAudio:
       return "audio";
@@ -58,8 +60,13 @@ const char* RequestDestinationToString(
     case network::mojom::RequestDestination::kFencedframe:
       return "fencedframe";
   }
-  NOTREACHED();
-  return "empty";
+}
+
+const char* RequestDestinationToStringForHistogram(
+    network::mojom::RequestDestination dest) {
+  return dest == network::mojom::RequestDestination::kEmpty
+             ? "empty"
+             : RequestDestinationToString(dest);
 }
 
 bool IsRequestDestinationEmbeddedFrame(

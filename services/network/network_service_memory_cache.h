@@ -64,6 +64,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   // response body.
   void StoreResponse(const std::string& cache_key,
                      const URLLoaderCompletionStatus& status,
+                     mojom::RequestDestination request_destination,
                      mojom::URLResponseHeadPtr response_head,
                      std::vector<unsigned char> data);
 

@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCacheWriter {
       uint64_t trace_id,
       std::string cache_key,
       net::URLRequest* request,
+      mojom::RequestDestination request_destination,
       const mojom::URLResponseHeadPtr& response_head);
 
   ~NetworkServiceMemoryCacheWriter();
@@ -54,6 +55,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCacheWriter {
 
   // `url_request_` must outlive `this`. The owner owns `url_request_`.
   const raw_ptr<net::URLRequest> url_request_;
+
+  mojom::RequestDestination request_destination_;
 
   mojom::URLResponseHeadPtr response_head_;
   std::vector<unsigned char> received_data_;

@@ -822,10 +822,9 @@ void UmaPageLoadMetricsObserver::OnLoadedResource(
   if (timing_info.receive_headers_end.is_null())
     return;
 
-  base::StringPiece destination = network::RequestDestinationToString(
-      extra_request_complete_info.request_destination);
-  if (destination.empty())
-    destination = "empty";
+  base::StringPiece destination =
+      network::RequestDestinationToStringForHistogram(
+          extra_request_complete_info.request_destination);
 
   base::TimeDelta delta =
       timing_info.receive_headers_end - timing_info.request_start;

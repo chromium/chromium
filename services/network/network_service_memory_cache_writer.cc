@@ -16,11 +16,13 @@ NetworkServiceMemoryCacheWriter::NetworkServiceMemoryCacheWriter(
     uint64_t trace_id,
     std::string cache_key,
     net::URLRequest* url_request,
+    mojom::RequestDestination request_destination,
     const mojom::URLResponseHeadPtr& response_head)
     : cache_(std::move(cache)),
       trace_id_(trace_id),
       cache_key_(std::move(cache_key)),
       url_request_(url_request),
+      request_destination_(request_destination),
       response_head_(response_head.Clone()) {
   DCHECK(cache_);
   DCHECK(url_request_);
@@ -51,8 +53,8 @@ void NetworkServiceMemoryCacheWriter::OnCompleted(
       received_data_.size());
 
   if (cache_) {
-    cache_->StoreResponse(cache_key_, status, std::move(response_head_),
-                          std::move(received_data_));
+    cache_->StoreResponse(cache_key_, status, request_destination_,
+                          std::move(response_head_), std::move(received_data_));
   }
   // `this` will be deleted by the owner.
 }

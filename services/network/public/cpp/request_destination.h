@@ -15,6 +15,11 @@ namespace network {
 COMPONENT_EXPORT(NETWORK_CPP)
 const char* RequestDestinationToString(network::mojom::RequestDestination dest);
 
+// Returns a string representation of the `destination` for histogram recording.
+COMPONENT_EXPORT(NETWORK_CPP)
+const char* RequestDestinationToStringForHistogram(
+    network::mojom::RequestDestination dest);
+
 // Returns whether the destination is a frame embedded in the document.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsRequestDestinationEmbeddedFrame(network::mojom::RequestDestination dest);

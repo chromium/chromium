@@ -8,6 +8,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_cache.h"
@@ -20,6 +22,7 @@
 #include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/url_loader.h"
 #include "url/gurl.h"
@@ -154,18 +157,27 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
 
   return std::make_unique<NetworkServiceMemoryCacheWriter>(
       weak_ptr_factory_.GetWeakPtr(), GetNextTraceId(), std::move(cache_key),
-      url_request, response);
+      url_request, request_destination, response);
 }
 
 void NetworkServiceMemoryCache::StoreResponse(
     const std::string& cache_key,
     const URLLoaderCompletionStatus& status,
+    mojom::RequestDestination request_destination,
     mojom::URLResponseHeadPtr response_head,
     std::vector<unsigned char> data) {
   // TODO(https://crbug.com/1339708): Consider caching a response that doesn't
   // have contents.
   if (status.error_code != net::OK || data.size() == 0)
     return;
+
+  base::UmaHistogramCustomCounts(
+      base::StrCat(
+          {"NetworkService.MemoryCache.ContentLength.",
+           RequestDestinationToStringForHistogram(request_destination)}),
+      base::saturated_cast<base::Histogram::Sample>(data.size()),
+      /*min=*/1, /*exclusive_max=*/50000000,
+      /*buckets=*/50);
 
   // TODO(https://crbug.com/1339708): Consider not storing a large response to
   // improve cache hit rate.
