@@ -194,7 +194,7 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
   // for |scheme|. If a factory object used to exist for |scheme|, it will be
   // deleted.
   void RegisterSchemeFactory(const std::string& scheme,
-                             HttpAuthHandlerFactory* factory);
+                             std::unique_ptr<HttpAuthHandlerFactory> factory);
 
   // Creates an HttpAuthHandlerRegistryFactory.
   //

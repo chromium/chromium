@@ -67,16 +67,16 @@ TEST(HttpAuthHandlerFactoryTest, RegistryFactory) {
       /*http_auth_preferences=*/nullptr);
   url::SchemeHostPort scheme_host_port(GURL("https://www.google.com"));
   const int kBasicReturnCode = -1;
-  MockHttpAuthHandlerFactory* mock_factory_basic =
-      new MockHttpAuthHandlerFactory(kBasicReturnCode);
+  auto mock_factory_basic =
+      std::make_unique<MockHttpAuthHandlerFactory>(kBasicReturnCode);
 
   const int kDigestReturnCode = -2;
-  MockHttpAuthHandlerFactory* mock_factory_digest =
-      new MockHttpAuthHandlerFactory(kDigestReturnCode);
+  auto mock_factory_digest =
+      std::make_unique<MockHttpAuthHandlerFactory>(kDigestReturnCode);
 
   const int kDigestReturnCodeReplace = -3;
-  MockHttpAuthHandlerFactory* mock_factory_digest_replace =
-      new MockHttpAuthHandlerFactory(kDigestReturnCodeReplace);
+  auto mock_factory_digest_replace =
+      std::make_unique<MockHttpAuthHandlerFactory>(kDigestReturnCodeReplace);
 
   auto host_resovler = std::make_unique<MockHostResolver>();
   std::unique_ptr<HttpAuthHandler> handler;
@@ -89,7 +89,8 @@ TEST(HttpAuthHandlerFactoryTest, RegistryFactory) {
           scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
 
   // Test what happens with a single scheme.
-  registry_factory.RegisterSchemeFactory("Basic", mock_factory_basic);
+  registry_factory.RegisterSchemeFactory("Basic",
+                                         std::move(mock_factory_basic));
   EXPECT_EQ(
       kBasicReturnCode,
       registry_factory.CreateAuthHandlerFromString(
@@ -102,7 +103,8 @@ TEST(HttpAuthHandlerFactoryTest, RegistryFactory) {
           scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
 
   // Test multiple schemes
-  registry_factory.RegisterSchemeFactory("Digest", mock_factory_digest);
+  registry_factory.RegisterSchemeFactory("Digest",
+                                         std::move(mock_factory_digest));
   EXPECT_EQ(
       kBasicReturnCode,
       registry_factory.CreateAuthHandlerFromString(
@@ -122,7 +124,8 @@ TEST(HttpAuthHandlerFactoryTest, RegistryFactory) {
           scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
 
   // Test replacement of existing auth scheme
-  registry_factory.RegisterSchemeFactory("Digest", mock_factory_digest_replace);
+  registry_factory.RegisterSchemeFactory(
+      "Digest", std::move(mock_factory_digest_replace));
   EXPECT_EQ(
       kBasicReturnCode,
       registry_factory.CreateAuthHandlerFromString(
