@@ -25,13 +25,17 @@ interface MediaSource : EventTarget {
                     attribute EventHandler        onsourceended;
                     attribute EventHandler        onsourceclose;
     static readonly attribute boolean canConstructInDedicatedWorker;
-    SourceBuffer   addSourceBuffer (DOMString type);
-    undefined           removeSourceBuffer (SourceBuffer sourceBuffer);
-    undefined           endOfStream (optional EndOfStreamError error);
-    undefined           setLiveSeekableRange (double start, double end);
-    undefined           clearLiveSeekableRange ();
-    static boolean isTypeSupported (DOMString type);
+    SourceBuffer      addSourceBuffer (DOMString type);
+    undefined         removeSourceBuffer (SourceBuffer sourceBuffer);
+    undefined         endOfStream (optional EndOfStreamError error);
+    undefined         setLiveSeekableRange (double start, double end);
+    undefined         clearLiveSeekableRange ();
+    MediaSourceHandle getHandle ();
+    static boolean    isTypeSupported (DOMString type);
 };
+
+[Exposed=(Window,DedicatedWorker)]
+interface MediaSourceHandle {};
 
 enum AppendMode {
     "segments",

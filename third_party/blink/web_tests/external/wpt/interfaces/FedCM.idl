@@ -4,37 +4,30 @@
 // Source: Federated Credential Management API (https://fedidcg.github.io/FedCM/)
 
 [Exposed=Window, SecureContext]
-dictionary FederatedAccountLoginRequest {
-  AbortSignal signal;
+interface IdentityCredential : Credential {
+  readonly attribute USVString? token;
+};
+
+partial dictionary CredentialRequestOptions {
+  IdentityCredentialRequestOptions identity;
+};
+
+dictionary IdentityCredentialRequestOptions {
+  sequence<IdentityProvider> providers;
+};
+
+dictionary IdentityProvider {
+  required USVString configURL;
+  required USVString clientId;
   USVString nonce;
 };
 
-[Exposed=Window, SecureContext]
-partial interface FederatedCredential {
-  Promise<FederatedTokens> login(optional FederatedAccountLoginRequest request = {});
-};
-
-[Exposed=Window, SecureContext]
-dictionary FederatedTokens {
-  USVString token;
-};
-
-[Exposed=Window, SecureContext]
-partial interface FederatedCredential {
-  Promise<undefined> revoke(USVString hint);
-};
-
-[Exposed=Window, SecureContext]
-partial interface FederatedCredential {
-  Promise<undefined> logout();
-};
-
-dictionary FederatedCredentialLogoutRpsRequest {
+dictionary IdentityCredentialLogoutRpsRequest {
   required USVString url;
   required USVString accountId;
 };
 
 [Exposed=Window, SecureContext]
-partial interface FederatedCredential {
-  static Promise<undefined> logoutRPs(sequence<FederatedCredentialLogoutRpsRequest> logoutRequests);
+partial interface IdentityCredential {
+  static Promise<undefined> logoutRPs(sequence<IdentityCredentialLogoutRpsRequest> logoutRequests);
 };

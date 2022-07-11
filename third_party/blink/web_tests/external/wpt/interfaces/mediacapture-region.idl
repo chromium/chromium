@@ -5,12 +5,7 @@
 
 [Exposed=(Window,Worker), Serializable]
 interface CropTarget {
-  // Intentionally empty; just an opaque identifier.
-};
-
-partial interface MediaDevices {
-  Promise<CropTarget>
-  produceCropTarget(Element element);
+  [SecureContext] static Promise<CropTarget> fromElement(Element element);
 };
 
 [Exposed = Window]

@@ -36,5 +36,5 @@ dictionary PressureRecord {
 };
 
 dictionary PressureObserverOptions {
-  double frequency;
+  double samplerate;
 };

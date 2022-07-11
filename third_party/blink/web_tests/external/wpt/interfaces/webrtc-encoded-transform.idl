@@ -86,7 +86,7 @@ dictionary RTCEncodedVideoFrameMetadata {
 [Exposed=(Window,DedicatedWorker)]
 interface RTCEncodedVideoFrame {
     readonly attribute RTCEncodedVideoFrameType type;
-    readonly attribute unsigned long long timestamp;
+    readonly attribute unsigned long timestamp; // RTP timestamp.
     attribute ArrayBuffer data;
     RTCEncodedVideoFrameMetadata getMetadata();
 };
@@ -99,7 +99,7 @@ dictionary RTCEncodedAudioFrameMetadata {
 
 [Exposed=(Window,DedicatedWorker)]
 interface RTCEncodedAudioFrame {
-    readonly attribute unsigned long long timestamp;
+    readonly attribute unsigned long timestamp; // RTP timestamp.
     attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
 };
@@ -120,7 +120,7 @@ interface RTCRtpScriptTransformer {
     readonly attribute ReadableStream readable;
     readonly attribute WritableStream writable;
     readonly attribute any options;
-    Promise<undefined> generateKeyFrame(optional sequence <DOMString> rids);
+    Promise<unsigned long long> generateKeyFrame(optional DOMString rid);
     Promise<undefined> sendKeyFrameRequest();
 };
 

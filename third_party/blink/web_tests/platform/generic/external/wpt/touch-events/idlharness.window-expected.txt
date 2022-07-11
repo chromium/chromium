@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 125 tests; 115 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 128 tests; 115 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface mixin GlobalEventHandlers: original interface mixin defined
@@ -88,6 +88,7 @@ PASS TouchEvent interface: attribute altKey
 PASS TouchEvent interface: attribute metaKey
 PASS TouchEvent interface: attribute ctrlKey
 PASS TouchEvent interface: attribute shiftKey
+FAIL TouchEvent interface: operation getModifierState(DOMString) assert_own_property: interface prototype object missing non-static operation expected property "getModifierState" missing
 PASS TouchEvent must be primary interface of new TouchEvent("name")
 PASS Stringification of new TouchEvent("name")
 PASS TouchEvent interface: new TouchEvent("name") must inherit property "touches" with the proper type
@@ -97,6 +98,8 @@ PASS TouchEvent interface: new TouchEvent("name") must inherit property "altKey"
 PASS TouchEvent interface: new TouchEvent("name") must inherit property "metaKey" with the proper type
 PASS TouchEvent interface: new TouchEvent("name") must inherit property "ctrlKey" with the proper type
 PASS TouchEvent interface: new TouchEvent("name") must inherit property "shiftKey" with the proper type
+FAIL TouchEvent interface: new TouchEvent("name") must inherit property "getModifierState(DOMString)" with the proper type assert_inherits: property "getModifierState" not found in prototype chain
+FAIL TouchEvent interface: calling getModifierState(DOMString) on new TouchEvent("name") with too few arguments must throw TypeError assert_inherits: property "getModifierState" not found in prototype chain
 PASS HTMLElement interface: attribute ontouchstart
 PASS HTMLElement interface: attribute ontouchend
 PASS HTMLElement interface: attribute ontouchmove

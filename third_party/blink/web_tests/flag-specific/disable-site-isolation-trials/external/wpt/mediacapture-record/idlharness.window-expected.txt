@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-Found 70 tests; 60 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS MediaRecorder interface: existence and properties of interface object
@@ -60,15 +59,5 @@ PASS BlobEvent must be primary interface of [object BlobEvent]
 PASS Stringification of [object BlobEvent]
 PASS BlobEvent interface: [object BlobEvent] must inherit property "data" with the proper type
 PASS BlobEvent interface: [object BlobEvent] must inherit property "timecode" with the proper type
-FAIL MediaRecorderErrorEvent interface: existence and properties of interface object assert_own_property: self does not have own property "MediaRecorderErrorEvent" expected property "MediaRecorderErrorEvent" missing
-FAIL MediaRecorderErrorEvent interface object length assert_own_property: self does not have own property "MediaRecorderErrorEvent" expected property "MediaRecorderErrorEvent" missing
-FAIL MediaRecorderErrorEvent interface object name assert_own_property: self does not have own property "MediaRecorderErrorEvent" expected property "MediaRecorderErrorEvent" missing
-FAIL MediaRecorderErrorEvent interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MediaRecorderErrorEvent" expected property "MediaRecorderErrorEvent" missing
-FAIL MediaRecorderErrorEvent interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MediaRecorderErrorEvent" expected property "MediaRecorderErrorEvent" missing
-FAIL MediaRecorderErrorEvent interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MediaRecorderErrorEvent" expected property "MediaRecorderErrorEvent" missing
-FAIL MediaRecorderErrorEvent interface: attribute error assert_own_property: self does not have own property "MediaRecorderErrorEvent" expected property "MediaRecorderErrorEvent" missing
-FAIL MediaRecorderErrorEvent must be primary interface of undefined assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL Stringification of undefined assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL MediaRecorderErrorEvent interface: undefined must inherit property "error" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
 Harness: the test ran to completion.
 

@@ -4,7 +4,7 @@
 // Source: Visual Viewport API (https://wicg.github.io/visual-viewport/)
 
 partial interface Window {
-  [SameObject, Replaceable] readonly attribute VisualViewport visualViewport;
+  [SameObject, Replaceable] readonly attribute VisualViewport? visualViewport;
 };
 
 [Exposed=Window]

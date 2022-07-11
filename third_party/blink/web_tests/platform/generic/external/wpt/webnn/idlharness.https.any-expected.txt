@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 386 tests; 148 PASS, 238 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 386 tests; 146 PASS, 240 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'MLGraphBuilder': parameter 1 is not of type 'MLContext'."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -111,17 +111,12 @@ FAIL ML interface: operation createContext(optional MLContextOptions) assert_thr
 FAIL ML interface: operation createContext(GPUDevice) assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {
             fn.apply(obj, args);
         }" did not throw
-FAIL ML interface: operation createContext(WebGLRenderingContext) assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {
-            fn.apply(obj, args);
-        }" did not throw
 PASS ML must be primary interface of navigator.ml
 PASS Stringification of navigator.ml
 PASS ML interface: navigator.ml must inherit property "createContext(optional MLContextOptions)" with the proper type
 PASS ML interface: calling createContext(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError
 PASS ML interface: navigator.ml must inherit property "createContext(GPUDevice)" with the proper type
 PASS ML interface: calling createContext(GPUDevice) on navigator.ml with too few arguments must throw TypeError
-PASS ML interface: navigator.ml must inherit property "createContext(WebGLRenderingContext)" with the proper type
-PASS ML interface: calling createContext(WebGLRenderingContext) on navigator.ml with too few arguments must throw TypeError
 PASS MLContext interface: existence and properties of interface object
 PASS MLContext interface object length
 PASS MLContext interface object name
@@ -165,6 +160,7 @@ PASS MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor)
 FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_equals: property has wrong .length expected 1 but got 2
 FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_equals: property has wrong .length expected 1 but got 2
 PASS MLGraphBuilder interface: member build
+FAIL MLGraphBuilder interface: operation buildAsync(MLNamedOperands) assert_own_property: interface prototype object missing non-static operation expected property "buildAsync" missing
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
 PASS MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
 PASS MLGraphBuilder interface: operation clamp(optional MLClampOptions)
@@ -242,6 +238,8 @@ FAIL MLGraphBuilder interface: calling constant(MLOperandDescriptor, MLBufferVie
 FAIL MLGraphBuilder interface: builder must inherit property "constant(double, optional MLOperandType)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must not have property "build" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "buildAsync(MLNamedOperands)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling buildAsync(MLNamedOperands) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "clamp(MLOperand, optional MLClampOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"

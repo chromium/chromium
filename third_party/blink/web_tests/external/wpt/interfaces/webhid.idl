@@ -7,7 +7,12 @@
     [SameObject] readonly attribute HID hid;
 };
 
-[Exposed=Window, SecureContext]
+[Exposed=ServiceWorker, SecureContext]
+partial interface WorkerNavigator {
+    [SameObject] readonly attribute HID hid;
+};
+
+[Exposed=(Window,ServiceWorker), SecureContext]
 interface HID : EventTarget {
     attribute EventHandler onconnect;
     attribute EventHandler ondisconnect;

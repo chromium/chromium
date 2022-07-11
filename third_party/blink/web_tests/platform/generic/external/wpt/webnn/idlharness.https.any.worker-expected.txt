@@ -107,15 +107,12 @@ FAIL ML interface: existence and properties of interface prototype object's "con
 FAIL ML interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ML" expected property "ML" missing
 FAIL ML interface: operation createContext(optional MLContextOptions) assert_own_property: self does not have own property "ML" expected property "ML" missing
 FAIL ML interface: operation createContext(GPUDevice) assert_own_property: self does not have own property "ML" expected property "ML" missing
-FAIL ML interface: operation createContext(WebGLRenderingContext) assert_own_property: self does not have own property "ML" expected property "ML" missing
 FAIL ML must be primary interface of navigator.ml assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL Stringification of navigator.ml assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL ML interface: navigator.ml must inherit property "createContext(optional MLContextOptions)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL ML interface: calling createContext(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL ML interface: navigator.ml must inherit property "createContext(GPUDevice)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL ML interface: calling createContext(GPUDevice) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ML interface: navigator.ml must inherit property "createContext(WebGLRenderingContext)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ML interface: calling createContext(WebGLRenderingContext) on navigator.ml with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
 FAIL MLContext interface: existence and properties of interface object assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface object length assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
 FAIL MLContext interface object name assert_own_property: self does not have own property "MLContext" expected property "MLContext" missing
@@ -160,6 +157,7 @@ FAIL MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor) a
 FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation build(MLNamedOperands) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation buildAsync(MLNamedOperands) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation clamp(optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
@@ -238,6 +236,8 @@ FAIL MLGraphBuilder interface: builder must inherit property "constant(double, o
 FAIL MLGraphBuilder interface: calling constant(double, optional MLOperandType) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "build(MLNamedOperands)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling build(MLNamedOperands) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "buildAsync(MLNamedOperands)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling buildAsync(MLNamedOperands) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "clamp(MLOperand, optional MLClampOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"

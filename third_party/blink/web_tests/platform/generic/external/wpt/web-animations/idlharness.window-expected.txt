@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 215 tests; 164 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 213 tests; 164 PASS, 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -48,7 +48,6 @@ PASS AnimationTimeline interface: existence and properties of interface prototyp
 PASS AnimationTimeline interface: existence and properties of interface prototype object's "constructor" property
 PASS AnimationTimeline interface: existence and properties of interface prototype object's @@unscopables property
 PASS AnimationTimeline interface: attribute currentTime
-FAIL AnimationTimeline interface: attribute phase assert_true: The prototype object must have a property "phase" expected true got false
 PASS AnimationTimeline interface: attribute duration
 FAIL AnimationTimeline interface: operation play(optional AnimationEffect?) assert_own_property: interface prototype object missing non-static operation expected property "play" missing
 PASS DocumentTimeline interface: existence and properties of interface object
@@ -60,7 +59,6 @@ PASS DocumentTimeline interface: existence and properties of interface prototype
 PASS DocumentTimeline must be primary interface of document.timeline
 PASS Stringification of document.timeline
 PASS AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type
-FAIL AnimationTimeline interface: document.timeline must inherit property "phase" with the proper type assert_inherits: property "phase" not found in prototype chain
 PASS AnimationTimeline interface: document.timeline must inherit property "duration" with the proper type
 FAIL AnimationTimeline interface: document.timeline must inherit property "play(optional AnimationEffect?)" with the proper type assert_inherits: property "play" not found in prototype chain
 FAIL AnimationTimeline interface: calling play(optional AnimationEffect?) on document.timeline with too few arguments must throw TypeError assert_inherits: property "play" not found in prototype chain

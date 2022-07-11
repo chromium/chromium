@@ -22,16 +22,6 @@ partial interface MediaStreamTrack {
   CaptureHandle? getCaptureHandle();
 };
 
-[Exposed=Window]
-interface CaptureHandleChangeEvent : Event {
-  constructor(optional CaptureHandleChangeEventInit init = {});
-  [SameObject] CaptureHandle captureHandle();
-};
-
-dictionary CaptureHandleChangeEventInit : EventInit {
-  CaptureHandle captureHandle;
-};
-
 partial interface MediaStreamTrack {
   attribute EventHandler oncapturehandlechange;
 };

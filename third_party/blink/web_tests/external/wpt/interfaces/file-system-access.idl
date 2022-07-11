@@ -57,6 +57,7 @@ dictionary SaveFilePickerOptions : FilePickerOptions {
 dictionary DirectoryPickerOptions {
     DOMString id;
     StartInDirectory startIn;
+    FileSystemPermissionMode mode = "read";
 };
 
 [SecureContext]

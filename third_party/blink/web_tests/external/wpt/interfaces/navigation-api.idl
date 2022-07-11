@@ -84,7 +84,7 @@ interface NavigateEvent : Event {
 
   readonly attribute NavigationType navigationType;
   readonly attribute NavigationDestination destination;
-  readonly attribute boolean canTransition;
+  readonly attribute boolean canIntercept;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
   readonly attribute AbortSignal signal;
@@ -92,15 +92,14 @@ interface NavigateEvent : Event {
   readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
 
-  undefined transitionWhile(Promise<undefined> newNavigationAction,
-                            optional NavigationTransitionWhileOptions options = {});
+  undefined intercept(optional NavigationInterceptOptions options = {});
   undefined restoreScroll();
 };
 
 dictionary NavigateEventInit : EventInit {
   NavigationType navigationType = "push";
   required NavigationDestination destination;
-  boolean canTransition = false;
+  boolean canIntercept = false;
   boolean userInitiated = false;
   boolean hashChange = false;
   required AbortSignal signal;
@@ -109,7 +108,8 @@ dictionary NavigateEventInit : EventInit {
   any info;
 };
 
-dictionary NavigationTransitionWhileOptions {
+dictionary NavigationInterceptOptions {
+  NavigationInterceptHandler handler;
   NavigationFocusReset focusReset;
   NavigationScrollRestoration scrollRestoration;
 };
@@ -123,6 +123,8 @@ enum NavigationScrollRestoration {
   "after-transition",
   "manual"
 };
+
+callback NavigationInterceptHandler = Promise<undefined> ();
 
 enum NavigationType {
   "reload",

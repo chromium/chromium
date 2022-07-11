@@ -3,10 +3,10 @@ FAIL idl_test setup promise_test: Unhandled rejection with value: object "Device
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
 PASS Partial interface Navigator: member names are unique
-PASS Partial interface Navigator[2]: original interface defined
-PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface MediaDevices: original interface defined
 PASS Partial interface MediaDevices: member names are unique
+PASS Partial interface Navigator[2]: original interface defined
+PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique

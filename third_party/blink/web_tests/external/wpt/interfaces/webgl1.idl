@@ -516,6 +516,8 @@ interface mixin WebGLRenderingContextBase
     readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
     readonly attribute GLsizei drawingBufferWidth;
     readonly attribute GLsizei drawingBufferHeight;
+    attribute PredefinedColorSpace drawingBufferColorSpace;
+    attribute PredefinedColorSpace unpackColorSpace;
 
     [WebGLHandlesContextLoss] WebGLContextAttributes? getContextAttributes();
     [WebGLHandlesContextLoss] boolean isContextLost();

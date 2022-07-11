@@ -29,7 +29,6 @@ dictionary MLContextOptions {
 interface ML {
   MLContext createContext(optional MLContextOptions options = {});
   MLContext createContext(GPUDevice gpuDevice);
-  MLContext createContext(WebGLRenderingContext glContext);
 };
 
 dictionary MLArrayInput {
@@ -90,7 +89,7 @@ interface MLOperator {};
 typedef record<DOMString, MLOperand> MLNamedOperands;
 
 dictionary MLBufferResourceView {
-  required (WebGLBuffer or GPUBuffer) resource;
+  required GPUBuffer resource;
   unsigned long long offset = 0;
   unsigned long long size;
 };
@@ -111,9 +110,12 @@ interface MLGraphBuilder {
   // Create a single-value operand from the specified number of the specified type.
   MLOperand constant(double value, optional MLOperandType type = "float32");
 
-  // Compile the graph up to the specified output operands
+  // Compile the graph up to the specified output operands synchronously.
   [Exposed=(DedicatedWorker)]
   MLGraph build(MLNamedOperands outputs);
+
+  // Compile the graph up to the specified output operands asynchronously.
+  Promise<MLGraph> buildAsync(MLNamedOperands outputs);
 };
 
 dictionary MLBatchNormalizationOptions {

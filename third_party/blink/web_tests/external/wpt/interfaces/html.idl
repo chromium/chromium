@@ -192,7 +192,7 @@ interface HTMLLinkElement : HTMLElement {
   [CEReactions] attribute USVString href;
   [CEReactions] attribute DOMString? crossOrigin;
   [CEReactions] attribute DOMString rel;
-  [CEReactions] attribute DOMString as; // (default "")
+  [CEReactions] attribute DOMString as;
   [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
   [CEReactions] attribute DOMString media;
   [CEReactions] attribute DOMString integrity;
@@ -1858,7 +1858,7 @@ dictionary ErrorEventInit : EventInit {
   USVString filename = "";
   unsigned long lineno = 0;
   unsigned long colno = 0;
-  any error = null;
+  any error;
 };
 
 [Exposed=*]
@@ -1889,6 +1889,7 @@ typedef OnBeforeUnloadEventHandlerNonNull? OnBeforeUnloadEventHandler;
 interface mixin GlobalEventHandlers {
   attribute EventHandler onabort;
   attribute EventHandler onauxclick;
+  attribute EventHandler onbeforeinput;
   attribute EventHandler onbeforematch;
   attribute EventHandler onblur;
   attribute EventHandler oncancel;

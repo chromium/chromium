@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 340 tests; 338 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 345 tests; 338 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -10,6 +10,11 @@ PASS onauxclick: the default value must be null
 PASS onauxclick: the content attribute must be compiled into a function as the corresponding property
 PASS onauxclick: dynamic changes on the attribute
 PASS onauxclick: dispatching an Event at a <math> element must trigger element.onauxclick
+FAIL onbeforeinput: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "onbeforeinput" expected true got false
+FAIL onbeforeinput: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
+FAIL onbeforeinput: the content attribute must be compiled into a function as the corresponding property assert_equals: The onbeforeinput property must be a function expected "function" but got "undefined"
+FAIL onbeforeinput: dynamic changes on the attribute assert_equals: The onbeforeinput property must be null (no attribute) expected (object) null but got (undefined) undefined
+FAIL onbeforeinput: dispatching an Event at a <math> element must trigger element.onbeforeinput assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
 PASS onbeforematch: must be on the appropriate locations for GlobalEventHandlers
 PASS onbeforematch: the default value must be null
 FAIL onbeforematch: the content attribute must be compiled into a function as the corresponding property assert_equals: The onbeforematch property must be a function expected "function" but got "object"

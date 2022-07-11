@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 378 tests; 296 PASS, 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 378 tests; 303 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -147,8 +147,8 @@ PASS HTMLElement interface: document.createElement("div") must inherit property 
 PASS HTMLElement interface: document.createElement("div") must inherit property "offsetHeight" with the proper type
 PASS Element interface: document.createElement("div") must inherit property "getClientRects()" with the proper type
 PASS Element interface: document.createElement("div") must inherit property "getBoundingClientRect()" with the proper type
-FAIL Element interface: document.createElement("div") must inherit property "isVisible(optional IsVisibleOptions)" with the proper type assert_inherits: property "isVisible" not found in prototype chain
-FAIL Element interface: calling isVisible(optional IsVisibleOptions) on document.createElement("div") with too few arguments must throw TypeError assert_inherits: property "isVisible" not found in prototype chain
+PASS Element interface: document.createElement("div") must inherit property "checkVisibility(optional CheckVisibilityOptions)" with the proper type
+PASS Element interface: calling checkVisibility(optional CheckVisibilityOptions) on document.createElement("div") with too few arguments must throw TypeError
 PASS Element interface: document.createElement("div") must inherit property "scrollIntoView(optional (boolean or ScrollIntoViewOptions))" with the proper type
 PASS Element interface: calling scrollIntoView(optional (boolean or ScrollIntoViewOptions)) on document.createElement("div") with too few arguments must throw TypeError
 PASS Element interface: document.createElement("div") must inherit property "scroll(optional ScrollToOptions)" with the proper type
@@ -190,8 +190,8 @@ PASS HTMLElement interface: document.createElement("img") must inherit property 
 PASS HTMLElement interface: document.createElement("img") must inherit property "offsetHeight" with the proper type
 PASS Element interface: document.createElement("img") must inherit property "getClientRects()" with the proper type
 PASS Element interface: document.createElement("img") must inherit property "getBoundingClientRect()" with the proper type
-FAIL Element interface: document.createElement("img") must inherit property "isVisible(optional IsVisibleOptions)" with the proper type assert_inherits: property "isVisible" not found in prototype chain
-FAIL Element interface: calling isVisible(optional IsVisibleOptions) on document.createElement("img") with too few arguments must throw TypeError assert_inherits: property "isVisible" not found in prototype chain
+PASS Element interface: document.createElement("img") must inherit property "checkVisibility(optional CheckVisibilityOptions)" with the proper type
+PASS Element interface: calling checkVisibility(optional CheckVisibilityOptions) on document.createElement("img") with too few arguments must throw TypeError
 PASS Element interface: document.createElement("img") must inherit property "scrollIntoView(optional (boolean or ScrollIntoViewOptions))" with the proper type
 PASS Element interface: calling scrollIntoView(optional (boolean or ScrollIntoViewOptions)) on document.createElement("img") with too few arguments must throw TypeError
 PASS Element interface: document.createElement("img") must inherit property "scroll(optional ScrollToOptions)" with the proper type
@@ -308,7 +308,7 @@ FAIL Document interface: document must inherit property "convertPointFromNode(DO
 FAIL Document interface: calling convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) on document with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
 PASS Element interface: operation getClientRects()
 PASS Element interface: operation getBoundingClientRect()
-FAIL Element interface: operation isVisible(optional IsVisibleOptions) assert_own_property: interface prototype object missing non-static operation expected property "isVisible" missing
+PASS Element interface: operation checkVisibility(optional CheckVisibilityOptions)
 PASS Element interface: operation scrollIntoView(optional (boolean or ScrollIntoViewOptions))
 PASS Element interface: operation scroll(optional ScrollToOptions)
 PASS Element interface: operation scroll(unrestricted double, unrestricted double)
@@ -330,8 +330,8 @@ FAIL Element interface: operation convertRectFromNode(DOMRectReadOnly, GeometryN
 FAIL Element interface: operation convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertPointFromNode" missing
 PASS Element interface: document.createElementNS("x", "y") must inherit property "getClientRects()" with the proper type
 PASS Element interface: document.createElementNS("x", "y") must inherit property "getBoundingClientRect()" with the proper type
-FAIL Element interface: document.createElementNS("x", "y") must inherit property "isVisible(optional IsVisibleOptions)" with the proper type assert_inherits: property "isVisible" not found in prototype chain
-FAIL Element interface: calling isVisible(optional IsVisibleOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError assert_inherits: property "isVisible" not found in prototype chain
+PASS Element interface: document.createElementNS("x", "y") must inherit property "checkVisibility(optional CheckVisibilityOptions)" with the proper type
+PASS Element interface: calling checkVisibility(optional CheckVisibilityOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError
 PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollIntoView(optional (boolean or ScrollIntoViewOptions))" with the proper type
 PASS Element interface: calling scrollIntoView(optional (boolean or ScrollIntoViewOptions)) on document.createElementNS("x", "y") with too few arguments must throw TypeError
 PASS Element interface: document.createElementNS("x", "y") must inherit property "scroll(optional ScrollToOptions)" with the proper type

@@ -181471,7 +181471,7 @@
       ]
      ],
      "text-decoration-subelements-002.html": [
-      "8ac1afa705677262d847686a769df0a0a8a1de79",
+      "c8eeea6b6f6ecdc54874768a535322caaa1eeca6",
       [
        null,
        [
@@ -181486,8 +181486,8 @@
           null,
           [
            [
-            75,
-            75
+            80,
+            80
            ],
            [
             42,
@@ -249107,10 +249107,6 @@
       []
      ]
     },
-    "fedcm.json": [
-     "54175a71061cb971c6cf4b5fc29051b2711e4b4c",
-     []
-    ],
     "idp-proxy": {
      "META.yml": [
       "9901aed94e7d018fc877c768f902d2570484518c",
@@ -249124,7 +249120,11 @@
       "e73ca22bb2ae79a6ceec2ebbf407ed22b1d0b435",
       []
      ]
-    }
+    },
+    "web-identity": [
+     "0b0efb25c83e77a305bca39c2cabf03b83eac5ed",
+     []
+    ]
    },
    "BackgroundSync": {
     "META.yml": [
@@ -254129,7 +254129,7 @@
       []
      ],
      "fedcm-iframe.html": [
-      "950547c6f2020804c5a97157df4988adfb174bf3",
+      "1c7c534f06f1bc0838ca47d988b7169c703bdfa6",
       []
      ],
      "fedcm-manifest-not-in-list": {
@@ -318970,7 +318970,7 @@
      []
     ],
     "CSP.idl": [
-     "1e69b3cb53b4453b172e7d5d85b07623589ed49e",
+     "ac0a6ff5638eb0f64464d35cb11c7550a72d715f",
      []
     ],
     "DOM-Parsing.idl": [
@@ -319034,7 +319034,7 @@
      []
     ],
     "FedCM.idl": [
-     "832b54a684aa74ee9e67f534bcfb89d43fcad040",
+     "2ea74547ab13a73ef5a1db742618e9136b60ff19",
      []
     ],
     "FileAPI.idl": [
@@ -319158,11 +319158,11 @@
      []
     ],
     "WEBGL_multi_draw.idl": [
-     "d5ab6cf4f4606665294717161c58d5ae9afc341c",
+     "30164ef74a2f38b82b03325757763eb3404a7207",
      []
     ],
     "WEBGL_multi_draw_instanced_base_vertex_base_instance.idl": [
-     "8dd3253a24cffa3b24ae145a378912d2ada260fb",
+     "ed728434aa2ed8324c669a4d1bf2df455bba8a8a",
      []
     ],
     "WebCryptoAPI.idl": [
@@ -319179,6 +319179,10 @@
     ],
     "anchors.idl": [
      "e92e7d10cdd146f08d276284ed616c896d9f2e3f",
+     []
+    ],
+    "attribution-reporting-api.idl": [
+     "76640f54c8d5bd22151509d4d9b8a018d9492a09",
      []
     ],
     "audio-output.idl": [
@@ -319209,6 +319213,10 @@
      "103a999fd432707d8858e8083b7ef74b17396890",
      []
     ],
+    "capture-handle-identity.idl": [
+     "37b2c61dac94c1d571aa2f6afad24ca01696478b",
+     []
+    ],
     "clipboard-apis.idl": [
      "3f2c9ba6f28253f6febaf689e150d188d4fc3374",
      []
@@ -319226,7 +319234,7 @@
      []
     ],
     "compute-pressure.idl": [
-     "5eb78cdf5120936e70102057d32a4e9c3b572cb2",
+     "d327122c63a3518be7dc6765faff4e59261f92be",
      []
     ],
     "console.idl": [
@@ -319241,12 +319249,8 @@
      "177c5b9f11d4e1dd48ebb407529a4e567d030f1a",
      []
     ],
-    "conversion-measurement-api.idl": [
-     "fba87e49769cd66d2a7e6db4cfdf066c81a6704e",
-     []
-    ],
     "cookie-store.idl": [
-     "993b327fe70aa3e369e0bd7c7ea6dcdb227c60cc",
+     "72ef3f8c8242dfd608b400a3de10aa6d49361210",
      []
     ],
     "crash-reporting.idl": [
@@ -319254,7 +319258,7 @@
      []
     ],
     "credential-management.idl": [
-     "bf1adbaffcbe7e6221f8629724e29ac2cf75aa19",
+     "e9fab13f35fe13aa13076aeb955f2b3b33d16676",
      []
     ],
     "csp-embedded-enforcement.idl": [
@@ -319366,7 +319370,7 @@
      []
     ],
     "cssom-view.idl": [
-     "edc74ed2ba5c67572187827b0cecd8382727d401",
+     "d853fb001eb01fa39576e6b8be6916f3ccea029c",
      []
     ],
     "cssom.idl": [
@@ -319398,7 +319402,7 @@
      []
     ],
     "dom.idl": [
-     "f1b58fe150c28ba339b738c33a1a73a8b8d4e084",
+     "96acfc6a717fb29e9fed64ba3dab1635ee9c78f7",
      []
     ],
     "edit-context.idl": [
@@ -319422,7 +319426,7 @@
      []
     ],
     "event-timing.idl": [
-     "ca41454c95ff7171b2390b5fc8f605b81e78a97f",
+     "2f8e031ce15d9b80a675e1c963f1c37123ee302b",
      []
     ],
     "eyedropper-api.idl": [
@@ -319434,7 +319438,7 @@
      []
     ],
     "file-system-access.idl": [
-     "fac89ea54b10865e5d720b53905255bd2892c85b",
+     "572f9342a40afbc71ada383cc64d062ebed55e55",
      []
     ],
     "filter-effects.idl": [
@@ -319494,7 +319498,7 @@
      []
     ],
     "html.idl": [
-     "fd7a4dfc3d8219e4bca7f5b1a245bc336ddda28e",
+     "d9068b4ad1e550fa56c079379d92ccd0d6735e58",
      []
     ],
     "idle-detection.idl": [
@@ -319582,7 +319586,7 @@
      []
     ],
     "media-source.idl": [
-     "36bce567bcc11303fc2d234c680cee4613406c56",
+     "7138baefc4b6d4d9190d05c93f1c56c11be5e76a",
      []
     ],
     "mediacapture-automation.idl": [
@@ -319597,16 +319601,12 @@
      "408f8e83bbc849a959d56603280bf8a85289034f",
      []
     ],
-    "mediacapture-handle-identity.idl": [
-     "fb223534ac23da1bf36c2b4af2185eecf5cf9b51",
-     []
-    ],
     "mediacapture-region.idl": [
-     "402daa7ff76cc88010e4e9186faf3537d87275e9",
+     "3ebda3d9d4a883de17769b9c5287e7f4c65fd7ec",
      []
     ],
     "mediacapture-streams.idl": [
-     "33511eb24153ab4ac4dd213b932219244ea98d21",
+     "fd7097645347d25a171cf6084a7a01f7155cef21",
      []
     ],
     "mediacapture-transform.idl": [
@@ -319622,7 +319622,7 @@
      []
     ],
     "mediastream-recording.idl": [
-     "8681a5ad428df9838e7f88779f42146e048fac7e",
+     "99f30282333a933c6f59e0e34ac127742efea2f7",
      []
     ],
     "mst-content-hint.idl": [
@@ -319630,7 +319630,7 @@
      []
     ],
     "navigation-api.idl": [
-     "5d2f2a8279ce8e5fb95254c1376101704a3f0967",
+     "531231c41092a9941f2e5e527da8b07f15df3a3a",
      []
     ],
     "navigation-timing.idl": [
@@ -319706,7 +319706,7 @@
      []
     ],
     "pointerevents.idl": [
-     "6647589dfdd9006553fab0fb5e41f42ea8454ab5",
+     "4ecb290ed4143eafad0c8d1f667809a1d0f8fab8",
      []
     ],
     "pointerlock.idl": [
@@ -319782,7 +319782,7 @@
      []
     ],
     "screen-capture.idl": [
-     "f2b3d4268288f36fac30a21ce31b4741463d192b",
+     "5e684bc4b1b00e7aba12bad6a3801a896064c59d",
      []
     ],
     "screen-orientation.idl": [
@@ -319862,7 +319862,7 @@
      []
     ],
     "touch-events.idl": [
-     "653414fcaaa4039b21589fec5c26bf90e0ffd5a0",
+     "9844f08538194e673fb9e2a972aece97ad4559b3",
      []
     ],
     "trusted-types.idl": [
@@ -319906,7 +319906,7 @@
      []
     ],
     "visual-viewport.idl": [
-     "e4507aebad1efe1d5f2240c78577cd771643a6de",
+     "ee7af9f323409aa77989cf49d1ffb955b2c3f56f",
      []
     ],
     "wai-aria.idl": [
@@ -319926,7 +319926,7 @@
      []
     ],
     "web-animations.idl": [
-     "a958bc84c0ffaec8df5c217286d36ad546742952",
+     "b1f4178edb87d73dcebbb30d8498f8a665033039",
      []
     ],
     "web-bluetooth.idl": [
@@ -319946,7 +319946,7 @@
      []
     ],
     "web-share.idl": [
-     "6ba7407f9469b863a964f225953a7c965a641455",
+     "12a2dbb8acad260cfebd5c26c9a2c30389caf0d9",
      []
     ],
     "webaudio.idl": [
@@ -319954,7 +319954,7 @@
      []
     ],
     "webauthn.idl": [
-     "2b897608ab4b1118bdaf90ba716b88b2f1b1eaa4",
+     "cb229b1b14ad153294161a6d89f917bdd798b0a7",
      []
     ],
     "webcodecs.idl": [
@@ -319970,7 +319970,7 @@
      []
     ],
     "webgl1.idl": [
-     "bebb8640d5b9778dabbb1ab05791efb56f243fbc",
+     "351218440c32654568c3fcbe0defd06e4fbe623b",
      []
     ],
     "webgl2.idl": [
@@ -319978,11 +319978,11 @@
      []
     ],
     "webgpu.idl": [
-     "6cbab9821d3fb167135d743debcd6695717bd201",
+     "81c171afd02e1be7f605fc2b71a5f624c6e31f1b",
      []
     ],
     "webhid.idl": [
-     "771c58cf4f50f35aa5aaf5055bf183ec6d616106",
+     "a1a02d3e43879680b3bb7b92e4d29b5ca99eccd8",
      []
     ],
     "webidl.idl": [
@@ -319994,11 +319994,11 @@
      []
     ],
     "webnn.idl": [
-     "13959b38ffc3d6659c40cba086c9d23e1b55aea9",
+     "63a0f156332733ee3765bf28afeee80a7a4f4155",
      []
     ],
     "webrtc-encoded-transform.idl": [
-     "e417d1bfd31707b4ac933d70330b264abfca4cf6",
+     "b905ab84bbc288d9c70ab7eba822222b13ff25b1",
      []
     ],
     "webrtc-ice.idl": [
@@ -320014,7 +320014,7 @@
      []
     ],
     "webrtc-stats.idl": [
-     "61a2f93a52f9f55bf2cee92b1337ad3eaadbfe88",
+     "2a931589c171009ed1bb94c5a2576c1484480bae",
      []
     ],
     "webrtc-svc.idl": [
@@ -320375,7 +320375,7 @@
     ]
    },
    "lint.ignore": [
-    "07ad220e4f7d1bd7949842ad37827cca99b6eb9f",
+    "17c09d9cc63163f9235e7c28119f7a9e791a0d41",
     []
    ],
    "loading": {
@@ -370748,14 +370748,14 @@
      ]
     ],
     "fedcm-logout-rps.https.html": [
-     "9e41d973dd3b078b4716a4a273229a0debc1dc37",
+     "6e97239dfa848b822933cf5eaf294ee00ce17437",
      [
       null,
       {}
      ]
     ],
     "fedcm-network-requests.sub.https.html": [
-     "5cc9c1f13c9099c5aa4802ea4763aaae4819b428",
+     "1bad1eeb2bf4f737999325cb05de7dd4b4c65206",
      [
       null,
       {}
