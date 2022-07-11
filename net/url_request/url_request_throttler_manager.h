@@ -53,7 +53,8 @@ class NET_EXPORT_PRIVATE URLRequestThrottlerManager
   // Registers a new entry in this service and overrides the existing entry (if
   // any) for the URL. The service will hold a reference to the entry.
   // It is only used by unit tests.
-  void OverrideEntryForTests(const GURL& url, URLRequestThrottlerEntry* entry);
+  void OverrideEntryForTests(const GURL& url,
+                             scoped_refptr<URLRequestThrottlerEntry> entry);
 
   // Explicitly erases an entry.
   // This is useful to remove those entries which have got infinite lifetime and
