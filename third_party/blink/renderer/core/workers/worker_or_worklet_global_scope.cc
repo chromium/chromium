@@ -99,6 +99,7 @@ class OutsideSettingsCSPDelegate final
   void SetRequireTrustedTypes() override {}
   void AddInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy) override {}
   void DisableEval(const String& error_message) override {}
+  void SetWasmEvalErrorMessage(const String& error_message) override {}
 
   std::unique_ptr<SourceLocation> GetSourceLocation() override {
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
@@ -414,6 +415,11 @@ bool WorkerOrWorkletGlobalScope::IsJSExecutionForbidden() const {
 
 void WorkerOrWorkletGlobalScope::DisableEval(const String& error_message) {
   script_controller_->DisableEval(error_message);
+}
+
+void WorkerOrWorkletGlobalScope::SetWasmEvalErrorMessage(
+    const String& error_message) {
+  script_controller_->SetWasmEvalErrorMessage(error_message);
 }
 
 bool WorkerOrWorkletGlobalScope::CanExecuteScripts(

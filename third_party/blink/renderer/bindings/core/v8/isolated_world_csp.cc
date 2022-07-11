@@ -113,6 +113,11 @@ class IsolatedWorldCSPDelegate final
                                                                error_message);
   }
 
+  void SetWasmEvalErrorMessage(const String& error_message) override {
+    window_->GetScriptController().SetWasmEvalErrorMessageForIsolatedWorld(
+        world_id_, error_message);
+  }
+
   void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) override {
     // This allows users to set breakpoints in the Devtools for the case when

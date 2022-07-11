@@ -31,6 +31,7 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
   KURL CompleteURL(const String&) const override { return url_; }
 
   void DisableEval(const String&) override {}
+  void SetWasmEvalErrorMessage(const String&) override {}
   String UserAgent() const override { return String(); }
 
   HttpsState GetHttpsState() const override {

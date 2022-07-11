@@ -158,6 +158,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   const KURL& BaseURL() const final;
   KURL CompleteURL(const String&) const final;
   void DisableEval(const String& error_message) final;
+  void SetWasmEvalErrorMessage(const String& error_message) final;
   String UserAgent() const final;
   UserAgentMetadata GetUserAgentMetadata() const final;
   HttpsState GetHttpsState() const final;

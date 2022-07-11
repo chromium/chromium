@@ -120,6 +120,7 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
   virtual void AddConsoleMessage(ConsoleMessage*) = 0;
   virtual void AddInspectorIssue(AuditsIssue) = 0;
   virtual void DisableEval(const String& error_message) = 0;
+  virtual void SetWasmEvalErrorMessage(const String& error_message) = 0;
   virtual void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) = 0;
   virtual void DidAddContentSecurityPolicies(
@@ -340,6 +341,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   void RequireTrustedTypes();
   bool IsRequireTrustedTypes() const { return require_trusted_types_; }
   String EvalDisabledErrorMessage() const;
+  String WasmEvalDisabledErrorMessage() const;
 
   // Upgrade-Insecure-Requests and Block-All-Mixed-Content are represented in
   // |m_insecureRequestPolicy|
@@ -471,6 +473,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   network::mojom::blink::WebSandboxFlags sandbox_mask_;
   bool require_trusted_types_;
   String disable_eval_error_message_;
+  String disable_wasm_eval_error_message_;
   mojom::blink::InsecureRequestPolicy insecure_request_policy_;
 
   bool supports_wasm_eval_ = false;

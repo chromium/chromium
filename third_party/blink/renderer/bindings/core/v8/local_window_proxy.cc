@@ -183,6 +183,8 @@ void LocalWindowProxy::Initialize() {
     context->AllowCodeGenerationFromStrings(!csp->ShouldCheckEval());
     context->SetErrorMessageForCodeGenerationFromStrings(
         V8String(GetIsolate(), csp->EvalDisabledErrorMessage()));
+    context->SetErrorMessageForWasmCodeGeneration(
+        V8String(GetIsolate(), csp->WasmEvalDisabledErrorMessage()));
   }
 
   scoped_refptr<const SecurityOrigin> origin;

@@ -82,6 +82,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   bool IsWorkerOrWorkletGlobalScope() const final { return true; }
   bool IsJSExecutionForbidden() const final;
   void DisableEval(const String& error_message) final;
+  void SetWasmEvalErrorMessage(const String& error_message) final;
   bool CanExecuteScripts(ReasonForCallingCanExecuteScripts) final;
   bool HasInsecureContextInAncestors() const override;
 

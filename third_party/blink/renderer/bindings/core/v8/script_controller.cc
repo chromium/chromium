@@ -96,6 +96,11 @@ void ScriptController::DisableEval(const String& error_message) {
                   error_message);
 }
 
+void ScriptController::SetWasmEvalErrorMessage(const String& error_message) {
+  SetWasmEvalErrorMessageForWorld(DOMWrapperWorld::MainWorld(),
+                                  /*allow_eval=*/false, error_message);
+}
+
 void ScriptController::DisableEvalForIsolatedWorld(
     int32_t world_id,
     const String& error_message) {
@@ -103,6 +108,15 @@ void ScriptController::DisableEvalForIsolatedWorld(
   scoped_refptr<DOMWrapperWorld> world =
       DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id);
   SetEvalForWorld(*world, false /* allow_eval */, error_message);
+}
+
+void ScriptController::SetWasmEvalErrorMessageForIsolatedWorld(
+    int32_t world_id,
+    const String& error_message) {
+  DCHECK(DOMWrapperWorld::IsIsolatedWorldId(world_id));
+  scoped_refptr<DOMWrapperWorld> world =
+      DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id);
+  SetWasmEvalErrorMessageForWorld(*world, /*allow_eval=*/false, error_message);
 }
 
 void ScriptController::SetEvalForWorld(DOMWrapperWorld& world,
@@ -123,6 +137,28 @@ void ScriptController::SetEvalForWorld(DOMWrapperWorld& world,
     return;
 
   v8_context->SetErrorMessageForCodeGenerationFromStrings(
+      V8String(GetIsolate(), error_message));
+}
+
+void ScriptController::SetWasmEvalErrorMessageForWorld(
+    DOMWrapperWorld& world,
+    bool allow_eval,
+    const String& error_message) {
+  // For now we have nothing to do in case we want to enable wasm-eval.
+  if (allow_eval)
+    return;
+
+  v8::HandleScope handle_scope(GetIsolate());
+  LocalWindowProxy* proxy =
+      world.IsMainWorld()
+          ? window_proxy_manager_->MainWorldProxyMaybeUninitialized()
+          : WindowProxy(world);
+
+  v8::Local<v8::Context> v8_context = proxy->ContextIfInitialized();
+  if (v8_context.IsEmpty())
+    return;
+
+  v8_context->SetErrorMessageForWasmCodeGeneration(
       V8String(GetIsolate(), error_message));
 }
 

@@ -75,6 +75,9 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   // Disables `eval()` on JavaScript. This must be called before Evaluate().
   void DisableEval(const String&);
 
+  // Disables wasm code generation. This must be called before Evaluate().
+  void SetWasmEvalErrorMessage(const String&);
+
   ScriptState* GetScriptState() { return script_state_; }
 
   // Used by V8 bindings:
@@ -97,6 +100,8 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
  private:
   void DisableEvalInternal(const String& error_message);
 
+  void SetWasmEvalErrorMessageInternal(const String& error_message);
+
   void DisposeContextIfNeeded();
 
   Member<WorkerOrWorkletGlobalScope> global_scope_;
@@ -111,6 +116,7 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
 
   // Keeps the error message for `eval()` on JavaScript until Initialize().
   String disable_eval_pending_;
+  String disable_wasm_eval_pending_;
 
   bool is_ready_to_evaluate_ = false;
   bool execution_forbidden_ = false;

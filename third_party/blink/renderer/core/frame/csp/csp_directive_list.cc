@@ -778,6 +778,32 @@ bool CSPDirectiveListShouldDisableEval(
   return false;
 }
 
+bool CSPDirectiveListShouldDisableWasmEval(
+    const network::mojom::blink::ContentSecurityPolicy& csp,
+    const ContentSecurityPolicy* policy,
+    String& error_message) {
+  if (CheckWasmEval(csp, policy)) {
+    return false;
+  }
+
+  const char* format =
+      SupportsWasmEval(csp, policy)
+          ? "Refused to compile or instantiate WebAssembly module because "
+            "neither 'wasm-eval' nor 'unsafe-eval' is an allowed source of "
+            "script in the following Content Security Policy directive: \"%s\""
+          : "Refused to compile or instantiate WebAssembly module because "
+            "'unsafe-eval' is not an allowed source of script in the following "
+            "Content Security Policy directive: \"%s\"";
+
+  CSPOperativeDirective directive =
+      OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
+  error_message = String::Format(
+      format, GetRawDirectiveForMessage(csp.raw_directives, directive.type)
+                  .Ascii()
+                  .c_str());
+  return true;
+}
+
 bool CSPDirectiveListAllowFromSource(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,

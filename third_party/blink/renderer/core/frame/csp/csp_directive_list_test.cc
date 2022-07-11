@@ -67,6 +67,7 @@ class CSPDirectiveListTest : public testing::Test {
     }
     void AddInspectorIssue(AuditsIssue) override {}
     void DisableEval(const String& error_message) override {}
+    void SetWasmEvalErrorMessage(const String& error_message) override {}
     void ReportBlockedScriptExecutionToInspector(
         const String& directive_text) override {}
     void DidAddContentSecurityPolicies(

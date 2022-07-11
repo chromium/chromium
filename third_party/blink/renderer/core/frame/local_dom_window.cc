@@ -350,6 +350,10 @@ void LocalDOMWindow::DisableEval(const String& error_message) {
   GetScriptController().DisableEval(error_message);
 }
 
+void LocalDOMWindow::SetWasmEvalErrorMessage(const String& error_message) {
+  GetScriptController().SetWasmEvalErrorMessage(error_message);
+}
+
 String LocalDOMWindow::UserAgent() const {
   if (!GetFrame())
     return String();

@@ -92,10 +92,18 @@ class CORE_EXPORT ScriptController final
   // Disables eval for the main world.
   void DisableEval(const String& error_message);
 
+  // Disables wasm eval for the main world
+  void SetWasmEvalErrorMessage(const String& error_message);
+
   // Disables eval for the given isolated |world_id|. This initializes the
   // window proxy for the isolated world, if it's not yet initialized.
   void DisableEvalForIsolatedWorld(int32_t world_id,
                                    const String& error_message);
+
+  // Disables wasm eval for the given isolated |world_id|. This initializes the
+  // window proxy for the isolated world, if it's not yet initialized.
+  void SetWasmEvalErrorMessageForIsolatedWorld(int32_t world_id,
+                                               const String& error_message);
 
   TextPosition EventHandlerPosition() const;
 
@@ -119,6 +127,10 @@ class CORE_EXPORT ScriptController final
   void SetEvalForWorld(DOMWrapperWorld& world,
                        bool allow_eval,
                        const String& error_message);
+
+  void SetWasmEvalErrorMessageForWorld(DOMWrapperWorld& world,
+                                       bool allow_eval,
+                                       const String& error_message);
 
   const Member<LocalDOMWindow> window_;
   const Member<LocalWindowProxyManager> window_proxy_manager_;
