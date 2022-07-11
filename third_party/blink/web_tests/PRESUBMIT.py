@@ -322,11 +322,23 @@ class _DoctypeParser(HTMLParser):
             self.encountered_tag = True
 
 
+def _IsDoctypeHTMLSet(lines):
+    """Returns true if the given HTML file starts with <!DOCTYPE html>.
+    """
+    parser = _DoctypeParser()
+    for l in lines:
+        parser.feed(l)
+
+    return re.match("DOCTYPE\s*html\s*$", parser.doctype, re.IGNORECASE)
+
+
 def _CheckForDoctypeHTML(input_api, output_api):
     """Checks that all changed HTML files start with the correct <!DOCTYPE html> tag.
     """
     results = []
-    doctype_pattern = re.compile("DOCTYPE\s*html\s*$", re.IGNORECASE)
+
+    if input_api.no_diffs:
+        return results
 
     for f in input_api.AffectedFiles(include_deletes=False):
         path = f.LocalPath()
@@ -335,15 +347,13 @@ def _CheckForDoctypeHTML(input_api, output_api):
         if not fname.endswith(".html") or "quirk" in fname:
             continue
 
-        parser = _DoctypeParser()
-        parser.feed(input_api.ReadFile(f))
+        if not _IsDoctypeHTMLSet(f.NewContents()):
+            error = "HTML file \"%s\" does not start with <!DOCTYPE html>. " \
+                    "If you really intend to test in quirks mode, add \"quirk\" " \
+                    "to the name of your test." % path
 
-        if not doctype_pattern.match(parser.doctype):
-            results.append(
-                output_api.PresubmitError(
-                    "HTML file \"%s\" does not start with <!DOCTYPE html>. "
-                    "If you really intend to test in quirks mode, add \"quirk\" "
-                    "to the name of your test." % path))
+            if f.Action() == "A" or _IsDoctypeHTMLSet(f.OldContents()):
+                results.append(output_api.PresubmitError(error))
 
     return results
 

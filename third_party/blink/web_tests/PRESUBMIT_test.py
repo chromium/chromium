@@ -46,17 +46,24 @@ class PresubmitTest(unittest.TestCase):
         file9 = MockAffectedFile(
             "some/dir/quirk-file9.html",
             ["<html>", "<body>", "<p>Test</p>", "</body>", "</html>"])
+        file10 = MockAffectedFile(
+            "old/file10.html",
+            ["<html>", "<body>", "<p>New content</p>", "</body>", "</html>"],
+            ["<html>", "<body>", "<p>Old content</p>", "</body>", "</html>"],
+            action="M")
 
         mock_input_api = MockInputApi()
         mock_input_api.files = [
-            file1, file2, file3, file4, file5, file6, file7, file8, file9
+            file1, file2, file3, file4, file5, file6, file7, file8, file9,
+            file10
         ]
-        errors = PRESUBMIT._CheckForDoctypeHTML(mock_input_api,
-                                                MockOutputApi())
+        messages = PRESUBMIT._CheckForDoctypeHTML(mock_input_api,
+                                                  MockOutputApi())
 
-        self.assertEqual(4, len(errors))
+        self.assertEqual(4, len(messages))
         for i, file in enumerate([file2, file4, file5, file8]):
-            self.assertIn("\"%s\"" % file.LocalPath(), errors[i].message)
+            self.assertEqual("error", messages[i].type)
+            self.assertIn("\"%s\"" % file.LocalPath(), messages[i].message)
 
 
 if __name__ == "__main__":
