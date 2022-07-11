@@ -132,13 +132,13 @@ int HttpAuthHandlerBasic::Factory::CreateAuthHandler(
   }
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(new HttpAuthHandlerBasic());
+  auto tmp_handler = std::make_unique<HttpAuthHandlerBasic>();
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
                                       network_isolation_key, scheme_host_port,
                                       net_log)) {
     return ERR_INVALID_RESPONSE;
   }
-  handler->swap(tmp_handler);
+  *handler = std::move(tmp_handler);
   return OK;
 }
 

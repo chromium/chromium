@@ -350,7 +350,7 @@ class NetworkChangeNotifierFuchsiaTest : public testing::Test {
     // Use a noop DNS notifier.
     dns_config_notifier_ = std::make_unique<SystemDnsConfigChangeNotifier>(
         nullptr /* task_runner */, nullptr /* dns_config_service */);
-    notifier_.reset(new NetworkChangeNotifierFuchsia(
+    notifier_ = base::WrapUnique(new NetworkChangeNotifierFuchsia(
         std::move(watcher_handle_), requires_wlan, dns_config_notifier_.get()));
 
     type_observer_ = std::make_unique<FakeConnectionTypeObserver>();

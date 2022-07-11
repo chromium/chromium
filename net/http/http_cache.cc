@@ -376,8 +376,8 @@ int HttpCache::CreateTransaction(
     CreateBackend(CompletionOnceCallback());
   }
 
-  HttpCache::Transaction* new_transaction =
-      new HttpCache::Transaction(priority, this);
+  auto new_transaction =
+      std::make_unique<HttpCache::Transaction>(priority, this);
   if (bypass_lock_for_test_)
     new_transaction->BypassLockForTest();
   if (bypass_lock_after_headers_for_test_)
@@ -385,7 +385,7 @@ int HttpCache::CreateTransaction(
   if (fail_conditionalization_for_test_)
     new_transaction->FailConditionalizationForTest();
 
-  transaction->reset(new_transaction);
+  *transaction = std::move(new_transaction);
   return OK;
 }
 
@@ -744,9 +744,10 @@ HttpCache::ActiveEntry* HttpCache::FindActiveEntry(const std::string& key) {
 HttpCache::ActiveEntry* HttpCache::ActivateEntry(disk_cache::Entry* disk_entry,
                                                  bool opened) {
   DCHECK(!FindActiveEntry(disk_entry->GetKey()));
-  ActiveEntry* entry = new ActiveEntry(disk_entry, opened);
-  active_entries_[disk_entry->GetKey()] = base::WrapUnique(entry);
-  return entry;
+  auto entry = std::make_unique<ActiveEntry>(disk_entry, opened);
+  ActiveEntry* entry_ptr = entry.get();
+  active_entries_[disk_entry->GetKey()] = std::move(entry);
+  return entry_ptr;
 }
 
 void HttpCache::DeactivateEntry(ActiveEntry* entry) {

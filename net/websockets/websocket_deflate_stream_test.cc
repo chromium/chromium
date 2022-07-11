@@ -214,11 +214,13 @@ class WebSocketDeflateStreamTest : public ::testing::Test {
       parameters.SetClientNoContextTakeOver();
     }
     parameters.SetClientMaxWindowBits(window_bits);
-    mock_stream_ = new testing::StrictMock<MockWebSocketStream>;
-    predictor_ = new WebSocketDeflatePredictorMock;
+    auto mock_stream =
+        std::make_unique<testing::StrictMock<MockWebSocketStream>>();
+    auto predictor = std::make_unique<WebSocketDeflatePredictorMock>();
+    mock_stream_ = mock_stream.get();
+    predictor_ = predictor.get();
     deflate_stream_ = std::make_unique<WebSocketDeflateStream>(
-        base::WrapUnique(mock_stream_.get()), parameters,
-        base::WrapUnique(predictor_.get()));
+        std::move(mock_stream), parameters, std::move(predictor));
   }
 
   void AppendTo(std::vector<std::unique_ptr<WebSocketFrame>>* frames,

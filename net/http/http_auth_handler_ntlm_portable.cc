@@ -29,14 +29,14 @@ int HttpAuthHandlerNTLM::Factory::CreateAuthHandler(
   //                 method and only constructing when valid.
   // NOTE: Default credentials are not supported for the portable implementation
   // of NTLM.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(
-      new HttpAuthHandlerNTLM(http_auth_preferences()));
+  auto tmp_handler =
+      std::make_unique<HttpAuthHandlerNTLM>(http_auth_preferences());
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
                                       network_isolation_key, scheme_host_port,
                                       net_log)) {
     return ERR_INVALID_RESPONSE;
   }
-  handler->swap(tmp_handler);
+  *handler = std::move(tmp_handler);
   return OK;
 }
 

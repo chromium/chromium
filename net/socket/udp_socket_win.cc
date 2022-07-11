@@ -330,7 +330,7 @@ int UDPSocketWin::GetPeerAddress(IPEndPoint* address) const {
     SockaddrStorage storage;
     if (getpeername(socket_, storage.addr, &storage.addr_len))
       return MapSystemError(WSAGetLastError());
-    std::unique_ptr<IPEndPoint> remote_address(new IPEndPoint());
+    auto remote_address = std::make_unique<IPEndPoint>();
     if (!remote_address->FromSockAddr(storage.addr, storage.addr_len))
       return ERR_ADDRESS_INVALID;
     remote_address_ = std::move(remote_address);
@@ -351,7 +351,7 @@ int UDPSocketWin::GetLocalAddress(IPEndPoint* address) const {
     SockaddrStorage storage;
     if (getsockname(socket_, storage.addr, &storage.addr_len))
       return MapSystemError(WSAGetLastError());
-    std::unique_ptr<IPEndPoint> local_address(new IPEndPoint());
+    auto local_address = std::make_unique<IPEndPoint>();
     if (!local_address->FromSockAddr(storage.addr, storage.addr_len))
       return ERR_ADDRESS_INVALID;
     local_address_ = std::move(local_address);

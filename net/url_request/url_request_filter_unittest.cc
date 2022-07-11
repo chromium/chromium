@@ -37,8 +37,9 @@ class TestURLRequestInterceptor : public URLRequestInterceptor {
   // URLRequestInterceptor implementation:
   std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
       URLRequest* request) const override {
-    job_ = new URLRequestTestJob(request);
-    return base::WrapUnique<URLRequestJob>(job_.get());
+    auto job = std::make_unique<URLRequestTestJob>(request);
+    job_ = job.get();
+    return job;
   }
 
   // Is |job| the URLRequestJob generated during interception?
@@ -71,13 +72,13 @@ TEST(URLRequestFilter, BasicMatching) {
 
   // Check URLRequestInterceptor URL matching.
   filter->ClearHandlers();
-  TestURLRequestInterceptor* interceptor = new TestURLRequestInterceptor();
-  EXPECT_TRUE(filter->AddUrlInterceptor(
-      kUrl1, std::unique_ptr<URLRequestInterceptor>(interceptor)));
+  auto interceptor1 = std::make_unique<TestURLRequestInterceptor>();
+  auto* interceptor1_ptr = interceptor1.get();
+  EXPECT_TRUE(filter->AddUrlInterceptor(kUrl1, std::move(interceptor1)));
   {
     std::unique_ptr<URLRequestJob> found =
         filter->MaybeInterceptRequest(request1.get());
-    EXPECT_TRUE(interceptor->WasLastJobCreated(found.get()));
+    EXPECT_TRUE(interceptor1_ptr->WasLastJobCreated(found.get()));
   }
   EXPECT_EQ(filter->hit_count(), 1);
 
@@ -93,14 +94,14 @@ TEST(URLRequestFilter, BasicMatching) {
   // Check hostname matching.
   filter->ClearHandlers();
   EXPECT_EQ(0, filter->hit_count());
-  interceptor = new TestURLRequestInterceptor();
-  filter->AddHostnameInterceptor(
-      kUrl1.scheme(), kUrl1.host(),
-      std::unique_ptr<URLRequestInterceptor>(interceptor));
+  auto interceptor2 = std::make_unique<TestURLRequestInterceptor>();
+  auto* interceptor2_ptr = interceptor2.get();
+  filter->AddHostnameInterceptor(kUrl1.scheme(), kUrl1.host(),
+                                 std::move(interceptor2));
   {
     std::unique_ptr<URLRequestJob> found =
         filter->MaybeInterceptRequest(request1.get());
-    EXPECT_TRUE(interceptor->WasLastJobCreated(found.get()));
+    EXPECT_TRUE(interceptor2_ptr->WasLastJobCreated(found.get()));
   }
   EXPECT_EQ(1, filter->hit_count());
 

@@ -5601,8 +5601,9 @@ TEST_F(HttpCacheTest, SimpleGET_ManyWriters_DeleteCache) {
 
 // Tests that we queue requests when initializing the backend.
 TEST_F(HttpCacheTest, SimpleGET_WaitForBackend) {
-  MockBlockingBackendFactory* factory = new MockBlockingBackendFactory();
-  MockHttpCache cache(base::WrapUnique(factory));
+  auto factory = std::make_unique<MockBlockingBackendFactory>();
+  MockBlockingBackendFactory* factory_ptr = factory.get();
+  MockHttpCache cache(std::move(factory));
 
   MockHttpRequest request0(kSimpleGET_Transaction);
   MockHttpRequest request1(kTypicalGET_Transaction);
@@ -5632,7 +5633,7 @@ TEST_F(HttpCacheTest, SimpleGET_WaitForBackend) {
   // The first request should be creating the disk cache.
   EXPECT_FALSE(context_list[0]->callback.have_result());
 
-  factory->FinishCreation();
+  factory_ptr->FinishCreation();
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, cache.network_layer()->transaction_count());
@@ -5647,8 +5648,9 @@ TEST_F(HttpCacheTest, SimpleGET_WaitForBackend) {
 // Tests that we can cancel requests that are queued waiting for the backend
 // to be initialized.
 TEST_F(HttpCacheTest, SimpleGET_WaitForBackend_CancelCreate) {
-  MockBlockingBackendFactory* factory = new MockBlockingBackendFactory();
-  MockHttpCache cache(base::WrapUnique(factory));
+  auto factory = std::make_unique<MockBlockingBackendFactory>();
+  MockBlockingBackendFactory* factory_ptr = factory.get();
+  MockHttpCache cache(std::move(factory));
 
   MockHttpRequest request0(kSimpleGET_Transaction);
   MockHttpRequest request1(kTypicalGET_Transaction);
@@ -5685,7 +5687,7 @@ TEST_F(HttpCacheTest, SimpleGET_WaitForBackend_CancelCreate) {
   context_list[0].reset();
 
   // Complete the last transaction.
-  factory->FinishCreation();
+  factory_ptr->FinishCreation();
 
   context_list[2]->result =
       context_list[2]->callback.GetResult(context_list[2]->result);
@@ -5697,8 +5699,9 @@ TEST_F(HttpCacheTest, SimpleGET_WaitForBackend_CancelCreate) {
 
 // Tests that we can delete the HttpCache while creating the backend.
 TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
-  MockBlockingBackendFactory* factory = new MockBlockingBackendFactory();
-  auto cache = std::make_unique<MockHttpCache>(base::WrapUnique(factory));
+  auto factory = std::make_unique<MockBlockingBackendFactory>();
+  MockBlockingBackendFactory* factory_ptr = factory.get();
+  auto cache = std::make_unique<MockHttpCache>(std::move(factory));
 
   MockHttpRequest request(kSimpleGET_Transaction);
 
@@ -5717,7 +5720,7 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
   // Manually arrange for completion to happen after ~HttpCache.
   // This can't be done via FinishCreation() since that's in `factory`, and
   // that's owned by `cache`.
-  disk_cache::BackendResultCallback callback = factory->ReleaseCallback();
+  disk_cache::BackendResultCallback callback = factory_ptr->ReleaseCallback();
 
   cache.reset();
   base::RunLoop().RunUntilIdle();
@@ -5729,8 +5732,9 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
 // Tests that we can delete the cache while creating the backend, from within
 // one of the callbacks.
 TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
-  MockBlockingBackendFactory* factory = new MockBlockingBackendFactory();
-  MockHttpCache* cache = new MockHttpCache(base::WrapUnique(factory));
+  auto factory = std::make_unique<MockBlockingBackendFactory>();
+  MockBlockingBackendFactory* factory_ptr = factory.get();
+  MockHttpCache* cache = new MockHttpCache(std::move(factory));
 
   DeleteCacheCompletionCallback cb(cache);
   disk_cache::Backend* backend;
@@ -5758,7 +5762,7 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
   EXPECT_FALSE(c->callback.have_result());
 
   // Generate the callback.
-  factory->FinishCreation();
+  factory_ptr->FinishCreation();
   rv = cb.WaitForResult();
 
   // The cache should be gone by now.

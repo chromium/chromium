@@ -377,9 +377,10 @@ void PreconnectHelperForURL(int num_streams,
                             SecureDnsPolicy secure_dns_policy,
                             HttpNetworkSession* session) {
   HttpNetworkSessionPeer peer(session);
-  MockHttpStreamFactoryForPreconnect* mock_factory =
-      new MockHttpStreamFactoryForPreconnect(session);
-  peer.SetHttpStreamFactory(std::unique_ptr<HttpStreamFactory>(mock_factory));
+  auto mock_factory =
+      std::make_unique<MockHttpStreamFactoryForPreconnect>(session);
+  auto* mock_factory_ptr = mock_factory.get();
+  peer.SetHttpStreamFactory(std::move(mock_factory));
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -391,7 +392,7 @@ void PreconnectHelperForURL(int num_streams,
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   session->http_stream_factory()->PreconnectStreams(num_streams, request);
-  mock_factory->WaitForPreconnects();
+  mock_factory_ptr->WaitForPreconnects();
 }
 
 void PreconnectHelper(const TestCase& test, HttpNetworkSession* session) {
@@ -540,15 +541,17 @@ TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
                              HostPortPair("http_proxy", 80));
     CommonConnectJobParams common_connect_job_params =
         session->CreateCommonConnectJobParams();
-    CapturePreconnectsTransportSocketPool* http_proxy_pool =
-        new CapturePreconnectsTransportSocketPool(&common_connect_job_params);
+
+    auto http_proxy_pool =
+        std::make_unique<CapturePreconnectsTransportSocketPool>(
+            &common_connect_job_params);
+    auto* http_proxy_pool_ptr = http_proxy_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(proxy_server,
-                                     base::WrapUnique(http_proxy_pool));
+    mock_pool_manager->SetSocketPool(proxy_server, std::move(http_proxy_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
     PreconnectHelper(test, session.get());
-    EXPECT_EQ(test.num_streams, http_proxy_pool->last_num_streams());
-    EXPECT_EQ(GetGroupId(test), http_proxy_pool->last_group_id());
+    EXPECT_EQ(test.num_streams, http_proxy_pool_ptr->last_num_streams());
+    EXPECT_EQ(GetGroupId(test), http_proxy_pool_ptr->last_group_id());
   }
 }
 
@@ -564,15 +567,16 @@ TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
                              HostPortPair("socks_proxy", 1080));
     CommonConnectJobParams common_connect_job_params =
         session->CreateCommonConnectJobParams();
-    CapturePreconnectsTransportSocketPool* socks_proxy_pool =
-        new CapturePreconnectsTransportSocketPool(&common_connect_job_params);
+    auto socks_proxy_pool =
+        std::make_unique<CapturePreconnectsTransportSocketPool>(
+            &common_connect_job_params);
+    auto* socks_proxy_pool_ptr = socks_proxy_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(proxy_server,
-                                     base::WrapUnique(socks_proxy_pool));
+    mock_pool_manager->SetSocketPool(proxy_server, std::move(socks_proxy_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
     PreconnectHelper(test, session.get());
-    EXPECT_EQ(test.num_streams, socks_proxy_pool->last_num_streams());
-    EXPECT_EQ(GetGroupId(test), socks_proxy_pool->last_group_id());
+    EXPECT_EQ(test.num_streams, socks_proxy_pool_ptr->last_num_streams());
+    EXPECT_EQ(GetGroupId(test), socks_proxy_pool_ptr->last_group_id());
   }
 }
 
@@ -1020,15 +1024,16 @@ TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
                              HostPortPair("http_proxy", 80));
     CommonConnectJobParams common_connect_job_params =
         session->CreateCommonConnectJobParams();
-    CapturePreconnectsTransportSocketPool* http_proxy_pool =
-        new CapturePreconnectsTransportSocketPool(&common_connect_job_params);
+    auto http_proxy_pool =
+        std::make_unique<CapturePreconnectsTransportSocketPool>(
+            &common_connect_job_params);
+    auto* http_proxy_pool_ptr = http_proxy_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(proxy_server,
-                                     base::WrapUnique(http_proxy_pool));
+    mock_pool_manager->SetSocketPool(proxy_server, std::move(http_proxy_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
     PreconnectHelperForURL(num_streams, url, NetworkIsolationKey(),
                            SecureDnsPolicy::kAllow, session.get());
-    EXPECT_EQ(num_streams, http_proxy_pool->last_num_streams());
+    EXPECT_EQ(num_streams, http_proxy_pool_ptr->last_num_streams());
   }
 }
 
@@ -2000,7 +2005,7 @@ class HttpStreamFactoryBidirectionalQuicTest
                              false),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
-        ssl_config_service_(new SSLConfigServiceDefaults) {
+        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()) {
     FLAGS_quic_enable_http3_grease_randomness = false;
     quic_context_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
     quic::QuicEnableVersion(version_);
@@ -2390,9 +2395,9 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
 // amongst streams with different socket tags).
 TEST_F(HttpStreamFactoryTest, Tag) {
   SpdySessionDependencies session_deps;
-  MockTaggingClientSocketFactory* socket_factory =
-      new MockTaggingClientSocketFactory();
-  session_deps.socket_factory.reset(socket_factory);
+  auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
+  auto* socket_factory_ptr = socket_factory.get();
+  session_deps.socket_factory = std::move(socket_factory);
 
   // Prepare for two HTTPS connects.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
@@ -2456,9 +2461,9 @@ TEST_F(HttpStreamFactoryTest, Tag) {
       1, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify socket tagged appropriately.
-  EXPECT_TRUE(tag1 == socket_factory->GetLastProducedTCPSocket()->tag());
-  EXPECT_TRUE(
-      socket_factory->GetLastProducedTCPSocket()->tagged_before_connected());
+  EXPECT_TRUE(tag1 == socket_factory_ptr->GetLastProducedTCPSocket()->tag());
+  EXPECT_TRUE(socket_factory_ptr->GetLastProducedTCPSocket()
+                  ->tagged_before_connected());
 
   // Verify one more stream with a different tag results in one more session and
   // socket.
@@ -2481,9 +2486,9 @@ TEST_F(HttpStreamFactoryTest, Tag) {
       2, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify socket tagged appropriately.
-  EXPECT_TRUE(tag2 == socket_factory->GetLastProducedTCPSocket()->tag());
-  EXPECT_TRUE(
-      socket_factory->GetLastProducedTCPSocket()->tagged_before_connected());
+  EXPECT_TRUE(tag2 == socket_factory_ptr->GetLastProducedTCPSocket()->tag());
+  EXPECT_TRUE(socket_factory_ptr->GetLastProducedTCPSocket()
+                  ->tagged_before_connected());
 
   // Verify one more stream reusing a tag does not create new sessions, groups
   // or sockets.
@@ -2644,9 +2649,9 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
 
 TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
   SpdySessionDependencies session_deps;
-  MockTaggingClientSocketFactory* socket_factory =
-      new MockTaggingClientSocketFactory();
-  session_deps.socket_factory.reset(socket_factory);
+  auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
+  auto* socket_factory_ptr = socket_factory.get();
+  session_deps.socket_factory = std::move(socket_factory);
 
   // Prepare for two HTTPS connects.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
@@ -2719,7 +2724,8 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
       1, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify socket tagged appropriately.
-  MockTaggingStreamSocket* socket = socket_factory->GetLastProducedTCPSocket();
+  MockTaggingStreamSocket* socket =
+      socket_factory_ptr->GetLastProducedTCPSocket();
   EXPECT_TRUE(tag1 == socket->tag());
   EXPECT_TRUE(socket->tagged_before_connected());
 
@@ -2743,7 +2749,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
       1, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify no new sockets created.
-  EXPECT_EQ(socket, socket_factory->GetLastProducedTCPSocket());
+  EXPECT_EQ(socket, socket_factory_ptr->GetLastProducedTCPSocket());
   // Verify socket tag changed.
   EXPECT_TRUE(tag2 == socket->tag());
   EXPECT_FALSE(socket->tagged_before_connected());
@@ -2777,7 +2783,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
       1, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify no new sockets created.
-  EXPECT_EQ(socket, socket_factory->GetLastProducedTCPSocket());
+  EXPECT_EQ(socket, socket_factory_ptr->GetLastProducedTCPSocket());
   // Verify socket tag changed.
   EXPECT_TRUE(tag1 == socket->tag());
   EXPECT_FALSE(socket->tagged_before_connected());
@@ -2811,7 +2817,8 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
       2, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify a new socket was created.
-  MockTaggingStreamSocket* socket2 = socket_factory->GetLastProducedTCPSocket();
+  MockTaggingStreamSocket* socket2 =
+      socket_factory_ptr->GetLastProducedTCPSocket();
   EXPECT_NE(socket, socket2);
   // Verify tag set appropriately.
   EXPECT_TRUE(tag2 == socket2->tag());
@@ -2825,9 +2832,9 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
 // Regression test for https://crbug.com/954503.
 TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   SpdySessionDependencies session_deps;
-  MockTaggingClientSocketFactory* socket_factory =
-      new MockTaggingClientSocketFactory();
-  session_deps.socket_factory.reset(socket_factory);
+  auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
+  auto* socket_factory_ptr = socket_factory.get();
+  session_deps.socket_factory = std::move(socket_factory);
 
   // Prepare for two HTTPS connects.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
@@ -2901,7 +2908,8 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
       1, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify socket tagged appropriately.
-  MockTaggingStreamSocket* socket = socket_factory->GetLastProducedTCPSocket();
+  MockTaggingStreamSocket* socket =
+      socket_factory_ptr->GetLastProducedTCPSocket();
   EXPECT_TRUE(tag1 == socket->tag());
   EXPECT_TRUE(socket->tagged_before_connected());
 
@@ -2933,7 +2941,8 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
       2, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify a new socket was created.
-  MockTaggingStreamSocket* socket2 = socket_factory->GetLastProducedTCPSocket();
+  MockTaggingStreamSocket* socket2 =
+      socket_factory_ptr->GetLastProducedTCPSocket();
   EXPECT_NE(socket, socket2);
   // Verify tag set appropriately.
   EXPECT_TRUE(tag2 == socket2->tag());
@@ -2972,7 +2981,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
       2, GetHandedOutSocketCount(session->GetSocketPool(
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
   // Verify no new sockets created.
-  EXPECT_EQ(socket2, socket_factory->GetLastProducedTCPSocket());
+  EXPECT_EQ(socket2, socket_factory_ptr->GetLastProducedTCPSocket());
   // Verify socket tag changed.
   EXPECT_TRUE(tag3 == socket->tag());
   EXPECT_FALSE(socket->tagged_before_connected());
@@ -2993,7 +3002,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   EXPECT_FALSE(waiter4.websocket_stream());
   ASSERT_TRUE(waiter4.stream());
   // Verify no new sockets created.
-  EXPECT_EQ(socket2, socket_factory->GetLastProducedTCPSocket());
+  EXPECT_EQ(socket2, socket_factory_ptr->GetLastProducedTCPSocket());
 }
 #endif
 

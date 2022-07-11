@@ -5092,18 +5092,18 @@ TEST_F(SSLClientSocketTest, Tag) {
 
   auto tagging_sock =
       std::make_unique<MockTaggingStreamSocket>(std::move(transport));
-  MockTaggingStreamSocket* raw_tagging_sock = tagging_sock.get();
+  auto* tagging_sock_ptr = tagging_sock.get();
 
   // |sock| takes ownership of |tagging_sock|, but keep a
   // non-owning pointer to it.
   std::unique_ptr<SSLClientSocket> sock(CreateSSLClientSocket(
       std::move(tagging_sock), host_port_pair(), SSLConfig()));
 
-  EXPECT_EQ(raw_tagging_sock->tag(), SocketTag());
+  EXPECT_EQ(tagging_sock_ptr->tag(), SocketTag());
 #if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
   sock->ApplySocketTag(tag);
-  EXPECT_EQ(raw_tagging_sock->tag(), tag);
+  EXPECT_EQ(tagging_sock_ptr->tag(), tag);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

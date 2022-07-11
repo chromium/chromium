@@ -442,15 +442,16 @@ TEST_P(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
   ProxyConfig proxy_config;
   proxy_config.set_pac_url(GURL("http://fooproxyurl"));
   proxy_config.set_pac_mandatory(true);
-  MockAsyncProxyResolverFactory* proxy_resolver_factory =
-      new MockAsyncProxyResolverFactory(false);
+  auto proxy_resolver_factory =
+      std::make_unique<MockAsyncProxyResolverFactory>(false);
+  auto* proxy_resolver_factory_ptr = proxy_resolver_factory.get();
   MockAsyncProxyResolver resolver;
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
 
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
-          base::WrapUnique(proxy_resolver_factory), nullptr,
+          std::move(proxy_resolver_factory), nullptr,
           /*quick_check_enabled=*/true);
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -472,7 +473,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
       request_delegate_,
       OnStreamFailed(ERR_MANDATORY_PROXY_CONFIGURATION_FAILED, _, _, _, _))
       .Times(1);
-  proxy_resolver_factory->pending_requests()[0]->CompleteNowWithForwarder(
+  proxy_resolver_factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(
       ERR_FAILED, &resolver);
   base::RunLoop().RunUntilIdle();
   request_.reset();

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -43,8 +44,8 @@ std::unique_ptr<GzipSourceStream> GzipSourceStream::Create(
     std::unique_ptr<SourceStream> upstream,
     SourceStream::SourceType type) {
   DCHECK(type == TYPE_GZIP || type == TYPE_DEFLATE);
-  std::unique_ptr<GzipSourceStream> source(
-      new GzipSourceStream(std::move(upstream), type));
+  auto source =
+      base::WrapUnique(new GzipSourceStream(std::move(upstream), type));
 
   if (!source->Init())
     return nullptr;

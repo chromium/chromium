@@ -147,7 +147,7 @@ class AddressSorterWin : public AddressSorter {
 
 // static
 std::unique_ptr<AddressSorter> AddressSorter::CreateAddressSorter() {
-  return std::unique_ptr<AddressSorter>(new AddressSorterWin());
+  return std::make_unique<AddressSorterWin>();
 }
 
 }  // namespace net

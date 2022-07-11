@@ -12141,7 +12141,8 @@ TEST_F(URLRequestTestHTTP, HeadersCallbacksAuthRetry) {
 
   auto req_headers_callback = base::BindRepeating(
       [](ReqHeadersVector* vec, HttpRawRequestHeaders headers) {
-        vec->emplace_back(new HttpRawRequestHeaders(std::move(headers)));
+        vec->emplace_back(
+            std::make_unique<HttpRawRequestHeaders>(std::move(headers)));
       },
       &raw_req_headers);
   auto resp_headers_callback = base::BindRepeating(

@@ -65,7 +65,7 @@ std::unique_ptr<SrvRecordRdata> SrvRecordRdata::Create(
   if (!HasValidSize(data, kType))
     return nullptr;
 
-  std::unique_ptr<SrvRecordRdata> rdata(new SrvRecordRdata);
+  auto rdata = base::WrapUnique(new SrvRecordRdata());
 
   auto reader = base::BigEndianReader::FromStringPiece(data);
   // 2 bytes for priority, 2 bytes for weight, 2 bytes for port.
@@ -104,7 +104,7 @@ std::unique_ptr<ARecordRdata> ARecordRdata::Create(
   if (!HasValidSize(data, kType))
     return nullptr;
 
-  std::unique_ptr<ARecordRdata> rdata(new ARecordRdata);
+  auto rdata = base::WrapUnique(new ARecordRdata());
   rdata->address_ =
       IPAddress(reinterpret_cast<const uint8_t*>(data.data()), data.length());
   return rdata;
@@ -131,7 +131,7 @@ std::unique_ptr<AAAARecordRdata> AAAARecordRdata::Create(
   if (!HasValidSize(data, kType))
     return nullptr;
 
-  std::unique_ptr<AAAARecordRdata> rdata(new AAAARecordRdata);
+  auto rdata = base::WrapUnique(new AAAARecordRdata());
   rdata->address_ =
       IPAddress(reinterpret_cast<const uint8_t*>(data.data()), data.length());
   return rdata;
@@ -155,7 +155,7 @@ CnameRecordRdata::~CnameRecordRdata() = default;
 std::unique_ptr<CnameRecordRdata> CnameRecordRdata::Create(
     const base::StringPiece& data,
     const DnsRecordParser& parser) {
-  std::unique_ptr<CnameRecordRdata> rdata(new CnameRecordRdata);
+  auto rdata = base::WrapUnique(new CnameRecordRdata());
 
   if (!parser.ReadName(data.begin(), &rdata->cname_))
     return nullptr;
@@ -182,7 +182,7 @@ PtrRecordRdata::~PtrRecordRdata() = default;
 std::unique_ptr<PtrRecordRdata> PtrRecordRdata::Create(
     const base::StringPiece& data,
     const DnsRecordParser& parser) {
-  std::unique_ptr<PtrRecordRdata> rdata(new PtrRecordRdata);
+  auto rdata = base::WrapUnique(new PtrRecordRdata());
 
   if (!parser.ReadName(data.begin(), &rdata->ptrdomain_))
     return nullptr;
@@ -208,7 +208,7 @@ TxtRecordRdata::~TxtRecordRdata() = default;
 std::unique_ptr<TxtRecordRdata> TxtRecordRdata::Create(
     const base::StringPiece& data,
     const DnsRecordParser& parser) {
-  std::unique_ptr<TxtRecordRdata> rdata(new TxtRecordRdata);
+  auto rdata = base::WrapUnique(new TxtRecordRdata());
 
   for (size_t i = 0; i < data.size(); ) {
     uint8_t length = data[i];
@@ -243,7 +243,7 @@ NsecRecordRdata::~NsecRecordRdata() = default;
 std::unique_ptr<NsecRecordRdata> NsecRecordRdata::Create(
     const base::StringPiece& data,
     const DnsRecordParser& parser) {
-  std::unique_ptr<NsecRecordRdata> rdata(new NsecRecordRdata);
+  auto rdata = base::WrapUnique(new NsecRecordRdata());
 
   // Read the "next domain". This part for the NSEC record format is
   // ignored for mDNS, since it has no semantic meaning.
@@ -314,7 +314,7 @@ OptRecordRdata& OptRecordRdata::operator=(OptRecordRdata&& other) = default;
 std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
     const base::StringPiece& data,
     const DnsRecordParser& parser) {
-  std::unique_ptr<OptRecordRdata> rdata(new OptRecordRdata);
+  auto rdata = base::WrapUnique(new OptRecordRdata());
   rdata->buf_.assign(data.begin(), data.end());
 
   auto reader = base::BigEndianReader::FromStringPiece(data);

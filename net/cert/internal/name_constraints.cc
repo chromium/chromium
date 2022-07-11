@@ -174,7 +174,7 @@ std::unique_ptr<NameConstraints> NameConstraints::Create(
     CertErrors* errors) {
   DCHECK(errors);
 
-  std::unique_ptr<NameConstraints> name_constraints(new NameConstraints());
+  auto name_constraints = std::make_unique<NameConstraints>();
   if (!name_constraints->Parse(extension_value, is_critical, errors))
     return nullptr;
   return name_constraints;

@@ -63,13 +63,14 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   std::unique_ptr<PacFileFetcher> ImplCreateScriptFetcher() override {
     // We don't maintain ownership of the fetcher, it is transferred to
     // the caller.
-    fetcher_ = new MockPacFileFetcher();
+    auto fetcher = std::make_unique<MockPacFileFetcher>();
+    fetcher_ = fetcher.get();
     if (fetcher_delay_ms_ != -1) {
       fetcher_timer_.Start(FROM_HERE, base::Milliseconds(fetcher_delay_ms_),
                            this,
                            &MockDhcpPacFileAdapterFetcher::OnFetcherTimer);
     }
-    return base::WrapUnique(fetcher_.get());
+    return fetcher;
   }
 
   class DelayingDhcpQuery : public DhcpQuery {

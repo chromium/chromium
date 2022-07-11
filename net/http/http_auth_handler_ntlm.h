@@ -92,6 +92,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
   HttpAuthHandlerNTLM(const HttpAuthHandlerNTLM&) = delete;
   HttpAuthHandlerNTLM& operator=(const HttpAuthHandlerNTLM&) = delete;
 
+  ~HttpAuthHandlerNTLM() override;
+
   // HttpAuthHandler
   bool NeedsIdentity() override;
   bool AllowsDefaultCredentials() override;
@@ -109,8 +111,6 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
       HttpAuthChallengeTokenizer* challenge) override;
 
  private:
-  ~HttpAuthHandlerNTLM() override;
-
   // Parse the challenge, saving the results into this instance.
   HttpAuth::AuthorizationResult ParseChallenge(HttpAuthChallengeTokenizer* tok);
 

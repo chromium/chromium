@@ -319,9 +319,10 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     IsolationInfo isolation_info =
         IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
                               origin, SiteForCookies::FromOrigin(origin));
-    event_interface_ = new ConnectTestingEventInterface();
-    channel_ = std::make_unique<WebSocketChannel>(
-        base::WrapUnique(event_interface_.get()), context_.get());
+    auto event_interface = std::make_unique<ConnectTestingEventInterface>();
+    event_interface_ = event_interface.get();
+    channel_ = std::make_unique<WebSocketChannel>(std::move(event_interface),
+                                                  context_.get());
     channel_->SendAddChannelRequest(
         GURL(socket_url), sub_protocols_, origin, site_for_cookies,
         isolation_info, HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS);

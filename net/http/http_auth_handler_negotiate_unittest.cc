@@ -62,10 +62,12 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
         features::kSplitHostCacheByNetworkIsolationKey);
     network_isolation_key_ = NetworkIsolationKey::CreateTransient();
 #if BUILDFLAG(IS_WIN)
-    auth_library_ = new MockAuthLibrary(const_cast<wchar_t*>(NEGOSSP_NAME));
+    auto auth_library =
+        std::make_unique<MockAuthLibrary>(const_cast<wchar_t*>(NEGOSSP_NAME));
 #else
-    auth_library_ = new MockAuthLibrary();
+    auto auth_library = std::make_unique<MockAuthLibrary>();
 #endif
+    auth_library_ = auth_library.get();
     resolver_ = std::make_unique<MockCachingHostResolver>(
         /*cache_invalidation_num=*/0,
         /*default_result=*/MockHostResolverBase::RuleResolver::
@@ -78,11 +80,12 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
         HttpAuthMechanismFactory());
     factory_->set_http_auth_preferences(http_auth_preferences_.get());
 #if BUILDFLAG(IS_ANDROID)
+    auth_library_for_android_ = std::move(auth_library);
     http_auth_preferences_->set_auth_android_negotiate_account_type(
         "org.chromium.test.DummySpnegoAuthenticator");
     MockAuthLibrary::EnsureTestAccountExists();
 #else
-    factory_->set_library(base::WrapUnique(auth_library_.get()));
+    factory_->set_library(std::move(auth_library));
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -264,6 +267,8 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<SecPkgInfoW> security_package_;
+#elif BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<MockAuthLibrary> auth_library_for_android_;
 #endif
   // |auth_library_| is passed to |factory_|, which assumes ownership of it, but
   // can't be a scoped pointer to it since the tests need access when they set
@@ -450,8 +455,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, NoKerberosCredentials) {
 #if BUILDFLAG(USE_EXTERNAL_GSSAPI)
 TEST_F(HttpAuthHandlerNegotiateTest, MissingGSSAPI) {
   MockAllowHttpAuthPreferences http_auth_preferences;
-  std::unique_ptr<HttpAuthHandlerNegotiate::Factory> negotiate_factory(
-      new HttpAuthHandlerNegotiate::Factory(HttpAuthMechanismFactory()));
+  auto negotiate_factory = std::make_unique<HttpAuthHandlerNegotiate::Factory>(
+      HttpAuthMechanismFactory());
   negotiate_factory->set_http_auth_preferences(&http_auth_preferences);
   negotiate_factory->set_library(
       std::make_unique<GSSAPISharedLibrary>("/this/library/does/not/exist"));

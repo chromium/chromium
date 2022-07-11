@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -56,7 +57,7 @@ struct CacheSpec {
       return nullptr;
     if (tokens[1] != kDiskCacheType && tokens[1] != kAppCacheType)
       return nullptr;
-    return std::unique_ptr<CacheSpec>(new CacheSpec(
+    return base::WrapUnique(new CacheSpec(
         tokens[0] == kBlockFileBackendType ? net::CACHE_BACKEND_BLOCKFILE
                                            : net::CACHE_BACKEND_SIMPLE,
         tokens[1] == kDiskCacheType ? net::DISK_CACHE : net::APP_CACHE,

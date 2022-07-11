@@ -914,10 +914,10 @@ TEST_F(HttpNetworkTransactionTest, SimpleGETHostResolutionFailure) {
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  MockHostResolver* resolver = new MockHostResolver();
+  auto resolver = std::make_unique<MockHostResolver>();
   resolver->rules()->AddSimulatedTimeoutFailure("www.example.org");
   session_deps_.net_log = net::NetLog::Get();
-  session_deps_.host_resolver.reset(resolver);
+  session_deps_.host_resolver = std::move(resolver);
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -11019,12 +11019,11 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
 // Tests that nonce count increments when multiple auth attempts
 // are started with the same nonce.
 TEST_F(HttpNetworkTransactionTest, DigestPreAuthNonceCount) {
-  HttpAuthHandlerDigest::Factory* digest_factory =
-      new HttpAuthHandlerDigest::Factory();
+  auto digest_factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
   HttpAuthHandlerDigest::FixedNonceGenerator* nonce_generator =
       new HttpAuthHandlerDigest::FixedNonceGenerator("0123456789abcdef");
   digest_factory->set_nonce_generator(nonce_generator);
-  session_deps_.http_auth_handler_factory.reset(digest_factory);
+  session_deps_.http_auth_handler_factory = std::move(digest_factory);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Transaction 1: authenticate (foo, bar) on MyRealm1
@@ -12777,18 +12776,20 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
         SetupSessionForGroupIdTests(&session_deps_));
 
     HttpNetworkSessionPeer peer(session.get());
-    CaptureGroupIdTransportSocketPool* transport_conn_pool =
-        new CaptureGroupIdTransportSocketPool(&dummy_connect_job_params_);
+    auto transport_conn_pool =
+        std::make_unique<CaptureGroupIdTransportSocketPool>(
+            &dummy_connect_job_params_);
+    auto* transport_conn_pool_ptr = transport_conn_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
     mock_pool_manager->SetSocketPool(ProxyServer::Direct(),
-                                     base::WrapUnique(transport_conn_pool));
+                                     std::move(transport_conn_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     EXPECT_EQ(ERR_IO_PENDING,
               GroupIdTransactionHelper(test.url, session.get()));
     EXPECT_EQ(test.expected_group_id,
-              transport_conn_pool->last_group_id_received());
-    EXPECT_TRUE(transport_conn_pool->socket_requested());
+              transport_conn_pool_ptr->last_group_id_received());
+    EXPECT_TRUE(transport_conn_pool_ptr->socket_requested());
   }
 }
 
@@ -12838,17 +12839,17 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
 
     ProxyServer proxy_server(ProxyServer::SCHEME_HTTP,
                              HostPortPair("http_proxy", 80));
-    CaptureGroupIdTransportSocketPool* http_proxy_pool =
-        new CaptureGroupIdTransportSocketPool(&dummy_connect_job_params_);
+    auto http_proxy_pool = std::make_unique<CaptureGroupIdTransportSocketPool>(
+        &dummy_connect_job_params_);
+    auto* http_proxy_pool_ptr = http_proxy_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(proxy_server,
-                                     base::WrapUnique(http_proxy_pool));
+    mock_pool_manager->SetSocketPool(proxy_server, std::move(http_proxy_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     EXPECT_EQ(ERR_IO_PENDING,
               GroupIdTransactionHelper(test.url, session.get()));
     EXPECT_EQ(test.expected_group_id,
-              http_proxy_pool->last_group_id_received());
+              http_proxy_pool_ptr->last_group_id_received());
   }
 }
 
@@ -12917,11 +12918,11 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
     ProxyServer proxy_server(
         ProxyUriToProxyServer(test.proxy_server, ProxyServer::SCHEME_HTTP));
     ASSERT_TRUE(proxy_server.is_valid());
-    CaptureGroupIdTransportSocketPool* socks_conn_pool =
-        new CaptureGroupIdTransportSocketPool(&dummy_connect_job_params_);
+    auto socks_conn_pool = std::make_unique<CaptureGroupIdTransportSocketPool>(
+        &dummy_connect_job_params_);
+    auto* socks_conn_pool_ptr = socks_conn_pool.get();
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(proxy_server,
-                                     base::WrapUnique(socks_conn_pool));
+    mock_pool_manager->SetSocketPool(proxy_server, std::move(socks_conn_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -12929,7 +12930,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
     EXPECT_EQ(ERR_IO_PENDING,
               GroupIdTransactionHelper(test.url, session.get()));
     EXPECT_EQ(test.expected_group_id,
-              socks_conn_pool->last_group_id_received());
+              socks_conn_pool_ptr->last_group_id_received());
   }
 }
 
@@ -13296,9 +13297,10 @@ TEST_F(HttpNetworkTransactionTest, CancelDuringInitRequestBody) {
     CompletionOnceCallback callback_;
   };
 
-  FakeUploadElementReader* fake_reader = new FakeUploadElementReader;
+  auto fake_reader = std::make_unique<FakeUploadElementReader>();
+  auto* fake_reader_ptr = fake_reader.get();
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
-  element_readers.push_back(base::WrapUnique(fake_reader));
+  element_readers.push_back(std::move(fake_reader));
   ElementsUploadDataStream upload_data_stream(std::move(element_readers), 0);
 
   HttpRequestInfo request;
@@ -13321,7 +13323,7 @@ TEST_F(HttpNetworkTransactionTest, CancelDuringInitRequestBody) {
   base::RunLoop().RunUntilIdle();
 
   // Transaction is pending on request body initialization.
-  CompletionOnceCallback init_callback = fake_reader->TakeCallback();
+  CompletionOnceCallback init_callback = fake_reader_ptr->TakeCallback();
   ASSERT_FALSE(init_callback.is_null());
 
   // Return Init()'s result after the transaction gets destroyed.
@@ -15837,9 +15839,9 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
   for (const auto& test_config : test_configs) {
     SCOPED_TRACE(::testing::Message() << "Test config at "
                                       << test_config.line_number);
-    HttpAuthHandlerMock::Factory* auth_factory(
-        new HttpAuthHandlerMock::Factory());
-    session_deps_.http_auth_handler_factory.reset(auth_factory);
+    auto auth_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
+    auto* auth_factory_ptr = auth_factory.get();
+    session_deps_.http_auth_handler_factory = std::move(auth_factory);
     SSLInfo empty_ssl_info;
 
     // Set up authentication handlers as necessary.
@@ -15856,7 +15858,7 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
         auth_handler->SetGenerateExpectation(
             test_config.proxy_auth_timing == AUTH_ASYNC,
             n == 0 ? test_config.first_generate_proxy_token_rv : OK);
-        auth_factory->AddMockHandler(auth_handler, HttpAuth::AUTH_PROXY);
+        auth_factory_ptr->AddMockHandler(auth_handler, HttpAuth::AUTH_PROXY);
       }
     }
     if (test_config.server_auth_timing != AUTH_NONE) {
@@ -15871,7 +15873,7 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
       auth_handler->SetGenerateExpectation(
           test_config.server_auth_timing == AUTH_ASYNC,
           test_config.first_generate_server_token_rv);
-      auth_factory->AddMockHandler(auth_handler, HttpAuth::AUTH_SERVER);
+      auth_factory_ptr->AddMockHandler(auth_handler, HttpAuth::AUTH_SERVER);
 
       // The second handler always succeeds. It should only be used where there
       // are multiple auth sessions for server auth in the same network
@@ -15882,8 +15884,8 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
                                         empty_ssl_info, NetworkIsolationKey(),
                                         scheme_host_port, NetLogWithSource());
       second_handler->SetGenerateExpectation(true, OK);
-      auth_factory->AddMockHandler(second_handler.release(),
-                                   HttpAuth::AUTH_SERVER);
+      auth_factory_ptr->AddMockHandler(second_handler.release(),
+                                       HttpAuth::AUTH_SERVER);
     }
     if (test_config.proxy_url) {
       session_deps_.proxy_resolution_service =
@@ -15980,9 +15982,9 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
 
 TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   // Do multi-round authentication and make sure it works correctly.
-  HttpAuthHandlerMock::Factory* auth_factory(
-      new HttpAuthHandlerMock::Factory());
-  session_deps_.http_auth_handler_factory.reset(auth_factory);
+  auto auth_factory = std::make_unique<HttpAuthHandlerMock::Factory>();
+  auto* auth_factory_ptr = auth_factory.get();
+  session_deps_.http_auth_handler_factory = std::move(auth_factory);
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateDirect();
   session_deps_.host_resolver->rules()->AddRule("www.example.com", "10.0.0.1");
@@ -15997,7 +15999,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
                                   empty_ssl_info, NetworkIsolationKey(),
                                   url::SchemeHostPort(url), NetLogWithSource());
-  auth_factory->AddMockHandler(auth_handler, HttpAuth::AUTH_SERVER);
+  auth_factory_ptr->AddMockHandler(auth_handler, HttpAuth::AUTH_SERVER);
 
   int rv = OK;
   const HttpResponseInfo* response = nullptr;
@@ -16015,15 +16017,16 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   HttpNetworkSessionPeer session_peer(session.get());
   CommonConnectJobParams common_connect_job_params(
       session->CreateCommonConnectJobParams());
-  TransportClientSocketPool* transport_pool = new TransportClientSocketPool(
+  auto transport_pool = std::make_unique<TransportClientSocketPool>(
       50,                            // Max sockets for pool
       1,                             // Max sockets per group
       base::Seconds(10),             // unused_idle_socket_timeout
       ProxyServer::Direct(), false,  // is_for_websockets
       &common_connect_job_params);
+  auto* transport_pool_ptr = transport_pool.get();
   auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
   mock_pool_manager->SetSocketPool(ProxyServer::Direct(),
-                                   base::WrapUnique(transport_pool));
+                                   std::move(transport_pool));
   session_peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -16092,7 +16095,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_TRUE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler->state());
 
@@ -16117,7 +16120,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler->state());
 
@@ -16130,7 +16133,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
             auth_handler->state());
 
@@ -16143,7 +16146,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_FALSE(response->auth_challenge.has_value());
-  EXPECT_EQ(0u, transport_pool->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
 
   // In WAIT_FOR_CHALLENGE, although in reality the auth handler is done. A real
   // auth handler should transition to a DONE state in concert with the remote
@@ -16163,7 +16166,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_EQ(0, rv);
   // There are still 0 idle sockets, since the trans_compete transaction
   // will be handed it immediately after trans releases it to the group.
-  EXPECT_EQ(0u, transport_pool->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
 
   // The competing request can now finish. Wait for the headers and then
   // read the body.
@@ -16177,7 +16180,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_EQ(0, rv);
 
   // Finally, the socket is released to the group.
-  EXPECT_EQ(1u, transport_pool->IdleSocketCountInGroup(kSocketGroup));
+  EXPECT_EQ(1u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
 }
 
 // This tests the case that a request is issued via http instead of spdy after
@@ -20076,15 +20079,16 @@ TEST_F(HttpNetworkTransactionTest, ProxyResolutionFailsAsync) {
   ProxyConfig proxy_config;
   proxy_config.set_pac_url(GURL("http://fooproxyurl"));
   proxy_config.set_pac_mandatory(true);
-  MockAsyncProxyResolverFactory* proxy_resolver_factory =
-      new MockAsyncProxyResolverFactory(false);
+  auto proxy_resolver_factory =
+      std::make_unique<MockAsyncProxyResolverFactory>(false);
+  auto* proxy_resolver_factory_ptr = proxy_resolver_factory.get();
   MockAsyncProxyResolver resolver;
   session_deps_.proxy_resolution_service =
       std::make_unique<ConfiguredProxyResolutionService>(
 
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
-          base::WrapUnique(proxy_resolver_factory), nullptr,
+          std::move(proxy_resolver_factory), nullptr,
           /*quick_check_enabled=*/true);
   HttpRequestInfo request;
   request.method = "GET";
@@ -20099,7 +20103,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyResolutionFailsAsync) {
   int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  proxy_resolver_factory->pending_requests()[0]->CompleteNowWithForwarder(
+  proxy_resolver_factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(
       ERR_FAILED, &resolver);
   EXPECT_THAT(callback.WaitForResult(),
               IsError(ERR_MANDATORY_PROXY_CONFIGURATION_FAILED));

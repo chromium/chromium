@@ -202,7 +202,8 @@ void MDnsConnection::OnDatagramReceived(
 MDnsClientImpl::Core::Core(base::Clock* clock, base::OneShotTimer* timer)
     : clock_(clock),
       cleanup_timer_(timer),
-      connection_(new MDnsConnection(this)) {
+      connection_(
+          std::make_unique<MDnsConnection>((MDnsConnection::Delegate*)this)) {
   DCHECK(cleanup_timer_);
   DCHECK(!cleanup_timer_->IsRunning());
 }

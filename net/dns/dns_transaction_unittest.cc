@@ -111,11 +111,11 @@ class DnsSocketData {
                 const OptRecordRdata* opt_rdata = nullptr,
                 DnsQuery::PaddingStrategy padding_strategy =
                     DnsQuery::PaddingStrategy::NONE)
-      : query_(new DnsQuery(id,
-                            DomainFromDot(dotted_name),
-                            qtype,
-                            opt_rdata,
-                            padding_strategy)),
+      : query_(std::make_unique<DnsQuery>(id,
+                                          DomainFromDot(dotted_name),
+                                          qtype,
+                                          opt_rdata,
+                                          padding_strategy)),
         transport_(transport) {
     if (Transport::TCP == transport_) {
       auto length = std::make_unique<uint16_t>();

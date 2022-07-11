@@ -406,8 +406,9 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     ssl_data_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
     net_log_observer_.SetObserverCaptureMode(NetLogCaptureMode::kEverything);
-    socket_factory_ = new MockTaggingClientSocketFactory();
-    session_deps_.socket_factory.reset(socket_factory_);
+    auto socket_factory = std::make_unique<MockTaggingClientSocketFactory>();
+    socket_factory_ = socket_factory.get();
+    session_deps_.socket_factory = std::move(socket_factory);
   }
 
  protected:
@@ -694,23 +695,24 @@ TEST_F(BidirectionalStreamTest, TestReadDataAfterClose) {
       base::MakeRefCounted<IOBuffer>(kReadBufferSize);
   // Create a MockTimer. Retain a raw pointer since the underlying
   // BidirectionalStreamImpl owns it.
-  MockTimer* timer = new MockTimer();
+  auto timer = std::make_unique<MockTimer>();
+  MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
-      read_buffer.get(), kReadBufferSize, base::WrapUnique(timer));
+      read_buffer.get(), kReadBufferSize, std::move(timer));
   delegate->set_do_not_start_read(true);
 
   delegate->Start(std::move(request_info), http_session_.get());
 
   // Write request, and deliver response headers.
   sequenced_data_->RunUntilPaused();
-  EXPECT_FALSE(timer->IsRunning());
+  EXPECT_FALSE(timer_ptr->IsRunning());
   // ReadData returns asynchronously because no data is buffered.
   int rv = delegate->ReadData();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   // Deliver a DATA frame.
   sequenced_data_->Resume();
   base::RunLoop().RunUntilIdle();
-  timer->Fire();
+  timer_ptr->Fire();
   // Asynchronous completion callback is invoke.
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(kUploadDataSize * 1,
@@ -779,14 +781,15 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
 
   scoped_refptr<IOBuffer> read_buffer =
       base::MakeRefCounted<IOBuffer>(kReadBufferSize);
-  MockTimer* timer = new MockTimer();
+  auto timer = std::make_unique<MockTimer>();
+  MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
-      read_buffer.get(), kReadBufferSize, base::WrapUnique(timer));
+      read_buffer.get(), kReadBufferSize, std::move(timer));
   delegate->set_do_not_start_read(true);
   delegate->Start(std::move(request_info), http_session_.get());
   // Send the request and receive response headers.
   sequenced_data_->RunUntilPaused();
-  EXPECT_FALSE(timer->IsRunning());
+  EXPECT_FALSE(timer_ptr->IsRunning());
 
   scoped_refptr<StringIOBuffer> buf =
       base::MakeRefCounted<StringIOBuffer>(kBodyDataString);
@@ -801,7 +804,7 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
   // |sequenced_data_| is now stopped after delivering first DATA frame but
   // before the second DATA frame.
   // Fire the timer to allow the first ReadData to complete asynchronously.
-  timer->Fire();
+  timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, delegate->on_data_read_count());
 
@@ -915,14 +918,15 @@ TEST_F(BidirectionalStreamTest, TestInterleaveReadDataAndSendData) {
 
   scoped_refptr<IOBuffer> read_buffer =
       base::MakeRefCounted<IOBuffer>(kReadBufferSize);
-  MockTimer* timer = new MockTimer();
+  auto timer = std::make_unique<MockTimer>();
+  MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
-      read_buffer.get(), kReadBufferSize, base::WrapUnique(timer));
+      read_buffer.get(), kReadBufferSize, std::move(timer));
   delegate->set_do_not_start_read(true);
   delegate->Start(std::move(request_info), http_session_.get());
   // Send the request and receive response headers.
   sequenced_data_->RunUntilPaused();
-  EXPECT_FALSE(timer->IsRunning());
+  EXPECT_FALSE(timer_ptr->IsRunning());
 
   // Send a DATA frame.
   scoped_refptr<StringIOBuffer> buf =
@@ -936,7 +940,7 @@ TEST_F(BidirectionalStreamTest, TestInterleaveReadDataAndSendData) {
   // Deliver a DATA frame, and fire the timer.
   sequenced_data_->Resume();
   sequenced_data_->RunUntilPaused();
-  timer->Fire();
+  timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, delegate->on_data_sent_count());
   EXPECT_EQ(1, delegate->on_data_read_count());
@@ -949,7 +953,7 @@ TEST_F(BidirectionalStreamTest, TestInterleaveReadDataAndSendData) {
   // Deliver a DATA frame, and fire the timer.
   sequenced_data_->Resume();
   sequenced_data_->RunUntilPaused();
-  timer->Fire();
+  timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
   // Last DATA frame is read. Server half closes.
   EXPECT_EQ(2, delegate->on_data_read_count());
@@ -1005,9 +1009,9 @@ TEST_F(BidirectionalStreamTest, TestCoalesceSmallDataBuffers) {
 
   scoped_refptr<IOBuffer> read_buffer =
       base::MakeRefCounted<IOBuffer>(kReadBufferSize);
-  MockTimer* timer = new MockTimer();
+  auto timer = std::make_unique<MockTimer>();
   auto delegate = std::make_unique<TestDelegateBase>(
-      read_buffer.get(), kReadBufferSize, base::WrapUnique(timer));
+      read_buffer.get(), kReadBufferSize, std::move(timer));
   delegate->set_do_not_start_read(true);
   TestCompletionCallback callback;
   delegate->Start(std::move(request_info), http_session_.get(),
@@ -1095,14 +1099,15 @@ TEST_F(BidirectionalStreamTest, TestCompleteAsyncRead) {
 
   scoped_refptr<IOBuffer> read_buffer =
       base::MakeRefCounted<IOBuffer>(kReadBufferSize);
-  MockTimer* timer = new MockTimer();
+  auto timer = std::make_unique<MockTimer>();
+  MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
-      read_buffer.get(), kReadBufferSize, base::WrapUnique(timer));
+      read_buffer.get(), kReadBufferSize, std::move(timer));
   delegate->set_do_not_start_read(true);
   delegate->Start(std::move(request_info), http_session_.get());
   // Write request, and deliver response headers.
   sequenced_data_->RunUntilPaused();
-  EXPECT_FALSE(timer->IsRunning());
+  EXPECT_FALSE(timer_ptr->IsRunning());
 
   // ReadData should return asynchronously because no data is buffered.
   int rv = delegate->ReadData();
@@ -1155,23 +1160,24 @@ TEST_F(BidirectionalStreamTest, TestBuffering) {
 
   scoped_refptr<IOBuffer> read_buffer =
       base::MakeRefCounted<IOBuffer>(kReadBufferSize);
-  MockTimer* timer = new MockTimer();
+  auto timer = std::make_unique<MockTimer>();
+  MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
-      read_buffer.get(), kReadBufferSize, base::WrapUnique(timer));
+      read_buffer.get(), kReadBufferSize, std::move(timer));
   delegate->Start(std::move(request_info), http_session_.get());
   // Deliver two DATA frames together.
   sequenced_data_->RunUntilPaused();
-  EXPECT_TRUE(timer->IsRunning());
-  timer->Fire();
+  EXPECT_TRUE(timer_ptr->IsRunning());
+  timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
   // This should trigger |more_read_data_pending_| to execute the task at a
   // later time, and Delegate::OnReadComplete should not have been called.
-  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_TRUE(timer_ptr->IsRunning());
   EXPECT_EQ(0, delegate->on_data_read_count());
 
   // Fire the timer now, the two DATA frame should be combined into one
   // single Delegate::OnReadComplete callback.
-  timer->Fire();
+  timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(kUploadDataSize * 2,
@@ -1228,9 +1234,10 @@ TEST_F(BidirectionalStreamTest, TestBufferingWithTrailers) {
 
   scoped_refptr<IOBuffer> read_buffer =
       base::MakeRefCounted<IOBuffer>(kReadBufferSize);
-  MockTimer* timer = new MockTimer();
+  auto timer = std::make_unique<MockTimer>();
+  MockTimer* timer_ptr = timer.get();
   auto delegate = std::make_unique<TestDelegateBase>(
-      read_buffer.get(), kReadBufferSize, base::WrapUnique(timer));
+      read_buffer.get(), kReadBufferSize, std::move(timer));
 
   auto request_info = std::make_unique<BidirectionalStreamRequestInfo>();
   request_info->method = "GET";
@@ -1241,12 +1248,12 @@ TEST_F(BidirectionalStreamTest, TestBufferingWithTrailers) {
   delegate->Start(std::move(request_info), http_session_.get());
   // Deliver all three DATA frames together.
   sequenced_data_->RunUntilPaused();
-  EXPECT_TRUE(timer->IsRunning());
-  timer->Fire();
+  EXPECT_TRUE(timer_ptr->IsRunning());
+  timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
   // This should trigger |more_read_data_pending_| to execute the task at a
   // later time, and Delegate::OnReadComplete should not have been called.
-  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_TRUE(timer_ptr->IsRunning());
   EXPECT_EQ(0, delegate->on_data_read_count());
 
   // Deliver trailers. Remaining read should be completed, since OnClose is
@@ -1704,9 +1711,9 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
 
   scoped_refptr<IOBuffer> read_buffer =
       base::MakeRefCounted<IOBuffer>(kReadBufferSize);
-  MockTimer* timer = new MockTimer();
+  auto timer = std::make_unique<MockTimer>();
   auto delegate = std::make_unique<TestDelegateBase>(
-      read_buffer.get(), kReadBufferSize, base::WrapUnique(timer));
+      read_buffer.get(), kReadBufferSize, std::move(timer));
   delegate->SetRunUntilCompletion(true);
   delegate->Start(std::move(request_info), http_session_.get());
 

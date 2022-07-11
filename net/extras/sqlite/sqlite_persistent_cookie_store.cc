@@ -1445,7 +1445,7 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
   DCHECK(!background_task_runner()->RunsTasksInCurrentSequence());
 
   // We do a full copy of the cookie here, and hopefully just here.
-  std::unique_ptr<PendingOperation> po(new PendingOperation(op, cc));
+  auto po = std::make_unique<PendingOperation>(op, cc);
 
   PendingOperationsMap::size_type num_pending;
   {

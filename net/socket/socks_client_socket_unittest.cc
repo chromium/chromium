@@ -429,7 +429,7 @@ TEST_F(SOCKSClientSocketTest, Tag) {
   auto tagging_sock = std::make_unique<MockTaggingStreamSocket>(
       std::make_unique<MockTCPClientSocket>(address_list_, NetLog::Get(),
                                             &data));
-  MockTaggingStreamSocket* raw_tagging_sock = tagging_sock.get();
+  auto* tagging_sock_ptr = tagging_sock.get();
 
   auto connection = std::make_unique<ClientSocketHandle>();
   // |connection| takes ownership of |tagging_sock|, but keep a
@@ -440,11 +440,11 @@ TEST_F(SOCKSClientSocketTest, Tag) {
       NetworkIsolationKey(), DEFAULT_PRIORITY, &host_resolver,
       SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  EXPECT_EQ(raw_tagging_sock->tag(), SocketTag());
+  EXPECT_EQ(tagging_sock_ptr->tag(), SocketTag());
 #if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
   socket.ApplySocketTag(tag);
-  EXPECT_EQ(raw_tagging_sock->tag(), tag);
+  EXPECT_EQ(tagging_sock_ptr->tag(), tag);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

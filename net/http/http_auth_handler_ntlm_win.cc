@@ -33,13 +33,13 @@ int HttpAuthHandlerNTLM::Factory::CreateAuthHandler(
     return ERR_UNSUPPORTED_AUTH_SCHEME;
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(
-      new HttpAuthHandlerNTLM(sspi_library_.get(), http_auth_preferences()));
+  auto tmp_handler = std::make_unique<HttpAuthHandlerNTLM>(
+      sspi_library_.get(), http_auth_preferences());
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
                                       network_isolation_key, scheme_host_port,
                                       net_log))
     return ERR_INVALID_RESPONSE;
-  handler->swap(tmp_handler);
+  *handler = std::move(tmp_handler);
   return OK;
 }
 

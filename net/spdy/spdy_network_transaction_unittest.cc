@@ -1610,8 +1610,8 @@ namespace {
 // invoked.
 class KillerCallback : public TestCompletionCallbackBase {
  public:
-  explicit KillerCallback(HttpNetworkTransaction* transaction)
-      : transaction_(transaction) {}
+  explicit KillerCallback(std::unique_ptr<HttpNetworkTransaction> transaction)
+      : transaction_(std::move(transaction)) {}
 
   ~KillerCallback() override = default;
 
@@ -1622,12 +1622,12 @@ class KillerCallback : public TestCompletionCallbackBase {
  private:
   void OnComplete(int result) {
     if (result < 0)
-      delete transaction_;
+      transaction_.reset();
 
     SetResult(result);
   }
 
-  raw_ptr<HttpNetworkTransaction> transaction_;
+  std::unique_ptr<HttpNetworkTransaction> transaction_;
 };
 
 }  // namespace
@@ -1692,12 +1692,13 @@ TEST_F(SpdyNetworkTransactionTest, ThreeGetsWithMaxConcurrentSocketClose) {
   helper.AddData(&data_placeholder);
   HttpNetworkTransaction trans1(HIGHEST, helper.session());
   HttpNetworkTransaction trans2(MEDIUM, helper.session());
-  HttpNetworkTransaction* trans3(
-      new HttpNetworkTransaction(DEFAULT_PRIORITY, helper.session()));
+  auto trans3 = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
+                                                         helper.session());
+  auto* trans3_ptr = trans3.get();
 
   TestCompletionCallback callback1;
   TestCompletionCallback callback2;
-  KillerCallback callback3(trans3);
+  KillerCallback callback3(std::move(trans3));
 
   out.rv = trans1.Start(&request_, callback1.callback(), log_);
   ASSERT_EQ(out.rv, ERR_IO_PENDING);
@@ -1707,7 +1708,7 @@ TEST_F(SpdyNetworkTransactionTest, ThreeGetsWithMaxConcurrentSocketClose) {
 
   out.rv = trans2.Start(&request_, callback2.callback(), log_);
   ASSERT_EQ(out.rv, ERR_IO_PENDING);
-  out.rv = trans3->Start(&request_, callback3.callback(), log_);
+  out.rv = trans3_ptr->Start(&request_, callback3.callback(), log_);
   ASSERT_EQ(out.rv, ERR_IO_PENDING);
 
   // Run until both transactions are in the SpdySession's queue, waiting for the

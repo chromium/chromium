@@ -229,8 +229,7 @@ TEST_F(DirectoryListerTest, EmptyDirTest) {
 // regression.
 TEST_F(DirectoryListerTest, BasicCancelTest) {
   ListerDelegate delegate(DirectoryLister::ALPHA_DIRS_FIRST);
-  std::unique_ptr<DirectoryLister> lister(
-      new DirectoryLister(root_path(), &delegate));
+  auto lister = std::make_unique<DirectoryLister>(root_path(), &delegate);
   lister->Start();
   lister->Cancel();
   base::RunLoop().RunUntilIdle();

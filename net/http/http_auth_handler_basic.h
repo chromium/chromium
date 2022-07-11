@@ -35,6 +35,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerBasic : public HttpAuthHandler {
                           std::unique_ptr<HttpAuthHandler>* handler) override;
   };
 
+  ~HttpAuthHandlerBasic() override = default;
+
  private:
   // HttpAuthHandler
   bool Init(HttpAuthChallengeTokenizer* challenge,
@@ -46,9 +48,6 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerBasic : public HttpAuthHandler {
                             std::string* auth_token) override;
   HttpAuth::AuthorizationResult HandleAnotherChallengeImpl(
       HttpAuthChallengeTokenizer* challenge) override;
-
- private:
-  ~HttpAuthHandlerBasic() override = default;
 
   bool ParseChallenge(HttpAuthChallengeTokenizer* challenge);
 };

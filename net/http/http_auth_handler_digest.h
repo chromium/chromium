@@ -91,6 +91,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
     std::unique_ptr<const NonceGenerator> nonce_generator_;
   };
 
+  ~HttpAuthHandlerDigest() override;
+
  private:
   // HttpAuthHandler
   bool Init(HttpAuthChallengeTokenizer* challenge,
@@ -134,7 +136,6 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
   // the handler. The lifetime of the |nonce_generator| must exceed that of this
   // handler.
   HttpAuthHandlerDigest(int nonce_count, const NonceGenerator* nonce_generator);
-  ~HttpAuthHandlerDigest() override;
 
   // Parse the challenge, saving the results into this instance.
   // Returns true on success.

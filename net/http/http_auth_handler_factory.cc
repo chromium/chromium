@@ -150,8 +150,8 @@ HttpAuthHandlerRegistryFactory::Create(
     HttpAuthMechanismFactory negotiate_auth_system_factory
 #endif
 ) {
-  std::unique_ptr<HttpAuthHandlerRegistryFactory> registry_factory(
-      new HttpAuthHandlerRegistryFactory(prefs));
+  auto registry_factory =
+      std::make_unique<HttpAuthHandlerRegistryFactory>(prefs);
 
   registry_factory->RegisterSchemeFactory(kBasicAuthScheme,
                                           new HttpAuthHandlerBasic::Factory());

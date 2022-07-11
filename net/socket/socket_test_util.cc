@@ -1978,11 +1978,12 @@ int MockTransportClientSocketPool::RequestSocket(
   std::unique_ptr<StreamSocket> socket =
       client_socket_factory_->CreateTransportClientSocket(
           AddressList(), nullptr, nullptr, net_log.net_log(), NetLogSource());
-  MockConnectJob* job = new MockConnectJob(
+  auto job = std::make_unique<MockConnectJob>(
       std::move(socket), handle, socket_tag, std::move(callback), priority);
-  job_list_.push_back(base::WrapUnique(job));
+  auto* job_ptr = job.get();
+  job_list_.push_back(std::move(job));
   handle->set_group_generation(1);
-  return job->Connect();
+  return job_ptr->Connect();
 }
 
 void MockTransportClientSocketPool::SetPriority(

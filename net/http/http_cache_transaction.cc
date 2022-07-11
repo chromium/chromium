@@ -3407,7 +3407,7 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
 
   // When writing headers, we normally only write the non-transient headers.
   bool skip_transient_headers = true;
-  scoped_refptr<PickledIOBuffer> data(new PickledIOBuffer());
+  auto data = base::MakeRefCounted<PickledIOBuffer>();
   response.Persist(data->pickle(), skip_transient_headers, truncated);
   data->Done();
 

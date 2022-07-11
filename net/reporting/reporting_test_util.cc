@@ -178,12 +178,13 @@ TestReportingContext::TestReportingContext(
                        TestReportingRandIntCallback(),
                        std::make_unique<TestReportingUploader>(),
                        std::make_unique<TestReportingDelegate>(),
-                       store),
-      delivery_timer_(new base::MockOneShotTimer()),
-      garbage_collection_timer_(new base::MockOneShotTimer()) {
-  garbage_collector()->SetTimerForTesting(
-      base::WrapUnique(garbage_collection_timer_.get()));
-  delivery_agent()->SetTimerForTesting(base::WrapUnique(delivery_timer_.get()));
+                       store) {
+  auto delivery_timer = std::make_unique<base::MockOneShotTimer>();
+  delivery_timer_ = delivery_timer.get();
+  auto garbage_collection_timer = std::make_unique<base::MockOneShotTimer>();
+  garbage_collection_timer_ = garbage_collection_timer.get();
+  garbage_collector()->SetTimerForTesting(std::move(garbage_collection_timer));
+  delivery_agent()->SetTimerForTesting(std::move(delivery_timer));
 }
 
 TestReportingContext::~TestReportingContext() {

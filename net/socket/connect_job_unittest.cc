@@ -68,8 +68,8 @@ class TestConnectJob : public ConnectJob {
     return ResolveErrorInfo(net::OK);
   }
   int ConnectInternal() override {
-    SetSocket(std::unique_ptr<StreamSocket>(new MockTCPClientSocket(
-                  AddressList(), net_log().net_log(), &socket_data_provider_)),
+    SetSocket(std::make_unique<MockTCPClientSocket>(
+                  AddressList(), net_log().net_log(), &socket_data_provider_),
               absl::nullopt /* dns_aliases */);
     return socket()->Connect(base::BindOnce(
         &TestConnectJob::NotifyDelegateOfCompletion, base::Unretained(this)));

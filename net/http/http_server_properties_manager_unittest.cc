@@ -225,11 +225,11 @@ class HttpServerPropertiesManagerTest : public testing::Test,
   void SetUp() override {
     one_day_from_now_ = base::Time::Now() + base::Days(1);
     advertised_versions_ = DefaultSupportedQuicVersions();
-    pref_delegate_ = new MockPrefDelegate;
+    auto pref_delegate = std::make_unique<MockPrefDelegate>();
+    pref_delegate_ = pref_delegate.get();
 
     http_server_props_ = std::make_unique<HttpServerProperties>(
-        base::WrapUnique(pref_delegate_.get()), /*net_log=*/nullptr,
-        GetMockTickClock());
+        std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
 
     EXPECT_FALSE(http_server_props_->IsInitialized());
     EXPECT_EQ(0u, GetPendingMainThreadTaskCount());

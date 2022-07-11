@@ -149,8 +149,9 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     run_loop.Run();
   }
 
-  void set_trace_net_log_observer(TraceNetLogObserver* trace_net_log_observer) {
-    trace_net_log_observer_.reset(trace_net_log_observer);
+  void set_trace_net_log_observer(
+      std::unique_ptr<TraceNetLogObserver> trace_net_log_observer) {
+    trace_net_log_observer_ = std::move(trace_net_log_observer);
   }
 
   static base::Value::List FilterNetLogTraceEvents(
@@ -367,7 +368,7 @@ TEST_F(TraceNetLogObserverTest, DestroyObserverWhileNotTracing) {
 TEST_F(TraceNetLogObserverTest, CreateObserverAfterTracingStarts) {
   set_trace_net_log_observer(nullptr);
   EnableTraceLogWithNetLog();
-  set_trace_net_log_observer(new TraceNetLogObserver());
+  set_trace_net_log_observer(std::make_unique<TraceNetLogObserver>());
   trace_net_log_observer()->WatchForTraceStart(NetLog::Get());
   NetLog::Get()->AddGlobalEntry(NetLogEventType::CANCELLED);
   trace_net_log_observer()->StopWatchForTraceStart();
@@ -387,7 +388,7 @@ TEST_F(TraceNetLogObserverTest,
 
   EnableTraceLogWithoutNetLog();
 
-  set_trace_net_log_observer(new TraceNetLogObserver());
+  set_trace_net_log_observer(std::make_unique<TraceNetLogObserver>());
   trace_net_log_observer()->WatchForTraceStart(NetLog::Get());
   NetLog::Get()->AddGlobalEntry(NetLogEventType::CANCELLED);
   trace_net_log_observer()->StopWatchForTraceStart();

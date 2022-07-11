@@ -1322,14 +1322,14 @@ TEST_P(WebSocketStreamCreateTest, CancellationDuringConnect) {
 TEST_P(WebSocketStreamCreateTest, CancellationDuringWrite) {
   // First write never completes.
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 0)};
-  SequencedSocketData* socket_data(
-      new SequencedSocketData(base::span<MockRead>(), writes));
+  auto socket_data =
+      std::make_unique<SequencedSocketData>(base::span<MockRead>(), writes);
+  auto* socket_data_ptr = socket_data.get();
   socket_data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
   CreateAndConnectRawExpectations("ws://www.example.org/", NoSubProtocols(),
-                                  HttpRequestHeaders(),
-                                  base::WrapUnique(socket_data));
+                                  HttpRequestHeaders(), std::move(socket_data));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(socket_data->AllWriteDataConsumed());
+  EXPECT_TRUE(socket_data_ptr->AllWriteDataConsumed());
   stream_request_.reset();
   // WaitUntilConnectDone doesn't work in this case.
   base::RunLoop().RunUntilIdle();
