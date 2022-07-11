@@ -76,7 +76,6 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
         static_cast<SelectedTheme>(args[1].GetInt());
 
     if (selected_theme == SelectedTheme::kAuto) {
-      profile->GetPrefs()->ClearPref(prefs::kDarkModeEnabled);
       profile->GetPrefs()->SetInteger(
           prefs::kDarkModeScheduleType,
           static_cast<int>(ScheduleType::kSunsetToSunrise));
