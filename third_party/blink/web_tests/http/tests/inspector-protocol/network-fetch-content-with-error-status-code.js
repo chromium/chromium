@@ -112,6 +112,7 @@
     testRunner.log(`  Has extra info: ${optionsResponseExtra}`);
 
     const message = await dp.Network.getResponseBody({requestId: getRequestEventParams.requestId});
+    if (message.error) testRunner.log(message.error);
     testRunner.log('Response Body: ' + message.result.body);
     testRunner.completeTest();
   }

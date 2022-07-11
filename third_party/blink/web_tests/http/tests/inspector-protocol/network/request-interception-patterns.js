@@ -54,6 +54,7 @@
     testRunner.log('Response Received for: ' + url);
 
     var message = await session.protocol.Network.getResponseBody({requestId: event.params.requestId});
+    if (message.error) testRunner.log(message.error);
     var body = message.result.base64Encoded ? atob(message.result.body) : message.result.body;
     testRunner.log('Response Content: ' + body.replace(/[\r\n]+/g, '\\n'));
     testRunner.log('');
