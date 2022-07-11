@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 
 namespace {
@@ -16,6 +17,8 @@ constexpr const char kFastPairServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
 constexpr uint8_t kFastPairModelId[] = {0x41, 0xc0, 0xd9};
 constexpr uint16_t kCompanyId = 0x00e0;
+constexpr const char kAdvertisingSuccessHistogramName[] =
+    "OOBE.QuickStart.FastPairAdvertising";
 
 }  // namespace
 
@@ -111,6 +114,7 @@ void FastPairAdvertiser::OnRegisterAdvertisement(
     scoped_refptr<device::BluetoothAdvertisement> advertisement) {
   advertisement_ = advertisement;
   advertisement_->AddObserver(this);
+  base::UmaHistogramBoolean(kAdvertisingSuccessHistogramName, true);
   std::move(callback).Run();
 }
 
@@ -118,6 +122,7 @@ void FastPairAdvertiser::OnRegisterAdvertisementError(
     base::OnceClosure error_callback,
     device::BluetoothAdvertisement::ErrorCode error_code) {
   LOG(ERROR) << __func__ << " failed with error code = " << error_code;
+  base::UmaHistogramBoolean(kAdvertisingSuccessHistogramName, false);
   std::move(error_callback).Run();
   // |this| might be destroyed here, do not access local fields.
 }

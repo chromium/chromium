@@ -10,7 +10,9 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_base.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
@@ -124,6 +126,19 @@ class FastPairAdvertiserTest : public testing::Test {
  protected:
   FastPairAdvertiserTest() = default;
 
+  void TestExpectedMetrics(bool should_succeed) {
+    if (should_succeed) {
+      expected_success_count_++;
+      histograms_.ExpectBucketCount("OOBE.QuickStart.FastPairAdvertising", true,
+                                    expected_success_count_);
+      return;
+    }
+
+    expected_failure_count_++;
+    histograms_.ExpectBucketCount("OOBE.QuickStart.FastPairAdvertising", false,
+                                  expected_failure_count_);
+  }
+
   void SetUp() override {
     mock_adapter_ = base::MakeRefCounted<
         NiceMock<MockBluetoothAdapterWithAdvertisements>>();
@@ -177,9 +192,12 @@ class FastPairAdvertiserTest : public testing::Test {
   scoped_refptr<NiceMock<MockBluetoothAdapterWithAdvertisements>> mock_adapter_;
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   std::unique_ptr<RegisterAdvertisementArgs> register_args_;
+  base::HistogramTester histograms_;
   bool called_on_start_advertising_ = false;
   bool called_on_start_advertising_error_ = false;
   bool called_on_stop_advertising_ = false;
+  base::HistogramBase::Count expected_success_count_ = 0;
+  base::HistogramBase::Count expected_failure_count_ = 0;
 };
 
 TEST_F(FastPairAdvertiserTest, TestStartAdvertising_Success) {
@@ -191,6 +209,7 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_Success) {
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
   EXPECT_TRUE(fake_advertisement->HasObserver(fast_pair_advertiser_.get()));
+  TestExpectedMetrics(/*should_succeed=*/true);
 }
 
 TEST_F(FastPairAdvertiserTest, TestStartAdvertising_Error) {
@@ -202,6 +221,7 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_Error) {
   EXPECT_FALSE(called_on_start_advertising());
   EXPECT_TRUE(called_on_start_advertising_error());
   EXPECT_FALSE(called_on_stop_advertising());
+  TestExpectedMetrics(/*should_succeed=*/false);
 }
 
 // Regression test for crbug.com/1109581.
@@ -215,6 +235,7 @@ TEST_F(FastPairAdvertiserTest, TestStartAdvertising_DeleteInErrorCallback) {
                INVALID_ADVERTISEMENT_ERROR_CODE);
 
   EXPECT_FALSE(fast_pair_advertiser_);
+  TestExpectedMetrics(/*should_succeed=*/false);
 }
 
 TEST_F(FastPairAdvertiserTest, TestStopAdvertising_Success) {

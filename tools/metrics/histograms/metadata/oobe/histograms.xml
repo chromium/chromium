@@ -264,6 +264,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.QuickStart.FastPairAdvertising" enum="BooleanSuccess"
+    expires_after="2023-07-07">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to start Fast Pair BLE
+    advertisement. Recorded when the FastPairAdvertiser attempts to register an
+    advertisement.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
     expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
