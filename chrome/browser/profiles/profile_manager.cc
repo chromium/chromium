@@ -504,7 +504,20 @@ void UpdateSupervisedUserPref(Profile* profile, bool is_child) {
     profile->GetPrefs()->ClearPref(prefs::kSupervisedUserId);
   }
 }
+
+absl::optional<bool> IsUserChild(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const user_manager::User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  return user ? absl::make_optional(user->GetType() ==
+                                    user_manager::USER_TYPE_CHILD)
+              : absl::nullopt;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserInitParams::Get()->session_type ==
+         crosapi::mojom::SessionType::kChildSession;
 #endif
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -1309,28 +1322,36 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     return;
   }
 
+  // User type can change during online sign in on Chrome OS. Propagate the
+  // change to the profile in both Ash and LaCrOS and remove stored profile
+  // attributes so they can be re-initialized later.
+#if BUILDFLAG(IS_CHROMEOS)
+  const absl::optional<bool> user_is_child = IsUserChild(profile);
+  const bool profile_is_new = profile->IsNewProfile();
+  const bool profile_is_child = profile->IsChild();
+  const bool did_supervised_status_change =
+      !profile_is_new && user_is_child.has_value() &&
+      profile_is_child != user_is_child.value();
+
+  if (user_is_child.has_value()) {
+    if (did_supervised_status_change) {
+      ProfileAttributesEntry* entry =
+          storage.GetProfileAttributesWithPath(profile->GetPath());
+      if (entry)
+        storage.RemoveProfile(profile->GetPath());
+    }
+    UpdateSupervisedUserPref(profile, user_is_child.value());
+  }
+#endif
+
+  // Additionally to propagation of the user type change to profile on Chrome
+  // OS, Ash needs to propagate it to ARC++ and update secondary accounts.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // User object may already have changed user type, so we apply that
-  // type to profile.
-  // If profile type has changed, remove ProfileAttributesEntry for it to make
-  // sure it is fully re-initialized later.
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user) {
-    const bool user_is_child =
-        (user->GetType() == user_manager::USER_TYPE_CHILD);
-    const bool profile_is_child = profile->IsChild();
-    const bool profile_is_new = profile->IsNewProfile();
+  if (user_is_child.has_value()) {
     const bool profile_is_managed = !profile->IsOffTheRecord() &&
                                     arc::policy_util::IsAccountManaged(profile);
 
-    if (!profile_is_new && profile_is_child != user_is_child) {
-      ProfileAttributesEntry* entry =
-          storage.GetProfileAttributesWithPath(profile->GetPath());
-      if (entry) {
-        LOG(WARNING) << "Profile child status has changed.";
-        storage.RemoveProfile(profile->GetPath());
-      }
+    if (did_supervised_status_change) {
       ash::ChildAccountTypeChangedUserData::GetForProfile(profile)->SetValue(
           true);
     } else {
@@ -1352,8 +1373,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
       if (!arc_signed_in) {
         // No transition is necessary if user never enabled ARC.
         transition = arc::ArcManagementTransition::NO_TRANSITION;
-      } else if (profile_is_child != user_is_child) {
-        transition = user_is_child
+      } else if (profile_is_child != user_is_child.value()) {
+        transition = user_is_child.value()
                          ? arc::ArcManagementTransition::REGULAR_TO_CHILD
                          : arc::ArcManagementTransition::CHILD_TO_REGULAR;
       } else if (profile_is_managed && arc_is_managed_set && !arc_is_managed) {
@@ -1366,15 +1387,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
       profile->GetPrefs()->SetInteger(arc::prefs::kArcManagementTransition,
                                       static_cast<int>(transition));
     }
-    UpdateSupervisedUserPref(profile, user_is_child);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool user_is_child = chromeos::BrowserInitParams::Get()->session_type ==
-                             crosapi::mojom::SessionType::kChildSession;
-  UpdateSupervisedUserPref(profile, user_is_child);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   size_t avatar_index;
   std::string profile_name;
