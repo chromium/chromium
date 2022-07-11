@@ -400,9 +400,19 @@ float CalculationExpressionAnchorQueryNode::Evaluate(
     float max_value,
     const Length::AnchorEvaluator* anchor_evaluator) const {
   if (anchor_evaluator) {
-    if (const absl::optional<LayoutUnit> value =
-            anchor_evaluator->Evaluate(anchor_name_, AnchorSide()))
-      return value->ToFloat();
+    switch (Type()) {
+      case AnchorQueryType::kAnchor:
+        if (const absl::optional<LayoutUnit> value =
+                anchor_evaluator->EvaluateAnchor(anchor_name_, AnchorSide()))
+          return value->ToFloat();
+        break;
+      case AnchorQueryType::kAnchorSize:
+        if (const absl::optional<LayoutUnit> value =
+                anchor_evaluator->EvaluateAnchorSize(anchor_name_,
+                                                     AnchorSize()))
+          return value->ToFloat();
+        break;
+    }
   }
   // TODO(crbug.com/1309178): Support fallback.
   return 0;

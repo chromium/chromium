@@ -30,7 +30,7 @@ struct NGLogicalAnchorQuery {
 
   // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
   // the query is invalid (e.g., no targets or wrong axis.)
-  absl::optional<LayoutUnit> Evaluate(
+  absl::optional<LayoutUnit> EvaluateAnchor(
       const AtomicString& anchor_name,
       AnchorValue anchor_value,
       LayoutUnit available_size,

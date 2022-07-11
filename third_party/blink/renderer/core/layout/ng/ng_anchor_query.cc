@@ -8,7 +8,7 @@
 
 namespace blink {
 
-absl::optional<LayoutUnit> NGLogicalAnchorQuery::Evaluate(
+absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     const AtomicString& anchor_name,
     AnchorValue anchor_value,
     LayoutUnit available_size,

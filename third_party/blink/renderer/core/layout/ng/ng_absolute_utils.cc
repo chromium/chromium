@@ -275,12 +275,12 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
         : anchor_query(anchor_query),
           container_converter(container_converter) {}
 
-    absl::optional<LayoutUnit> Evaluate(
+    absl::optional<LayoutUnit> EvaluateAnchor(
         const AtomicString& anchor_name,
         AnchorValue anchor_value) const override {
-      return anchor_query.Evaluate(anchor_name, anchor_value, available_size,
-                                   container_converter, is_y_axis,
-                                   is_right_or_bottom);
+      return anchor_query.EvaluateAnchor(anchor_name, anchor_value,
+                                         available_size, container_converter,
+                                         is_y_axis, is_right_or_bottom);
     }
 
     const NGLogicalAnchorQuery& anchor_query;
