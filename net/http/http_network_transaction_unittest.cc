@@ -11020,9 +11020,10 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthCacheAndPreauth) {
 // are started with the same nonce.
 TEST_F(HttpNetworkTransactionTest, DigestPreAuthNonceCount) {
   auto digest_factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
-  HttpAuthHandlerDigest::FixedNonceGenerator* nonce_generator =
-      new HttpAuthHandlerDigest::FixedNonceGenerator("0123456789abcdef");
-  digest_factory->set_nonce_generator(nonce_generator);
+  auto nonce_generator =
+      std::make_unique<HttpAuthHandlerDigest::FixedNonceGenerator>(
+          "0123456789abcdef");
+  digest_factory->set_nonce_generator(std::move(nonce_generator));
   session_deps_.http_auth_handler_factory = std::move(digest_factory);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 

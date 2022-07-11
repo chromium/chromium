@@ -74,7 +74,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
     ~Factory() override;
 
     // This factory owns the passed in |nonce_generator|.
-    void set_nonce_generator(const NonceGenerator* nonce_generator);
+    void set_nonce_generator(
+        std::unique_ptr<const NonceGenerator> nonce_generator);
 
     int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
                           HttpAuth::Target target,

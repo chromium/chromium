@@ -56,9 +56,10 @@ bool RespondToChallenge(HttpAuth::Target target,
 
   token->clear();
   auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
-  HttpAuthHandlerDigest::NonceGenerator* nonce_generator =
-      new HttpAuthHandlerDigest::FixedNonceGenerator("client_nonce");
-  factory->set_nonce_generator(nonce_generator);
+  auto nonce_generator =
+      std::make_unique<HttpAuthHandlerDigest::FixedNonceGenerator>(
+          "client_nonce");
+  factory->set_nonce_generator(std::move(nonce_generator));
   auto host_resolver = std::make_unique<MockHostResolver>();
   std::unique_ptr<HttpAuthHandler> handler;
 

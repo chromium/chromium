@@ -83,8 +83,8 @@ HttpAuthHandlerDigest::Factory::Factory()
 HttpAuthHandlerDigest::Factory::~Factory() = default;
 
 void HttpAuthHandlerDigest::Factory::set_nonce_generator(
-    const NonceGenerator* nonce_generator) {
-  nonce_generator_.reset(nonce_generator);
+    std::unique_ptr<const NonceGenerator> nonce_generator) {
+  nonce_generator_ = std::move(nonce_generator);
 }
 
 int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
