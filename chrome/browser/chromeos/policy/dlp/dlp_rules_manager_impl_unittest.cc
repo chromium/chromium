@@ -31,8 +31,8 @@ namespace policy {
 
 namespace {
 
-constexpr char kExampleUrl[] = "https://wwww.example.com";
-constexpr char kGoogleUrl[] = "https://wwww.google.com";
+constexpr char kExampleUrl[] = "https://www.example.com";
+constexpr char kGoogleUrl[] = "https://www.google.com";
 constexpr char kWildCardMatching[] = "*";
 constexpr char kGmailUrl[] = "https://www.gmail.com";
 constexpr char kCompanyUrl[] = "https://company.com";
