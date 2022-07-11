@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerImpl, PasswordsSectionElement, PaymentsManagerImpl, SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {buildRouter, Router, routes} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, OpenWindowProxyImpl, PasswordManagerImpl, SettingsAutofillPageElement, SettingsPluralStringProxyImpl, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MultiStorePasswordUiEntry, OpenWindowProxyImpl, PasswordManagerImpl, SettingsAutofillPageElement, SettingsPluralStringProxyImpl, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -228,7 +228,7 @@ suite('PasswordsAndForms', function() {
       flush();
 
       assertDeepEquals(
-          list.map(entry => new MultiStoreExceptionEntry(entry)),
+          list,
           element.shadowRoot!
               .querySelector<PasswordsSectionElement>(
                   '#passwordSection')!.passwordExceptions);

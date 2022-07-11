@@ -11,7 +11,7 @@ import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PasswordsSectionElement} from 'chrome://settings/lazy_load.js';
-import {buildRouter, HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl,StatusAction, TrustedVaultBannerState, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {buildRouter, HatsBrowserProxyImpl, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl,StatusAction, TrustedVaultBannerState, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -81,8 +81,9 @@ function validatePasswordList(
  * @param nodes The nodes that will be checked.
  * @param exceptionList The expected data.
  */
-function validateMultiStoreExceptionList(
-    nodes: NodeListOf<HTMLElement>, exceptionList: MultiStoreExceptionEntry[]) {
+function validateExceptionList(
+    nodes: NodeListOf<HTMLElement>,
+    exceptionList: chrome.passwordsPrivate.ExceptionEntry[]) {
   assertEquals(exceptionList.length, nodes.length);
   for (let index = 0; index < exceptionList.length; ++index) {
     const node = nodes[index]!;
@@ -94,19 +95,6 @@ function validateMultiStoreExceptionList(
         exception.urls.link.toLowerCase(),
         node.querySelector<HTMLAnchorElement>('#exception')!.href);
   }
-}
-
-/**
- * Convenience version of validateMultiStoreExceptionList() for when store
- * duplicates do not exist.
- * @param nodes The nodes that will be checked.
- * @param exceptionList The expected data.
- */
-function validateExceptionList(
-    nodes: NodeListOf<HTMLElement>,
-    exceptionList: chrome.passwordsPrivate.ExceptionEntry[]) {
-  validateMultiStoreExceptionList(
-      nodes, exceptionList.map(entry => new MultiStoreExceptionEntry(entry)));
 }
 
 /**
@@ -140,8 +128,7 @@ function listContainsUrl(
  * @param url The URL that is being searched for.
  */
 function exceptionsListContainsUrl(
-    exceptionList:
-        (MultiStoreExceptionEntry[]|chrome.passwordsPrivate.ExceptionEntry[]),
+    exceptionList: chrome.passwordsPrivate.ExceptionEntry[],
     url: string): boolean {
   return exceptionList.some(
       item => (item.urls as unknown as {originUrl: string}).originUrl === url);

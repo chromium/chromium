@@ -293,18 +293,6 @@ TEST_F('CrSettingsPasswordEditDialogTest', 'All', function() {
   mocha.run();
 });
 
-var CrSettingsMultiStoreExceptionEntryTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/multi_store_exception_entry_test.js';
-  }
-};
-
-TEST_F('CrSettingsMultiStoreExceptionEntryTest', 'All', function() {
-  mocha.run();
-});
-
 var CrSettingsPasswordsCheckTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
