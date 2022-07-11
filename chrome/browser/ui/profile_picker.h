@@ -74,7 +74,9 @@ class ProfilePicker {
     // policies prevent it) to let the user opt in to sync, etc. for the primary
     // profile.
     kLacrosPrimaryProfileFirstRun = 9,
-    kMaxValue = kLacrosPrimaryProfileFirstRun,
+    // The Profile became idle, due to the IdleProfileCloseTimeout policy.
+    kProfileIdle = 10,
+    kMaxValue = kProfileIdle,
   };
 
   class Params final {

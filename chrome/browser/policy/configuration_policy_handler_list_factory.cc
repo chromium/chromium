@@ -1685,6 +1685,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kEventPathEnabled,
     policy_prefs::kEventPathEnabled,
     base::Value::Type::BOOLEAN},
+  { key::kIdleProfileCloseTimeout,
+    prefs::kIdleProfileCloseTimeout,
+    base::Value::Type::INTEGER },
 };
 // clang-format on
 

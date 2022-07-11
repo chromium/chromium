@@ -1251,6 +1251,8 @@ extern const char kOriginAgentClusterDefaultEnabled[];
 
 extern const char kForceMajorVersionToMinorPositionInUserAgent[];
 
+extern const char kIdleProfileCloseTimeout[];
+
 extern const char kSCTAuditingHashdanceReportCount[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

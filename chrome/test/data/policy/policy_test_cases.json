@@ -18734,5 +18734,24 @@
         }
       }
     ]
+  },
+  "IdleProfileCloseTimeout": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleProfileCloseTimeout": 5
+        },
+        "prefs": {
+          "idle_profile_close_timeout": {
+            "value": 5
+          }
+        }
+      }
+    ]
   }
 }

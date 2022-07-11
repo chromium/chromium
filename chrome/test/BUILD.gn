@@ -3063,6 +3063,7 @@ if (!is_android) {
       if (is_win || is_linux || is_mac) {
         sources += [
           "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc",
+          "../browser/enterprise/idle/idle_service_browsertest.cc",
           "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
           "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",

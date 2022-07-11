@@ -124,6 +124,7 @@ GURL ProfilePicker::Params::GetInitialURL() const {
     case ProfilePicker::EntryPoint::kProfileLocked:
     case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
     case ProfilePicker::EntryPoint::kBackgroundModeManager:
+    case ProfilePicker::EntryPoint::kProfileIdle:
       return base_url;
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
       return base_url.Resolve("new-profile");

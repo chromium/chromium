@@ -251,6 +251,10 @@
 #include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/idle/idle_service_factory.h"
+#endif
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -426,6 +430,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   metrics::DesktopProfileSessionDurationsServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  enterprise_idle::IdleServiceFactory::GetInstance();
 #endif
   ModelTypeStoreServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)

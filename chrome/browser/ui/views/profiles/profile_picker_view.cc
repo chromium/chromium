@@ -737,7 +737,8 @@ void ProfilePickerView::CancelSignedInFlow() {
     case ProfilePicker::EntryPoint::kNewSessionOnExistingProcess:
     case ProfilePicker::EntryPoint::kProfileLocked:
     case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
-    case ProfilePicker::EntryPoint::kBackgroundModeManager: {
+    case ProfilePicker::EntryPoint::kBackgroundModeManager:
+    case ProfilePicker::EntryPoint::kProfileIdle: {
       // Navigate to the very beginning which is guaranteed to be the profile
       // picker.
       contents_->GetController().GoToIndex(0);

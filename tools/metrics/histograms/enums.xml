@@ -31932,6 +31932,7 @@ Called by update_document_policy_enum.py.-->
   <int value="991" label="OnFileTransferEnterpriseConnector"/>
   <int value="992" label="ChromeRootStoreEnabled"/>
   <int value="993" label="WebSQLNonSecureContextEnabled"/>
+  <int value="994" label="IdleProfileCloseTimeout"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

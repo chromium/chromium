@@ -1703,6 +1703,10 @@ const char kForceMajorVersionToMinorPositionInUserAgent[] =
 const char kSidePanelHorizontalAlignment[] = "side_panel.is_right_aligned";
 #endif
 
+// Number of minutes of inactivity before closing the profile and showing the
+// Profile Picker. Controlled via the IdleProfileCloseTimeout policy.
+const char kIdleProfileCloseTimeout[] = "idle_profile_close_timeout";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
