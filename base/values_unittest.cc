@@ -217,6 +217,17 @@ TEST(ValuesTest, ConstructList) {
   EXPECT_EQ(Value::Type::LIST, value.type());
 }
 
+TEST(ValuesTest, UseTestingEachOnValueList) {
+  Value::List list;
+  list.Append(true);
+  list.Append(true);
+
+  // This will only work if `Value::List::value_type` is defined.
+  EXPECT_THAT(list, testing::Each(testing::ResultOf(
+                        [](const Value& value) { return value.GetBool(); },
+                        testing::Eq(true))));
+}
+
 TEST(ValuesTest, ConstructListFromValueList) {
   Value::List list;
   list.Append("foo");

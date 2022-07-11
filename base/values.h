@@ -570,6 +570,7 @@ class BASE_EXPORT GSL_OWNER Value {
    public:
     using iterator = CheckedContiguousIterator<Value>;
     using const_iterator = CheckedContiguousConstIterator<Value>;
+    using value_type = Value;
 
     List();
 
