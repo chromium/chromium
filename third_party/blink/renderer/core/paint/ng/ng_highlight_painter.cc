@@ -759,6 +759,19 @@ void NGHighlightPainter::ClipToPartDecorations(const HighlightPart& part) {
 
 void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     const HighlightPart& part) {
+  // Line decorations in highlight pseudos are ordered first by the kind of line
+  // (underlines before overlines), then by the highlight layer they came from.
+  // https://github.com/w3c/csswg-drafts/issues/6022
+  PaintDecorationsExceptLineThrough(part, TextDecorationLine::kUnderline);
+  PaintDecorationsExceptLineThrough(part, TextDecorationLine::kOverline);
+  PaintDecorationsExceptLineThrough(
+      part,
+      TextDecorationLine::kSpellingError | TextDecorationLine::kGrammarError);
+}
+
+void NGHighlightPainter::PaintDecorationsExceptLineThrough(
+    const HighlightPart& part,
+    TextDecorationLine lines_to_paint) {
   GraphicsContextStateSaver state_saver(paint_info_.context, false);
 
   for (const HighlightLayer& decoration_layer_id : part.decorations) {
@@ -766,7 +779,11 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     DCHECK_NE(decoration_layer_index, kNotFound);
 
     LayerPaintState& decoration_layer = layers_[decoration_layer_index];
-    if (!decoration_layer.decoration_info)
+
+    // Clipping the canvas unnecessarily is expensive, so avoid doing it if
+    // there are no decorations of the given |lines_to_paint|.
+    if (!decoration_layer.decoration_info ||
+        !decoration_layer.decoration_info->HasAnyLine(lines_to_paint))
       continue;
 
     // SVG painting currently ignores ::selection styles, and will malfunction
@@ -789,13 +806,10 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
           layers_[part_layer_index].text_style.fill_color);
     }
 
-    // TODO(crbug.com/1147859) order by underline-then-overline first, then by
-    // highlight layer, not grouping underline and overline within each layer
-    // https://github.com/w3c/csswg-drafts/issues/6022
     text_painter_.PaintDecorationsExceptLineThrough(
         fragment_item_, paint_info_, *decoration_layer.style,
         decoration_layer.text_style, *decoration_layer.decoration_info,
-        decoration_rect_, &decoration_layer.has_line_through_decorations);
+        lines_to_paint, decoration_rect_);
   }
 }
 
@@ -808,8 +822,12 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
     DCHECK_NE(decoration_layer_index, kNotFound);
 
     LayerPaintState& decoration_layer = layers_[decoration_layer_index];
+
+    // Clipping the canvas unnecessarily is expensive, so avoid doing it if
+    // there are no ‘line-through’ decorations.
     if (!decoration_layer.decoration_info ||
-        !decoration_layer.has_line_through_decorations)
+        !decoration_layer.decoration_info->HasAnyLine(
+            TextDecorationLine::kLineThrough))
       continue;
 
     // SVG painting currently ignores ::selection styles, and will malfunction

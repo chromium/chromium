@@ -90,7 +90,6 @@ void NGTextDecorationPainter::Begin(Phase phase) {
   DCHECK(step_ == kBegin);
 
   phase_ = phase;
-  has_line_through_decoration_ = false;
   UpdateDecorationInfo(decoration_info_, style_, text_style_);
   clip_rect_.reset();
 
@@ -118,13 +117,16 @@ void NGTextDecorationPainter::Begin(Phase phase) {
 void NGTextDecorationPainter::PaintExceptLineThrough() {
   DCHECK(step_ == kExcept);
 
-  if (decoration_info_) {
+  // Clipping the canvas unnecessarily is expensive, so avoid doing it if the
+  // only decoration was a ‘line-through’.
+  if (decoration_info_ &&
+      decoration_info_->HasAnyLine(~TextDecorationLine::kLineThrough)) {
     GraphicsContextStateSaver state_saver(paint_info_.context, false);
     ClipIfNeeded(state_saver);
 
     text_painter_.PaintDecorationsExceptLineThrough(
         text_item_, paint_info_, style_, text_style_, *decoration_info_,
-        decoration_rect_, &has_line_through_decoration_);
+        ~TextDecorationLine::kNone, decoration_rect_);
   }
 
   step_ = kOnly;
@@ -133,9 +135,10 @@ void NGTextDecorationPainter::PaintExceptLineThrough() {
 void NGTextDecorationPainter::PaintOnlyLineThrough() {
   DCHECK(step_ == kOnly);
 
-  if (has_line_through_decoration_) {
-    DCHECK(decoration_info_);
-
+  // Clipping the canvas unnecessarily is expensive, so avoid doing it if there
+  // are no ‘line-through’ decorations.
+  if (decoration_info_ &&
+      decoration_info_->HasAnyLine(TextDecorationLine::kLineThrough)) {
     GraphicsContextStateSaver state_saver(paint_info_.context, false);
     ClipIfNeeded(state_saver);
 

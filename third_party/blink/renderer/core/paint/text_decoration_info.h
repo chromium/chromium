@@ -61,6 +61,20 @@ class CORE_EXPORT TextDecorationInfo {
     DCHECK(applied_text_decoration_);
     return *applied_text_decoration_;
   }
+
+  // Returns whether any of the decoration indices in AppliedTextDecoration
+  // have any of the given lines.
+  bool HasAnyLine(TextDecorationLine lines) const {
+    return EnumHasFlags(union_all_lines_, lines);
+  }
+
+ private:
+  // Returns whether the decoration currently selected by |SetDecorationIndex|
+  // has any of the given lines.
+  bool Has(TextDecorationLine line) const { return EnumHasFlags(lines_, line); }
+
+ public:
+  // These methods also apply to the currently selected decoration only.
   bool HasUnderline() const { return has_underline_; }
   bool HasOverline() const { return has_overline_; }
   bool HasLineThrough() const { return Has(TextDecorationLine::kLineThrough); }
@@ -135,7 +149,6 @@ class CORE_EXPORT TextDecorationInfo {
   void SetHighlightOverrideColor(const absl::optional<Color>&);
 
  private:
-  bool Has(TextDecorationLine line) const { return EnumHasFlags(lines_, line); }
   LayoutUnit OffsetFromDecoratingBox() const;
   float ComputeThickness() const;
   float ComputeUnderlineThickness(
@@ -191,7 +204,14 @@ class CORE_EXPORT TextDecorationInfo {
 
   int decoration_index_ = 0;
 
+  // |lines_| represents the lines in the current |decoration_index_|, while
+  // |union_all_lines_| represents the lines found in any |decoration_index_|.
+  //
+  // Ideally we would build a vector of the TextDecorationLine instances needing
+  // ‘line-through’, but this is a rare case so better to avoid vector overhead.
   TextDecorationLine lines_ = TextDecorationLine::kNone;
+  const TextDecorationLine union_all_lines_ = TextDecorationLine::kNone;
+
   ResolvedUnderlinePosition original_underline_position_ =
       ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
   ResolvedUnderlinePosition flipped_underline_position_ =

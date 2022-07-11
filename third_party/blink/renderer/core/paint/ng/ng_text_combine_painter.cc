@@ -105,14 +105,11 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
   const auto& applied_text_decorations = style_.AppliedTextDecorations();
 
   // Paint text decorations except line through
-  bool has_line_through_decoration = false;
   PaintDecorationsExceptLineThrough(decoration_offset, decoration_info,
-                                    paint_info, applied_text_decorations,
-                                    text_style, &has_line_through_decoration);
-  if (!has_line_through_decoration)
-    return;
+                                    ~TextDecorationLine::kNone, paint_info,
+                                    applied_text_decorations, text_style);
 
-  // Paint line through
+  // Paint line through if needed
   PaintDecorationsOnlyLineThrough(decoration_info, paint_info,
                                   applied_text_decorations, text_style);
 }

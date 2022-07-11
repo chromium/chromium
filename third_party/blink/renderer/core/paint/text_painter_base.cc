@@ -222,11 +222,18 @@ void TextPainterBase::DecorationsStripeIntercepts(
 void TextPainterBase::PaintDecorationsExceptLineThrough(
     const TextDecorationOffsetBase& decoration_offset,
     TextDecorationInfo& decoration_info,
+    TextDecorationLine lines_to_paint,
     const PaintInfo& paint_info,
     const Vector<AppliedTextDecoration>& decorations,
     const TextPaintStyle& text_style,
-    bool* has_line_through_decoration,
     const cc::PaintFlags* flags) {
+  // Updating the graphics context and looping through applied decorations is
+  // expensive, so avoid doing it if there are no decorations of the given
+  // |lines_to_paint|, or the only decoration was a ‘line-through’.
+  if (!decoration_info.HasAnyLine(lines_to_paint &
+                                  ~TextDecorationLine::kLineThrough))
+    return;
+
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);
@@ -237,7 +244,9 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
     decoration_info.SetDecorationIndex(applied_decoration_index);
     context.SetStrokeThickness(decoration_info.ResolvedThickness());
 
-    if (decoration_info.HasSpellingOrGrammerError()) {
+    if (decoration_info.HasSpellingOrGrammerError() &&
+        EnumHasFlags(lines_to_paint, TextDecorationLine::kSpellingError |
+                                         TextDecorationLine::kGrammarError)) {
       decoration_info.SetSpellingOrGrammarErrorLineData(decoration_offset);
       // We ignore "text-decoration-skip-ink: auto" for spelling and grammar
       // error markers.
@@ -246,22 +255,19 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
       continue;
     }
 
-    if (decoration_info.HasUnderline() && decoration_info.FontData()) {
+    if (decoration_info.HasUnderline() && decoration_info.FontData() &&
+        EnumHasFlags(lines_to_paint, TextDecorationLine::kUnderline)) {
       decoration_info.SetUnderlineLineData(decoration_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kUnderline, flags);
     }
 
-    if (decoration_info.HasOverline() && decoration_info.FontData()) {
+    if (decoration_info.HasOverline() && decoration_info.FontData() &&
+        EnumHasFlags(lines_to_paint, TextDecorationLine::kOverline)) {
       decoration_info.SetOverlineLineData(decoration_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kOverline, flags);
     }
-
-    // We could instead build a vector of the TextDecorationLine instances
-    // needing line-through but this is a rare case so better to avoid vector
-    // overhead.
-    *has_line_through_decoration |= decoration_info.HasLineThrough();
   }
 }
 
@@ -271,6 +277,11 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
     const Vector<AppliedTextDecoration>& decorations,
     const TextPaintStyle& text_style,
     const cc::PaintFlags* flags) {
+  // Updating the graphics context and looping through applied decorations is
+  // expensive, so avoid doing it if there are no ‘line-through’ decorations.
+  if (!decoration_info.HasAnyLine(TextDecorationLine::kLineThrough))
+    return;
+
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);

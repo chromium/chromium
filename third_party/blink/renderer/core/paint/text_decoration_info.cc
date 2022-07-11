@@ -76,6 +76,13 @@ static bool ShouldSetDecorationAntialias(const ComputedStyle& style) {
   return false;
 }
 
+static TextDecorationLine ComputeUnionAllLines(const ComputedStyle& style) {
+  TextDecorationLine result = TextDecorationLine::kNone;
+  for (const auto& decoration : style.AppliedTextDecorations())
+    result |= decoration.Lines();
+  return result;
+}
+
 static float ComputeDecorationThickness(
     const TextDecorationThickness text_decoration_thickness,
     float computed_font_size,
@@ -163,6 +170,7 @@ TextDecorationInfo::TextDecorationInfo(
       width_(width),
       target_ascent_(GetAscent(target_style, font_override)),
       scaling_factor_(scaling_factor),
+      union_all_lines_(ComputeUnionAllLines(target_style)),
       use_decorating_box_(RuntimeEnabledFeatures::TextDecoratingBoxEnabled() &&
                           inline_context && !font_override_ &&
                           !decorating_box_style_override_ &&

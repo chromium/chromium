@@ -108,8 +108,8 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                                          const ComputedStyle& style,
                                          const TextPaintStyle& text_style,
                                          TextDecorationInfo& decoration_info,
-                                         const PhysicalRect& decoration_rect,
-                                         bool* has_line_through_decoration);
+                                         TextDecorationLine lines_to_paint,
+                                         const PhysicalRect& decoration_rect);
 
   void PaintDecorationsOnlyLineThrough(const NGFragmentItem& text_item,
                                        const PaintInfo& paint_info,
@@ -146,10 +146,10 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
   void PaintSvgDecorationsExceptLineThrough(
       const TextDecorationOffsetBase& decoration_offset,
       TextDecorationInfo& decoration_info,
+      TextDecorationLine lines_to_paint,
       const PaintInfo& paint_info,
       const Vector<AppliedTextDecoration>& decorations,
-      const TextPaintStyle& text_style,
-      bool* has_line_through_decoration);
+      const TextPaintStyle& text_style);
   void PaintSvgDecorationsOnlyLineThrough(
       TextDecorationInfo& decoration_info,
       const PaintInfo& paint_info,

@@ -106,10 +106,10 @@ class CORE_EXPORT TextPainterBase {
   //   3. Paint line throguh
   void PaintDecorationsExceptLineThrough(const TextDecorationOffsetBase&,
                                          TextDecorationInfo&,
+                                         TextDecorationLine lines_to_paint,
                                          const PaintInfo&,
                                          const Vector<AppliedTextDecoration>&,
                                          const TextPaintStyle& text_style,
-                                         bool* has_line_through_decoration,
                                          const cc::PaintFlags* flags = nullptr);
   void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
                                        const PaintInfo&,

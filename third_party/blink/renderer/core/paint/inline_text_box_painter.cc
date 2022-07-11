@@ -412,7 +412,6 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   if (!paint_selected_text_only) {
     // Paint text decorations except line-through.
     absl::optional<TextDecorationInfo> decoration_info;
-    bool has_line_through_decoration = false;
     if (style_to_use.TextDecorationsInEffect() != TextDecorationLine::kNone &&
         inline_text_box_.Truncation() != kCFullTruncation) {
       PhysicalOffset local_origin = box_origin;
@@ -436,8 +435,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
                                              &inline_text_box_, decorating_box);
       text_painter.PaintDecorationsExceptLineThrough(
           decoration_offset, decoration_info.value(), paint_info,
-          style_to_use.AppliedTextDecorations(), text_style,
-          &has_line_through_decoration);
+          style_to_use.AppliedTextDecorations(), text_style);
     }
 
     int start_offset = 0;
@@ -458,7 +456,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
                        auto_dark_mode);
 
     // Paint line-through decoration if needed.
-    if (has_line_through_decoration) {
+    if (decoration_info.has_value()) {
       text_painter.PaintDecorationsOnlyLineThrough(
           decoration_info.value(), paint_info,
           style_to_use.AppliedTextDecorations(), text_style);

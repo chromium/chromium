@@ -263,9 +263,11 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
     TextDecorationInfo& decoration_info,
-    const PhysicalRect& decoration_rect,
-    bool* has_line_through_decoration) {
-  *has_line_through_decoration = false;
+    TextDecorationLine lines_to_paint,
+    const PhysicalRect& decoration_rect) {
+  if (!decoration_info.HasAnyLine(lines_to_paint &
+                                  ~TextDecorationLine::kLineThrough))
+    return;
 
   const NGTextDecorationOffset decoration_offset(decoration_info.TargetStyle(),
                                                  text_item.Style());
@@ -278,14 +280,12 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
           1, text_item.SvgScalingFactor() / decoration_info.ScalingFactor());
     }
     PaintSvgDecorationsExceptLineThrough(
-        decoration_offset, decoration_info, paint_info,
-        style.AppliedTextDecorations(), text_style,
-        has_line_through_decoration);
+        decoration_offset, decoration_info, lines_to_paint, paint_info,
+        style.AppliedTextDecorations(), text_style);
   } else {
     TextPainterBase::PaintDecorationsExceptLineThrough(
-        decoration_offset, decoration_info, paint_info,
-        style.AppliedTextDecorations(), text_style,
-        has_line_through_decoration);
+        decoration_offset, decoration_info, lines_to_paint, paint_info,
+        style.AppliedTextDecorations(), text_style, nullptr);
   }
 }
 
@@ -296,6 +296,9 @@ void NGTextPainter::PaintDecorationsOnlyLineThrough(
     const TextPaintStyle& text_style,
     TextDecorationInfo& decoration_info,
     const PhysicalRect& decoration_rect) {
+  if (!decoration_info.HasAnyLine(TextDecorationLine::kLineThrough))
+    return;
+
   if (svg_text_paint_state_.has_value()) {
     GraphicsContextStateSaver state_saver(paint_info.context, false);
     if (paint_info.IsRenderingResourceSubtree()) {
@@ -465,10 +468,10 @@ void NGTextPainter::PaintSvgTextFragment(DOMNodeId node_id,
 void NGTextPainter::PaintSvgDecorationsExceptLineThrough(
     const TextDecorationOffsetBase& decoration_offset,
     TextDecorationInfo& decoration_info,
+    TextDecorationLine lines_to_paint,
     const PaintInfo& paint_info,
     const Vector<AppliedTextDecoration>& decorations,
-    const TextPaintStyle& text_style,
-    bool* has_line_through_decoration) {
+    const TextPaintStyle& text_style) {
   const NGTextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
   absl::optional<SelectionStyleScope> selection_style_scope;
   bool has_fill = false;
@@ -503,8 +506,8 @@ void NGTextPainter::PaintSvgDecorationsExceptLineThrough(
                                SvgPaintMode::kTextDecoration, *resource_mode,
                                flags)) {
         TextPainterBase::PaintDecorationsExceptLineThrough(
-            decoration_offset, decoration_info, paint_info, decorations,
-            text_style, has_line_through_decoration, &flags);
+            decoration_offset, decoration_info, lines_to_paint, paint_info,
+            decorations, text_style, &flags);
       }
     }
   }

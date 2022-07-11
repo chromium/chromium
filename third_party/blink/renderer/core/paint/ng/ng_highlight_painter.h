@@ -147,6 +147,9 @@ class CORE_EXPORT NGHighlightPainter {
   void ClipToPartDecorations(const NGHighlightOverlay::HighlightPart&);
   void PaintDecorationsExceptLineThrough(
       const NGHighlightOverlay::HighlightPart&);
+  void PaintDecorationsExceptLineThrough(
+      const NGHighlightOverlay::HighlightPart&,
+      TextDecorationLine lines_to_paint);
   void PaintDecorationsOnlyLineThrough(
       const NGHighlightOverlay::HighlightPart&);
   void PaintSpellingGrammarDecorations(
@@ -172,7 +175,6 @@ class CORE_EXPORT NGHighlightPainter {
     const scoped_refptr<const ComputedStyle> style;
     const TextPaintStyle text_style;
     absl::optional<TextDecorationInfo> decoration_info{};
-    bool has_line_through_decorations{false};
   };
 
   const NGTextFragmentPaintInfo& fragment_paint_info_;

@@ -26,7 +26,7 @@ enum class {{enum.type_name}} : unsigned {
 {% if enum.set_type %}
 static const int k{{enum.type_name}}Bits = {{enum.values|length - (1 if enum.set_type == 'multi' else 0)}};
 
-{% for op in ('|', '^') %}
+{% for op in ('|', '^', '&') %}
 inline {{enum.type_name}} operator{{op}}({{enum.type_name}} a, {{enum.type_name}} b) {
   return static_cast<{{enum.type_name}}>(
     static_cast<unsigned>(a) {{op}} static_cast<unsigned>(b)
@@ -37,6 +37,10 @@ inline {{enum.type_name}}& operator{{op}}=({{enum.type_name}}& a, {{enum.type_na
 }
 
 {% endfor %}
+inline {{enum.type_name}} operator~({{enum.type_name}} x) {
+  return static_cast<{{enum.type_name}}>(~static_cast<unsigned>(x));
+}
+
 {% endif %}
 {% endfor %}
 }  // namespace blink

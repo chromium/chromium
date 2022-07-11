@@ -67,8 +67,12 @@ void TextPainter::PaintDecorationsExceptLineThrough(
     TextDecorationInfo& decoration_info,
     const PaintInfo& paint_info,
     const Vector<AppliedTextDecoration>& decorations,
-    const TextPaintStyle& text_style,
-    bool* has_line_through_decoration) {
+    const TextPaintStyle& text_style) {
+  // Updating the graphics context and looping through applied decorations is
+  // expensive, so avoid doing it if the only decoration was a ‘line-through’.
+  if (!decoration_info.HasAnyLine(~TextDecorationLine::kLineThrough))
+    return;
+
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);
@@ -102,11 +106,6 @@ void TextPainter::PaintDecorationsExceptLineThrough(
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kOverline);
     }
-
-    // We could instead build a vector of the TextDecorationLine instances
-    // needing line-through but this is a rare case so better to avoid vector
-    // overhead.
-    *has_line_through_decoration |= decoration_info.HasLineThrough();
   }
 
   // Restore rotation as needed.
@@ -119,6 +118,11 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
     const PaintInfo& paint_info,
     const Vector<AppliedTextDecoration>& decorations,
     const TextPaintStyle& text_style) {
+  // Updating the graphics context and looping through applied decorations is
+  // expensive, so avoid doing it if there are no ‘line-through’ decorations.
+  if (!decoration_info.HasAnyLine(TextDecorationLine::kLineThrough))
+    return;
+
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);
