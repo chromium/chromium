@@ -107,7 +107,13 @@
         <item name="android:background">@null</item>
         <item name="android:scaleType">center</item>
     </style>
-
+    <style name="ListItemEndIconV2">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@null</item>
+        <item name="android:scaleType">center</item>
+    </style>
+    
     <!-- Promo dialogs -->
     <style name="PromoDialog" >
         <item name="android:background">@android:color/transparent</item>

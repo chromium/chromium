@@ -21,11 +21,12 @@
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/optional_button"
         android:visibility="gone"
-        style="@style/ListItemEndIcon" />
+        style="@style/ListItemEndIconV2" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/end_button"
         android:visibility="gone"
-        style="@style/ListItemEndIcon" />
+        style="@style/ListItemEndIconV2"
+        android:layout_marginEnd="4dp" />
 
 </LinearLayout>
