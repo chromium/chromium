@@ -1228,7 +1228,8 @@ public class RootUiCoordinator
             mAppMenuCoordinator = AppMenuCoordinatorFactory.createAppMenuCoordinator(mActivity,
                     mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
-                    mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
+                    mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub),
+                    () -> mActivity.getWindow().getAttributes().y);
             AppMenuCoordinatorFactory.setExceptionReporter(
                     (throwable)
                             -> ChromePureJavaExceptionReporter.reportJavaException(

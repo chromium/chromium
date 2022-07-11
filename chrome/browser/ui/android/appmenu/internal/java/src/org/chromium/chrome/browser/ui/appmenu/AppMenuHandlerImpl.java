@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -52,6 +53,7 @@ class AppMenuHandlerImpl
     private final AppMenuDelegate mAppMenuDelegate;
     private final View mDecorView;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final Supplier<Integer> mWindowY;
 
     private Callback<Integer> mTestOptionsItemSelectedListener;
 
@@ -75,11 +77,12 @@ class AppMenuHandlerImpl
      *            activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
      *            displayed using a hardware button.
+     * @param windowY Vertical offset of the Window from the origin.
      */
     public AppMenuHandlerImpl(Context context, AppMenuPropertiesDelegate delegate,
             AppMenuDelegate appMenuDelegate, View decorView,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            View hardwareButtonAnchorView) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher, View hardwareButtonAnchorView,
+            Supplier<Integer> windowY) {
         mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
@@ -87,6 +90,7 @@ class AppMenuHandlerImpl
         mBlockers = new ArrayList<>();
         mObservers = new ArrayList<>();
         mHardwareButtonMenuAnchor = hardwareButtonAnchorView;
+        mWindowY = windowY;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -206,6 +210,10 @@ class AppMenuHandlerImpl
             appRect.right = mDecorView.getWidth();
             appRect.bottom = mDecorView.getHeight();
         }
+
+        // Take into account the vertical offset of the Window.
+        appRect.bottom -= mWindowY.get();
+
         Point pt = new Point();
         display.getSize(pt);
 
