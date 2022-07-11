@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/dev_ui_components_resources.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/version_info/version_info.h"
 #include "components/version_ui/version_handler_helper.h"
 #include "components/version_ui/version_ui_constants.h"
@@ -97,6 +98,12 @@ void InternalsUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "resetCache", base::BindRepeating(&InternalsUIHandler::OnResetCache,
                                         base::Unretained(this)));
+#if BUILDFLAG(IS_ANDROID)
+  web_ui()->RegisterMessageCallback(
+      "resetUpmEviction",
+      base::BindRepeating(&InternalsUIHandler::OnResetUpmEviction,
+                          base::Unretained(this)));
+#endif
 }
 
 void InternalsUIHandler::OnJavascriptAllowed() {
@@ -118,6 +125,14 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
       "notify-about-incognito",
       base::Value(Profile::FromWebUI(web_ui())->IsIncognitoProfile()));
   FireWebUIListener("notify-about-variations", version_ui::GetVariationsList());
+
+#if BUILDFLAG(IS_ANDROID)
+  auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
+  FireWebUIListener("enable-reset-upm-eviction-button",
+                    base::Value(prefs->GetBoolean(
+                        password_manager::prefs::
+                            kUnenrolledFromGoogleMobileServicesDueToErrors)));
+#endif
 }
 
 void InternalsUIHandler::OnResetCache(const base::Value::List& args) {
@@ -132,6 +147,16 @@ void InternalsUIHandler::OnResetCache(const base::Value::List& args) {
 void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
   FireWebUIListener("notify-reset-done", base::Value(message));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
+  auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
+  prefs->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      false);
+  FireWebUIListener("enable-reset-upm-eviction-button", base::Value(false));
+}
+#endif
 
 void InternalsUIHandler::StartSubscription() {
   LogRouter* log_router =
