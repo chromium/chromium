@@ -188,6 +188,8 @@ void color_management_output_get_color_space(
     uint32_t id) {
   auto* display_handler =
       GetUserDataAs<WaylandDisplayHandler>(color_management_output_resource);
+  if (!display_handler)
+    return;
 
   display::Display display;
   bool exists = display::Screen::GetScreen()->GetDisplayWithDisplayId(
@@ -217,7 +219,8 @@ void color_management_output_destroy(
     struct wl_resource* color_management_output_resource) {
   auto* display_handler =
       GetUserDataAs<WaylandDisplayHandler>(color_management_output_resource);
-  display_handler->UnsetColorManagementOutputResource();
+  if (display_handler)
+    display_handler->UnsetColorManagementOutputResource();
   wl_resource_destroy(color_management_output_resource);
 }
 
@@ -435,6 +438,9 @@ void color_manager_get_color_management_output(
       client, &zcr_color_management_output_v1_interface, 1, id);
 
   auto* display_handler = GetUserDataAs<WaylandDisplayHandler>(output);
+  if (!display_handler)
+    return;
+
   wl_resource_set_implementation(color_management_output_resource,
                                  &color_management_output_v1_implementation,
                                  display_handler, nullptr);
