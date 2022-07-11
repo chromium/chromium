@@ -1103,7 +1103,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8659501358298941449">డ్రాప్-డౌన్ లిస్ట్‌లు</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ముగింపు</translation>
 <translation id="867187640362843212">శీర్షిక 5</translation>
-<translation id="8690400660839620419">{COUNT,plural, =1{}other{నెస్ట్ చేయబడిన స్థాయి #}}</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{Nest చేయబడిన స్థాయి #}}</translation>
 <translation id="8693391540059827073">నాకు ఇష్టమైన సీజన్</translation>
 <translation id="8696284982970258155">హనీడ్యూ పండు రంగు</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{పైప్ గుర్తు}other{# నిలువు పైప్ గుర్తులు}}</translation>
