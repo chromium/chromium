@@ -456,12 +456,14 @@ class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
 };
 
 // Captures various properties of the NavigationHandle on DidFinishNavigation.
-// By default, captures the next navigation and waits until the navigation
-// completely loads. Can be configured to not wait for load to finish, and also
-// to capture properties for multiple navigations, as we save the values in
-// arrays.
+// By default, captures the next navigation (either for a specific frame or
+// any frame in the WebContents) and waits until the navigation completely
+// loads. Can be configured to not wait for load to finish, and also to capture
+// properties for multiple navigations, as we save the values in arrays.
 class FrameNavigateParamsCapturer : public WebContentsObserver {
  public:
+  // Observes navigation for any node in `contents`.
+  explicit FrameNavigateParamsCapturer(WebContents* contents);
   // Observes navigation for the specified |node|.
   explicit FrameNavigateParamsCapturer(FrameTreeNode* node);
   ~FrameNavigateParamsCapturer() override;
@@ -536,8 +538,10 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
 
   void DidStopLoading() override;
 
-  // The id of the FrameTreeNode whose navigations to observe.
-  int frame_tree_node_id_;
+  // The id of the FrameTreeNode whose navigations to observe. If this is not
+  // set, then this FrameNavigateParamsCapturer observes all navigations that
+  // happen in the observed WebContents.
+  absl::optional<int> frame_tree_node_id_;
 
   // How many navigations remain to capture.
   int navigations_remaining_ = 1;

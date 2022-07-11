@@ -757,6 +757,9 @@ void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
   run_loop_disable_log_.Run();
 }
 
+FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(WebContents* contents)
+    : WebContentsObserver(contents) {}
+
 FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(FrameTreeNode* node)
     : WebContentsObserver(
           WebContents::FromRenderFrameHost(node->current_frame_host())),
@@ -767,12 +770,16 @@ FrameNavigateParamsCapturer::~FrameNavigateParamsCapturer() = default;
 void FrameNavigateParamsCapturer::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
-      navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_ ||
+      (frame_tree_node_id_.has_value() &&
+       navigation_handle->GetFrameTreeNodeId() !=
+           frame_tree_node_id_.value()) ||
       navigations_remaining_ == 0) {
     return;
   }
 
   --navigations_remaining_;
+  LOG(ERROR) << " DidFinishNavigation -- " << navigation_handle->GetURL()
+             << " transition is " << navigation_handle->GetPageTransition();
   transitions_.push_back(navigation_handle->GetPageTransition());
   urls_.push_back(navigation_handle->GetURL());
   navigation_types_.push_back(

@@ -284,11 +284,17 @@ LocalFrameClient* FrameLoader::Client() const {
 
 ClientRedirectPolicy CalculateClientRedirectPolicy(
     ClientNavigationReason client_navigation_reason,
-    WebFrameLoadType frame_load_type) {
-  if (client_navigation_reason == ClientNavigationReason::kNone ||
+    WebFrameLoadType frame_load_type,
+    bool is_on_initial_empty_document) {
+  if (is_on_initial_empty_document ||
+      client_navigation_reason == ClientNavigationReason::kNone ||
       client_navigation_reason == ClientNavigationReason::kFormSubmissionGet ||
       client_navigation_reason == ClientNavigationReason::kFormSubmissionPost ||
       client_navigation_reason == ClientNavigationReason::kAnchorClick) {
+    // Navigations away from the initial empty document and some types of
+    // navigations like form submission shouldn't be considered as client
+    // redirects, because they're not actually caused by a script redirecting to
+    // a different URL.
     return ClientRedirectPolicy::kNotClientRedirect;
   }
   // If the ClientRedirectReason is kFrameNavigation, only treat as a client
@@ -709,7 +715,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     document_loader_->CommitSameDocumentNavigation(
         url, frame_load_type, nullptr,
         CalculateClientRedirectPolicy(request.ClientRedirectReason(),
-                                      frame_load_type),
+                                      frame_load_type,
+                                      IsOnInitialEmptyDocument()),
         resource_request.HasUserGesture(), origin_window->GetSecurityOrigin(),
         /*is_synchronously_committed=*/true, request.GetTriggeringEventInfo(),
         false /* is_browser_initiated */);
@@ -849,9 +856,9 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       resource_request, request.GetFrameType(), origin_window,
       nullptr /* document_loader */, navigation_type,
       request.GetNavigationPolicy(), frame_load_type,
-      CalculateClientRedirectPolicy(request.ClientRedirectReason(),
-                                    frame_load_type) ==
-          ClientRedirectPolicy::kClientRedirect,
+      CalculateClientRedirectPolicy(
+          request.ClientRedirectReason(), frame_load_type,
+          IsOnInitialEmptyDocument()) == ClientRedirectPolicy::kClientRedirect,
       request.IsUnfencedTopNavigation(), request.GetTriggeringEventInfo(),
       request.Form(), should_check_main_world_csp, request.GetBlobURLToken(),
       request.GetInputStartTime(), request.HrefTranslate().GetString(),
