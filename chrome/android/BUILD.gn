@@ -3283,6 +3283,7 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     "//chrome/android/features/autofill_assistant:test_java",
     "//chrome/android/features/keyboard_accessory:test_java",
     "//chrome/browser/banners/android:javatests",
+    "//chrome/browser/download/internal/android:javatests",
     "//chrome/browser/engagement/android:javatests",
     "//chrome/browser/flags:javatests",
     "//chrome/browser/password_check/android:test_java",

@@ -214,10 +214,34 @@ android_resources("java_resources") {
   ]
 }
 
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/browser/download/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/messages/android:java",
+    "//components/offline_items_collection/core:core_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+    "//url:gurl_junit_test_support",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.download.internal"
+}
+
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
-    "java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerTest.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadActivityV2Test.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedOfflineContentProvider.java",
     "java/src/org/chromium/chrome/browser/download/home/StubbedProvider.java",
