@@ -27,6 +27,7 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {DomRepeatEvent, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {FocusConfig} from '../focus_config.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
@@ -35,8 +36,6 @@ import {Route, Router} from '../router.js';
 
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 import {getTemplate} from './site_data.html.js';
-
-type FocusConfig = Map<string, string|(() => void)>;
 
 type SelectedItem = {
   item: LocalDataItem,

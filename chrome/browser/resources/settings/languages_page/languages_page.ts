@@ -42,6 +42,7 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {FocusConfig} from '../focus_config.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
@@ -49,8 +50,6 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {getTemplate} from './languages_page.html.js';
 import {LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 const SettingsLanguagesPageElementBase =
     RouteObserverMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement)))) as {

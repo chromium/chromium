@@ -15,6 +15,7 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {DomRepeatEvent, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {FocusConfig} from '../focus_config.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
@@ -32,8 +33,6 @@ export type CategoryListItem = {
   otherLabel?: string,
   shouldShow?: () => boolean,
 };
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 export function defaultSettingLabel(
     setting: string, enabled: string, disabled: string,

@@ -45,6 +45,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 // </if>
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
@@ -58,8 +59,6 @@ import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.j
  * briefly on-screen.
  */
 export const kMenuCloseDelay: number = 100;
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsLanguagesSubpageElement {
   $: {

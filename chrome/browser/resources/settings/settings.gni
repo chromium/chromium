@@ -242,6 +242,7 @@ non_web_component_files = [
   "downloads_page/downloads_browser_proxy.ts",
   "ensure_lazy_loaded.ts",
   "extension_control_browser_proxy.ts",
+  "focus_config.ts",
   "global_scroll_target_mixin.ts",
   "hats_browser_proxy.ts",
   "i18n_setup.ts",

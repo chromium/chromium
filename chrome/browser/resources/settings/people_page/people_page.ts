@@ -33,6 +33,7 @@ import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resource
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
+import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PageVisibility} from '../page_visibility.js';
@@ -46,8 +47,6 @@ import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js
 import {getTemplate} from './people_page.html.js';
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsPeoplePageElement {
   $: {

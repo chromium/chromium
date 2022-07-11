@@ -30,6 +30,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BaseMixin} from '../base_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
@@ -47,8 +48,6 @@ type BlockAutoplayStatus = {
   enabled: boolean,
   pref: chrome.settingsPrivate.PrefObject,
 };
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsPrivacyPageElement {
   $: {

@@ -41,6 +41,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FocusConfig} from '../focus_config.js';
 import {GlobalScrollTargetMixin, GlobalScrollTargetMixinInterface} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -74,8 +75,6 @@ function isEditable(element: Element): boolean {
         /^(?:text|search|email|number|tel|url|password)$/i.test(
             (element as HTMLInputElement).type)));
 }
-
-type FocusConfig = Map<string, string|(() => void)>;
 
 export interface PasswordsSectionElement {
   $: {

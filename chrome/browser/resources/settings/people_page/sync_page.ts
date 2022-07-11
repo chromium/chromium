@@ -33,6 +33,7 @@ import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-c
 import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 
+import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 // <if expr="chromeos_ash">
 import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
@@ -62,8 +63,6 @@ function getSyncRoutes(): SyncRoutes {
   const router = Router.getInstance();
   return router.getRoutes() as SyncRoutes;
 }
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsSyncPageElement {
   $: {

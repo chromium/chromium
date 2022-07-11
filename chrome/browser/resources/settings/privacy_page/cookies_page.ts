@@ -28,6 +28,7 @@ import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resource
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
+import {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
@@ -50,8 +51,6 @@ enum NetworkPredictionOptions {
   EXTENDED = 3,
   DEFAULT = 1,
 }
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsCookiesPageElement {
   $: {

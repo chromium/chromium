@@ -16,6 +16,7 @@ import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resource
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FocusConfig} from '../focus_config.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
@@ -23,8 +24,6 @@ import {SiteSettingsMixin, SiteSettingsMixinInterface} from '../site_settings/si
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './recent_site_permissions.html.js';
-
-type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsRecentSitePermissionsElement {
   $: {

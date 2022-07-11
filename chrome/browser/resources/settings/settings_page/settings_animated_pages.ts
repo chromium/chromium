@@ -25,16 +25,14 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FocusConfig} from '../focus_config.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 // <if expr="chromeos_ash">
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 // </if>
 
 import {getTemplate} from './settings_animated_pages.html.js';
-
 import {SettingsSubpageElement} from './settings_subpage.js';
-
-type FocusConfig = Map<string, (string|Element|(() => void))>;
 
 interface SettingsAnimatedPagesElement {
   $: {
