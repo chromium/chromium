@@ -14,14 +14,6 @@ python_library("lacros_resource_sizes_py") {
   ]
 }
 
-process_version("lacros_version_metadata") {
-  sources = [ "//chrome/VERSION" ]
-
-  template_file = "metadata.json.in"
-  output = "$root_out_dir/metadata.json"
-  process_only = true
-}
-
 # Lacros is built with "{arch}-generic" configuration. However, in Chrome
 # OS, it is just "one board variation", so the libraries on the *-generic
 # boards may not be compatible with the ones on the actual DUTs.

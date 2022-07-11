@@ -181,7 +181,6 @@
       'lacros-amd64-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
           'linux_symbols',
           'symupload',
           'strip_chrome_binary',
@@ -202,7 +201,6 @@
       'lacros-amd64-generic-chrome-skylab': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
           'linux_symbols',
           'symupload',
           'strip_chrome_binary',
@@ -218,7 +216,6 @@
       'lacros-arm-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
           'linux_symbols',
           'symupload',
           'strip_chrome_binary'
@@ -236,7 +233,6 @@
       'lacros-arm-generic-chrome-skylab': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
           'linux_symbols',
           'symupload',
           'strip_chrome_binary'
@@ -252,7 +248,6 @@
       'lacros-arm64-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
           'linux_symbols',
           'symupload',
           'strip_chrome_binary'
@@ -378,14 +373,12 @@
       'lacros-arm-archive-rel': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
         ],
         'os_type': 'chromeos',
       },
       'lacros64-archive-rel': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
         ],
         'os_type': 'chromeos',
       },
@@ -6510,7 +6503,6 @@
       'lacros-amd64-generic-chrome-fyi': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_fyi',
@@ -6527,7 +6519,6 @@
       'lacros-arm-generic-chrome-fyi': {
         'additional_compile_targets': [
           'chrome',
-          'lacros_version_metadata',
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_arm_fyi',

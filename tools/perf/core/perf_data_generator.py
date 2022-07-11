@@ -1277,7 +1277,7 @@ BUILDERS = {
         False,
     },
     'chromeos-amd64-generic-lacros-builder-perf': {
-        'additional_compile_targets': ['chrome', 'lacros_version_metadata'],
+        'additional_compile_targets': ['chrome'],
         'tests': [
             {
                 'name': 'resource_sizes_lacros_chrome',
@@ -1300,7 +1300,7 @@ BUILDERS = {
         False,
     },
     'chromeos-arm-generic-lacros-builder-perf': {
-        'additional_compile_targets': ['chrome', 'lacros_version_metadata'],
+        'additional_compile_targets': ['chrome'],
         'tests': [
             {
                 'name': 'resource_sizes_lacros_chrome',

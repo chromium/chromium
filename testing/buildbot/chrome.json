@@ -1808,7 +1808,6 @@
   "lacros-amd64-generic-chrome": {
     "additional_compile_targets": [
       "chrome",
-      "lacros_version_metadata",
       "linux_symbols",
       "symupload",
       "strip_chrome_binary"
@@ -1909,7 +1908,6 @@
   "lacros-amd64-generic-chrome-skylab": {
     "additional_compile_targets": [
       "chrome",
-      "lacros_version_metadata",
       "linux_symbols",
       "symupload",
       "strip_chrome_binary"
@@ -2048,7 +2046,6 @@
   "lacros-arm-generic-chrome": {
     "additional_compile_targets": [
       "chrome",
-      "lacros_version_metadata",
       "linux_symbols",
       "symupload",
       "strip_chrome_binary"
@@ -2082,7 +2079,6 @@
   "lacros-arm-generic-chrome-skylab": {
     "additional_compile_targets": [
       "chrome",
-      "lacros_version_metadata",
       "linux_symbols",
       "symupload",
       "strip_chrome_binary"
@@ -2387,7 +2383,6 @@
   "lacros-arm64-generic-chrome": {
     "additional_compile_targets": [
       "chrome",
-      "lacros_version_metadata",
       "linux_symbols",
       "symupload",
       "strip_chrome_binary"

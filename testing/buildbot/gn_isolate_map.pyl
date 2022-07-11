@@ -1177,10 +1177,6 @@
       "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
-  "lacros_version_metadata": {
-    "label": "//build/lacros:lacros_version_metadata",
-    "type": "additional_compile_target",
-  },
   "lacros_variations_tast_tests" : {
     "label": "//chromeos/lacros:lacros_variations_tast_tests",
     "type": "generated_script",
