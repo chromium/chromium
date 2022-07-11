@@ -44,6 +44,10 @@ const CGFloat kPreferredMaxWidth = 73;
         IsContentSuggestionsUIModuleRefreshEnabled() ? kIconSize
                                                      : kPreferredMaxWidth;
     _titleLabel.numberOfLines = kLabelNumLines;
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      _titleLabel.adjustsFontSizeToFitWidth = YES;
+      _titleLabel.minimumScaleFactor = 0.7;
+    }
 
     _imageContainerView = [[UIView alloc] init];
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
