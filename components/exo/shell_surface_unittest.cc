@@ -1732,6 +1732,43 @@ TEST_F(ShellSurfaceTest, ServerStartResize) {
             size.width() + kDragAmount);
 }
 
+TEST_F(ShellSurfaceTest, ServerStartResizeComponent) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).SetNoCommit().BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  shell_surface->root_surface()->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  auto* widget = shell_surface->GetWidget();
+
+  gfx::Size size = widget->GetWindowBoundsInScreen().size();
+  widget->SetBounds(gfx::Rect(size));
+
+  uint32_t serial = 0;
+  auto configure_callback = base::BindRepeating(
+      [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
+         chromeos::WindowStateType state_type, bool resizing, bool activated,
+         const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
+      &serial);
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(size.width() + 2, size.height() / 2);
+
+  EXPECT_EQ(shell_surface->resize_component_for_test(), HTCAPTION);
+
+  constexpr int kDragAmount = 10;
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(kDragAmount, 0);
+  EXPECT_EQ(shell_surface->resize_component_for_test(), HTCAPTION);
+  shell_surface->AcknowledgeConfigure(serial);
+  shell_surface->root_surface()->Commit();
+  EXPECT_EQ(shell_surface->resize_component_for_test(), HTRIGHT);
+  event_generator->ReleaseLeftButton();
+  shell_surface->AcknowledgeConfigure(serial);
+  shell_surface->root_surface()->Commit();
+  EXPECT_EQ(shell_surface->resize_component_for_test(), HTCAPTION);
+}
+
 // Make sure that resize shadow does not update until commit when the window
 // property |aura::client::kUseWindowBoundsForShadow| is false.
 TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {

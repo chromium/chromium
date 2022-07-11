@@ -138,6 +138,10 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
+  void EndDrag();
+
+  int resize_component_for_test() const { return resize_component_; }
+
  private:
   struct Config;
 
@@ -178,8 +182,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   bool GetCanResizeFromSizeConstraints() const override;
 
   void AttemptToStartDrag(int component);
-
-  void EndDrag();
 
   std::unique_ptr<ash::ScopedAnimationDisabler> animations_disabler_;
 

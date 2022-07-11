@@ -46,4 +46,9 @@ CustomWindowStateDelegate::OnDragStarted(int component) {
           "Ash.InteractiveWindowResize.Lacros.TimeToPresent.MaxLatency"));
 }
 
+void CustomWindowStateDelegate::OnDragFinished(bool cancel,
+                                               const gfx::PointF& location) {
+  shell_surface_->EndDrag();
+}
+
 }  // namespace exo
