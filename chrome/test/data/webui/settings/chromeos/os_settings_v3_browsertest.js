@@ -312,7 +312,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['LockScreenPage', 'lock_screen_tests.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.js'],
  ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
- ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
+ // TODO(b/208932892): Re-enable once flakiness is fixed.
+ // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.js'],
  [
    'MultideviceNotificationAccessSetupDialog',
