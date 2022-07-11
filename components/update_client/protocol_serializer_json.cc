@@ -19,198 +19,200 @@ using Value = base::Value;
 
 std::string ProtocolSerializerJSON::Serialize(
     const protocol_request::Request& request) const {
-  Value root_node(Value::Type::DICTIONARY);
-  auto* request_node =
-      root_node.SetKey("request", Value(Value::Type::DICTIONARY));
-  request_node->SetKey("protocol", Value(request.protocol_version));
-  request_node->SetKey("ismachine", Value(request.is_machine));
-  request_node->SetKey("dedup", Value("cr"));
-  request_node->SetKey("acceptformat", Value("crx3"));
+  Value::Dict root_node;
+  Value::Dict request_node;
+  request_node.Set("protocol", request.protocol_version);
+  request_node.Set("ismachine", request.is_machine);
+  request_node.Set("dedup", "cr");
+  request_node.Set("acceptformat", "crx3");
   if (!request.additional_attributes.empty()) {
     for (const auto& attr : request.additional_attributes)
-      request_node->SetKey(attr.first, Value(attr.second));
+      request_node.Set(attr.first, attr.second);
   }
-  request_node->SetKey("sessionid", Value(request.session_id));
-  request_node->SetKey("requestid", Value(request.request_id));
-  request_node->SetKey("@updater", Value(request.updatername));
-  request_node->SetKey("prodversion", Value(request.prodversion));
-  request_node->SetKey("updaterversion", Value(request.updaterversion));
-  request_node->SetKey("@os", Value(request.operating_system));
-  request_node->SetKey("arch", Value(request.arch));
-  request_node->SetKey("nacl_arch", Value(request.nacl_arch));
+  request_node.Set("sessionid", request.session_id);
+  request_node.Set("requestid", request.request_id);
+  request_node.Set("@updater", request.updatername);
+  request_node.Set("prodversion", request.prodversion);
+  request_node.Set("updaterversion", request.updaterversion);
+  request_node.Set("@os", request.operating_system);
+  request_node.Set("arch", request.arch);
+  request_node.Set("nacl_arch", request.nacl_arch);
 #if BUILDFLAG(IS_WIN)
   if (request.is_wow64)
-    request_node->SetKey("wow64", Value(request.is_wow64));
+    request_node.Set("wow64", request.is_wow64);
 #endif  // BUILDFLAG(IS_WIN)
   if (!request.updaterchannel.empty())
-    request_node->SetKey("updaterchannel", Value(request.updaterchannel));
+    request_node.Set("updaterchannel", request.updaterchannel);
   if (!request.prodchannel.empty())
-    request_node->SetKey("prodchannel", Value(request.prodchannel));
+    request_node.Set("prodchannel", request.prodchannel);
   if (!request.dlpref.empty())
-    request_node->SetKey("dlpref", Value(request.dlpref));
-  if (request.domain_joined) {
-    request_node->SetKey("domainjoined", Value(*request.domain_joined));
-  }
+    request_node.Set("dlpref", request.dlpref);
+  if (request.domain_joined)
+    request_node.Set("domainjoined", *request.domain_joined);
 
   // HW platform information.
-  auto* hw_node = request_node->SetKey("hw", Value(Value::Type::DICTIONARY));
-  hw_node->SetKey("physmemory", Value(static_cast<int>(request.hw.physmemory)));
-  hw_node->SetKey("sse", Value(request.hw.sse));
-  hw_node->SetKey("sse2", Value(request.hw.sse2));
-  hw_node->SetKey("sse3", Value(request.hw.sse3));
-  hw_node->SetKey("sse41", Value(request.hw.sse41));
-  hw_node->SetKey("sse42", Value(request.hw.sse42));
-  hw_node->SetKey("ssse3", Value(request.hw.ssse3));
-  hw_node->SetKey("avx", Value(request.hw.avx));
+  Value::Dict hw_node;
+  hw_node.Set("physmemory", static_cast<int>(request.hw.physmemory));
+  hw_node.Set("sse", request.hw.sse);
+  hw_node.Set("sse2", request.hw.sse2);
+  hw_node.Set("sse3", request.hw.sse3);
+  hw_node.Set("sse41", request.hw.sse41);
+  hw_node.Set("sse42", request.hw.sse42);
+  hw_node.Set("ssse3", request.hw.ssse3);
+  hw_node.Set("avx", request.hw.avx);
+  request_node.Set("hw", std::move(hw_node));
 
   // OS version and platform information.
-  auto* os_node = request_node->SetKey("os", Value(Value::Type::DICTIONARY));
-  os_node->SetKey("platform", Value(request.os.platform));
-  os_node->SetKey("arch", Value(request.os.arch));
+  Value::Dict os_node;
+  os_node.Set("platform", request.os.platform);
+  os_node.Set("arch", request.os.arch);
   if (!request.os.version.empty())
-    os_node->SetKey("version", Value(request.os.version));
+    os_node.Set("version", request.os.version);
   if (!request.os.service_pack.empty())
-    os_node->SetKey("sp", Value(request.os.service_pack));
+    os_node.Set("sp", request.os.service_pack);
+  request_node.Set("os", std::move(os_node));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (request.updater) {
     const auto& updater = *request.updater;
-    auto* updater_node =
-        request_node->SetKey("updater", Value(Value::Type::DICTIONARY));
-    updater_node->SetKey("name", Value(updater.name));
-    updater_node->SetKey("ismachine", Value(updater.is_machine));
-    updater_node->SetKey("autoupdatecheckenabled",
-                         Value(updater.autoupdate_check_enabled));
-    updater_node->SetKey("updatepolicy", Value(updater.update_policy));
+    Value::Dict updater_node;
+    updater_node.Set("name", updater.name);
+    updater_node.Set("ismachine", updater.is_machine);
+    updater_node.Set("autoupdatecheckenabled",
+                     updater.autoupdate_check_enabled);
+    updater_node.Set("updatepolicy", updater.update_policy);
     if (!updater.version.empty())
-      updater_node->SetKey("version", Value(updater.version));
+      updater_node.Set("version", updater.version);
     if (updater.last_checked)
-      updater_node->SetKey("lastchecked", Value(*updater.last_checked));
+      updater_node.Set("lastchecked", *updater.last_checked);
     if (updater.last_started)
-      updater_node->SetKey("laststarted", Value(*updater.last_started));
+      updater_node.Set("laststarted", *updater.last_started);
+    request_node.Set("updater", std::move(updater_node));
   }
 #endif
 
-  std::vector<Value> app_nodes;
+  Value::List app_nodes;
   for (const auto& app : request.apps) {
-    Value app_node(Value::Type::DICTIONARY);
-    app_node.SetKey("appid", Value(app.app_id));
-    app_node.SetKey("version", Value(app.version));
+    Value::Dict app_node;
+    app_node.Set("appid", app.app_id);
+    app_node.Set("version", app.version);
     if (!app.ap.empty())
-      app_node.SetKey("ap", Value(app.ap));
+      app_node.Set("ap", app.ap);
     if (!app.brand_code.empty())
-      app_node.SetKey("brand", Value(app.brand_code));
+      app_node.Set("brand", app.brand_code);
     if (!app.lang.empty())
-      app_node.SetKey("lang", Value(app.lang));
+      app_node.Set("lang", app.lang);
     if (!app.install_source.empty())
-      app_node.SetKey("installsource", Value(app.install_source));
+      app_node.Set("installsource", app.install_source);
     if (!app.install_location.empty())
-      app_node.SetKey("installedby", Value(app.install_location));
+      app_node.Set("installedby", app.install_location);
     // TODO(crbug/1120685): Test that this is never sent to the server if the
     // machine is not enterprise managed.
     if (!app.release_channel.empty())
-      app_node.SetKey("release_channel", Value(app.release_channel));
+      app_node.Set("release_channel", app.release_channel);
     if (!app.cohort.empty())
-      app_node.SetKey("cohort", Value(app.cohort));
+      app_node.Set("cohort", app.cohort);
     if (!app.cohort_name.empty())
-      app_node.SetKey("cohortname", Value(app.cohort_name));
+      app_node.Set("cohortname", app.cohort_name);
     if (!app.cohort_hint.empty())
-      app_node.SetKey("cohorthint", Value(app.cohort_hint));
+      app_node.Set("cohorthint", app.cohort_hint);
     if (app.enabled)
-      app_node.SetKey("enabled", Value(*app.enabled));
+      app_node.Set("enabled", *app.enabled);
 
     if (app.disabled_reasons && !app.disabled_reasons->empty()) {
-      std::vector<Value> disabled_nodes;
+      Value::List disabled_nodes;
       for (const int disabled_reason : *app.disabled_reasons) {
-        Value disabled_node(Value::Type::DICTIONARY);
-        disabled_node.SetKey("reason", Value(disabled_reason));
-        disabled_nodes.push_back(std::move(disabled_node));
+        Value::Dict disabled_node;
+        disabled_node.Set("reason", disabled_reason);
+        disabled_nodes.Append(std::move(disabled_node));
       }
-      app_node.SetKey("disabled", Value(disabled_nodes));
+      app_node.Set("disabled", std::move(disabled_nodes));
     }
 
     for (const auto& attr : app.installer_attributes)
-      app_node.SetKey(attr.first, Value(attr.second));
+      app_node.Set(attr.first, attr.second);
 
     if (app.update_check) {
-      auto* update_check_node =
-          app_node.SetKey("updatecheck", Value(Value::Type::DICTIONARY));
+      Value::Dict update_check_node;
       if (app.update_check->is_update_disabled)
-        update_check_node->SetKey("updatedisabled", Value(true));
+        update_check_node.Set("updatedisabled", true);
       if (app.update_check->rollback_allowed)
-        update_check_node->SetKey("rollback_allowed", Value(true));
+        update_check_node.Set("rollback_allowed", true);
       if (app.update_check->same_version_update_allowed)
-        update_check_node->SetKey("sameversionupdate", Value(true));
+        update_check_node.Set("sameversionupdate", true);
       if (!app.update_check->target_version_prefix.empty()) {
-        update_check_node->SetKey(
-            "targetversionprefix",
-            Value(app.update_check->target_version_prefix));
+        update_check_node.Set("targetversionprefix",
+                              app.update_check->target_version_prefix);
       }
+      app_node.Set("updatecheck", std::move(update_check_node));
     }
 
     if (!app.data.empty()) {
-      std::vector<Value> data_nodes;
+      Value::List data_nodes;
       for (const auto& data : app.data) {
-        Value data_node(Value::Type::DICTIONARY);
+        Value::Dict data_node;
 
-        data_node.SetKey("name", Value(data.name));
+        data_node.Set("name", data.name);
         if (data.name == "install")
-          data_node.SetKey("index", Value(data.install_data_index));
+          data_node.Set("index", data.install_data_index);
         else if (data.name == "untrusted")
-          data_node.SetKey("#text", Value(data.untrusted_data));
+          data_node.Set("#text", data.untrusted_data);
 
-        data_nodes.push_back(std::move(data_node));
+        data_nodes.Append(std::move(data_node));
       }
 
       if (!data_nodes.empty())
-        app_node.SetKey("data", Value(std::move(data_nodes)));
+        app_node.Set("data", std::move(data_nodes));
     }
 
     if (app.ping) {
       const auto& ping = *app.ping;
-      auto* ping_node = app_node.SetKey("ping", Value(Value::Type::DICTIONARY));
+      Value::Dict ping_node;
       if (!ping.ping_freshness.empty())
-        ping_node->SetKey("ping_freshness", Value(ping.ping_freshness));
+        ping_node.Set("ping_freshness", ping.ping_freshness);
 
       // Output "ad" or "a" only if the this app has been seen 'active'.
       if (ping.date_last_active) {
-        ping_node->SetKey("ad", Value(*ping.date_last_active));
+        ping_node.Set("ad", *ping.date_last_active);
       } else if (ping.days_since_last_active_ping) {
-        ping_node->SetKey("a", Value(*ping.days_since_last_active_ping));
+        ping_node.Set("a", *ping.days_since_last_active_ping);
       }
 
       // Output "rd" if valid or "r" as a last resort roll call metric.
       if (ping.date_last_roll_call)
-        ping_node->SetKey("rd", Value(*ping.date_last_roll_call));
+        ping_node.Set("rd", *ping.date_last_roll_call);
       else
-        ping_node->SetKey("r", Value(ping.days_since_last_roll_call));
+        ping_node.Set("r", ping.days_since_last_roll_call);
+      app_node.Set("ping", std::move(ping_node));
     }
 
     if (!app.fingerprint.empty()) {
-      std::vector<Value> package_nodes;
-      Value package(Value::Type::DICTIONARY);
-      package.SetKey("fp", Value(app.fingerprint));
-      package_nodes.push_back(std::move(package));
-      auto* packages_node =
-          app_node.SetKey("packages", Value(Value::Type::DICTIONARY));
-      packages_node->SetKey("package", Value(package_nodes));
+      Value::List package_nodes;
+      Value::Dict package;
+      package.Set("fp", app.fingerprint);
+      package_nodes.Append(std::move(package));
+      Value::Dict packages_node;
+      packages_node.Set("package", std::move(package_nodes));
+      app_node.Set("packages", std::move(packages_node));
     }
 
     if (app.events) {
-      std::vector<Value> event_nodes;
+      Value::List event_nodes;
       for (const auto& event : *app.events) {
         DCHECK(event.is_dict());
-        DCHECK(!event.DictEmpty());
-        event_nodes.push_back(event.Clone());
+        DCHECK(!event.GetDict().empty());
+        event_nodes.Append(event.Clone());
       }
-      app_node.SetKey("event", Value(event_nodes));
+      app_node.Set("event", std::move(event_nodes));
     }
 
-    app_nodes.push_back(std::move(app_node));
+    app_nodes.Append(std::move(app_node));
   }
 
   if (!app_nodes.empty())
-    request_node->SetKey("app", Value(std::move(app_nodes)));
+    request_node.Set("app", std::move(app_nodes));
+
+  root_node.Set("request", std::move(request_node));
 
   std::string msg;
   return base::JSONWriter::WriteWithOptions(
