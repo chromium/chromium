@@ -570,6 +570,7 @@ static_library("test_support") {
       "//ash/components/cryptohome",
       "//ash/constants",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:print_job_info_proto",
       "//chrome/browser/ui/ash/system_web_apps",
@@ -701,7 +702,6 @@ static_library("test_support") {
 
     deps += [
       "//build:chromeos_buildflags",
-      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/webapps/browser",
       "//third_party/zlib/google:zip",
@@ -1212,8 +1212,6 @@ if (!is_android) {
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/ash/system_web_apps:browser_tests",
-      "//chrome/browser/ash/system_web_apps/test_support",
-      "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
@@ -2375,6 +2373,10 @@ if (!is_android) {
 
     if (is_chromeos_ash) {
       sources += [ "../browser/sessions/tab_restore_service_browsertest.cc" ]
+      deps += [
+        "//chrome/browser/ash/system_web_apps/test_support",
+        "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+      ]
     }
 
     # https://crbug.com/1252812 The intent picker (launch icon) actions
@@ -4481,7 +4483,6 @@ if (!is_android) {
       # TODO(crbug.com/1278123): Enable once PWAs are supported.
       deps -= [
         "//chrome/browser/ash/system_web_apps:browser_tests",
-        "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
         "//chrome/browser/ui/web_applications:app_service_browser_tests",
         "//chrome/browser/ui/web_applications:browser_tests",
         "//chrome/browser/web_applications:app_service_browser_tests",
@@ -4681,7 +4682,6 @@ if (is_chromeos_lacros) {
       ":test_support",
       ":test_support_ui",
       "//chrome/app:command_ids",
-      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/ui/web_applications:app_service_browser_tests",
@@ -6868,7 +6868,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome:packed_resources_integrity_hash",
-      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery:discovery",
@@ -7247,6 +7246,7 @@ test("unit_tests") {
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/crosapi:unit_tests",
       "//chrome/browser/ash/system_extensions:unit_tests",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/chromeos:unit_tests",
@@ -8789,7 +8789,6 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser:browser_process",
       "//chrome/browser/ash/system_web_apps",
-      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/devtools",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
@@ -8922,6 +8921,7 @@ if (!is_android) {
         "//ash/services/device_sync",
         "//ash/services/device_sync:test_support",
         "//chrome/browser/ash",
+        "//chrome/browser/ash/system_web_apps/test_support",
       ]
     } else {
       sources += [
@@ -9153,8 +9153,6 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:unexpire_flags",
-      "//chrome/browser/ash/system_web_apps/test_support",
-      "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
@@ -9391,6 +9389,8 @@ if (!is_android) {
         deps += [
           "//ash:ash",
           "//chrome/browser/ash/crosapi:crosapi",
+          "//chrome/browser/ash/system_web_apps/test_support",
+          "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
           "//ui/wm/public:public",
         ]
       } else {
@@ -9866,6 +9866,7 @@ source_set("sync_integration_test_support") {
       "//ash/app_list:test_support",
       "//ash/components/arc:arc_test_support",
       "//ash/components/arc/mojom",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chromeos/ash/components/network/portal_detector",
       "//chromeos/printing",
       "//components/desks_storage",
@@ -9876,7 +9877,6 @@ source_set("sync_integration_test_support") {
     deps += [ ":sync_integration_test_support_jni_headers" ]
   } else {
     deps += [
-      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/send_tab_to_self",
       "//components/webapps/browser",
@@ -9913,7 +9913,6 @@ if (!is_android) {
       "//chrome:strings",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
-      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",
@@ -9942,7 +9941,10 @@ if (!is_android) {
     ]
 
     if (is_chromeos_ash) {
-      deps += [ "//chrome/browser/ash/crosapi:browser_util" ]
+      deps += [
+        "//chrome/browser/ash/crosapi:browser_util",
+        "//chrome/browser/ash/system_web_apps/test_support",
+      ]
     }
 
     data_deps = [

@@ -58,7 +58,6 @@ source_set("unit_tests") {
   deps = [
     ":extensions",
     "//build:chromeos_buildflags",
-    "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
@@ -81,6 +80,9 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//chrome/browser/ash/system_web_apps/test_support",
+    ]
   }
 }

@@ -108,8 +108,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
-#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
@@ -132,6 +130,8 @@
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #endif
 
@@ -415,9 +415,12 @@ void TestingProfile::Init(bool is_supervised_profile) {
 
   web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
       this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
       this, base::BindRepeating(&ash::TestSystemWebAppManager::BuildDefault));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Prefs for incognito profiles are set in CreateIncognitoPrefService().
   SimpleFactoryKey* key = GetProfileKey();

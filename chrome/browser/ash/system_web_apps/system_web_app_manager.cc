@@ -370,13 +370,19 @@ void SystemWebAppManager::Start() {
     UpdateLastAttemptedInfo();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const auto& disabled_system_apps =
       web_app_policy_manager_->GetDisabledSystemWebApps();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   for (const auto& app : system_app_delegates_) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    bool is_disabled = base::Contains(disabled_system_apps, app.first);
+#else
+    bool is_disabled = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     install_options_list.push_back(CreateInstallOptionsForSystemApp(
-        app.first, *app.second, should_force_install_apps,
-        base::Contains(disabled_system_apps, app.first)));
+        app.first, *app.second, should_force_install_apps, is_disabled));
   }
 
   const bool exceeded_retries = CheckAndIncrementRetryAttempts();

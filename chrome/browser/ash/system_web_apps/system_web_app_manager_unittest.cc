@@ -167,11 +167,7 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
   template <typename... TaskEnvironmentTraits>
   explicit SystemWebAppManagerTest(TaskEnvironmentTraits&&... traits)
       : ChromeRenderViewHostTestHarness(
-            std::forward<TaskEnvironmentTraits>(traits)...) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    web_app::EnableSystemWebAppsInLacrosForTesting();
-#endif
-  }
+            std::forward<TaskEnvironmentTraits>(traits)...) {}
   SystemWebAppManagerTest(const SystemWebAppManagerTest&) = delete;
   SystemWebAppManagerTest& operator=(const SystemWebAppManagerTest&) = delete;
 

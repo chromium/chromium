@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -46,6 +45,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -327,8 +327,10 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
         std::make_unique<FakeWebAppRegistryController>();
     fake_externally_managed_app_manager_ =
         std::make_unique<FakeExternallyManagedAppManager>(profile());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     test_system_app_manager_ =
         std::make_unique<ash::TestSystemWebAppManager>(profile());
+#endif
     web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
 
     controller().SetUp(profile());
@@ -375,15 +377,18 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     policy_manager().SetSubsystems(
         &externally_managed_app_manager(), &app_registrar(),
         &controller().sync_bridge(), &controller().os_integration_manager());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     policy_manager().SetSystemWebAppDelegateMap(
         &system_app_manager().system_app_delegates());
-
+#endif
     controller().Init();
   }
 
   void TearDown() override {
     web_app_policy_manager_.reset();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     test_system_app_manager_.reset();
+#endif
     fake_externally_managed_app_manager_.reset();
     fake_registry_controller_.reset();
 
@@ -448,9 +453,11 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     return *fake_externally_managed_app_manager_;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::TestSystemWebAppManager& system_app_manager() {
     return *test_system_app_manager_;
   }
+#endif
 
   WebAppRegistrar& app_registrar() { return controller().registrar(); }
   WebAppPolicyManager& policy_manager() { return *web_app_policy_manager_; }
@@ -502,7 +509,9 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<FakeExternallyManagedAppManager>
       fake_externally_managed_app_manager_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::TestSystemWebAppManager> test_system_app_manager_;
+#endif
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1118,8 +1127,8 @@ TEST_P(WebAppPolicyManagerTest, InstallResultHistogram) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_P(WebAppPolicyManagerTest, DisableWebApps) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
   policy_manager().Start();
   base::RunLoop().RunUntilIdle();
 
@@ -1150,7 +1159,7 @@ TEST_P(WebAppPolicyManagerTest, DisableWebApps) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(policy_manager().IsDisabledAppsModeHidden());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_P(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
   if (ShouldSkipPWASpecificTest())

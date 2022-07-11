@@ -662,8 +662,6 @@ source_set("web_applications_browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash/system_web_apps/test_support",
-    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
@@ -674,6 +672,13 @@ source_set("web_applications_browser_tests") {
     "//ui/events/devices:test_support",
     "//url",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/system_web_apps/test_support",
+      "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    ]
+  }
 }
 
 group("browser_tests") {

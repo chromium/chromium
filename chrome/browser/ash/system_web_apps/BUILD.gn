@@ -59,7 +59,8 @@ source_set("system_web_apps") {
 source_set("unit_tests") {
   testonly = true
 
-  if (is_chromeos) {
+  # TODO(crbug.com/1321984): Remove `if`.
+  if (is_chromeos_ash) {
     sources = [ "system_web_app_manager_unittest.cc" ]
   }
 
@@ -68,7 +69,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -80,6 +80,11 @@ source_set("unit_tests") {
     "//ui/base/idle:test_support",
     "//url",
   ]
+
+  # TODO(crbug.com/1321984): Remove `if`.
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/system_web_apps/test_support" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -87,7 +92,8 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  if (is_chromeos) {
+  # TODO(crbug.com/1321984): Remove `if`.
+  if (is_chromeos_ash) {
     sources = [ "system_web_app_manager_browsertest.cc" ]
   }
 
@@ -95,8 +101,6 @@ source_set("browser_tests") {
     ":system_web_apps",
     "//base",
     "//chrome/app:command_ids",
-    "//chrome/browser/ash/system_web_apps/test_support",
-    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -107,4 +111,12 @@ source_set("browser_tests") {
     "//ui/base/idle:test_support",
     "//url",
   ]
+
+  # TODO(crbug.com/1321984): Remove `if`.
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/system_web_apps/test_support",
+      "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    ]
+  }
 }

@@ -4,9 +4,7 @@
 
 import("//chrome/browser/buildflags.gni")
 
-# TODO(crbug.com/1321984): Make SystemWebAppManager an ash-only object and
-# move all the GN dependencies under `if (is_chromeos_ash)` section.
-# assert(is_chromeos_ash)
+assert(is_chromeos_ash)
 
 # This test_support library doesn't use extensions. It must not depend on
 # //chrome/test:test_support_ui as it is depended upon by those targets.
@@ -25,6 +23,7 @@ source_set("test_support") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base/test:test_support",
     "//chrome/app:command_ids",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
@@ -49,10 +48,6 @@ source_set("test_support") {
     "//testing/gtest",
     "//ui/webui",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
-  }
 }
 
 # Browsertest base classes that depend on //chrome/test:test_support_ui. Must
@@ -64,17 +59,9 @@ source_set("test_support_ui") {
   sources = [
     "system_web_app_browsertest_base.cc",
     "system_web_app_browsertest_base.h",
+    "system_web_app_integration_test.cc",
+    "system_web_app_integration_test.h",
   ]
-
-  # TODO(crbug.com/1321984): Remove `if` after we compile out SWAs. We need this
-  # because the integration test uses ui/aura/window.h which is not available on
-  # macOS.
-  if (is_chromeos_ash) {
-    sources += [
-      "system_web_app_integration_test.cc",
-      "system_web_app_integration_test.h",
-    ]
-  }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

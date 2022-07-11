@@ -71,8 +71,10 @@ class WebAppPolicyManager {
   // disabled and notifies sync_bridge_ about the current app state.
   void OnDisableListPolicyChanged();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets system web apps disabled by SystemFeaturesDisableList policy.
   const std::set<ash::SystemWebAppType>& GetDisabledSystemWebApps() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Gets ids of web apps disabled by SystemFeaturesDisableList policy.
   const std::set<AppId>& GetDisabledWebAppsIds() const;
@@ -167,8 +169,12 @@ class WebAppPolicyManager {
 
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // List of disabled system web apps, containing app types.
   std::set<ash::SystemWebAppType> disabled_system_apps_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // List of disabled system and progressive web apps, containing app ids.
   std::set<AppId> disabled_web_apps_;
 

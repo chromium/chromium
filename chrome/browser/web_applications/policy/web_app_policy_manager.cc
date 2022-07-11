@@ -182,10 +182,12 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const std::set<ash::SystemWebAppType>&
 WebAppPolicyManager::GetDisabledSystemWebApps() const {
   return disabled_system_apps_;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const std::set<AppId>& WebAppPolicyManager::GetDisabledWebAppsIds() const {
   return disabled_web_apps_;
@@ -613,8 +615,12 @@ void WebAppPolicyManager::OnDisableModePolicyChanged() {
 }
 
 void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
-  disabled_system_apps_.clear();
   disabled_web_apps_.clear();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  disabled_system_apps_.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state)  // Sometimes it's not available in tests.
@@ -626,6 +632,10 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
 
   for (const auto& entry : disabled_system_features_pref) {
     switch (static_cast<policy::SystemFeature>(entry.GetInt())) {
+      case policy::SystemFeature::kCanvas:
+        disabled_web_apps_.insert(kCanvasAppId);
+        break;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       case policy::SystemFeature::kCamera:
         disabled_system_apps_.insert(ash::SystemWebAppType::CAMERA);
         break;
@@ -638,12 +648,17 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kExplore:
         disabled_system_apps_.insert(ash::SystemWebAppType::HELP);
         break;
-      case policy::SystemFeature::kCanvas:
-        disabled_web_apps_.insert(kCanvasAppId);
-        break;
       case policy::SystemFeature::kCrosh:
         disabled_system_apps_.insert(ash::SystemWebAppType::CROSH);
         break;
+#else
+      case policy::SystemFeature::kCamera:
+      case policy::SystemFeature::kOsSettings:
+      case policy::SystemFeature::kScanning:
+      case policy::SystemFeature::kExplore:
+      case policy::SystemFeature::kCrosh:
+        break;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       case policy::SystemFeature::kUnknownSystemFeature:
       case policy::SystemFeature::kBrowserSettings:
       case policy::SystemFeature::kWebStore:
@@ -652,6 +667,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(system_web_apps_delegate_map_);
   for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {
     absl::optional<AppId> app_id = GetAppIdForSystemApp(
@@ -660,6 +676,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       disabled_web_apps_.insert(app_id.value());
     }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
