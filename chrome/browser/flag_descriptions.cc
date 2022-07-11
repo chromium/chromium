@@ -5319,6 +5319,11 @@ const char kLacrosProfileMigrationForceOffDescription[] =
     "migration is rolled out to the user, the migration will not run and the "
     "user can continue to use lacros without profile migration.";
 
+const char kLauncherItemSuggestName[] = "Launcher ItemSuggest";
+const char kLauncherItemSuggestDescription[] =
+    "Allows configuration of experiment parameters for ItemSuggest in the "
+    "launcher.";
+
 const char kLauncherLacrosIntegrationName[] = "Launcher lacros integration";
 const char kLauncherLacrosIntegrationDescription[] =
     "Forces launcher Omnibox search queries to be sent to the lacros browser. "

@@ -3039,6 +3039,9 @@ extern const char kLacrosSelectionStatefulDescription[];
 extern const char kLacrosSupportName[];
 extern const char kLacrosSupportDescription[];
 
+extern const char kLauncherItemSuggestName[];
+extern const char kLauncherItemSuggestDescription[];
+
 extern const char kLauncherLacrosIntegrationName[];
 extern const char kLauncherLacrosIntegrationDescription[];
 

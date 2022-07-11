@@ -59751,6 +59751,7 @@ from previous Chrome versions.
   <int value="764508124" label="NavigationNetworkResponseQueue:disabled"/>
   <int value="765266228" label="TabGroupsCollapse:disabled"/>
   <int value="765306424" label="ModuleScriptsDynamicImport:disabled"/>
+  <int value="765650925" label="LauncherItemSuggest:disabled"/>
   <int value="765803208" label="AutofillShowTypePredictions:enabled"/>
   <int value="766563170" label="MessagesForAndroidInstantApps:enabled"/>
   <int value="766898398" label="sampling-heap-profiler"/>
@@ -60217,6 +60218,7 @@ from previous Chrome versions.
   <int value="1074359194" label="UseSuggestionsEvenIfFew:enabled"/>
   <int value="1074427701" label="NewPrintPreviewLayout:enabled"/>
   <int value="1075637651" label="disable-tablet-splitview"/>
+  <int value="1075862390" label="LauncherItemSuggest:enabled"/>
   <int value="1077758422" label="LeakDetectionUnauthenticated:disabled"/>
   <int value="1079032226" label="ParallelDownloading:enabled"/>
   <int value="1079302639" label="ArcEnableWebAppShare:disabled"/>

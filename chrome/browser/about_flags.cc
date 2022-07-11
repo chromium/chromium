@@ -57,6 +57,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
+#include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -2633,6 +2634,37 @@ const FeatureEntry::FeatureParam kProductivityLauncher_WithoutContinue[] = {
 const FeatureEntry::FeatureVariation kProductivityLauncherVariations[] = {
     {"without Continue", kProductivityLauncher_WithoutContinue,
      std::size(kProductivityLauncher_WithoutContinue), nullptr}};
+
+const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay10Mins[] = {
+    {"long_delay_minutes", "10"}};
+const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay12Hours[] = {
+    {"long_delay_minutes", "720"}};
+const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay24Hours[] = {
+    {"long_delay_minutes", "1440"}};
+const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay36Hours[] = {
+    {"long_delay_minutes", "2160"}};
+const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay48Hours[] = {
+    {"long_delay_minutes", "2880"}};
+const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay60Hours[] = {
+    {"long_delay_minutes", "3600"}};
+const FeatureEntry::FeatureParam kLauncherItemSuggest_LongDelay72Hours[] = {
+    {"long_delay_minutes", "4320"}};
+
+const FeatureEntry::FeatureVariation kLauncherItemSuggestVariations[] = {
+    {"with 10 minute long delay", kLauncherItemSuggest_LongDelay10Mins,
+     std::size(kLauncherItemSuggest_LongDelay10Mins), nullptr},
+    {"with 12 hour long delay", kLauncherItemSuggest_LongDelay12Hours,
+     std::size(kLauncherItemSuggest_LongDelay12Hours), nullptr},
+    {"with 24 hour long delay", kLauncherItemSuggest_LongDelay24Hours,
+     std::size(kLauncherItemSuggest_LongDelay24Hours), nullptr},
+    {"with 36 hour long delay", kLauncherItemSuggest_LongDelay36Hours,
+     std::size(kLauncherItemSuggest_LongDelay36Hours), nullptr},
+    {"with 48 hour long delay", kLauncherItemSuggest_LongDelay48Hours,
+     std::size(kLauncherItemSuggest_LongDelay48Hours), nullptr},
+    {"with 60 hour long delay", kLauncherItemSuggest_LongDelay60Hours,
+     std::size(kLauncherItemSuggest_LongDelay60Hours), nullptr},
+    {"with 72 hour long delay", kLauncherItemSuggest_LongDelay72Hours,
+     std::size(kLauncherItemSuggest_LongDelay72Hours), nullptr}};
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -7139,6 +7171,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kProductivityLauncher,
                                     kProductivityLauncherVariations,
                                     "ProductivityLauncher")},
+    {"launcher-item-suggest", flag_descriptions::kLauncherItemSuggestName,
+     flag_descriptions::kLauncherItemSuggestDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(app_list::ItemSuggestCache::kExperiment,
+                                    kLauncherItemSuggestVariations,
+                                    "LauncherItemSuggest")},
     {"autocomplete-extended-suggestions",
      flag_descriptions::kAutocompleteExtendedSuggestionsName,
      flag_descriptions::kAutocompleteExtendedSuggestionsDescription, kOsCrOS,

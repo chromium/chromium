@@ -4070,6 +4070,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "launcher-item-suggest",
+    "owners": ["wrong", "amandadeacon", "tby"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "launcher-lacros-integration",
     "owners": ["wrong", "thanhdng", "tby"],
     "expiry_milestone": 115
