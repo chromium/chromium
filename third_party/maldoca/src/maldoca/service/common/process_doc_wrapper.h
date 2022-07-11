@@ -8,10 +8,7 @@
 #include "maldoca/service/proto/doc_type.pb.h"
 #include "maldoca/service/proto/maldoca_service.pb.h"
 #include "maldoca/service/proto/processing_config.pb.h"
-
-namespace absl {
-class Status;
-}  // namespace absl
+#include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace third_party_maldoca {
 
