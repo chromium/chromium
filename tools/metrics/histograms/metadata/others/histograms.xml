@@ -12663,7 +12663,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.SuggestionGatheringDuration"
-    units="ms" expires_after="2022-08-20">
+    units="ms" expires_after="2022-12-31">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
