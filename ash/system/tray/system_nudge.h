@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -36,7 +37,9 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
               int icon_size,
               int icon_label_spacing,
               int nudge_padding,
-              bool anchor_status_area = false);
+              bool anchor_status_area = false,
+              AshColorProvider::ContentLayerType icon_color_layer_type =
+                  AshColorProvider::ContentLayerType::kIconColorPrimary);
   SystemNudge(const SystemNudge&) = delete;
   SystemNudge& operator=(const SystemNudge&) = delete;
   ~SystemNudge() override;
@@ -94,6 +97,9 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
     // Otherwise the nudge will be on the left/right side of the window for
     // non-RTL/RTL locale.
     bool anchor_status_area = false;
+    // The color of the icon.
+    AshColorProvider::ContentLayerType icon_color_layer_type =
+        AshColorProvider::ContentLayerType::kIconColorPrimary;
   };
 
   // Calculate and set widget bounds based on a fixed width and a variable

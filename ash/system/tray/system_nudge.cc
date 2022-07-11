@@ -63,7 +63,7 @@ class SystemNudge::SystemNudgeView : public views::View {
               return gfx::CreateVectorIcon(
                   nudge->GetIcon(),
                   AshColorProvider::Get()->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kIconColorPrimary));
+                      nudge->params_.icon_color_layer_type));
             },
             nudge_),
         gfx::Size(nudge_->params_.icon_size, nudge_->params_.icon_size)));
@@ -89,17 +89,20 @@ class SystemNudge::SystemNudgeView : public views::View {
   views::ImageView* icon_ = nullptr;
 };
 
-SystemNudge::SystemNudge(const std::string& name,
-                         int icon_size,
-                         int icon_label_spacing,
-                         int nudge_padding,
-                         bool anchor_status_area)
+SystemNudge::SystemNudge(
+    const std::string& name,
+    int icon_size,
+    int icon_label_spacing,
+    int nudge_padding,
+    bool anchor_status_area,
+    AshColorProvider::ContentLayerType icon_color_layer_type)
     : root_window_(Shell::GetRootWindowForNewWindows()) {
   params_.name = name;
   params_.icon_size = icon_size;
   params_.icon_label_spacing = icon_label_spacing;
   params_.nudge_padding = nudge_padding;
   params_.anchor_status_area = anchor_status_area;
+  params_.icon_color_layer_type = icon_color_layer_type;
 }
 
 SystemNudge::~SystemNudge() = default;
