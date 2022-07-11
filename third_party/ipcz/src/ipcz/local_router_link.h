@@ -12,6 +12,8 @@
 
 namespace ipcz {
 
+struct RouterLinkState;
+
 // Local link between two Routers on the same node. This class is thread-safe.
 //
 // NOTE: This implementation must take caution when calling into any Router. See
@@ -21,14 +23,22 @@ class LocalRouterLink : public RouterLink {
   // Creates a new pair of LocalRouterLinks linking the given pair of Routers
   // together. The Routers must not currently have outward links. `type` must
   // be either kCentral or kBridge, as local links may never be peripheral.
-  static void ConnectRouters(LinkType type, const Router::Pair& routers);
+  static RouterLink::Pair ConnectRouters(LinkType type,
+                                         const Router::Pair& routers);
 
   // RouterLink:
   LinkType GetType() const override;
+  RouterLinkState* GetLinkState() const override;
   bool HasLocalPeer(const Router& router) override;
   bool IsRemoteLinkTo(const NodeLink& node_link, SublinkId sublink) override;
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
+  void MarkSideStable() override;
+  bool TryLockForBypass(const NodeName& bypass_request_source) override;
+  bool TryLockForClosure() override;
+  void Unlock() override;
+  bool FlushOtherSideIfWaiting() override;
+  bool CanNodeRequestBypass(const NodeName& bypass_request_source) override;
   void Deactivate() override;
   std::string Describe() const override;
 

@@ -10,8 +10,6 @@ namespace ipcz {
 
 RefCountedFragment::RefCountedFragment() = default;
 
-RefCountedFragment::~RefCountedFragment() = default;
-
 void RefCountedFragment::AddRef() {
   ref_count_.fetch_add(1, std::memory_order_relaxed);
 }

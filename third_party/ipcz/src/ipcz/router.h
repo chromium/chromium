@@ -136,9 +136,6 @@ class Router : public RefCounted {
   // and SublinkId.
   void NotifyLinkDisconnected(const NodeLink& node_link, SublinkId sublink);
 
- private:
-  ~Router() override;
-
   // Flushes any inbound or outbound parcels, as well as any route closure
   // notifications. RouterLinks which are no longer needed for the operation of
   // this Router may be deactivated by this call.
@@ -151,6 +148,9 @@ class Router : public RefCounted {
   // A safe way to ensure that is for RouterLink implementations to only call
   // into Router using a reference held on the calling stack.
   void Flush();
+
+ private:
+  ~Router() override;
 
   absl::Mutex mutex_;
 

@@ -263,7 +263,8 @@ void NodeConnector::EstablishWaitingPortals(Ref<NodeLink> to_link,
   for (size_t i = 0; i < num_valid_portals; ++i) {
     const Ref<Router> router = waiting_portals_[i]->router();
     router->SetOutwardLink(to_link->AddRemoteRouterLink(
-        SublinkId(i), LinkType::kCentral, link_side, router));
+        SublinkId(i), to_link->memory().GetInitialRouterLinkState(i),
+        LinkType::kCentral, link_side, router));
   }
 
   // Elicit immediate peer closure on any surplus portals that were established

@@ -5,13 +5,16 @@
 #ifndef IPCZ_SRC_IPCZ_NODE_LINK_MEMORY_H_
 #define IPCZ_SRC_IPCZ_NODE_LINK_MEMORY_H_
 
+#include <cstddef>
 #include <cstdint>
 
 #include "ipcz/buffer_id.h"
 #include "ipcz/buffer_pool.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
+#include "ipcz/fragment_ref.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/router_link_state.h"
 #include "ipcz/sublink_id.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
@@ -74,6 +77,13 @@ class NodeLinkMemory : public RefCounted {
   // Returns the first of `count` newly allocated, contiguous sublink IDs for
   // use on the corresponding NodeLink.
   SublinkId AllocateSublinkIds(size_t count);
+
+  // Returns a ref to the RouterLinkState for the `i`th initial portal on the
+  // NodeLink, established by the Connect() call which created this link. Unlike
+  // other RouterLinkStates which are allocated dynamically, these have a fixed
+  // location within the NodeLinkMemory's primary buffer. The returned
+  // FragmentRef is unmanaged and will never free its underlying fragment.
+  FragmentRef<RouterLinkState> GetInitialRouterLinkState(size_t i);
 
  private:
   struct PrimaryBuffer;

@@ -21,7 +21,6 @@ struct IPCZ_ALIGN(4) RefCountedFragment {
   enum { kUnmanagedRef };
 
   RefCountedFragment();
-  ~RefCountedFragment();
 
   int32_t ref_count_for_testing() const { return ref_count_; }
 

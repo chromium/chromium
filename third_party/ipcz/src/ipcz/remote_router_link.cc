@@ -18,26 +18,36 @@ namespace ipcz {
 
 RemoteRouterLink::RemoteRouterLink(Ref<NodeLink> node_link,
                                    SublinkId sublink,
+                                   FragmentRef<RouterLinkState> link_state,
                                    LinkType type,
                                    LinkSide side)
     : node_link_(std::move(node_link)),
       sublink_(sublink),
       type_(type),
-      side_(side) {}
+      side_(side),
+      link_state_(std::move(link_state)) {
+  ABSL_ASSERT(link_state_.is_null() || link_state_.is_addressable());
+}
 
 RemoteRouterLink::~RemoteRouterLink() = default;
 
 // static
-Ref<RemoteRouterLink> RemoteRouterLink::Create(Ref<NodeLink> node_link,
-                                               SublinkId sublink,
-                                               LinkType type,
-                                               LinkSide side) {
-  return AdoptRef(
-      new RemoteRouterLink(std::move(node_link), sublink, type, side));
+Ref<RemoteRouterLink> RemoteRouterLink::Create(
+    Ref<NodeLink> node_link,
+    SublinkId sublink,
+    FragmentRef<RouterLinkState> link_state,
+    LinkType type,
+    LinkSide side) {
+  return AdoptRef(new RemoteRouterLink(std::move(node_link), sublink,
+                                       std::move(link_state), type, side));
 }
 
 LinkType RemoteRouterLink::GetType() const {
   return type_;
+}
+
+RouterLinkState* RemoteRouterLink::GetLinkState() const {
+  return link_state_.get();
 }
 
 bool RemoteRouterLink::HasLocalPeer(const Router& router) {
@@ -155,6 +165,59 @@ void RemoteRouterLink::AcceptRouteClosure(SequenceNumber sequence_length) {
   route_closed.params().sublink = sublink_;
   route_closed.params().sequence_length = sequence_length;
   node_link()->Transmit(route_closed);
+}
+
+void RemoteRouterLink::MarkSideStable() {
+  side_is_stable_.store(true, std::memory_order_release);
+  if (RouterLinkState* state = GetLinkState()) {
+    state->SetSideStable(side_);
+  }
+}
+
+bool RemoteRouterLink::TryLockForBypass(const NodeName& bypass_request_source) {
+  RouterLinkState* state = GetLinkState();
+  if (!state || !state->TryLock(side_)) {
+    return false;
+  }
+
+  state->allowed_bypass_request_source = bypass_request_source;
+
+  // Balanced by an acquire in CanNodeRequestBypass().
+  std::atomic_thread_fence(std::memory_order_release);
+  return true;
+}
+
+bool RemoteRouterLink::TryLockForClosure() {
+  RouterLinkState* state = GetLinkState();
+  return state && state->TryLock(side_);
+}
+
+void RemoteRouterLink::Unlock() {
+  if (RouterLinkState* state = GetLinkState()) {
+    state->Unlock(side_);
+  }
+}
+
+bool RemoteRouterLink::FlushOtherSideIfWaiting() {
+  RouterLinkState* state = GetLinkState();
+  if (!state || !state->ResetWaitingBit(side_.opposite())) {
+    return false;
+  }
+
+  msg::FlushRouter flush;
+  flush.params().sublink = sublink_;
+  node_link()->Transmit(flush);
+  return true;
+}
+
+bool RemoteRouterLink::CanNodeRequestBypass(
+    const NodeName& bypass_request_source) {
+  RouterLinkState* state = GetLinkState();
+
+  // Balanced by a release in TryLockForBypass().
+  std::atomic_thread_fence(std::memory_order_acquire);
+  return state && state->is_locked_by(side_.opposite()) &&
+         state->allowed_bypass_request_source == bypass_request_source;
 }
 
 void RemoteRouterLink::Deactivate() {

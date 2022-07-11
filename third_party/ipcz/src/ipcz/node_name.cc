@@ -16,8 +16,6 @@ namespace ipcz {
 
 static_assert(std::is_standard_layout<NodeName>::value, "Invalid NodeName");
 
-NodeName::~NodeName() = default;
-
 std::string NodeName::ToString() const {
   std::string name(33, 0);
   int length = snprintf(name.data(), name.size(), "%016" PRIx64 "%016" PRIx64,

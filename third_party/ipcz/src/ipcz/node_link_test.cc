@@ -66,9 +66,11 @@ TEST_F(NodeLinkTest, BasicTransmission) {
   auto router0 = MakeRefCounted<Router>();
   auto router1 = MakeRefCounted<Router>();
   router0->SetOutwardLink(link0->AddRemoteRouterLink(
-      SublinkId(0), LinkType::kCentral, LinkSide::kA, router0));
+      SublinkId(0), link0->memory().GetInitialRouterLinkState(0),
+      LinkType::kCentral, LinkSide::kA, router0));
   router1->SetOutwardLink(link1->AddRemoteRouterLink(
-      SublinkId(0), LinkType::kCentral, LinkSide::kB, router1));
+      SublinkId(0), link0->memory().GetInitialRouterLinkState(0),
+      LinkType::kCentral, LinkSide::kB, router1));
 
   EXPECT_FALSE(router1->IsPeerClosed());
   router0->CloseRoute();

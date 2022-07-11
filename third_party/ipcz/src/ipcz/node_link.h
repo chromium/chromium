@@ -77,10 +77,16 @@ class NodeLink : public msg::NodeMessageListener {
   // specifies which side of the link this end identifies as (A or B), and
   // `type` specifies the type of link this is, from the perspective of
   // `router`.
-  Ref<RemoteRouterLink> AddRemoteRouterLink(SublinkId sublink,
-                                            LinkType type,
-                                            LinkSide side,
-                                            Ref<Router> router);
+  //
+  // If `link_state_fragment` is non-null, the given fragment contains the
+  // shared RouterLinkState structure for the new link. Only central links
+  // require a RouterLinkState.
+  Ref<RemoteRouterLink> AddRemoteRouterLink(
+      SublinkId sublink,
+      FragmentRef<RouterLinkState> link_state,
+      LinkType type,
+      LinkSide side,
+      Ref<Router> router);
 
   // Removes the route specified by `sublink`. Once removed, any messages
   // received for that sublink are ignored.
@@ -121,6 +127,7 @@ class NodeLink : public msg::NodeMessageListener {
   // NodeMessageListener overrides:
   bool OnAcceptParcel(msg::AcceptParcel& accept) override;
   bool OnRouteClosed(msg::RouteClosed& route_closed) override;
+  bool OnFlushRouter(msg::FlushRouter& flush) override;
   void OnTransportError() override;
 
   const Ref<Node> node_;

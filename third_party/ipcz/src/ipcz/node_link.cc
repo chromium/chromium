@@ -65,12 +65,14 @@ NodeLink::~NodeLink() {
   ABSL_HARDENING_ASSERT(!active_);
 }
 
-Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(SublinkId sublink,
-                                                    LinkType type,
-                                                    LinkSide side,
-                                                    Ref<Router> router) {
-  auto link =
-      RemoteRouterLink::Create(WrapRefCounted(this), sublink, type, side);
+Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
+    SublinkId sublink,
+    FragmentRef<RouterLinkState> link_state,
+    LinkType type,
+    LinkSide side,
+    Ref<Router> router) {
+  auto link = RemoteRouterLink::Create(WrapRefCounted(this), sublink,
+                                       std::move(link_state), type, side);
 
   absl::MutexLock lock(&mutex_);
   if (!active_) {
@@ -241,6 +243,13 @@ bool NodeLink::OnRouteClosed(msg::RouteClosed& route_closed) {
 
   return sublink->receiver->AcceptRouteClosureFrom(
       sublink->router_link->GetType(), route_closed.params().sequence_length);
+}
+
+bool NodeLink::OnFlushRouter(msg::FlushRouter& flush) {
+  if (Ref<Router> router = GetRouter(flush.params().sublink)) {
+    router->Flush();
+  }
+  return true;
 }
 
 void NodeLink::OnTransportError() {

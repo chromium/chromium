@@ -7,9 +7,11 @@
 
 #include <atomic>
 
+#include "ipcz/fragment_ref.h"
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/router_link.h"
+#include "ipcz/router_link_state.h"
 #include "ipcz/sublink_id.h"
 #include "util/ref_counted.h"
 
@@ -35,9 +37,11 @@ class RemoteRouterLink : public RouterLink {
   // using `sublink` specifically. `side` is the side of this link on which
   // this RemoteRouterLink falls (side A or B), and `type` indicates what type
   // of link it is -- which for remote links must be either kCentral,
-  // kPeripheralInward, or kPeripheralOutward.
+  // kPeripheralInward, or kPeripheralOutward. If the link is kCentral, a
+  // non-null `link_state` may be provided to use as the link's RouterLinkState.
   static Ref<RemoteRouterLink> Create(Ref<NodeLink> node_link,
                                       SublinkId sublink,
+                                      FragmentRef<RouterLinkState> link_state,
                                       LinkType type,
                                       LinkSide side);
 
@@ -46,16 +50,24 @@ class RemoteRouterLink : public RouterLink {
 
   // RouterLink:
   LinkType GetType() const override;
+  RouterLinkState* GetLinkState() const override;
   bool HasLocalPeer(const Router& router) override;
   bool IsRemoteLinkTo(const NodeLink& node_link, SublinkId sublink) override;
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
+  void MarkSideStable() override;
+  bool TryLockForBypass(const NodeName& bypass_request_source) override;
+  bool TryLockForClosure() override;
+  void Unlock() override;
+  bool FlushOtherSideIfWaiting() override;
+  bool CanNodeRequestBypass(const NodeName& bypass_request_source) override;
   void Deactivate() override;
   std::string Describe() const override;
 
  private:
   RemoteRouterLink(Ref<NodeLink> node_link,
                    SublinkId sublink,
+                   FragmentRef<RouterLinkState> link_state,
                    LinkType type,
                    LinkSide side);
 
@@ -65,6 +77,17 @@ class RemoteRouterLink : public RouterLink {
   const SublinkId sublink_;
   const LinkType type_;
   const LinkSide side_;
+
+  // Local atomic cache of whether this side of the link is marked stable. If
+  // MarkSideStable() is called when no RouterLinkState is present, this will be
+  // used to remember it once a RouterLinkState is finally established.
+  std::atomic<bool> side_is_stable_{false};
+
+  // A reference to the shared memory Fragment containing the RouterLinkState
+  // shared by both ends of this RouterLink. Always null for non-central links,
+  // and may be null for a central links if its RouterLinkState has not yet been
+  // allocated or shared.
+  FragmentRef<RouterLinkState> link_state_;
 };
 
 }  // namespace ipcz

@@ -58,6 +58,31 @@ DriverTransport::DriverTransport(DriverObject transport)
 
 DriverTransport::~DriverTransport() = default;
 
+// static
+DriverTransport::Pair DriverTransport::CreatePair(
+    const IpczDriver& driver,
+    const DriverTransport* transport0,
+    const DriverTransport* transport1) {
+  IpczDriverHandle new_transport0;
+  IpczDriverHandle new_transport1;
+  IpczDriverHandle target_transport0 = IPCZ_INVALID_DRIVER_HANDLE;
+  IpczDriverHandle target_transport1 = IPCZ_INVALID_DRIVER_HANDLE;
+  if (transport0) {
+    ABSL_ASSERT(transport1);
+    target_transport0 = transport0->driver_object().handle();
+    target_transport1 = transport1->driver_object().handle();
+  }
+  IpczResult result = driver.CreateTransports(
+      target_transport0, target_transport1, IPCZ_NO_FLAGS, nullptr,
+      &new_transport0, &new_transport1);
+  ABSL_ASSERT(result == IPCZ_RESULT_OK);
+  auto first =
+      MakeRefCounted<DriverTransport>(DriverObject(driver, new_transport0));
+  auto second =
+      MakeRefCounted<DriverTransport>(DriverObject(driver, new_transport1));
+  return {std::move(first), std::move(second)};
+}
+
 IpczDriverHandle DriverTransport::Release() {
   return transport_.release();
 }

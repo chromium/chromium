@@ -28,7 +28,6 @@ class IPCZ_ALIGN(8) NodeName {
  public:
   constexpr NodeName() = default;
   constexpr NodeName(uint64_t high, uint64_t low) : high_(high), low_(low) {}
-  ~NodeName();
 
   bool is_valid() const { return high_ != 0 || low_ != 0; }
 

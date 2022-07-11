@@ -58,6 +58,15 @@ class DriverTransport
   // handle in `transport`.
   explicit DriverTransport(DriverObject transport);
 
+  // Creates a new pair of connected DriverTransports, one to send over
+  // `transport0`, and one to send over `transport1`, in order to establish a
+  // direct link between their respective remote nodes. Both `transport0` and
+  // `transport1` may be null if the new transport pair won't be sent anywhere.
+  static DriverTransport::Pair CreatePair(
+      const IpczDriver& driver,
+      const DriverTransport* transport0 = nullptr,
+      const DriverTransport* transport1 = nullptr);
+
   // Set the object handling any incoming message or error notifications. This
   // is only safe to set before Activate() is called, or from within one of the
   // Listener methods when invoked by this DriverTransport (because invocations

@@ -11,9 +11,11 @@
 
 #include "ipcz/buffer_id.h"
 #include "ipcz/driver_memory.h"
+#include "ipcz/fragment_descriptor.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
 #include "ipcz/node_link.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
@@ -28,6 +30,15 @@ constexpr size_t kPrimaryBufferSize = 65536;
 // The front of the primary buffer is reserved for special current and future
 // uses which require synchronous availability throughout a link's lifetime.
 constexpr size_t kPrimaryBufferReservedHeaderSize = 256;
+
+// The number of fixed RouterLinkState locations in the primary buffer. This
+// limits the maximum number of initial portals supported by the ConnectNode()
+// API. Note that these states reside in a fixed location at the end of the
+// reserved block.
+using InitialRouterLinkStateArray =
+    std::array<RouterLinkState, NodeLinkMemory::kMaxInitialPortals>;
+static_assert(sizeof(InitialRouterLinkStateArray) == 768,
+              "Invalid InitialRouterLinkStateArray size");
 
 struct IPCZ_ALIGN(8) PrimaryBufferHeader {
   // Atomic generator for new unique BufferIds to use across the associated
@@ -46,6 +57,12 @@ static_assert(sizeof(PrimaryBufferHeader) < kPrimaryBufferReservedHeaderSize);
 constexpr size_t kPrimaryBufferHeaderPaddingSize =
     kPrimaryBufferReservedHeaderSize - sizeof(PrimaryBufferHeader);
 
+// Computes the byte offset of one address from another.
+uint32_t ToOffset(void* ptr, void* base) {
+  return static_cast<uint32_t>(static_cast<uint8_t*>(ptr) -
+                               static_cast<uint8_t*>(base));
+}
+
 }  // namespace
 
 // This structure always sits at offset 0 in the primary buffer and has a fixed
@@ -55,6 +72,10 @@ struct IPCZ_ALIGN(8) NodeLinkMemory::PrimaryBuffer {
   // Header + padding occupies the first 256 bytes.
   PrimaryBufferHeader header;
   uint8_t reserved_header_padding[kPrimaryBufferHeaderPaddingSize];
+
+  // Reserved RouterLinkState instances for use only by the NodeLink's initial
+  // portals.
+  InitialRouterLinkStateArray initial_link_states;
 
   // Reserved memory for a series of fixed block allocators. Additional
   // allocators may be adopted by a NodeLinkMemory over its lifetime, but these
@@ -161,6 +182,19 @@ BufferId NodeLinkMemory::AllocateNewBufferId() {
 SublinkId NodeLinkMemory::AllocateSublinkIds(size_t count) {
   return SublinkId{primary_buffer_.header.next_sublink_id.fetch_add(
       count, std::memory_order_relaxed)};
+}
+
+FragmentRef<RouterLinkState> NodeLinkMemory::GetInitialRouterLinkState(
+    size_t i) {
+  auto& states = primary_buffer_.initial_link_states;
+  ABSL_ASSERT(i < states.size());
+  RouterLinkState* state = &states[i];
+
+  FragmentDescriptor descriptor(kPrimaryBufferId,
+                                ToOffset(state, primary_buffer_memory_.data()),
+                                sizeof(RouterLinkState));
+  return FragmentRef<RouterLinkState>(RefCountedFragment::kUnmanagedRef,
+                                      Fragment(descriptor, state));
 }
 
 }  // namespace ipcz

@@ -267,8 +267,8 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
     }
 
     Ref<RemoteRouterLink> new_link = from_node_link.AddRemoteRouterLink(
-        descriptor.new_sublink, LinkType::kPeripheralOutward, LinkSide::kB,
-        router);
+        descriptor.new_sublink, nullptr, LinkType::kPeripheralOutward,
+        LinkSide::kB, router);
     if (new_link) {
       router->outward_link_ = std::move(new_link);
 
@@ -326,8 +326,9 @@ void Router::SerializeNewRouter(NodeLink& to_node_link,
   // RemoteRouterLink, because it's not yet safe for us to send messages to the
   // remote node regarding `new_sublink`. `descriptor` must be transmitted
   // first.
-  to_node_link.AddRemoteRouterLink(new_sublink, LinkType::kPeripheralInward,
-                                   LinkSide::kA, WrapRefCounted(this));
+  to_node_link.AddRemoteRouterLink(new_sublink, nullptr,
+                                   LinkType::kPeripheralInward, LinkSide::kA,
+                                   WrapRefCounted(this));
 }
 
 void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
