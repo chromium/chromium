@@ -65,10 +65,12 @@ int InstructionCounterFdForCurrentThread() {
 
 }  // namespace
 
+// static
 bool ThreadInstructionCount::IsSupported() {
   return InstructionCounterFdForCurrentThread() > 0;
 }
 
+// static
 ThreadInstructionCount ThreadInstructionCount::Now() {
   DCHECK(IsSupported());
   int fd = InstructionCounterFdForCurrentThread();
