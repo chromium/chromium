@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   std::string script =
       "window.domAutomationController.send(window.performance.timing."
       "responseEnd - window.performance.timing.responseStart)";
-  EXPECT_LT(0, content::EvalJs(GetActiveWebContents(), script,
+  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script,
                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
   // Check the response start is after (or the same as) request start.
