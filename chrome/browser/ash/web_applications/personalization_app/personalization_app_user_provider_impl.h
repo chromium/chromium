@@ -39,8 +39,7 @@ namespace personalization_app {
 
 class PersonalizationAppUserProviderImpl
     : public PersonalizationAppUserProvider,
-      public user_manager::UserManager::Observer,
-      public ash::CameraPresenceNotifier::Observer {
+      public user_manager::UserManager::Observer {
  public:
   explicit PersonalizationAppUserProviderImpl(content::WebUI* web_ui);
 
@@ -90,8 +89,7 @@ class PersonalizationAppUserProviderImpl
   void OnUserProfileImageUpdated(const user_manager::User& user,
                                  const gfx::ImageSkia& profile_image) override;
 
-  // ash::CameraPresenceNotifier::Observer:
-  void OnCameraPresenceCheckDone(bool is_camera_present) override;
+  void OnCameraPresenceCheckDone(bool is_camera_present);
 
   void SetUserImageFileSelectorForTesting(
       std::unique_ptr<ash::UserImageFileSelector> file_selector);
@@ -135,9 +133,7 @@ class PersonalizationAppUserProviderImpl
                           user_manager::UserManager::Observer>
       user_manager_observer_{this};
 
-  base::ScopedObservation<ash::CameraPresenceNotifier,
-                          ash::CameraPresenceNotifier::Observer>
-      camera_observer_{this};
+  std::unique_ptr<ash::CameraPresenceNotifier> camera_presence_notifier_;
 
   mojo::Remote<ash::personalization_app::mojom::UserImageObserver>
       user_image_observer_remote_;

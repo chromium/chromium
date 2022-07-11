@@ -24,17 +24,6 @@ constexpr char kFakeCameraModelId[] = "0def:c000";
 
 }  // namespace
 
-class MockCameraPresenceNotifierObserver
-    : public ash::CameraPresenceNotifier::Observer {
- public:
-  MockCameraPresenceNotifierObserver() = default;
-  ~MockCameraPresenceNotifierObserver() override = default;
-  MOCK_METHOD(void,
-              OnCameraPresenceCheckDone,
-              (bool is_camera_present),
-              (override));
-};
-
 class FakeVideoCaptureService
     : public video_capture::mojom::VideoCaptureService {
  public:
@@ -94,6 +83,9 @@ class CameraPresenceNotifierTest : public testing::Test {
 
   void RemoveFakeCamera() { fake_service_.RemoveFakeCamera(); }
 
+  // Advances time past the poll interval.
+  void StepClock() { task_environment_.FastForwardBy(base::Seconds(10)); }
+
   // testing::Test:
   void SetUp() override {
     content::OverrideVideoCaptureServiceForTesting(&fake_service_);
@@ -104,39 +96,47 @@ class CameraPresenceNotifierTest : public testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeVideoCaptureService fake_service_;
 };
 
 // Tests that the observer of CameraPresenceNotifier works correctly when the
 // camera is added/removed.
 TEST_F(CameraPresenceNotifierTest, TestObservers) {
-  auto* notifier = CameraPresenceNotifier::GetInstance();
+  std::vector<bool> values;
+  CameraPresenceNotifier::CameraPresenceCallback callback = base::BindRepeating(
+      [](std::vector<bool>* values, bool camera_is_present) {
+        values->push_back(camera_is_present);
+      },
+      &values);
 
-  MockCameraPresenceNotifierObserver mock_observer;
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer, OnCameraPresenceCheckDone(false))
-        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-    notifier->AddObserver(&mock_observer);
-    run_loop.Run();
-  }
+  CameraPresenceNotifier notifier(callback);
 
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer, OnCameraPresenceCheckDone(true))
-        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-    AddFakeCamera();
-    run_loop.Run();
-  }
+  // No events before start.
+  ASSERT_TRUE(values.empty());
+  notifier.Start();
+  StepClock();
+  // The first result should be false since there are no available cameras.
+  ASSERT_EQ(1U, values.size());
+  EXPECT_FALSE(values.back());
 
-  {
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer, OnCameraPresenceCheckDone(false))
-        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-    RemoveFakeCamera();
-    run_loop.Run();
-  }
+  // Advance clock to verify that unchanged values don't cause callbacks.
+  StepClock();
+  ASSERT_EQ(1U, values.size());
+
+  // Add a camera.
+  AddFakeCamera();
+  StepClock();
+  ASSERT_EQ(2U, values.size());
+  // There is a camera now.
+  EXPECT_TRUE(values.back());
+
+  // Camera removed. Next callback is false again.
+  RemoveFakeCamera();
+  StepClock();
+  ASSERT_EQ(3U, values.size());
+  EXPECT_FALSE(values.back());
 }
 
 }  // namespace ash

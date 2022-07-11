@@ -25,8 +25,7 @@ namespace settings {
 // ChromeOS user image settings page UI handler.
 class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
                              public user_manager::UserManager::Observer,
-                             public ImageDecoder::ImageRequest,
-                             public CameraPresenceNotifier::Observer {
+                             public ImageDecoder::ImageRequest {
  public:
   ChangePictureHandler();
 
@@ -39,9 +38,6 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
-
-  // CameraPresenceNotifier::Observer implementation:
-  void OnCameraPresenceCheckDone(bool is_camera_present) override;
 
  private:
   friend class ChangePictureHandlerTest;
@@ -126,9 +122,8 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observation_{this};
-  base::ScopedObservation<CameraPresenceNotifier,
-                          CameraPresenceNotifier::Observer>
-      camera_observation_{this};
+
+  ash::CameraPresenceNotifier camera_presence_notifier_;
 
   std::unique_ptr<ash::UserImageFileSelector> user_image_file_selector_;
 

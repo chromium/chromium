@@ -64,7 +64,10 @@ using ::content::BrowserThread;
 }  // namespace
 
 ChangePictureHandler::ChangePictureHandler()
-    : previous_image_index_(user_manager::User::USER_IMAGE_INVALID) {
+    : previous_image_index_(user_manager::User::USER_IMAGE_INVALID),
+      camera_presence_notifier_(
+          base::BindRepeating(&ChangePictureHandler::SetCameraPresent,
+                              base::Unretained(this))) {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   audio::SoundsManager* manager = audio::SoundsManager::Get();
   manager->Initialize(static_cast<int>(Sound::kObjectDelete),
@@ -109,7 +112,7 @@ void ChangePictureHandler::RegisterMessages() {
 
 void ChangePictureHandler::OnJavascriptAllowed() {
   user_manager_observation_.Observe(user_manager::UserManager::Get());
-  camera_observation_.Observe(CameraPresenceNotifier::GetInstance());
+  camera_presence_notifier_.Start();
 }
 
 void ChangePictureHandler::OnJavascriptDisallowed() {
@@ -117,9 +120,7 @@ void ChangePictureHandler::OnJavascriptDisallowed() {
       user_manager::UserManager::Get()));
   user_manager_observation_.Reset();
 
-  DCHECK(camera_observation_.IsObservingSource(
-      CameraPresenceNotifier::GetInstance()));
-  camera_observation_.Reset();
+  camera_presence_notifier_.Stop();
 
   user_image_file_selector_.reset();
 }
@@ -382,10 +383,6 @@ void ChangePictureHandler::SetImageFromCamera(
 
 void ChangePictureHandler::SetCameraPresent(bool present) {
   FireWebUIListener("camera-presence-changed", base::Value(present));
-}
-
-void ChangePictureHandler::OnCameraPresenceCheckDone(bool is_camera_present) {
-  SetCameraPresent(is_camera_present);
 }
 
 void ChangePictureHandler::OnUserImageChanged(const user_manager::User& user) {
