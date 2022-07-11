@@ -47,7 +47,7 @@ bool IsJspbMessage(const std::string& jspb_id_prefix,
   if (!value.is_list()) {
     return false;
   }
-  base::Value::ConstListView list = value.GetListDeprecated();
+  const base::Value::List& list = value.GetList();
   if (list.empty() || !list.front().is_string() ||
       !base::StartsWith(list.front().GetString(), jspb_id_prefix)) {
     if (error_message != nullptr) {
@@ -60,7 +60,7 @@ bool IsJspbMessage(const std::string& jspb_id_prefix,
 }
 
 bool ParseJspbToString(const std::string& jspb_id_prefix,
-                       const base::Value::ConstListView& list,
+                       const base::Value::List& list,
                        std::string* bytes,
                        std::string* error_message);
 
@@ -100,8 +100,8 @@ bool AppendFieldValue(const std::string& jspb_id_prefix,
       if (IsJspbMessage(jspb_id_prefix, value, /* error_message= */ nullptr)) {
         // A proto message
         std::string bytes;
-        if (!ParseJspbToString(jspb_id_prefix, value.GetListDeprecated(),
-                               &bytes, error_message)) {
+        if (!ParseJspbToString(jspb_id_prefix, value.GetList(), &bytes,
+                               error_message)) {
           return false;
         }
         WriteTag(field_tag, WIRETYPE_LENGTH_DELIMITED, out);
@@ -110,7 +110,7 @@ bool AppendFieldValue(const std::string& jspb_id_prefix,
         break;
       }
       // A repeated field.
-      for (const base::Value& element : value.GetListDeprecated()) {
+      for (const base::Value& element : value.GetList()) {
         AppendFieldValue(jspb_id_prefix, field_tag, element, out,
                          error_message);
       }
@@ -129,7 +129,7 @@ bool AppendFieldValue(const std::string& jspb_id_prefix,
 
 // Parses a message from |list| and puts the result into |bytes|.
 bool ParseJspbToString(const std::string& jspb_id_prefix,
-                       const base::Value::ConstListView& list,
+                       const base::Value::List& list,
                        std::string* bytes,
                        std::string* error_message) {
   google::protobuf::io::StringOutputStream string_output(bytes);
@@ -183,7 +183,7 @@ absl::optional<std::string> ParseJspb(const std::string& jspb_id_prefix,
     return absl::nullopt;
   }
   std::string bytes;
-  if (!ParseJspbToString(jspb_id_prefix, message.GetListDeprecated(), &bytes,
+  if (!ParseJspbToString(jspb_id_prefix, message.GetList(), &bytes,
                          error_message)) {
     return absl::nullopt;
   }

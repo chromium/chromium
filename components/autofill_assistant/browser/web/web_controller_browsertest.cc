@@ -855,11 +855,11 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
       [itemRect.top, itemRect.bottom, window.innerHeight,
            containerRect.top, containerRect.bottom])")
                                   .ExtractList();
-    double top = eval_result.GetListDeprecated()[0].GetDouble();
-    double bottom = eval_result.GetListDeprecated()[1].GetDouble();
-    double window_height = eval_result.GetListDeprecated()[2].GetDouble();
-    double container_top = eval_result.GetListDeprecated()[3].GetDouble();
-    double container_bottom = eval_result.GetListDeprecated()[4].GetDouble();
+    double top = eval_result.GetList()[0].GetDouble();
+    double bottom = eval_result.GetList()[1].GetDouble();
+    double window_height = eval_result.GetList()[2].GetDouble();
+    double container_top = eval_result.GetList()[3].GetDouble();
+    double container_bottom = eval_result.GetList()[4].GetDouble();
 
     // Element is at the desired position. (top is relative to the viewport)
     EXPECT_NEAR(top, window_height * 0.25, 1);
@@ -1731,8 +1731,8 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
       let containerRect = container.getBoundingClientRect();
       [itemRect.top, containerRect.top])")
                                 .ExtractList();
-  double element_top = eval_result.GetListDeprecated()[0].GetDouble();
-  double container_top = eval_result.GetListDeprecated()[1].GetDouble();
+  double element_top = eval_result.GetList()[0].GetDouble();
+  double container_top = eval_result.GetList()[1].GetDouble();
 
   // Element is at the desired position.
   EXPECT_NEAR(element_top, container_top, 1);
@@ -1804,8 +1804,8 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   )")
                                 .ExtractList();
 
-  double top = eval_result.GetListDeprecated()[0].GetDouble();
-  double window_inner_height = eval_result.GetListDeprecated()[1].GetDouble();
+  double top = eval_result.GetList()[0].GetDouble();
+  double window_inner_height = eval_result.GetList()[1].GetDouble();
 
   EXPECT_NEAR(top, window_inner_height * 0.7, 1);
 }

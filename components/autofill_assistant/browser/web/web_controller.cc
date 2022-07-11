@@ -528,7 +528,7 @@ void WebController::OnJavaScriptResultForStringArray(
     return;
   }
 
-  auto values = remote_object->GetValue()->GetListDeprecated();
+  const base::Value::List& values = remote_object->GetValue()->GetList();
   std::vector<std::string> v;
   for (const base::Value& value : values) {
     if (!value.is_string()) {
@@ -1280,13 +1280,13 @@ void WebController::GetStringAttribute(
     std::move(callback).Run(error_status, "");
     return;
   }
-  base::Value::ListStorage attribute_values;
+  base::Value::List attribute_values;
   for (const std::string& attribute : attributes) {
-    attribute_values.emplace_back(base::Value(attribute));
+    attribute_values.Append(attribute);
   }
 
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgument(attribute_values, &arguments);
+  AddRuntimeCallArgument(std::move(attribute_values), &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
@@ -1346,13 +1346,13 @@ void WebController::SetAttribute(
     std::move(callback).Run(error_status);
     return;
   }
-  base::Value::ListStorage attribute_values;
+  base::Value::List attribute_values;
   for (const std::string& attribute : attributes) {
-    attribute_values.emplace_back(base::Value(attribute));
+    attribute_values.Append(attribute);
   }
 
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgument(attribute_values, &arguments);
+  AddRuntimeCallArgument(std::move(attribute_values), &arguments);
   AddRuntimeCallArgument(value, &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
@@ -1463,14 +1463,14 @@ void WebController::OnGetVisualViewport(
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok() || !result->GetResult()->HasValue() ||
       !result->GetResult()->GetValue()->is_list() ||
-      result->GetResult()->GetValue()->GetListDeprecated().size() != 4u) {
+      result->GetResult()->GetValue()->GetList().size() != 4u) {
     VLOG(1) << __func__ << " Failed to get visual viewport: " << status;
     std::move(callback).Run(
         JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
         RectF());
     return;
   }
-  const auto& list = result->GetResult()->GetValue()->GetListDeprecated();
+  const auto& list = result->GetResult()->GetValue()->GetList();
   // Value::GetDouble() is safe to call without checking the value type; it'll
   // return 0.0 if the value has the wrong type.
 

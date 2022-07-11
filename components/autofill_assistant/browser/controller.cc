@@ -914,21 +914,21 @@ bool Controller::ShouldSuppressKeyboard() const {
 }
 
 base::Value Controller::GetDebugContext() {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
   if (trigger_context_) {
-    std::vector<base::Value> parameters_js;
+    base::Value::List parameters_js;
     for (const auto& parameter :
          trigger_context_->GetScriptParameters().ToProto()) {
-      base::Value parameter_js = base::Value(base::Value::Type::DICTIONARY);
-      parameter_js.SetKey(parameter.name(), base::Value(parameter.value()));
-      parameters_js.push_back(std::move(parameter_js));
+      base::Value::Dict parameter_js;
+      parameter_js.Set(parameter.name(), parameter.value());
+      parameters_js.Append(std::move(parameter_js));
     }
-    dict.SetKey("parameters", base::Value(parameters_js));
+    dict.Set("parameters", std::move(parameters_js));
   }
-  dict.SetKey("scripts", script_tracker()->GetDebugContext());
+  dict.Set("scripts", script_tracker()->GetDebugContext());
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 void Controller::GetTouchableArea(std::vector<RectF>* area) const {

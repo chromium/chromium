@@ -70,15 +70,16 @@ void StarterHeuristic::InitFromTrialParams() {
   }
 
   // Read mandatory list of heuristics.
-  auto* heuristics = dict->FindListKey(kHeuristicsKey);
-  if (heuristics == nullptr || !heuristics->is_list()) {
+  const base::Value::List* heuristics =
+      dict->GetDict().FindList(kHeuristicsKey);
+  if (heuristics == nullptr) {
     VLOG(1) << "Field trial params did not contain heuristics";
     return;
   }
   url_matcher::URLMatcherConditionSet::Vector condition_sets;
   base::flat_map<base::MatcherStringPattern::ID, std::string> mapping;
   base::MatcherStringPattern::ID next_condition_set_id = 0;
-  for (const auto& heuristic : heuristics->GetListDeprecated()) {
+  for (const auto& heuristic : *heuristics) {
     auto* intent =
         heuristic.FindKeyOfType(kHeuristicIntentKey, base::Value::Type::STRING);
     auto* url_conditions = heuristic.FindKeyOfType(
@@ -101,10 +102,11 @@ void StarterHeuristic::InitFromTrialParams() {
   }
 
   // Read optional list of denylisted domains.
-  auto* denylisted_domains_value = dict->FindListKey(kDenylistedDomainsKey);
+  const base::Value::List* denylisted_domains_value =
+      dict->GetDict().FindList(kDenylistedDomainsKey);
   base::flat_set<std::string> denylisted_domains;
   if (denylisted_domains_value != nullptr) {
-    for (const auto& domain : denylisted_domains_value->GetListDeprecated()) {
+    for (const auto& domain : *denylisted_domains_value) {
       if (!domain.is_string()) {
         VLOG(1) << "Invalid type for denylisted domain";
         return;

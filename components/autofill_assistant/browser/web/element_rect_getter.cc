@@ -85,7 +85,7 @@ void ElementRectGetter::OnGetClientRectResult(
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok() || !result->GetResult()->HasValue() ||
       !result->GetResult()->GetValue()->is_list() ||
-      result->GetResult()->GetValue()->GetListDeprecated().size() != 4u) {
+      result->GetResult()->GetValue()->GetList().size() != 4u) {
     VLOG(2) << __func__ << " Failed to get element rect: " << status;
     std::move(callback).Run(
         JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr),
@@ -93,7 +93,7 @@ void ElementRectGetter::OnGetClientRectResult(
     return;
   }
 
-  const auto& list = result->GetResult()->GetValue()->GetListDeprecated();
+  const auto& list = result->GetResult()->GetValue()->GetList();
   // Value::GetDouble() is safe to call without checking the value type; it'll
   // return 0.0 if the value has the wrong type.
 

@@ -62,10 +62,10 @@ std::unique_ptr<base::Value> ToValueImpl(const base::Value& value, T*) {
 template <typename T>
 std::unique_ptr<base::Value> ToValueImpl(const std::vector<T>& vector,
                                          const std::vector<T>*) {
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   for (const auto& it : vector)
-    result->GetList().Append(base::Value::FromUniquePtrValue(ToValue(it)));
-  return std::move(result);
+    result.Append(base::Value::FromUniquePtrValue(ToValue(it)));
+  return std::make_unique<base::Value>(std::move(result));
 }
 
 template <typename T>
@@ -157,7 +157,7 @@ struct FromValue<std::vector<T>> {
       return result;
     }
     errors->Push();
-    for (const auto& item : value.GetListDeprecated())
+    for (const auto& item : value.GetList())
       result.push_back(FromValue<T>::Parse(item, errors));
     errors->Pop();
     return result;

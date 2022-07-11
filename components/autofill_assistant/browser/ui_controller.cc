@@ -711,17 +711,17 @@ void UiController::SetBottomSheetState(BottomSheetState state) {
   bottom_sheet_state_ = state;
 }
 base::Value UiController::GetDebugContext() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.SetKey("status", base::Value(status_message_));
+  dict.Set("status", status_message_);
 
-  std::vector<base::Value> details_list;
+  base::Value::List details_list;
   for (const auto& holder : details_) {
-    details_list.push_back(holder.GetDetails().GetDebugContext());
+    details_list.Append(holder.GetDetails().GetDebugContext());
   }
-  dict.SetKey("details", base::Value(details_list));
+  dict.Set("details", std::move(details_list));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 const CollectUserDataOptions* UiController::GetCollectUserDataOptions() const {

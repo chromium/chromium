@@ -580,7 +580,7 @@ void SelectorObserver::OnHasChanges(
   wait_time_remaining_ms_[dom_root] = wait_time_remaining;
   const base::Value* updates_val = value->FindKey("updates");
   DCHECK(updates_val->is_list());
-  auto update_list = updates_val->GetListDeprecated();
+  const base::Value::List& update_list = updates_val->GetList();
   if (update_list.size() == 0) {
     AwaitChanges(dom_root);
     return;
@@ -655,16 +655,16 @@ void SelectorObserver::GetElementsByElementId(
     const std::vector<int>& element_ids,
     base::OnceCallback<void(const base::flat_map<int, std::string>&)>
         callback) {
-  auto element_ids_list =
-      std::make_unique<base::Value>(base::Value::Type::LIST);
+  base::Value::List element_ids_list;
   for (int id : element_ids) {
     DCHECK(id >= 0);
-    element_ids_list->Append(id);
+    element_ids_list.Append(id);
   }
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  arguments.emplace_back(runtime::CallArgument::Builder()
-                             .SetValue(std::move(element_ids_list))
-                             .Build());
+  arguments.emplace_back(
+      runtime::CallArgument::Builder()
+          .SetValue(std::make_unique<base::Value>(std::move(element_ids_list)))
+          .Build());
   auto status = CallSelectorObserverScriptApi(
       dom_root, "getElements",
       std::move(runtime::CallFunctionOnParams::Builder()

@@ -20,11 +20,11 @@ JsFilterBuilder::JsFilterBuilder() = default;
 JsFilterBuilder::~JsFilterBuilder() = default;
 
 std::unique_ptr<base::Value> JsFilterBuilder::BuildArgumentArray() const {
-  auto str_array_arg = std::make_unique<base::Value>(base::Value::Type::LIST);
+  base::Value::List str_array_arg;
   for (const std::string& str : arguments_) {
-    str_array_arg->Append(str);
+    str_array_arg.Append(str);
   }
-  return str_array_arg;
+  return std::make_unique<base::Value>(std::move(str_array_arg));
 }
 
 std::vector<std::unique_ptr<runtime::CallArgument>>
