@@ -53,8 +53,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   // Extra detail on the error.
   int extended_error_code = 0;
 
-  // A copy of the data requested exists in the cache.
+  // A copy of the data requested exists in the disk cache and/or the in-memory
+  // cache.
   bool exists_in_cache = false;
+
+  // A copy of the data requested exists in the in-memory cache.
+  bool exists_in_memory_cache = false;
 
   // Time the request completed.
   base::TimeTicks completion_time;

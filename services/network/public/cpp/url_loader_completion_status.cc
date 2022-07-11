@@ -35,6 +35,7 @@ bool URLLoaderCompletionStatus::operator==(
   return error_code == rhs.error_code &&
          extended_error_code == rhs.extended_error_code &&
          exists_in_cache == rhs.exists_in_cache &&
+         exists_in_memory_cache == rhs.exists_in_memory_cache &&
          completion_time == rhs.completion_time &&
          encoded_data_length == rhs.encoded_data_length &&
          encoded_body_length == rhs.encoded_body_length &&

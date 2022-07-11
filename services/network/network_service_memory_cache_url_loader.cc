@@ -187,6 +187,7 @@ void NetworkServiceMemoryCacheURLLoader::Finish(int error_code) {
     URLLoaderCompletionStatus status;
     status.error_code = net::OK;
     status.exists_in_cache = true;
+    status.exists_in_memory_cache = true;
     status.completion_time = base::TimeTicks::Now();
     status.encoded_body_length = content_->size();
     status.decoded_body_length = content_->size();

@@ -24,8 +24,14 @@ struct URLLoaderCompletionStatus {
   // Extra detail on the error.
   int32 extended_error_code = 0;
 
-  // A copy of the data requested exists in the cache.
+  // A copy of the data requested exists in the disk cache and/or the in-memory
+  // cache.
+  // TODO(https://crbug.com/1339708): Rename this field to `exists_in_any_cache`
+  // to represent what this field actually means.
   bool exists_in_cache = false;
+
+  // A copy of the data requested exists in the in-memory cache.
+  bool exists_in_memory_cache = false;
 
   // Time the request completed.
   mojo_base.mojom.TimeTicks completion_time;

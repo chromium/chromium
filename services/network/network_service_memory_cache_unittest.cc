@@ -40,7 +40,7 @@ namespace network {
 
 namespace {
 
-constexpr int kMaxTotalSize = 2 * 1024;
+constexpr int kMaxTotalSize = 8 * 1024;
 
 struct LoaderPair {
   LoaderPair() : client(std::make_unique<TestURLLoaderClient>()) {}
@@ -544,7 +544,9 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_Basic) {
 
   LoaderPair pair = CreateLoaderAndStart(request);
   pair.client->RunUntilComplete();
-  ASSERT_EQ(pair.client->completion_status().error_code, net::OK);
+  const URLLoaderCompletionStatus& status = pair.client->completion_status();
+  ASSERT_EQ(status.error_code, net::OK);
+  ASSERT_TRUE(status.exists_in_memory_cache);
 
   const mojom::URLResponseHeadPtr& response = pair.client->response_head();
   ASSERT_FALSE(response->network_accessed);
@@ -575,7 +577,9 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_DisableLoadTiming) {
   request.enable_load_timing = false;
   LoaderPair pair = CreateLoaderAndStart(request);
   pair.client->RunUntilComplete();
-  ASSERT_EQ(pair.client->completion_status().error_code, net::OK);
+  const URLLoaderCompletionStatus& status = pair.client->completion_status();
+  ASSERT_EQ(status.error_code, net::OK);
+  ASSERT_TRUE(status.exists_in_memory_cache);
 
   const mojom::URLResponseHeadPtr& response = pair.client->response_head();
   ASSERT_FALSE(response->network_accessed);
@@ -596,6 +600,7 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
   constexpr uint32_t kReadDataSize = 512;
   // Arbitrary response body size larger than `kReadDataSize`.
   constexpr int kBodySize = 4 * 1024 + 659;
+  DCHECK_GE(kMaxTotalSize, kBodySize);
 
   ResourceRequest request =
       CreateRequest(base::StringPrintf("/cacheable?body-size=%d", kBodySize));
@@ -629,7 +634,9 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
   }
 
   pair.client->RunUntilComplete();
-  ASSERT_EQ(pair.client->completion_status().error_code, net::OK);
+  const URLLoaderCompletionStatus& status = pair.client->completion_status();
+  ASSERT_EQ(status.error_code, net::OK);
+  ASSERT_TRUE(status.exists_in_memory_cache);
 
   const std::string kExpectedBody(kBodySize, 'a');
   ASSERT_EQ(kExpectedBody, received_body);
