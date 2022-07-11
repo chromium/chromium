@@ -54,15 +54,14 @@ void VTTCueBox::ApplyCSSProperties(
   SetInlineStyleProperty(CSSPropertyID::kPosition, CSSValueID::kAbsolute);
 
   //  the 'unicode-bidi' property must be set to 'plaintext'
-  SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
-                         CSSValueID::kWebkitPlaintext);
+  SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kPlaintext);
 
   // the 'direction' property must be set to direction
   SetInlineStyleProperty(CSSPropertyID::kDirection,
                          display_parameters.direction);
 
   // the 'writing-mode' property must be set to writing-mode
-  SetInlineStyleProperty(CSSPropertyID::kWebkitWritingMode,
+  SetInlineStyleProperty(CSSPropertyID::kWritingMode,
                          display_parameters.writing_mode);
 
   const gfx::PointF& position = display_parameters.position;
