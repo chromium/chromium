@@ -1441,7 +1441,30 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   // Delete the request before DelayTimer kicks in.
   federated_auth_request_impl_->ResetAndDeleteThis();
 
-  // If double counted, the the samples would not be unique so the following
+  // If double counted, these samples would not be unique so the following
+  // checks will fail.
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       TokenStatus::kDisabledInFlags, 1);
+  ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest,
+       MetricsForFeatureIsDisabledNotDoubleCountedWithAbortedRequest) {
+  test_api_permission_delegate_->permission_override_ =
+      std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
+                     ApiPermissionStatus::BLOCKED_VARIATIONS);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.wait_for_callback = false;
+  RequestExpectations expectations = {/*return_status=*/absl::nullopt,
+                                      /*devtools_issue_status*/ absl::nullopt,
+                                      /*fetched_endpoints=*/0};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  // Abort the request before DelayTimer kicks in.
+  federated_auth_request_impl_->CancelTokenRequest();
+
+  // If double counted, these samples would not be unique so the following
   // checks will fail.
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
                                        TokenStatus::kDisabledInFlags, 1);
