@@ -55460,6 +55460,7 @@ from previous Chrome versions.
   <int value="-1980328793" label="trace-upload-url"/>
   <int value="-1978625006" label="PcieBillboardNotification:disabled"/>
   <int value="-1977496883" label="ViewPasswords:enabled"/>
+  <int value="-1976050618" label="AppDeduplicationService:disabled"/>
   <int value="-1975719988" label="GlobalMediaControlsSeamlessTransfer:enabled"/>
   <int value="-1974861173" label="ShelfGesturesWithVirtualKeyboard:enabled"/>
   <int value="-1973722176" label="VoiceSearchOnLocalNtp:enabled"/>
@@ -56863,6 +56864,7 @@ from previous Chrome versions.
   <int value="-1116278039" label="ShelfAppScaling:disabled"/>
   <int value="-1115681358" label="FeedBackToTop:enabled"/>
   <int value="-1114080030" label="ResourceLoadingHints:enabled"/>
+  <int value="-1113746031" label="AppDeduplicationService:enabled"/>
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>

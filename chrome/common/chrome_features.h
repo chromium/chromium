@@ -56,6 +56,11 @@ extern const base::Feature kAnonymousUpdateChecks;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAppDeduplicationService;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppDiscoveryForOobe;
 #endif
 
