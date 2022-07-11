@@ -124,15 +124,6 @@ void SetUpSecondaryProfileForPreTest(
           .GetProfileAttributesWithPath(profile_path);
   ASSERT_NE(entry, nullptr);
   entry->SetActiveTimeToNow();
-
-  // Enabling sync, as Lacros only supports syncing profiles.
-  // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles
-  // are allowed.
-  entry->SetAuthInfo(
-      base::StringPrintf("gaia_id_%s", profile_path.MaybeAsASCII().c_str()),
-      base::UTF8ToUTF16(base::StringPrintf(
-          "user%s@gmail.com", profile_path.MaybeAsASCII().c_str())),
-      /*is_consented_primary_account=*/true);
 }
 
 void CreateBrowserForProfileDir(const base::FilePath& profile_dir_basename) {
