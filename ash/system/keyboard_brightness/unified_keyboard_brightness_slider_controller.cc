@@ -13,6 +13,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -81,9 +82,8 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
         IDS_ASH_STATUS_TRAY_KEYBOARD_BACKLIGHT_ACCESSIBLE_NAME);
 
     personalization_app::mojom::BacklightColor backlight_color =
-        Shell::Get()
-            ->keyboard_backlight_color_controller()
-            ->GetBacklightColor();
+        Shell::Get()->keyboard_backlight_color_controller()->GetBacklightColor(
+            Shell::Get()->session_controller()->GetActiveAccountId());
     if (backlight_color ==
         personalization_app::mojom::BacklightColor::kRainbow) {
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();

@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -73,7 +74,8 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
   }
   DVLOG(4) << __func__ << " backlight_color=" << backlight_color;
   LogKeyboardBacklightColor(backlight_color);
-  GetKeyboardBacklightColorController()->SetBacklightColor(backlight_color);
+  GetKeyboardBacklightColorController()->SetBacklightColor(
+      backlight_color, GetAccountId(profile_));
   GetKeyboardBacklightColorController()
       ->keyboard_backlight_color_nudge_controller()
       ->SetUserPerformedAction();
@@ -103,7 +105,8 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
     NotifyBacklightColorChanged() {
   DCHECK(keyboard_backlight_observer_remote_.is_bound());
   keyboard_backlight_observer_remote_->OnBacklightColorChanged(
-      GetKeyboardBacklightColorController()->GetBacklightColor());
+      GetKeyboardBacklightColorController()->GetBacklightColor(
+          GetAccountId(profile_)));
 }
 
 }  // namespace ash::personalization_app

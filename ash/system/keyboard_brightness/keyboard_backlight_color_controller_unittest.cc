@@ -25,7 +25,9 @@ const AccountId account_id_2 = AccountId::FromUserEmailGaiaId(kUser2, kUser2);
 class KeyboardBacklightColorControllerTest : public AshTestBase {
  public:
   KeyboardBacklightColorControllerTest()
-      : scoped_feature_list_(features::kRgbKeyboard) {}
+      : scoped_feature_list_(features::kRgbKeyboard) {
+    set_start_session(false);
+  }
 
   KeyboardBacklightColorControllerTest(
       const KeyboardBacklightColorControllerTest&) = delete;
@@ -54,41 +56,37 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
 };
 
 TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorUpdatesPref) {
+  SimulateUserLogin(account_id_1);
   controller_->SetBacklightColor(
-      personalization_app::mojom::BacklightColor::kBlue);
+      personalization_app::mojom::BacklightColor::kBlue, account_id_1);
 
-  PrefService* prefs_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kBlue,
-            static_cast<personalization_app::mojom::BacklightColor>(
-                prefs_service->GetInteger(
-                    prefs::kPersonalizationKeyboardBacklightColor)));
+            controller_->GetBacklightColor(account_id_1));
 }
 
 TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
   // Verify the user starts with wallpaper-extracted color.
   SimulateUserLogin(account_id_1);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
-            controller_->GetBacklightColor());
-  // Expect the Wallpaper color to be set twice. Once on login screen and once
-  // after the user logs in.
+            controller_->GetBacklightColor(account_id_1));
+  // Expect the Wallpaper color to be set after user signs in.
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 2);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 1);
   histogram_tester().ExpectTotalCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", 2);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", 1);
   controller_->SetBacklightColor(
-      personalization_app::mojom::BacklightColor::kRainbow);
+      personalization_app::mojom::BacklightColor::kRainbow, account_id_1);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kRainbow,
-            controller_->GetBacklightColor());
+            controller_->GetBacklightColor(account_id_1));
 
   // Simulate login for user2.
   SimulateUserLogin(account_id_2);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
-            controller_->GetBacklightColor());
+            controller_->GetBacklightColor(account_id_2));
 
   SimulateUserLogin(account_id_1);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kRainbow,
-            controller_->GetBacklightColor());
+            controller_->GetBacklightColor(account_id_1));
 }
 
 }  // namespace ash

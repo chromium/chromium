@@ -34,12 +34,14 @@ class ASH_EXPORT KeyboardBacklightColorController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Sets the keyboard backlight color.
+  // Sets the keyboard backlight color for the user with |account_id|.
   void SetBacklightColor(
-      personalization_app::mojom::BacklightColor backlight_color);
+      personalization_app::mojom::BacklightColor backlight_color,
+      const AccountId& account_id);
 
-  // Returns the currently set backlight color.
-  personalization_app::mojom::BacklightColor GetBacklightColor();
+  // Returns the currently set backlight color for user with |account_id|.
+  personalization_app::mojom::BacklightColor GetBacklightColor(
+      const AccountId& account_id);
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -53,6 +55,15 @@ class ASH_EXPORT KeyboardBacklightColorController
   };
 
  private:
+  // Displays the |backlight_color| on the keyboard.
+  void DisplayBacklightColor(
+      personalization_app::mojom::BacklightColor backlight_color);
+
+  // Sets the keyboard backlight color pref for user with |account_id|.
+  void SetBacklightColorPref(
+      personalization_app::mojom::BacklightColor backlight_color,
+      const AccountId& account_id);
+
   ScopedSessionObserver scoped_session_observer_{this};
 
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>

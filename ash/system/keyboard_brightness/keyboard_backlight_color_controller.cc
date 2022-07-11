@@ -24,8 +24,13 @@ namespace ash {
 
 namespace {
 
-PrefService* GetActivePrefService() {
-  return Shell::Get()->session_controller()->GetActivePrefService();
+AccountId GetActiveAccountId() {
+  return Shell::Get()->session_controller()->GetActiveAccountId();
+}
+
+PrefService* GetUserPrefService(const AccountId& account_id) {
+  return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
+      account_id);
 }
 
 }  // namespace
@@ -47,6 +52,43 @@ void KeyboardBacklightColorController::RegisterProfilePrefs(
 }
 
 void KeyboardBacklightColorController::SetBacklightColor(
+    personalization_app::mojom::BacklightColor backlight_color,
+    const AccountId& account_id) {
+  DisplayBacklightColor(backlight_color);
+  SetBacklightColorPref(backlight_color, account_id);
+}
+
+personalization_app::mojom::BacklightColor
+KeyboardBacklightColorController::GetBacklightColor(
+    const AccountId& account_id) {
+  // |account_id| may be empty in tests.
+  if (account_id.empty())
+    return personalization_app::mojom::BacklightColor::kWallpaper;
+  auto* pref_service = GetUserPrefService(account_id);
+  if (!pref_service) {
+    // TODO(b/238463679): Migrate to local state pref. There may be a timing
+    // issue that results in null pref service. Defaults to |kWallpaper| when
+    // that happens.
+    return personalization_app::mojom::BacklightColor::kWallpaper;
+  }
+  return static_cast<personalization_app::mojom::BacklightColor>(
+      pref_service->GetInteger(prefs::kPersonalizationKeyboardBacklightColor));
+}
+
+void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  const auto backlight_color = GetBacklightColor(GetActiveAccountId());
+  DisplayBacklightColor(backlight_color);
+}
+
+void KeyboardBacklightColorController::OnWallpaperColorsChanged() {
+  const auto backlight_color = GetBacklightColor(GetActiveAccountId());
+  if (backlight_color != personalization_app::mojom::BacklightColor::kWallpaper)
+    return;
+  DisplayBacklightColor(personalization_app::mojom::BacklightColor::kWallpaper);
+}
+
+void KeyboardBacklightColorController::DisplayBacklightColor(
     personalization_app::mojom::BacklightColor backlight_color) {
   auto* rgb_keyboard_manager = Shell::Get()->rgb_keyboard_manager();
   DCHECK(rgb_keyboard_manager);
@@ -81,39 +123,14 @@ void KeyboardBacklightColorController::SetBacklightColor(
       rgb_keyboard_manager->SetRainbowMode();
       break;
   }
-
-  GetActivePrefService()->SetInteger(
-      prefs::kPersonalizationKeyboardBacklightColor,
-      static_cast<int>(backlight_color));
 }
 
-personalization_app::mojom::BacklightColor
-KeyboardBacklightColorController::GetBacklightColor() {
-  return static_cast<personalization_app::mojom::BacklightColor>(
-      GetActivePrefService()->GetInteger(
-          prefs::kPersonalizationKeyboardBacklightColor));
-}
-
-void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  DCHECK(pref_service);
-  auto backlight_color =
-      static_cast<personalization_app::mojom::BacklightColor>(
-          pref_service->GetInteger(
-              prefs::kPersonalizationKeyboardBacklightColor));
-  SetBacklightColor(backlight_color);
-}
-
-void KeyboardBacklightColorController::OnWallpaperColorsChanged() {
-  auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
-  DCHECK(wallpaper_controller);
-  auto backlight_color =
-      static_cast<personalization_app::mojom::BacklightColor>(
-          GetActivePrefService()->GetInteger(
-              prefs::kPersonalizationKeyboardBacklightColor));
-  if (backlight_color != personalization_app::mojom::BacklightColor::kWallpaper)
-    return;
-  SetBacklightColor(personalization_app::mojom::BacklightColor::kWallpaper);
+void KeyboardBacklightColorController::SetBacklightColorPref(
+    personalization_app::mojom::BacklightColor backlight_color,
+    const AccountId& account_id) {
+  GetUserPrefService(account_id)
+      ->SetInteger(prefs::kPersonalizationKeyboardBacklightColor,
+                   static_cast<int>(backlight_color));
 }
 
 }  // namespace ash
