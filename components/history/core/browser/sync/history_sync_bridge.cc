@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -31,24 +32,24 @@ std::string GetStorageKeyFromVisitRow(const VisitRow& row) {
   return HistorySyncMetadataDatabase::StorageKeyFromVisitTime(row.visit_time);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SyncHistoryDatabaseError {
-  // TODO(crbug.com/1318028): Consider introducing separate buckets for
-  // MergeSyncData vs ApplySyncChanges.
-  kApplySyncChangesAddSyncedVisit = 1,
-  kApplySyncChangesWriteMetadata = 2,
-  kOnDatabaseError = 3,
-  kLoadMetadata = 4,
-  kOnURLVisitedGetVisit = 5,
-  kOnURLsDeletedReadMetadata = 6,
-  kOnVisitUpdatedGetURL = 7,
-  kGetAllDataReadMetadata = 8,
+  kApplySyncChangesAddSyncedVisit = 0,
+  kApplySyncChangesWriteMetadata = 1,
+  kOnDatabaseError = 2,
+  kLoadMetadata = 3,
+  kOnURLVisitedGetVisit = 4,
+  kOnURLsDeletedReadMetadata = 5,
+  kOnVisitUpdatedGetURL = 6,
+  kGetAllDataReadMetadata = 7,
+  kMaxValue = kGetAllDataReadMetadata
 };
 
 void RecordDatabaseError(SyncHistoryDatabaseError error) {
   DLOG(ERROR) << "SyncHistoryBridge database error: "
               << static_cast<int>(error);
-  // TODO(crbug.com/1318028): Record UMA histogram, and add "do not modify"
-  // comment to the enum.
+  base::UmaHistogramEnumeration("Sync.History.DatabaseError", error);
 }
 
 // Creates a VisitRow out of a single redirect entry within the `specifics`.
@@ -205,10 +206,13 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   return entity_data;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SpecificsError {
-  kMissingRequiredFields = 1,
-  kTooOld = 2,
-  kTooNew = 3,
+  kMissingRequiredFields = 0,
+  kTooOld = 1,
+  kTooNew = 2,
+  kMaxValue = kTooNew
 };
 
 // Checks the given `specifics` for validity, i.e. whether it passes some basic
@@ -241,9 +245,8 @@ absl::optional<SpecificsError> GetSpecificsError(
   return {};
 }
 
-void RecordSpecificsError(SpecificsError validity) {
-  // TODO(crbug.com/1318028): Record UMA histogram, and add "do not modify"
-  // comment to the enum.
+void RecordSpecificsError(SpecificsError error) {
+  base::UmaHistogramEnumeration("Sync.History.IncomingSpecificsError", error);
 }
 
 }  // namespace

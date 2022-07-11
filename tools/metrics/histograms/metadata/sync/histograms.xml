@@ -442,6 +442,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.History.DatabaseError" enum="SyncHistoryDatabaseError"
+    expires_after="2023-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded when HistorySyncBridge encounters a database error. As a result,
+    the bridge stops operating (and tracking metadata) for the rest of the
+    runtime of Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Sync.History.IncomingSpecificsError"
+    enum="SyncHistorySpecificsError" expires_after="2023-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded when HistorySyncBridge encounters an incoming entity that is
+    invalid, i.e. that fails some validity check. Counts in this histogram
+    should be compared to counts in the &quot;Remote&quot; buckets of
+    Sync.ModelTypeEntityChange3.History.
+  </summary>
+</histogram>
+
 <histogram name="Sync.IncomingInvalidationStatus"
     enum="SyncIncomingInvalidationStatus" expires_after="2022-11-13">
   <owner>rushans@google.com</owner>
