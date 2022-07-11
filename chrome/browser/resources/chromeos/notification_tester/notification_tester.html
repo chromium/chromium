@@ -30,7 +30,7 @@
 
   .config-form {
     margin: 0 auto;
-    min-width: 28rem;
+    min-width: 32rem;
     padding: 0 1rem;
     width: 100%;
   }
@@ -195,7 +195,7 @@
           <label for="progress-percent"> Progress % </label>
           <cr-radio-group id="progress-percent"
             selected="{{notifMetadata.richDataProgress}}">
-            <cr-radio-button name="none" label="N/A"></cr-radio-button>
+            <cr-radio-button name="-1" label="N/A"></cr-radio-button>
             <cr-radio-button name="0" label="0%"></cr-radio-button>
             <cr-radio-button name="50" label="50%"></cr-radio-button>
             <cr-radio-button name="100" label="100%"></cr-radio-button>
@@ -228,7 +228,7 @@
         <label for="num-buttons"> # Buttons </label>
         <cr-radio-group id="num-buttons"
           selected="{{notifMetadata.richDataNumButtons}}">
-          <cr-radio-button name="none" label="None"></cr-radio-button>
+          <cr-radio-button name="0" label="None"></cr-radio-button>
           <cr-radio-button name="1" label="1"></cr-radio-button>
           <cr-radio-button name="2" label="2"></cr-radio-button>
           <cr-radio-button name="3" label="3"></cr-radio-button>
