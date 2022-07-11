@@ -42,6 +42,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
 namespace {
@@ -817,7 +818,7 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
   // GET.
   if (tentative_resource_request.method !=
       net::HttpRequestHeaders::kGetMethod) {
-    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadFormOrLink;
     return prefetches_.end();
   }
 
@@ -827,17 +828,21 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
   if (tentative_resource_request.load_flags & net::LOAD_BYPASS_CACHE ||
       tentative_resource_request.load_flags & net::LOAD_DISABLE_CACHE ||
       tentative_resource_request.load_flags & net::LOAD_VALIDATE_CACHE) {
-    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadFormOrLink;
     return prefetches_.end();
   }
 
-  // Link clicks should not be served with a prefetch due to results page nth
-  // page matching the URL pattern of the DSE.
+  // Link clicks and form subbmit should not be served with a prefetch due to
+  // results page nth page matching the URL pattern of the DSE.
   if (ui::PageTransitionCoreTypeIs(
           static_cast<ui::PageTransition>(
               tentative_resource_request.transition_type),
-          ui::PAGE_TRANSITION_LINK)) {
-    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
+          ui::PAGE_TRANSITION_LINK) ||
+      ui::PageTransitionCoreTypeIs(
+          static_cast<ui::PageTransition>(
+              tentative_resource_request.transition_type),
+          ui::PAGE_TRANSITION_FORM_SUBMIT)) {
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadFormOrLink;
     return prefetches_.end();
   }
 

@@ -93,7 +93,7 @@ enum class SearchPrefetchServingReason {
   // The request wasn't served unexpectantly.
   kNotServedOtherReason = 8,
   // The navigation was a POST request, reload or link navigation.
-  kPostReloadOrLink = 9,
+  kPostReloadFormOrLink = 9,
   // A prerender navigation request has taken this response away.
   kPrerendered = 10,
   kMaxValue = kPrerendered,
