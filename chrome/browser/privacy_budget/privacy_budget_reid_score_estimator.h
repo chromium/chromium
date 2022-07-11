@@ -38,6 +38,19 @@ class PrivacyBudgetReidScoreEstimator {
   // Keeps track of the set of surfaces for which the Reid scorre is calculated.
   base::flat_map<blink::IdentifiableSurface, SurfacesAndOptionalValues>
       surfaces_and_values_;
+
+  // Keeps track of the set of divisors to calculate the Pi or the salt value
+  // for estimating Reid score for every surface block.
+  std::vector<uint64_t> reid_blocks_salts_ranges_;
+
+  // Keeps track of the number of reported surfaces in every Reid surface block.
+  // The Reid surface map at index i is full when the count_flag_ at i is equal
+  // to the number of surfaces in that map i.e. size of the map.
+  std::vector<uint64_t> count_flag_;
+
+  // Compute the hash for estimating the REID score.
+  uint64_t ComputeHashForReidScore(const SurfacesAndOptionalValues& surface_map,
+                                   uint64_t max_num_salt);
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_

@@ -38,6 +38,10 @@ bool DecodeIdentifiabilityType(const base::StringPiece s, int* out) {
   return base::StringToInt(s, out);
 }
 
+bool DecodeIdentifiabilityType(const base::StringPiece s, uint64_t* out) {
+  return base::StringToUint64(s, out);
+}
+
 bool DecodeIdentifiabilityType(const base::StringPiece s, unsigned int* out) {
   return base::StringToUint(s, out);
 }
@@ -83,6 +87,10 @@ std::string EncodeIdentifiabilityType(const double& value) {
 
 std::string EncodeIdentifiabilityType(const std::string& value) {
   return value;
+}
+
+std::string EncodeIdentifiabilityType(const uint64_t& value) {
+  return base::NumberToString(value);
 }
 
 std::string EncodeIdentifiabilityType(

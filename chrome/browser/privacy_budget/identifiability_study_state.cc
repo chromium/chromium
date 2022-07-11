@@ -87,6 +87,10 @@ bool IdentifiabilityStudyState::ShouldRecordSurface(
   if (surface.GetType() == blink::IdentifiableSurface::Type::kReservedInternal)
     return true;
 
+  if (surface.GetType() ==
+      blink::IdentifiableSurface::Type::kReidScoreEstimator)
+    return settings_.is_using_reid_score_estimator();
+
   if (base::Contains(active_surfaces_, surface))
     return true;
 

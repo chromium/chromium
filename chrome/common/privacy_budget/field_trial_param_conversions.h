@@ -35,6 +35,7 @@ bool DecodeIdentifiabilityType(const base::StringPiece,
 bool DecodeIdentifiabilityType(const base::StringPiece,
                                blink::IdentifiableSurface::Type*);
 bool DecodeIdentifiabilityType(const base::StringPiece, int*);
+bool DecodeIdentifiabilityType(const base::StringPiece, uint64_t*);
 bool DecodeIdentifiabilityType(const base::StringPiece, unsigned int*);
 bool DecodeIdentifiabilityType(const base::StringPiece, double*);
 bool DecodeIdentifiabilityType(const base::StringPiece,
@@ -66,6 +67,7 @@ std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface&);
 std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface::Type&);
 std::string EncodeIdentifiabilityType(const unsigned int&);
 std::string EncodeIdentifiabilityType(const double&);
+std::string EncodeIdentifiabilityType(const uint64_t&);
 template <typename T, typename U>
 std::string EncodeIdentifiabilityType(const std::pair<T, U>& v) {
   return base::StrCat({EncodeIdentifiabilityType(v.first), ";",

@@ -13,8 +13,8 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
 TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest, EmptyStorageByDefault) {
-  auto settings =
-      IdentifiabilityStudyGroupSettings::InitFrom(true, 0, 0, "", "", "", "");
+  auto settings = IdentifiabilityStudyGroupSettings::InitFrom(true, 0, 0, "",
+                                                              "", "", "", "");
   auto reid_storage =
       std::make_unique<PrivacyBudgetReidScoreEstimator>(settings);
 
@@ -34,7 +34,7 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
   // Initialize the settings with random surface keys.
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
       true, 0, 0, "", "", "",
-      "2077075229;1122849309,3996426525;517825053;1983694109");
+      "2077075229;1122849309,3996426525;517825053;1983694109", "1,2");
   auto reid_storage =
       std::make_unique<PrivacyBudgetReidScoreEstimator>(settings);
 
@@ -68,7 +68,7 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
      UpdateStorageWithNewValues) {
   // Initialize the settings with random surface keys.
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
-      true, 0, 0, "", "", "", "2077075229;1122849309");
+      true, 0, 0, "", "", "", "2077075229;1122849309", "1");
   auto reid_storage =
       std::make_unique<PrivacyBudgetReidScoreEstimator>(settings);
 
@@ -79,25 +79,16 @@ TEST(PrivacyBudgetReidScoreEstimatorStandaloneTest,
 
   // Process values for 2 surfaces.
   auto surface_1 = blink::IdentifiableSurface::FromMetricHash(2077075229);
-  auto surface_2 = blink::IdentifiableSurface::FromMetricHash(1122849309);
   int64_t token1 = 1234;
-  int64_t token2 = 1235;
 
   reid_storage->ProcessForReidScore(surface_1,
                                     blink::IdentifiableToken(token1));
-  reid_storage->ProcessForReidScore(surface_2,
-                                    blink::IdentifiableToken(token2));
 
   auto map_itr = surface_maps->begin();
   auto submap_itr = map_itr->second;
 
-  // The respective surface should have a value equal to the respective
+  // The respective surface should have a value equal to the respective token.
   auto surface_itr = submap_itr.find(surface_1);
   EXPECT_TRUE(surface_itr->second.has_value());
   EXPECT_TRUE(surface_itr->second->ToUkmMetricValue() == token1);
-
-  surface_itr = submap_itr.find(surface_2);
-
-  EXPECT_TRUE(surface_itr->second.has_value());
-  EXPECT_TRUE(surface_itr->second->ToUkmMetricValue() == token2);
 }

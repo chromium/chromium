@@ -25,13 +25,15 @@ void UmaHistogramFinchConfigValidation(bool valid) {
 // static
 IdentifiabilityStudyGroupSettings
 IdentifiabilityStudyGroupSettings::InitFromFeatureParams() {
-  return InitFrom(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy),
-                  features::kIdentifiabilityStudyExpectedSurfaceCount.Get(),
-                  features::kIdentifiabilityStudyActiveSurfaceBudget.Get(),
-                  features::kIdentifiabilityStudyBlocks.Get(),
-                  features::kIdentifiabilityStudyBlockWeights.Get(),
-                  features::kIdentifiabilityStudyAllowedRandomTypes.Get(),
-                  features::kIdentifiabilityStudyReidSurfaceBlocks.Get());
+  return InitFrom(
+      base::FeatureList::IsEnabled(features::kIdentifiabilityStudy),
+      features::kIdentifiabilityStudyExpectedSurfaceCount.Get(),
+      features::kIdentifiabilityStudyActiveSurfaceBudget.Get(),
+      features::kIdentifiabilityStudyBlocks.Get(),
+      features::kIdentifiabilityStudyBlockWeights.Get(),
+      features::kIdentifiabilityStudyAllowedRandomTypes.Get(),
+      features::kIdentifiabilityStudyReidSurfaceBlocks.Get(),
+      features::kIdentifiabilityStudyReidSurfaceBlocksSaltsRanges.Get());
 }
 
 // static
@@ -42,7 +44,8 @@ IdentifiabilityStudyGroupSettings IdentifiabilityStudyGroupSettings::InitFrom(
     const std::string& blocks,
     const std::string& blocks_weights,
     const std::string& allowed_random_types,
-    const std::string& reid_blocks) {
+    const std::string& reid_blocks,
+    const std::string& reid_blocks_salts_ranges) {
   return IdentifiabilityStudyGroupSettings(
       enabled, !blocks.empty(), !reid_blocks.empty(), expected_surface_count,
       surface_budget,
@@ -51,7 +54,9 @@ IdentifiabilityStudyGroupSettings IdentifiabilityStudyGroupSettings::InitFrom(
       DecodeIdentifiabilityFieldTrialParam<
           std::vector<blink::IdentifiableSurface::Type>>(allowed_random_types),
       DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceBlocks>(
-          reid_blocks));
+          reid_blocks),
+      DecodeIdentifiabilityFieldTrialParam<std::vector<uint64_t>>(
+          reid_blocks_salts_ranges));
 }
 
 IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
@@ -63,7 +68,8 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
     IdentifiableSurfaceBlocks blocks,
     std::vector<double> blocks_weights,
     std::vector<blink::IdentifiableSurface::Type> allowed_random_types,
-    IdentifiableSurfaceBlocks reid_blocks)
+    IdentifiableSurfaceBlocks reid_blocks,
+    std::vector<uint64_t> reid_blocks_salts_ranges)
     : enabled_(enabled),
       is_using_assigned_block_sampling_(is_using_assigned_block_sampling),
       is_using_reid_score_estimator_(is_using_reid_score_estimator),
@@ -78,6 +84,7 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
       blocks_(std::move(blocks)),
       blocks_weights_(std::move(blocks_weights)),
       reid_blocks_(std::move(reid_blocks)),
+      reid_blocks_salts_ranges_(std::move(reid_blocks_salts_ranges)),
       allowed_random_types_(std::move(allowed_random_types)) {
   bool validates = Validate();
   UmaHistogramFinchConfigValidation(validates);
@@ -145,13 +152,11 @@ bool IdentifiabilityStudyGroupSettings::ValidateAssignedBlockSampling() {
 }
 
 bool IdentifiabilityStudyGroupSettings::ValidateReidBlockEstimator() {
-  // Currently return true if the Reid blocks is not empty.
-  // This validation will change once we introduce the offset value for every
-  // Reid block list.
-  if (!reid_blocks_.empty()) {
-    return true;
-  }
-  return false;
+  if (reid_blocks_salts_ranges_.size() != reid_blocks_.size())
+    return false;
+  return base::ranges::all_of(
+      reid_blocks_salts_ranges_,
+      [](uint64_t salt_range) { return salt_range > 0; });
 }
 
 const IdentifiableSurfaceBlocks& IdentifiabilityStudyGroupSettings::blocks()
@@ -164,6 +169,11 @@ const std::vector<double>& IdentifiabilityStudyGroupSettings::blocks_weights()
     const {
   DCHECK(is_using_assigned_block_sampling_);
   return blocks_weights_;
+}
+
+const std::vector<uint64_t>&
+IdentifiabilityStudyGroupSettings::reid_blocks_salts_ranges() const {
+  return reid_blocks_salts_ranges_;
 }
 
 const IdentifiableSurfaceBlocks&

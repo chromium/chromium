@@ -316,7 +316,7 @@ constexpr double kMaxProbabilityPerSurface = 0.5;
 
 // Reid Surface Blocks.
 //
-// Parameter name: "ReidSurfaceBlocks"
+// Parameter name: "ReidBlocks"
 // Parameter type: Comma separated list of blocks. Each block is a semicolon
 //                 separated list of surfaces. See examples below.
 //
@@ -352,6 +352,26 @@ extern const base::FeatureParam<bool> kIdentifiabilityStudyEnableActiveSampling;
 // reported or not depends on the other parameters.
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyActivelySampledFonts;
+
+// Ranges for the random salts for the Reid Block hashes.
+//
+// Parameter name: "ReidBlocksSaltsRanges"
+// Parameter type: Comma separated list of salts ranges expressed as integers.
+//
+// If this parameter is specified then it must specify a max salt for each block
+// that is defined using the `ReidBlocks` parameter. The random salt used to
+// calculate the Reid hash should be a number between 0 and this parameter.
+//
+// * All max salts must be non-zero positive integers.
+//
+// * There must be exactly as many Reid salts ranges as there are Reid blocks.
+// If not, disable the Reid estimator feature.
+//
+// E.g.:
+//   * "1000,5000": Assigns max salt number for two Reid Blocks send in
+//   `ReidBlocks` parameter.
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudyReidSurfaceBlocksSaltsRanges;
 
 }  // namespace features
 
