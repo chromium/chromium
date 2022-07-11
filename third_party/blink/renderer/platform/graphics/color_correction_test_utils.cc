@@ -7,7 +7,7 @@
 #include "base/notreached.h"
 #include "base/sys_byteorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 namespace blink {
 

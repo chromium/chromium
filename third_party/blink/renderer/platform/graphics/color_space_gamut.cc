@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/display/screen_info.h"
 
 namespace blink {

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 namespace blink {
 namespace {

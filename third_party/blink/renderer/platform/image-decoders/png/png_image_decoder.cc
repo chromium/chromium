@@ -43,7 +43,7 @@
 #include "base/numerics/checked_math.h"
 #include "media/base/video_color_space.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 #if (defined(__ARM_NEON__) || defined(__ARM_NEON))
 #include <arm_neon.h>

@@ -11,7 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);

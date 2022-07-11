@@ -21,7 +21,7 @@
 #include "components/exo/wm_helper_chromeos.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/base/wayland/color_manager_util.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"

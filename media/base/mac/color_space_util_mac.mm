@@ -9,7 +9,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 namespace media {
 
