@@ -18,6 +18,7 @@
 #include "components/exo/text_input.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/exo/wayland/wl_seat.h"
 #include "components/exo/xkb_tracker.h"
 #include "ui/base/ime/utf_offset.h"
 #include "ui/base/wayland/wayland_server_input_types.h"
@@ -345,13 +346,14 @@ class WaylandExtendedTextInput {
 
 void text_input_activate(wl_client* client,
                          wl_resource* resource,
-                         wl_resource* seat,
+                         wl_resource* seat_resource,
                          wl_resource* surface_resource) {
   TextInput* text_input = GetUserDataAs<TextInput>(resource);
   Surface* surface = GetUserDataAs<Surface>(surface_resource);
+  Seat* seat = GetUserDataAs<WaylandSeat>(seat_resource)->seat;
   static_cast<WaylandTextInputDelegate*>(text_input->delegate())
       ->set_surface(surface_resource);
-  text_input->Activate(surface);
+  text_input->Activate(seat, surface);
 
   // Sending modifiers.
   wl_array modifiers;

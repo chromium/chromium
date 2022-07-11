@@ -9,11 +9,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/buffer.h"
+#include "components/exo/seat.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -106,6 +108,18 @@ class TestingInputMethodObserver : public ui::InputMethodObserver {
 
 class TextInputTest : public test::ExoTestBase {
  public:
+  class TestSurface {
+   public:
+    void SetUp(test::ExoTestHelper* exo_test_helper);
+    void TearDown();
+    Surface* surface() { return surface_.get(); }
+
+   private:
+    std::unique_ptr<Buffer> buffer_;
+    std::unique_ptr<Surface> surface_;
+    std::unique_ptr<ShellSurface> shell_surface_;
+  };
+
   TextInputTest() = default;
 
   TextInputTest(const TextInputTest&) = delete;
@@ -115,33 +129,15 @@ class TextInputTest : public test::ExoTestBase {
     test::ExoTestBase::SetUp();
     text_input_ =
         std::make_unique<TextInput>(std::make_unique<MockTextInputDelegate>());
-    SetupSurface();
+    seat_ = std::make_unique<Seat>();
+    test_surface_.SetUp(exo_test_helper());
   }
 
   void TearDown() override {
-    TearDownSurface();
+    test_surface_.TearDown();
+    seat_.reset();
     text_input_.reset();
     test::ExoTestBase::TearDown();
-  }
-
-  void SetupSurface() {
-    gfx::Size buffer_size(32, 32);
-    buffer_ = std::make_unique<Buffer>(
-        exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
-    surface_ = std::make_unique<Surface>();
-    shell_surface_ = std::make_unique<ShellSurface>(surface_.get());
-
-    surface_->Attach(buffer_.get());
-    surface_->Commit();
-
-    gfx::Point origin(100, 100);
-    shell_surface_->SetGeometry(gfx::Rect(origin, buffer_size));
-  }
-
-  void TearDownSurface() {
-    shell_surface_.reset();
-    surface_.reset();
-    buffer_.reset();
   }
 
  protected:
@@ -149,10 +145,11 @@ class TextInputTest : public test::ExoTestBase {
   MockTextInputDelegate* delegate() {
     return static_cast<MockTextInputDelegate*>(text_input_->delegate());
   }
-  Surface* surface() { return surface_.get(); }
+  Surface* surface() { return test_surface_.surface(); }
+  Seat* seat() { return seat_.get(); }
 
   ui::InputMethod* GetInputMethod() {
-    return surface_->window()->GetHost()->GetInputMethod();
+    return surface()->window()->GetHost()->GetInputMethod();
   }
 
   void SetCompositionText(const std::u16string& utf16) {
@@ -164,17 +161,36 @@ class TextInputTest : public test::ExoTestBase {
  private:
   std::unique_ptr<TextInput> text_input_;
 
-  std::unique_ptr<Buffer> buffer_;
-  std::unique_ptr<Surface> surface_;
-  std::unique_ptr<ShellSurface> shell_surface_;
+  std::unique_ptr<Seat> seat_;
+  TestSurface test_surface_;
 };
+
+void TextInputTest::TestSurface::SetUp(test::ExoTestHelper* exo_test_helper) {
+  gfx::Size buffer_size(32, 32);
+  buffer_ = std::make_unique<Buffer>(
+      exo_test_helper->CreateGpuMemoryBuffer(buffer_size));
+  surface_ = std::make_unique<Surface>();
+  shell_surface_ = std::make_unique<ShellSurface>(surface_.get());
+
+  surface_->Attach(buffer_.get());
+  surface_->Commit();
+
+  gfx::Point origin(100, 100);
+  shell_surface_->SetGeometry(gfx::Rect(origin, buffer_size));
+}
+
+void TextInputTest::TestSurface::TearDown() {
+  shell_surface_.reset();
+  surface_.reset();
+  buffer_.reset();
+}
 
 TEST_F(TextInputTest, Activate) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
 
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, text_input()->GetTextInputType());
@@ -189,12 +205,79 @@ TEST_F(TextInputTest, Activate) {
   EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
 }
 
+TEST_F(TextInputTest, ActivationRequiresFocus) {
+  TestingInputMethodObserver observer(GetInputMethod());
+
+  // Activation doesn't occur until the surface (window) is actually focused.
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+  EXPECT_CALL(observer, OnTextInputStateChanged(_)).Times(0);
+  EXPECT_CALL(*delegate(), Activated).Times(0);
+  text_input()->Activate(seat(), surface());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
+  EXPECT_CALL(*delegate(), Activated).Times(1);
+  focus_client->FocusWindow(surface()->window());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // Deactivation occurs on blur even if TextInput::Deactivate() isn't called.
+  EXPECT_CALL(observer, OnTextInputStateChanged(nullptr)).Times(1);
+  EXPECT_CALL(*delegate(), Deactivated).Times(1);
+  focus_client->FocusWindow(nullptr);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_CALL(observer, OnTextInputStateChanged(nullptr)).Times(0);
+  EXPECT_CALL(*delegate(), Deactivated).Times(0);
+  text_input()->Deactivate();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+}
+
+TEST_F(TextInputTest, MultipleActivations) {
+  TestingInputMethodObserver observer(GetInputMethod());
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  TestSurface surface2;
+  surface2.SetUp(exo_test_helper());
+
+  // Activate surface 1.
+  focus_client->FocusWindow(surface()->window());
+  EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
+  EXPECT_CALL(*delegate(), Activated).Times(1);
+  text_input()->Activate(seat(), surface());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // Attempting to activate the same surface is a no-op.
+  EXPECT_CALL(*delegate(), Activated).Times(0);
+  text_input()->Activate(seat(), surface());
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // Activating a non-focused surface causes deactivation until focus.
+  EXPECT_CALL(observer, OnTextInputStateChanged(nullptr)).Times(1);
+  EXPECT_CALL(*delegate(), Deactivated).Times(1);
+  text_input()->Activate(seat(), surface2.surface());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
+  EXPECT_CALL(*delegate(), Activated).Times(1);
+  focus_client->FocusWindow(surface2.surface()->window());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+}
+
 TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabled) {
   TestingInputMethodObserver observer(GetInputMethod());
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -244,7 +327,7 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
       }));
   EXPECT_CALL(*delegate(), Activated).Times(1);
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -256,7 +339,7 @@ TEST_F(TextInputTest, SetTypeModeFlag) {
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -285,7 +368,7 @@ TEST_F(TextInputTest, CaretBounds) {
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
@@ -354,7 +437,7 @@ TEST_F(TextInputTest, Commit) {
 }
 
 TEST_F(TextInputTest, InsertChar) {
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
 
   ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0);
 
@@ -363,7 +446,7 @@ TEST_F(TextInputTest, InsertChar) {
 }
 
 TEST_F(TextInputTest, InsertCharCtrlV) {
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
 
   // CTRL+V is interpreted as non-IME consumed KeyEvent, so should
   // not be sent.
@@ -373,7 +456,7 @@ TEST_F(TextInputTest, InsertCharCtrlV) {
 }
 
 TEST_F(TextInputTest, InsertCharNormalKey) {
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
 
   char16_t ch = 'x';
   ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
@@ -392,7 +475,7 @@ TEST_F(TextInputTest, SurroundingText) {
   std::u16string got_text;
   EXPECT_FALSE(text_input()->GetTextFromRange(gfx::Range(0, 1), &got_text));
 
-  text_input()->Activate(surface());
+  text_input()->Activate(seat(), surface());
 
   EXPECT_CALL(observer, OnCaretBoundsChanged(text_input())).Times(1);
   std::u16string text = u"surrounding\u3000text";

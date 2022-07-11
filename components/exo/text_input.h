@@ -9,6 +9,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/strings/string_piece.h"
+#include "components/exo/seat_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/text_input_client.h"
@@ -25,10 +26,14 @@ class InputMethod;
 
 namespace exo {
 class Surface;
+class Seat;
 
 // This class bridges the ChromeOS input method and a text-input context.
+// It can be inactive, active, or in a pending state where Activate() was
+// called but the associated window is not focused.
 class TextInput : public ui::TextInputClient,
-                  public ui::VirtualKeyboardControllerObserver {
+                  public ui::VirtualKeyboardControllerObserver,
+                  public SeatObserver {
  public:
   class Delegate {
    public:
@@ -103,10 +108,10 @@ class TextInput : public ui::TextInputClient,
   TextInput& operator=(const TextInput&) = delete;
   ~TextInput() override;
 
-  // Activates the text input context on the surface. Note that surface can be
-  // an app surface (hosted by a shell surface) or can be an independent one
-  // created by the text-input client.
-  void Activate(Surface* surface);
+  // Request to activate the text input context on the surface. Activation will
+  // occur immediately if the associated window is already focused, or
+  // otherwise when the window gains focus.
+  void Activate(Seat* seat, Surface* surface);
 
   // Deactivates the text input context.
   void Deactivate();
@@ -121,7 +126,7 @@ class TextInput : public ui::TextInputClient,
   // during the text input session.
   void Resync();
 
-  // Resets the current input method state.
+  // Resets the current input method composition state.
   void Reset();
 
   // Sets the surrounding text in the app.
@@ -196,8 +201,13 @@ class TextInput : public ui::TextInputClient,
   void OnKeyboardVisible(const gfx::Rect& keyboard_rect) override;
   void OnKeyboardHidden() override;
 
+  // SeatObserver:
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override;
+
  private:
-  void AttachInputMethod(aura::Window* window);
+  void AttachInputMethod();
   void DetachInputMethod();
   void ResetCompositionTextCache();
 
@@ -209,10 +219,16 @@ class TextInput : public ui::TextInputClient,
   // show the Virtual Keyboard.
   bool pending_vk_visible_ = false;
 
-  // Window instance that this TextInput is activated against.
-  aura::Window* window_ = nullptr;
+  // |surface_| and |seat_| are non-null if and only if the TextInput is in a
+  // pending or active state, in which case the TextInput will be observing the
+  // Seat.
+  Surface* surface_ = nullptr;
+  Seat* seat_ = nullptr;
 
-  // InputMethod in Chrome OS that this TextInput is attached to.
+  // If the TextInput is active (associated window has focus) and the
+  // InputMethod is available, this is set and the TextInput will be its
+  // focused client. Otherwise, it is null and the TextInput is not attached
+  // to any InputMethod, so the TextInputClient overrides will not be called.
   ui::InputMethod* input_method_ = nullptr;
 
   // Cache of the current caret bounding box, sent from the client.

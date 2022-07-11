@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -25,6 +26,10 @@
 namespace exo {
 
 namespace {
+
+constexpr int kTextInputSeatObserverPriority = 1;
+static_assert(Seat::IsValidObserverPriority(kTextInputSeatObserverPriority),
+              "kTextInputSeatObserverPriority is not in the valid range.");
 
 ui::InputMethod* GetInputMethod(aura::Window* window) {
   if (!window || !window->GetHost())
@@ -49,17 +54,29 @@ TextInput::TextInput(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {}
 
 TextInput::~TextInput() {
-  if (input_method_)
-    Deactivate();
+  Deactivate();
 }
 
-void TextInput::Activate(Surface* surface) {
+void TextInput::Activate(Seat* seat, Surface* surface) {
   DCHECK(surface);
-  AttachInputMethod(surface->window());
+  DCHECK(seat);
+  if (surface_ == surface)
+    return;
+  DetachInputMethod();
+  surface_ = surface;
+  seat_ = seat;
+  seat_->AddObserver(this, kTextInputSeatObserverPriority);
+  if (seat_->GetFocusedSurface() == surface_)
+    AttachInputMethod();
 }
 
 void TextInput::Deactivate() {
+  if (!surface_)
+    return;
   DetachInputMethod();
+  seat_->RemoveObserver(this);
+  surface_ = nullptr;
+  seat_ = nullptr;
 }
 
 void TextInput::ShowVirtualKeyboardIfEnabled() {
@@ -192,7 +209,7 @@ void TextInput::InsertChar(const ui::KeyEvent& event) {
   // future.
   // TODO(fukino): Get rid of this, too, when the wl_keyboard::key
   // and text_input::keysym events are handled properly in Lacros.
-  if (window_ && ConsumedByIme(window_, event))
+  if (ConsumedByIme(surface_->window(), event))
     delegate_->SendKey(event);
 }
 
@@ -217,7 +234,8 @@ bool TextInput::CanComposeInline() const {
 }
 
 gfx::Rect TextInput::GetCaretBounds() const {
-  return caret_bounds_ + window_->GetBoundsInScreen().OffsetFromOrigin();
+  return caret_bounds_ +
+         surface_->window()->GetBoundsInScreen().OffsetFromOrigin();
 }
 
 gfx::Rect TextInput::GetSelectionBoundingBox() const {
@@ -282,7 +300,8 @@ bool TextInput::GetTextFromRange(const gfx::Range& range,
 }
 
 void TextInput::OnInputMethodChanged() {
-  ui::InputMethod* input_method = GetInputMethod(window_);
+  DCHECK_EQ(surface_, seat_->GetFocusedSurface());
+  ui::InputMethod* input_method = GetInputMethod(surface_->window());
   if (input_method == input_method_)
     return;
   input_method_->DetachTextInputClient(this);
@@ -410,18 +429,24 @@ void TextInput::OnKeyboardHidden() {
   delegate_->OnVirtualKeyboardVisibilityChanged(false);
 }
 
-void TextInput::AttachInputMethod(aura::Window* window) {
-  DCHECK(window);
+void TextInput::OnSurfaceFocused(Surface* gained_focus,
+                                 Surface* lost_focus,
+                                 bool has_focused_surface) {
+  DCHECK(surface_);
+  if (gained_focus == lost_focus)
+    return;
 
-  if (window_) {
-    if (window == window_)
-      return;
-    DetachInputMethod();
+  if (gained_focus == surface_) {
+    AttachInputMethod();
+  } else if (lost_focus == surface_) {
+    Deactivate();
   }
-  DCHECK(!input_method_);
+}
 
-  window_ = window;
-  input_method_ = GetInputMethod(window_);
+void TextInput::AttachInputMethod() {
+  DCHECK(!input_method_);
+  DCHECK(surface_);
+  input_method_ = GetInputMethod(surface_->window());
   if (!input_method_) {
     LOG(ERROR) << "input method not found";
     return;
@@ -441,17 +466,14 @@ void TextInput::AttachInputMethod(aura::Window* window) {
 }
 
 void TextInput::DetachInputMethod() {
-  if (!input_method_) {
-    DLOG(ERROR) << "input method already detached";
+  if (!input_method_)
     return;
-  }
   input_mode_ = ui::TEXT_INPUT_MODE_DEFAULT;
   input_type_ = ui::TEXT_INPUT_TYPE_NONE;
   input_method_->DetachTextInputClient(this);
   if (auto* controller = input_method_->GetVirtualKeyboardController())
     controller->RemoveObserver(this);
   input_method_ = nullptr;
-  window_ = nullptr;
   delegate_->Deactivated();
 }
 
