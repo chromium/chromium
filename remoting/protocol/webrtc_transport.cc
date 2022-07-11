@@ -253,9 +253,6 @@ class RtcEventLogOutput : public webrtc::RtcEventLogOutput {
 
   // webrtc::RtcEventLogOutput interface
   bool IsActive() const override { return true; }
-  bool Write(const std::string& output) override {
-    return Write(absl::string_view(output));
-  }
   bool Write(absl::string_view output) override {
     event_log_data_.Write(base::StringViewToStringPiece(output));
     return true;

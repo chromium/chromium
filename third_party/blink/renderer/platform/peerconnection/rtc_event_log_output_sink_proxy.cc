@@ -23,10 +23,6 @@ bool RtcEventLogOutputSinkProxy::IsActive() const {
   return true;  // Active until the proxy is destroyed.
 }
 
-bool RtcEventLogOutputSinkProxy::Write(const std::string& output) {
-  return Write(absl::string_view(output));
-}
-
 bool RtcEventLogOutputSinkProxy::Write(absl::string_view output) {
   WTF::Vector<uint8_t> converted_output;
   converted_output.AppendRange(output.begin(), output.end());
