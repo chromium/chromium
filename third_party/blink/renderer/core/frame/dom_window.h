@@ -93,10 +93,6 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   DOMWindow* window() const;
   DOMWindow* frames() const;
 
-  v8::Local<v8::Object> selfForBindings(ScriptValue receiver) const;
-  v8::Local<v8::Object> windowForBindings(ScriptValue receiver) const;
-  v8::Local<v8::Object> framesForBindings(ScriptValue receiver) const;
-
   DOMWindow* opener() const;
   DOMWindow* parent() const;
   DOMWindow* top() const;

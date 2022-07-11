@@ -117,12 +117,20 @@ DOMWindow* DOMWindow::self() const {
   if (!GetFrame())
     return nullptr;
 
+  RecordWindowProxyAccessMetrics(
+      WebFeature::kWindowProxyCrossOriginAccessSelf,
+      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageSelf);
+
   return GetFrame()->DomWindow();
 }
 
 DOMWindow* DOMWindow::window() const {
   if (!GetFrame())
     return nullptr;
+
+  RecordWindowProxyAccessMetrics(
+      WebFeature::kWindowProxyCrossOriginAccessWindow,
+      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageWindow);
 
   return GetFrame()->DomWindow();
 }
@@ -131,46 +139,11 @@ DOMWindow* DOMWindow::frames() const {
   if (!GetFrame())
     return nullptr;
 
-  return GetFrame()->DomWindow();
-}
-
-v8::Local<v8::Object> DOMWindow::selfForBindings(ScriptValue receiver) const {
-  v8::Local<v8::Object> v8_receiver = receiver.V8Value().As<v8::Object>();
-
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessSelf,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageSelf);
-
-  v8::Local<v8::Context> v8_context;
-  if (!v8_receiver->GetCreationContext().ToLocal(&v8_context))
-    return v8_receiver;
-  return v8_context->Global();
-}
-
-v8::Local<v8::Object> DOMWindow::windowForBindings(ScriptValue receiver) const {
-  v8::Local<v8::Object> v8_receiver = receiver.V8Value().As<v8::Object>();
-
-  RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessWindow,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageWindow);
-
-  v8::Local<v8::Context> v8_context;
-  if (!v8_receiver->GetCreationContext().ToLocal(&v8_context))
-    return v8_receiver;
-  return v8_context->Global();
-}
-
-v8::Local<v8::Object> DOMWindow::framesForBindings(ScriptValue receiver) const {
-  v8::Local<v8::Object> v8_receiver = receiver.V8Value().As<v8::Object>();
-
   RecordWindowProxyAccessMetrics(
       WebFeature::kWindowProxyCrossOriginAccessFrames,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFrames);
 
-  v8::Local<v8::Context> v8_context;
-  if (!v8_receiver->GetCreationContext().ToLocal(&v8_context))
-    return v8_receiver;
-  return v8_context->Global();
+  return GetFrame()->DomWindow();
 }
 
 DOMWindow* DOMWindow::OpenerWithMetrics() const {
