@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Securizată</translation>
 <translation id="2638942478653899953">Google Drive nu a putut fi accesat. <ph name="BEGIN_LINK" />Deconectați-vă<ph name="END_LINK" /> și conectați-vă din nou.</translation>
 <translation id="2649120831653069427">Pește</translation>
+<translation id="2653059201992392941">Mai ai <ph name="RETRIES" /> încercări.</translation>
 <translation id="2663066752008346276">Birmană/Myanmar cu tastatură Myansan</translation>
 <translation id="2664412712123763093">Locația fișierului</translation>
 <translation id="2718540689505416944">Instalează aplicația cu Linux</translation>
@@ -530,6 +531,7 @@
 <translation id="5489067830765222292">Letonă</translation>
 <translation id="5489965683297092283">Filtrul <ph name="FILTER_NAME" /> este dezactivat.</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
+<translation id="5500104704744051184">Nu vei putea să folosești rețeaua până când nu introduci codul PUK</translation>
 <translation id="5500122897333236901">Islandeză</translation>
 <translation id="5508696409934741614">Puncte</translation>
 <translation id="5522908512596376669">Lista de fișiere s-a modificat la afișare listă.</translation>
@@ -635,6 +637,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elemente</translation>
 <translation id="642282551015776456">Acest nume nu poate fi folosit ca nume de fișier sau de dosar</translation>
 <translation id="6423031066725912715">Tastatură vietnameză TCVN</translation>
+<translation id="6430271654280079150">Mai ai o încercare.</translation>
 <translation id="6485131920355264772">Nu s-au putut prelua informațiile despre spațiu</translation>
 <translation id="6495925982925244349">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, detalii</translation>
 <translation id="649877868557234318">Se extrage <ph name="FILE_NAME" /> în <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +904,7 @@
 <translation id="8579285237314169903">Se sincronizează <ph name="NUMBER_OF_FILES" /> elemente...</translation>
 <translation id="8600173386174225982">Lista de fișiere s-a modificat la vizualizare cu miniaturi.</translation>
 <translation id="8601932370724196034">Fișier imagine Crostini</translation>
+<translation id="8608515571837163082">Codul PIN a fost introdus greșit de prea multe ori. Introdu cheia personală de deblocare (PUK) din opt cifre oferită de operator.</translation>
 <translation id="8609695766746872526">Islandeză</translation>
 <translation id="863903787380594467">Codul PIN este incorect. Mai ai <ph name="RETRIES" /> încercări.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

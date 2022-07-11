@@ -11,7 +11,7 @@
 <translation id="1120073797882051782">韓文 (羅馬拼音)</translation>
 <translation id="112387589102719461">英文 (美國)，Programmer Dvorak 鍵盤</translation>
 <translation id="1134697384939541955">英文 (美國)，擴充鍵盤</translation>
-<translation id="1138691154716715755">本月稍早</translation>
+<translation id="1138691154716715755">本月較早前</translation>
 <translation id="1148097584170732637">已找到 <ph name="FILE_COUNT" />。
     <ph name="LINE_BREAK1" />
     可用的本機儲存空間不足。需要額外 <ph name="FILE_SIZE" />。
@@ -379,7 +379,7 @@
 <translation id="4380245540200674032">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，詳情</translation>
 <translation id="4387004326333427325">遠端已拒絕驗證憑證</translation>
 <translation id="4394214039309501350">外部連結</translation>
-<translation id="4394980935660306080">本週稍早</translation>
+<translation id="4394980935660306080">本週較早前</translation>
 <translation id="4401287888955153199">解壓縮全部</translation>
 <translation id="4410695710508688828">擷取操作失敗：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">為檔案建立捷徑</translation>
@@ -423,7 +423,7 @@
 <translation id="4712283082407695269">正在開啟「<ph name="PATH" />」</translation>
 <translation id="4720185134442950733">流動數據網絡</translation>
 <translation id="4724850507808590449">已備份 <ph name="FILE_COUNT" /> 張相片</translation>
-<translation id="4725096204469550614">今年稍早</translation>
+<translation id="4725096204469550614">今年較早前</translation>
 <translation id="4725511304875193254">哥基</translation>
 <translation id="4737050008115666127">降落跑道</translation>
 <translation id="4747271164117300400">馬其頓文</translation>

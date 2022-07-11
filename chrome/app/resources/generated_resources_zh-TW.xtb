@@ -350,7 +350,6 @@
 <translation id="1339009753652684748">只要說出「Ok Google」就能存取 Google 助理。如要節省電力，請選擇「啟用 (建議設定)」。這樣一來，你的 Google 助理就只會在裝置插上電源或充電時回應你的指令。</translation>
 <translation id="13392265090583506">無障礙設定</translation>
 <translation id="1340527397989195812">使用「檔案」應用程式備份裝置上的媒體。</translation>
-<translation id="1341988552785875222">目前使用的桌布是由「<ph name="APP_NAME" />」設定。您可能需要先解除安裝「<ph name="APP_NAME" />」，才能選用其他桌布。</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住這部 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
 <translation id="134589511016534552">媒體分頁也會顯示在「開啟的分頁」部分</translation>
@@ -415,7 +414,6 @@
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="140723521119632973">啟用行動網路</translation>
-<translation id="1407489512183974736">置中並剪裁</translation>
 <translation id="1408504635543854729">在「檔案」應用程式中探索裝置內容。內容受管理員限制，使用者無法修改。</translation>
 <translation id="1408980562518920698">管理個人資訊</translation>
 <translation id="1410197035576869800">應用程式圖示</translation>
@@ -663,7 +661,6 @@
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> 資料會遭到刪除</translation>
 <translation id="1621984899599015181">共用選項是由貴機構所管理。系統可能會隱藏部分項目。</translation>
 <translation id="1622054403950683339">清除 Wi-Fi 網路</translation>
-<translation id="1623132449929929218">目前無法提供圖片。如要查看桌布集，請重新連上網際網路。</translation>
 <translation id="1623723619460186680">降低藍光</translation>
 <translation id="1624012933569991823">設定</translation>
 <translation id="1624599281783425761">日後不會再顯示「<ph name="MERCHANT" />」</translation>
@@ -784,7 +781,6 @@
 <translation id="1734824808160898225">「<ph name="PRODUCT_NAME" />」可能無法自動更新</translation>
 <translation id="173522743738009831">關於 Privacy Sandbox</translation>
 <translation id="173628468822554835">我知道了。在預設情況下，你首次造訪的網站將不會傳送通知。</translation>
-<translation id="1736419249208073774">探索</translation>
 <translation id="1737968601308870607">回報錯誤</translation>
 <translation id="1739684185846730053">Privacy Sandbox 的試用功能仍在積極開發階段，目前開放地區有限。現在網站可以嘗試使用 Privacy Sandbox，也能繼續使用第三方 Cookie 等現有的網路技術。</translation>
 <translation id="1741190788710022490">自動調節充電</translation>
@@ -1748,7 +1744,6 @@
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 將可編輯「<ph name="FILENAME" />」</translation>
 <translation id="2616366145935564096">讀取以及變更你在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2618797463720777311">設定鄰近分享功能</translation>
-<translation id="2619761439309613843">每日變換新桌布</translation>
 <translation id="2620215283731032047">無法安全下載「<ph name="FILE_NAME" />」。</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="262154978979441594">訓練 Google 助理的語音模型</translation>
@@ -1766,7 +1761,6 @@
 <translation id="2634199532920451708">列印記錄</translation>
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">簽署</translation>
-<translation id="2636625531157955190">Chrome 無法存取這張圖片。</translation>
 <translation id="2637313651144986786">搜尋分頁...</translation>
 <translation id="2637400434494156704">PIN 碼不正確。你還可以再試 1 次。</translation>
 <translation id="2638286699381354126">更新...</translation>
@@ -2129,7 +2123,6 @@
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (擴充功能已提供)</translation>
 <translation id="2961210776189273067">稱謂</translation>
 <translation id="2961695502793809356">按一下到下一頁，按住可查看記錄</translation>
-<translation id="2962131322798295505">桌布挑選器</translation>
 <translation id="2963151496262057773">下列外掛程式無回應：<ph name="PLUGIN_NAME" /> 您要停止執行嗎？</translation>
 <translation id="2964193600955408481">停用 WiFi</translation>
 <translation id="2964245677645334031">鄰近分享瀏覽權限</translation>
@@ -2934,7 +2927,6 @@
 <translation id="3776796446459804932">這個擴充功能違反了 Chrome 線上應用程式商店政策。</translation>
 <translation id="3777483481409781352">無法啟用行動裝置</translation>
 <translation id="3777806571986431400">擴充功能已啟用</translation>
-<translation id="3778152852029592020">下載作業已取消。</translation>
 <translation id="3778208826288864398">由於你輸入太多次錯誤的 PIN 碼，因此安全金鑰已遭到鎖定。你必須重設安全金鑰。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">Google 助理可根據你的問題提供解答，或是依指令執行各種操作。它是你專屬的 Google 服務，隨時為你提供協助。</translation>
@@ -3874,7 +3866,6 @@
 <translation id="4681453295291708042">停用鄰近分享功能</translation>
 <translation id="4681512854288453141">來源政策</translation>
 <translation id="4681930562518940301">在新分頁中開啟原始圖片(&amp;I)</translation>
-<translation id="4682551433947286597">登入畫面上顯示的桌布。</translation>
 <translation id="4682830185876172415">近期下載內容</translation>
 <translation id="4683629100208651599">使用小寫字母</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
@@ -3990,7 +3981,6 @@
 <translation id="4809927044794281115">淺色主題</translation>
 <translation id="4811212958317149293">切換控制功能鍵盤自動掃描</translation>
 <translation id="4811503964269049987">將所選分頁分組</translation>
-<translation id="4813136279048157860">我的圖片</translation>
 <translation id="4813512666221746211">網路錯誤</translation>
 <translation id="4814378367953456825">請輸入這個指紋的名稱</translation>
 <translation id="481574578487123132">連結的裝置</translation>
@@ -4879,7 +4869,6 @@
 <translation id="5700836101007545240">你的管理員停用了新增連線功能</translation>
 <translation id="5701080607174488915">從伺服器擷取政策時發生錯誤。</translation>
 <translation id="5701212929149679556">行動數據漫遊</translation>
-<translation id="5701381305118179107">置中</translation>
 <translation id="5701786609538182967">其他應用程式所設定會開啟的連結與「<ph name="APP_NAME" />」的設定相同，這會導致「<ph name="APP_NAME_2" />」、「<ph name="APP_NAME_3" />」、「<ph name="APP_NAME_4" />」和另外 1 個應用程式無法開啟支援的連結。</translation>
 <translation id="5702749864074810610">已關閉建議內容</translation>
 <translation id="5704875434923668958">同步到</translation>
@@ -5245,7 +5234,6 @@
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>
 <translation id="6066794465984119824">未設定映像檔雜湊</translation>
 <translation id="6069464830445383022">你的 Google 帳戶就是你用來登入 Chromebook 的帳戶</translation>
-<translation id="6069671174561668781">設定桌布</translation>
 <translation id="6071181508177083058">確認密碼</translation>
 <translation id="6071576563962215370">系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="6072442788591997866">不允許在這部裝置上使用「<ph name="APP_NAME" />」。請與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
@@ -5393,7 +5381,6 @@
 <translation id="6216696360484424239">自動登入</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> 目前離線。請連線至網際網路，然後再試一次。</translation>
 <translation id="6220413761270491930">載入擴充功能時發生錯誤</translation>
-<translation id="6223447490656896591">自訂圖片：</translation>
 <translation id="6224481128663248237">格式化成功完成！</translation>
 <translation id="622537739776246443">系統將會刪除設定檔</translation>
 <translation id="6225475702458870625">可透過 <ph name="PHONE_NAME" /> 使用數據連線</translation>
@@ -5422,7 +5409,6 @@
 <translation id="6242574558232861452">正在檢查下載內容是否符合貴機構的安全性政策。</translation>
 <translation id="6242589501614145408">重設安全金鑰</translation>
 <translation id="6242852299490624841">將焦點移至這個分頁</translation>
-<translation id="6243280677745499710">目前設定的桌布</translation>
 <translation id="6243774244933267674">無法與伺服器連線</translation>
 <translation id="6244245036423700521">匯入 ONC 檔案</translation>
 <translation id="6246790815526961700">從裝置上傳</translation>
@@ -6342,7 +6328,6 @@
 <translation id="7134098520442464001">縮小文字</translation>
 <translation id="7135729336746831607">要開啟藍牙功能嗎？</translation>
 <translation id="7136694880210472378">設為預設</translation>
-<translation id="7136993520339022828">發生錯誤，請選擇其他圖片，然後再試一次。</translation>
 <translation id="7137472406312798422">網站可以要求使用畫面中的資訊開啟及放置視窗</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7139627972753429585">「<ph name="APP_NAME" />」正在使用麥克風</translation>
@@ -6436,7 +6421,6 @@
 <translation id="7249764475759804559">開啟檔案時，將這個應用程式列為選項</translation>
 <translation id="7250616558727237648">你要分享檔案的目標裝置沒有回應，請再試一次。</translation>
 <translation id="725109152065019550">很抱歉，你的管理員已停用你帳戶中的外部儲存裝置。</translation>
-<translation id="7251346854160851420">預設桌布</translation>
 <translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" /> 想取得先前所核發安全金鑰的 ID 編號。該網站將明確得知你正在使用的安全金鑰為何。</translation>
 <translation id="7252023374029588426">將顯示一系列內含操作指示的說明泡泡。
@@ -7002,7 +6986,6 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788668840732459509">位置：</translation>
 <translation id="7789963078219276159">起始網頁背景已變更為<ph name="CATEGORY" />。</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7792012425874949788">登入帳戶時發生錯誤</translation>
@@ -7011,7 +6994,6 @@
 <translation id="7793098747275782155">深藍色</translation>
 <translation id="7797571222998226653">關閉</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
-<translation id="7799299114731150374">已成功設定桌布</translation>
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="7801679634091975683">你在這裡所做的變更僅適用於 Lacros Chrome 瀏覽器。如要變更 Chrome 瀏覽器設定，請開啟 Chrome 瀏覽器並前往設定頁面。</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -8125,7 +8107,6 @@
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />你可以透過哪些方式管理資料：<ph name="END_BOLD" />為保護個人隱私，我們會自動將 4 週以前的網站從清單中刪除。你再次造訪的網站可能會重新加入清單中。假如你不想讓系統根據特定網站定義興趣喜好，也可以移除網站。</translation>
 <translation id="8884570509232205463">你的裝置會在 <ph name="UNLOCK_TIME" /> 遭到鎖定。</translation>
 <translation id="8888253246822647887">升級完成後，你的應用程式即會啟動。升級作業可能需要幾分鐘才能完成。</translation>
-<translation id="8888432776533519951">顏色：</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可以編輯下列檔案與資料夾</translation>
 <translation id="8890170499370378450">可能需要支付行動數據傳輸費用</translation>
 <translation id="8890516388109605451">來源</translation>
@@ -8150,7 +8131,6 @@
 <translation id="8910222113987937043">你的書籤、歷史記錄、密碼和其他設定的變更將不會再同步到你的 Google 帳戶。不過，你的現有資料仍會儲存在你的 Google 帳戶中，並可透過 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
 <translation id="8910987510378294980">隱藏裝置清單</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
-<translation id="8912793549644936705">延伸</translation>
 <translation id="8912810933860534797">啟用自動掃描</translation>
 <translation id="8915370057835397490">正在載入建議</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
@@ -8521,7 +8501,6 @@
 <translation id="98515147261107953">橫向</translation>
 <translation id="987068745968718743">Parallels Desktop：<ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">一般</translation>
-<translation id="987897973846887088">沒有可用的圖片</translation>
 <translation id="988320949174893488">不時間斷</translation>
 <translation id="988978206646512040">通關密語欄位不得留空</translation>
 <translation id="991097196715779457">零售商店 ID 代碼 (選填)</translation>
