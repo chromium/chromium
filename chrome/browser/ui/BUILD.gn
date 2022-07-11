@@ -1789,6 +1789,7 @@ static_library("ui") {
       "//components/app_constants",
       "//components/autofill_assistant/browser/public/password_change/proto:proto",
       "//components/commerce/content/browser:hint",
+      "//components/commerce/core:cart_db_content_proto",
       "//components/commerce/core:feature_list",
       "//components/enterprise/common:download_item_reroute_info",
       "//components/feedback/proto",
