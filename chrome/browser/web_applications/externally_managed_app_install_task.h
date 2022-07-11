@@ -94,7 +94,14 @@ class ExternallyManagedAppInstallTask {
   void InstallPlaceholder(content::WebContents* web_contents,
                           ResultCallback result_callback);
 
-  void OnCustomIconFetched(ResultCallback callback,
+  void FetchCustomIcon(const GURL& url,
+                       content::WebContents* web_contents,
+                       int retries_left,
+                       ResultCallback callback);
+
+  void OnCustomIconFetched(int retries_left,
+                           content::WebContents* web_contents,
+                           ResultCallback callback,
                            int id,
                            int http_status_code,
                            const GURL& image_url,

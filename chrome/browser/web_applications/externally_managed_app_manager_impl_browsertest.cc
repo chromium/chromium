@@ -33,6 +33,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -234,6 +235,72 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec()));
   // 192 is chosen to not be part of web_app_icon_generator.h:SizesToGenerate().
   GURL icon_url = embedded_test_server()->GetURL("/banners/192x192-green.png");
+  const SquareSizePx kIconSize = 192;
+  const SkColor kIconColor = SK_ColorGREEN;
+  const auto kGeneratedSizes = SizesToGenerate();
+  EXPECT_TRUE(kGeneratedSizes.find(kIconSize) == kGeneratedSizes.end());
+
+  ExternalInstallOptions options =
+      CreateInstallOptions(app_url, ExternalInstallSource::kExternalPolicy);
+  options.install_placeholder = true;
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = true;
+  options.override_icon_url = icon_url;
+  InstallApp(options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(app_url);
+  ASSERT_TRUE(app_id.has_value());
+  EXPECT_TRUE(
+      registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
+  SortedSizesPx downloaded_sizes =
+      registrar().GetAppDownloadedIconSizesAny(app_id.value());
+  EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
+  EXPECT_TRUE(downloaded_sizes.find(kIconSize) != downloaded_sizes.end());
+  EXPECT_EQ(kIconColor,
+            IconManagerReadAppIconPixel(
+                WebAppProvider::GetForTest(profile())->icon_manager(),
+                app_id.value(), kIconSize, 0, 0));
+}
+
+// This RequestHandler returns HTTP_NOT_FOUND the first time a URL containing
+// |relative_url| is requested, and behaves normally in all other cases.
+std::unique_ptr<net::test_server::HttpResponse> FailFirstRequest(
+    const std::string& relative_url,
+    const net::test_server::HttpRequest& request) {
+  static bool first_run = true;
+  if (first_run &&
+      request.GetURL().spec().find(relative_url) != std::string::npos) {
+    first_run = false;
+    auto not_found_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    not_found_response->set_code(net::HTTP_NOT_FOUND);
+    return std::move(not_found_response);
+  }
+  // Return nullptr to use the default handlers.
+  return nullptr;
+}
+
+// Installing a placeholder app with a custom icon should succeed, even we have
+// to retry fetching the icon once.
+// This feature is ChromeOS-only.
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       PlaceholderInstallSucceedsWithCustomIconAfterRetry) {
+  // Fail the first time that this URL is loaded.
+  std::string kIconRelativeUrl = "/banners/192x192-green.png";
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&FailFirstRequest, kIconRelativeUrl));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL final_url = embedded_test_server()->GetURL(
+      "other.origin.com", "/banners/manifest_test_page.html");
+  // Add a redirect to a different origin, so a placeholder is installed.
+  GURL app_url(
+      embedded_test_server()->GetURL("/server-redirect?" + final_url.spec()));
+  // 192 is chosen to not be part of web_app_icon_generator.h:SizesToGenerate().
+  GURL icon_url = embedded_test_server()->GetURL(kIconRelativeUrl);
+
   const SquareSizePx kIconSize = 192;
   const SkColor kIconColor = SK_ColorGREEN;
   const auto kGeneratedSizes = SizesToGenerate();
