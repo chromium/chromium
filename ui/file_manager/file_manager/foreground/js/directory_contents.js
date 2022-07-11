@@ -268,16 +268,22 @@ export class DriveMetadataSearchContentScanner extends ContentScanner {
 export class RecentContentScanner extends ContentScanner {
   /**
    * @param {string} query Search query.
+   * @param {VolumeManager} volumeManager Volume manager.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
    * @param {chrome.fileManagerPrivate.RecentFileType=} opt_recentFileType
    */
-  constructor(query, opt_sourceRestriction, opt_recentFileType) {
+  constructor(query, volumeManager, opt_sourceRestriction, opt_recentFileType) {
     super();
 
     /**
      * @private {string}
      */
     this.query_ = query.toLowerCase();
+
+    /**
+     * @private {VolumeManager}
+     */
+    this.volumeManager_ = volumeManager;
 
     /**
      * @private {chrome.fileManagerPrivate.SourceRestriction}
@@ -298,6 +304,17 @@ export class RecentContentScanner extends ContentScanner {
   async scan(
       entriesCallback, successCallback, errorCallback,
       invalidateCache = false) {
+    /** @type {function(!FileEntry): boolean} */
+    const isMatchQuery = (entry) =>
+        entry.name.toLowerCase().indexOf(this.query_) >= 0;
+    /**
+     * Files app launched with "volumeFilter" launch parameter will filter out
+     * some volumes. Before returning the recent entries, we need to check if
+     * the entry's volume location is valid or not (crbug.com/1333385/#c17).
+     */
+    /** @type {function(!FileEntry): boolean} */
+    const isAllowedVolume = (entry) =>
+        this.volumeManager_.getVolumeInfo(entry) !== null;
     chrome.fileManagerPrivate.getRecentFiles(
         this.sourceRestriction_, this.recentFileType_, invalidateCache,
         entries => {
@@ -309,7 +326,7 @@ export class RecentContentScanner extends ContentScanner {
           }
           if (entries.length > 0) {
             entriesCallback(entries.filter(
-                entry => entry.name.toLowerCase().indexOf(this.query_) >= 0));
+                entry => isMatchQuery(entry) && isAllowedVolume(entry)));
           }
           successCallback();
         });
@@ -457,10 +474,6 @@ export class FileFilter extends EventTarget {
    * @private
    */
   setupInitialFilters_() {
-    if (this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled()) {
-      this.setMediaStoreRecentsFilter();
-    }
-
     this.setHiddenFilesVisible(false);
     this.setAllAndroidFoldersVisible(false);
     this.hideAndroidDownload();
@@ -482,16 +495,6 @@ export class FileFilter extends EventTarget {
   removeFilter(name) {
     delete this.filters_[name];
     dispatchSimpleEvent(this, 'changed');
-  }
-
-  /**
-   * When Android MediaStore volume manager filter is enabled, filter RECENTS
-   * volume entries by allowed volume type: crbug.com/1333385/#c17
-   */
-  setMediaStoreRecentsFilter() {
-    this.addFilter('media-store-recents', entry => {
-      return entry && this.volumeManager_.getLocationInfo(entry) !== null;
-    });
   }
 
   /**

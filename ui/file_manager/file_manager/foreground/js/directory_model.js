@@ -1500,7 +1500,11 @@ export class DirectoryModel extends EventTarget {
       return () => {
         const fakeEntry = /** @type {!FakeEntry} */ (entry);
         return new RecentContentScanner(
-            query, fakeEntry.sourceRestriction, fakeEntry.recentFileType);
+            query,
+            this.volumeManager_,
+            fakeEntry.sourceRestriction,
+            fakeEntry.recentFileType,
+        );
       };
     }
     if (entry.rootType == VolumeManagerCommon.RootType.CROSTINI) {
