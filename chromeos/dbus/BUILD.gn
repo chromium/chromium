@@ -33,7 +33,6 @@ component("dbus") {
     "//chromeos/dbus/easy_unlock",
     "//chromeos/dbus/fwupd",
     "//chromeos/dbus/gnubby",
-    "//chromeos/dbus/image_burner",
     "//chromeos/dbus/util",
     "//components/account_id",
     "//components/device_event_log",

@@ -21,17 +21,16 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/disks/disk.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/image_burner/fake_image_burner_client.h"
+#include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
-#include "chromeos/dbus/image_burner/fake_image_burner_client.h"
-#include "chromeos/dbus/image_burner/image_burner_client.h"
 #endif
 
 namespace extensions {
 namespace image_writer {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class ImageWriterFakeImageBurnerClient
-    : public chromeos::FakeImageBurnerClient {
+class ImageWriterFakeImageBurnerClient : public ash::FakeImageBurnerClient {
  public:
   ImageWriterFakeImageBurnerClient() = default;
   ~ImageWriterFakeImageBurnerClient() override = default;
@@ -247,7 +246,7 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
           /*fake_cicerone_client=*/nullptr);
     }
     image_burner_client_ = std::make_unique<ImageWriterFakeImageBurnerClient>();
-    chromeos::ImageBurnerClient::SetInstanceForTest(image_burner_client_.get());
+    ash::ImageBurnerClient::SetInstanceForTest(image_burner_client_.get());
   }
 
   FakeDiskMountManager* disk_manager = new FakeDiskMountManager();
@@ -269,7 +268,7 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
 
 void ImageWriterTestUtils::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ImageBurnerClient::SetInstanceForTest(nullptr);
+  ash::ImageBurnerClient::SetInstanceForTest(nullptr);
   image_burner_client_.reset();
 
   if (chromeos::DBusThreadManager::IsInitialized()) {

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_IMAGE_BURNER_FAKE_IMAGE_BURNER_CLIENT_H_
-#define CHROMEOS_DBUS_IMAGE_BURNER_FAKE_IMAGE_BURNER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_IMAGE_BURNER_FAKE_IMAGE_BURNER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_IMAGE_BURNER_FAKE_IMAGE_BURNER_CLIENT_H_
 
 #include <string>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/image_burner/image_burner_client.h"
+#include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implemetation of ImageBurnerClient. This class does nothing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) FakeImageBurnerClient
+class COMPONENT_EXPORT(ASH_DBUS_IMAGE_BURNER) FakeImageBurnerClient
     : public ImageBurnerClient {
  public:
   FakeImageBurnerClient();
@@ -34,6 +34,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) FakeImageBurnerClient
   void ResetEventHandlers() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_IMAGE_BURNER_FAKE_IMAGE_BURNER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_IMAGE_BURNER_FAKE_IMAGE_BURNER_CLIENT_H_

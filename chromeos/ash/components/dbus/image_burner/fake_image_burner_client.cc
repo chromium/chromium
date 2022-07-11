@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/image_burner/fake_image_burner_client.h"
+#include "chromeos/ash/components/dbus/image_burner/fake_image_burner_client.h"
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 FakeImageBurnerClient::FakeImageBurnerClient() = default;
 
@@ -24,4 +24,4 @@ void FakeImageBurnerClient::SetEventHandlers(
     BurnFinishedHandler burn_finished_handler,
     const BurnProgressUpdateHandler& burn_progress_update_handler) {}
 
-}  // namespace chromeos
+}  // namespace ash

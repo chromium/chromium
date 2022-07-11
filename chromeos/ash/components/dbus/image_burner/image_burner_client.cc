@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/image_burner/image_burner_client.h"
+#include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
 
 #include <stdint.h>
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chromeos/dbus/image_burner/fake_image_burner_client.h"
+#include "chromeos/ash/components/dbus/image_burner/fake_image_burner_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -181,4 +181,4 @@ ImageBurnerClient::ImageBurnerClient() = default;
 
 ImageBurnerClient::~ImageBurnerClient() = default;
 
-}  // namespace chromeos
+}  // namespace ash
