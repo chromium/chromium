@@ -59,7 +59,7 @@ class Executor : public base::RefCountedThreadSafe<Executor> {
   Executor(Coordinator* coordinator, int thread_number);
 
   // Submit a job to this executor.
-  void StartJob(Job* job);
+  void StartJob(scoped_refptr<Job> job);
 
   // Callback for when a job has completed running on the executor's thread.
   void OnJobCompleted(Job* job);
@@ -361,7 +361,7 @@ Executor::Executor(Executor::Coordinator* coordinator, int thread_number)
   CHECK(thread_->Start());
 }
 
-void Executor::StartJob(Job* job) {
+void Executor::StartJob(scoped_refptr<Job> job) {
   DCHECK(!outstanding_job_.get());
   outstanding_job_ = job;
 
@@ -464,7 +464,7 @@ int MultiThreadedProxyResolver::GetProxyForURL(
   Executor* executor = FindIdleExecutor();
   if (executor) {
     DCHECK_EQ(0u, pending_jobs_.size());
-    executor->StartJob(job.get());
+    executor->StartJob(job);
     return ERR_IO_PENDING;
   }
 
@@ -497,8 +497,8 @@ void MultiThreadedProxyResolver::AddNewExecutor() {
   int thread_number = executors_.size();
 
   auto executor = base::MakeRefCounted<Executor>(this, thread_number);
-  executor->StartJob(
-      new CreateResolverJob(script_data_, resolver_factory_.get()));
+  executor->StartJob(base::MakeRefCounted<CreateResolverJob>(
+      script_data_, resolver_factory_.get()));
   executors_.push_back(std::move(executor));
 }
 
@@ -508,7 +508,7 @@ void MultiThreadedProxyResolver::OnExecutorReady(Executor* executor) {
     scoped_refptr<Job> job = pending_jobs_.front();
     pending_jobs_.pop_front();
     if (!job->was_cancelled()) {
-      executor->StartJob(job.get());
+      executor->StartJob(std::move(job));
       return;
     }
   }
@@ -533,8 +533,8 @@ class MultiThreadedProxyResolverFactory::Job
         script_data_(script_data),
         executor_(base::MakeRefCounted<Executor>(this, 0)),
         callback_(std::move(callback)) {
-    executor_->StartJob(
-        new CreateResolverJob(script_data_, resolver_factory_.get()));
+    executor_->StartJob(base::MakeRefCounted<CreateResolverJob>(
+        script_data_, resolver_factory_.get()));
   }
 
   ~Job() override {
