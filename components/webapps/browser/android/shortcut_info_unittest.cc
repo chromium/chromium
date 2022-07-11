@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -242,6 +243,25 @@ TEST_F(ShortcutInfoTest, DisplayOverride) {
   info_.UpdateFromManifest(manifest_);
 
   EXPECT_EQ(info_.display, blink::mojom::DisplayMode::kFullscreen);
+}
+
+TEST_F(ShortcutInfoTest, ManifestIdGenerated) {
+  manifest_.start_url = GURL("https://new.com/start");
+  manifest_.id = u"new_id";
+
+  info_.UpdateFromManifest(manifest_);
+
+  EXPECT_EQ(info_.manifest_id, "https://new.com/new_id");
+}
+
+TEST_F(ShortcutInfoTest, ManifestIdFallback) {
+  manifest_.start_url = GURL("https://new.com/start");
+  manifest_.id = absl::nullopt;
+
+  info_.UpdateFromManifest(manifest_);
+
+  // If id is not specified, use start_url.
+  EXPECT_EQ(info_.manifest_id, manifest_.start_url.spec());
 }
 
 }  // namespace webapps

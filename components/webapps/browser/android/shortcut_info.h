@@ -159,6 +159,9 @@ struct ShortcutInfo {
   std::vector<GURL> screenshot_urls;
   absl::optional<ShareTarget> share_target;
 
+  // Id specified in the manifest.
+  std::string manifest_id;
+
   // Both shortcut item related vectors have the same size.
   std::vector<blink::Manifest::ShortcutItem> shortcut_items;
   std::vector<GURL> best_shortcut_icon_urls;

@@ -652,10 +652,10 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
   // Using empty string for |primary_icon_data| and |splash_icon_data| here
   // because in WebApk installs, we are using the icon data from |hashes|.
   webapps::BuildProto(
-      *install_shortcut_info_, std::string() /* primary_icon_data */,
-      is_primary_icon_maskable_, std::string() /* splash_icon_data */,
-      "" /* package_name */, "" /* version */, std::move(*hashes),
-      false /* is_manifest_stale */,
+      *install_shortcut_info_, install_shortcut_info_->manifest_id,
+      std::string() /* primary_icon_data */, is_primary_icon_maskable_,
+      std::string() /* splash_icon_data */, "" /* package_name */,
+      "" /* version */, std::move(*hashes), false /* is_manifest_stale */,
       false /* is_app_identity_update_supported */,
       base::BindOnce(&WebApkInstaller::SendRequest,
                      weak_ptr_factory_.GetWeakPtr(),

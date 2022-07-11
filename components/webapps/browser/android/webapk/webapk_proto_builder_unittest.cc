@@ -6,8 +6,10 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/webapk/webapk.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,10 +46,13 @@ class BuildProtoRunner {
                      icon_url_to_murmur2_hash,
                  const std::string& primary_icon_data,
                  const std::string& splash_icon_data,
+                 const std::string& manifest_id,
+                 const std::string& app_key,
                  bool is_manifest_stale,
                  bool is_app_identity_update_supported,
                  const std::vector<GURL>& best_shortcut_icon_urls) {
     webapps::ShortcutInfo info(GURL::EmptyGURL());
+    info.manifest_id = manifest_id;
     info.best_primary_icon_url = best_primary_icon_url;
     info.splash_image_url = splash_image_url;
     if (!best_primary_icon_url.is_empty())
@@ -63,7 +68,7 @@ class BuildProtoRunner {
       info.shortcut_items.back().icons.back().src = shortcut_url;
     }
 
-    webapps::BuildProto(info, primary_icon_data,
+    webapps::BuildProto(info, app_key, primary_icon_data,
                         false /* is_primary_icon_maskable */, splash_icon_data,
                         "" /* package_name */, "" /* version */,
                         std::move(icon_url_to_murmur2_hash), is_manifest_stale,
@@ -135,10 +140,11 @@ TEST_F(WebApkProtoBuilderTest, BuildWebApkProtoWhenManifestIsObsolete) {
 
   std::string primary_icon_data = "data3";
   std::string splash_icon_data = "data4";
+
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(GURL(), GURL(), std::move(icon_url_to_murmur2_hash),
-                    primary_icon_data, splash_icon_data,
-                    true /* is_manifest_stale */,
+                    primary_icon_data, splash_icon_data, "" /*manifest_id*/,
+                    "" /*app_key*/, true /* is_manifest_stale */,
                     true /* is_app_identity_update_supported */, {});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);
@@ -179,7 +185,8 @@ TEST_F(WebApkProtoBuilderTest, BuildWebApkProtoWhenManifestIsAvailable) {
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(GURL(best_primary_icon_url), GURL(best_splash_icon_url),
                     icon_url_to_murmur2_hash, "" /* primary_icon_data */,
-                    "" /* splash_icon_data */, false /* is_manifest_stale*/,
+                    "" /* splash_icon_data */, "" /*manifest_id*/,
+                    "" /*app_key*/, false /* is_manifest_stale*/,
                     false /* is_app_identity_update_supported */,
                     {GURL(best_shortcut_icon_url)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
@@ -234,11 +241,11 @@ TEST_F(WebApkProtoBuilderTest,
   icon_url_to_murmur2_hash[best_icon_url] = {"data0", "0"};
 
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
-  runner->BuildSync(GURL(best_icon_url), GURL(best_icon_url),
-                    icon_url_to_murmur2_hash, "" /* primary_icon_data */,
-                    "" /* splash_icon_data */, false /* is_manifest_stale*/,
-                    false /* is_app_identity_update_supported */,
-                    {GURL(best_icon_url)});
+  runner->BuildSync(
+      GURL(best_icon_url), GURL(best_icon_url), icon_url_to_murmur2_hash,
+      "" /* primary_icon_data */, "" /* splash_icon_data */, "" /*manifest_id*/,
+      "" /*app_key*/, false /* is_manifest_stale*/,
+      false /* is_app_identity_update_supported */, {GURL(best_icon_url)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);
 
@@ -292,7 +299,8 @@ TEST_F(WebApkProtoBuilderTest, BuildWebApkProtoWhenWithMultipleShortcuts) {
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(
       GURL(), GURL(), icon_url_to_murmur2_hash, "" /* primary_icon_data */,
-      "" /* splash_icon_data */, false /* is_manifest_stale*/,
+      "" /* splash_icon_data */, "" /*manifest_id*/, "" /*app_key*/,
+      false /* is_manifest_stale*/,
       false /* is_app_identity_update_supported */,
       {GURL(best_shortcut_icon_url1), GURL(best_shortcut_icon_url2)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
@@ -328,7 +336,8 @@ TEST_F(WebApkProtoBuilderTest,
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
   runner->BuildSync(
       GURL(), GURL(), icon_url_to_murmur2_hash, "" /* primary_icon_data */,
-      "" /* splash_icon_data */, false /* is_manifest_stale*/,
+      "" /* splash_icon_data */, "" /*manifest_id*/, "" /*app_key*/,
+      false /* is_manifest_stale*/,
       false /* is_app_identity_update_supported */,
       {GURL(best_shortcut_icon_url), GURL(best_shortcut_icon_url)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
@@ -363,11 +372,11 @@ TEST_F(WebApkProtoBuilderTest,
   icon_url_to_murmur2_hash[best_icon_url] = {"data0", "0"};
 
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
-  runner->BuildSync(GURL(icon_url_1), GURL(best_icon_url),
-                    icon_url_to_murmur2_hash, "" /* primary_icon_data */,
-                    "" /* splash_icon_data */, false /* is_manifest_stale*/,
-                    true /* is_app_identity_update_supported */,
-                    {GURL(best_icon_url)});
+  runner->BuildSync(
+      GURL(icon_url_1), GURL(best_icon_url), icon_url_to_murmur2_hash,
+      "" /* primary_icon_data */, "" /* splash_icon_data */, "" /*manifest_id*/,
+      "" /*app_key*/, false /* is_manifest_stale*/,
+      true /* is_app_identity_update_supported */, {GURL(best_icon_url)});
   webapk::WebApk* webapk_request = runner->GetWebApkRequest();
   ASSERT_NE(nullptr, webapk_request);
 
@@ -407,4 +416,26 @@ TEST_F(WebApkProtoBuilderTest,
   EXPECT_TRUE(manifest.shortcuts(0).icons(0).has_image_data());
   EXPECT_EQ(manifest.shortcuts(0).icons(0).image_data(),
             icon_url_to_murmur2_hash[best_icon_url].unsafe_data);
+}
+
+TEST_F(WebApkProtoBuilderTest, BuildWebApkProtoManifestIdAndKey) {
+  base::test::ScopedFeatureList feature_list(
+      webapps::features::kWebApkUniqueId);
+  std::string manifest_id_1 = "test_id_1";
+  std::string app_key_1 = "test_key_1";
+
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
+  std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+  runner->BuildSync(GURL(), GURL(), icon_url_to_murmur2_hash,
+                    "" /* primary_icon_data */, "" /* splash_icon_data */,
+                    manifest_id_1, app_key_1, false /* is_manifest_stale*/,
+                    false /* is_app_identity_update_supported */, {});
+  webapk::WebApk* webapk_request = runner->GetWebApkRequest();
+  ASSERT_NE(nullptr, webapk_request);
+
+  EXPECT_EQ(webapk_request->app_key(), app_key_1);
+
+  webapk::WebAppManifest manifest = webapk_request->manifest();
+  EXPECT_EQ(manifest.id(), manifest_id_1);
 }

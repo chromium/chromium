@@ -28,6 +28,7 @@ namespace webapps {
 // splash icon URL is unknown.
 std::unique_ptr<std::string> BuildProtoInBackground(
     const webapps::ShortcutInfo& shortcut_info,
+    const std::string& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
@@ -42,6 +43,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
 // Runs |callback| on the calling thread when complete.
 void BuildProto(
     const webapps::ShortcutInfo& shortcut_info,
+    const std::string& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,

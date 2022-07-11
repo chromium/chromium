@@ -18,6 +18,7 @@ namespace features {
 extern const base::Feature kAddToHomescreenMessaging;
 extern const base::Feature kInstallableAmbientBadgeInfoBar;
 extern const base::Feature kInstallableAmbientBadgeMessage;
+extern const base::Feature kWebApkUniqueId;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const base::Feature kSkipServiceWorkerCheckAll;

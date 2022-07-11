@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/android/build_info.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -18,6 +19,7 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/android/color_utils_android.h"
@@ -92,6 +94,7 @@ std::string getCurrentAbi() {
 
 std::unique_ptr<std::string> BuildProtoInBackground(
     const webapps::ShortcutInfo& shortcut_info,
+    const std::string& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
@@ -128,6 +131,11 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       ui::OptionalSkColorToString(shortcut_info.background_color));
   web_app_manifest->set_theme_color(
       ui::OptionalSkColorToString(shortcut_info.theme_color));
+
+  if (base::FeatureList::IsEnabled(features::kWebApkUniqueId)) {
+    web_app_manifest->set_id(shortcut_info.manifest_id);
+    webapk->set_app_key(app_key);
+  }
 
   std::string* scope = web_app_manifest->add_scopes();
   scope->assign(shortcut_info.scope.spec());
@@ -269,6 +277,7 @@ scoped_refptr<base::TaskRunner> GetBackgroundTaskRunner() {
 
 void BuildProto(
     const webapps::ShortcutInfo& shortcut_info,
+    const std::string& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
@@ -281,7 +290,7 @@ void BuildProto(
     base::OnceCallback<void(std::unique_ptr<std::string>)> callback) {
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
-      base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info,
+      base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info, app_key,
                      primary_icon_data, is_primary_icon_maskable,
                      splash_icon_data, package_name, version,
                      std::move(icon_url_to_murmur2_hash), is_manifest_stale,
@@ -308,9 +317,10 @@ bool StoreUpdateRequestToFileInBackground(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
+  // TODO(crbug.com/1342070): Implement the app_key for updates.
   std::unique_ptr<std::string> proto = BuildProtoInBackground(
-      shortcut_info, primary_icon_data, is_primary_icon_maskable,
-      splash_icon_data, package_name, version,
+      shortcut_info, "" /*app_key*/, primary_icon_data,
+      is_primary_icon_maskable, splash_icon_data, package_name, version,
       std::move(icon_url_to_murmur2_hash), is_manifest_stale,
       is_app_identity_update_supported, std::move(update_reasons));
 

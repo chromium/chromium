@@ -300,7 +300,7 @@ class WebApkInstallerTest : public ::testing::Test {
     webapps::ShortcutInfo info(GURL::EmptyGURL());
 
     return webapps::BuildProtoInBackground(
-        info, primary_icon_data, false, splash_icon_data,
+        info, info.manifest_id, primary_icon_data, false, splash_icon_data,
         /*package_name*/ "", /*version*/ "",
         std::move(icon_url_to_murmur2_hash), true /* is_manifest_stale */,
         true /* is_app_identity_update_supported */,

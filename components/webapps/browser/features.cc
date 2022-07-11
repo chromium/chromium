@@ -20,6 +20,10 @@ const base::Feature kInstallableAmbientBadgeInfoBar{
 // Enables or disables the installable ambient badge message.
 const base::Feature kInstallableAmbientBadgeMessage{
     "InstallableAmbientBadgeMessage", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables PWA Unique IDs for WebAPKs.
+const base::Feature kWebApkUniqueId{"WebApkUniqueId",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Skip the service worker in all install criteria check. This affect both
