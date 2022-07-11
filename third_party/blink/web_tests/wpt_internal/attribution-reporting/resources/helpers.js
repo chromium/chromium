@@ -14,6 +14,8 @@ const attribution_reporting_promise_test = (f, name) =>
 
 const eventLevelReportsUrl =
     '/.well-known/attribution-reporting/report-event-attribution';
+const eventLevelDebugReportsUrl =
+    '/.well-known/attribution-reporting/debug/report-event-attribution';
 const aggregatableReportsUrl =
     '/.well-known/attribution-reporting/report-aggregate-attribution';
 
@@ -213,6 +215,8 @@ const pollAttributionReports = async (url, interval = 100) => {
 
 const pollEventLevelReports = interval =>
     pollAttributionReports(eventLevelReportsUrl, interval);
+const pollEventLevelDebugReports = interval =>
+    pollAttributionReports(eventLevelDebugReportsUrl, interval);
 const pollAggregatableReports = interval =>
     pollAttributionReports(aggregatableReportsUrl, interval);
 
