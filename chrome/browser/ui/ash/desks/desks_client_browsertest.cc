@@ -106,7 +106,7 @@ namespace {
 
 constexpr int32_t kSettingsWindowId = 100;
 constexpr int32_t kHelpWindowId = 200;
-constexpr int32_t kLaunchedWindowIdBase = 1000000000;
+constexpr int32_t kLaunchedWindowIdBase = -1;
 
 constexpr char kExampleUrl1[] = "https://examples1.com";
 constexpr char kExampleUrl2[] = "https://examples2.com";
@@ -148,7 +148,7 @@ std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
 Browser* FindLaunchedBrowserByURLs(const std::vector<GURL>& urls) {
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
-    if (window->GetProperty(app_restore::kRestoreWindowIdKey) >=
+    if (window->GetProperty(app_restore::kRestoreWindowIdKey) <
             kLaunchedWindowIdBase &&
         GetURLsForBrowserWindow(browser) == urls) {
       return browser;

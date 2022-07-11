@@ -14,6 +14,9 @@
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/templates/saved_desk_test_util.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/feature_list.h"
@@ -37,9 +40,11 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/device_scheduled_reboot/reboot_notification_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -76,6 +81,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/wm/core/window_util.h"
 
@@ -110,6 +116,12 @@ void RemoveInactiveDesks() {
       break;
     run_loop.Run();
   }
+}
+
+void ActivateDesk(int index) {
+  base::RunLoop run_loop;
+  ash::AutotestDesksApi().ActivateDeskAtIndex(index, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 // Gets the ARC app launch information from the full restore file for `app_id`
@@ -216,6 +228,31 @@ Browser* GetBrowserForWindowId(int32_t window_id) {
   return nullptr;
 }
 
+void ClickButton(const views::Button* button) {
+  ASSERT_TRUE(button);
+  ASSERT_TRUE(button->GetVisible());
+  aura::Window* root_window =
+      button->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseToInHost(button->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+}
+
+void ClickSaveDeskAsTemplateButton() {
+  ClickButton(ash::GetSaveDeskAsTemplateButton());
+  // Wait for the template to be stored in the model.
+  ash::WaitForDesksTemplatesUI();
+  // Clicking the save template button selects the newly created template's name
+  // field. We can press enter or escape or click to select out of it.
+  ash::SendKey(ui::VKEY_RETURN);
+}
+
+void ClickTemplateItem(int index) {
+  ClickButton(ash::GetTemplateItemButton(/*index=*/0));
+  // We need to wait for the template to be fetched from the model.
+  ash::WaitForDesksTemplatesUI();
+}
+
 }  // namespace
 
 class FullRestoreAppLaunchHandlerBrowserTest
@@ -226,6 +263,9 @@ class FullRestoreAppLaunchHandlerBrowserTest
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_restore_for_testing_ = std::make_unique<ScopedRestoreForTesting>();
     set_launch_browser_for_testing(nullptr);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kDesksTemplates},
+        /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   ~FullRestoreAppLaunchHandlerBrowserTest() override = default;
 
@@ -330,6 +370,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
   ui::ScopedAnimationDurationScaleMode faster_animations_;
   std::unique_ptr<ScopedRestoreForTesting> scoped_restore_for_testing_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
@@ -992,6 +1033,112 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                 ::app_restore::kRestoreWindowIdKey));
   EXPECT_EQ(prerestore_bounds,
             shell_surface->GetWidget()->GetNativeWindow()->GetBoundsInScreen());
+}
+
+// Launch a desk template with a browser after full restore.
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       LaunchDeskTemplateAfterFullRestore) {
+  // Add the chrome browser launch info.
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
+                                app_constants::kChromeAppId, kWindowId1));
+
+  auto app_launch_info = std::make_unique<::app_restore::AppLaunchInfo>(
+      app_constants::kChromeAppId, kWindowId2);
+  app_launch_info->app_type_browser = true;
+  ::full_restore::SaveAppLaunchInfo(profile()->GetPath(),
+                                    std::move(app_launch_info));
+
+  WaitForAppLaunchInfoSaved();
+
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+  SetShouldRestore(app_launch_handler.get());
+
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
+  content::RunAllTasksUntilIdle();
+
+  // Verify there is new browser launched.
+  ASSERT_EQ(1, BrowserList::GetInstance()->size());
+  Browser* browser_from_full_restore = BrowserList::GetInstance()->get(0);
+
+  // We're now going to create a new desk and a browser in that desk.
+  ash::AutotestDesksApi().CreateNewDesk();
+  ActivateDesk(/*index=*/1);
+
+  const gfx::Rect expected_bounds(10, 10, 500, 300);
+  const GURL expected_url("https://example.org");
+
+  Browser* new_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile(), false));
+
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+  chrome::AddTabAt(new_browser, expected_url, /*index=*/-1,
+                   /*foreground=*/true);
+  navigation_observer.Wait();
+
+  new_browser->window()->Show();
+  new_browser->window()->SetBounds(expected_bounds);
+
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2);
+
+  // The browser has now been created. We're now going to enter overview mode
+  // and save the desk as a template. Once saved, we'll exit overview mode.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickSaveDeskAsTemplateButton();
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  ASSERT_FALSE(Shell::Get()->overview_controller()->overview_session());
+
+  // Move the browser a bit and then close it. This is to make sure that when we
+  // create a new browser, its bounds are actually coming from the template.
+  new_browser->window()->SetBounds(expected_bounds + gfx::Vector2d(10, 10));
+  web_app::CloseAndWait(new_browser);
+
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1);
+
+  // We're now going to launch the template and verify that we have a new
+  // browser, and that it has the correct bounds and URL.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  // Enter the saved desk library.
+  ClickButton(ash::GetExpandedStateDesksTemplatesButton());
+  // Launch the first entry.
+  ClickTemplateItem(/*index=*/0);
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2);
+
+  Browser* browser_from_template = nullptr;
+  for (Browser* b : *BrowserList::GetInstance()) {
+    if (b != browser_from_full_restore) {
+      browser_from_template = b;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(browser_from_template);
+  // Verify that the browser has the same bounds as was captured.
+  EXPECT_EQ(expected_bounds, browser_from_template->window()->GetBounds());
+  // Verify that the browser has a tab with the expected URL.
+  EXPECT_EQ(1, browser_from_template->tab_strip_model()->count());
+  EXPECT_EQ(expected_url, browser_from_template->tab_strip_model()
+                              ->GetWebContentsAt(0)
+                              ->GetVisibleURL());
+  // Verify that the browser window has a negative restore window ID (and lower
+  // than the special value -1).
+  EXPECT_LT(browser_from_template->window()->GetNativeWindow()->GetProperty(
+                ::app_restore::kRestoreWindowIdKey),
+            -1);
 }
 
 class FullRestoreAppLaunchHandlerChromeAppBrowserTest
