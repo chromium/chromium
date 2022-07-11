@@ -44,7 +44,8 @@ ci.builder(
             "gclient_apply_config": ["android"],
         },
     },
-    schedule = "with 6h interval",
+    # Every 6 hours starting at 5am UTC.
+    schedule = "0 5/6 * * * *",
     triggered_by = [],
 )
 
