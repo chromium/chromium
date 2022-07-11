@@ -10533,7 +10533,7 @@
 
       If this policy is enabled and the enrollment ID has already been uploaded to the DMServer, a remote device powerwash will be triggered.
 
-      If this policy is disabled or not set, the remote device powerwash is not trigged, independently of the enrollment ID upload status.
+      If this policy is disabled or not set, the remote device powerwash is not triggered, independently of the enrollment ID upload status.
 
       This check is triggered whenever the login screen is loaded, then retried every hour (if the device stays on the login screen). This prevents the migration from starting in the middle of a user session, causing potential problems to end users.''',
     },
@@ -24670,7 +24670,7 @@
       'id': 558,
       'caption': '''Enable 'Remember password' feature''',
       'tags': ['website-sharing'],
-      'desc': '''Controls whether the 'Remember password' feature is enabled in the Kerberos authentication dialog. Passwords are stored encryped on disk, only accessible to the Kerberos system daemon and during a user session.
+      'desc': '''Controls whether the 'Remember password' feature is enabled in the Kerberos authentication dialog. Passwords are stored encrypted on disk, only accessible to the Kerberos system daemon and during a user session.
 
           If this policy is enabled or not set, users can decide whether Kerberos passwords are remembered, so that they do not have to be entered again. Kerberos tickets are automatically fetched unless additional authentication is required (two-factor authentication).
 
