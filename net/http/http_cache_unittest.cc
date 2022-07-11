@@ -174,8 +174,8 @@ void DeferCallback(bool* defer) {
 
 class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
  public:
-  explicit DeleteCacheCompletionCallback(MockHttpCache* cache)
-      : cache_(cache) {}
+  explicit DeleteCacheCompletionCallback(std::unique_ptr<MockHttpCache> cache)
+      : cache_(std::move(cache)) {}
 
   DeleteCacheCompletionCallback(const DeleteCacheCompletionCallback&) = delete;
   DeleteCacheCompletionCallback& operator=(
@@ -188,11 +188,11 @@ class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
 
  private:
   void OnComplete(int result) {
-    delete cache_;
+    cache_.reset();
     SetResult(result);
   }
 
-  raw_ptr<MockHttpCache> cache_;
+  std::unique_ptr<MockHttpCache> cache_;
 };
 
 //-----------------------------------------------------------------------------
@@ -5734,25 +5734,26 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend) {
 TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
   auto factory = std::make_unique<MockBlockingBackendFactory>();
   MockBlockingBackendFactory* factory_ptr = factory.get();
-  MockHttpCache* cache = new MockHttpCache(std::move(factory));
+  auto cache = std::make_unique<MockHttpCache>(std::move(factory));
+  auto* cache_ptr = cache.get();
 
-  DeleteCacheCompletionCallback cb(cache);
+  DeleteCacheCompletionCallback cb(std::move(cache));
   disk_cache::Backend* backend;
-  int rv = cache->http_cache()->GetBackend(&backend, cb.callback());
+  int rv = cache_ptr->http_cache()->GetBackend(&backend, cb.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Now let's queue a regular transaction
   MockHttpRequest request(kSimpleGET_Transaction);
 
   auto c = std::make_unique<Context>();
-  c->result = cache->CreateTransaction(&c->trans);
+  c->result = cache_ptr->CreateTransaction(&c->trans);
   ASSERT_THAT(c->result, IsOk());
 
   c->trans->Start(&request, c->callback.callback(), NetLogWithSource());
 
   // And another direct backend request.
   TestCompletionCallback cb2;
-  rv = cache->http_cache()->GetBackend(&backend, cb2.callback());
+  rv = cache_ptr->http_cache()->GetBackend(&backend, cb2.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Just to make sure that everything is still pending.
