@@ -666,6 +666,73 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   prerender_observer.WaitForDestroyed();
 }
 
+// Tests the activated prerendered page records navigation timings correctly.
+// Though the prerender happens before the activation navigation, the timings
+// should not be a negative value, so that the activated page can measure the
+// timing correctly.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
+                       SetLoaderTimeCorrectly) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  // 1. Type the first query.
+  std::string search_query_1 = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  ChangeAutocompleteResult(search_query_1, prerender_query,
+                           PrerenderHint::kDisabled, PrefetchHint::kEnabled);
+
+  // 2. Wait until prefetch completed.
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(prerender_query),
+                           {SearchPrefetchStatus::kComplete});
+
+  // 3. Type a longer one.
+  std::string search_query_2 = "preren";
+  ChangeAutocompleteResult(search_query_2, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+  registry_observer.WaitForTrigger(expected_prerender_url);
+  prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                    expected_prerender_url);
+  EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(prerender_query));
+  EXPECT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
+
+  // 4. Activate.
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), expected_prerender_url);
+  NavigateToPrerenderedResult(expected_prerender_url);
+  prerender_observer.WaitForActivation();
+
+  // Check the response time is non-negative.
+  std::string script =
+      "window.domAutomationController.send(window.performance.timing."
+      "responseEnd - window.performance.timing.responseStart)";
+  EXPECT_LT(0, content::EvalJs(GetActiveWebContents(), script,
+                               content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+
+  // Check the response start is after (or the same as) request start.
+  script =
+      "window.domAutomationController.send(window.performance.timing."
+      "responseStart - window.performance.timing.requestStart)";
+  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script,
+                               content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+
+  // Check request start is after (or the same as) navigation start.
+  script =
+      "window.domAutomationController.send(window.performance.timing."
+      "requestStart - window.performance.timing.navigationStart)";
+  EXPECT_LE(0, content::EvalJs(GetActiveWebContents(), script,
+                               content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+}
+
 // Tests that prerender fails as well if the prefetch response that prerender
 // uses fails.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
