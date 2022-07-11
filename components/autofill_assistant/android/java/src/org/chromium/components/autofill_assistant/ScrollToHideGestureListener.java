@@ -74,7 +74,7 @@ public class ScrollToHideGestureListener extends GestureStateListenerWithScroll 
     }
 
     @Override
-    public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
+    public void onScrollStarted(int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
         Callback<Integer> offsetController = mContent.getOffsetController();
         if (offsetController == null) return;
 
@@ -153,10 +153,10 @@ public class ScrollToHideGestureListener extends GestureStateListenerWithScroll 
     }
 
     @Override
-    public void onFlingStartGesture(int scrollOffsetY, int scrollExtentY) {
+    public void onFlingStartGesture(int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
         // Flinging and scrolling are handled the same, the sheet follows the movement of the
         // browser page.
-        onScrollStarted(scrollOffsetY, scrollExtentY);
+        onScrollStarted(scrollOffsetY, scrollExtentY, isDirectionUp);
     }
 
     @Override

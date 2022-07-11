@@ -232,7 +232,8 @@ public abstract class SwipableOverlayView extends FrameLayout {
             private float mInitialExtentY;
 
             @Override
-            public void onFlingStartGesture(int scrollOffsetY, int scrollExtentY) {
+            public void onFlingStartGesture(
+                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                 if (!isAllowedToAutoHide() || !cancelCurrentAnimation()) return;
                 resetInternalScrollState(scrollOffsetY, scrollExtentY);
                 mGestureState = Gesture.FLINGING;
@@ -260,7 +261,8 @@ public abstract class SwipableOverlayView extends FrameLayout {
             }
 
             @Override
-            public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
+            public void onScrollStarted(
+                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                 if (!isAllowedToAutoHide() || !cancelCurrentAnimation()) return;
                 resetInternalScrollState(scrollOffsetY, scrollExtentY);
                 mLastScrollOffsetY = scrollOffsetY;

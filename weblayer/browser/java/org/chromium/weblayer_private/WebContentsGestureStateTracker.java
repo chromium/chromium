@@ -64,7 +64,8 @@ public final class WebContentsGestureStateTracker {
 
         mGestureListener = new GestureStateListener() {
             @Override
-            public void onFlingStartGesture(int scrollOffsetY, int scrollExtentY) {
+            public void onFlingStartGesture(
+                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                 onScrollingStateChanged();
             }
 
@@ -74,7 +75,8 @@ public final class WebContentsGestureStateTracker {
             }
 
             @Override
-            public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
+            public void onScrollStarted(
+                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                 onScrollingStateChanged();
             }
 

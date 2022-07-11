@@ -163,9 +163,20 @@ void GestureListenerManager::GestureEventAck(
   ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
   if (j_obj.is_null())
     return;
+  if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
+    Java_GestureListenerManagerImpl_onScrollBegin(
+        env, j_obj, /*isDirectionUp*/ event.data.scroll_begin.delta_y_hint > 0);
+    return;
+  }
+  bool consumed = ack_result == blink::mojom::InputEventResultState::kConsumed;
+  if (event.GetType() == blink::WebInputEvent::Type::kGestureFlingStart &&
+      consumed) {
+    Java_GestureListenerManagerImpl_onFlingStart(
+        env, j_obj, /*isDirectionUp*/ event.data.scroll_begin.delta_y_hint > 0);
+    return;
+  }
   Java_GestureListenerManagerImpl_onEventAck(
-      env, j_obj, static_cast<int>(event.GetType()),
-      ack_result == blink::mojom::InputEventResultState::kConsumed);
+      env, j_obj, static_cast<int>(event.GetType()), consumed);
 }
 
 void GestureListenerManager::DidStopFlinging() {

@@ -810,7 +810,7 @@ public class AwContents implements SmartClipProvider {
         }
 
         @Override
-        public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
+        public void onScrollStarted(int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
             mZoomControls.invokeZoomPicker();
         }
 

@@ -220,26 +220,14 @@ public class GestureListenerManagerImpl
     private void onEventAck(int event, boolean consumed) {
         switch (event) {
             case EventType.GESTURE_FLING_START:
-                if (consumed) {
-                    // The view expects the fling velocity in pixels/s.
-                    mHasActiveFlingScroll = true;
-                    for (mIterator.rewind(); mIterator.hasNext();) {
-                        mIterator.next().onFlingStartGesture(
-                                verticalScrollOffset(), verticalScrollExtent());
-                    }
-                } else {
-                    // If a scroll ends with a fling, a SCROLL_END event is never sent.
-                    // However, if that fling went unconsumed, we still need to let the
-                    // listeners know that scrolling has ended.
-                    updateOnScrollEnd();
-                }
-                break;
-            case EventType.GESTURE_SCROLL_BEGIN:
-                setGestureScrollInProgress(true);
-                for (mIterator.rewind(); mIterator.hasNext();) {
-                    mIterator.next().onScrollStarted(
-                            verticalScrollOffset(), verticalScrollExtent());
-                }
+                // If we're here, then |consumed| is false as otherwise #onFlingStart() would have
+                // been called by native instead.
+                assert !consumed;
+
+                // If a scroll ends with a fling, a SCROLL_END event is never sent.
+                // However, if that fling went unconsumed, we still need to let the
+                // listeners know that scrolling has ended.
+                updateOnScrollEnd();
                 break;
             case EventType.GESTURE_SCROLL_UPDATE:
                 if (!consumed) break;
@@ -271,6 +259,31 @@ public class GestureListenerManagerImpl
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * Called when a gesture event ack happens for |EventType.GESTURE_SCROLL_BEGIN|.
+     */
+    @CalledByNative
+    private void onScrollBegin(boolean isDirectionUp) {
+        setGestureScrollInProgress(true);
+        for (mIterator.rewind(); mIterator.hasNext();) {
+            mIterator.next().onScrollStarted(
+                    verticalScrollOffset(), verticalScrollExtent(), isDirectionUp);
+        }
+    }
+
+    /**
+     * Called when a gesture event ack happens for |EventType.GESTURE_FLING_START|.
+     */
+    @CalledByNative
+    private void onFlingStart(boolean isDirectionUp) {
+        // The view expects the fling velocity in pixels/s.
+        mHasActiveFlingScroll = true;
+        for (mIterator.rewind(); mIterator.hasNext();) {
+            mIterator.next().onFlingStartGesture(
+                    verticalScrollOffset(), verticalScrollExtent(), isDirectionUp);
         }
     }
 

@@ -121,7 +121,7 @@ public class ContextualSearchSelectionController {
 
     private class ContextualSearchGestureStateListener extends GestureStateListener {
         @Override
-        public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
+        public void onScrollStarted(int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
             mHandler.handleScrollStart();
         }
 

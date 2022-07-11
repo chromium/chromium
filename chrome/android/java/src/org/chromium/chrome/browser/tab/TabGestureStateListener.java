@@ -46,7 +46,8 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
             private int mLastScrollOffsetY;
 
             @Override
-            public void onFlingStartGesture(int scrollOffsetY, int scrollExtentY) {
+            public void onFlingStartGesture(
+                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                 onScrollingStateChanged();
             }
 
@@ -56,7 +57,8 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
             }
 
             @Override
-            public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
+            public void onScrollStarted(
+                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                 onScrollingStateChanged();
                 mLastScrollOffsetY = scrollOffsetY;
             }

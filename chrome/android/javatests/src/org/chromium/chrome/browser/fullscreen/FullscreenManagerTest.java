@@ -363,7 +363,8 @@ public class FullscreenManagerTest {
         final CallbackHelper scrollStartCallback = new CallbackHelper();
         GestureStateListener scrollListener = new GestureStateListener() {
             @Override
-            public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
+            public void onScrollStarted(
+                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                 scrollStartCallback.notifyCalled();
             }
 
@@ -371,7 +372,6 @@ public class FullscreenManagerTest {
             public void onFlingEndGesture(int scrollOffsetY, int scrollExtentY) {
                 flingEndCallback.notifyCalled();
             }
-
         };
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();

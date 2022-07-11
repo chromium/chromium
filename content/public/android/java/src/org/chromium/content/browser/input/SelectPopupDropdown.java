@@ -56,7 +56,8 @@ public class SelectPopupDropdown implements SelectPopup.Ui {
                 });
         GestureListenerManager.fromWebContents(webContents).addListener(new GestureStateListener() {
             @Override
-            public void onScrollStarted(int scrollOffsetY, int scrollExtentY) {
+            public void onScrollStarted(
+                    int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                 hide(true);
             }
         });

@@ -729,7 +729,8 @@ public class AndroidScrollIntegrationTest {
         }
 
         @Override
-        public void onFlingStartGesture(int scrollOffsetY, int scrollExtentY) {}
+        public void onFlingStartGesture(
+                int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {}
 
         @Override
         public void onScrollUpdateGestureConsumed() {
