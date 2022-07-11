@@ -68,6 +68,10 @@ class ASH_EXPORT MediaNotificationProviderImpl
   void OnMediaItemUISizeChanged() override;
   void OnMediaItemUIDestroyed(const std::string& id) override;
 
+  global_media_controls::MediaItemManager* item_manager() {
+    return item_manager_.get();
+  }
+
   global_media_controls::MediaSessionItemProducer*
   media_session_item_producer_for_testing() {
     return media_session_item_producer_.get();
