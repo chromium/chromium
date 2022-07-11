@@ -629,6 +629,8 @@ source_set("browser") {
     "browsing_topics/browsing_topics_site_data_manager_impl.h",
     "browsing_topics/browsing_topics_site_data_storage.cc",
     "browsing_topics/browsing_topics_site_data_storage.h",
+    "buckets/bucket_context.cc",
+    "buckets/bucket_context.h",
     "buckets/bucket_host.cc",
     "buckets/bucket_host.h",
     "buckets/bucket_manager.cc",

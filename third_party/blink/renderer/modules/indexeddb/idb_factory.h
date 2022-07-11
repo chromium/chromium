@@ -55,6 +55,9 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
   IDBFactory();
   ~IDBFactory() override;
 
+  void SetFactory(mojo::PendingRemote<mojom::blink::IDBFactory>,
+                  ExecutionContext*);
+
   // Implement the IDBFactory IDL
   IDBOpenDBRequest* open(ScriptState*, const String& name, ExceptionState&);
   IDBOpenDBRequest* open(ScriptState*,

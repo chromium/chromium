@@ -19,4 +19,6 @@
 
   [CallWith=ScriptState] Promise<void> setExpires(DOMTimeStamp expires);
   [CallWith=ScriptState] Promise<DOMTimeStamp?> expires();
+
+  [SameObject] readonly attribute IDBFactory indexedDB;
 };

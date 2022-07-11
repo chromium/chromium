@@ -53,11 +53,8 @@ class BucketManagerHostTest : public testing::Test {
     bucket_manager_ =
         std::make_unique<BucketManager>(quota_manager_proxy_.get());
     bucket_manager_->DoBindReceiver(
-        url::Origin::Create(GURL(kTestUrl)),
+        BucketContext(0, url::Origin::Create(GURL(kTestUrl))),
         bucket_manager_host_remote_.BindNewPipeAndPassReceiver(),
-        base::BindRepeating([](blink::PermissionType permission) {
-          return blink::mojom::PermissionStatus::GRANTED;
-        }),
         base::DoNothing());
     EXPECT_TRUE(bucket_manager_host_remote_.is_bound());
   }
@@ -119,12 +116,8 @@ TEST_F(BucketManagerHostTest, OpenBucketValidateName) {
   for (auto it = names.begin(); it < names.end(); ++it) {
     mojo::Remote<blink::mojom::BucketManagerHost> remote;
     bucket_manager_->DoBindReceiver(
-        url::Origin::Create(GURL(kTestUrl)),
-        remote.BindNewPipeAndPassReceiver(),
-        base::BindRepeating([](blink::PermissionType permission) {
-          return blink::mojom::PermissionStatus::GRANTED;
-        }),
-        base::DoNothing());
+        BucketContext(0, url::Origin::Create(GURL(kTestUrl))),
+        remote.BindNewPipeAndPassReceiver(), base::DoNothing());
     EXPECT_TRUE(remote.is_bound());
 
     if (it->first) {
@@ -190,15 +183,13 @@ TEST_F(BucketManagerHostTest, PermissionCheck) {
                     {blink::mojom::PermissionStatus::DENIED, false}};
 
   for (auto test_case : test_cases) {
-    blink::mojom::PermissionStatus permission = test_case.first;
+    auto context = BucketContext(0, url::Origin::Create(GURL(kTestUrl)));
+    context.set_permission_status_for_test(test_case.first);
     bool persisted_respected = test_case.second;
     mojo::Remote<blink::mojom::BucketManagerHost> manager_remote;
-    bucket_manager_->DoBindReceiver(
-        url::Origin::Create(GURL(kTestUrl)),
-        manager_remote.BindNewPipeAndPassReceiver(),
-        base::BindLambdaForTesting(
-            [&](blink::PermissionType type) { return permission; }),
-        base::DoNothing());
+    bucket_manager_->DoBindReceiver(context,
+                                    manager_remote.BindNewPipeAndPassReceiver(),
+                                    base::DoNothing());
     EXPECT_TRUE(manager_remote.is_bound());
 
     {

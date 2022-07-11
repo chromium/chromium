@@ -18,6 +18,7 @@
 
 namespace blink {
 
+class IDBFactory;
 class ScriptState;
 
 class StorageBucket final : public ScriptWrappable,
@@ -37,6 +38,7 @@ class StorageBucket final : public ScriptWrappable,
   ScriptPromise durability(ScriptState*);
   ScriptPromise setExpires(ScriptState*, const DOMTimeStamp&);
   ScriptPromise expires(ScriptState*);
+  IDBFactory* indexedDB();
 
   // ActiveScriptWrappable
   bool HasPendingActivity() const final;
@@ -68,6 +70,8 @@ class StorageBucket final : public ScriptWrappable,
 
   // BucketHost in the browser process.
   mojo::Remote<mojom::blink::BucketHost> remote_;
+
+  Member<IDBFactory> idb_factory_;
 };
 
 }  // namespace blink

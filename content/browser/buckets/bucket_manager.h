@@ -22,6 +22,8 @@
 
 namespace content {
 
+class BucketContext;
+
 // One instance of BucketManager exists per StoragePartition, and is created and
 // owned by the `RenderProcessHostImpl`. This class creates and destroys
 // BucketManagerHost instances per origin as a centeralized host for an origin's
@@ -67,9 +69,8 @@ class CONTENT_EXPORT BucketManager {
   SEQUENCE_CHECKER(sequence_checker_);
 
   void DoBindReceiver(
-      const url::Origin& origin,
+      const BucketContext& bucket_context,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
-      const BucketHost::PermissionDecisionCallback& permission_decision,
       mojo::ReportBadMessageCallback bad_message_callback);
 
   // Owns all instances of BucketManagerHost associated with a StoragePartition.

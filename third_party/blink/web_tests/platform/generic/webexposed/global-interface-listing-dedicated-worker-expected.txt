@@ -1495,6 +1495,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onremovesourcebuffer
 [Worker] interface StorageBucket
 [Worker]     attribute @@toStringTag
+[Worker]     getter indexedDB
 [Worker]     method constructor
 [Worker]     method durability
 [Worker]     method estimate

@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
 
 // Implementation of the proposed "Storage Buckets API".
 //
@@ -62,6 +63,9 @@ interface BucketHost {
   // null when there is not expiry policy set for the Storage Bucket. The
   // |expires| value is only valid when |success| is true.
   Expires() => (mojo_base.mojom.Time? expires, bool success);
+
+  // Connects to the IndexedDB factory implementation in the browser process.
+  GetIdbFactory(pending_receiver<IDBFactory> idb_factory);
 };
 
 // Origin-scoped entry point to the Storage Buckets API.

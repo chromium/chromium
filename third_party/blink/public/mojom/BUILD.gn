@@ -33,7 +33,6 @@ mojom("mojom_platform") {
     "badging/badging.mojom",
     "browser_interface_broker.mojom",
     "browsing_topics/browsing_topics.mojom",
-    "buckets/bucket_manager_host.mojom",
     "cache_storage/cache_storage.mojom",
     "choosers/color_chooser.mojom",
     "choosers/date_time_chooser.mojom",
@@ -1204,7 +1203,10 @@ mojom("mojom_core") {
 # to a type in renderer/modules. This also means these interfaces are not
 # available from renderer/platform or renderer/core.
 mojom("mojom_modules") {
-  sources = [ "indexeddb/indexeddb.mojom" ]
+  sources = [
+    "buckets/bucket_manager_host.mojom",
+    "indexeddb/indexeddb.mojom",
+  ]
 
   public_deps = [
     ":android_mojo_bindings",

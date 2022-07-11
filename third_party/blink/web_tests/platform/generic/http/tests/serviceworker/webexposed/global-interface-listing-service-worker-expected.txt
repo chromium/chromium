@@ -1409,6 +1409,7 @@ interface ServiceWorkerRegistration : EventTarget
     setter onupdatefound
 interface StorageBucket
     attribute @@toStringTag
+    getter indexedDB
     method constructor
     method durability
     method estimate

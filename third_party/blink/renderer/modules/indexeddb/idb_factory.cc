@@ -227,20 +227,27 @@ void IDBFactory::SetFactoryForTesting(
   factory_ = std::move(factory);
 }
 
+void IDBFactory::SetFactory(
+    mojo::PendingRemote<mojom::blink::IDBFactory> factory,
+    ExecutionContext* execution_context) {
+  DCHECK(!factory_);
+
+  mojo::PendingRemote<mojom::blink::FeatureObserver> feature_observer;
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
+      feature_observer.InitWithNewPipeAndPassReceiver());
+
+  task_runner_ = execution_context->GetTaskRunner(TaskType::kDatabaseAccess);
+  factory_.Bind(std::move(factory), task_runner_);
+  feature_observer_.Bind(std::move(feature_observer), task_runner_);
+}
+
 mojo::Remote<mojom::blink::IDBFactory>& IDBFactory::GetFactory(
     ExecutionContext* execution_context) {
   if (!factory_) {
     mojo::PendingRemote<mojom::blink::IDBFactory> factory;
     execution_context->GetBrowserInterfaceBroker().GetInterface(
         factory.InitWithNewPipeAndPassReceiver());
-
-    mojo::PendingRemote<mojom::blink::FeatureObserver> feature_observer;
-    execution_context->GetBrowserInterfaceBroker().GetInterface(
-        feature_observer.InitWithNewPipeAndPassReceiver());
-
-    task_runner_ = execution_context->GetTaskRunner(TaskType::kDatabaseAccess);
-    factory_.Bind(std::move(factory), task_runner_);
-    feature_observer_.Bind(std::move(feature_observer), task_runner_);
+    SetFactory(std::move(factory), execution_context);
   }
   return factory_;
 }

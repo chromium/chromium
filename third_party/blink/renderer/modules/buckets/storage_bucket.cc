@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
 
 namespace blink {
 
@@ -127,11 +128,22 @@ ScriptPromise StorageBucket::expires(ScriptState* script_state) {
   return promise;
 }
 
+IDBFactory* StorageBucket::indexedDB() {
+  if (!idb_factory_) {
+    idb_factory_ = MakeGarbageCollected<IDBFactory>();
+    mojo::PendingRemote<mojom::blink::IDBFactory> factory;
+    remote_->GetIdbFactory(factory.InitWithNewPipeAndPassReceiver());
+    idb_factory_->SetFactory(std::move(factory), GetExecutionContext());
+  }
+  return idb_factory_;
+}
+
 bool StorageBucket::HasPendingActivity() const {
   return GetExecutionContext();
 }
 
 void StorageBucket::Trace(Visitor* visitor) const {
+  visitor->Trace(idb_factory_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

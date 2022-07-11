@@ -34,7 +34,7 @@ class GlobalIndexedDBImpl final
   explicit GlobalIndexedDBImpl(T& supplementable)
       : Supplement<T>(supplementable) {}
 
-  IDBFactory* IdbFactory(T& fetching_scope) {
+  IDBFactory* IdbFactory() {
     if (!idb_factory_)
       idb_factory_ = MakeGarbageCollected<IDBFactory>();
     return idb_factory_;
@@ -56,12 +56,11 @@ const char GlobalIndexedDBImpl<T>::kSupplementName[] = "GlobalIndexedDBImpl";
 }  // namespace
 
 IDBFactory* GlobalIndexedDB::indexedDB(LocalDOMWindow& window) {
-  return GlobalIndexedDBImpl<LocalDOMWindow>::From(window).IdbFactory(window);
+  return GlobalIndexedDBImpl<LocalDOMWindow>::From(window).IdbFactory();
 }
 
 IDBFactory* GlobalIndexedDB::indexedDB(WorkerGlobalScope& worker) {
-  return GlobalIndexedDBImpl<WorkerGlobalScope>::From(worker).IdbFactory(
-      worker);
+  return GlobalIndexedDBImpl<WorkerGlobalScope>::From(worker).IdbFactory();
 }
 
 }  // namespace blink

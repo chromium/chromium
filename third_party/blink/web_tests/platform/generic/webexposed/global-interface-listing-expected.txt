@@ -8665,6 +8665,7 @@ interface Storage
     method setItem
 interface StorageBucket
     attribute @@toStringTag
+    getter indexedDB
     method constructor
     method durability
     method estimate
