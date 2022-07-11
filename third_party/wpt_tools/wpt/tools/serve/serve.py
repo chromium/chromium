@@ -571,7 +571,9 @@ class RoutesBuilder:
             ("GET", "*.asis", handlers.AsIsHandler),
             ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
+            ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/report-aggregate-attribution", handlers.PythonScriptHandler),
+            ("*", "/.well-known/attribution-reporting/debug/report-aggregate-attribution", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
         ]

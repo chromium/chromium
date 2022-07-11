@@ -206,7 +206,7 @@ def run_info_browser_version(**kwargs):
 
 
 def update_properties():
-    return (["os", "debug", "fission", "e10s", "processor", "swgl", "domstreams"],
+    return (["os", "debug", "fission", "processor", "swgl", "domstreams"],
             {"os": ["version"], "processor": ["bits"]})
 
 

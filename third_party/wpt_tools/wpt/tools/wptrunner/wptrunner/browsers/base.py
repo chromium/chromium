@@ -159,6 +159,9 @@ class Browser:
         log. Returns a boolean indicating whether a crash occured."""
         return False
 
+    @property
+    def pac(self):
+        return None
 
 class NullBrowser(Browser):
     def __init__(self, logger, **kwargs):
@@ -289,7 +292,7 @@ class WebDriverBrowser(Browser):
 
     def __init__(self, logger, binary=None, webdriver_binary=None,
                  webdriver_args=None, host="127.0.0.1", port=None, base_path="/",
-                 env=None, **kwargs):
+                 env=None, supports_pac=True, **kwargs):
         super().__init__(logger)
 
         if webdriver_binary is None:
@@ -302,6 +305,7 @@ class WebDriverBrowser(Browser):
 
         self.host = host
         self._port = port
+        self._supports_pac = supports_pac
 
         self.base_path = base_path
         self.env = os.environ.copy() if env is None else env
@@ -312,6 +316,7 @@ class WebDriverBrowser(Browser):
         self._output_handler = None
         self._cmd = None
         self._proc = None
+        self._pac = None
 
     def make_command(self):
         """Returns the full command for starting the server process as a list."""
@@ -400,4 +405,13 @@ class WebDriverBrowser(Browser):
     def executor_browser(self):
         return ExecutorBrowser, {"webdriver_url": self.url,
                                  "host": self.host,
-                                 "port": self.port}
+                                 "port": self.port,
+                                 "pac": self.pac}
+
+    def settings(self, test):
+        self._pac = test.environment.get("pac", None) if self._supports_pac else None
+        return {"pac": self._pac}
+
+    @property
+    def pac(self):
+        return self._pac

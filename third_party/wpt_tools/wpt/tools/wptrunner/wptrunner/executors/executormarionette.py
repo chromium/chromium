@@ -780,6 +780,16 @@ class MarionetteProtocol(Protocol):
             self.executor.original_pref_values[name] = self.prefs.get(name)
             self.prefs.set(name, value)
 
+        pac = new_environment.get("pac", None)
+
+        if pac != old_environment.get("pac", None):
+            if pac is None:
+                self.prefs.clear("network.proxy.type")
+                self.prefs.clear("network.proxy.autoconfig_url")
+            else:
+                self.prefs.set("network.proxy.type", 2)
+                self.prefs.set("network.proxy.autoconfig_url",
+                               urljoin(self.executor.server_url("http"), pac))
 
 class ExecuteAsyncScriptRun(TimedRunner):
     def set_timeout(self):

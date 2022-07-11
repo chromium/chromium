@@ -935,9 +935,14 @@ class Chrome(ChromeChromiumBase):
                 suffix = " " + channel.capitalize()
             return f"/Applications/Google Chrome{suffix}.app/Contents/MacOS/Google Chrome{suffix}"
         if uname[0] == "Windows":
-            path = os.path.expandvars(r"$SYSTEMDRIVE\Program Files (x86)\Google\Chrome\Application\chrome.exe")
-            if not os.path.exists(path):
-                path = os.path.expandvars(r"$SYSTEMDRIVE\Program Files\Google\Chrome\Application\chrome.exe")
+            name = "Chrome"
+            if channel == "beta":
+                name += " Beta"
+            elif channel == "dev":
+                name += " Dev"
+            path = os.path.expandvars(fr"$PROGRAMFILES\Google\{name}\Application\chrome.exe")
+            if channel == "canary":
+                path = os.path.expandvars(r"$LOCALAPPDATA\Google\Chrome SxS\Application\chrome.exe")
             return path
         self.logger.warning("Unable to find the browser binary.")
         return None
@@ -1467,7 +1472,7 @@ class Safari(Browser):
             if {"download", "dmg", "zip"} & class_names:
                 downloads.append(candidate)
 
-        stp_link_text = re.compile(r"^\s*Safari\s+Technology\s+Preview\s+for\s+macOS")
+        stp_link_text = re.compile(r"^\s*Safari\s+Technology\s+Preview\s+(?:[0-9]+\s+)?for\s+macOS")
         requirement = re.compile(
             r"Requires\s+macOS\s+([0-9\.]+)\s+(?:or\s+later|beta)."
         )

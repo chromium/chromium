@@ -22,7 +22,7 @@ class BrowsingContext(BidiModule):
     def _create(self, result: Mapping[str, Any]) -> Any:
         assert result["context"] is not None
 
-        return result["context"]
+        return result
 
     @command
     def get_tree(self,

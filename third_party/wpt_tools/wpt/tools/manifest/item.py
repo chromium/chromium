@@ -189,6 +189,11 @@ class TestharnessTest(URLManifestItem):
         return self._extras.get("timeout")
 
     @property
+    def pac(self):
+        # type: () -> Optional[Text]
+        return self._extras.get("pac")
+
+    @property
     def testdriver(self):
         # type: () -> Optional[Text]
         return self._extras.get("testdriver")
@@ -208,6 +213,8 @@ class TestharnessTest(URLManifestItem):
         rv = super().to_json()
         if self.timeout is not None:
             rv[-1]["timeout"] = self.timeout
+        if self.pac is not None:
+            rv[-1]["pac"] = self.pac
         if self.testdriver:
             rv[-1]["testdriver"] = self.testdriver
         if self.jsshell:
