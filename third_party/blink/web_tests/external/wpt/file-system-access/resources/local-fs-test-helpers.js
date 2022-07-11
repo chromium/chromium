@@ -123,14 +123,6 @@ function framed_test(func, description) {
   promise_test(async (t) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const directory = await directory_promise;
-        // To be resilient against tests not cleaning up properly, cleanup before
-        // every test.
-        for await (let entry of directory.values()) {
-          await directory.removeEntry(
-              entry.name, {recursive: entry.kind === 'directory'});
-        }
-
         // Set up handles to all third party frames.
         const handles = [
           null,  // firstParty

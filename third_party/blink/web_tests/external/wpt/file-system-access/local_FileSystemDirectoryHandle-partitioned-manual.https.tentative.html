@@ -58,10 +58,21 @@ const assertNoAccess = (done) => `
   }
 `;
 
+// To be resilient against tests not cleaning up properly, cleanup before
+// every test.
+function clearDirectories() {
+  const directory = await directory_promise;
+  for await (let entry of directory.values()) {
+    await directory.removeEntry(
+        entry.name, {recursive: entry.kind === 'directory'});
+  }
+}
+
 // The following tests make use of helper framed_test to define promise tests
 // that send assertion scripts to multiple executor subframes.
 
 framed_test(async (t, sendTo) => {
+  clearDirectories();
   // Ensure we have directory picker access in all child contexts.
   await sendTo(childContexts, setUpChildFrame);
   await sendTo(sameSiteContexts, assertNumEntries(0));
@@ -74,6 +85,7 @@ framed_test(async (t, sendTo) => {
 }, 'getDirectoryHandle can access handles across same-site contexts.');
 
 framed_test(async (t, sendTo) => {
+  clearDirectories();
   // Ensure we have directory picker access in all child contexts.
   await sendTo(childContexts, setUpChildFrame);
   await sendTo(sameSiteContexts, assertNumEntries(0));
@@ -89,6 +101,7 @@ framed_test(async (t, sendTo) => {
 }, 'Directory handles can be removed from other same-site contexts.');
 
 framed_test(async (t, sendTo) => {
+  clearDirectories();
   // Ensure we have directory picker access in all child contexts.
   await sendTo(childContexts, setUpChildFrame);
   // Assert that an error is raised when attempting to access
