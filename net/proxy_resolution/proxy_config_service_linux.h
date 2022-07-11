@@ -290,7 +290,7 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
       const NetworkTrafficAnnotationTag& traffic_annotation);
   ProxyConfigServiceLinux(
       std::unique_ptr<base::Environment> env_var_getter,
-      SettingGetter* setting_getter,  // TODO(eroman): Use std::unique_ptr.
+      std::unique_ptr<SettingGetter> setting_getter,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 
   ProxyConfigServiceLinux(const ProxyConfigServiceLinux&) = delete;

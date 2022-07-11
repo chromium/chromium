@@ -1455,10 +1455,10 @@ ProxyConfigServiceLinux::ProxyConfigServiceLinux(
 
 ProxyConfigServiceLinux::ProxyConfigServiceLinux(
     std::unique_ptr<base::Environment> env_var_getter,
-    SettingGetter* setting_getter,
+    std::unique_ptr<SettingGetter> setting_getter,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : delegate_(base::MakeRefCounted<Delegate>(std::move(env_var_getter),
-                                               base::WrapUnique(setting_getter),
+                                               std::move(setting_getter),
                                                traffic_annotation)) {}
 
 void ProxyConfigServiceLinux::AddObserver(Observer* observer) {
