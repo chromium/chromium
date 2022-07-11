@@ -46,22 +46,21 @@ export class SelectCustom extends PolymerElement {
   onSelectChange(event) {
     const customInput = this.shadowRoot.querySelector('.hidden-input');
     this.customSelected = event.target.value == 'custom';
-    customInput.hidden = event.target.value != 'custom';
-    if (event.target.value != 'custom') {
-      this.formItemStyle = 'form-item';
+    customInput.hidden = !this.customSelected;
+    this.formItemStyle = this.customSelected ? 'form-item-custom' : 'form-item';
+    if (this.customSelected) {
+      // Stores the text in the custom input in this.selectValue.
+      this.onInputChange();
+    } else {
       const select = this.shadowRoot.querySelector('#' + this.selectid);
       this.selectValue = this.selectElements[select.selectedIndex].value;
-    } else if (!this.noCustomInput) {
-      this.formItemStyle = 'form-item-custom';
-      this.onInputChange();  // sets the value of this.selectValue to the
-                             // value of the custom input.
     }
   }
 
   // When the custom input field changes (on-change event), store the value in
   // this.selectValue.
   onInputChange() {
-    if (this.customSelected && !this.noCustomInput) {
+    if (this.customSelected) {
       const customInput = this.shadowRoot.querySelector('.hidden-input');
       this.selectValue = customInput.value;
     }
@@ -71,7 +70,10 @@ export class SelectCustom extends PolymerElement {
   // This is to ensure the visually selected element matches this.selectValue
   // when it is modified in parent polymer components.
   onSelectValueChange() {
-    this.shadowRoot.querySelector('#' + this.selectid).value = this.selectValue;
+    if (!this.customSelected) {
+      this.shadowRoot.querySelector('#' + this.selectid).value =
+          this.selectValue;
+    }
   }
 }
 customElements.define(SelectCustom.is, SelectCustom);
