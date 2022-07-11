@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -113,6 +114,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   // `total_bytes_` becomes less than `max_total_bytes_`.
   void ShrinkToTotalBytes();
 
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel level);
+
   uint32_t next_trace_id_ = 0;
 
   CacheMap entries_;
@@ -122,6 +126,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   std::set<std::unique_ptr<NetworkServiceMemoryCacheURLLoader>,
            base::UniquePtrComparator>
       url_loaders_;
+
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   base::Time current_time_for_testing_;
 

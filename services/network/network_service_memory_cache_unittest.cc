@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -22,6 +23,7 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
+#include "services/network/network_service_memory_cache.h"
 #include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -143,6 +145,8 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
         cors_url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
         &origin_access_list_);
   }
+
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   net::test_server::EmbeddedTestServer& test_server() { return test_server_; }
 
@@ -515,6 +519,19 @@ TEST_F(NetworkServiceMemoryCacheTest, Clear) {
   ASSERT_FALSE(CanServeFromMemoryCache(request1));
   ASSERT_FALSE(CanServeFromMemoryCache(request2));
   ASSERT_FALSE(CanServeFromMemoryCache(request3));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, ClearOnMemoryPressure) {
+  ResourceRequest request = CreateRequest("/cacheable");
+  StoreResponseToMemoryCache(request);
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel::
+          MEMORY_PRESSURE_LEVEL_CRITICAL);
+  task_environment().RunUntilIdle();
+
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, ClientDisconnectedWhileCaching) {

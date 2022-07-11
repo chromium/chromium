@@ -92,6 +92,7 @@
 #include "services/network/is_browser_initiated.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
+#include "services/network/network_service_memory_cache.h"
 #include "services/network/network_service_network_delegate.h"
 #include "services/network/network_service_proxy_delegate.h"
 #include "services/network/proxy_config_service_mojo.h"
@@ -533,6 +534,9 @@ NetworkContext::NetworkContext(
   socket_factory_ = std::make_unique<SocketFactory>(
       url_request_context_->net_log(), url_request_context_);
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
+
+  if (base::FeatureList::IsEnabled(features::kNetworkServiceMemoryCache))
+    memory_cache_ = std::make_unique<NetworkServiceMemoryCache>();
 
   if (params_->http_auth_static_network_context_params) {
     http_auth_merged_preferences_.SetAllowDefaultCredentials(
@@ -2183,10 +2187,7 @@ const net::HttpAuthPreferences* NetworkContext::GetHttpAuthPreferences() const {
 }
 
 NetworkServiceMemoryCache* NetworkContext::GetMemoryCache() {
-  if (!base::FeatureList::IsEnabled(features::kNetworkServiceMemoryCache)) {
-    return nullptr;
-  }
-  return &memory_cache_;
+  return memory_cache_.get();
 }
 
 size_t NetworkContext::NumOpenWebTransports() const {

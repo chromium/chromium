@@ -78,7 +78,12 @@ struct NetworkServiceMemoryCache::Entry {
 
 NetworkServiceMemoryCache::NetworkServiceMemoryCache()
     : entries_(CacheMap::NO_AUTO_EVICT),
-      max_total_bytes_(kNetworkServiceMemoryCacheMaxTotalSize.Get()) {}
+      max_total_bytes_(kNetworkServiceMemoryCacheMaxTotalSize.Get()) {
+  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE,
+      base::BindRepeating(&NetworkServiceMemoryCache::OnMemoryPressure,
+                          base::Unretained(this)));
+}
 
 NetworkServiceMemoryCache::~NetworkServiceMemoryCache() = default;
 
@@ -314,6 +319,14 @@ void NetworkServiceMemoryCache::ShrinkToTotalBytes() {
     DCHECK_GE(total_bytes_, it->second->content->size());
     total_bytes_ -= it->second->content->size();
     entries_.Erase(it);
+  }
+}
+
+void NetworkServiceMemoryCache::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  if (level == base::MemoryPressureListener::MemoryPressureLevel::
+                   MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    Clear();
   }
 }
 
