@@ -77,6 +77,10 @@ class MockTextInputDelegate : public TextInput::Delegate {
               AddGrammarFragment,
               (base::StringPiece16, const ui::GrammarFragment&),
               ());
+  MOCK_METHOD(void,
+              SetAutocorrectRange,
+              (base::StringPiece16, const gfx::Range&),
+              ());
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {
@@ -659,6 +663,24 @@ TEST_F(TextInputTest, ClearGrammarFragments) {
 }
 
 TEST_F(TextInputTest, AddGrammarFragments) {
+  std::u16string surrounding_text = u"Sample surrouding text.";
+  text_input()->SetSurroundingText(surrounding_text, gfx::Range(2, 2));
+  std::vector<ui::GrammarFragment> fragments = {
+      ui::GrammarFragment(gfx::Range(0, 5), "one"),
+      ui::GrammarFragment(gfx::Range(10, 16), "two"),
+  };
+  EXPECT_CALL(
+      *delegate(),
+      AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[0]))
+      .Times(1);
+  EXPECT_CALL(
+      *delegate(),
+      AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[1]))
+      .Times(1);
+  text_input()->AddGrammarFragments(fragments);
+}
+
+TEST_F(TextInputTest, GetAutocorrect) {
   std::u16string surrounding_text = u"Sample surrouding text.";
   text_input()->SetSurroundingText(surrounding_text, gfx::Range(2, 2));
   std::vector<ui::GrammarFragment> fragments = {

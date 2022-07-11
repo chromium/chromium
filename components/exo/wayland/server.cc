@@ -398,7 +398,7 @@ void Server::Initialize() {
 
   zcr_text_input_extension_data_ =
       std::make_unique<WaylandTextInputExtension>();
-  wl_global_create(wl_display_.get(), &zcr_text_input_extension_v1_interface, 3,
+  wl_global_create(wl_display_.get(), &zcr_text_input_extension_v1_interface, 4,
                    zcr_text_input_extension_data_.get(),
                    bind_text_input_extension);
 

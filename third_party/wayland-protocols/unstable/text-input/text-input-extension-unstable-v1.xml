@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="3">
+  <interface name="zcr_text_input_extension_v1" version="4">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="3">
+  <interface name="zcr_extended_text_input_v1" version="4">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -218,6 +218,45 @@
       <arg name="start" type="uint" />
       <arg name="end" type="uint" />
       <arg name="suggestion" type="string" />
+    </request>
+
+    <!-- Version 4 -->
+
+    <event name="set_autocorrect_range" since="4">
+      <description summary="set autocorrect range">
+        IME requests to update text_input client to set the autocorrect range.
+        There is only one autocorrect range, so this replaces any existing
+        autocorrect ranges.
+
+        start and end are relative to the beginning of the input field in utf-8
+        byte length.
+
+        If start and end are the same, then the autocorrect range is cleared.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+    </event>
+
+    <request name="set_autocorrect_info" since="4">
+      <description summary="set autocorrect range">
+        Informs the IME the range and bounds of the current autocorrect change.
+        This is called whenever the range or bounds have changed.
+
+        start and end are relative to the beginning of the input field in utf-8
+        byte length.
+
+        x, y, width, and height are the bounds of the autocorrect text, relative
+        to the window.
+
+        This request only changes a pending state that will be effective on the
+        next 'set_surrounding_text' request.
+      </description>
+      <arg name="start" type="uint" />
+      <arg name="end" type="uint" />
+      <arg name="x" type="uint" />
+      <arg name="y" type="uint" />
+      <arg name="width" type="uint" />
+      <arg name="height" type="uint" />
     </request>
 
   </interface>

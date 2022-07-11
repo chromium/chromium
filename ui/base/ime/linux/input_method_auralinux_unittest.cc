@@ -171,6 +171,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
   void SetGrammarFragmentAtCursor(
       const ui::GrammarFragment& fragment) override {}
+  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
+                          const gfx::Rect& autocorrect_bounds) override {}
 
  private:
   raw_ptr<LinuxInputMethodContextDelegate> delegate_;

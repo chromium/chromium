@@ -340,6 +340,14 @@ void WaylandInputMethodContext::SetGrammarFragmentAtCursor(
   text_input_->SetGrammarFragmentAtCursor(fragment);
 }
 
+void WaylandInputMethodContext::SetAutocorrectInfo(
+    const gfx::Range& autocorrect_range,
+    const gfx::Rect& autocorrect_bounds) {
+  if (!text_input_)
+    return;
+  text_input_->SetAutocorrectInfo(autocorrect_range, autocorrect_bounds);
+}
+
 VirtualKeyboardController*
 WaylandInputMethodContext::GetVirtualKeyboardController() {
   if (!text_input_)
@@ -585,6 +593,10 @@ void WaylandInputMethodContext::OnAddGrammarFragment(
       {GrammarFragment(gfx::Range(static_cast<uint32_t>(offsets[0]),
                                   static_cast<uint32_t>(offsets[1])),
                        fragment.suggestion)});
+}
+
+void WaylandInputMethodContext::OnSetAutocorrectRange(const gfx::Range& range) {
+  ime_delegate_->OnSetAutocorrectRange(range);
 }
 
 void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {

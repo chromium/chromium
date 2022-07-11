@@ -68,6 +68,9 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   void OnAddGrammarFragment(const ui::GrammarFragment& fragment) override {
     was_on_add_grammar_fragment_called_ = true;
   }
+  void OnSetAutocorrectRange(const gfx::Range& range) override {
+    was_on_set_autocorrect_range_called_ = true;
+  }
   void OnPreeditEnd() override {}
   void OnPreeditStart() override {}
   void OnDeleteSurroundingText(size_t before, size_t after) override {
@@ -97,6 +100,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     return was_on_add_grammar_fragment_called_;
   }
 
+  bool was_on_set_autocorrect_range_called() const {
+    return was_on_set_autocorrect_range_called_;
+  }
+
   const absl::optional<std::pair<size_t, size_t>>&
   last_on_delete_surrounding_text_args() const {
     return last_on_delete_surrounding_text_args_;
@@ -108,6 +115,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   bool was_on_set_preedit_region_called_ = false;
   bool was_on_clear_grammar_fragments_called_ = false;
   bool was_on_add_grammar_fragment_called_ = false;
+  bool was_on_set_autocorrect_range_called_ = false;
   absl::optional<std::pair<size_t, size_t>>
       last_on_delete_surrounding_text_args_;
 };
@@ -546,6 +554,13 @@ TEST_P(WaylandInputMethodContextTest, OnAddGrammarFragments) {
   Sync();
   EXPECT_TRUE(
       input_method_context_delegate_->was_on_add_grammar_fragment_called());
+}
+
+TEST_P(WaylandInputMethodContextTest, OnSetAutocorrectRange) {
+  input_method_context_->OnSetAutocorrectRange(gfx::Range(1, 5));
+  Sync();
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_set_autocorrect_range_called());
 }
 
 TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {

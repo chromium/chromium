@@ -56,6 +56,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                    TextInputType old_type,
                    TextInputType new_type) override;
   void SetGrammarFragmentAtCursor(const GrammarFragment& fragment) override;
+  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
+                          const gfx::Rect& autocorrect_bounds) override;
   void Reset() override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 
@@ -82,6 +84,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   void OnClearGrammarFragments(const gfx::Range& range) override;
   void OnAddGrammarFragment(const GrammarFragment& fragment) override;
+  void OnSetAutocorrectRange(const gfx::Range& range) override;
 
   void OnInputPanelState(uint32_t state) override;
   void OnModifiersMap(std::vector<std::string> modifiers_map) override;

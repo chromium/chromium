@@ -47,6 +47,8 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
                       bool should_do_learning) override;
   void SetGrammarFragmentAtCursor(
       const ui::GrammarFragment& fragment) override {}
+  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
+                          const gfx::Rect& autocorrect_bounds) override {}
   ui::VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  private:

@@ -391,7 +391,14 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
       context_->SetGrammarFragmentAtCursor(
           ui::GrammarFragment(gfx::Range(), ""));
     }
+
+    // Send the updated autocorrect information before surrounding text,
+    // as surrounding text changes may trigger the IME to ask for the
+    // autocorrect information.
+    context_->SetAutocorrectInfo(client->GetAutocorrectRange(),
+                                 client->GetAutocorrectCharacterBounds());
 #endif
+
     context_->SetSurroundingText(text, selection_range);
   }
 }
@@ -529,6 +536,15 @@ void InputMethodAuraLinux::OnAddGrammarFragment(
     return;
 
   text_input_client->AddGrammarFragments({fragment});
+#endif
+}
+
+void InputMethodAuraLinux::OnSetAutocorrectRange(const gfx::Range& range) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* text_input_client = GetTextInputClient();
+  if (!text_input_client)
+    return;
+  text_input_client->SetAutocorrectRange(range);
 #endif
 }
 

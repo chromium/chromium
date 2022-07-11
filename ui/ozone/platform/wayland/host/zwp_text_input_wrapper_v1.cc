@@ -123,7 +123,8 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
       extended_text_input_listener = {
           &OnSetPreeditRegion,       // extended_text_input_set_preedit_region,
           &OnClearGrammarFragments,  // extended_text_input_clear_grammar_fragments,
-          &OnAddGrammarFragment,  // extended_text_input_add_grammar_fragment,
+          &OnAddGrammarFragment,   // extended_text_input_add_grammar_fragment,
+          &OnSetAutocorrectRange,  // extended_text_input_set_autocorrect_range,
       };
 
   auto* text_input =
@@ -212,11 +213,25 @@ void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
 
 void ZWPTextInputWrapperV1::SetGrammarFragmentAtCursor(
     const ui::GrammarFragment& fragment) {
-  if (wl::get_version_of_object(extended_obj_.get()) >=
-      ZCR_EXTENDED_TEXT_INPUT_V1_SET_GRAMMAR_FRAGMENT_AT_CURSOR_SINCE_VERSION) {
+  if (extended_obj_.get() &&
+      wl::get_version_of_object(extended_obj_.get()) >=
+          ZCR_EXTENDED_TEXT_INPUT_V1_SET_GRAMMAR_FRAGMENT_AT_CURSOR_SINCE_VERSION) {
     zcr_extended_text_input_v1_set_grammar_fragment_at_cursor(
         extended_obj_.get(), fragment.range.start(), fragment.range.end(),
         fragment.suggestion.c_str());
+  }
+}
+
+void ZWPTextInputWrapperV1::SetAutocorrectInfo(
+    const gfx::Range& autocorrect_range,
+    const gfx::Rect& autocorrect_bounds) {
+  if (extended_obj_.get() &&
+      wl::get_version_of_object(extended_obj_.get()) >=
+          ZCR_EXTENDED_TEXT_INPUT_V1_SET_AUTOCORRECT_INFO_SINCE_VERSION) {
+    zcr_extended_text_input_v1_set_autocorrect_info(
+        extended_obj_.get(), autocorrect_range.start(), autocorrect_range.end(),
+        autocorrect_bounds.x(), autocorrect_bounds.y(),
+        autocorrect_bounds.width(), autocorrect_bounds.height());
   }
 }
 
@@ -380,6 +395,16 @@ void ZWPTextInputWrapperV1::OnAddGrammarFragment(
   auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
   self->client_->OnAddGrammarFragment(
       ui::GrammarFragment(gfx::Range(start, end), suggestion));
+}
+
+// static
+void ZWPTextInputWrapperV1::OnSetAutocorrectRange(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    uint32_t start,
+    uint32_t end) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnSetAutocorrectRange(gfx::Range(start, end));
 }
 
 }  // namespace ui

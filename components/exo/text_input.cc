@@ -123,6 +123,11 @@ void TextInput::SetSurroundingText(const std::u16string& text,
     grammar_fragment_at_cursor_utf16_ = absl::nullopt;
   }
 
+  if (pending_autocorrect_info_) {
+    autocorrect_info_ = *pending_autocorrect_info_;
+    pending_autocorrect_info_ = absl::nullopt;
+  }
+
   // TODO(b/206068262): Consider introducing an API to notify surrounding text
   // update explicitly.
   if (input_method_)
@@ -157,6 +162,15 @@ void TextInput::SetGrammarFragmentAtCursor(
     const absl::optional<ui::GrammarFragment>& fragment) {
   grammar_fragment_at_cursor_utf16_ = absl::nullopt;
   grammar_fragment_at_cursor_utf8_ = fragment;
+}
+
+void TextInput::SetAutocorrectInfo(const gfx::Range& autocorrect_range,
+                                   const gfx::Rect& autocorrect_bounds) {
+  // Since we receive the autocorrect information separately from the
+  // surrounding text information, the range and bounds may be invalid at this
+  // point, because the surrounding text this class holds is stale.
+  // Save it as the "pending" information a surrounding text update is received.
+  pending_autocorrect_info_ = {autocorrect_range, autocorrect_bounds};
 }
 
 void TextInput::SetCompositionText(const ui::CompositionText& composition) {
@@ -375,21 +389,16 @@ bool TextInput::SetCompositionFromExistingText(
 }
 
 gfx::Range TextInput::GetAutocorrectRange() const {
-  // TODO(https://crbug.com/952757): Implement this method.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::Range();
+  return autocorrect_info_.range;
 }
 
 gfx::Rect TextInput::GetAutocorrectCharacterBounds() const {
-  // TODO(https://crbug.com/952757): Implement this method.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::Rect();
+  return autocorrect_info_.bounds;
 }
 
-// TODO(crbug.com/1091088) Implement setAutocorrectRange
 bool TextInput::SetAutocorrectRange(const gfx::Range& range) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  delegate_->SetAutocorrectRange(surrounding_text_, range);
+  return true;
 }
 
 absl::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor()

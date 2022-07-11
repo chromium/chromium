@@ -101,6 +101,12 @@ class TextInput : public ui::TextInputClient,
     // utf8 conversion.
     virtual void AddGrammarFragment(base::StringPiece16 surrounding_text,
                                     const ui::GrammarFragment& fragment) = 0;
+
+    // Sets the autocorrect range from the current surrounding text offsets.
+    // Offsets in |range| is relative to the beginning of
+    // |surrounding_text|. All offsets are in UTF16, and must be valid.
+    virtual void SetAutocorrectRange(base::StringPiece16 surrounding_text,
+                                     const gfx::Range& range) = 0;
   };
 
   explicit TextInput(std::unique_ptr<Delegate> delegate);
@@ -146,6 +152,12 @@ class TextInput : public ui::TextInputClient,
   // Sets grammar fragment at the cursor position.
   void SetGrammarFragmentAtCursor(
       const absl::optional<ui::GrammarFragment>& fragment);
+
+  // Sets the autocorrect range and bounds. `autocorrect_bounds` is the
+  // bounding rect around the autocorreced text, and are relative to
+  // to the window origin.
+  void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
+                          const gfx::Rect& autocorrect_bounds);
 
   Delegate* delegate() { return delegate_.get(); }
 
@@ -268,6 +280,20 @@ class TextInput : public ui::TextInputClient,
   // IME requests current grammar fragment, we always return the utf16 version.
   absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf8_;
   absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf16_;
+
+  struct AutocorrectInfo {
+    gfx::Range range;
+    gfx::Rect bounds;
+  };
+
+  // Latest autocorrect information that was sent from the Wayland client.
+  // along with the last surrounding text change.
+  AutocorrectInfo autocorrect_info_;
+
+  // Latest autocorrect information that was received without a receiving a
+  // corresponding surrounding text. Once this class receives a surrounding text
+  // update, `autocorrect_info_` will take on this pending value, if it exists.
+  absl::optional<AutocorrectInfo> pending_autocorrect_info_;
 };
 
 }  // namespace exo

@@ -41,6 +41,10 @@ void FakeInputMethodContext::SetContentType(TextInputType type,
 void FakeInputMethodContext::SetGrammarFragmentAtCursor(
     const ui::GrammarFragment& fragment) {}
 
+void FakeInputMethodContext::SetAutocorrectInfo(
+    const gfx::Range& autocorrect_range,
+    const gfx::Rect& autocorrect_bounds) {}
+
 VirtualKeyboardController*
 FakeInputMethodContext::GetVirtualKeyboardController() {
   return nullptr;

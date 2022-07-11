@@ -258,6 +258,24 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     }
   }
 
+  void SetAutocorrectRange(base::StringPiece16 surrounding_text,
+                           const gfx::Range& range) override {
+    if (!extended_text_input_)
+      return;
+
+    const uint32_t begin = range.GetMin();
+    const uint32_t end = range.GetMax();
+
+    if (wl_resource_get_version(extended_text_input_) >=
+        ZCR_EXTENDED_TEXT_INPUT_V1_SET_AUTOCORRECT_RANGE_SINCE_VERSION) {
+      // TODO(https://crbug.com/952757): Convert to UTF-8 offsets once the
+      // surrounding text is no longer stale.
+      zcr_extended_text_input_v1_send_set_autocorrect_range(
+          extended_text_input_, begin, end);
+      wl_client_flush(client());
+    }
+  }
+
   void SendPreeditStyle(base::StringPiece16 text,
                         const std::vector<ui::ImeTextSpan>& spans) {
     if (spans.empty())
@@ -597,11 +615,33 @@ void extended_text_input_set_grammar_fragment_at_cursor(
   }
 }
 
+void extended_text_input_set_autocorrect_info(wl_client* client,
+                                              wl_resource* resource,
+                                              uint32_t start,
+                                              uint32_t end,
+                                              uint32_t x,
+                                              uint32_t y,
+                                              uint32_t width,
+                                              uint32_t height) {
+  auto* delegate =
+      GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
+  if (!delegate)
+    return;
+
+  auto* text_input = GetUserDataAs<TextInput>(delegate->resource());
+  // TODO(https://crbug.com/952757): Convert to UTF-16 offsets once the
+  // surrounding text is no longer stale.
+  gfx::Range autocorrect_range(start, end);
+  gfx::Rect autocorrect_bounds(x, y, width, height);
+  text_input->SetAutocorrectInfo(autocorrect_range, autocorrect_bounds);
+}
+
 constexpr struct zcr_extended_text_input_v1_interface
     extended_text_input_implementation = {
         extended_text_input_destroy,
         extended_text_input_set_input_type,
         extended_text_input_set_grammar_fragment_at_cursor,
+        extended_text_input_set_autocorrect_info,
 };
 
 ////////////////////////////////////////////////////////////////////////////////

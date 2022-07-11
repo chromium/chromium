@@ -47,6 +47,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
                           const std::vector<ImeTextSpan>& spans) override;
   void OnClearGrammarFragments(const gfx::Range& range) override;
   void OnAddGrammarFragment(const ui::GrammarFragment& fragment) override;
+  void OnSetAutocorrectRange(const gfx::Range& range) override;
 
  protected:
   // Overridden from InputMethodBase.
