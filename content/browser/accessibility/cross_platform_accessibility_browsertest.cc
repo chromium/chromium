@@ -1960,8 +1960,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       // TODO(crbug.com/1342326): Re-enable this test
-                       DISABLED_NavigateInIframe) {
+                       NavigateInIframe) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/regression/iframe-navigation.html");
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
@@ -1975,9 +1974,9 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   // Press enter to activate the link, wait for the second iframe to load.
   {
-    AccessibilityNotificationWaiter waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ui::AXEventGenerator::Event::LOAD_COMPLETE);
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kLoadComplete);
     SimulateKeyPress(shell()->web_contents(), ui::DomKey::ENTER,
                      ui::DomCode::ENTER, ui::VKEY_RETURN, false, false, false,
                      false);

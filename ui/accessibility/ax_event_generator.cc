@@ -747,6 +747,10 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
 
   if (new_tree_data.loaded && !old_tree_data.loaded &&
       ShouldFireLoadEvents(tree->root())) {
+    // TODO(crbug.com/1342649) This may no longer be necessary, because
+    // Blink now fires more reliable load complete events. We are currently
+    // handling both in BrowserAccessibilityManager::OnAccesssibilityEvents().
+    // These are likely redundant.
     AddEvent(tree->root(), Event::LOAD_COMPLETE);
   }
 
