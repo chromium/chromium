@@ -65,7 +65,6 @@ bool VideoPlayer::CreateWrapper(
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(state_, VideoPlayerState::kUninitialized);
   DCHECK(frame_renderer);
   DVLOGF(4);
 
@@ -90,8 +89,6 @@ void VideoPlayer::SetEventWaitTimeout(base::TimeDelta timeout) {
 
 bool VideoPlayer::Initialize(const Video* video) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_ == VideoPlayerState::kUninitialized ||
-         state_ == VideoPlayerState::kIdle);
   DCHECK(video);
   DVLOGF(4);
 
@@ -101,13 +98,11 @@ bool VideoPlayer::Initialize(const Video* video) {
   if (!WaitForEvent(VideoPlayerEvent::kInitialized))
     return false;
 
-  state_ = VideoPlayerState::kIdle;
   return true;
 }
 
 void VideoPlayer::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(state_, VideoPlayerState::kIdle);
   DVLOGF(4);
 
   // Play until the end of the video.
@@ -116,11 +111,9 @@ void VideoPlayer::Play() {
 
 void VideoPlayer::PlayUntil(VideoPlayerEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(state_, VideoPlayerState::kIdle);
   DVLOGF(4);
 
   play_until_ = event;
-  state_ = VideoPlayerState::kDecoding;
   decoder_wrapper_->Play();
 }
 
@@ -210,21 +203,12 @@ size_t VideoPlayer::GetFrameDecodedCount() const {
 
 bool VideoPlayer::NotifyEvent(VideoPlayerEvent event) {
   base::AutoLock auto_lock(event_lock_);
-  if (event == VideoPlayerEvent::kFlushDone ||
-      event == VideoPlayerEvent::kResetDone) {
-    state_ = VideoPlayerState::kIdle;
-  }
-
   video_player_events_.push(event);
   video_player_event_counts_[static_cast<size_t>(event)]++;
   event_cv_.Signal();
 
-  // Check whether video playback should be paused after this event.
-  if (play_until_.has_value() && play_until_ == event) {
-    state_ = VideoPlayerState::kIdle;
-    return false;
-  }
-  return true;
+  const bool should_pause = play_until_.has_value() && play_until_ == event;
+  return !should_pause;
 }
 
 }  // namespace test

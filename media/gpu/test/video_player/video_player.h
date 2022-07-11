@@ -54,9 +54,7 @@ class VideoPlayer {
 
   ~VideoPlayer();
 
-  // Create an instance of the video player. The |frame_renderer| and
-  // |frame_processors| will not be owned by the video player. The caller should
-  // guarantee they outlive the video player.
+  // Create an instance of this class. Must be Initialize()d before use.
   static std::unique_ptr<VideoPlayer> Create(
       const DecoderWrapperConfig& config,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
@@ -108,12 +106,6 @@ class VideoPlayer {
   size_t GetFrameDecodedCount() const;
 
  private:
-  enum class VideoPlayerState : size_t {
-    kUninitialized = 0,
-    kIdle,
-    kDecoding,
-  };
-
   VideoPlayer();
 
   bool CreateWrapper(
@@ -125,7 +117,6 @@ class VideoPlayer {
   // whether the decoder client should continue decoding frames.
   bool NotifyEvent(VideoPlayerEvent event);
 
-  VideoPlayerState state_ = VideoPlayerState::kUninitialized;
   std::unique_ptr<DecoderWrapper> decoder_wrapper_;
 
   // The timeout used when waiting for events.
