@@ -3881,6 +3881,19 @@
           'skia_gold_test',
         ],
       },
+      'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
+        'name': 'webgpu_swiftshader_blink_web_tests_with_backend_validation',
+        'isolate_name': 'webgpu_blink_web_tests',
+        'args': [
+          '--flag-specific=webgpu-swiftshader-with-backend-validation',
+          # Increase the timeout when using backend validation layers (crbug.com/1208253)
+          '--timeout-ms=30000',
+        ],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
+      },
     },
 
     'gpu_webgpu_integration_isolated_scripts': {
@@ -3906,6 +3919,17 @@
           'skia_gold_test',
         ],
       },
+      'webgpu_swiftshader_blink_web_tests': {
+        'name': 'webgpu_swiftshader_blink_web_tests',
+        'isolate_name': 'webgpu_blink_web_tests',
+        'args': [
+          '--flag-specific=webgpu-swiftshader',
+        ],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
+      },
     },
 
     # For Windows. Use the D3D12 backend validation layers but without GPU-based
@@ -3916,6 +3940,19 @@
         'isolate_name': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu-with-partial-backend-validation',
+          # Increase the timeout when using backend validation layers (crbug.com/1208253)
+          '--timeout-ms=30000',
+        ],
+        'mixins': [
+          'webgpu_cts',
+          'skia_gold_test',
+        ],
+      },
+      'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
+        'name': 'webgpu_swiftshader_blink_web_tests_with_partial_backend_validation',
+        'isolate_name': 'webgpu_blink_web_tests',
+        'args': [
+          '--flag-specific=webgpu-swiftshader-with-partial-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
           '--timeout-ms=30000',
         ],
