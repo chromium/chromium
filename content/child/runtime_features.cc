@@ -314,6 +314,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kRemoveMobileViewportDoubleTap},
     {wf::EnableZeroCopyTabCapture, blink::features::kZeroCopyTabCapture},
     {wf::EnableEventPath, blink::features::kEventPath},
+    {wf::EnableGetDisplayMediaSet, features::kGetDisplayMediaSet},
+    {wf::EnableGetDisplayMediaSetAutoSelectAllScreens,
+     features::kGetDisplayMediaSetAutoSelectAllScreens},
   };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

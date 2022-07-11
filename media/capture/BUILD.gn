@@ -64,6 +64,7 @@ source_set("capture_device_specific") {
     "content/animated_content_sampler.h",
     "content/capture_resolution_chooser.cc",
     "content/capture_resolution_chooser.h",
+    "content/screen_enumerator.h",
     "content/smooth_event_sampler.cc",
     "content/smooth_event_sampler.h",
     "content/video_capture_oracle.cc",

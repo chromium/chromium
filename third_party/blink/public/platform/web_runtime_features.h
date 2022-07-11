@@ -243,6 +243,9 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableWebAuthenticationRemoteDesktopSupport(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableWebHIDOnServiceWorkers(bool enable);
+  BLINK_PLATFORM_EXPORT static void EnableGetDisplayMediaSet(bool);
+  BLINK_PLATFORM_EXPORT static void
+  EnableGetDisplayMediaSetAutoSelectAllScreens(bool);
 
  private:
   WebRuntimeFeatures();

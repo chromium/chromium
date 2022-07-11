@@ -677,4 +677,14 @@ void WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(bool enable) {
   RuntimeEnabledFeatures::SetWebHIDOnServiceWorkersEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableGetDisplayMediaSet(bool enable) {
+  RuntimeEnabledFeatures::SetGetDisplayMediaSetEnabled(enable);
+}
+
+void WebRuntimeFeatures::EnableGetDisplayMediaSetAutoSelectAllScreens(
+    bool enable) {
+  RuntimeEnabledFeatures::SetGetDisplayMediaSetAutoSelectAllScreensEnabled(
+      enable);
+}
+
 }  // namespace blink

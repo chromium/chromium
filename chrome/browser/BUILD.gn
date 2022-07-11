@@ -719,6 +719,8 @@ static_library("browser") {
     "media/webrtc/capture_policy_utils.h",
     "media/webrtc/chrome_camera_pan_tilt_zoom_permission_context_delegate.cc",
     "media/webrtc/chrome_camera_pan_tilt_zoom_permission_context_delegate.h",
+    "media/webrtc/chrome_screen_enumerator.cc",
+    "media/webrtc/chrome_screen_enumerator.h",
     "media/webrtc/desktop_media_list.cc",
     "media/webrtc/desktop_media_list.h",
     "media/webrtc/desktop_media_list_base.cc",

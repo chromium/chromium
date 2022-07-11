@@ -104,6 +104,9 @@ CONTENT_EXPORT extern const base::Feature kFledgeLimitNumAuctions;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFledgeLimitNumAuctionsParam;
 CONTENT_EXPORT extern const base::Feature kFractionalScrollOffsets;
+CONTENT_EXPORT extern const base::Feature kGetDisplayMediaSet;
+CONTENT_EXPORT extern const base::Feature
+    kGetDisplayMediaSetAutoSelectAllScreens;
 CONTENT_EXPORT extern const base::Feature kGreaseUACH;
 CONTENT_EXPORT extern const base::Feature kIdentityInCanMakePaymentEventFeature;
 CONTENT_EXPORT extern const base::Feature kIdleDetection;

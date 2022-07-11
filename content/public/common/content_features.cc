@@ -405,6 +405,16 @@ const base::Feature kFractionalScrollOffsets{"FractionalScrollOffsets",
 const base::Feature kNetworkQualityEstimatorWebHoldback{
     "NetworkQualityEstimatorWebHoldback", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the getDisplayMediaSet API for capturing multiple screens at once.
+const base::Feature kGetDisplayMediaSet{"GetDisplayMediaSet",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables auto selection of all screens in combination with the
+// getDisplayMediaSet API.
+const base::Feature kGetDisplayMediaSetAutoSelectAllScreens{
+    "GetDisplayMediaSetAutoSelectAllScreens",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Determines if an extra brand version pair containing possibly escaped double
 // quotes and escaped backslashed should be added to the Sec-CH-UA header
 // (activated by kUserAgentClientHint)

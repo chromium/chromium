@@ -298,8 +298,11 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   MediaStreamDispatcherHostTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         origin_(url::Origin::Create(GURL("https://test.com"))) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kUserMediaCaptureOnFocus);
+    scoped_feature_list_
+        .InitFromCommandLine(/*enable_features=*/
+                             "UserMediaCaptureOnFocus,GetDisplayMediaSet,"
+                             "GetDisplayMediaSetAutoSelectAllScreens",
+                             /*disable_features=*/"");
     audio_manager_ = std::make_unique<media::MockAudioManager>(
         std::make_unique<media::TestAudioThread>());
     audio_system_ =

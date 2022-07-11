@@ -23,6 +23,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -372,6 +373,15 @@ void MediaStreamDispatcherHost::GenerateStreams(
                                     controls.video.stream_type)) {
     ReceivedBadMessage(render_process_id_,
                        bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION);
+    return;
+  }
+
+  if (controls.video.stream_type ==
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET &&
+      (!base::FeatureList::IsEnabled(features::kGetDisplayMediaSet) ||
+       !base::FeatureList::IsEnabled(
+           features::kGetDisplayMediaSetAutoSelectAllScreens))) {
+    mojo::ReportBadMessage("The GetDisplayMediaSet API has not been enabled");
     return;
   }
 
