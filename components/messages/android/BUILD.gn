@@ -59,6 +59,8 @@ static_library("android") {
     "message_enums.h",
     "message_wrapper.cc",
     "message_wrapper.h",
+    "throttler/domain_session_throttler.cc",
+    "throttler/domain_session_throttler.h",
   ]
   deps = [
     ":jni_headers",

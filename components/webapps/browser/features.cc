@@ -21,6 +21,13 @@ const base::Feature kInstallableAmbientBadgeInfoBar{
 const base::Feature kInstallableAmbientBadgeMessage{
     "InstallableAmbientBadgeMessage", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// The capacity of cached domains which do not show message again if
+// users do not accept the message.
+extern const base::FeatureParam<int>
+    kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity{
+        &kInstallableAmbientBadgeMessage,
+        "installable_ambient_badge_message_throttle_domains_capacity", 100};
+
 // Enables PWA Unique IDs for WebAPKs.
 const base::Feature kWebApkUniqueId{"WebApkUniqueId",
                                     base::FEATURE_DISABLED_BY_DEFAULT};

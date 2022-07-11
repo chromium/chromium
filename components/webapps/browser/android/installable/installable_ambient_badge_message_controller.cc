@@ -5,11 +5,16 @@
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
 #include "base/bind.h"
+#include "base/containers/lru_cache.h"
+#include "base/no_destructor.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/messages/android/throttler/domain_session_throttler.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
+#include "components/webapps/browser/features.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace webapps {
@@ -35,7 +40,12 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
     const bool is_primary_icon_maskable,
     const GURL& start_url) {
   DCHECK(!message_);
+  if (!GetThrottler()->ShouldShow(
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+    return;
+  }
 
+  save_origin_ = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::INSTALLABLE_AMBIENT_BADGE,
       base::BindOnce(
@@ -84,6 +94,17 @@ void InstallableAmbientBadgeMessageController::HandleMessageDismissed(
   if (dismiss_reason == messages::DismissReason::GESTURE) {
     client_->BadgeDismissed();
   }
+  if (dismiss_reason != messages::DismissReason::PRIMARY_ACTION) {
+    GetThrottler()->AddStrike(save_origin_);
+  }
+}
+
+// static
+messages::DomainSessionThrottler*
+InstallableAmbientBadgeMessageController::GetThrottler() {
+  static messages::DomainSessionThrottler instance(
+      features::kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity.Get());
+  return &instance;
 }
 
 }  // namespace webapps

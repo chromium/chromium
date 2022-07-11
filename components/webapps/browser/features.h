@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_FEATURES_H_
 #define COMPONENTS_WEBAPPS_BROWSER_FEATURES_H_
 
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -18,6 +19,8 @@ namespace features {
 extern const base::Feature kAddToHomescreenMessaging;
 extern const base::Feature kInstallableAmbientBadgeInfoBar;
 extern const base::Feature kInstallableAmbientBadgeMessage;
+extern const base::FeatureParam<int>
+    kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity;
 extern const base::Feature kWebApkUniqueId;
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -38,6 +38,7 @@ class InstallableAmbientBadgeMessageControllerTest
 
   void EnqueueMessage();
   void EnqueueMessage(bool maskable);
+  void EnqueueMessageWithExpectNotCalled();
   void DismissMessage(bool expected);
 
   void TriggerActionClick();
@@ -96,6 +97,15 @@ void InstallableAmbientBadgeMessageControllerTest::EnqueueMessage(
                                           kUnpremul_SkAlphaType));
   message_controller_.EnqueueMessage(web_contents(), kAppName, test_icon,
                                      maskable, GURL("https://example.com/"));
+}
+
+void InstallableAmbientBadgeMessageControllerTest::
+    EnqueueMessageWithExpectNotCalled() {
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage).Times(0);
+  test_icon.allocPixels(SkImageInfo::Make(100, 100, kRGBA_8888_SkColorType,
+                                          kUnpremul_SkAlphaType));
+  message_controller_.EnqueueMessage(web_contents(), kAppName, test_icon, false,
+                                     GURL("https://example.com/"));
 }
 
 void InstallableAmbientBadgeMessageControllerTest::DismissMessage(
@@ -181,6 +191,17 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, Dismiss) {
   EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
   EXPECT_CALL(client_mock(), BadgeDismissed);
   TriggerMessageDismissedWithGesture();
+}
+
+// Tests that when the user dismisses the message with a gesture, client's
+// BadgeDismissed method is called and the message is not enqueued
+// because of throttling.
+TEST_F(InstallableAmbientBadgeMessageControllerTest, Throttle) {
+  EnqueueMessage();
+  EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
+  DismissMessage(true);
+  EnqueueMessageWithExpectNotCalled();
+  ASSERT_FALSE(message_controller()->IsMessageEnqueued());
 }
 
 }  // namespace webapps

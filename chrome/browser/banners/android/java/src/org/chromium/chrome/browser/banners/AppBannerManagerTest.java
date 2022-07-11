@@ -782,7 +782,11 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE,
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params="
+                    + "Study.Group:installable_ambient_badge_message_throttle_domains_capacity/0",
             "disable-features=" + ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_INFOBAR})
     public void
     testBlockedAmbientBadgeDoesNotAppearAgainForMonths_Message() throws Exception {
