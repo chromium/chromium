@@ -1408,7 +1408,6 @@ if (!is_ios) {
       data += [
         "//third_party/blink/web_tests/platform/win/",
         "//third_party/blink/web_tests/platform/win10/",
-        "//third_party/blink/web_tests/platform/win7/",
       ]
       if (is_linux || is_fuchsia) {
         data += [ "//third_party/blink/web_tests/platform/linux/" ]
@@ -1475,7 +1474,6 @@ if (!is_ios) {
       data += [
         "//third_party/blink/web_tests/platform/win/",
         "//third_party/blink/web_tests/platform/win10/",
-        "//third_party/blink/web_tests/platform/win7/",
       ]
       if (is_linux || is_fuchsia) {
         data += [ "//third_party/blink/web_tests/platform/linux/" ]
