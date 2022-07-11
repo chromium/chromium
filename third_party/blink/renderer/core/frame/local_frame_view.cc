@@ -4698,18 +4698,14 @@ void LocalFrameView::DidChangeMobileFriendliness(
 }
 
 LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {
-  if (!frame_->IsLocalRoot() &&
-      base::FeatureList::IsEnabled(
-          features::kLocalFrameRootPrePostFCPMetrics)) {
-    DCHECK(!ukm_aggregator_);
-    return frame_->LocalFrameRoot().View()->EnsureUkmAggregator();
-  }
-  if (!ukm_aggregator_) {
+  DCHECK(frame_->IsLocalRoot() || !ukm_aggregator_);
+  LocalFrameView* local_root_frame_view = frame_->LocalFrameRoot().View();
+  if (!local_root_frame_view->ukm_aggregator_) {
     ukm_aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
-        frame_->GetDocument()->UkmSourceID(),
-        frame_->GetDocument()->UkmRecorder());
+        local_root_frame_view->frame_->GetDocument()->UkmSourceID(),
+        local_root_frame_view->frame_->GetDocument()->UkmRecorder());
   }
-  return *ukm_aggregator_;
+  return *local_root_frame_view->ukm_aggregator_;
 }
 
 void LocalFrameView::OnFirstContentfulPaint() {
@@ -4721,12 +4717,8 @@ void LocalFrameView::OnFirstContentfulPaint() {
       FontPerformance::MarkFirstContentfulPaint();
   }
 
-  if (base::FeatureList::IsEnabled(features::kLocalFrameRootPrePostFCPMetrics)
-          ? frame_->IsLocalRoot()
-          : frame_->IsMainFrame()) {
-    // See crbug.com/1330675.
+  if (frame_->IsLocalRoot())
     EnsureUkmAggregator().DidReachFirstContentfulPaint();
-  }
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(

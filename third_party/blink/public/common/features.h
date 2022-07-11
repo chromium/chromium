@@ -775,10 +775,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kFileSystemUrlNavigation;
 BLINK_COMMON_EXPORT extern const base::Feature
     kEarlyExitOnNoopClassOrStyleChange;
 
-// Enables correct PreFCP and PostFCP metrics for non-main local frame roots.
-// See https://crbug.com/1330675.
-BLINK_COMMON_EXPORT extern const base::Feature kLocalFrameRootPrePostFCPMetrics;
-
 // Stylus handwriting recognition to text input feature.
 BLINK_COMMON_EXPORT extern const base::Feature kStylusWritingToInput;
 
