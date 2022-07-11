@@ -86,6 +86,11 @@ void SigninUiDelegateImplLacros::ShowSigninUI(
     bool enable_sync,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action) {
+  if (enable_sync) {
+    signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
+    signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
+  }
+
   SigninManager* signin_manager = SigninManagerFactory::GetForProfile(profile);
   auto on_completion_callback =
       base::BindOnce(&SigninUiDelegateImplLacros::OnAccountAdded,
@@ -108,6 +113,11 @@ void SigninUiDelegateImplLacros::ShowReauthUI(
     bool enable_sync,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action) {
+  if (enable_sync) {
+    signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
+    signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
+  }
+
   AccountReconcilor* account_reconcilor =
       AccountReconcilorFactory::GetForProfile(profile);
   base::OnceClosure reauth_completed_closure =
