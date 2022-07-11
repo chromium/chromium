@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/sync/base/time.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"

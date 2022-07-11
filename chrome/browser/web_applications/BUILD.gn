@@ -170,6 +170,7 @@ source_set("web_applications") {
     "web_app_registrar.h",
     "web_app_registry_update.cc",
     "web_app_registry_update.h",
+    "web_app_sources.h",
     "web_app_sync_bridge.cc",
     "web_app_sync_bridge.h",
     "web_app_sync_install_delegate.h",

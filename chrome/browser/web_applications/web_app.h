@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_H_
 
-#include <bitset>
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -18,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_sources.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -30,8 +30,6 @@
 #include "url/gurl.h"
 
 namespace web_app {
-
-using WebAppSources = std::bitset<WebAppManagement::kMaxValue + 1>;
 
 class WebApp {
  public:
