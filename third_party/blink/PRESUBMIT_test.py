@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -56,13 +56,10 @@ class PresubmitTest(unittest.TestCase):
         capture = Capture()
         # pylint: disable=E1101
         subprocess.Popen.assert_called_with(capture, stderr=-1)
-        self.assertEqual(6, len(capture.value))
+        self.assertEqual(5, len(capture.value))
         self.assertEqual(
             mock_input_api.os_path.join('..', '..', 'file_blink.h'),
             capture.value[3])
-        self.assertEqual(
-            mock_input_api.os_path.join('..', '..', 'web_tests',
-                                        'TestExpectations'), capture.value[5])
 
     @mock.patch('subprocess.Popen')
     def testCheckChangeOnUploadWithEmptyAffectedFileList(self, _):
@@ -103,8 +100,6 @@ class PresubmitTest(unittest.TestCase):
         filtered = PRESUBMIT._FilterPaths(mock_input_api)
         self.assertEqual([
             mock_input_api.os_path.join('..', '..', 'file_chromium1.h'),
-            mock_input_api.os_path.join('..', '..', 'web_tests',
-                                        'TestExpectations')
         ], filtered)
 
     def testCheckPublicHeaderWithBlinkMojo(self):
