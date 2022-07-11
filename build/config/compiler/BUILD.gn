@@ -1545,6 +1545,13 @@ config("default_warnings") {
         "-Wno-ignored-pragma-optimize",
       ]
 
+      if (llvm_force_head_revision) {
+        cflags += [
+          # TODO(crbug.com/1343303) Evaluate and possibly enable.
+          "-Wno-array-parameter",
+        ]
+      }
+
       if (!is_nacl) {
         # TODO(https://crbug.com/1300731) Clean up and enable.
         cflags += [ "-Wno-unqualified-std-cast-call" ]
