@@ -7,7 +7,9 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,6 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/net/safe_search_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -108,5 +111,13 @@ void PolicyTest::FlushBlocklistPolicy() {
   content::RunAllTasksUntilIdle();
   content::RunAllPendingInMessageLoop(BrowserThread::IO);
 }
+
+PolicyTestAppTerminationObserver::PolicyTestAppTerminationObserver() {
+  terminating_subscription_ = browser_shutdown::AddAppTerminatingCallback(
+      base::BindOnce(&PolicyTestAppTerminationObserver::OnAppTerminating,
+                     base::Unretained(this)));
+}
+
+PolicyTestAppTerminationObserver::~PolicyTestAppTerminationObserver() = default;
 
 }  // namespace policy

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_POLICY_TEST_UTILS_H_
 #define CHROME_BROWSER_POLICY_POLICY_TEST_UTILS_H_
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -62,6 +63,20 @@ class PolicyTest : public PlatformBrowserTest {
   bool NavigateToUrl(GURL url, PlatformBrowserTest* browser_test);
 
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
+};
+
+class PolicyTestAppTerminationObserver {
+ public:
+  PolicyTestAppTerminationObserver();
+  ~PolicyTestAppTerminationObserver();
+
+  bool WasAppTerminated() const { return terminated_; }
+
+ private:
+  void OnAppTerminating() { terminated_ = true; }
+
+  base::CallbackListSubscription terminating_subscription_;
+  bool terminated_ = false;
 };
 
 }  // namespace policy

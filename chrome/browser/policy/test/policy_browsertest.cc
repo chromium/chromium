@@ -25,7 +25,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -43,12 +42,9 @@
 #include "components/prefs/pref_service.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/gpu_data_manager.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/mock_notification_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -207,10 +203,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
 // Disabled, see http://crbug.com/554728.
 IN_PROC_BROWSER_TEST_F(PolicyTest,
                        DISABLED_WaitForInitialUserActivityUnsatisfied) {
-  content::MockNotificationObserver observer;
-  content::NotificationRegistrar registrar;
-  registrar.Add(&observer, chrome::NOTIFICATION_APP_TERMINATING,
-                content::NotificationService::AllSources());
+  PolicyTestAppTerminationObserver observer;
 
   // Require initial user activity.
   PolicyMap policies;
@@ -222,14 +215,12 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
 
   // Set the session length limit to 1 hour. Verify that the session is not
   // terminated.
-  EXPECT_CALL(observer, Observe(chrome::NOTIFICATION_APP_TERMINATING, _, _))
-      .Times(0);
   policies.Set(key::kSessionLengthLimit, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(kOneHourInMs), nullptr);
   UpdateProviderPolicy(policies);
   base::RunLoop().RunUntilIdle();
-  Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_FALSE(observer.WasAppTerminated());
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_WaitForInitialUserActivitySatisfied) {
@@ -242,15 +233,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_WaitForInitialUserActivitySatisfied) {
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {
-  content::MockNotificationObserver observer;
-  content::NotificationRegistrar registrar;
-  registrar.Add(&observer, chrome::NOTIFICATION_APP_TERMINATING,
-                content::NotificationService::AllSources());
+  PolicyTestAppTerminationObserver observer;
 
   // Require initial user activity and set the session length limit to 3 hours.
   // Verify that the session is not terminated.
-  EXPECT_CALL(observer, Observe(chrome::NOTIFICATION_APP_TERMINATING, _, _))
-      .Times(0);
   PolicyMap policies;
   policies.Set(key::kWaitForInitialUserActivity, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
@@ -260,17 +246,16 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {
                base::Value(kThreeHoursInMs), nullptr);
   UpdateProviderPolicy(policies);
   base::RunLoop().RunUntilIdle();
-  Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_FALSE(observer.WasAppTerminated());
 
   // Decrease the session length limit to 1 hour. Verify that the session is
   // terminated immediately.
-  EXPECT_CALL(observer, Observe(chrome::NOTIFICATION_APP_TERMINATING, _, _));
   policies.Set(key::kSessionLengthLimit, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(kOneHourInMs), nullptr);
   UpdateProviderPolicy(policies);
   base::RunLoop().RunUntilIdle();
-  Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_TRUE(observer.WasAppTerminated());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
