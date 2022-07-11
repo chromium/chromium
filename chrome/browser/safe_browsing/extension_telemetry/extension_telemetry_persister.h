@@ -9,8 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
-
-class Profile;
+#include "base/sequence_checker.h"
 
 namespace base {
 class FilePath;
@@ -19,10 +18,16 @@ namespace safe_browsing {
 
 // The `ExtensionTelemetryPersister` stores data collected by the Extension
 // Telemetry Service to disk. It creates files until `max_num_files_` are on
-// disk and then starts overwriting previously made files.
+// disk and then starts overwriting previously made files. The Persister runs
+// read and write functions that are time intensive. To avoid blocking
+// important threads, the persister should be created using SequenceBound.
 class ExtensionTelemetryPersister {
  public:
-  explicit ExtensionTelemetryPersister(int max_num_files, Profile* profile);
+  // The `profile_path` is used to construct where the persister saves it's
+  // files. The persister creates a directory under profile_path/CRX_Telemetry
+  // and saves files there.
+  explicit ExtensionTelemetryPersister(int max_num_files,
+                                       base::FilePath profile_path);
 
   ExtensionTelemetryPersister(const ExtensionTelemetryPersister&) = delete;
   ExtensionTelemetryPersister& operator=(const ExtensionTelemetryPersister&) =
@@ -38,56 +43,25 @@ class ExtensionTelemetryPersister {
   // exposed to the caller and is determined by `write_index_`.
   void WriteReport(const std::string write_string);
 
-  // Caller should use this method exactly once to write a telemetry report to
-  // disk during Chrome/Profile shutdown. The persister object should not be
-  // used after calling this method and should be destroyed.
-  void WriteReportDuringShutdown(const std::string write_string);
-
   // Reads a telemetry report from a file on disk. The file is deleted
   // regardless of if the read was successful or not. The filename
-  // is not exposed to the caller. The callback passes back the result
-  // of the read operation and the contents of the report if the read succeeded.
-  // The callback is expected to be bound to the thread it needs to run on.
-  void ReadReport(base::OnceCallback<void(std::string, bool)> callback);
+  // is not exposed to the caller. Returns a string representation
+  // of the read file, or an empty string if the read failed.
+  std::string ReadReport();
 
-  // Deletes the CRXTelemetry folder by calling DeleteAllFiles.
+  // Deletes the CRXTelemetry directory.
   void ClearPersistedFiles();
 
  private:
-  // A helper function of PersisterInit allowing it post actions to the
-  // thread pool.
-  void InitHelper();
-
-  // Writes data to the file represented by `write_index_`.
-  void SaveFile(std::string write_string);
-
-  // Writes data during a profile or Chrome shutdown. Persister
-  // tasks run on the threadpool but it's destructor runs on the
-  // main UI thread. This function is static to prevent threading
-  // errors when the persister's destructor and posted task execute
-  // at the same time but on different threads.
-  static void SaveFileDuringShutdown(std::string write_string,
-                                     base::FilePath dir_path,
-                                     int write_index);
-
-  // Reads data from the file represented by `read_index_`. When a
-  // file is read it is also deleted.
-  void LoadFile(base::OnceCallback<void(std::string, bool)> callback);
-
   // Deletes the file that the `path` variable points to.
   // Returns true if the file is deleted, false otherwise.
   bool DeleteFile(const base::FilePath path);
 
   // Deletes the CRXTelemetry directory.
-  void DeleteAllFiles();
-
   friend class ExtensionTelemetryPersisterTest;
 
-  // Stores the directory path of the user's profile.
+  // Stores the directory path where the telemetry files are persisted.
   base::FilePath dir_path_;
-
-  // The profile with which this instance of the persister is associated.
-  const raw_ptr<Profile> profile_;
 
   // The maximum number of files that are stored on disk.
   int max_num_files_;
@@ -105,16 +79,7 @@ class ExtensionTelemetryPersister {
   // persister is done initializing.
   bool initialization_complete_ = false;
 
-  // Ensures once the persister has run it's shutdown write function
-  // the persister will not post any other tasks.
-  bool is_shut_down_ = false;
-
-  // Task runner for read and write operations. Shutdown behavior
-  // is to complete tasks that have started. There is a chance that if Chrome
-  // is performing a lot of tasks during shutdown, persister tasks might
-  // not run. This can most likely occur when Chrome is open and closed
-  // very quickly.  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ExtensionTelemetryPersister> weak_factory_{this};
 };
