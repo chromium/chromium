@@ -51,6 +51,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.CheckDownloadStats.Exe"
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2022-11-13">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the reason why EXE downloads are marked as being malicious or clean
+    by the improved SafeBrowsing binary download protection. This is logged
+    after every EXE download scanned by Safe Browsing.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
     expires_after="2022-11-13">
   <owner>drubery@chromium.org</owner>

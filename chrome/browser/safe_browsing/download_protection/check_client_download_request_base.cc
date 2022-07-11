@@ -145,8 +145,8 @@ void CheckClientDownloadRequestBase::FinishRequest(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!request_start_time_.is_null()) {
-    UMA_HISTOGRAM_ENUMERATION("SBClientDownload.DownloadRequestNetworkStats",
-                              reason, REASON_MAX);
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.DownloadRequestNetworkStats", reason, REASON_MAX);
   }
 
   auto settings = ShouldUploadBinary(reason);
@@ -158,8 +158,14 @@ void CheckClientDownloadRequestBase::FinishRequest(
         FROM_HERE, base::BindOnce(std::move(callback_), result));
   }
 
-  UMA_HISTOGRAM_ENUMERATION("SBClientDownload.CheckDownloadStats", reason,
-                            REASON_MAX);
+  if (FileTypePolicies::GetInstance()
+          ->PolicyForFile(target_file_path_, GURL{}, nullptr)
+          .extension() == "exe") {
+    base::UmaHistogramEnumeration("SBClientDownload.CheckDownloadStats.Exe",
+                                  reason, REASON_MAX);
+  }
+  base::UmaHistogramEnumeration("SBClientDownload.CheckDownloadStats", reason,
+                                REASON_MAX);
   MaybeLogDocumentMetrics(client_download_request_data_, reason);
 
   NotifyRequestFinished(result, reason);
