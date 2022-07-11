@@ -145,7 +145,6 @@
 
   button[disabled] {
     cursor: auto;
-    pointer-events: none;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -184,7 +183,7 @@
     <h3>$i18n{accountSelectionLacrosSubtitle}</h3>
   </div>
   <button id="other-account-button" class="account-button"
-          on-click="onOtherAccountClick_" disabled="[[accountSelected_]]">
+          on-click="onOtherAccountClick_" disabled$="[[accountSelected_]]">
     <div class="account-avatar">
       <iron-icon icon="profiles:account-circle" id="otherAccountIcon">
       </iron-icon>
@@ -198,7 +197,7 @@
   <div id="buttonsContainer">
     <template is="dom-repeat" items="[[availableAccounts_]]">
       <button class="account-button" on-click="onAccountClick_"
-          disabled="[[accountSelected_]]">
+          disabled$="[[accountSelected_]]">
         <img class="account-avatar" src="[[item.accountImageUrl]]">
         <div class="account-text">
           <div class="account-name">[[item.name]]</div>

@@ -105,20 +105,20 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
       webUIListenerCallback(
           'available-accounts-changed', generateAccountsList(3));
       flushTasks();
-      const accounts_buttons =
+      const accountsButtons =
           testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>(
               '#buttonsContainer > button');
-      assertTrue(!!accounts_buttons);
-      assertEquals(accounts_buttons.length, 3);
-      accounts_buttons[0]!.click();
-      accounts_buttons.forEach(button => {
+      assertTrue(!!accountsButtons);
+      assertEquals(accountsButtons.length, 3);
+      accountsButtons[0]!.click();
+      accountsButtons.forEach(button => {
         assertTrue(button.disabled);
       });
-      const other_account_button =
+      const otherAccountButton =
           testElement.shadowRoot!.querySelector<HTMLButtonElement>(
               '#other-account-button');
-      assertTrue(!!other_account_button);
-      assertTrue(other_account_button.disabled);
+      assertTrue(!!otherAccountButton);
+      assertTrue(otherAccountButton.disabled);
     });
   });
 });
