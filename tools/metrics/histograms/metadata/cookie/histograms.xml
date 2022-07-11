@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CrossSiteRedirectType.{AccessType}"
-    enum="ContextRedirectTypeBug1221316" expires_after="2022-07-15">
+    enum="ContextRedirectTypeBug1221316" expires_after="2023-01-15">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
