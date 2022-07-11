@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
+#include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
 #include "ppapi/buildflags/buildflags.h"
 
 class PrefRegistrySimple;
@@ -29,39 +30,8 @@ class AppWindow;
 
 namespace chromeos {
 
-// Kiosk histogram metrics-related constants.
-extern const char kKioskMetrics[];
-extern const char kKioskSessionStateHistogram[];
-extern const char kKioskSessionCountPerDayHistogram[];
-extern const char kKioskSessionDurationNormalHistogram[];
-extern const char kKioskSessionDurationInDaysNormalHistogram[];
-extern const char kKioskSessionDurationCrashedHistogram[];
-extern const char kKioskSessionDurationInDaysCrashedHistogram[];
-
-extern const char kKioskSessionLastDayList[];
-extern const char kKioskSessionStartTime[];
-
-extern const base::TimeDelta kKioskSessionDurationHistogramLimit;
-
-class AppSessionMetricsService;
 class KioskSessionPluginHandler;
 class KioskSessionPluginHandlerDelegate;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Keep in sync with respective enum in tools/metrics/histograms/enums.xml
-enum class KioskSessionState {
-  kStarted = 0,
-  kWebStarted = 1,
-  kCrashed = 2,
-  kStopped = 3,
-  kPluginCrashed = 4,
-  kPluginHung = 5,
-  // No longer used, use kWebStarted for lacros platform.
-  // kWebWithLacrosStarted = 6, 
-  kRestored = 7,
-  kMaxValue = kRestored,
-};
 
 // AppSession maintains a kiosk session and handles its lifetime.
 class AppSession {

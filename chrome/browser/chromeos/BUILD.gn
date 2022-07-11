@@ -2076,6 +2076,8 @@ source_set("chromeos") {
     "app_mode/app_session.h",
     "app_mode/app_session_browser_window_handler.cc",
     "app_mode/app_session_browser_window_handler.h",
+    "app_mode/app_session_metrics_service.cc",
+    "app_mode/app_session_metrics_service.h",
     "app_mode/chrome_kiosk_app_installer.cc",
     "app_mode/chrome_kiosk_app_installer.h",
     "app_mode/chrome_kiosk_app_launcher.cc",

@@ -5294,6 +5294,8 @@ static_library("browser") {
       "chromeos/app_mode/app_session.h",
       "chromeos/app_mode/app_session_browser_window_handler.cc",
       "chromeos/app_mode/app_session_browser_window_handler.h",
+      "chromeos/app_mode/app_session_metrics_service.cc",
+      "chromeos/app_mode/app_session_metrics_service.h",
       "chromeos/app_mode/chrome_kiosk_app_installer.cc",
       "chromeos/app_mode/chrome_kiosk_app_installer.h",
       "chromeos/app_mode/chrome_kiosk_app_launcher.cc",
