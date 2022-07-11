@@ -4060,6 +4060,8 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
   {
     OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(),
                                             cull_rect);
+    PaintControllerCycleScope cycle_scope(context.GetPaintController(),
+                                          PaintDebugInfoEnabled());
     PaintFrame(context, paint_flags);
   }
 
@@ -4082,7 +4084,8 @@ void LocalFrameView::PaintForTest(const CullRect& cull_rect) {
   OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(), cull_rect);
   PaintController& paint_controller = EnsurePaintController();
   if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
-    PaintControllerCycleScope cycle_scope(paint_controller);
+    PaintControllerCycleScope cycle_scope(paint_controller,
+                                          PaintDebugInfoEnabled());
     GraphicsContext graphics_context(paint_controller);
     PaintFrame(graphics_context);
     paint_controller.CommitNewDisplayItems();

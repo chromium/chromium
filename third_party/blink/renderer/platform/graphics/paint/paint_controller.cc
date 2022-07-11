@@ -108,7 +108,6 @@ void PaintController::RecordScrollHitTestData(
   CheckNewChunkId(id);
   ValidateNewChunkClient(client);
   paint_chunker_.CreateScrollHitTestChunk(id, client, scroll_translation, rect);
-  RecordDebugInfo(client);
   CheckNewChunk();
 }
 
@@ -376,7 +375,7 @@ void PaintController::CheckNewChunkId(const PaintChunk::Id& id) {
   if (it != new_paint_chunk_id_index_map_.end()) {
     ShowDebugData();
     NOTREACHED() << "New paint chunk id " << id.ToString(*new_paint_artifact_)
-                 << " has duplicated id with previous chuck "
+                 << " is already used by a previous chuck "
                  << new_paint_artifact_->PaintChunks()[it->value].ToString(
                         *new_paint_artifact_);
   }
@@ -789,6 +788,7 @@ FrameFirstPaint PaintController::EndFrame(const void* frame) {
 }
 
 void PaintController::ValidateNewChunkClient(const DisplayItemClient& client) {
+  RecordDebugInfo(client);
   if (IsSkippingCache() && usage_ == kMultiplePaints)
     client.Invalidate(PaintInvalidationReason::kUncacheable);
 }

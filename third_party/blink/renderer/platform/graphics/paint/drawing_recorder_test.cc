@@ -24,7 +24,7 @@ TEST_F(DrawingRecorderTest, Nothing) {
       *MakeGarbageCollected<FakeDisplayItemClient>();
   GraphicsContext context(GetPaintController());
   {
-    PaintControllerCycleScope cycle_scope(GetPaintController());
+    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
     InitRootChunk();
     DrawNothing(context, client, kForegroundType);
     GetPaintController().CommitNewDisplayItems();
@@ -41,7 +41,7 @@ TEST_F(DrawingRecorderTest, Rect) {
       *MakeGarbageCollected<FakeDisplayItemClient>();
   GraphicsContext context(GetPaintController());
   {
-    PaintControllerCycleScope cycle_scope(GetPaintController());
+    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
     InitRootChunk();
     DrawRect(context, client, kForegroundType, kBounds);
     GetPaintController().CommitNewDisplayItems();
@@ -55,7 +55,7 @@ TEST_F(DrawingRecorderTest, Cached) {
       *MakeGarbageCollected<FakeDisplayItemClient>();
   GraphicsContext context(GetPaintController());
   {
-    PaintControllerCycleScope cycle_scope(GetPaintController());
+    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
     InitRootChunk();
     DrawNothing(context, client, kBackgroundType);
     DrawRect(context, client, kForegroundType, kBounds);
@@ -67,7 +67,7 @@ TEST_F(DrawingRecorderTest, Cached) {
                           IsSameId(client.Id(), kForegroundType)));
 
   {
-    PaintControllerCycleScope cycle_scope(GetPaintController());
+    PaintControllerCycleScopeForTest cycle_scope(GetPaintController());
     InitRootChunk();
     DrawNothing(context, client, kBackgroundType);
     DrawRect(context, client, kForegroundType, kBounds);

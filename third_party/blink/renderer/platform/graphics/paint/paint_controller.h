@@ -455,13 +455,13 @@ class PLATFORM_EXPORT PaintControllerCycleScope {
   STACK_ALLOCATED();
 
  public:
-  explicit PaintControllerCycleScope(bool record_debug_info = false)
+  explicit PaintControllerCycleScope(bool record_debug_info)
       : record_debug_info_(record_debug_info) {
     clients_to_validate_ =
         MakeGarbageCollected<HeapVector<Member<const DisplayItemClient>>>();
   }
   explicit PaintControllerCycleScope(PaintController& controller,
-                                     bool record_debug_info = false)
+                                     bool record_debug_info)
       : PaintControllerCycleScope(record_debug_info) {
     AddController(controller);
   }
