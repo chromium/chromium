@@ -13,7 +13,7 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::Evaluate(
     AnchorValue anchor_value,
     LayoutUnit available_size,
     const WritingModeConverter& container_converter,
-    bool is_vertical,
+    bool is_y_axis,
     bool is_right_or_bottom) const {
   const auto it = anchor_references.find(anchor_name);
   if (it == anchor_references.end())
@@ -23,22 +23,22 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::Evaluate(
   LayoutUnit value;
   switch (anchor_value) {
     case AnchorValue::kLeft:
-      if (is_vertical)
+      if (is_y_axis)
         return absl::nullopt;  // Wrong axis.
       value = anchor.X();
       break;
     case AnchorValue::kRight:
-      if (is_vertical)
+      if (is_y_axis)
         return absl::nullopt;  // Wrong axis.
       value = anchor.Right();
       break;
     case AnchorValue::kTop:
-      if (!is_vertical)
+      if (!is_y_axis)
         return absl::nullopt;  // Wrong axis.
       value = anchor.Y();
       break;
     case AnchorValue::kBottom:
-      if (!is_vertical)
+      if (!is_y_axis)
         return absl::nullopt;  // Wrong axis.
       value = anchor.Bottom();
       break;

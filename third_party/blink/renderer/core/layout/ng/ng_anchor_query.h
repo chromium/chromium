@@ -35,7 +35,7 @@ struct NGLogicalAnchorQuery {
       AnchorValue anchor_value,
       LayoutUnit available_size,
       const WritingModeConverter& container_converter,
-      bool is_vertical,
+      bool is_y_axis,
       bool is_right_or_bottom) const;
 
   HashMap<AtomicString, LogicalRect> anchor_references;

@@ -279,14 +279,14 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
         const AtomicString& anchor_name,
         AnchorValue anchor_value) const override {
       return anchor_query.Evaluate(anchor_name, anchor_value, available_size,
-                                   container_converter, is_vertical,
+                                   container_converter, is_y_axis,
                                    is_right_or_bottom);
     }
 
     const NGLogicalAnchorQuery& anchor_query;
     const WritingModeConverter& container_converter;
     LayoutUnit available_size;
-    bool is_vertical = false;
+    bool is_y_axis = false;
     bool is_right_or_bottom = false;
   } anchor_evaluator(anchor_query, container_converter);
 
@@ -308,7 +308,7 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
                                   &anchor_evaluator);
   }
 
-  anchor_evaluator.is_vertical = true;
+  anchor_evaluator.is_y_axis = true;
   anchor_evaluator.available_size = available_size.height;
   absl::optional<LayoutUnit> top;
   if (!style.Top().IsAuto()) {
