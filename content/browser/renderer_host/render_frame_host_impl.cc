@@ -7826,7 +7826,7 @@ void RenderFrameHostImpl::ResourceLoadComplete(
 
 void RenderFrameHostImpl::HandleAXEvents(
     const ui::AXTreeID& tree_id,
-    mojom::AXUpdatesAndEventsPtr updates_and_events,
+    blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
     int32_t reset_token) {
   TRACE_EVENT0("accessibility", "RenderFrameHostImpl::HandleAXEvents");
   SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.HandleAXEvents");
@@ -7925,7 +7925,7 @@ void RenderFrameHostImpl::HandleAXEvents(
 
 void RenderFrameHostImpl::HandleAXLocationChanges(
     const ui::AXTreeID& tree_id,
-    std::vector<mojom::LocationChangesPtr> changes) {
+    std::vector<blink::mojom::LocationChangesPtr> changes) {
   if (tree_id != GetAXTreeID()) {
     // The message has arrived after the frame has navigated which means its
     // changes are no longer relevant and can be discarded.
@@ -10056,7 +10056,7 @@ void RenderFrameHostImpl::AccessibilityHitTestCallback(
     ax::mojom::Event event_to_fire,
     base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                             int hit_node_id)> opt_callback,
-    mojom::HitTestResponsePtr hit_test_response) {
+    blink::mojom::HitTestResponsePtr hit_test_response) {
   if (!hit_test_response) {
     if (opt_callback)
       std::move(opt_callback).Run(nullptr, 0);
@@ -10258,7 +10258,7 @@ void RenderFrameHostImpl::GetFeatureObserver(
 }
 
 void RenderFrameHostImpl::BindRenderAccessibilityHost(
-    mojo::PendingReceiver<mojom::RenderAccessibilityHost> receiver) {
+    mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost> receiver) {
   // There must be an accessibility token as
   // RenderAccessibilityImpl::ScheduleSendPendingAccessibilityEvents will only
   // attempt to send updates once it has created one, which happens as part of

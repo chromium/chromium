@@ -2617,7 +2617,7 @@ TEST_F(RenderViewImplTest, SetAccessibilityMode) {
 TEST_F(RenderViewImplTest, AccessibilityModeOnClosingConnection) {
   // Force the RenderAccessibilityManager to bind a pending receiver so that we
   // can test what happens after closing the remote endpoint.
-  mojo::AssociatedRemote<mojom::RenderAccessibility> remote;
+  mojo::AssociatedRemote<blink::mojom::RenderAccessibility> remote;
   GetRenderAccessibilityManager()->BindReceiver(
       remote.BindNewEndpointAndPassReceiver());
 

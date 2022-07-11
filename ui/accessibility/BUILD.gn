@@ -20,6 +20,7 @@ if (is_win) {
 }
 
 mojom("ax_constants_mojo") {
+  generate_java = true
   sources = [ "ax_constants.mojom" ]
 
   # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.
@@ -29,6 +30,7 @@ mojom("ax_constants_mojo") {
 }
 
 mojom_component("ax_enums_mojo") {
+  generate_java = true
   sources = [ "ax_enums.mojom" ]
 
   # TODO(abigailbklein): Remove this when ReadAnythingAppController is wired up.

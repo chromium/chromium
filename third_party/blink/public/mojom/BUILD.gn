@@ -164,6 +164,7 @@ mojom("mojom_platform") {
     "push_messaging/push_messaging_status.mojom",
     "quota/quota_manager_host.mojom",
     "quota/quota_types.mojom",
+    "render_accessibility.mojom",
     "renderer_preference_watcher.mojom",
     "renderer_preferences.mojom",
     "reporting/reporting.mojom",
@@ -266,6 +267,7 @@ mojom("mojom_platform") {
     "//third_party/blink/public/mojom/service_worker:storage",
     "//third_party/blink/public/mojom/tokens",
     "//third_party/blink/public/mojom/usb",
+    "//ui/accessibility/mojom",
     "//ui/base/cursor/mojom",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime/mojom",
@@ -286,6 +288,7 @@ mojom("mojom_platform") {
       "//services/network/public/mojom:cookies_mojom",
       "//services/network/public/mojom:mojom_network_param",
       "//services/network/public/mojom:mojom_schemeful_site",
+      "//ui/accessibility:ax_enums_mojo",
       "//ui/latency/mojom",
     ]
   } else {

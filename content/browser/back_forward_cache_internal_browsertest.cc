@@ -3568,8 +3568,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
       [](BrowserAccessibilityDelegate* delegate,
          ui::AXEventGenerator::Event event, int event_target_id) { FAIL(); }));
   // Generate an event.
-  mojom::AXUpdatesAndEventsPtr updates_and_events =
-      mojom::AXUpdatesAndEvents::New();
+  blink::mojom::AXUpdatesAndEventsPtr updates_and_events =
+      blink::mojom::AXUpdatesAndEvents::New();
   ui::AXTreeUpdate update;
   update.root_id = 1;
   updates_and_events->updates.emplace_back(update);

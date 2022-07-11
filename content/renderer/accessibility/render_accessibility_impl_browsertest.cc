@@ -18,8 +18,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/common/render_accessibility.mojom-test-utils.h"
-#include "content/common/render_accessibility.mojom.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/ax_image_annotator.h"
@@ -37,6 +35,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -147,37 +147,36 @@ class MockAnnotationService : public image_annotation::mojom::Annotator {
 };
 
 class RenderAccessibilityHostInterceptor
-    : public content::mojom::RenderAccessibilityHostInterceptorForTesting {
+    : public blink::mojom::RenderAccessibilityHostInterceptorForTesting {
  public:
   explicit RenderAccessibilityHostInterceptor(
       blink::BrowserInterfaceBrokerProxy* broker) {
     broker->GetInterface(local_frame_host_remote_.BindNewPipeAndPassReceiver());
     broker->SetBinderForTesting(
-        content::mojom::RenderAccessibilityHost::Name_,
+        blink::mojom::RenderAccessibilityHost::Name_,
         base::BindRepeating(&RenderAccessibilityHostInterceptor::
                                 BindRenderAccessibilityHostReceiver,
                             base::Unretained(this)));
   }
   ~RenderAccessibilityHostInterceptor() override = default;
 
-  content::mojom::RenderAccessibilityHost* GetForwardingInterface() override {
+  blink::mojom::RenderAccessibilityHost* GetForwardingInterface() override {
     return local_frame_host_remote_.get();
   }
 
   void BindRenderAccessibilityHostReceiver(
       mojo::ScopedMessagePipeHandle handle) {
-    receiver_.Bind(
-        mojo::PendingReceiver<content::mojom::RenderAccessibilityHost>(
-            std::move(handle)));
+    receiver_.Bind(mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost>(
+        std::move(handle)));
 
     receiver_.set_disconnect_handler(base::BindOnce(
-        [](mojo::Receiver<content::mojom::RenderAccessibilityHost>* receiver) {
+        [](mojo::Receiver<blink::mojom::RenderAccessibilityHost>* receiver) {
           receiver->reset();
         },
         base::Unretained(&receiver_)));
   }
 
-  void HandleAXEvents(mojom::AXUpdatesAndEventsPtr updates_and_events,
+  void HandleAXEvents(blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
                       int32_t reset_token,
                       HandleAXEventsCallback callback) override {
     handled_updates_.insert(handled_updates_.end(),
@@ -187,7 +186,7 @@ class RenderAccessibilityHostInterceptor
   }
 
   void HandleAXLocationChanges(
-      std::vector<mojom::LocationChangesPtr> changes) override {
+      std::vector<blink::mojom::LocationChangesPtr> changes) override {
     for (auto& change : changes)
       location_changes_.emplace_back(std::move(change));
   }
@@ -201,7 +200,7 @@ class RenderAccessibilityHostInterceptor
     return handled_updates_;
   }
 
-  std::vector<mojom::LocationChangesPtr>& location_changes() {
+  std::vector<blink::mojom::LocationChangesPtr>& location_changes() {
     return location_changes_;
   }
 
@@ -210,12 +209,11 @@ class RenderAccessibilityHostInterceptor
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 
-  mojo::Receiver<content::mojom::RenderAccessibilityHost> receiver_{this};
-  mojo::Remote<content::mojom::RenderAccessibilityHost>
-      local_frame_host_remote_;
+  mojo::Receiver<blink::mojom::RenderAccessibilityHost> receiver_{this};
+  mojo::Remote<blink::mojom::RenderAccessibilityHost> local_frame_host_remote_;
 
   std::vector<::ui::AXTreeUpdate> handled_updates_;
-  std::vector<mojom::LocationChangesPtr> location_changes_;
+  std::vector<blink::mojom::LocationChangesPtr> location_changes_;
 };
 
 class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
@@ -239,7 +237,7 @@ class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
     render_accessibility_host_->ClearHandledUpdates();
   }
 
-  std::vector<mojom::LocationChangesPtr>& LocationChanges() {
+  std::vector<blink::mojom::LocationChangesPtr>& LocationChanges() {
     return render_accessibility_host_->location_changes();
   }
 
@@ -378,7 +376,7 @@ class RenderAccessibilityImplTest : public RenderViewTest {
         ->ClearHandledUpdates();
   }
 
-  std::vector<mojom::LocationChangesPtr>& GetLocationChanges() {
+  std::vector<blink::mojom::LocationChangesPtr>& GetLocationChanges() {
     return static_cast<RenderAccessibilityTestRenderFrame*>(frame())
         ->LocationChanges();
   }
@@ -788,7 +786,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
   EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
 
   // Make sure that a location change is sent for the fixed-positioned node.
-  std::vector<mojom::LocationChangesPtr>& changes = GetLocationChanges();
+  std::vector<blink::mojom::LocationChangesPtr>& changes = GetLocationChanges();
   EXPECT_EQ(changes.size(), 1u);
   EXPECT_EQ(changes[0]->id, expected_id);
   EXPECT_EQ(changes[0]->new_location, expected_bounds);
@@ -851,7 +849,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
   EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
 
   // Make sure that a location change is sent for the fixed-positioned node.
-  std::vector<mojom::LocationChangesPtr>& changes = GetLocationChanges();
+  std::vector<blink::mojom::LocationChangesPtr>& changes = GetLocationChanges();
   EXPECT_EQ(changes.size(), 2u);
   for (auto& change : changes) {
     auto search = expected.find(change->id);

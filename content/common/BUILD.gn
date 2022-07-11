@@ -438,7 +438,6 @@ mojom("mojo_bindings") {
     "native_types.mojom",
     "navigation_client.mojom",
     "private_aggregation_host.mojom",
-    "render_accessibility.mojom",
     "render_message_filter.mojom",
     "renderer.mojom",
     "renderer_host.mojom",

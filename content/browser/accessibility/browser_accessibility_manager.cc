@@ -21,8 +21,8 @@
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/common/render_accessibility.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -713,7 +713,7 @@ void BrowserAccessibilityManager::BeforeAccessibilityEvents() {}
 void BrowserAccessibilityManager::FinalizeAccessibilityEvents() {}
 
 void BrowserAccessibilityManager::OnLocationChanges(
-    const std::vector<mojom::LocationChangesPtr>& changes) {
+    const std::vector<blink::mojom::LocationChangesPtr>& changes) {
   for (auto& change : changes) {
     BrowserAccessibility* obj = GetFromID(change->id);
     if (!obj)
@@ -729,7 +729,7 @@ void BrowserAccessibilityManager::OnLocationChanges(
 }
 
 void BrowserAccessibilityManager::SendLocationChangeEvents(
-    const std::vector<mojom::LocationChangesPtr>& changes) {
+    const std::vector<blink::mojom::LocationChangesPtr>& changes) {
   for (auto& change : changes) {
     BrowserAccessibility* obj = GetFromID(change->id);
     if (obj)

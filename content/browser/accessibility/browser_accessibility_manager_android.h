@@ -9,7 +9,7 @@
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
-#include "content/common/render_accessibility.mojom-forward.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom-forward.h"
 
 namespace ui {
 class MotionEventAndroid;
@@ -88,7 +88,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // BrowserAccessibilityManager overrides.
   BrowserAccessibility* GetFocus() const override;
   void SendLocationChangeEvents(
-      const std::vector<mojom::LocationChangesPtr>& changes) override;
+      const std::vector<blink::mojom::LocationChangesPtr>& changes) override;
   BrowserAccessibility* RetargetForEvents(
       BrowserAccessibility* node,
       RetargetEventType type) const override;

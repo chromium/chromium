@@ -8,11 +8,12 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "content/common/render_accessibility.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
+
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace content {
@@ -34,11 +35,11 @@ class RenderFrameHostImpl;
 // * Each message contains the per-document tree_id and the message will be
 //   ignored if the tree_id doesn't match the current tree_id passed at
 //   construction time. (It will also be checked again on the UI thread).
-class RenderAccessibilityHost : public mojom::RenderAccessibilityHost {
+class RenderAccessibilityHost : public blink::mojom::RenderAccessibilityHost {
  public:
   RenderAccessibilityHost(
       base::WeakPtr<RenderFrameHostImpl> render_frame_host_impl,
-      mojo::PendingReceiver<mojom::RenderAccessibilityHost> receiver,
+      mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost> receiver,
       ui::AXTreeID tree_id);
 
   RenderAccessibilityHost(const RenderAccessibilityHost&) = delete;
@@ -46,16 +47,16 @@ class RenderAccessibilityHost : public mojom::RenderAccessibilityHost {
 
   ~RenderAccessibilityHost() override;
 
-  void HandleAXEvents(mojom::AXUpdatesAndEventsPtr updates_and_events,
+  void HandleAXEvents(blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
                       int32_t reset_token,
                       HandleAXEventsCallback callback) override;
 
   void HandleAXLocationChanges(
-      std::vector<mojom::LocationChangesPtr> changes) override;
+      std::vector<blink::mojom::LocationChangesPtr> changes) override;
 
  private:
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_impl_;
-  mojo::Receiver<mojom::RenderAccessibilityHost> receiver_;
+  mojo::Receiver<blink::mojom::RenderAccessibilityHost> receiver_;
   const ui::AXTreeID tree_id_;
 };
 

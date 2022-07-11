@@ -65,7 +65,6 @@
 #include "content/common/input/input_injector.mojom-forward.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_client.mojom.h"
-#include "content/common/render_accessibility.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
@@ -128,6 +127,7 @@
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-forward.h"
+#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-forward.h"
@@ -1821,7 +1821,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::FeatureObserver> receiver);
 
   void BindRenderAccessibilityHost(
-      mojo::PendingReceiver<mojom::RenderAccessibilityHost> receiver);
+      mojo::PendingReceiver<blink::mojom::RenderAccessibilityHost> receiver);
 
   // Prerender2:
   // Tells PrerenderHostRegistry to cancel the prerendering of the page this
@@ -2500,9 +2500,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                  JavaScriptResultAndTypeCallback callback);
 
   // Call |HandleAXEvents()| for tests.
-  void HandleAXEventsForTests(const ui::AXTreeID& tree_id,
-                              mojom::AXUpdatesAndEventsPtr updates_and_events,
-                              int32_t reset_token) {
+  void HandleAXEventsForTests(
+      const ui::AXTreeID& tree_id,
+      blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
+      int32_t reset_token) {
     HandleAXEvents(tree_id, std::move(updates_and_events), reset_token);
   }
 
@@ -2786,10 +2787,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   friend class RenderAccessibilityHost;
   void HandleAXEvents(const ui::AXTreeID& tree_id,
-                      mojom::AXUpdatesAndEventsPtr updates_and_events,
+                      blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
                       int32_t reset_token);
-  void HandleAXLocationChanges(const ui::AXTreeID& tree_id,
-                               std::vector<mojom::LocationChangesPtr> changes);
+  void HandleAXLocationChanges(
+      const ui::AXTreeID& tree_id,
+      std::vector<blink::mojom::LocationChangesPtr> changes);
 
   // mojom::DomAutomationControllerHost:
   void DomOperationResponse(const std::string& json_string) override;
@@ -2963,7 +2965,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       ax::mojom::Event event_to_fire,
       base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                               int hit_node_id)> opt_callback,
-      mojom::HitTestResponsePtr hit_test_response);
+      blink::mojom::HitTestResponsePtr hit_test_response);
 
   // Callback that will be called as a response to the call to the method
   // content::mojom::RenderAccessibility::SnapshotAccessibilityTree(). The
@@ -3850,7 +3852,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // this binding is done on-demand (in UpdateAccessibilityMode()) and will only
   // be connected (i.e. bound) to the other endpoint in the renderer while there
   // is an accessibility mode that includes |kWebContents|.
-  mojo::AssociatedRemote<mojom::RenderAccessibility> render_accessibility_;
+  mojo::AssociatedRemote<blink::mojom::RenderAccessibility>
+      render_accessibility_;
 
   base::SequenceBound<RenderAccessibilityHost> render_accessibility_host_;
 
