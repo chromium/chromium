@@ -165,9 +165,7 @@ TEST_F(WebCryptoAesCbcTest, KnownAnswerEncryptDecrypt) {
 TEST_F(WebCryptoAesCbcTest, GenerateKeyIsRandom) {
   // Check key generation for each allowed key length.
   std::vector<blink::WebCryptoAlgorithm> algorithm;
-  const uint16_t kKeyLength[] = {128, 256};
-  for (size_t key_length_i = 0; key_length_i < std::size(kKeyLength);
-       ++key_length_i) {
+  for (uint16_t key_length : {128, 256}) {
     blink::WebCryptoKey key;
 
     std::vector<std::vector<uint8_t>> keys;
@@ -176,9 +174,8 @@ TEST_F(WebCryptoAesCbcTest, GenerateKeyIsRandom) {
     // Generate a small sample of keys.
     for (int j = 0; j < 16; ++j) {
       ASSERT_EQ(Status::Success(),
-                GenerateSecretKey(
-                    CreateAesCbcKeyGenAlgorithm(kKeyLength[key_length_i]), true,
-                    blink::kWebCryptoKeyUsageEncrypt, &key));
+                GenerateSecretKey(CreateAesCbcKeyGenAlgorithm(key_length), true,
+                                  blink::kWebCryptoKeyUsageEncrypt, &key));
       EXPECT_TRUE(key.Handle());
       EXPECT_EQ(blink::kWebCryptoKeyTypeSecret, key.GetType());
       ASSERT_EQ(Status::Success(),
@@ -194,12 +191,11 @@ TEST_F(WebCryptoAesCbcTest, GenerateKeyIsRandom) {
 }
 
 TEST_F(WebCryptoAesCbcTest, GenerateKeyBadLength) {
-  const uint16_t kKeyLen[] = {0, 127, 257};
   blink::WebCryptoKey key;
-  for (size_t i = 0; i < std::size(kKeyLen); ++i) {
-    SCOPED_TRACE(i);
+  for (uint16_t key_length : {0, 127, 257}) {
+    SCOPED_TRACE(key_length);
     EXPECT_EQ(Status::ErrorGenerateAesKeyLength(),
-              GenerateSecretKey(CreateAesCbcKeyGenAlgorithm(kKeyLen[i]), true,
+              GenerateSecretKey(CreateAesCbcKeyGenAlgorithm(key_length), true,
                                 blink::kWebCryptoKeyUsageEncrypt, &key));
   }
 }
@@ -423,7 +419,7 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyBadUsage_Raw) {
   const blink::WebCryptoAlgorithm algorithm =
       CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc);
 
-  blink::WebCryptoKeyUsageMask bad_usages[] = {
+  const blink::WebCryptoKeyUsageMask kBadUsages[] = {
       blink::kWebCryptoKeyUsageSign,
       blink::kWebCryptoKeyUsageSign | blink::kWebCryptoKeyUsageDecrypt,
       blink::kWebCryptoKeyUsageDeriveBits,
@@ -432,32 +428,33 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyBadUsage_Raw) {
 
   std::vector<uint8_t> key_bytes(16);
 
-  for (size_t i = 0; i < std::size(bad_usages); ++i) {
-    SCOPED_TRACE(i);
+  for (auto usage : kBadUsages) {
+    SCOPED_TRACE(usage);
 
     blink::WebCryptoKey key;
     ASSERT_EQ(Status::ErrorCreateKeyBadUsages(),
               ImportKey(blink::kWebCryptoKeyFormatRaw, key_bytes, algorithm,
-                        true, bad_usages[i], &key));
+                        true, usage, &key));
   }
 }
 
 // Generate an AES-CBC key with invalid usages. AES-CBC supports:
 //   'encrypt', 'decrypt', 'wrapKey', 'unwrapKey'
 TEST_F(WebCryptoAesCbcTest, GenerateKeyBadUsages) {
-  blink::WebCryptoKeyUsageMask bad_usages[] = {
-      blink::kWebCryptoKeyUsageSign, blink::kWebCryptoKeyUsageVerify,
+  const blink::WebCryptoKeyUsageMask kBadUsages[] = {
+      blink::kWebCryptoKeyUsageSign,
+      blink::kWebCryptoKeyUsageVerify,
       blink::kWebCryptoKeyUsageDecrypt | blink::kWebCryptoKeyUsageVerify,
   };
 
-  for (size_t i = 0; i < std::size(bad_usages); ++i) {
-    SCOPED_TRACE(i);
+  for (auto usage : kBadUsages) {
+    SCOPED_TRACE(usage);
 
     blink::WebCryptoKey key;
 
-    ASSERT_EQ(Status::ErrorCreateKeyBadUsages(),
-              GenerateSecretKey(CreateAesCbcKeyGenAlgorithm(128), true,
-                                bad_usages[i], &key));
+    ASSERT_EQ(
+        Status::ErrorCreateKeyBadUsages(),
+        GenerateSecretKey(CreateAesCbcKeyGenAlgorithm(128), true, usage, &key));
   }
 }
 
