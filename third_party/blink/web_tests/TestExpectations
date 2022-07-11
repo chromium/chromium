@@ -6147,8 +6147,6 @@ crbug.com/1196027 http/tests/inspector-protocol/network/request-interception.js 
 crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-frame-id.js [ Failure Pass Timeout ]
 crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-patterns.js [ Failure Pass Timeout ]
 crbug.com/1228246 http/tests/inspector-protocol/network/request-response-interception-disable-between.js [ Failure Pass Timeout ]
-crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-lax-subresource-context-downgrade.js [ Failure Pass Timeout ]
-crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js [ Failure Pass Timeout ]
 crbug.com/1228246 http/tests/inspector-protocol/network/webbundle.js [ Failure Pass Timeout ]
 
 # linux_layout_tests_layout_ng_disabled needs its own baselines.
@@ -6164,8 +6162,6 @@ crbug.com/1231699 [ Linux ] virtual/text-antialias/color-emoji.html [ Failure Pa
 crbug.com/1228261 http/tests/inspector-protocol/browser-grant-permissions.js [ Failure Pass Timeout ]
 crbug.com/1228261 http/tests/inspector-protocol/network-fetch-content-with-error-status-code.js [ Failure Pass Timeout ]
 crbug.com/1228261 http/tests/inspector-protocol/fetch/request-paused-network-id-cors.js [ Failure Pass Timeout ]
-crbug.com/1228261 http/tests/inspector-protocol/service-worker/network-extrainfo-subresource.js [ Failure Pass Timeout ]
-crbug.com/1228261 http/tests/inspector-protocol/service-worker/network-get-request-body-blob.js [ Failure Pass Timeout ]
 
 # Flakes that might be caused or aggravated by PlzServiceWorker
 crbug.com/996511 external/wpt/service-workers/cache-storage/window/cache-abort.https.html [ Crash Failure Pass ]

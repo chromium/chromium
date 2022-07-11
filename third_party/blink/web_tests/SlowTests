@@ -802,3 +802,8 @@ crbug.com/1314927 external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.t
 crbug.com/1314927 external/wpt/IndexedDB/idbobjectstore_batchGetAll_largeValue.tentative.any.html [ Slow ]
 
 crbug.com/1327869 css3/calc/simple-calcs-prefixed.html [ Slow ]
+
+crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js [ Slow ]
+crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-lax-subresource-context-downgrade.js [ Slow ]
+crbug.com/1228246 http/tests/inspector-protocol/service-worker/network-get-request-body-blob.js [ Slow ]
+crbug.com/1228246 http/tests/inspector-protocol/service-worker/network-extrainfo-subresource.js [ Slow ]
