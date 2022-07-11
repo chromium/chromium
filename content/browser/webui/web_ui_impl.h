@@ -142,11 +142,17 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // The URL schemes that can be requested by this document.
   std::vector<std::string> requestable_schemes_;
 
-  // RenderFrameHost associated with |this|.
-  raw_ptr<RenderFrameHostImpl> frame_host_;
-
-  // Non-owning pointer to the WebContentsImpl this WebUI is associated with.
-  raw_ptr<WebContentsImpl> web_contents_;
+  // Non-owning pointer to the WebContents and RenderFrameHostImpl this WebUI is
+  // associated with. It is generally safe, because |web_content_| indirectly
+  // owns |frame_host_|, which owns |this|.
+  //
+  // Note: During the destructor, releasing |controller_| calls content/
+  // embedder code. This might delete both synchronously.
+  // This lead to one UAF. See https://crbug.com/1308391
+  // See regression test:
+  // `WebUIImplBrowserTest::SynchronousWebContentDeletionInUnload`
+  raw_ptr<WebContents, DisableDanglingPtrDetection> web_contents_;
+  raw_ptr<RenderFrameHostImpl, DisableDanglingPtrDetection> frame_host_;
 
   // The WebUIMessageHandlers we own.
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;

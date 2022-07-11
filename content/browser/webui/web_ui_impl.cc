@@ -65,8 +65,8 @@ std::u16string WebUI::GetJavascriptCall(
 WebUIImpl::WebUIImpl(WebContentsImpl* contents, RenderFrameHostImpl* frame_host)
     : bindings_(BINDINGS_POLICY_WEB_UI),
       requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
-      frame_host_(frame_host),
       web_contents_(contents),
+      frame_host_(frame_host),
       web_contents_observer_(new WebUIMainFrameObserver(this, contents)) {
   DCHECK(contents);
 
@@ -80,7 +80,11 @@ WebUIImpl::WebUIImpl(WebContentsImpl* contents, RenderFrameHostImpl* frame_host)
 WebUIImpl::~WebUIImpl() {
   // Delete the controller first, since it may also be keeping a pointer to some
   // of the handlers and can call them at destruction.
+  // Note: Calling this might delete |web_content_| and |frame_host_|. The two
+  // pointers are now potentially dangling.
+  // See https://crbug.com/1308391
   controller_.reset();
+
   remote_.reset();
   receiver_.reset();
 }
