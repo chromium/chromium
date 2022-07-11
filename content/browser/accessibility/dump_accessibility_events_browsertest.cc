@@ -1170,11 +1170,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("select-selected-add-remove.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsTextAttributeChanged) {
-  RunEventTest(FILE_PATH_LITERAL("text-attribute-changed.html"));
-}
-
 // Test is flaky on Linux. See crbug.com/990847 for more details.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DeleteSubtree DISABLED_DeleteSubtree

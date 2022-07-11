@@ -1,2 +1,0 @@
-IA2_EVENT_TEXT_ATTRIBUTE_CHANGED on <select#selectElement.box horizTranslate> role=ROLE_SYSTEM_COMBOBOX value="All" COLLAPSED,FOCUSABLE,HASPOPUP SetSize=3
-IA2_EVENT_TEXT_ATTRIBUTE_CHANGED on <select#selectElement.box horizTranslate> role=ROLE_SYSTEM_COMBOBOX value="All" COLLAPSED,FOCUSABLE,HASPOPUP SetSize=3
