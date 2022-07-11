@@ -29,5 +29,15 @@ public final class WebAuthnCredentialDetails {
      */
     public byte[] mCredentialId;
 
+    /**
+     * Whether the credential is discoverable.
+     */
+    public boolean mIsDiscoverable;
+
+    /**
+     * Whether the credential is enabled for Secure Payment Confirmation.
+     */
+    public boolean mIsPayment;
+
     public WebAuthnCredentialDetails() {}
 }
