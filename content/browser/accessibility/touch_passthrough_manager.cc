@@ -154,8 +154,11 @@ void TouchPassthroughManager::CancelTouchesAndDestroyTouchDriver() {
 
   is_touch_down_ = false;
   touch_driver_.reset();
-  gesture_controller_.reset();
+  // `gesture_target_` is a raw pointer on a `unique_ptr` owned by
+  // `gesture_controller_`. Hence we need to clear this raw_ptr first before
+  // releasing `gesture_controller_`.
   gesture_target_ = nullptr;
+  gesture_controller_.reset();
 }
 
 void TouchPassthroughManager::SimulatePress(const gfx::Point& point,

@@ -91,7 +91,7 @@ class CONTENT_EXPORT TouchPassthroughManager {
 
   // Classes needed to generate touch events.
   std::unique_ptr<SyntheticGestureController> gesture_controller_;
-  raw_ptr<SyntheticGestureTarget, DanglingUntriaged> gesture_target_ = nullptr;
+  raw_ptr<SyntheticGestureTarget> gesture_target_ = nullptr;
   std::unique_ptr<SyntheticTouchDriver> touch_driver_;
 
   // Keeps track of whether or not touch is down, regardless of whether or
