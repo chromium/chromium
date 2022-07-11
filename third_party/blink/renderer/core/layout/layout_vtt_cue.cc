@@ -255,6 +255,10 @@ void SnapToLinesLayouter::UpdateLayout() {
       // out of the viewport. Otherwise we'd need to mutate the layout
       // tree during layout.
       cue_box_.SetLogicalTop(cue_box_.ContainingBlock()->LogicalHeight() + 1);
+      // The above code doesn't work well if the container's writing-mode and
+      // the cue's writing-mode is different. SetLogicalTop() is based on the
+      // cue's writing-mode, and LogicalHeight() is based on the container's
+      // writing-mode.
       break;
     }
 

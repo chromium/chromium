@@ -15,6 +15,8 @@ track.addCue(new VTTCue(1, 60, '<ruby>渋谷ストリーム<rt>しぶやすと�
 track.addCue(new VTTCue(1, 60, '<ruby>六本木<rt>ろっぽんぎ</rt></ruby>ヒルズ'));
 let cue3 = new VTTCue(1, 60, '👅<ruby>臥薪嘗胆<rt>がしんしょうたん</rt></ruby>');
 cue3.vertical = 'rl';
+cue3.align = "start";
+cue3.size = 70;
 track.addCue(cue3);
 if (window.testRunner)
   v.onseeked = () => { testRunner.notifyDone(); };
