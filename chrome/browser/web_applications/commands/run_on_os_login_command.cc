@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/barrier_callback.h"
 #include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -55,13 +54,13 @@ void UpdateRunOnOsLoginOsIntegration(
   }
 
   if (effective_mode == RunOnOsLoginMode::kNotRun) {
-    OsHooksOptions os_hooks;
-    os_hooks[OsHookType::kRunOnOsLogin] = true;
+    web_app::OsHooksOptions os_hooks;
+    os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
     os_integration_manager->UninstallOsHooks(
         app_id, os_hooks, base::BindOnce(&MaybeCallTestingCallback));
   } else {
-    InstallOsHooksOptions install_options;
-    install_options.os_hooks[OsHookType::kRunOnOsLogin] = true;
+    web_app::InstallOsHooksOptions install_options;
+    install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
     os_integration_manager->InstallOsHooks(
         app_id, base::BindOnce(&MaybeCallTestingCallback), nullptr,
         std::move(install_options));
@@ -128,7 +127,7 @@ void SyncRunOnOsLoginOsIntegrationState(
 }
 
 // static
-std::unique_ptr<RunOnOsLoginCommand> RunOnOsLoginCommand::CreateForPersistMode(
+std::unique_ptr<RunOnOsLoginCommand> RunOnOsLoginCommand::CreateForSetLoginMode(
     WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     WebAppSyncBridge* sync_bridge,
@@ -141,11 +140,12 @@ std::unique_ptr<RunOnOsLoginCommand> RunOnOsLoginCommand::CreateForPersistMode(
 
   return base::WrapUnique(new RunOnOsLoginCommand(
       app_id, registrar, os_integration_manager, sync_bridge, login_mode,
-      RunOnOsLoginAction::kPersistMode, std::move(callback)));
+      RunOnOsLoginAction::kSetModeInDBAndOS, std::move(callback)));
 }
 
 // static
-std::unique_ptr<RunOnOsLoginCommand> RunOnOsLoginCommand::CreateForSyncMode(
+std::unique_ptr<RunOnOsLoginCommand>
+RunOnOsLoginCommand::CreateForSyncLoginMode(
     WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
     const AppId& app_id,
@@ -155,7 +155,7 @@ std::unique_ptr<RunOnOsLoginCommand> RunOnOsLoginCommand::CreateForSyncMode(
 
   return base::WrapUnique(new RunOnOsLoginCommand(
       app_id, registrar, os_integration_manager, /*sync_bridge=*/nullptr,
-      /*login_mode=*/absl::nullopt, RunOnOsLoginAction::kSyncModeToSystem,
+      /*login_mode=*/absl::nullopt, RunOnOsLoginAction::kSyncModeFromDBToOS,
       std::move(callback)));
 }
 
@@ -165,7 +165,7 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
     OsIntegrationManager* os_integration_manager,
     WebAppSyncBridge* sync_bridge,
     absl::optional<RunOnOsLoginMode> login_mode,
-    RunOnOsLoginAction persist_or_sync_mode,
+    RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)
     : WebAppCommand(WebAppCommandLock::CreateForAppLock({app_id})),
       app_id_(app_id),
@@ -173,16 +173,22 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
       os_integration_manager_(os_integration_manager),
       sync_bridge_(sync_bridge),
       login_mode_(login_mode),
-      persist_or_sync_mode_(persist_or_sync_mode),
+      set_or_sync_mode_(set_or_sync_mode),
       callback_(std::move(callback)) {}
 
 RunOnOsLoginCommand::~RunOnOsLoginCommand() = default;
 
 void RunOnOsLoginCommand::Start() {
-  if (persist_or_sync_mode_ == RunOnOsLoginAction::kPersistMode) {
-    PersistRunOnOsLoginMode();
-  } else {
-    SyncRunOnOsLoginMode();
+  switch (set_or_sync_mode_) {
+    case RunOnOsLoginAction::kSetModeInDBAndOS:
+      SetRunOnOsLoginMode();
+      break;
+    case RunOnOsLoginAction::kSyncModeFromDBToOS:
+      SyncRunOnOsLoginMode();
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -195,10 +201,16 @@ base::Value RunOnOsLoginCommand::ToDebugValue() const {
   base::Value::Dict rool_info;
   rool_info.Set("RunOnOsLoginCommand ID:", id());
   rool_info.Set("App Id: ", app_id_);
-  if (persist_or_sync_mode_ == RunOnOsLoginAction::kPersistMode) {
-    rool_info.Set("Type of Action: ", "Persisting value");
-  } else {
-    rool_info.Set("Type of Action: ", "Syncing value");
+  switch (set_or_sync_mode_) {
+    case RunOnOsLoginAction::kSetModeInDBAndOS:
+      rool_info.Set("Type of Action: ", "Setting value in DB & OS");
+      break;
+    case RunOnOsLoginAction::kSyncModeFromDBToOS:
+      rool_info.Set("Type of Action: ", "Syncing value in OS from DB");
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
   if (!stop_reason_.empty())
     rool_info.Set("Command Stop Reason: ", stop_reason_);
@@ -217,9 +229,6 @@ void RunOnOsLoginCommand::Abort(
     case RunOnOsLoginCommandCompletionState::kNotAllowedByPolicy:
       stop_reason_ = "Setting of run on OS login mode not allowed by policy";
       break;
-    case RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched:
-      stop_reason_ = "Run on OS Login mode already matches value in DB";
-      break;
     case RunOnOsLoginCommandCompletionState::kAppNotLocallyInstalled:
       stop_reason_ = "App is not locally installed";
       break;
@@ -233,7 +242,7 @@ void RunOnOsLoginCommand::Abort(
                                   std::move(callback_));
 }
 
-void RunOnOsLoginCommand::PersistRunOnOsLoginMode() {
+void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
   if (!registrar_->IsLocallyInstalled(app_id_)) {
     Abort(RunOnOsLoginCommandCompletionState::kAppNotLocallyInstalled);
     return;
@@ -249,7 +258,10 @@ void RunOnOsLoginCommand::PersistRunOnOsLoginMode() {
   }
 
   if (login_mode_.value() == current_mode.value) {
-    Abort(RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
+    RecordCompletionState(
+        RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
+    SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
+                                    std::move(callback_));
     return;
   }
 
@@ -275,7 +287,10 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration() {
       registrar_->GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
 
   if (os_integration_state && login_mode_.value() == *os_integration_state) {
-    Abort(RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
+    RecordCompletionState(
+        RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
+    SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
+                                    std::move(callback_));
     return;
   }
 

@@ -8,7 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -182,6 +185,11 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+void WebAppPolicyManager::OnSyncCommandsComplete(
+    std::vector<std::string> app_ids) {
+  app_registrar_->NotifyWebAppSettingsPolicyChanged();
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const std::set<ash::SystemWebAppType>&
 WebAppPolicyManager::GetDisabledSystemWebApps() const {
@@ -323,12 +331,18 @@ void WebAppPolicyManager::RefreshPolicySettings() {
 }
 
 void WebAppPolicyManager::ApplyPolicySettings() {
-  for (const AppId& app_id : app_registrar_->GetAppIds()) {
-    SyncRunOnOsLoginOsIntegrationState(app_registrar_, os_integration_manager_,
-                                       app_id);
+  std::vector<AppId> app_ids_to_sync = app_registrar_->GetAppIds();
+  auto callback_for_sync_commands = base::BarrierCallback<std::string>(
+      app_ids_to_sync.size(),
+      base::BindOnce(&WebAppPolicyManager::OnSyncCommandsComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  for (const AppId& app_id : app_ids_to_sync) {
+    provider->command_manager().ScheduleCommand(
+        RunOnOsLoginCommand::CreateForSyncLoginMode(
+            app_registrar_, os_integration_manager_, app_id,
+            base::BindOnce(callback_for_sync_commands, app_id)));
   }
-
-  app_registrar_->NotifyWebAppSettingsPolicyChanged();
 }
 
 ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(

@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_POLICY_WEB_APP_POLICY_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_POLICY_WEB_APP_POLICY_MANAGER_H_
 
+#include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -149,6 +151,8 @@ class WebAppPolicyManager {
   void ObserveDisabledSystemFeaturesPolicy();
 
   void OnDisableModePolicyChanged();
+
+  void OnSyncCommandsComplete(std::vector<std::string> app_ids);
 
   // Populates ids lists of web apps disabled by SystemFeaturesDisableList
   // policy.

@@ -65,6 +65,8 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -844,9 +846,6 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicyRunWindowed(
 
 void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(Site site) {
   BeforeStateChangeAction(__FUNCTION__);
-  base::RunLoop run_loop;
-  web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
-      run_loop.QuitClosure());
   GURL url = GetAppStartURL(site);
   {
     ListPrefUpdate updateList(profile()->GetPrefs(), prefs::kWebAppSettings);
@@ -854,7 +853,6 @@ void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(Site site) {
       return item.FindKey(kManifestId)->GetString() == url.spec();
     });
   }
-  run_loop.Run();
   AfterStateChangeAction();
 }
 
@@ -2061,6 +2059,7 @@ void WebAppIntegrationTestDriver::BeforeStateChangeAction(
 void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   DCHECK(executing_action_level_ > 0);
   --executing_action_level_;
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 #if BUILDFLAG(IS_MAC)
   for (auto* profile : delegate_->GetAllProfiles()) {
     std::vector<AppId> app_ids = provider()->registrar().GetAppIds();
@@ -2084,6 +2083,7 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
 
 void WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
   ++executing_action_level_;
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   LOG(INFO) << "BeforeStateCheckAction: "
             << std::string(executing_action_level_, ' ') << function;
   DCHECK(after_state_change_action_state_);
@@ -2315,9 +2315,6 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
 
 void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
                                                           const char* policy) {
-  base::RunLoop run_loop;
-  web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
-      run_loop.QuitClosure());
   GURL url = GetAppStartURL(site);
   {
     ListPrefUpdate updateList(profile()->GetPrefs(), prefs::kWebAppSettings);
@@ -2331,7 +2328,6 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
 
     updateList.Get()->Append(std::move(dictItem));
   }
-  run_loop.Run();
 }
 
 void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
@@ -2568,13 +2564,8 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
-  base::RunLoop run_loop;
-  web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
-      run_loop.QuitClosure());
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetRunOnOsLoginMode(app_id, login_mode);
-  run_loop.Run();
 #endif
 }
 

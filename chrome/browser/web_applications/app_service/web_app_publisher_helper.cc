@@ -56,6 +56,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -1087,10 +1088,12 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
 void WebAppPublisherHelper::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
-  PersistRunOnOsLoginUserChoice(
-      &provider_->registrar(), &provider_->os_integration_manager(),
-      &provider_->sync_bridge(), app_id,
-      ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode));
+  provider_->command_manager().ScheduleCommand(
+      RunOnOsLoginCommand::CreateForSetLoginMode(
+          &provider_->registrar(), &provider_->os_integration_manager(),
+          &provider_->sync_bridge(), app_id,
+          ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
+          base::DoNothing()));
 }
 
 RunOnOsLoginMode WebAppPublisherHelper::ConvertOsLoginModeToWebAppConstants(
