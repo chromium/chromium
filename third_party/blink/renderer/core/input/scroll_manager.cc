@@ -751,6 +751,12 @@ WebInputEventResult ScrollManager::HandleGestureScrollEnd(
 
   GetPage()->GetBrowserControls().ScrollEnd();
 
+  // It's possible to get here due to a deferred scroll end having its waiting
+  // animation "completed" by the document being stopped. In that case we're
+  // about to be destroyed so early return.
+  if (!frame_->GetDocument()->IsActive())
+    return WebInputEventResult::kNotHandled;
+
   Node* node = scroll_gesture_handling_node_;
 
   if (node && node->GetLayoutObject()) {

@@ -462,8 +462,14 @@ void LocalFrameView::Dispose() {
   // We need to clear the RootFrameViewport's animator since it gets called
   // from non-GC'd objects and RootFrameViewport will still have a pointer to
   // this class.
-  if (viewport_scrollable_area_)
+  if (viewport_scrollable_area_) {
+    DCHECK(frame_->IsMainFrame());
+    DCHECK(frame_->GetPage());
+
     viewport_scrollable_area_->ClearScrollableArea();
+    viewport_scrollable_area_.Clear();
+    frame_->GetPage()->GlobalRootScrollerController().Reset();
+  }
 
   // If we have scheduled plugins to be updated, cancel it. They will still be
   // notified before they are destroyed.
@@ -1936,23 +1942,48 @@ void LocalFrameView::DidAttachDocument() {
   Page* page = frame_->GetPage();
   DCHECK(page);
 
-  DCHECK(frame_->GetDocument());
+  VisualViewport& visual_viewport = page->GetVisualViewport();
+
+  if (frame_->IsMainFrame() && visual_viewport.IsActiveViewport()) {
+    // If this frame is provisional it's not yet the Page's main frame. In that
+    // case avoid creating a root scroller as it has Page-global effects; it
+    // will be initialized when the frame becomes the Page's main frame.
+    if (!frame_->IsProvisional())
+      InitializeRootScroller();
+  }
 
   if (frame_->IsMainFrame()) {
-    ScrollableArea& visual_viewport = frame_->GetPage()->GetVisualViewport();
-    ScrollableArea* layout_viewport = LayoutViewport();
-    DCHECK(layout_viewport);
-
-    auto* root_frame_viewport = MakeGarbageCollected<RootFrameViewport>(
-        visual_viewport, *layout_viewport);
-    viewport_scrollable_area_ = root_frame_viewport;
-
-    page->GlobalRootScrollerController().InitializeViewportScrollCallback(
-        *root_frame_viewport, *frame_->GetDocument());
-
     // Allow for commits to be deferred because this is a new document.
     have_deferred_commits_ = false;
   }
+}
+
+void LocalFrameView::InitializeRootScroller() {
+  Page* page = frame_->GetPage();
+  DCHECK(page);
+
+  DCHECK_EQ(frame_, page->MainFrame());
+  DCHECK(frame_->GetDocument());
+  DCHECK(frame_->GetDocument()->IsActive());
+
+  VisualViewport& visual_viewport = frame_->GetPage()->GetVisualViewport();
+  DCHECK(visual_viewport.IsActiveViewport());
+
+  ScrollableArea* layout_viewport = LayoutViewport();
+  DCHECK(layout_viewport);
+
+  // This method may be called multiple times during loading. If the root
+  // scroller is already initialized this call will be a no-op.
+  if (viewport_scrollable_area_)
+    return;
+
+  auto* root_frame_viewport = MakeGarbageCollected<RootFrameViewport>(
+      visual_viewport, *layout_viewport);
+  viewport_scrollable_area_ = root_frame_viewport;
+
+  DCHECK(frame_->GetDocument());
+  page->GlobalRootScrollerController().InitializeViewportScrollCallback(
+      *root_frame_viewport, *frame_->GetDocument());
 }
 
 Color LocalFrameView::DocumentBackgroundColor() {

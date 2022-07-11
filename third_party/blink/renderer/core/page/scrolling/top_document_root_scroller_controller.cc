@@ -92,6 +92,11 @@ gfx::Size TopDocumentRootScrollerController::RootScrollerVisibleArea() const {
                    layout_size.height() + browser_controls_adjustment);
 }
 
+void TopDocumentRootScrollerController::Reset() {
+  global_root_scroller_.Clear();
+  viewport_apply_scroll_.Clear();
+}
+
 Node* TopDocumentRootScrollerController::FindGlobalRootScroller() {
   if (!TopDocument())
     return nullptr;

@@ -66,6 +66,11 @@ class CORE_EXPORT TopDocumentRootScrollerController
   // browser controls adjustment and using the root LocalFrameView.
   gfx::Size RootScrollerVisibleArea() const;
 
+  // Called when a document is shutdown to releases the global_root_scroller_
+  // and viewport_apply_scroll_ members, without any side effects (i.e. doesn't
+  // call DidChangeGlobalRootScroller).
+  void Reset();
+
  private:
   // Calculates the Node that should be the global root scroller. On a simple
   // page, this will be the root frame's effective root scroller. If the
