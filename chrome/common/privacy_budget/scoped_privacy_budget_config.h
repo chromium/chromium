@@ -61,6 +61,7 @@ class ScopedPrivacyBudgetConfig {
     IdentifiableSurfaceBlocks blocks;
     std::vector<double> block_weights;
     std::vector<blink::IdentifiableSurface::Type> allowed_random_types;
+    std::vector<std::string> actively_sampled_fonts;
   };
 
   enum Presets {

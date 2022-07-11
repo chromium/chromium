@@ -39,6 +39,7 @@ bool DecodeIdentifiabilityType(const base::StringPiece, unsigned int*);
 bool DecodeIdentifiabilityType(const base::StringPiece, double*);
 bool DecodeIdentifiabilityType(const base::StringPiece,
                                std::vector<blink::IdentifiableSurface>*);
+bool DecodeIdentifiabilityType(const base::StringPiece, std::string*);
 
 // V is a std::pair<P,R> where P and R are types known to
 // DecodeIdentifiabilityType().
@@ -72,6 +73,7 @@ std::string EncodeIdentifiabilityType(const std::pair<T, U>& v) {
 }
 std::string EncodeIdentifiabilityType(
     const std::vector<blink::IdentifiableSurface>& value);
+std::string EncodeIdentifiabilityType(const std::string& value);
 
 template <typename T>
 struct NoOpFilter {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/privacy_budget/active_sampling.h"
 
+#include "base/barrier_closure.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
@@ -42,12 +43,14 @@ class PrivacyBudgetActiveSamplingTest : public ::testing::Test {
 
 TEST_F(PrivacyBudgetActiveSamplingTest, ActivelySampledSurfaces) {
   test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.actively_sampled_fonts = {"Arial", "Helvetica"};
   test::ScopedPrivacyBudgetConfig config(parameters);
   ScopedIdentifiabilityStudySettings scoped_settings;
 
   base::RunLoop run_loop;
   ukm_recorder().SetOnAddEntryCallback(
-      ukm::builders::Identifiability::kEntryName, run_loop.QuitClosure());
+      ukm::builders::Identifiability::kEntryName,
+      BarrierClosure(2u, run_loop.QuitClosure()));
   ActivelySampleIdentifiableSurfaces();
 
   // Wait for the metrics to come down the pipe.
@@ -63,5 +66,9 @@ TEST_F(PrivacyBudgetActiveSamplingTest, ActivelySampledSurfaces) {
     }
   }
   EXPECT_THAT(reported_surface_keys,
-              testing::IsSupersetOf({18009598079355128088u}));
+              testing::IsSupersetOf({
+                  18009598079355128088u,  // model
+                  9223784233214641190u,   // Arial
+                  10735872651981970214u,  // Helvetica
+              }));
 }

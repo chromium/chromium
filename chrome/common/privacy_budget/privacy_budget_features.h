@@ -333,6 +333,17 @@ constexpr double kMaxProbabilityPerSurface = 0.5;
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyReidSurfaceBlocks;
 
+// List of font families which will be actively sampled.
+//
+// Parameter name: "ActivelySampledFonts"
+// Parameter type: Comma separated list of font families.
+//
+// The Identifiability Study code will actively sample whether these font
+// families are available or not. Note that whether they will actually be
+// reported or not depends on the other parameters.
+extern const base::FeatureParam<std::string>
+    kIdentifiabilityStudyActivelySampledFonts;
+
 }  // namespace features
 
 #endif  // CHROME_COMMON_PRIVACY_BUDGET_PRIVACY_BUDGET_FEATURES_H_

@@ -254,6 +254,12 @@ class IdentifiableSurface {
     // correspond to any Web APIs specifically.
     kReidScoreEstimator = 37,
 
+    // Type for binary surfaces telling whether a font family is available or
+    // not in the system. The key of the surface is the name of the font family,
+    // the value is a boolean. These surfaces are currently only actively
+    // sampled in the browser.
+    kFontFamilyAvailable = 38,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };

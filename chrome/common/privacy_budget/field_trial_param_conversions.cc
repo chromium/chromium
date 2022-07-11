@@ -53,6 +53,11 @@ bool DecodeIdentifiabilityType(const base::StringPiece s,
   return !out->empty();
 }
 
+bool DecodeIdentifiabilityType(const base::StringPiece s, std::string* out) {
+  *out = std::string(s);
+  return true;
+}
+
 std::string EncodeIdentifiabilityType(const blink::IdentifiableSurface& s) {
   return base::NumberToString(s.ToUkmMetricHash());
 }
@@ -74,6 +79,10 @@ std::string EncodeIdentifiabilityType(const unsigned int& v) {
 
 std::string EncodeIdentifiabilityType(const double& value) {
   return base::NumberToString(value);
+}
+
+std::string EncodeIdentifiabilityType(const std::string& value) {
+  return value;
 }
 
 std::string EncodeIdentifiabilityType(
