@@ -7173,3 +7173,4 @@ crbug.com/1180274 virtual/partitioned-cookies/http/tests/inspector-protocol/netw
 crbug.com/1343262 [ Win11 ] compositing/overlap-blending/reflection-opacity-huge.html [ Failure ]
 crbug.com/1343262 [ Win11 ] compositing/reflections/nested-reflection-opacity.html [ Failure ]
 crbug.com/1343262 [ Win11 ] fast/reflections/transparent-reflected-sublayers.html [ Failure ]
+crbug.com/1343270 [ Win11 ] media/controls/video-controls-with-cast-rendering.html [ Failure ]
