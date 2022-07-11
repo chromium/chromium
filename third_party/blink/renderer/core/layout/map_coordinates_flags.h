@@ -26,15 +26,6 @@ enum MapCoordinatesMode {
   // If the local root frame has a remote frame parent, apply the transformation
   // from the local root frame to the remote main frame.
   kApplyRemoteMainFrameTransform = 1 << 6,
-
-  // Whether to use GeometryMapper to optimize for speed. This can only be
-  // used it the callsites are in a lifecycle state >= kPrePaintClean.
-  // This flag is not implemented in all methods that take a MapCoordinatesMode
-  // parameter;  see particular methods for more details.
-  kUseGeometryMapperMode = 1 << 7,
-
-  // Ignore the scroll offset of the mapped-to ancestor.
-  kIgnoreScrollOffsetOfAncestor = 1 << 8,
 };
 typedef unsigned MapCoordinatesFlags;
 

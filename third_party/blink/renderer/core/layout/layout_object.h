@@ -293,7 +293,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                            ContainingBlockFixedLayoutObjectInBody);
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest,
                            ContainingBlockAbsoluteLayoutObjectInBody);
-  FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, LocalToAncestorRectFastPath);
   FRIEND_TEST_ALL_PREFIXES(
       LayoutObjectTest,
       ContainingBlockAbsoluteLayoutObjectShouldNotBeNonStaticallyPositionedInlineAncestor);
@@ -3796,11 +3795,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
  private:
-  bool LocalToAncestorRectFastPath(const PhysicalRect& rect,
-                                   const LayoutBoxModelObject* ancestor,
-                                   MapCoordinatesFlags mode,
-                                   PhysicalRect& result) const;
-
   gfx::QuadF LocalToAncestorQuadInternal(const gfx::QuadF&,
                                          const LayoutBoxModelObject* ancestor,
                                          MapCoordinatesFlags = 0) const;

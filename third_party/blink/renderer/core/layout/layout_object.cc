@@ -3117,21 +3117,8 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   if (!container)
     return;
 
-  bool should_ignore_scroll_offset = false;
-  if (mode & kIgnoreScrollOffset) {
-    should_ignore_scroll_offset = true;
-  } else if (mode & kIgnoreScrollOffsetOfAncestor) {
-    if (container == ancestor) {
-      should_ignore_scroll_offset = true;
-    } else if (!ancestor && container == View() &&
-               (!(mode & kTraverseDocumentBoundaries) ||
-                !GetFrame()->OwnerLayoutObject())) {
-      should_ignore_scroll_offset = true;
-    }
-  }
-
   PhysicalOffset container_offset =
-      OffsetFromContainer(container, should_ignore_scroll_offset);
+      OffsetFromContainer(container, mode & kIgnoreScrollOffset);
 
   // TODO(smcgruer): This is inefficient. Instead we should avoid including
   // offsetForInFlowPosition in offsetFromContainer when ignoring sticky.
@@ -3322,63 +3309,11 @@ gfx::PointF LayoutObject::LocalToAncestorPoint(
   return transform_state.LastPlanarPoint();
 }
 
-bool LayoutObject::LocalToAncestorRectFastPath(
-    const PhysicalRect& rect,
-    const LayoutBoxModelObject* ancestor,
-    MapCoordinatesFlags mode,
-    PhysicalRect& result) const {
-  NOT_DESTROYED();
-  MapCoordinatesFlags supported_mode =
-      kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor;
-  if (mode != supported_mode)
-    return false;
-
-  if (ancestor && ancestor != View())
-    return false;
-
-  ancestor = View();
-
-  if (ancestor == this)
-    return true;
-
-  AncestorSkipInfo skip_info(ancestor);
-  PropertyTreeStateOrAlias container_properties =
-      PropertyTreeState::Uninitialized();
-  const LayoutObject* property_container =
-      GetPropertyContainer(&skip_info, &container_properties);
-  if (!property_container)
-    return false;
-
-  gfx::RectF mapping_rect(rect);
-
-  // This works because it's not possible to have any intervening clips,
-  // effects, transforms between |this| and |property_container|, and therefore
-  // FirstFragment().PaintOffset() is relative to the transform space defined by
-  // FirstFragment().LocalBorderBoxProperties() (if this == property_container)
-  // or property_container->FirstFragment().ContentsProperties().
-  mapping_rect.Offset(gfx::Vector2dF(FirstFragment().PaintOffset()));
-
-  if (property_container != ancestor) {
-    GeometryMapper::SourceToDestinationRect(
-        container_properties.Transform(),
-        ancestor->FirstFragment().ContentsProperties().Transform(),
-        mapping_rect);
-  }
-  mapping_rect.Offset(-gfx::Vector2dF(ancestor->FirstFragment().PaintOffset()));
-
-  result = PhysicalRect::EnclosingRect(mapping_rect);
-  return true;
-}
-
 PhysicalRect LayoutObject::LocalToAncestorRect(
     const PhysicalRect& rect,
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  PhysicalRect result;
-  if (LocalToAncestorRectFastPath(rect, ancestor, mode, result))
-    return result;
-
   return PhysicalRect::EnclosingRect(
       LocalToAncestorQuad(gfx::QuadF(gfx::RectF(rect)), ancestor, mode)
           .BoundingBox());

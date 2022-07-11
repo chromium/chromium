@@ -192,10 +192,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
   const EffectPaintPropertyNodeOrAlias& PreFilter() const;
   const EffectPaintPropertyNodeOrAlias& PostIsolationEffect() const;
 
-  // Map a rect from |this|'s local border box space to |fragment|'s local
-  // border box space. Both fragments must have local border box properties.
-  void MapRectToFragment(const FragmentData& fragment, gfx::Rect&) const;
-
   ~FragmentData() = default;
   void Trace(Visitor* visitor) const { visitor->Trace(rare_data_); }
 

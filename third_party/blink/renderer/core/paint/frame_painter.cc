@@ -29,8 +29,7 @@ gfx::QuadF GetQuadForTraceEvent(const LocalFrameView& frame_view,
   gfx::QuadF quad(gfx::RectF(cull_rect.Rect()));
   if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
     quad += gfx::Vector2dF(owner->PhysicalContentBoxOffset());
-    owner->LocalToAbsoluteQuad(
-        quad, kTraverseDocumentBoundaries | kUseGeometryMapperMode);
+    owner->LocalToAbsoluteQuad(quad, kTraverseDocumentBoundaries);
   }
   return quad;
 }

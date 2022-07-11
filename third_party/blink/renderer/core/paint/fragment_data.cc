@@ -157,15 +157,4 @@ const EffectPaintPropertyNodeOrAlias& FragmentData::PostIsolationEffect()
   return LocalBorderBoxProperties().Effect();
 }
 
-void FragmentData::MapRectToFragment(const FragmentData& fragment,
-                                     gfx::Rect& rect) const {
-  if (this == &fragment)
-    return;
-  const auto& from_transform = LocalBorderBoxProperties().Transform();
-  const auto& to_transform = fragment.LocalBorderBoxProperties().Transform();
-  rect.Offset(ToRoundedPoint(PaintOffset()).OffsetFromOrigin());
-  GeometryMapper::SourceToDestinationRect(from_transform, to_transform, rect);
-  rect.Offset(-ToRoundedPoint(fragment.PaintOffset()).OffsetFromOrigin());
-}
-
 }  // namespace blink

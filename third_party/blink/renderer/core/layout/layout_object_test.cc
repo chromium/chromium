@@ -1388,71 +1388,6 @@ TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
   EXPECT_EQ(-0.01, decomposed.perspective_z);
 }
 
-TEST_F(LayoutObjectTest, LocalToAncestorRectFastPath) {
-  SetBodyInnerHTML(R"HTML(
-    <style>body { margin:0; }</style>
-    <div id=target
-         style="transform: translate(50px, 25px); width: 10px; height: 10px">
-    </div>
-    <div id=ancestor2 style="position: relative">
-      <div id=target2
-         style="transform: translate(75px, 15px); width: 10px; height: 10px">
-      </div>
-    </div>
-  )HTML");
-
-  LayoutObject* target = GetLayoutObjectByElementId("target");
-  PhysicalRect rect(0, 0, 10, 10);
-  PhysicalRect result;
-
-  EXPECT_TRUE(target->LocalToAncestorRectFastPath(
-      rect, nullptr, kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor,
-      result));
-  EXPECT_EQ(PhysicalRect(50, 25, 10, 10), result);
-  // Compare with non-fast path.
-  EXPECT_EQ(PhysicalRect(50, 25, 10, 10),
-            target->LocalToAncestorRect(rect, nullptr));
-
-  // No other modes are supported.
-  EXPECT_FALSE(target->LocalToAncestorRectFastPath(rect, nullptr, 0, result));
-  EXPECT_FALSE(
-      target->LocalToAncestorRectFastPath(rect, nullptr, kIsFixed, result));
-  EXPECT_FALSE(target->LocalToAncestorRectFastPath(rect, nullptr,
-                                                   kIgnoreTransforms, result));
-  EXPECT_FALSE(target->LocalToAncestorRectFastPath(
-      rect, nullptr, kIgnoreStickyOffset, result));
-  EXPECT_FALSE(target->LocalToAncestorRectFastPath(
-      rect, nullptr, kIgnoreScrollOffset, result));
-  EXPECT_FALSE(target->LocalToAncestorRectFastPath(
-      rect, nullptr, kIgnoreScrollOffsetOfAncestor, result));
-  EXPECT_FALSE(target->LocalToAncestorRectFastPath(
-      rect, nullptr, kApplyRemoteMainFrameTransform, result));
-
-  EXPECT_EQ(PhysicalRect(50, 25, 10, 10),
-            target->LocalToAncestorRect(rect, nullptr, kUseGeometryMapperMode));
-
-  LayoutObject* target2 = GetLayoutObjectByElementId("target2");
-  LayoutObject* ancestor2 = GetLayoutObjectByElementId("ancestor2");
-  PhysicalRect result2;
-
-  EXPECT_FALSE(target2->LocalToAncestorRectFastPath(
-      rect, To<LayoutBoxModelObject>(ancestor2),
-      kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor, result2));
-
-  EXPECT_EQ(
-      PhysicalRect(75, 15, 10, 10),
-      target2->LocalToAncestorRect(rect, To<LayoutBoxModelObject>(ancestor2)));
-  // Compare with non-fast path.
-  EXPECT_TRUE(target2->LocalToAncestorRectFastPath(
-      rect, nullptr, kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor,
-      result2));
-  // 25 instead of 15, because #target is 10px high.
-  EXPECT_EQ(PhysicalRect(75, 25, 10, 10), result2);
-
-  EXPECT_EQ(PhysicalRect(75, 25, 10, 10),
-            target2->LocalToAncestorRect(rect, nullptr));
-}
-
 TEST_F(LayoutObjectTest, LocalToAncestoRectIgnoreAncestorScroll) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin:0; }</style>
@@ -1470,9 +1405,6 @@ TEST_F(LayoutObjectTest, LocalToAncestoRectIgnoreAncestorScroll) {
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect rect(0, 0, 100, 100);
-  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
-            target->LocalToAncestorRect(rect, ancestor,
-                                        kIgnoreScrollOffsetOfAncestor));
 
   EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
             target->LocalToAncestorRect(rect, ancestor, kIgnoreScrollOffset));
@@ -1494,13 +1426,6 @@ TEST_F(LayoutObjectTest, LocalToAncestoRectViewIgnoreAncestorScroll) {
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect rect(0, 0, 100, 100);
-  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
-            target->LocalToAncestorRect(rect, nullptr,
-                                        kIgnoreScrollOffsetOfAncestor));
-  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
-            target->LocalToAncestorRect(
-                rect, nullptr,
-                kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor));
 
   EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
             target->LocalToAncestorRect(rect, nullptr, kIgnoreScrollOffset));
@@ -1534,9 +1459,6 @@ TEST_F(LayoutObjectTest,
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect rect(0, 0, 100, 100);
-  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
-            target->LocalToAncestorRect(rect, ancestor,
-                                        kIgnoreScrollOffsetOfAncestor));
 
   EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
             target->LocalToAncestorRect(rect, ancestor, kIgnoreScrollOffset));
@@ -1566,13 +1488,6 @@ TEST_F(LayoutObjectTest,
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect rect(0, 0, 100, 100);
-  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
-            target->LocalToAncestorRect(rect, nullptr,
-                                        kIgnoreScrollOffsetOfAncestor));
-  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
-            target->LocalToAncestorRect(
-                rect, nullptr,
-                kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor));
 
   EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
             target->LocalToAncestorRect(rect, nullptr, kIgnoreScrollOffset));
