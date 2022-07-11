@@ -38,8 +38,7 @@ HistoryDeleteDirectivesModelTypeController::
           model_type_store_service->GetStoreFactory(),
           GetSyncableServiceFromHistoryService(history_service),
           dump_stack),
-      helper_(syncer::HISTORY_DELETE_DIRECTIVES, sync_service, pref_service),
-      sync_service_(sync_service) {}
+      helper_(syncer::HISTORY_DELETE_DIRECTIVES, sync_service, pref_service) {}
 
 HistoryDeleteDirectivesModelTypeController::
     ~HistoryDeleteDirectivesModelTypeController() = default;
@@ -47,7 +46,7 @@ HistoryDeleteDirectivesModelTypeController::
 syncer::DataTypeController::PreconditionState
 HistoryDeleteDirectivesModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  if (sync_service_->GetUserSettings()->IsEncryptEverythingEnabled()) {
+  if (helper_.sync_service()->GetUserSettings()->IsEncryptEverythingEnabled()) {
     return PreconditionState::kMustStopAndClearData;
   }
   return helper_.GetPreconditionState();
@@ -59,7 +58,7 @@ void HistoryDeleteDirectivesModelTypeController::LoadModels(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(NOT_RUNNING, state());
 
-  sync_service_->AddObserver(this);
+  helper_.sync_service()->AddObserver(this);
   SyncableServiceBasedModelTypeController::LoadModels(configure_context,
                                                       model_load_callback);
 }
@@ -69,7 +68,7 @@ void HistoryDeleteDirectivesModelTypeController::Stop(
     StopCallback callback) {
   DCHECK(CalledOnValidThread());
 
-  sync_service_->RemoveObserver(this);
+  helper_.sync_service()->RemoveObserver(this);
 
   SyncableServiceBasedModelTypeController::Stop(shutdown_reason,
                                                 std::move(callback));
@@ -79,7 +78,7 @@ void HistoryDeleteDirectivesModelTypeController::OnStateChanged(
     syncer::SyncService* sync) {
   DCHECK(CalledOnValidThread());
   // Most of these calls will be no-ops but SyncService handles that just fine.
-  sync_service_->DataTypePreconditionChanged(type());
+  helper_.sync_service()->DataTypePreconditionChanged(type());
 }
 
 }  // namespace history

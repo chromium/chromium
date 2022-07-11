@@ -8,6 +8,7 @@
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/model_type_controller.h"
+#include "components/sync/driver/sync_service_observer.h"
 
 class PrefService;
 
@@ -20,7 +21,8 @@ namespace history {
 class HistoryService;
 
 // ModelTypeController for "history" data types - HISTORY and TYPED_URLS.
-class HistoryModelTypeController : public syncer::ModelTypeController {
+class HistoryModelTypeController : public syncer::ModelTypeController,
+                                   public syncer::SyncServiceObserver {
  public:
   // `model_type` must be either HISTORY or TYPED_URLS.
   HistoryModelTypeController(syncer::ModelType model_type,
@@ -36,6 +38,13 @@ class HistoryModelTypeController : public syncer::ModelTypeController {
 
   // syncer::DataTypeController implementation.
   PreconditionState GetPreconditionState() const override;
+  void LoadModels(const syncer::ConfigureContext& configure_context,
+                  const ModelLoadCallback& model_load_callback) override;
+  void Stop(syncer::ShutdownReason shutdown_reason,
+            StopCallback callback) override;
+
+  // syncer::SyncServiceObserver implementation.
+  void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
   HistoryModelTypeControllerHelper helper_;

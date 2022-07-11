@@ -38,6 +38,8 @@ class HistoryModelTypeControllerHelper {
   // Must be called from DataTypeController::GetPreconditionState().
   syncer::DataTypeController::PreconditionState GetPreconditionState() const;
 
+  syncer::SyncService* sync_service() const { return sync_service_; }
+
  private:
   void OnSavingBrowserHistoryDisabledChanged();
 
