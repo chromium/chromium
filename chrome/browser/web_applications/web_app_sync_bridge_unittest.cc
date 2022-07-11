@@ -567,7 +567,8 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
   controller().SetUninstallFromSyncDelegate(base::BindLambdaForTesting(
       [&](const std::vector<AppId>& apps_to_uninstall,
           FakeWebAppRegistryController::RepeatingUninstallCallback callback) {
-        EXPECT_EQ(5ul, sync_bridge().GetAppsInSyncUninstallForTest().size());
+        EXPECT_EQ(5ul, apps_to_uninstall.size());
+
         for (const AppId& app_to_uninstall : apps_to_uninstall) {
           // The app must be registered.
           const WebApp* app = registrar().GetAppById(app_to_uninstall);
@@ -590,8 +591,6 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
   sync_bridge().ApplySyncChanges(sync_bridge().CreateMetadataChangeList(),
                                  std::move(entity_changes));
   run_loop.Run();
-
-  EXPECT_EQ(0ul, sync_bridge().GetAppsInSyncUninstallForTest().size());
 
   EXPECT_TRUE(IsRegistryEqual(registrar_registry(), registry));
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
@@ -638,7 +637,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_DeleteHappensExternally) {
                                  std::move(entity_changes));
   run_loop.Run();
 
-  EXPECT_EQ(5ul, sync_bridge().GetAppsInSyncUninstallForTest().size());
+  EXPECT_EQ(5ul, to_uninstall.size());
 
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
   for (const AppId& app_to_uninstall : to_uninstall) {

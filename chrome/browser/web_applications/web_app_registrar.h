@@ -68,6 +68,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // manifest.
   const WebApp* GetAppByStartUrl(const GURL& start_url) const;
   std::vector<AppId> GetAppsFromSyncAndPendingInstallation() const;
+  std::vector<AppId> GetAppsPendingUninstall() const;
 
   bool AppsExistWithExternalConfigData() const;
 

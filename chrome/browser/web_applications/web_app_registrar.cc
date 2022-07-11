@@ -512,6 +512,23 @@ std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation()
   return app_ids;
 }
 
+std::vector<AppId> WebAppRegistrar::GetAppsPendingUninstall() const {
+  AppSet apps_in_sync_uninstall = AppSet(
+      this,
+      [](const WebApp& web_app) {
+        return WebAppSourceSupported(web_app) &&
+               !web_app.is_from_sync_and_pending_installation() &&
+               web_app.is_uninstalling();
+      },
+      /*empty=*/registry_profile_being_deleted_);
+
+  std::vector<AppId> app_ids;
+  for (const WebApp& app : apps_in_sync_uninstall)
+    app_ids.push_back(app.app_id());
+
+  return app_ids;
+}
+
 bool WebAppRegistrar::AppsExistWithExternalConfigData() const {
   for (const WebApp& web_app : GetApps()) {
     if (web_app.management_to_external_config_map().size() > 0)

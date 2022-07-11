@@ -235,23 +235,20 @@ bool AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     // happens asynchronously after the observer gets OnWebAppInstalled. And
     // some installs might not have OS hooks installed but they will be in the
     // registry.
+    auto* provider = web_app::WebAppProvider::GetForTest(profile);
     std::vector<web_app::AppId> sync_apps_pending_install =
-        web_app::WebAppProvider::GetForTest(profile)
-            ->registrar()
-            .GetAppsFromSyncAndPendingInstallation();
+        provider->registrar().GetAppsFromSyncAndPendingInstallation();
     if (!sync_apps_pending_install.empty()) {
       LOG(ERROR) << "Apps from sync are still pending installation: "
                  << sync_apps_pending_install.size();
       return false;
     }
 
-    std::set<web_app::AppId> apps_in_sync_uninstall =
-        web_app::WebAppProvider::GetForTest(profile)
-            ->sync_bridge()
-            .GetAppsInSyncUninstallForTest();
-    if (!apps_in_sync_uninstall.empty()) {
-      LOG(ERROR) << "App uninstalls from sync are still pending: "
-                 << apps_in_sync_uninstall.size();
+    std::vector<web_app::AppId> apps_in_uninstall =
+        provider->registrar().GetAppsPendingUninstall();
+    if (!apps_in_uninstall.empty()) {
+      LOG(ERROR) << "App uninstalls are still pending: "
+                 << apps_in_uninstall.size();
       return false;
     }
   }

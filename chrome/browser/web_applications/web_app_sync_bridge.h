@@ -148,8 +148,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
-  const std::set<AppId>& GetAppsInSyncUninstallForTest();
-
   void set_disable_checks_for_testing(bool disable_checks_for_testing) {
     disable_checks_for_testing_ = disable_checks_for_testing;
   }
@@ -161,11 +159,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   // Update the in-memory model.
   void UpdateRegistrar(std::unique_ptr<RegistryUpdateData> update_data);
-
-  // Useful for identifying apps that have not yet been fully uninstalled.
-  // TODO(phillis): Remove apps_in_sync_uninstall_ and
-  // GetAppsInSyncUninstallForTest. https://crbug.com/1341354
-  std::set<AppId> apps_in_sync_uninstall_;
 
   // Update the remote sync server.
   void UpdateSync(const RegistryUpdateData& update_data,
