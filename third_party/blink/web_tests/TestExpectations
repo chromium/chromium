@@ -6161,7 +6161,6 @@ crbug.com/1231699 [ Linux ] svg/custom/transformed-outlines.svg [ Failure Pass ]
 crbug.com/1231699 [ Linux ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
 
 # Other devtools flaky tests outside of http/tests/inspector-protocol/network.
-crbug.com/1228261 http/tests/devtools/console/console-context-selector.js [ Failure Pass Timeout ]
 crbug.com/1228261 http/tests/inspector-protocol/browser-grant-permissions.js [ Failure Pass Timeout ]
 crbug.com/1228261 http/tests/inspector-protocol/network-fetch-content-with-error-status-code.js [ Failure Pass Timeout ]
 crbug.com/1228261 http/tests/inspector-protocol/fetch/request-paused-network-id-cors.js [ Failure Pass Timeout ]
