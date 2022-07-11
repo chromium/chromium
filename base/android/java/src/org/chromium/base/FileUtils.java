@@ -59,7 +59,7 @@ public class FileUtils {
         if (currentFile.isDirectory()) {
             File[] files = currentFile.listFiles();
             if (files != null) {
-                for (var file : files) {
+                for (File file : files) {
                     recursivelyDeleteFile(file, canDelete);
                 }
             }
