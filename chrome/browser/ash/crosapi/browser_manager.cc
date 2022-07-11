@@ -310,6 +310,26 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
       ResourcesFileSharingMode::kError)
     params.enable_resource_file_sharing = false;
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kLacrosChromeAdditionalArgsFile)) {
+    const base::FilePath path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            ash::switches::kLacrosChromeAdditionalArgsFile);
+    std::string data;
+    if (!base::ReadFileToString(path, &data)) {
+      PLOG(WARNING) << "Unable to read from lacros additional args file "
+                    << path.value();
+    }
+    std::vector<base::StringPiece> delimited_flags =
+        base::SplitStringPieceUsingSubstr(data, "\n", base::TRIM_WHITESPACE,
+                                          base::SPLIT_WANT_NONEMPTY);
+
+    for (const auto& flag : delimited_flags) {
+      if (flag[0] != '#')
+        params.lacros_additional_args.emplace_back(flag);
+    }
+  }
+
   return params;
 }
 
@@ -1092,6 +1112,9 @@ void BrowserManager::StartWithLogFile(
                                         base::SPLIT_WANT_NONEMPTY);
   for (const auto& flag : delimited_flags)
     argv.emplace_back(flag);
+
+  argv.insert(argv.end(), params.lacros_additional_args.begin(),
+              params.lacros_additional_args.end());
 
   // Forward flag for zero copy video capture to Lacros if it is enabled.
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {

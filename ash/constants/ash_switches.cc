@@ -641,6 +641,14 @@ const char kLacrosAvailabilityIgnore[] = "lacros-availability-ignore";
 //   --bar=/tmp/dir name
 const char kLacrosChromeAdditionalArgs[] = "lacros-chrome-additional-args";
 
+// If this switch is set, then ash-chrome will read from the provided path
+// and pass additional arguments when launching lacros-chrome. Each non-empty
+// line in the file will be treated as an argument. Example file contents:
+//   --foo=5
+//   --bar=/tmp/dir name
+const char kLacrosChromeAdditionalArgsFile[] =
+    "lacros-chrome-additional-args-file";
+
 // Additional environment variables set for lacros-chrome. The string '####' is
 // used as a delimiter. For example:
 // --lacros-chrome-additional-env=WAYLAND_DEBUG=client####FOO=bar
