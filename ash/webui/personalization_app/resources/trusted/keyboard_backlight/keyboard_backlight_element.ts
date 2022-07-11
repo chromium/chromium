@@ -256,7 +256,8 @@ export class KeyboardBacklight extends WithPersonalizationStore {
         // Add the border for the white background.
         return `background-color: ${
             colors[colorId]
-                .hexVal}; border: 1px solid var(--cros-separator-color);`;
+                .hexVal}; outline: 1px solid var(--cros-separator-color);
+                outline-offset: -1px;`;
       default:
         return `background-color: ${colors[colorId].hexVal}`;
     }
@@ -267,7 +268,8 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     // Show the default style when wallpaper color is loading or invalid.
     if (!wallpaperColor || (wallpaperColor.value & 0xFFFFFF) === 0xFFFFFF) {
       return `background-color: #FFFFFF;
-          border: 1px solid var(--cros-separator-color);`;
+          outline: 1px solid var(--cros-separator-color);
+          outline-offset: -1px;`;
     }
     // Strip the alpha value and convert to hex string.
     const hexStr =

@@ -173,7 +173,8 @@
           on-click="onPresetColorSelected_" on-keypress="onPresetColorSelected_"
           aria-label$="[[getPresetColorAriaLabel_(presetColorId)]]"
           role="radio"
-          aria-checked$="[[getPresetColorAriaChecked_(presetColorId, presetColors_, backlightColor_)]]">
+          aria-checked$="[[getPresetColorAriaChecked_(presetColorId, presetColors_, backlightColor_)]]"
+          title$="[[getPresetColorAriaLabel_(presetColorId)]]">
         <div class="color-inner-container"
             style$="[[getColorInnerContainerStyle_(presetColorId, presetColors_)]]">
         </div>
@@ -184,7 +185,8 @@
         tabindex="0"
         on-click="onRainbowColorSelected_" on-keypress="onRainbowColorSelected_"
         aria-label="$i18n{rainbowColor}" role="radio"
-        aria-checked$="[[getRainbowColorAriaChecked_(backlightColor_)]]">
+        aria-checked$="[[getRainbowColorAriaChecked_(backlightColor_)]]"
+        title="$i18n{rainbowColor}">
       <div class="color-inner-container"
           style$="[[getColorInnerContainerStyle_(rainbowColorId_, presetColors_)]]">
       </div>
