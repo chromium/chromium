@@ -14,7 +14,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/launcher_nudge_controller.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -203,7 +202,6 @@ void ShelfController::OnTabletModeStarted() {
       if (shelf->IsHorizontalAlignment())
         shelf->set_is_tablet_mode_animation_running(true);
       shelf->SetAlignment(ShelfAlignment::kBottom);
-      shelf->shelf_widget()->OnTabletModeChanged();
     }
   }
 }
@@ -219,7 +217,6 @@ void ShelfController::OnTabletModeEnded() {
     if (Shelf* shelf = GetShelfForDisplay(display.id())) {
       if (shelf->IsHorizontalAlignment())
         shelf->set_is_tablet_mode_animation_running(true);
-      shelf->shelf_widget()->OnTabletModeChanged();
     }
   }
 }

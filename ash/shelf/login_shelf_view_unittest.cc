@@ -143,11 +143,14 @@ class LoginShelfViewTest : public LoginTestBase,
   }
 
   // Check if the former button is shown before the latter button
-  bool AreButtonsInOrder(LoginShelfView::ButtonId former, LoginShelfView::ButtonId latter){
+  bool AreButtonsInOrder(LoginShelfView::ButtonId former,
+                         LoginShelfView::ButtonId latter) {
     auto* former_button_view = login_shelf_view_->GetViewByID(former);
     auto* latter_button_view = login_shelf_view_->GetViewByID(latter);
-    EXPECT_TRUE(former_button_view->GetVisible() && latter_button_view->GetVisible());
-    return login_shelf_view_->GetIndexOf(former_button_view) < login_shelf_view_->GetIndexOf(latter_button_view);
+    EXPECT_TRUE(former_button_view->GetVisible() &&
+                latter_button_view->GetVisible());
+    return login_shelf_view_->GetIndexOf(former_button_view) <
+           login_shelf_view_->GetIndexOf(latter_button_view);
   }
 
   // Check whether the button is enabled.
@@ -847,23 +850,16 @@ TEST_P(LoginShelfViewTest, OsInstallButtonHidden) {
       {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest}));
 }
 
-TEST_P(LoginShelfViewTest, TapShutdownWithSwipeDetectionEnabledOnLogin) {
+TEST_P(LoginShelfViewTest, TapShutdownInTabletLoginPrimary) {
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   TabletModeControllerTestApi().EnterTabletMode();
-
-  Shell::Get()->login_screen_controller()->SetLoginShelfGestureHandler(
-      u"Test swipe", base::DoNothing(), base::DoNothing());
 
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
-TEST_P(LoginShelfViewTest, TapShutdownWithSwipeDetectionEnabledInOobe) {
+TEST_P(LoginShelfViewTest, TapShutdownInTabletOobe) {
   TabletModeControllerTestApi().EnterTabletMode();
-
-  Shell::Get()->login_screen_controller()->SetLoginShelfGestureHandler(
-      u"Test swipe", base::DoNothing(), base::DoNothing());
-
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }

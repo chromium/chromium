@@ -388,21 +388,6 @@ void LoginScreenController::RequestSecurityTokenPin(
 void LoginScreenController::ClearSecurityTokenPinRequest() {
   security_token_request_controller_.ClosePinUi();
 }
-bool LoginScreenController::SetLoginShelfGestureHandler(
-    const std::u16string& nudge_text,
-    const base::RepeatingClosure& fling_callback,
-    base::OnceClosure exit_callback) {
-  return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
-      ->shelf_widget()
-      ->SetLoginShelfSwipeHandler(nudge_text, fling_callback,
-                                  std::move(exit_callback));
-}
-
-void LoginScreenController::ClearLoginShelfGestureHandler() {
-  return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
-      ->shelf_widget()
-      ->ClearLoginShelfSwipeHandler();
-}
 
 views::Widget* LoginScreenController::GetLoginWindowWidget() {
   return client_ ? client_->GetLoginWindowWidget() : nullptr;

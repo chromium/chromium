@@ -31,10 +31,6 @@ class ASH_EXPORT ShelfTestApi {
 
   views::View* GetHomeButton();
 
-  // Whether the shelf has a login shelf gesture handler set up, which would
-  // imply that swipe from shelf gesture detection is active.
-  bool HasLoginShelfGestureHandler() const;
-
   // Returns ui information of scrollable shelf for the given state. If |state|
   // specifies the scroll distance, the target offset, which is the offset value
   // after scrolling by the distance, is also calculated. It is useful if you

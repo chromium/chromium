@@ -128,10 +128,6 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   void RequestSecurityTokenPin(SecurityTokenPinRequest request) override;
   void ClearSecurityTokenPinRequest() override;
-  bool SetLoginShelfGestureHandler(const std::u16string& nudge_text,
-                                   const base::RepeatingClosure& fling_callback,
-                                   base::OnceClosure exit_callback) override;
-  void ClearLoginShelfGestureHandler() override;
   views::Widget* GetLoginWindowWidget() override;
 
   // KioskAppMenu:

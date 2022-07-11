@@ -794,9 +794,6 @@ void ShelfLayoutManager::RemoveObserver(ShelfLayoutManagerObserver* observer) {
 
 bool ShelfLayoutManager::ProcessGestureEvent(
     const ui::GestureEvent& event_in_screen) {
-  if (shelf_widget_->HandleLoginShelfGestureEvent(event_in_screen))
-    return true;
-
   if (!IsDragAllowed())
     return false;
 

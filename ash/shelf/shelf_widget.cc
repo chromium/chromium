@@ -23,7 +23,6 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/hotseat_widget.h"
-#include "ash/shelf/login_shelf_gesture_controller.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
@@ -560,12 +559,6 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
 }
 
 void ShelfWidget::DelegateView::UpdateDragHandle() {
-  if (shelf_widget_->login_shelf_view_->GetVisible()) {
-    drag_handle_->SetVisible(
-        shelf_widget_->login_shelf_gesture_controller_.get());
-    return;
-  }
-
   if (!Shell::Get()->IsInTabletMode()) {
     drag_handle_->SetVisible(false);
     return;
@@ -674,17 +667,7 @@ bool ShelfWidget::GetHitTestRects(aura::Window* target,
   aura::Window::ConvertRectToTarget(source, target->parent(),
                                     &login_view_button_bounds);
   *hit_test_rect_mouse = login_view_button_bounds;
-
-  // If login shelf gesture detection is active, consume touch events on the
-  // whole shelf, so |login_shelf_gesture_controller_| can receive them.
-  if (login_shelf_gesture_controller_) {
-    gfx::Rect shelf_view_bounds = login_shelf_view_->GetLocalBounds();
-    aura::Window::ConvertRectToTarget(source, target->parent(),
-                                      &shelf_view_bounds);
-    *hit_test_rect_touch = shelf_view_bounds;
-  } else {
-    *hit_test_rect_touch = login_view_button_bounds;
-  }
+  *hit_test_rect_touch = login_view_button_bounds;
   return true;
 }
 
@@ -700,29 +683,6 @@ base::ScopedClosureRunner ShelfWidget::ForceShowHotseatInTabletMode() {
 
 bool ShelfWidget::IsHotseatForcedShowInTabletMode() const {
   return force_show_hotseat_count_ > 0;
-}
-
-bool ShelfWidget::SetLoginShelfSwipeHandler(
-    const std::u16string& nudge_text,
-    const base::RepeatingClosure& fling_callback,
-    base::OnceClosure exit_callback) {
-  if (!login_shelf_view_->GetVisible())
-    return false;
-
-  if (!Shell::Get()->IsInTabletMode())
-    return false;
-
-  login_shelf_gesture_controller_ =
-      std::make_unique<LoginShelfGestureController>(
-          shelf_, delegate_view_->drag_handle(), nudge_text, fling_callback,
-          std::move(exit_callback));
-  delegate_view_->UpdateDragHandle();
-  return true;
-}
-
-void ShelfWidget::ClearLoginShelfSwipeHandler() {
-  login_shelf_gesture_controller_.reset();
-  delegate_view_->UpdateDragHandle();
 }
 
 ui::Layer* ShelfWidget::GetOpaqueBackground() {
@@ -846,14 +806,6 @@ void ShelfWidget::RegisterHotseatWidget(HotseatWidget* hotseat_widget) {
   hotseat_transition_animator_->AddObserver(delegate_view_);
   shelf_->hotseat_widget()->OnHotseatTransitionAnimatorCreated(
       hotseat_transition_animator());
-}
-
-void ShelfWidget::OnTabletModeChanged() {
-  if (!Shell::Get()->IsInTabletMode()) {
-    // Disable login shelf gesture controller, if one is set when leacing tablet
-    // mode.
-    ClearLoginShelfSwipeHandler();
-  }
 }
 
 void ShelfWidget::PostCreateShelf() {
@@ -1100,8 +1052,6 @@ void ShelfWidget::OnSessionStateChanged(session_manager::SessionState state) {
       wm::DeactivateWindow(shelf_window);
     login_shelf_view()->SetVisible(!show_hotseat);
 
-    if (show_hotseat)
-      login_shelf_gesture_controller_.reset();
     ShowIfHidden();
 
     // The shelf widget can get activated when login shelf view is shown, which
@@ -1142,14 +1092,6 @@ void ShelfWidget::HideIfShown() {
 void ShelfWidget::ShowIfHidden() {
   if (!IsVisible())
     Show();
-}
-
-bool ShelfWidget::HandleLoginShelfGestureEvent(
-    const ui::GestureEvent& event_in_screen) {
-  if (!login_shelf_gesture_controller_)
-    return false;
-
-  return login_shelf_gesture_controller_->HandleGestureEvent(event_in_screen);
 }
 
 void ShelfWidget::OnMouseEvent(ui::MouseEvent* event) {
