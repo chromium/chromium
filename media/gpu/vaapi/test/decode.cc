@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/av1_decoder.h"
+#include "media/gpu/vaapi/test/h264_decoder.h"
 #include "media/gpu/vaapi/test/shared_va_surface.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
@@ -27,6 +28,7 @@
 #include "ui/gfx/geometry/size.h"
 
 using media::vaapi_test::Av1Decoder;
+using media::vaapi_test::H264Decoder;
 using media::vaapi_test::SharedVASurface;
 using media::vaapi_test::VaapiDevice;
 using media::vaapi_test::VideoDecoder;
@@ -113,14 +115,21 @@ std::string FourccStr(uint32_t fourcc) {
 }
 
 // Creates the appropriate decoder for |stream_data| which is expected to point
-// to IVF data of length |stream_len|. The decoder will use |va_device| to issue
-// VAAPI calls. Returns nullptr on failure.
+// to H264 Annex B data of length |stream_len|. The decoder will use
+// |va_device| to issue VAAPI calls. Returns nullptr on failure.
 std::unique_ptr<VideoDecoder> CreateDecoder(
     const VaapiDevice& va_device,
     SharedVASurface::FetchPolicy fetch_policy,
     const uint8_t* stream_data,
     size_t stream_len) {
-  // Set up video parser.
+  if (*reinterpret_cast<const uint32_t*>(stream_data) == fourcc(0, 0, 0, 1) ||
+      ((*reinterpret_cast<const uint32_t*>(stream_data)) & 0x00FFFFFF) ==
+          fourcc(0, 0, 1, 0)) {
+    return std::make_unique<H264Decoder>(stream_data, stream_len, va_device,
+                                         fetch_policy);
+  }
+
+  // Set up IVF parser.
   auto ivf_parser = std::make_unique<media::IvfParser>();
   media::IvfFileHeader file_header{};
   if (!ivf_parser->Initialize(stream_data, stream_len, &file_header)) {

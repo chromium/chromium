@@ -79,6 +79,9 @@ class Av1Decoder : public VideoDecoder {
   // If film grain is applied, the film grain surface is stored in
   // |display_surfaces_|. Otherwise, matches |ref_frames_|.
   std::vector<scoped_refptr<SharedVASurface>> display_surfaces_;
+
+  // Parser for the IVF stream to decode.
+  std::unique_ptr<IvfParser> ivf_parser_;
 };
 
 }  // namespace vaapi_test
