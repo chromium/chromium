@@ -827,8 +827,8 @@ chromium-metrics-reviews@google.com.
     Any given ChromeOS user has some number of vault keysets to store file name
     encryption keys, depending on registered authentication factors at the time.
     This histogram records how many vault keysets with {VaultKeysetMetric} a
-    user has. Recorded once on startup, and during every call to ListKeys or
-    MassRemoveKeys through the ChromeOS cryptohome daemon.
+    user has. Recorded once per a successful preparation (mount) of the user
+    home directory by the ChromeOS cryptohome daemon.
   </summary>
   <token key="VaultKeysetMetric">
     <variant name="EmptyLabelCount"/>
@@ -841,6 +841,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SmartCardCount"/>
     <variant name="SmartUnlockCount"/>
     <variant name="UnclassifedKeysetCount"/>
+    <variant name="UntypedKeysetCount"/>
   </token>
 </histogram>
 
