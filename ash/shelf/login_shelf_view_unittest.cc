@@ -120,6 +120,8 @@ class LoginShelfViewTest : public LoginTestBase,
 
   // Simulates a click event on the button.
   void Click(LoginShelfView::ButtonId id) {
+    DCHECK(login_shelf_view_->GetViewByID(id)->GetVisible());
+
     ui::test::EventGenerator* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(
         login_shelf_view_->GetViewByID(id)->GetBoundsInScreen().CenterPoint());
@@ -541,6 +543,14 @@ TEST_P(LoginShelfViewTest,
 }
 
 TEST_P(LoginShelfViewTest, ClickRestartButton) {
+  // The Restart button is not available in OOBE session state.
+  CreateUserSessions(1);
+  NotifySessionStateChanged(SessionState::LOCKED);
+
+  NotifyShutdownPolicyChanged(true /*reboot_on_shutdown*/);
+  EXPECT_TRUE(
+      ShowsShelfButtons({LoginShelfView::kRestart, LoginShelfView::kSignOut}));
+
   Click(LoginShelfView::kRestart);
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }

@@ -16,6 +16,7 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/scoped_guest_button_blocker.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/kiosk_app_instruction_bubble.h"
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 #include "ash/shutdown_controller_impl.h"
@@ -40,6 +41,7 @@ namespace ash {
 
 enum class LockScreenActionBackgroundState;
 
+class LoginShelfButton;
 class KioskAppsButton;
 class TrayBackgroundView;
 
@@ -50,7 +52,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
                                   public LockScreenActionBackgroundObserver,
                                   public ShutdownControllerImpl::Observer,
                                   public LoginDataDispatcher::Observer,
-                                  public EnterpriseDomainObserver {
+                                  public EnterpriseDomainObserver,
+                                  public ShelfConfig::Observer {
  public:
   enum ButtonId {
     kShutdown = 1,          // Shut down the device.
@@ -133,6 +136,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout() override;
   void OnThemeChanged() override;
+
+  // ShelfConfig::Observer:
+  void OnShelfConfigUpdated() override;
 
   gfx::Rect get_button_union_bounds() const { return button_union_bounds_; }
 
@@ -275,6 +281,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // letting events that target the "empty space" pass through. These
   // coordinates are local to the view.
   gfx::Rect button_union_bounds_;
+
+  // Maintains a list of LoginShelfButton children of LoginShelfView.
+  std::vector<LoginShelfButton*> login_shelf_buttons_;
 
   // Number of active scoped Guest button blockers.
   int scoped_guest_button_blockers_ = 0;

@@ -18,10 +18,10 @@ namespace ash {
 
 namespace {
 
-constexpr int kPillButtonHeight = 32;
 constexpr int kPillButtonMinimumWidth = 56;
 constexpr int kIconSize = 20;
 constexpr int kIconPillButtonImageLabelSpacingDp = 8;
+constexpr int kPaddingReductionForIcon = 4;
 
 // Returns true it is a floating type of PillButton, which is a type of
 // PillButton without a background.
@@ -80,20 +80,19 @@ PillButton::PillButton(PressedCallback callback,
                        PillButton::Type type,
                        const gfx::VectorIcon* icon,
                        int horizontal_spacing,
+                       int height,
                        bool use_light_colors,
                        bool rounded_highlight_path)
     : views::LabelButton(std::move(callback), text),
       type_(type),
       icon_(icon),
       use_light_colors_(use_light_colors),
-      horizontal_spacing_(horizontal_spacing) {
+      horizontal_spacing_(horizontal_spacing),
+      rounded_highlight_path_(rounded_highlight_path) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  const int vertical_spacing =
-      std::max(kPillButtonHeight - GetPreferredSize().height() / 2, 0);
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(vertical_spacing, horizontal_spacing_)));
+  UpdateButtonHeight(height);
   label()->SetSubpixelRenderingEnabled(false);
   // TODO: Unify the font size, weight under ash/style as well.
   label()->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -104,14 +103,6 @@ PillButton::PillButton(PressedCallback callback,
       /*highlight_on_focus=*/false,
       /*background_color=*/
       use_light_colors ? SK_ColorWHITE : gfx::kPlaceholderColor);
-  if (rounded_highlight_path) {
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  kPillButtonHeight / 2.f);
-  }
-  if (!IsFloatingPillButton(type_)) {
-    SetBackground(views::CreateRoundedRectBackground(
-        GetDefaultBackgroundColor(type), kPillButtonHeight / 2.f));
-  }
   views::FocusRing::Get(this)->SetColorId(
       (use_light_colors_ && !features::IsDarkLightModeEnabled())
           ? ui::kColorAshLightFocusRing
@@ -122,18 +113,25 @@ PillButton::PillButton(PressedCallback callback,
 PillButton::~PillButton() = default;
 
 gfx::Size PillButton::CalculatePreferredSize() const {
-  int button_width =
-      2 * horizontal_spacing_ + label()->GetPreferredSize().width();
-  if (type_ == PillButton::Type::kIcon)
-    button_width += (kIconSize + kIconPillButtonImageLabelSpacingDp);
+  int button_width = label()->GetPreferredSize().width();
 
-  gfx::Size size(button_width, kPillButtonHeight);
-  size.SetToMax(gfx::Size(kPillButtonMinimumWidth, kPillButtonHeight));
+  if (type_ == Type::kIcon) {
+    // Add the padding on two sides.
+    button_width += horizontal_spacing_ + GetHorizontalSpacingWithIcon();
+
+    // Add the icon width and the spacing between the icon and the text.
+    button_width += kIconSize + kIconPillButtonImageLabelSpacingDp;
+  } else {
+    button_width += 2 * horizontal_spacing_;
+  }
+
+  gfx::Size size(button_width, height_);
+  size.SetToMax(gfx::Size(kPillButtonMinimumWidth, height_));
   return size;
 }
 
 int PillButton::GetHeightForWidth(int width) const {
-  return kPillButtonHeight;
+  return height_;
 }
 
 void PillButton::OnThemeChanged() {
@@ -206,8 +204,36 @@ void PillButton::SetIconColor(const SkColor icon_color) {
   OnThemeChanged();
 }
 
+void PillButton::UpdateButtonHeight(int height) {
+  if (height_ == height)
+    return;
+
+  height_ = height;
+
+  const int vertical_spacing =
+      std::max((height_ - GetPreferredSize().height()) / 2, 0);
+  const int left_padding = type_ == Type::kIcon ? GetHorizontalSpacingWithIcon()
+                                                : horizontal_spacing_;
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      vertical_spacing, left_padding, vertical_spacing, horizontal_spacing_)));
+
+  if (rounded_highlight_path_) {
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  height_ / 2.f);
+  }
+  if (!IsFloatingPillButton(type_)) {
+    SetBackground(views::CreateRoundedRectBackground(
+        GetDefaultBackgroundColor(type_), height_ / 2.f));
+  }
+  PreferredSizeChanged();
+}
+
 void PillButton::SetUseDefaultLabelFont() {
   label()->SetFontList(views::Label::GetDefaultFontList());
+}
+
+int PillButton::GetHorizontalSpacingWithIcon() const {
+  return std::max(horizontal_spacing_ - kPaddingReductionForIcon, 0);
 }
 
 BEGIN_METADATA(PillButton, views::LabelButton)
