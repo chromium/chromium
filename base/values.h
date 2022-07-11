@@ -1034,12 +1034,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // If the current object can be converted into the given type, the value is
   // returned through the `out_value` parameter and true is returned;
   // otherwise, false is returned and `out_value` is unchanged.
-  // ListValue::From is the equivalent for std::unique_ptr conversions.
-  //
-  // DEPRECATED: prefer direct use `base::Value::List` where possible, or
-  // `GetIfList()` otherwise.
-  bool GetAsList(ListValue** out_value);
-  bool GetAsList(const ListValue** out_value) const;
   // DictionaryValue::From is the equivalent for std::unique_ptr conversions.
   //
   // DEPRECATED: prefer direct use `base::Value::Dict` where possible, or

@@ -1390,22 +1390,6 @@ void Value::MergeDictionary(const Value* dictionary) {
   return GetDict().Merge(dictionary->GetDict().Clone());
 }
 
-bool Value::GetAsList(ListValue** out_value) {
-  if (out_value && is_list()) {
-    *out_value = static_cast<ListValue*>(this);
-    return true;
-  }
-  return is_list();
-}
-
-bool Value::GetAsList(const ListValue** out_value) const {
-  if (out_value && is_list()) {
-    *out_value = static_cast<const ListValue*>(this);
-    return true;
-  }
-  return is_list();
-}
-
 bool Value::GetAsDictionary(DictionaryValue** out_value) {
   if (out_value && is_dict()) {
     *out_value = static_cast<DictionaryValue*>(this);
@@ -1773,11 +1757,9 @@ std::unique_ptr<DictionaryValue> DictionaryValue::CreateDeepCopy() const {
 
 // static
 std::unique_ptr<ListValue> ListValue::From(std::unique_ptr<Value> value) {
-  ListValue* out;
-  if (value && value->GetAsList(&out)) {
-    std::ignore = value.release();
-    return WrapUnique(out);
-  }
+  if (value && value->is_list())
+    return WrapUnique(static_cast<ListValue*>(value.release()));
+
   return nullptr;
 }
 

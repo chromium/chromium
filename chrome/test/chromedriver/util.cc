@@ -548,6 +548,7 @@ bool GetOptionalString(const base::DictionaryValue* dict,
   const base::Value* value = dict->FindPath(path);
   if (!value)
     return true;
+
   if (value->is_string()) {
     *out_value = value->GetString();
     if (has_value != nullptr)
@@ -567,10 +568,26 @@ bool GetOptionalDictionary(const base::DictionaryValue* dict,
 
 bool GetOptionalList(const base::DictionaryValue* dict,
                      base::StringPiece path,
-                     const base::ListValue** out_value,
+                     const base::Value::List** out_value,
                      bool* has_value) {
-  return GetOptionalValueDeprecated(dict, path, out_value, has_value,
-                                    &base::Value::GetAsList);
+  if (has_value != nullptr)
+    *has_value = false;
+
+  if (!dict->is_dict())
+    return false;
+
+  const base::Value* value = dict->FindPath(path);
+  if (!value)
+    return true;
+
+  if (value->is_list()) {
+    *out_value = &value->GetList();
+    if (has_value != nullptr)
+      *has_value = true;
+    return true;
+  }
+
+  return false;
 }
 
 bool GetOptionalSafeInt(const base::DictionaryValue* dict,

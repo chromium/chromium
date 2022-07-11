@@ -1702,10 +1702,7 @@ TEST(ValuesTest, DeepCopy) {
   ASSERT_TRUE(copy_value);
   ASSERT_NE(copy_value, list_weak);
   ASSERT_TRUE(copy_value->is_list());
-  ListValue* copy_list = nullptr;
-  ASSERT_TRUE(copy_value->GetAsList(&copy_list));
-  ASSERT_TRUE(copy_list);
-  ASSERT_EQ(2U, copy_list->GetListDeprecated().size());
+  ASSERT_EQ(2U, copy_value->GetList().size());
 
   copy_value = nullptr;
   ASSERT_TRUE(copy_dict->Get("dictionary", &copy_value));

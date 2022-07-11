@@ -11,7 +11,6 @@
 
 namespace base {
 class FilePath;
-class ListValue;
 }
 
 struct Session;
@@ -89,7 +88,7 @@ bool GetOptionalDictionary(const base::DictionaryValue* dict,
                            bool* has_value = nullptr);
 bool GetOptionalList(const base::DictionaryValue* dict,
                      base::StringPiece path,
-                     const base::ListValue** out_value,
+                     const base::Value::List** out_value,
                      bool* has_value = nullptr);
 // Handles "safe integer" mentioned in W3C spec,
 // https://www.w3.org/TR/webdriver/#dfn-maximum-safe-integer.

@@ -600,7 +600,7 @@ Status ParseMargin(const base::DictionaryValue& params, Margin* margin) {
 Status ParsePageRanges(const base::DictionaryValue& params,
                        std::string* pageRanges) {
   bool has_value;
-  const base::ListValue* page_range_list = nullptr;
+  const base::Value::List* page_range_list = nullptr;
   if (!GetOptionalList(&params, "pageRanges", &page_range_list, &has_value)) {
     return Status(kInvalidArgument, "'pageRanges' must be an array");
   }
@@ -610,7 +610,7 @@ Status ParsePageRanges(const base::DictionaryValue& params,
   }
 
   std::vector<std::string> ranges;
-  for (const base::Value& page_range : page_range_list->GetList()) {
+  for (const base::Value& page_range : *page_range_list) {
     if (page_range.is_int()) {
       if (page_range.GetInt() < 0) {
         return Status(kInvalidArgument,
