@@ -23,7 +23,6 @@ import android.text.TextUtils;
 import org.json.JSONArray;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,7 +81,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowUrlUtilities.class})
 @LooperMode(LooperMode.Mode.LEGACY)
-@Ignore // https://crbug.com/1306225
 public class WebApkUpdateManagerUnitTest {
     @Rule
     public MockWebappDataStorageClockRule mClockRule = new MockWebappDataStorageClockRule();
