@@ -75414,6 +75414,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="11004" label="ACCESS_DENIED"/>
   <int value="11005" label="AUTH_ERROR_RESOLVABLE"/>
   <int value="11006" label="AUTH_ERROR_UNRESOLVABLE"/>
+  <int value="11008" label="BAD_REQUEST"/>
+  <int value="11009" label="BACKEND_GENERIC"/>
+  <int value="11010" label="BACKEND_RESOURCE_EXHAUSTED"/>
+  <int value="11011" label="INVALID_DATA"/>
+  <int value="11012" label="UNMAPPED_ERROR_CODE"/>
+  <int value="11013" label="UNEXPECTED_ERROR"/>
   <int value="43502" label="CHROME_SYNC_API_CALL_ERROR"/>
   <int value="43504" label="ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
   <int value="43507" label="REQUIRED_SYNCED_ACCOUNT_MISSING"/>
