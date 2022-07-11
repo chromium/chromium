@@ -48,7 +48,7 @@ constexpr ProgressStep kStep = ProgressStep::PROGRESS_STEP_START;
 constexpr char16_t kInterruptTitle[] = u"Title during interrupt";
 constexpr char16_t kInterruptDescription[] = u"Description during interrupt";
 
-constexpr char kUrl[] = "https://wwww.example.com";
+constexpr char kUrl[] = "https://www.example.com";
 
 autofill_assistant::external::ElementConditionsUpdate CreateDomUpdate(
     const std::vector<std::pair<int, bool>>& updates) {
@@ -213,7 +213,7 @@ TEST_F(ApcExternalActionDelegateTest, ShowStartingScreen) {
   EXPECT_CALL(*display(),
               SetTitle(l10n_util::GetStringFUTF16(
                   IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE,
-                  base::UTF8ToUTF16(url.host_piece()))));
+                  u"example.com")));
   EXPECT_CALL(*display(), SetDescription(std::u16string()));
 
   action_delegate()->ShowStartingScreen(url);

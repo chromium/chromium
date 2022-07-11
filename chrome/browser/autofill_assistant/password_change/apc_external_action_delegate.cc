@@ -19,13 +19,12 @@
 #include "components/autofill_assistant/browser/public/external_action.pb.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
+#include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 using autofill_assistant::password_change::GenericPasswordChangeSpecification;
 
-// TODO(crbug.com/1324089): Implement once the side panel and
-// UpdateDesktopSideAction are available.
 ApcExternalActionDelegate::ApcExternalActionDelegate(
     AssistantDisplayDelegate* display_delegate)
     : display_delegate_(display_delegate) {
@@ -220,9 +219,17 @@ void ApcExternalActionDelegate::ShowStartingScreen(const GURL& url) {
       autofill_assistant::password_change::TopIcon::TOP_ICON_UNSPECIFIED);
   SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_START);
+
+  const std::u16string formatted_url = url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlTrimAfterHost,
+      base::UnescapeRule::SPACES, /*new_parsed=*/nullptr,
+      /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
   SetTitle(l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_STARTING_SCREEN_TITLE,
-      base::UTF8ToUTF16(url.host_piece())));
+      formatted_url));
   SetDescription(std::u16string());
 }
 
