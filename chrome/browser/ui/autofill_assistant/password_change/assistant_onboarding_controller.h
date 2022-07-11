@@ -30,20 +30,21 @@ struct AssistantOnboardingInformation {
   AssistantOnboardingInformation(AssistantOnboardingInformation&&);
   AssistantOnboardingInformation& operator=(AssistantOnboardingInformation&&);
 
-  // The header title and the description.
-  std::u16string title;
-  std::u16string description;
+  // The resource ids of the title and the description.
+  int title_id;
+  int description_id;
 
-  // The consent text containing the legal disclaimer.
-  std::u16string consent_text;
+  // The resource id of the consent text containing the legal disclaimer.
+  int consent_text_id;
 
-  // The shown text and the URL of the "learn more" link.
-  std::u16string learn_more_title;
+  // The resource id of the shown text and the URL of the "learn more" link.
+  int learn_more_title_id;
   GURL learn_more_url;
 
-  // The text on the buttons for declining and granting consent.
-  std::u16string button_cancel_text;
-  std::u16string button_accept_text;
+  // The resource ids of the text on the buttons for declining and giving
+  // consent.
+  int button_cancel_text_id;
+  int button_accept_text_id;
 };
 
 // Abstract interface for a controller of an `OnboardingPrompt`.

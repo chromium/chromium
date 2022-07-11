@@ -10,11 +10,11 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -77,10 +77,14 @@ void AssistantOnboardingView::OnControllerGone() {
 
 void AssistantOnboardingView::InitDelegate() {
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 controller_->GetOnboardingInformation().button_accept_text);
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 controller_->GetOnboardingInformation().button_cancel_text);
+  SetButtonLabel(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(
+          controller_->GetOnboardingInformation().button_accept_text_id));
+  SetButtonLabel(
+      ui::DIALOG_BUTTON_CANCEL,
+      l10n_util::GetStringUTF16(
+          controller_->GetOnboardingInformation().button_cancel_text_id));
 
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
@@ -128,7 +132,8 @@ void AssistantOnboardingView::InitDialog() {
   // The title.
   AddChildView(
       views::Builder<views::Label>()
-          .SetText(controller_->GetOnboardingInformation().title)
+          .SetText(l10n_util::GetStringUTF16(
+              controller_->GetOnboardingInformation().title_id))
           .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_TITLE)
           .SetTextStyle(views::style::TextStyle::STYLE_PRIMARY)
           .SetMultiLine(true)
@@ -146,7 +151,8 @@ void AssistantOnboardingView::InitDialog() {
   // The description.
   AddChildView(
       views::Builder<views::Label>()
-          .SetText(controller_->GetOnboardingInformation().description)
+          .SetText(l10n_util::GetStringUTF16(
+              controller_->GetOnboardingInformation().description_id))
           .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
           .SetTextStyle(views::style::TextStyle::STYLE_SECONDARY)
           .SetMultiLine(true)
@@ -176,9 +182,11 @@ void AssistantOnboardingView::InitDialog() {
 
   // Get the offset of the "Learn more" text to create a link style.
   size_t offset = 0;
-  std::u16string consent_text = base::ReplaceStringPlaceholders(
-      controller_->GetOnboardingInformation().consent_text,
-      controller_->GetOnboardingInformation().learn_more_title, &offset);
+  const std::u16string learn_more_title = l10n_util::GetStringUTF16(
+      controller_->GetOnboardingInformation().learn_more_title_id);
+  const std::u16string consent_text = l10n_util::GetStringFUTF16(
+      controller_->GetOnboardingInformation().consent_text_id, learn_more_title,
+      &offset);
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &AssistantOnboardingController::OnLearnMoreClicked, controller_));
@@ -195,11 +203,8 @@ void AssistantOnboardingView::InitDialog() {
                   0, ConvertScaleFactorToMargin(kConsentTestScaleFactor), 0,
                   ConvertScaleFactorToMargin(kConsentTestScaleFactor)))
           .SetID(static_cast<int>(DialogViewID::CONSENT_TEXT))
-          .AddStyleRange(
-              gfx::Range(offset,
-                         offset + controller_->GetOnboardingInformation()
-                                      .learn_more_title.length()),
-              link_style)
+          .AddStyleRange(gfx::Range(offset, offset + learn_more_title.length()),
+                         link_style)
           .Build());
 }
 

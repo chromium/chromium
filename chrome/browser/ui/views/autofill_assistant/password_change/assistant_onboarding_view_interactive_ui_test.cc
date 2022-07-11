@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
@@ -19,33 +18,10 @@
 #include "chrome/browser/ui/views/autofill_assistant/password_change/assistant_onboarding_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "url/gurl.h"
-
-namespace {
-
-constexpr char16_t kTitle[] = u"Test title";
-constexpr char16_t kDescription[] = u"Test description";
-constexpr char16_t kConsentText[] = u"Legal text. $1";
-constexpr char16_t kLearnMoreTitle[] = u"Learn more";
-constexpr char16_t kButtonAccept[] = u"Accept";
-constexpr char16_t kButtonCancel[] = u"Cancel";
-constexpr char kUrl[] = "https://www.example.com/page.html";
-
-AssistantOnboardingInformation CreateTestModel() {
-  AssistantOnboardingInformation model;
-  model.title = kTitle;
-  model.description = kDescription;
-  model.consent_text = kConsentText;
-  model.button_accept_text = kButtonAccept;
-  model.button_cancel_text = kButtonCancel;
-  model.learn_more_title = kLearnMoreTitle;
-  model.learn_more_url = GURL(kUrl);
-  return model;
-}
-
-}  // namespace
 
 // Simple test fixture for testing `AssistantOnboardingView` that checks
 // whether accepting/cancelling the dialog works and whether the labels
@@ -55,23 +31,17 @@ class AssistantOnboardingViewBrowserTest : public DialogBrowserTest {
   AssistantOnboardingViewBrowserTest() = default;
   ~AssistantOnboardingViewBrowserTest() override = default;
 
-  // Creates a model with test data, i.e. not strings we actually expect in the
-  // UI.
-  void UseTestModel() { model_ = CreateTestModel(); }
-
   // Creates a model with the same data that is used for the automated password
   // change onboarding dialog.
   void UseApcModel() {
     model_ = ApcOnboardingCoordinator::CreateOnboardingInformation();
   }
 
-  // Creates controller and view and calls their `Show()` method.
+  // Creates the controller and view and calls their `Show()` method.
   void ShowUi(const std::string& name) override {
     // Pick the correct model for the dialog.
     if (name == "Apc") {
       UseApcModel();
-    } else if (name == "custom") {
-      UseTestModel();
     } else {
       NOTREACHED();
     }
@@ -90,18 +60,22 @@ class AssistantOnboardingViewBrowserTest : public DialogBrowserTest {
       return false;
 
     if (GetTextFromLabel(AssistantOnboardingView::DialogViewID::TITLE) !=
-        model()->title)
+        l10n_util::GetStringUTF16(model()->title_id)) {
       return false;
+    }
 
     if (GetTextFromLabel(AssistantOnboardingView::DialogViewID::DESCRIPTION) !=
-        model()->description)
+        l10n_util::GetStringUTF16(model()->description_id)) {
       return false;
+    }
 
     if (GetTextFromStyledLabel(
             AssistantOnboardingView::DialogViewID::CONSENT_TEXT) !=
-        base::ReplaceStringPlaceholders(model()->consent_text,
-                                        model()->learn_more_title, nullptr))
+        l10n_util::GetStringFUTF16(
+            model()->consent_text_id,
+            l10n_util::GetStringUTF16(model()->learn_more_title_id))) {
       return false;
+    }
 
     return true;
   }
@@ -146,7 +120,7 @@ class AssistantOnboardingViewBrowserTest : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, CancelDialog) {
-  ShowUi("custom");
+  ShowUi("Apc");
 
   // We expect the controller to signal back that the dialog was cancelled.
   EXPECT_CALL(callback(), Run(false));
@@ -154,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, CancelDialog) {
 }
 
 IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, AcceptDialog) {
-  ShowUi("custom");
+  ShowUi("Apc");
 
   // We expect the controller to signal back that the dialog was accepted.
   EXPECT_CALL(callback(), Run(true));
