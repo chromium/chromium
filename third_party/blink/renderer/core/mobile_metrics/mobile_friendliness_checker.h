@@ -33,6 +33,7 @@ class CORE_EXPORT MobileFriendlinessChecker
 
   // LocalFrameView::LifecycleNotificationObserver implementation
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+  void NotifyInitialScaleUpdated();
 
   void NotifyPaint();
   void WillBeRemovedFromFrame();
@@ -61,6 +62,8 @@ class CORE_EXPORT MobileFriendlinessChecker
  private:
   Member<LocalFrameView> frame_view_;
   HeapTaskRunnerTimer<MobileFriendlinessChecker> timer_;
+  double viewport_scalar_;
+  double initial_scale_ = 1.0;
   base::TimeTicks last_evaluated_;
   TextAreaWithFontSize text_area_sizes_;
   bool viewport_device_width_ = false;

@@ -79,8 +79,7 @@ class MobileFriendlinessCheckerTest : public testing::Test {
     for (const Frame* frame = &view->GetFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
       if (const auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-        local_frame->View()->UpdateLifecycleToPrePaintClean(
-            DocumentUpdateReason::kTest);
+        local_frame->View()->UpdateAllLifecyclePhasesForTest();
       }
     }
 
@@ -502,14 +501,15 @@ TEST_F(MobileFriendlinessCheckerTest, NormalTextAndWideImage) {
   // Wide image forces Chrome to zoom out.
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
-  <body>
-    <img style="width:3000px; height:50px">
+  <body style="margin:0px">
+    <img style="width:720px; height:800px">
     <p style="font-size: 12pt">Normal font text.</p>
   </body>
 </html>
 )");
+  // Automatic zoom-out makes text small and image fits in display.
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
-  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 50);
+  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, SmallTextByWideTable) {
@@ -527,6 +527,7 @@ TEST_F(MobileFriendlinessCheckerTest, SmallTextByWideTable) {
   </body>
 </html>
 )");
+  // Automatic zoom-out makes text small.
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
   EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 0);
 }
@@ -544,6 +545,7 @@ TEST_F(MobileFriendlinessCheckerTest,
   </body>
 </html>
 )");
+  // Automatic zoom-out makes text small and image fits in display.
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
   EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 50);
 }
@@ -674,6 +676,9 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWideOverflowXHidden) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       R"(
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
   <body>
     <pre style="overflow-x:hidden">)" +
       std::string(10000, 'a') + R"(</pre>
@@ -687,6 +692,9 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWideHidden) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       R"(
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
   <body>
     <pre style="overflow:hidden">)" +
       std::string(10000, 'a') +
@@ -701,6 +709,9 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWideHiddenInDiv) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       R"(
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
   <body>
     <div style="overflow:hidden">
       <pre>)" +
@@ -762,7 +773,7 @@ TEST_F(MobileFriendlinessCheckerTest, ImageTooWideTwoImages) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
-    <meta name="viewport" content="initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body style="width:4000px">
     <img style="width:2000px; height:50px">
@@ -780,11 +791,11 @@ TEST_F(MobileFriendlinessCheckerTest, ImageTooWideAbsolutePosition) {
     <meta name="viewport" content="initial-scale=1.0">
   </head>
   <body>
-    <img style="width:100px; height:100px; position:absolute; left:2000px">
+    <img style="width:480px; height:800px; position:absolute; left:2000px">
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 338);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 417);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ImageTooWideDisplayNone) {

@@ -877,6 +877,8 @@ void LocalFrameView::PerformLayout() {
               !document->GetDisplayLockDocumentState().HasForcedScopes());
       DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
       GetLayoutView()->UpdateLayout();
+      if (mobile_friendliness_checker_)
+        mobile_friendliness_checker_->NotifyInitialScaleUpdated();
     }
   }
 

@@ -54,7 +54,13 @@ MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
       timer_(frame_view_->GetFrame().GetTaskRunner(TaskType::kInternalDefault),
              this,
-             &MobileFriendlinessChecker::Activate) {}
+             &MobileFriendlinessChecker::Activate),
+      viewport_scalar_(
+          frame_view_->GetFrame().GetWidgetForLocalRoot()
+              ? frame_view_->GetPage()
+                    ->GetChromeClient()
+                    .WindowToViewportScalar(&frame_view_->GetFrame(), 1)
+              : 1.0) {}
 
 MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
@@ -381,14 +387,9 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   DCHECK(frame_view_->GetFrame().IsLocalRoot());
   base::TimeTicks started = base::TimeTicks::Now();
   constexpr float kOneDipInMm = 0.15875;
-  double initial_scale = frame_view_->GetPage()
-                             ->GetPageScaleConstraintsSet()
-                             .FinalConstraints()
-                             .initial_scale;
-  DCHECK_GT(initial_scale, 0);
 
   const int finger_radius =
-      std::floor((3 / kOneDipInMm) / initial_scale);  // 3mm in logical pixel.
+      std::floor((3 / kOneDipInMm) / initial_scale_);  // 3mm in logical pixel.
 
   Vector<std::pair<int, EdgeOrCenter>> vertices;
   vertices.ReserveInitialCapacity(1024);
@@ -477,6 +478,13 @@ void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
   last_evaluated_ = base::TimeTicks::Now();
 }
 
+void MobileFriendlinessChecker::NotifyInitialScaleUpdated() {
+  initial_scale_ = frame_view_->GetPage()
+                       ->GetPageScaleConstraintsSet()
+                       .FinalConstraints()
+                       .initial_scale;
+}
+
 void MobileFriendlinessChecker::NotifyViewportUpdated(
     const ViewportDescription& viewport) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
@@ -490,11 +498,7 @@ void MobileFriendlinessChecker::NotifyViewportUpdated(
   if (viewport.max_width.IsFixed()) {
     viewport_hardcoded_width_ = viewport.max_width.GetFloatValue();
     // Convert value from Blink space to device-independent pixels.
-    const double viewport_scalar =
-        frame_view_->GetPage()->GetChromeClient().WindowToViewportScalar(
-            &frame_view_->GetFrame(), 1);
-    if (viewport_scalar != 0)
-      viewport_hardcoded_width_ /= viewport_scalar;
+    viewport_hardcoded_width_ /= viewport_scalar_;
   }
 
   if (viewport.zoom_is_explicit)
@@ -534,18 +538,8 @@ void MobileFriendlinessChecker::NotifyInvalidatePaint(
         style.ClipBottom().IsZero())
       return;
 
-    const double viewport_scalar =
-        frame_view_->GetPage()->GetChromeClient().WindowToViewportScalar(
-            &frame_view_->GetFrame(), 1);
-
-    double initial_scale = frame_view_->GetPage()
-                               ->GetPageScaleConstraintsSet()
-                               .FinalConstraints()
-                               .initial_scale;
-    DCHECK_GT(initial_scale, 0);
-
     double actual_font_size =
-        style.FontSize() * initial_scale / viewport_scalar;
+        style.FontSize() * initial_scale_ / viewport_scalar_;
     double area = text->PhysicalAreaSize();
     if (std::round(actual_font_size) < kSmallFontThresholdInDips)
       text_area_sizes_.small_font_area += area;
@@ -565,13 +559,9 @@ int MobileFriendlinessChecker::ComputeContentOutsideViewport() {
     return 0;
   }
 
-  double initial_scale = frame_view_->GetPage()
-                             ->GetPageScaleConstraintsSet()
-                             .FinalConstraints()
-                             .initial_scale;
   int content_width =
       root_frame_viewport->LayoutViewport().ContentsSize().width() *
-      initial_scale;
+      initial_scale_;
   int max_scroll_offset = content_width - frame_width;
 
   // We use ceil function here because we want to treat 100.1% as 101 which
