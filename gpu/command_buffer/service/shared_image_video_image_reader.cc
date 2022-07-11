@@ -519,11 +519,6 @@ SharedImageVideoImageReader::ProduceSkia(
   return skia_representation;
 }
 
-void SharedImageVideoImageReader::BeginGLReadAccess(const GLuint service_id) {
-  AssertAcquiredDrDcLock();
-  stream_texture_sii_->UpdateAndBindTexImage(service_id);
-}
-
 // Representation of SharedImageVideoImageReader as an overlay plane.
 class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
     : public gpu::SharedImageRepresentationOverlay,

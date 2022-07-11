@@ -98,8 +98,6 @@ class GPU_GLES2_EXPORT SharedImageVideoImageReader
   class SharedImageRepresentationOverlayVideo;
   class SharedImageRepresentationLegacyOverlayVideo;
 
-  void BeginGLReadAccess(const GLuint service_id);
-
   std::unique_ptr<ContextLostObserverHelper> context_lost_helper_;
   scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii_;
 
