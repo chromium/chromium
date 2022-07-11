@@ -98,8 +98,8 @@
     <template is="dom-repeat" items="[[detectedPIIItems_]]">
       <div id="detected-pii-item">
         <cr-expand-button expanded="{{item.expandDetails}}"
-            aria-description$=
-                "[[getPiiItemAriaDescription_(
+            aria-label$=
+                "[[getPiiItemAriaLabel_(
                       item.piiTypeDescription, item.count)]]">
           <cr-checkbox checked="{{item.keep}}">
             <span>[[item.piiTypeDescription]]: [[item.count]]</span>

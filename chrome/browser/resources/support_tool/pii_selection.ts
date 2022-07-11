@@ -111,8 +111,7 @@ export class PIISelectionElement extends PIISelectionElementBase {
     return (selectedButton === PiiRadioButtons.INCLUDE_NONE);
   }
 
-  private getPiiItemAriaDescription_(description: string, count: number):
-      string {
+  private getPiiItemAriaLabel_(description: string, count: number): string {
     return 'More info for ' + description + ' ' + count;
   }
 }
