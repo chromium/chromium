@@ -311,7 +311,7 @@ public final class ReturnToChromeUtil {
             @Nullable String postDataType, @Nullable byte[] postData, boolean isBackground,
             @Nullable Boolean incognito, @Nullable Tab parentTab) {
         String url = params.getUrl();
-        ChromeActivity chromeActivity = getActivityPresentingOverviewWithOmnibox();
+        ChromeActivity chromeActivity = getActivityPresentingOverviewWithOmnibox(url);
         if (chromeActivity == null) return null;
 
         // Create a new unparented tab.
@@ -359,7 +359,7 @@ public final class ReturnToChromeUtil {
      * @param url The URL to load.
      * @return The ChromeActivity if it is presenting the omnibox on the tab switcher, else null.
      */
-    private static ChromeActivity getActivityPresentingOverviewWithOmnibox() {
+    private static ChromeActivity getActivityPresentingOverviewWithOmnibox(String url) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (activity == null || !isStartSurfaceEnabled(activity)
                 || !(activity instanceof ChromeActivity)) {
@@ -369,6 +369,7 @@ public final class ReturnToChromeUtil {
         ChromeActivity chromeActivity = (ChromeActivity) activity;
 
         assert LibraryLoader.getInstance().isInitialized();
+        if (!chromeActivity.isInOverviewMode() && !UrlUtilities.isNTPUrl(url)) return null;
 
         return chromeActivity;
     }
