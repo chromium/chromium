@@ -4479,7 +4479,6 @@ crbug.com/1050754 external/wpt/shadow-dom/declarative/move-template-before-closi
 crbug.com/1050754 external/wpt/shadow-dom/declarative/script-access.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/shadow-dom/focus/click-focus-delegatesFocus-tabindex-varies.html [ Failure ]
 crbug.com/1050754 external/wpt/shadow-dom/focus/focus-selector-delegatesFocus.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/shadow-dom/historical.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/shadow-dom/offsetParent-across-shadow-boundaries.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/shadow-dom/slots-imperative-api-slotchange.tentative.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/shadow-dom/slots-imperative-slot-api.tentative.html [ Failure Pass ]
