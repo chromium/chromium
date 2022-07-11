@@ -130,6 +130,30 @@ TEST_F(FindTextTest, FindFancyQuotationMarkText) {
   engine->StartFind(base::UTF16ToUTF8(term), /*case_sensitive=*/true);
 }
 
+TEST_F(FindTextTest, FindVisibleCroppedText) {
+  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Only one instance of the word "world" is visible. The other is cropped out.
+  // TODO(crbug.com/1343175): The correct behavior is to return 1 result.
+  ExpectInitialSearchResults(client, 2);
+  engine->StartFind("world", /*case_sensitive=*/true);
+}
+
+TEST_F(FindTextTest, FindHiddenCroppedText) {
+  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
+  ASSERT_TRUE(engine);
+
+  // The word "Hello" is cropped out.
+  // TODO(crbug.com/1343175): The correct behavior is to return no results.
+  ExpectInitialSearchResults(client, 1);
+  engine->StartFind("Hello", /*case_sensitive=*/true);
+}
+
 TEST_F(FindTextTest, SelectFindResult) {
   FindTextTestClient client(/*expected_case_sensitive=*/true);
   std::unique_ptr<PDFiumEngine> engine =
