@@ -42,7 +42,4 @@ void CastWindowManagerDefault::AddTouchActivityObserver(
 void CastWindowManagerDefault::RemoveTouchActivityObserver(
     CastTouchActivityObserver* observer) {}
 
-void CastWindowManagerDefault::SetEnableRoundedCorners(bool enable) {}
-void CastWindowManagerDefault::NotifyColorInversionEnabled(bool enabled) {}
-
 }  // namespace chromecast

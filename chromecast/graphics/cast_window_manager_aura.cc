@@ -15,7 +15,6 @@
 #include "chromecast/graphics/cast_window_tree_host_aura.h"
 #include "chromecast/graphics/gestures/cast_system_gesture_event_handler.h"
 #include "chromecast/graphics/gestures/side_swipe_detector.h"
-#include "chromecast/graphics/rounded_window_corners.h"
 #include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"
@@ -234,10 +233,6 @@ void CastWindowManagerAura::Setup() {
   side_swipe_detector_ = std::make_unique<SideSwipeDetector>(
       system_gesture_dispatcher_.get(), root_window);
 
-  // Add rounded corners, but defaulted to hidden until explicitly asked for by
-  // a component.
-  rounded_window_corners_ = RoundedWindowCorners::Create(this);
-
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
   window_tree_host_->compositor()->SetDisplayVSyncParameters(
       base::TimeTicks(), base::Milliseconds(250));
@@ -245,11 +240,6 @@ void CastWindowManagerAura::Setup() {
 
   // Chromecast devices do not support cut/copy/paste.
   DCHECK(!ui::TouchSelectionMenuRunner::GetInstance());
-}
-
-bool CastWindowManagerAura::HasRoundedWindowCorners() const {
-  return rounded_window_corners_.get() != nullptr &&
-         rounded_window_corners_->IsEnabled();
 }
 
 void CastWindowManagerAura::OnWindowOrderChanged(
@@ -358,15 +348,6 @@ void CastWindowManagerAura::AddTouchActivityObserver(
 void CastWindowManagerAura::RemoveTouchActivityObserver(
     CastTouchActivityObserver* observer) {
   event_gate_->RemoveObserver(observer);
-}
-
-void CastWindowManagerAura::SetEnableRoundedCorners(bool enable) {
-  DCHECK(rounded_window_corners_);
-  rounded_window_corners_->SetEnabled(enable);
-}
-
-void CastWindowManagerAura::NotifyColorInversionEnabled(bool enabled) {
-  rounded_window_corners_->SetColorInversion(enabled);
 }
 
 }  // namespace chromecast

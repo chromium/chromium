@@ -24,6 +24,4 @@ enum ZOrder {
   SETTINGS = 6,
   // Boot animation.
   BOOT_ANIMATION_OVERLAY = 7,
-  // Rounded corners for select devices.
-  CORNERS_OVERLAY = 8,
 };

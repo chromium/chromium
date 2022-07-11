@@ -124,7 +124,6 @@
 #include "chromecast/browser/devtools/cast_ui_devtools.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "chromecast/graphics/cast_window_manager_aura.h"
-#include "chromecast/graphics/rounded_window_corners_manager.h"
 #include "chromecast/media/service/cast_renderer.h"  // nogncheck
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/ui_devtools/devtools_server.h"  // nogncheck
@@ -663,11 +662,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
       GetSwitchValueBoolean(switches::kEnableInput, false));
   window_manager_->Setup();
 
-  if (GetSwitchValueBoolean(switches::kEnableRoundedWindowCorners, false)) {
-    rounded_window_corners_manager_ =
-        std::make_unique<RoundedWindowCornersManager>(window_manager_.get());
-  }
-
   display_change_observer_ = std::make_unique<DisplayConfiguratorObserver>(
       cast_browser_process_->display_configurator(), window_manager_.get());
 
@@ -848,10 +842,6 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
   cast_browser_process_->cast_service()->Finalize();
   cast_browser_process_->cast_browser_metrics()->Finalize();
   cast_browser_process_.reset();
-
-#if defined(USE_AURA)
-  rounded_window_corners_manager_.reset();
-#endif
 
   window_manager_.reset();
 #if defined(USE_AURA)

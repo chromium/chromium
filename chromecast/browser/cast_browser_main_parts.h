@@ -49,7 +49,6 @@ class ServiceManagerContext;
 #if defined(USE_AURA)
 class CastWindowManagerAura;
 class CastScreen;
-class RoundedWindowCornersManager;
 namespace shell {
 class CastUIDevTools;
 }  // namespace shell
@@ -141,7 +140,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<views::ViewsDelegate> views_delegate_;
   std::unique_ptr<CastScreen> cast_screen_;
   std::unique_ptr<CastWindowManagerAura> window_manager_;
-  std::unique_ptr<RoundedWindowCornersManager> rounded_window_corners_manager_;
   std::unique_ptr<DisplayConfiguratorObserver> display_change_observer_;
 #else
   std::unique_ptr<CastWindowManager> window_manager_;

@@ -86,7 +86,6 @@ void DisplaySettingsManagerImpl::SetColorInversion(bool enable) {
 #if defined(USE_AURA)
   gamma_configurator_->SetColorInversion(enable);
 #endif  // defined(USE_AURA)
-  window_manager_->NotifyColorInversionEnabled(enable);
 }
 
 void DisplaySettingsManagerImpl::AddReceiver(

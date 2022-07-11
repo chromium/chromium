@@ -186,9 +186,6 @@ const char kBackGestureHorizontalThreshold[] =
 // Whether to enable detection and dispatch of a 'drag from the top' gesture.
 const char kEnableTopDragGesture[] = "enable-top-drag-gesture";
 
-// Whether to enable the drawing of rounded window corners in the root window.
-const char kEnableRoundedWindowCorners[] = "enable-rounded-window-corners";
-
 // Whether in hospitality mode
 const char kManagedMode[] = "managed-mode";
 

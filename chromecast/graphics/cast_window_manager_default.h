@@ -38,8 +38,6 @@ class CastWindowManagerDefault : public CastWindowManager {
   void AddTouchActivityObserver(CastTouchActivityObserver* observer) override;
   void RemoveTouchActivityObserver(
       CastTouchActivityObserver* observer) override;
-  void SetEnableRoundedCorners(bool enable) override;
-  void NotifyColorInversionEnabled(bool enabled) override;
 };
 
 }  // namespace chromecast
