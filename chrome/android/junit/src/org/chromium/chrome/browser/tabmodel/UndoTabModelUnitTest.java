@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -44,6 +45,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisabledTest(message = "crbug.com/1343385")
 public class UndoTabModelUnitTest {
     private static final long FAKE_NATIVE_ADDRESS = 123L;
     private static final Tab[] sEmptyList = new Tab[] {};
