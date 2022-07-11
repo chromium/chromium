@@ -175,9 +175,10 @@ void WebBundleReader::ReadMetadata(MetadataCallback callback) {
     return;
   }
   DCHECK(source_->is_network());
-  parser_->ParseMetadata(base::BindOnce(&WebBundleReader::OnMetadataParsed,
-                                        base::Unretained(this),
-                                        std::move(callback)));
+  parser_->ParseMetadata(
+      /*offset=*/-1,
+      base::BindOnce(&WebBundleReader::OnMetadataParsed, base::Unretained(this),
+                     std::move(callback)));
 }
 
 void WebBundleReader::ReadResponse(
@@ -339,9 +340,10 @@ void WebBundleReader::ReadMetadataInternal(MetadataCallback callback,
                 web_package::mojom::BundleParseErrorType::kParserInternalError,
                 base::File::ErrorToString(error))));
   } else {
-    parser_->ParseMetadata(base::BindOnce(&WebBundleReader::OnMetadataParsed,
-                                          base::Unretained(this),
-                                          std::move(callback)));
+    parser_->ParseMetadata(
+        /*offset=*/-1,
+        base::BindOnce(&WebBundleReader::OnMetadataParsed,
+                       base::Unretained(this), std::move(callback)));
   }
 }
 

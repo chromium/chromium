@@ -25,14 +25,19 @@ class WebBundleParser : public mojom::WebBundleParser {
 
   ~WebBundleParser() override;
 
- private:
-  class MetadataParser;
-  class ResponseParser;
-
   class SharedBundleDataSource
       : public base::RefCounted<SharedBundleDataSource> {
    public:
-    class Observer;
+    class Observer {
+     public:
+      Observer() = default;
+
+      Observer(const Observer&) = delete;
+      Observer& operator=(const Observer&) = delete;
+
+      virtual ~Observer() = default;
+      virtual void OnDisconnect() = 0;
+    };
 
     explicit SharedBundleDataSource(
         mojo::PendingRemote<mojom::BundleDataSource> pending_data_source);
@@ -63,8 +68,13 @@ class WebBundleParser : public mojom::WebBundleParser {
     base::flat_set<Observer*> observers_;
   };
 
+ private:
+  class MetadataParser;
+  class ResponseParser;
+
   // mojom::WebBundleParser implementation.
-  void ParseMetadata(ParseMetadataCallback callback) override;
+  void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override;
+  void ParseMetadata(int64_t offset, ParseMetadataCallback callback) override;
   void ParseResponse(uint64_t response_offset,
                      uint64_t response_length,
                      ParseResponseCallback callback) override;

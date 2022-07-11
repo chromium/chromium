@@ -140,7 +140,11 @@ MockParserFactory::MockParserFactory(
 
 MockParserFactory::~MockParserFactory() = default;
 
-void MockParser::ParseMetadata(ParseMetadataCallback callback) {
+void MockParser::ParseIntegrityBlock(ParseIntegrityBlockCallback callback) {
+  NOTREACHED();
+}
+
+void MockParser::ParseMetadata(int64_t offset, ParseMetadataCallback callback) {
   if (simulate_parse_metadata_crash_) {
     factory_->SimulateParserDisconnect();
     return;

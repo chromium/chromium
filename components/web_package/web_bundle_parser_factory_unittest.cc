@@ -129,7 +129,7 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
     base::test::TestFuture<mojom::BundleMetadataPtr,
                            mojom::BundleMetadataParseErrorPtr>
         future;
-    parser->ParseMetadata(future.GetCallback());
+    parser->ParseMetadata(/*offset=*/-1, future.GetCallback());
     metadata = std::get<0>(future.Take());
   }
   ASSERT_TRUE(metadata);

@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "components/cbor/reader.h"
 #include "components/web_package/input_reader.h"
+#include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
@@ -177,17 +178,6 @@ GURL ParseExchangeURL(base::StringPiece str, const GURL& base_url) {
 
 }  // namespace
 
-class WebBundleParser::SharedBundleDataSource::Observer {
- public:
-  Observer() {}
-
-  Observer(const Observer&) = delete;
-  Observer& operator=(const Observer&) = delete;
-
-  virtual ~Observer() {}
-  virtual void OnDisconnect() = 0;
-};
-
 // A parser for bundle's metadata. This class owns itself and will self destruct
 // after calling the ParseMetadataCallback.
 class WebBundleParser::MetadataParser
@@ -208,14 +198,18 @@ class WebBundleParser::MetadataParser
 
   ~MetadataParser() override { data_source_->RemoveObserver(this); }
 
+  // Starts parsing of the web bundle. If the data source is backed by a
+  // random-access, read the trailing `length` field at the end of the web
+  // bundle file and start from that offset.
+  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-trailing-length
   void Start() {
-    // First, check if the data source is backed by a random-access context to
-    // determine whether it is performant to read the trailing length field at
-    // the end of the web bundle file.
-    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-trailing-length
     data_source_->IsRandomAccessContext(base::BindOnce(
         &MetadataParser::OnIsRandomAccessContext, weak_factory_.GetWeakPtr()));
   }
+
+  // Starts parsing of the web bundle at the specified offset, ignoring the
+  // `length` field of the web bundle.
+  void StartAtOffset(const uint64_t offset) { ReadMagicBytes(offset); }
 
  private:
   void OnIsRandomAccessContext(const bool is_random_access_context) {
@@ -1169,10 +1163,29 @@ WebBundleParser::WebBundleParser(
 
 WebBundleParser::~WebBundleParser() = default;
 
-void WebBundleParser::ParseMetadata(ParseMetadataCallback callback) {
+void WebBundleParser::ParseIntegrityBlock(
+    ParseIntegrityBlockCallback callback) {
+  IntegrityBlockParser* parser =
+      new IntegrityBlockParser(data_source_, std::move(callback));
+  parser->Start();
+}
+
+void WebBundleParser::ParseMetadata(int64_t offset,
+                                    ParseMetadataCallback callback) {
   MetadataParser* parser =
       new MetadataParser(data_source_, base_url_, std::move(callback));
-  parser->Start();
+  if (offset >= 0) {
+    parser->StartAtOffset(offset);
+  } else {
+    DCHECK_EQ(offset, -1);
+    // If no offset is specified, then where we start parsing the web bundle
+    // metadata depends on whether or not it is loaded in a random-access
+    // context. If random-access into the web bundle is possible, then we use
+    // the `length` field at its end to determine the start of the web bundle.
+    // If random-access into the web bundle is not possible, then we simply
+    // start at the top.
+    parser->Start();
+  }
 }
 
 void WebBundleParser::ParseResponse(uint64_t response_offset,

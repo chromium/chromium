@@ -35,10 +35,20 @@ class SafeWebBundleParser {
   void OpenDataSource(
       mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source);
 
-  // Parses metadata. See web_package::mojom::WebBundleParser::ParseMetadata for
+  // Parses the integrity block of a signed web bundle. See
+  // web_package::mojom::WebBundleParser::ParseIntegrityBlock for
+  // details. This method fails when it's called before the previous call
+  // finishes.
+  void ParseIntegrityBlock(
+      web_package::mojom::WebBundleParser::ParseIntegrityBlockCallback
+          callback);
+
+  // Parses metadata. If `offset` is >= 0, then parsing of the web bundle starts
+  // at that offset. See web_package::mojom::WebBundleParser::ParseMetadata for
   // details. This method fails when it's called before the previous call
   // finishes.
   void ParseMetadata(
+      int64_t offset,
       web_package::mojom::WebBundleParser::ParseMetadataCallback callback);
 
   // Parses response. See web_package::mojom::WebBundleParser::ParseResponse for
@@ -55,6 +65,9 @@ class SafeWebBundleParser {
  private:
   web_package::mojom::WebBundleParserFactory* GetFactory();
   void OnDisconnect();
+  void OnIntegrityBlockParsed(
+      web_package::mojom::BundleIntegrityBlockPtr integrity_block,
+      web_package::mojom::BundleIntegrityBlockParseErrorPtr error);
   void OnMetadataParsed(web_package::mojom::BundleMetadataPtr metadata,
                         web_package::mojom::BundleMetadataParseErrorPtr error);
   void OnResponseParsed(size_t callback_id,
@@ -64,6 +77,8 @@ class SafeWebBundleParser {
   DataDecoder data_decoder_;
   mojo::Remote<web_package::mojom::WebBundleParserFactory> factory_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
+  web_package::mojom::WebBundleParser::ParseIntegrityBlockCallback
+      integrity_block_callback_;
   web_package::mojom::WebBundleParser::ParseMetadataCallback metadata_callback_;
   base::flat_map<size_t,
                  web_package::mojom::WebBundleParser::ParseResponseCallback>

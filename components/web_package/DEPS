@@ -13,7 +13,7 @@ specific_include_rules = {
   "web_bundle_signer.cc": [
     "+crypto",
   ],
-  "(ed25519_public_key|web_bundle_signer)\.cc": [
+  "(integrity_block_parser|ed25519_public_key|web_bundle_parser_unittest|web_bundle_signer)\.cc": [
     "+third_party/boringssl",
   ],
 }

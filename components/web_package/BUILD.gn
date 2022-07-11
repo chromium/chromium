@@ -10,6 +10,8 @@ static_library("web_package") {
     "input_reader.h",
     "signed_web_bundles/ed25519_public_key.cc",
     "signed_web_bundles/ed25519_public_key.h",
+    "signed_web_bundles/integrity_block_parser.cc",
+    "signed_web_bundles/integrity_block_parser.h",
     "signed_web_bundles/signed_web_bundle_id.cc",
     "signed_web_bundles/signed_web_bundle_id.h",
     "signed_web_bundles/signed_web_bundle_utils.cc",

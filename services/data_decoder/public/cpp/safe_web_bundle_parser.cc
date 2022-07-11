@@ -44,7 +44,25 @@ void SafeWebBundleParser::OpenDataSource(
   disconnected_ = false;
 }
 
+void SafeWebBundleParser::ParseIntegrityBlock(
+    web_package::mojom::WebBundleParser::ParseIntegrityBlockCallback callback) {
+  // This method is designed to be called once. So, allowing only once
+  // simultaneous request is fine enough.
+  if (disconnected_ || !integrity_block_callback_.is_null()) {
+    std::move(callback).Run(
+        nullptr,
+        web_package::mojom::BundleIntegrityBlockParseError::New(
+            web_package::mojom::BundleParseErrorType::kParserInternalError,
+            kConnectionError));
+    return;
+  }
+  integrity_block_callback_ = std::move(callback);
+  parser_->ParseIntegrityBlock(base::BindOnce(
+      &SafeWebBundleParser::OnIntegrityBlockParsed, base::Unretained(this)));
+}
+
 void SafeWebBundleParser::ParseMetadata(
+    int64_t offset,
     web_package::mojom::WebBundleParser::ParseMetadataCallback callback) {
   // This method is designed to be called once. So, allowing only once
   // simultaneous request is fine enough.
@@ -57,7 +75,8 @@ void SafeWebBundleParser::ParseMetadata(
     return;
   }
   metadata_callback_ = std::move(callback);
-  parser_->ParseMetadata(base::BindOnce(&SafeWebBundleParser::OnMetadataParsed,
+  parser_->ParseMetadata(offset,
+                         base::BindOnce(&SafeWebBundleParser::OnMetadataParsed,
                                         base::Unretained(this)));
 }
 
@@ -115,6 +134,14 @@ void SafeWebBundleParser::OnDisconnect() {
   response_callbacks_.clear();
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
+}
+
+void SafeWebBundleParser::OnIntegrityBlockParsed(
+    web_package::mojom::BundleIntegrityBlockPtr integrity_block,
+    web_package::mojom::BundleIntegrityBlockParseErrorPtr error) {
+  DCHECK(!integrity_block_callback_.is_null());
+  std::move(integrity_block_callback_)
+      .Run(std::move(integrity_block), std::move(error));
 }
 
 void SafeWebBundleParser::OnMetadataParsed(

@@ -22,8 +22,16 @@ interface WebBundleParserFactory {
 // Parser interface to obtain metadata and multiple responses from the bound
 // application/webbundle data provided on the construction at the factory above.
 interface WebBundleParser {
-  // Parses bundle's metadata.
-  ParseMetadata() => (BundleMetadata? Result, BundleMetadataParseError? error);
+  // Parses bundle's integrity block, if it exists.
+  ParseIntegrityBlock() => (BundleIntegrityBlock? Result,
+                            BundleIntegrityBlockParseError? error);
+
+  // Parses bundle's metadata. If `offset` is >= 0, parsing will begin at the
+  // indicated offset, and the `length` field of the web bundle will be ignored.
+  // If `offset` is -1, and the bundle is read in a random-access context, then
+  // the `length` field of the bundle will be used to determine the offset.
+  ParseMetadata(int64 offset)
+      => (BundleMetadata? Result, BundleMetadataParseError? error);
 
   // Parses a response from the range
   // |[response_offset, response_offset + response_length)|.
@@ -52,6 +60,11 @@ enum BundleParseErrorType {
   kVersionError,
 };
 
+struct BundleIntegrityBlockParseError {
+  BundleParseErrorType type;
+  string message;
+};
+
 struct BundleMetadataParseError {
   BundleParseErrorType type;
   string message;
@@ -60,6 +73,26 @@ struct BundleMetadataParseError {
 struct BundleResponseParseError {
   BundleParseErrorType type;
   string message;
+};
+
+struct BundleIntegrityBlock {
+  // If size is 0, then no integrity block was found.
+  uint64 size;
+  array<BundleIntegrityBlockSignatureStackEntry> signature_stack;
+};
+
+struct BundleIntegrityBlockSignatureStackEntry {
+  // The CBOR of this signature stack entry.
+  // This is needed for verification of more than one signature later, because
+  // to verify the n+1th signature, the CBOR of the signature stack entries of
+  // all n previous signatures is needed (crbug.com/1315947).
+  array<uint8> complete_entry_cbor;
+  // The CBOR of the attributes of this signature stack entry.
+  array<uint8> attributes_cbor;
+  // The public key of this signature stack entry.
+  array<uint8> public_key;
+  // The signature of this signature stack entry.
+  array<uint8> signature;
 };
 
 // Bundle's metadata, i.e. information in sections other than "responses".

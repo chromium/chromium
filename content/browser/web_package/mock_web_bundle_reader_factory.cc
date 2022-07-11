@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -65,7 +66,10 @@ class MockParser final : public web_package::mojom::WebBundleParser {
 
  private:
   // web_package::mojom::WebBundleParser implementation.
-  void ParseMetadata(ParseMetadataCallback callback) override {
+  void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override {
+    NOTREACHED();
+  }
+  void ParseMetadata(int64_t offset, ParseMetadataCallback callback) override {
     metadata_callback_ = std::move(callback);
     if (!wait_parse_metadata_callback_.is_null())
       std::move(wait_parse_metadata_callback_).Run();

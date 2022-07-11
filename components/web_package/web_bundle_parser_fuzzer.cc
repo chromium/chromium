@@ -56,8 +56,10 @@ class DataSource : public web_package::mojom::BundleDataSource {
 class WebBundleParserFuzzer {
  public:
   WebBundleParserFuzzer(const bool is_random_access_context,
+                        const bool parse_integrity_block,
                         const std::string& data)
-      : data_source_(is_random_access_context, data) {}
+      : data_source_(is_random_access_context, data),
+        parse_integrity_block_(parse_integrity_block) {}
 
   void FuzzBundle(base::RunLoop* run_loop) {
     mojo::PendingRemote<web_package::mojom::BundleDataSource>
@@ -71,8 +73,29 @@ class WebBundleParserFuzzer {
                                    std::move(data_source_remote));
 
     quit_loop_ = run_loop->QuitClosure();
-    parser_->ParseMetadata(base::BindOnce(
-        &WebBundleParserFuzzer::OnParseMetadata, base::Unretained(this)));
+    if (parse_integrity_block_) {
+      parser_->ParseIntegrityBlock(
+          base::BindOnce(&WebBundleParserFuzzer::OnParseIntegrityBlock,
+                         base::Unretained(this)));
+      return;
+    } else {
+      parser_->ParseMetadata(
+          /*offset=*/-1, base::BindOnce(&WebBundleParserFuzzer::OnParseMetadata,
+                                        base::Unretained(this)));
+    }
+  }
+
+  void OnParseIntegrityBlock(
+      web_package::mojom::BundleIntegrityBlockPtr integrity_block,
+      web_package::mojom::BundleIntegrityBlockParseErrorPtr error) {
+    if (!integrity_block) {
+      std::move(quit_loop_).Run();
+      return;
+    }
+    parser_->ParseMetadata(
+        integrity_block->size,
+        base::BindOnce(&WebBundleParserFuzzer::OnParseMetadata,
+                       base::Unretained(this)));
   }
 
   void OnParseMetadata(web_package::mojom::BundleMetadataPtr metadata,
@@ -107,6 +130,7 @@ class WebBundleParserFuzzer {
  private:
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   DataSource data_source_;
+  bool parse_integrity_block_;
   base::OnceClosure quit_loop_;
   std::vector<web_package::mojom::BundleResponseLocationPtr> locations_;
 };
@@ -129,9 +153,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment* env = new Environment();
 
   std::string web_bundle(reinterpret_cast<const char*>(data), size);
-  bool is_random_access_context = std::hash<std::string>()(web_bundle) & 1;
+  auto hash = std::hash<std::string>()(web_bundle);
+  bool is_random_access_context = hash & 0b01;
+  bool parse_integrity_block = hash & 0b10;
 
-  WebBundleParserFuzzer fuzzer(is_random_access_context, web_bundle);
+  WebBundleParserFuzzer fuzzer(is_random_access_context, parse_integrity_block,
+                               web_bundle);
   base::RunLoop run_loop;
   env->task_executor.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&WebBundleParserFuzzer::FuzzBundle,

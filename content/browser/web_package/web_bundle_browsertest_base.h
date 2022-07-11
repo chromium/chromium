@@ -105,7 +105,8 @@ class MockParser final : public web_package::mojom::WebBundleParser {
 
  private:
   // web_package::mojom::WebBundleParser implementation.
-  void ParseMetadata(ParseMetadataCallback callback) override;
+  void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override;
+  void ParseMetadata(int64_t offset, ParseMetadataCallback callback) override;
   void ParseResponse(uint64_t response_offset,
                      uint64_t response_length,
                      ParseResponseCallback callback) override;
