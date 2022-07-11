@@ -245,9 +245,6 @@ try_.orchestrator_builder(
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
-    experiments = {
-        "remove_src_checkout_experiment": 20,
-    },
 )
 
 try_.compilator_builder(
