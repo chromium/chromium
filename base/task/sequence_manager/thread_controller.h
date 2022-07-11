@@ -350,11 +350,10 @@ class BASE_EXPORT ThreadController {
       HistogramBase* histogram_ = nullptr;
 #if BUILDFLAG(ENABLE_BASE_TRACING)
       absl::optional<perfetto::Track> perfetto_track_;
-#endif
 
       // True if tracing was enabled during the last pass of RecordTimeInPhase.
       bool was_tracing_enabled_;
-
+#endif
       const RunLevelTracker& outer_;
     } time_keeper_{*this};
 

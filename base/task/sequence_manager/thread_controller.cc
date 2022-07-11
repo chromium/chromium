@@ -8,6 +8,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
 
