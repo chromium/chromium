@@ -593,23 +593,31 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetGroupConfigBrowserTest, LoadsAGroup) {
   ASSERT_TRUE(settings->IsActive());
 }
 
-// The following test requires that the testing config defined in
-// testing/variations/fieldtrial_testing_config.json is applied. The testing
-// config is only applied by default if 1) the
-// "disable_fieldtrial_testing_config" GN flag is set to false, and 2) the build
-// is a non-Chrome branded build.
-#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace {
-class PrivacyBudgetFieldtrialConfigTest : public PrivacyBudgetBrowserTestBase {
+
+class PrivacyBudgetAssignedBlockSamplingConfigTest
+    : public PlatformBrowserTest {
  public:
-  // This surface is blocked in fieldtrial_testing_config.json.
+  PrivacyBudgetAssignedBlockSamplingConfigTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIdentifiabilityStudy,
+        {{features::kIdentifiabilityStudyBlockedMetrics.name, "44033,44289"},
+         {features::kIdentifiabilityStudyBlockedTypes.name, "13,25,28"},
+         {features::kIdentifiabilityStudyBlockWeights.name, "5202,37515,34582"},
+         {features::kIdentifiabilityStudyBlocks.name,
+          // Define three blocks of surfaces.
+          "9129224;865032;8710152;8678920;9305096,"
+          "1722309467823238416;3972031034286914064,"
+          "3873813933275956760;7532279523433960728;13014994009983628312,"},
+         {features::kIdentifiabilityStudyGeneration.name, "7"}});
+  }
+
   static constexpr auto kBlockedSurface =
       blink::IdentifiableSurface::FromMetricHash(44033);
 
-  // This surface is not mentioned in fieldtrial_testing_config.json and is
-  // not blocked by default. It should be considered allowed, but its metrics
-  // will not be recorded because it is not one of the active surfaces.
+  // This surface is not mentioned above and is not blocked by default. It
+  // should be considered allowed, but its metrics will not be recorded because
+  // it is not one of the active surfaces.
   static constexpr auto kAllowedInactiveSurface =
       blink::IdentifiableSurface::FromMetricHash(44290);
 
@@ -617,21 +625,13 @@ class PrivacyBudgetFieldtrialConfigTest : public PrivacyBudgetBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-const blink::IdentifiableSurface
-    PrivacyBudgetFieldtrialConfigTest::kBlockedSurface;
-const blink::IdentifiableSurface
-    PrivacyBudgetFieldtrialConfigTest::kAllowedInactiveSurface;
 }  // namespace
 
-// //testing/variations/fieldtrial_testing_config.json defines a set of
-// parameters that should effectively enable the identifiability study for
-// browser tests. This test verifies that those settings work. This isn't
-// testing whether fieldtrial work, but rather we are testing if the process
-// picks up the config correctly since it is non-trivial.
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetFieldtrialConfigTest,
-                       LoadsSettingsFromFieldTrialConfig) {
+// This test checks that the Identifiability Study configuration is picked up
+// correctly from the field trial parameters.
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetAssignedBlockSamplingConfigTest,
+                       LoadsSettingsFromFieldTrialParameters) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
-  ASSERT_TRUE(EnableUkmRecording());
 
   const auto* settings = blink::IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
@@ -651,6 +651,3 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetFieldtrialConfigTest,
   EXPECT_FALSE(settings->ShouldSampleType(
       blink::IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo));
 }
-
-#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED) &&
-        // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
