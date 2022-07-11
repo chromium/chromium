@@ -24,4 +24,8 @@ bool CountingSettingsProvider::IsTypeAllowed(
   return state_->response_for_is_allowed;
 }
 
+bool CountingSettingsProvider::ShouldActivelySample() const {
+  return false;
+}
+
 }  // namespace blink

@@ -50,6 +50,9 @@ const base::FeatureParam<std::string> kIdentifiabilityStudyBlockWeights = {
 const base::FeatureParam<std::string> kIdentifiabilityStudyReidSurfaceBlocks = {
     &kIdentifiabilityStudy, "ReidSurfaceBlocks", ""};
 
+const base::FeatureParam<bool> kIdentifiabilityStudyEnableActiveSampling = {
+    &kIdentifiabilityStudy, "EnableActiveSampling", false};
+
 const base::FeatureParam<std::string>
     kIdentifiabilityStudyActivelySampledFonts = {&kIdentifiabilityStudy,
                                                  "ActivelySampledFonts", ""};

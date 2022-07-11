@@ -44,6 +44,7 @@ class PrivacyBudgetActiveSamplingTest : public ::testing::Test {
 TEST_F(PrivacyBudgetActiveSamplingTest, ActivelySampledSurfaces) {
   test::ScopedPrivacyBudgetConfig::Parameters parameters;
   parameters.actively_sampled_fonts = {"Arial", "Helvetica"};
+  parameters.enable_active_sampling = true;
   test::ScopedPrivacyBudgetConfig config(parameters);
   ScopedIdentifiabilityStudySettings scoped_settings;
 

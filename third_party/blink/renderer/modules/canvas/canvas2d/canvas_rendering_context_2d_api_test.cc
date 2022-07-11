@@ -359,6 +359,7 @@ class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
   bool IsTypeAllowed(IdentifiableSurface::Type type) const override {
     return true;
   }
+  bool ShouldActivelySample() const override { return false; }
 
  private:
   const bool enabled_ = true;

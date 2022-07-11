@@ -97,3 +97,7 @@ std::string EncodeIdentifiabilityType(
 }
 
 }  // namespace privacy_budget_internal
+
+std::string EncodeIdentifiabilityFieldTrialParam(bool source) {
+  return source ? "true" : "false";
+}

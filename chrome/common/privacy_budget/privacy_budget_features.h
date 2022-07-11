@@ -333,6 +333,15 @@ constexpr double kMaxProbabilityPerSurface = 0.5;
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudyReidSurfaceBlocks;
 
+// Enable active sampling.
+//
+// Parameter name: "EnableActiveSampling"
+// Parameter type: boolean.
+//
+// Enable active sampling of supported surfaces. Whether the surfaces will
+// actually be reported depends on the other parameters.
+extern const base::FeatureParam<bool> kIdentifiabilityStudyEnableActiveSampling;
+
 // List of font families which will be actively sampled.
 //
 // Parameter name: "ActivelySampledFonts"

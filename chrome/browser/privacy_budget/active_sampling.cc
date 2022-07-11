@@ -96,7 +96,7 @@ void ActivelySampleAvailableFonts() {
 }  // namespace
 
 void ActivelySampleIdentifiableSurfaces() {
-  if (!blink::IdentifiabilityStudySettings::Get()->IsActive())
+  if (!blink::IdentifiabilityStudySettings::Get()->ShouldActivelySample())
     return;
   ActivelySampleUserAgentModel();
   ActivelySampleAvailableFonts();

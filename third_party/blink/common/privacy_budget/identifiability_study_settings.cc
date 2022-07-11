@@ -145,4 +145,10 @@ bool IdentifiabilityStudySettings::ShouldSampleType(
   return provider_->IsTypeAllowed(type);
 }
 
+bool IdentifiabilityStudySettings::ShouldActivelySample() const {
+  if (LIKELY(!is_enabled_))
+    return false;
+  return provider_->ShouldActivelySample();
+}
+
 }  // namespace blink

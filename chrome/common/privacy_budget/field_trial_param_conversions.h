@@ -113,6 +113,8 @@ T DecodeIdentifiabilityFieldTrialParam(base::StringPiece encoded_value) {
   return result;
 }
 
+std::string EncodeIdentifiabilityFieldTrialParam(bool source);
+
 // Encodes a field trial parameter that will contain a list of values taken from
 // a container. The container must satisfy the named requirement Container. Its
 // value_type must have a corresponding EncodeIdentifiabilityType
