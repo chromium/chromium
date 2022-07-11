@@ -23,6 +23,7 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
@@ -4637,6 +4638,33 @@ TEST_F(DelegatedTest, ForwardMultipleBasic) {
     const auto kSmallCandidateRect = gfx::RectF(0, 0, 16 * (i + 1), 16);
     EXPECT_RECTF_EQ(kSmallCandidateRect, candidate_list[i].display_rect);
   }
+}
+
+TEST_F(DelegatedTest, DoNotDelegateCopyRequest) {
+  auto pass = CreateRenderPass();
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        kOverlayTopLeftRect);
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  // AggregatedRenderPass* main_pass = pass.get();
+  SurfaceDamageRectList surface_damage_rect_list;
+  // Simplify by adding full root damage.
+  surface_damage_rect_list.push_back(pass->output_rect);
+  pass->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
+  pass_list.push_back(std::move(pass));
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list),
+      overlay_processor_->GetDefaultPrimaryPlane(), &candidate_list,
+      &damage_rect_, &content_bounds_);
+  EXPECT_EQ(0u, candidate_list.size());
 }
 
 TEST_F(DelegatedTest, TestClipHandCrafted) {

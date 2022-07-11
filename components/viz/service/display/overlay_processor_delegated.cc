@@ -130,6 +130,13 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   if (disable_delegation())
     return false;
 
+  // Do not delegated when we have copy requests otherwise we will end up with
+  // the delegated quads missing from the frame buffer.
+  if (!render_pass->copy_requests.empty()) {
+    delegated_status_ = DelegationStatus::kCompositedCopyRequest;
+    return false;
+  }
+
   if (quad_list->size() >= kTooManyQuads) {
     delegated_status_ = DelegationStatus::kCompositedTooManyQuads;
     return false;
@@ -239,7 +246,6 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     gfx::Rect* damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
   DCHECK(candidates->empty());
-  auto* render_pass = render_passes->back().get();
   bool success = false;
 #if !BUILDFLAG(IS_APPLE)
   RecordFDUsageUMA();
@@ -250,15 +256,10 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     DBG_DRAW_RECT("delegated.surface.damage", each);
   }
 
-  // If we have any copy requests, we can't remove any quads for overlays or
-  // CALayers because the framebuffer would be missing the removed quads'
-  // contents.
-  if (render_pass->copy_requests.empty()) {
-    success = AttemptWithStrategies(
-        output_color_matrix, render_pass_backdrop_filters, resource_provider,
-        render_passes, &surface_damage_rect_list, output_surface_plane,
-        candidates, content_bounds);
-  }
+  success = AttemptWithStrategies(
+      output_color_matrix, render_pass_backdrop_filters, resource_provider,
+      render_passes, &surface_damage_rect_list, output_surface_plane,
+      candidates, content_bounds);
 
   DCHECK(candidates->empty() || success);
 
