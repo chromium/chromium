@@ -36,6 +36,18 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
   float devicePixelRatio() const;
   String label() const;
 
+  // Attributes exposed for HDR canvas.
+  // https://github.com/w3c/ColorWeb-CG/blob/master/hdr_html_canvas_element.md
+  float highDynamicRangeHeadroom() const;
+  float redPrimaryX() const;
+  float redPrimaryY() const;
+  float greenPrimaryX() const;
+  float greenPrimaryY() const;
+  float bluePrimaryX() const;
+  float bluePrimaryY() const;
+  float whitePointX() const;
+  float whitePointY() const;
+
   uint32_t label_idx() const { return label_idx_; }
   bool label_is_internal() const { return label_is_internal_; }
 

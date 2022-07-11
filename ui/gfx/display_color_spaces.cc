@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace gfx {
 
@@ -118,6 +119,12 @@ gfx::ColorSpace DisplayColorSpaces::GetCompositingColorSpace(
 bool DisplayColorSpaces::SupportsHDR() const {
   return GetOutputColorSpace(ContentColorUsage::kHDR, false).IsHDR() ||
          GetOutputColorSpace(ContentColorUsage::kHDR, true).IsHDR();
+}
+
+SkColorSpacePrimaries DisplayColorSpaces::GetPrimaries() const {
+  // TODO(https://crbug.com/1274220): Store this directly, rather than inferring
+  // it from the raster color space.
+  return GetRasterColorSpace().GetColorSpacePrimaries();
 }
 
 ColorSpace DisplayColorSpaces::GetScreenInfoColorSpace() const {

@@ -112,6 +112,9 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // Return true if the HDR color spaces are, indeed, HDR.
   bool SupportsHDR() const;
 
+  // Return the primaries that define the color gamut of the display.
+  SkColorSpacePrimaries GetPrimaries() const;
+
   // Output as a vector of strings. This is a helper function for printing in
   // about:gpu. All output vectors will be the same length. Each entry will be
   // the configuration name, its buffer format, and its color space.

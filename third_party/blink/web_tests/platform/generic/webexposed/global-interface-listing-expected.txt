@@ -8361,12 +8361,21 @@ interface Screen : EventTarget
     setter onchange
 interface ScreenDetailed : Screen
     attribute @@toStringTag
+    getter bluePrimaryX
+    getter bluePrimaryY
     getter devicePixelRatio
+    getter greenPrimaryX
+    getter greenPrimaryY
+    getter highDynamicRangeHeadroom
     getter isInternal
     getter isPrimary
     getter label
     getter left
+    getter redPrimaryX
+    getter redPrimaryY
     getter top
+    getter whitePointX
+    getter whitePointY
     method constructor
 interface ScreenDetails : EventTarget
     attribute @@toStringTag
