@@ -86,6 +86,7 @@ const CGSize kShadowOffset = CGSizeMake(0, 20);
       self.title.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
       self.title.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      self.title.accessibilityTraits |= UIAccessibilityTraitHeader;
       self.title.translatesAutoresizingMaskIntoConstraints = NO;
       [self addSubview:self.title];
       [NSLayoutConstraint activateConstraints:@[
