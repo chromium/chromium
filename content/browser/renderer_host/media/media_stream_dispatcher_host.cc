@@ -15,12 +15,15 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -321,6 +324,42 @@ void MediaStreamDispatcherHost::OnWebContentsFocused() {
   }
 }
 
+bool MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
+    int render_process_id,
+    int render_frame_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  RenderFrameHostImpl* render_frame_host =
+      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+  if (!render_frame_host)
+    return false;
+  ContentBrowserClient* browser_client = GetContentClient()->browser();
+  return browser_client->IsGetDisplayMediaSetSelectAllScreensAllowed(
+      render_frame_host->GetBrowserContext(),
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin());
+}
+
+MediaStreamDispatcherHost::GenerateStreamsUIThreadCheckResult
+MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread(
+    int render_process_id,
+    int render_frame_id,
+    bool request_all_screens,
+    base::OnceCallback<MediaDeviceSaltAndOrigin()>
+        generate_salt_and_origin_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(crbug.com/1342071): Add tests for |request_all_screens| being true.
+  if (request_all_screens &&
+      !CheckRequestAllScreensAllowed(render_process_id, render_frame_id)) {
+    return {.request_allowed = false,
+            .salt_and_origin = MediaDeviceSaltAndOrigin()};
+  }
+
+  return {
+      .request_allowed = true,
+      .salt_and_origin = std::move(generate_salt_and_origin_callback).Run()};
+}
+
 const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
 MediaStreamDispatcherHost::GetMediaStreamDeviceObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -396,8 +435,12 @@ void MediaStreamDispatcherHost::GenerateStreams(
 
   base::PostTaskAndReplyWithResult(
       GetUIThreadTaskRunner({}).get(), FROM_HERE,
-      base::BindOnce(salt_and_origin_callback_, render_process_id_,
-                     render_frame_id_),
+      base::BindOnce(
+          &MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread,
+          /*render_process_id=*/render_process_id_,
+          /*render_frame_id=*/render_frame_id_, controls.request_all_screens,
+          base::BindOnce(salt_and_origin_callback_, render_process_id_,
+                         render_frame_id_)),
       base::BindOnce(&MediaStreamDispatcherHost::DoGenerateStreams,
                      weak_factory_.GetWeakPtr(), page_request_id, controls,
                      user_gesture, std::move(audio_stream_selection_info_ptr),
@@ -410,9 +453,20 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
     bool user_gesture,
     blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
     GenerateStreamsCallback callback,
-    MediaDeviceSaltAndOrigin salt_and_origin) {
+    GenerateStreamsUIThreadCheckResult ui_check_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  // TODO(crbug.com/1337580): Cover this block by a browser test.
+  if (!ui_check_result.request_allowed) {
+    ReceivedBadMessage(
+        render_process_id_,
+        bad_message::MSDH_REQUEST_ALL_SCREENS_NOT_ALLOWED_FOR_ORIGIN);
+    return;
+  }
+
+  MediaDeviceSaltAndOrigin salt_and_origin =
+      std::move(ui_check_result.salt_and_origin);
+  ui_check_result = {};
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
                                            salt_and_origin.origin)) {
     std::move(callback).Run(

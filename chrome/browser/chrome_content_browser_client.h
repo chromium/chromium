@@ -234,6 +234,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
   bool IsIsolatedAppsDeveloperModeAllowed(
       content::BrowserContext* context) override;
+  bool IsGetDisplayMediaSetSelectAllScreensAllowed(
+      content::BrowserContext* context,
+      const url::Origin& origin) override;
   bool IsFileAccessAllowed(const base::FilePath& path,
                            const base::FilePath& absolute_path,
                            const base::FilePath& profile_path) override;
@@ -490,6 +493,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::CommitDeferringCondition::NavigationType type) override;
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
+  std::unique_ptr<media::ScreenEnumerator> CreateScreenEnumerator()
+      const override;
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   void CreateMediaRemoter(
       content::RenderFrameHost* render_frame_host,

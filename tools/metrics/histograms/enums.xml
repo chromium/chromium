@@ -10646,6 +10646,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="277" label="FF_NAVIGATION_INVALID_URL"/>
   <int value="278" label="FTN_ANONYMOUS"/>
   <int value="279" label="BFSI_CREATE_FOR_WORKER_FENCED_FRAME"/>
+  <int value="280" label="PMM_SUBSCRIBE_IN_FENCED_FRAME"/>
+  <int value="281" label="MSDH_REQUEST_ALL_SCREENS_NOT_ALLOWED_FOR_ORIGIN"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

@@ -63,10 +63,27 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   friend class MediaStreamDispatcherHostTest;
   friend class MockMediaStreamDispatcherHost;
 
+  struct GenerateStreamsUIThreadCheckResult {
+    bool request_allowed = false;
+    MediaDeviceSaltAndOrigin salt_and_origin;
+  };
+
   struct PendingAccessRequest;
   using RequestsQueue =
       base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
   RequestsQueue pending_requests_;
+
+  static bool CheckRequestAllScreensAllowed(int render_process_id,
+                                            int render_frame_id);
+
+  // Performs checks / computations that need to be done on the UI
+  // thread (i.e. if a select all screens request is permitted and
+  // the computation of the device salt and origin).
+  static GenerateStreamsUIThreadCheckResult GenerateStreamsChecksOnUIThread(
+      int render_process_id,
+      int render_frame_id,
+      bool request_all_screens,
+      base::OnceCallback<MediaDeviceSaltAndOrigin()> salt_and_origin_callback);
 
   const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
   GetMediaStreamDeviceObserver();
@@ -120,7 +137,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       bool user_gesture,
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
       GenerateStreamsCallback callback,
-      MediaDeviceSaltAndOrigin salt_and_origin);
+      GenerateStreamsUIThreadCheckResult ui_check_result);
   void DoOpenDevice(int32_t request_id,
                     const std::string& device_id,
                     blink::mojom::MediaStreamType type,

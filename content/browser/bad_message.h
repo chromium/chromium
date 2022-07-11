@@ -305,6 +305,7 @@ enum BadMessageReason {
   FTN_ANONYMOUS = 278,
   BFSI_CREATE_FOR_WORKER_FENCED_FRAME = 279,
   PMM_SUBSCRIBE_IN_FENCED_FRAME = 280,
+  MSDH_REQUEST_ALL_SCREENS_NOT_ALLOWED_FOR_ORIGIN = 281,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

@@ -68,6 +68,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_switches.h"
+#include "media/capture/content/screen_enumerator.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/fake_video_capture_device.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
@@ -2004,6 +2005,28 @@ void MediaStreamManager::SetUpRequest(const std::string& label) {
       return;
     }
   }
+
+  if (request->controls.request_all_screens) {
+    std::unique_ptr<media::ScreenEnumerator> screen_enumerator =
+        GetContentClient()->browser()->CreateScreenEnumerator();
+    if (!screen_enumerator) {
+      HandleAccessRequestResponse(
+          label, media::AudioParameters(), blink::mojom::StreamDevicesSet(),
+          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED);
+      return;
+    }
+
+    // The screen enumerator lives on the IO thread.
+    // It is safe to bind base::Unretained(this) because MediaStreamManager is
+    // owned by BrowserMainLoop.
+    screen_enumerator->EnumerateScreens(
+        request->video_type(),
+        base::BindOnce(&MediaStreamManager::HandleAccessRequestResponse,
+                       base::Unretained(this), label,
+                       media::AudioParameters()));
+    return;
+  }
+
   ReadOutputParamsAndPostRequestToUI(label, request, MediaDeviceEnumeration());
 }
 

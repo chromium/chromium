@@ -293,6 +293,11 @@ std::unique_ptr<media::AudioManager> ContentBrowserClient::CreateAudioManager(
   return nullptr;
 }
 
+std::unique_ptr<media::ScreenEnumerator>
+ContentBrowserClient::CreateScreenEnumerator() const {
+  return nullptr;
+}
+
 bool ContentBrowserClient::OverridesAudioManager() {
   return false;
 }
@@ -333,6 +338,12 @@ bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 bool ContentBrowserClient::IsIsolatedAppsDeveloperModeAllowed(
     BrowserContext* context) {
   return true;
+}
+
+bool ContentBrowserClient::IsGetDisplayMediaSetSelectAllScreensAllowed(
+    content::BrowserContext* context,
+    const url::Origin& origin) {
+  return false;
 }
 
 size_t ContentBrowserClient::GetMaxRendererProcessCountOverride() {

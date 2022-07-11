@@ -60,6 +60,7 @@ void FilterMediaList(std::vector<DesktopMediaList::Type>& media_types,
 
 void ShowCaptureTerminatedDialog(content::WebContents* contents);
 
+// TODO(crbug.com/1342069): Use Origin instead of GURL.
 bool IsGetDisplayMediaSetSelectAllScreensAllowed(
     content::BrowserContext* context,
     const GURL& url);

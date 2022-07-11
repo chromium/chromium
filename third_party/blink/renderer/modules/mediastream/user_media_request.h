@@ -104,6 +104,7 @@ class MODULES_EXPORT UserMediaRequest final
                    MediaConstraints audio,
                    MediaConstraints video,
                    bool should_prefer_current_tab,
+                   bool auto_select_all_screens,
                    Callbacks*,
                    IdentifiableSurface surface);
   ~UserMediaRequest() override;
@@ -149,6 +150,7 @@ class MODULES_EXPORT UserMediaRequest final
 
   void set_exclude_system_audio(bool value) { exclude_system_audio_ = value; }
   bool exclude_system_audio() const { return exclude_system_audio_; }
+  bool auto_select_all_screens() const { return auto_select_all_screens_; }
 
   // Mark this request as an GetOpenDevice request for initializing a
   // TransferredMediaStreamTrack from the deviced identified by session_id.
@@ -171,6 +173,7 @@ class MODULES_EXPORT UserMediaRequest final
   MediaConstraints video_;
   const bool should_prefer_current_tab_ = false;
   bool exclude_system_audio_ = false;
+  const bool auto_select_all_screens_ = false;
   bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;
   int32_t request_id_ = -1;

@@ -67,6 +67,8 @@
 #include "chrome/browser/media/audio_service_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/webrtc/audio_debug_recordings_handler.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
+#include "chrome/browser/media/webrtc/chrome_screen_enumerator.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/browser/memory/chrome_browser_main_extra_parts_memory.h"
@@ -2170,6 +2172,13 @@ bool ChromeContentBrowserClient::IsIsolatedAppsDeveloperModeAllowed(
   return profile &&
          profile->GetPrefs()->GetBoolean(
              policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed);
+}
+
+bool ChromeContentBrowserClient::IsGetDisplayMediaSetSelectAllScreensAllowed(
+    content::BrowserContext* context,
+    const url::Origin& origin) {
+  return capture_policy::IsGetDisplayMediaSetSelectAllScreensAllowed(
+      context, origin.GetURL());
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(
@@ -4574,6 +4583,11 @@ std::unique_ptr<content::NavigationUIData>
 ChromeContentBrowserClient::GetNavigationUIData(
     content::NavigationHandle* navigation_handle) {
   return std::make_unique<ChromeNavigationUIData>(navigation_handle);
+}
+
+std::unique_ptr<media::ScreenEnumerator>
+ChromeContentBrowserClient::CreateScreenEnumerator() const {
+  return std::make_unique<ChromeScreenEnumerator>();
 }
 
 std::unique_ptr<content::DevToolsManagerDelegate>

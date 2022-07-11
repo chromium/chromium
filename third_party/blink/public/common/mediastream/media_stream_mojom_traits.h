@@ -113,6 +113,10 @@ struct BLINK_COMMON_EXPORT
     return controls.request_pan_tilt_zoom_permission;
   }
 
+  static bool request_all_screens(const blink::StreamControls& controls) {
+    return controls.request_all_screens;
+  }
+
   static bool Read(blink::mojom::StreamControlsDataView input,
                    blink::StreamControls* out);
 };

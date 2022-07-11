@@ -840,6 +840,11 @@ void UserMediaProcessor::SetupVideoInput() {
       IsPanTiltZoomPermissionRequested(
           current_request_info_->request()->VideoConstraints());
 
+  // TODO(crbug.com/1337788): Clean up naming inconsistency with
+  // auto_select_all_screens.
+  current_request_info_->stream_controls()->request_all_screens =
+      current_request_info_->request()->auto_select_all_screens();
+
   if (blink::IsDeviceMediaType(video_controls.stream_type)) {
     GetMediaDevicesDispatcher()->GetVideoInputCapabilities(
         WTF::Bind(&UserMediaProcessor::SelectVideoDeviceSettings,

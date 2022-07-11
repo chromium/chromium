@@ -393,7 +393,8 @@ UserMediaRequest* UserMediaRequest::Create(
 
   UserMediaRequest* const result = MakeGarbageCollected<UserMediaRequest>(
       context, controller, media_type, audio, video,
-      options->preferCurrentTab(), callbacks, surface);
+      options->preferCurrentTab(), options->autoSelectAllScreens(), callbacks,
+      surface);
 
   // The default is to include.
   // Note that this option is no-op if audio is not requested.
@@ -410,7 +411,8 @@ UserMediaRequest* UserMediaRequest::CreateForTesting(
     const MediaConstraints& video) {
   return MakeGarbageCollected<UserMediaRequest>(
       nullptr, nullptr, UserMediaRequest::MediaType::kUserMedia, audio, video,
-      /*should_prefer_current_tab=*/false, nullptr, IdentifiableSurface());
+      /*should_prefer_current_tab=*/false, /*auto_select_all_screens=*/false,
+      nullptr, IdentifiableSurface());
 }
 
 UserMediaRequest::UserMediaRequest(ExecutionContext* context,
@@ -419,6 +421,7 @@ UserMediaRequest::UserMediaRequest(ExecutionContext* context,
                                    MediaConstraints audio,
                                    MediaConstraints video,
                                    bool should_prefer_current_tab,
+                                   bool auto_select_all_screens,
                                    Callbacks* callbacks,
                                    IdentifiableSurface surface)
     : ExecutionContextLifecycleObserver(context),
@@ -426,6 +429,7 @@ UserMediaRequest::UserMediaRequest(ExecutionContext* context,
       audio_(audio),
       video_(video),
       should_prefer_current_tab_(should_prefer_current_tab),
+      auto_select_all_screens_(auto_select_all_screens),
       should_disable_hardware_noise_suppression_(
           RuntimeEnabledFeatures::DisableHardwareNoiseSuppressionEnabled(
               context)),

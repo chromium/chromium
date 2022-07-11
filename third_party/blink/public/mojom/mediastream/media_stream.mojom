@@ -124,6 +124,7 @@ struct StreamControls {
   bool disable_local_echo;
   bool exclude_system_audio;
   bool request_pan_tilt_zoom_permission;
+  bool request_all_screens;
 };
 
 // Results returned by a successful GetOpenDevice call.

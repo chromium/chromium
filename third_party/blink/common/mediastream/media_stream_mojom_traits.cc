@@ -71,6 +71,7 @@ bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
   out->exclude_system_audio = input.exclude_system_audio();
   out->request_pan_tilt_zoom_permission =
       input.request_pan_tilt_zoom_permission();
+  out->request_all_screens = input.request_all_screens();
   return true;
 }
 

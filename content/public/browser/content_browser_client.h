@@ -124,6 +124,7 @@ class ImageSkia;
 namespace media {
 class AudioLogFactory;
 class AudioManager;
+class ScreenEnumerator;
 }  // namespace media
 
 namespace mojo {
@@ -632,6 +633,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // AllowIsolatedAppsDeveloperMode policy (chrome-only, the respective override
   // can be found in ChromeContentBrowserClient). Returns true by default.
   virtual bool IsIsolatedAppsDeveloperModeAllowed(BrowserContext* context);
+
+  // Check if applications whose origin is |origin| are allowed to perform
+  // all-screens-auto-selection, which allows automatic capturing of all
+  // screens with the getDisplayMediaSet API.
+  virtual bool IsGetDisplayMediaSetSelectAllScreensAllowed(
+      content::BrowserContext* context,
+      const url::Origin& origin);
 
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,
@@ -1276,6 +1284,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // will be used.
   virtual std::unique_ptr<media::AudioManager> CreateAudioManager(
       media::AudioLogFactory* audio_log_factory);
+
+  // The ScreenEnumerator object can be used to query all attached screens
+  // at once. This function should be called on the IO thread.
+  virtual std::unique_ptr<media::ScreenEnumerator> CreateScreenEnumerator()
+      const;
 
   // Returns true if (and only if) CreateAudioManager() is implemented and
   // returns a non-null value.
