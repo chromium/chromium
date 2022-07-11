@@ -3864,10 +3864,10 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
                          testing::Bool(),
                          WebViewTest::DescribeParams);
 
-// https://crbug.com/1087381
+// TODO(crbug.com/1087381): Flaky on mac
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if BUILDFLAG(IS_CHROMEOS) ||                                  \
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) ||             \
     ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
      defined(ADDRESS_SANITIZER))
 #define MAYBE_Shim_TestZoomAPI DISABLED_Shim_TestZoomAPI
