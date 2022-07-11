@@ -121,6 +121,8 @@ void APIResponseValidator::ValidateEvent(
       "chromeWebViewInternal.onClicked",
       "inputMethodPrivate.onFocus",
       "test.onMessage",
+      // https://crbug.com/1343611.
+      "runtime.onMessage",
   };
 
   if (base::ranges::find(kBrokenSignaturesToIgnore, event_name) !=
