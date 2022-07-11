@@ -5264,7 +5264,7 @@ TEST_F(HttpNetworkTransactionTest,
   auth_handler_factory->set_do_init_from_challenge(true);
   auto mock_handler = std::make_unique<HttpAuthHandlerMock>();
   mock_handler->set_allows_default_credentials(true);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_PROXY);
   session_deps_.http_auth_handler_factory = std::move(auth_handler_factory);
 
@@ -5380,7 +5380,7 @@ TEST_F(HttpNetworkTransactionTest,
   auth_handler_factory->set_do_init_from_challenge(true);
   auto mock_handler = std::make_unique<HttpAuthHandlerMock>();
   mock_handler->set_allows_default_credentials(true);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_PROXY);
   session_deps_.http_auth_handler_factory = std::move(auth_handler_factory);
 
@@ -5501,7 +5501,7 @@ TEST_F(HttpNetworkTransactionTest,
   auth_handler_factory->set_do_init_from_challenge(true);
   auto mock_handler = std::make_unique<HttpAuthHandlerMock>();
   mock_handler->set_allows_default_credentials(true);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_PROXY);
   session_deps_.http_auth_handler_factory = std::move(auth_handler_factory);
 
@@ -5611,13 +5611,13 @@ TEST_F(HttpNetworkTransactionTest,
   mock_handler->set_allows_default_credentials(true);
   mock_handler->set_allows_explicit_credentials(true);
   mock_handler->set_connection_based(true);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_PROXY);
   mock_handler = std::make_unique<HttpAuthHandlerMock>();
   mock_handler->set_allows_default_credentials(true);
   mock_handler->set_allows_explicit_credentials(true);
   mock_handler->set_connection_based(true);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_PROXY);
   session_deps_.http_auth_handler_factory = std::move(auth_handler_factory);
 
@@ -5719,13 +5719,13 @@ TEST_F(HttpNetworkTransactionTest,
   auth_handler_factory->set_do_init_from_challenge(true);
   auto mock_handler = std::make_unique<HttpAuthHandlerMock>();
   mock_handler->set_allows_default_credentials(true);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_PROXY);
   // Add another handler for the second challenge. It supports default
   // credentials, but they shouldn't be used, since they were already tried.
   mock_handler = std::make_unique<HttpAuthHandlerMock>();
   mock_handler->set_allows_default_credentials(true);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_PROXY);
   session_deps_.http_auth_handler_factory = std::move(auth_handler_factory);
 
@@ -5823,7 +5823,7 @@ TEST_F(HttpNetworkTransactionTest, NonPermanentGenerateAuthTokenError) {
   mock_handler->set_allows_explicit_credentials(true);
   mock_handler->set_connection_based(true);
   mock_handler->SetGenerateExpectation(true, ERR_INVALID_AUTH_CREDENTIALS);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_SERVER);
 
   // Add another handler for the second challenge. It supports default
@@ -5832,7 +5832,7 @@ TEST_F(HttpNetworkTransactionTest, NonPermanentGenerateAuthTokenError) {
   mock_handler->set_allows_default_credentials(true);
   mock_handler->set_allows_explicit_credentials(true);
   mock_handler->set_connection_based(true);
-  auth_handler_factory->AddMockHandler(mock_handler.release(),
+  auth_handler_factory->AddMockHandler(std::move(mock_handler),
                                        HttpAuth::AUTH_SERVER);
   session_deps_.http_auth_handler_factory = std::move(auth_handler_factory);
 
@@ -15848,7 +15848,7 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
     // Set up authentication handlers as necessary.
     if (test_config.proxy_auth_timing != AUTH_NONE) {
       for (int n = 0; n < 3; n++) {
-        HttpAuthHandlerMock* auth_handler(new HttpAuthHandlerMock());
+        auto auth_handler = std::make_unique<HttpAuthHandlerMock>();
         std::string auth_challenge = "Mock realm=proxy";
         url::SchemeHostPort scheme_host_port(GURL(test_config.proxy_url));
         HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
@@ -15859,11 +15859,12 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
         auth_handler->SetGenerateExpectation(
             test_config.proxy_auth_timing == AUTH_ASYNC,
             n == 0 ? test_config.first_generate_proxy_token_rv : OK);
-        auth_factory_ptr->AddMockHandler(auth_handler, HttpAuth::AUTH_PROXY);
+        auth_factory_ptr->AddMockHandler(std::move(auth_handler),
+                                         HttpAuth::AUTH_PROXY);
       }
     }
     if (test_config.server_auth_timing != AUTH_NONE) {
-      HttpAuthHandlerMock* auth_handler(new HttpAuthHandlerMock());
+      auto auth_handler = std::make_unique<HttpAuthHandlerMock>();
       std::string auth_challenge = "Mock realm=server";
       url::SchemeHostPort scheme_host_port(GURL(test_config.server_url));
       HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
@@ -15874,7 +15875,8 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
       auth_handler->SetGenerateExpectation(
           test_config.server_auth_timing == AUTH_ASYNC,
           test_config.first_generate_server_token_rv);
-      auth_factory_ptr->AddMockHandler(auth_handler, HttpAuth::AUTH_SERVER);
+      auth_factory_ptr->AddMockHandler(std::move(auth_handler),
+                                       HttpAuth::AUTH_SERVER);
 
       // The second handler always succeeds. It should only be used where there
       // are multiple auth sessions for server auth in the same network
@@ -15885,7 +15887,7 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
                                         empty_ssl_info, NetworkIsolationKey(),
                                         scheme_host_port, NetLogWithSource());
       second_handler->SetGenerateExpectation(true, OK);
-      auth_factory_ptr->AddMockHandler(second_handler.release(),
+      auth_factory_ptr->AddMockHandler(std::move(second_handler),
                                        HttpAuth::AUTH_SERVER);
     }
     if (test_config.proxy_url) {
@@ -15990,7 +15992,8 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
       ConfiguredProxyResolutionService::CreateDirect();
   session_deps_.host_resolver->rules()->AddRule("www.example.com", "10.0.0.1");
 
-  HttpAuthHandlerMock* auth_handler(new HttpAuthHandlerMock());
+  auto auth_handler = std::make_unique<HttpAuthHandlerMock>();
+  auto* auth_handler_ptr = auth_handler.get();
   auth_handler->set_connection_based(true);
   std::string auth_challenge = "Mock realm=server";
   GURL url("http://www.example.com");
@@ -16000,7 +16003,8 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
                                   empty_ssl_info, NetworkIsolationKey(),
                                   url::SchemeHostPort(url), NetLogWithSource());
-  auth_factory_ptr->AddMockHandler(auth_handler, HttpAuth::AUTH_SERVER);
+  auth_factory_ptr->AddMockHandler(std::move(auth_handler),
+                                   HttpAuth::AUTH_SERVER);
 
   int rv = OK;
   const HttpResponseInfo* response = nullptr;
@@ -16088,7 +16092,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
       SecureDnsPolicy::kAllow);
 
   // First round of authentication.
-  auth_handler->SetGenerateExpectation(false, OK);
+  auth_handler_ptr->SetGenerateExpectation(false, OK);
   rv = trans.Start(&request, callback.callback(), NetLogWithSource());
   if (rv == ERR_IO_PENDING)
     rv = callback.WaitForResult();
@@ -16098,7 +16102,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_TRUE(response->auth_challenge.has_value());
   EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
-            auth_handler->state());
+            auth_handler_ptr->state());
 
   // In between rounds, another request comes in for the same domain.
   // It should not be able to grab the TCP socket that trans has already
@@ -16113,7 +16117,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   // the pool until after authentication completes.
 
   // Second round of authentication.
-  auth_handler->SetGenerateExpectation(false, OK);
+  auth_handler_ptr->SetGenerateExpectation(false, OK);
   rv = trans.RestartWithAuth(AuthCredentials(kFoo, kBar), callback.callback());
   if (rv == ERR_IO_PENDING)
     rv = callback.WaitForResult();
@@ -16123,10 +16127,10 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_FALSE(response->auth_challenge.has_value());
   EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
-            auth_handler->state());
+            auth_handler_ptr->state());
 
   // Third round of authentication.
-  auth_handler->SetGenerateExpectation(false, OK);
+  auth_handler_ptr->SetGenerateExpectation(false, OK);
   rv = trans.RestartWithAuth(AuthCredentials(), callback.callback());
   if (rv == ERR_IO_PENDING)
     rv = callback.WaitForResult();
@@ -16136,10 +16140,10 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   EXPECT_FALSE(response->auth_challenge.has_value());
   EXPECT_EQ(0u, transport_pool_ptr->IdleSocketCountInGroup(kSocketGroup));
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_GENERATE_AUTH_TOKEN,
-            auth_handler->state());
+            auth_handler_ptr->state());
 
   // Fourth round of authentication, which completes successfully.
-  auth_handler->SetGenerateExpectation(false, OK);
+  auth_handler_ptr->SetGenerateExpectation(false, OK);
   rv = trans.RestartWithAuth(AuthCredentials(), callback.callback());
   if (rv == ERR_IO_PENDING)
     rv = callback.WaitForResult();
@@ -16153,7 +16157,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   // auth handler should transition to a DONE state in concert with the remote
   // server. But that's not something we can test here with a mock handler.
   EXPECT_EQ(HttpAuthHandlerMock::State::WAIT_FOR_CHALLENGE,
-            auth_handler->state());
+            auth_handler_ptr->state());
 
   // Read the body since the fourth round was successful. This will also
   // release the socket back to the pool.

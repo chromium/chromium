@@ -69,10 +69,11 @@ void RunSingleRoundAuthTest(
       "\r\n"));
 
   HttpAuthHandlerMock::Factory auth_handler_factory;
-  HttpAuthHandlerMock* auth_handler = new HttpAuthHandlerMock();
+  auto auth_handler = std::make_unique<HttpAuthHandlerMock>();
   auth_handler->SetGenerateExpectation((run_mode == RUN_HANDLER_ASYNC),
                                        handler_rv);
-  auth_handler_factory.AddMockHandler(auth_handler, HttpAuth::AUTH_PROXY);
+  auth_handler_factory.AddMockHandler(std::move(auth_handler),
+                                      HttpAuth::AUTH_PROXY);
   auth_handler_factory.set_do_init_from_challenge(true);
   auto host_resolver = std::make_unique<MockHostResolver>();
 
@@ -234,29 +235,32 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
   // Handlers for the first attempt at authentication.  AUTH_SCHEME_MOCK handler
   // accepts the default identity and successfully constructs a token.
   auth_handler_factory.AddMockHandler(
-      new MockHandler(OK, HttpAuth::AUTH_SCHEME_MOCK), HttpAuth::AUTH_SERVER);
+      std::make_unique<MockHandler>(OK, HttpAuth::AUTH_SCHEME_MOCK),
+      HttpAuth::AUTH_SERVER);
   auth_handler_factory.AddMockHandler(
-      new MockHandler(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_BASIC),
+      std::make_unique<MockHandler>(ERR_UNEXPECTED,
+                                    HttpAuth::AUTH_SCHEME_BASIC),
       HttpAuth::AUTH_SERVER);
 
   // Handlers for the second attempt.  Neither should be used to generate a
   // token.  Instead the controller should realize that there are no viable
   // identities to use with the AUTH_SCHEME_MOCK handler and fail.
   auth_handler_factory.AddMockHandler(
-      new MockHandler(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_MOCK),
+      std::make_unique<MockHandler>(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_MOCK),
       HttpAuth::AUTH_SERVER);
   auth_handler_factory.AddMockHandler(
-      new MockHandler(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_BASIC),
+      std::make_unique<MockHandler>(ERR_UNEXPECTED,
+                                    HttpAuth::AUTH_SCHEME_BASIC),
       HttpAuth::AUTH_SERVER);
 
   // Fallback handlers for the second attempt.  The AUTH_SCHEME_MOCK handler
   // should be discarded due to the disabled scheme, and the AUTH_SCHEME_BASIC
   // handler should successfully be used to generate a token.
   auth_handler_factory.AddMockHandler(
-      new MockHandler(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_MOCK),
+      std::make_unique<MockHandler>(ERR_UNEXPECTED, HttpAuth::AUTH_SCHEME_MOCK),
       HttpAuth::AUTH_SERVER);
   auth_handler_factory.AddMockHandler(
-      new MockHandler(OK, HttpAuth::AUTH_SCHEME_BASIC),
+      std::make_unique<MockHandler>(OK, HttpAuth::AUTH_SCHEME_BASIC),
       HttpAuth::AUTH_SERVER);
   auth_handler_factory.set_do_init_from_challenge(true);
 

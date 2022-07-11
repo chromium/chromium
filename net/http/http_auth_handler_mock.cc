@@ -146,8 +146,9 @@ HttpAuthHandlerMock::Factory::Factory() {
 HttpAuthHandlerMock::Factory::~Factory() = default;
 
 void HttpAuthHandlerMock::Factory::AddMockHandler(
-    HttpAuthHandler* handler, HttpAuth::Target target) {
-  handlers_[target].push_back(base::WrapUnique(handler));
+    std::unique_ptr<HttpAuthHandler> handler,
+    HttpAuth::Target target) {
+  handlers_[target].push_back(std::move(handler));
 }
 
 int HttpAuthHandlerMock::Factory::CreateAuthHandler(

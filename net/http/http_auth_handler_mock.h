@@ -42,7 +42,8 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
     Factory();
     ~Factory() override;
 
-    void AddMockHandler(HttpAuthHandler* handler, HttpAuth::Target target);
+    void AddMockHandler(std::unique_ptr<HttpAuthHandler> handler,
+                        HttpAuth::Target target);
 
     void set_do_init_from_challenge(bool do_init_from_challenge) {
       do_init_from_challenge_ = do_init_from_challenge;
