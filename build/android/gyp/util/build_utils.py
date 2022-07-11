@@ -37,8 +37,6 @@ DIR_SOURCE_ROOT = os.path.relpath(
 JAVA_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current')
 JAVAC_PATH = os.path.join(JAVA_HOME, 'bin', 'javac')
 JAVAP_PATH = os.path.join(JAVA_HOME, 'bin', 'javap')
-RT_JAR_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'extras',
-                           'java_8', 'jre', 'lib', 'rt.jar')
 
 try:
   string_types = basestring

@@ -1694,6 +1694,19 @@ if (enable_java_templates) {
           }
         }
         if (_desugar_needs_classpath) {
+          if (defined(invoker.unprocessed_jar_path)) {
+            # Cannot use header jar for the active jar, because it does not
+            # contain anonymous classes. https://crbug.com/1342018#c5
+            # Cannot use processed .jar here because it might have classes
+            # filtered out via jar_excluded_patterns.
+            # Must come first in classpath in order to take precendence over
+            # deps that defined the same classes (via jar_excluded_patterns).
+            args += [
+              "--classpath",
+              rebase_path(invoker.unprocessed_jar_path, root_build_dir),
+            ]
+            inputs += [ invoker.unprocessed_jar_path ]
+          }
           _desugar_dependencies_path =
               "$target_gen_dir/$target_name.desugardeps"
           args += [
@@ -1709,15 +1722,6 @@ if (enable_java_templates) {
             _rebased_desugar_jars_paths =
                 rebase_path(invoker.desugar_jars_paths, root_build_dir)
             args += [ "--classpath=${_rebased_desugar_jars_paths}" ]
-          }
-          if (defined(invoker.final_ijar_path)) {
-            # Need to include the input .interface.jar on the classpath in order to make
-            # jar_excluded_patterns classes visible to desugar.
-            args += [
-              "--classpath",
-              rebase_path(invoker.final_ijar_path, root_build_dir),
-            ]
-            inputs += [ invoker.final_ijar_path ]
           }
         } else {
           not_needed(invoker, [ "desugar_jars_paths" ])
@@ -3019,6 +3023,11 @@ if (enable_java_templates) {
         get_label_info(":${target_name}", "label_no_toolchain"),
       ]
 
+      # SDK jar must be first on classpath.
+      if (invoker.include_android_sdk) {
+        args += [ "--classpath=@FileArg($_rebased_build_config:android:sdk_interface_jars)" ]
+      }
+
       if (defined(invoker.header_jar_path)) {
         inputs += [ invoker.header_jar_path ]
         args += [
@@ -3056,9 +3065,6 @@ if (enable_java_templates) {
         ]
       }
 
-      if (invoker.supports_android || invoker.use_turbine) {
-        args += [ "--java-version=1.8" ]
-      }
       if (use_java_goma) {
         args += [ "--gomacc-path=$goma_dir/gomacc" ]
 
@@ -3070,9 +3076,6 @@ if (enable_java_templates) {
       # checkout_android_prebuilts_build_tools=True in .gclient.
       if (enable_kythe_annotations && !invoker.enable_errorprone) {
         args += [ "--enable-kythe-annotations" ]
-      }
-      if (invoker.include_android_sdk) {
-        args += [ "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_interface_jars)" ]
       }
       if (_chromium_code) {
         args += [ "--chromium-code=1" ]
@@ -3743,7 +3746,6 @@ if (enable_java_templates) {
               java_sources_file = _java_sources_file
             }
             chromium_code = _chromium_code
-            supports_android = _supports_android
             include_android_sdk = _is_robolectric || _requires_android
           }
         }
@@ -3960,8 +3962,8 @@ if (enable_java_templates) {
           if (enable_desugar) {
             # Desugaring with D8 requires full classpath.
             build_config = _build_config
-            final_ijar_path = _final_ijar_path
-            deps += _header_classpath_deps + [ ":$_header_target_name" ]
+            unprocessed_jar_path = _unprocessed_jar_path
+            deps += _header_classpath_deps + _unprocessed_jar_deps
           }
 
           enable_multidex = false
