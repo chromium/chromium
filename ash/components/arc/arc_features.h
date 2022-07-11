@@ -25,6 +25,7 @@ extern const base::Feature kEnableUnifiedAudioFocusFeature;
 extern const base::Feature kEnableUnmanagedToManagedTransitionFeature;
 extern const base::Feature kEnableUsap;
 extern const base::Feature kEnableVirtioBlkForData;
+extern const base::FeatureParam<bool> kEnableVirtioBlkForDataUseLvm;
 extern const base::Feature kFilePickerExperimentFeature;
 extern const base::Feature kGameModeFeature;
 extern const base::Feature kGmsCoreLowMemoryKillerProtection;
