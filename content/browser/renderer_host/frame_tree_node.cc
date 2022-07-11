@@ -878,8 +878,6 @@ void FrameTreeNode::SetPopupCreatorOrigin(
 void FrameTreeNode::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
   proto->set_frame_tree_node_id(frame_tree_node_id());
-  // TODO(crbug.com/1314749): we should also capture the concept of outermost
-  // main frame here.
   proto->set_is_main_frame(IsMainFrame());
   proto.Set(TraceProto::kCurrentFrameHost, current_frame_host());
   proto.Set(TraceProto::kSpeculativeFrameHost,
