@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FormSelectOptions, NotificationType, NotifierType} from './form_constants.js';
+import {FormSelectOptions, NotificationPriority, NotificationType, NotifierType} from './form_constants.js';
 import {Notification} from './types.js';
 
 // Web component housing the form for chrome://notification-tester.
@@ -166,6 +166,33 @@ export class NotificationTester extends PolymerElement {
 
     // Send notification data to C++
     chrome.send('generateNotificationForm', [this.notifMetadata]);
+  }
+
+  onClickReset() {
+    this.set('notifMetadata.id', 'random');
+    this.set('notifMetadata.title', 'Notification Title');
+    this.set('notifMetadata.message', 'Notification content');
+    this.set('notifMetadata.icon', 'none');
+    this.set('notifMetadata.displaySource', 'Sample Display Source');
+    this.set('notifMetadata.originURL', 'https://testurl.xyz');
+    this.set(
+        'notifMetadata.notificationType',
+        NotificationType.NOTIFICATION_TYPE_SIMPLE);
+    this.set('notifMetadata.notifierType', 'System');
+    this.set('notifMetadata.richDataImage', 'none');
+    this.set('notifMetadata.richDataSmallImage', 'kProductIcon');
+    this.set('notifMetadata.richDataNeverTimeout', false);
+    this.set(
+        'notifMetadata.richDataPriority',
+        NotificationPriority.DEFAULT_PRIORITY);
+    this.set('notifMetadata.richDataPinned', false);
+    this.set('notifMetadata.richDataRenotify', false);
+    this.set('notifMetadata.richDataShowSnooze', false);
+    this.set('notifMetadata.richDataShowSettings', false);
+    this.set('notifMetadata.richDataProgress', '-1');
+    this.set('notifMetadata.richDataProgressStatus', 'Progress Status');
+    this.set('notifMetadata.richDataNumNotifItems', '0');
+    this.set('notifMetadata.richDataNumButtons', '0');
   }
 
   // Show / hide dom elements when this.notifMetadata.notificationType changes
