@@ -258,10 +258,9 @@ v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
           ->CreateDataProperty(isolate_->GetCurrentContext(), i,
                                serialized_child_node)
           .Check();
-
-      serialized_value_keys.push_back(V8String(isolate_, kChildren));
-      serialized_value_values.push_back(children);
     }
+    serialized_value_keys.push_back(V8String(isolate_, kChildren));
+    serialized_value_values.push_back(children);
   }
 
   DCHECK(serialized_value_values.size() == serialized_value_keys.size());
