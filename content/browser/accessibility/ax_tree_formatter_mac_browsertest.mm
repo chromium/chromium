@@ -373,8 +373,10 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
-                       ParameterizedAttributesTextMarkerRangeWrongParameters) {
+// Disabled because of flakiness: crbug.com/1342138.
+IN_PROC_BROWSER_TEST_F(
+    AXTreeFormatterMacBrowserTest,
+    DISABLED_ParameterizedAttributesTextMarkerRangeWrongParameters) {
   TestWrongParameters(
       R"~~(<p>Text</p>)~~",
       {"1, 2", "2", "{focus: {:2, 1, down}}", "{anchor: {:2, 1, down}}",
