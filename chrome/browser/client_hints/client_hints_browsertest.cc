@@ -952,6 +952,12 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
 #endif
         main_frame_viewport_width_observed_ = value;
 
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-viewport-height")->second, &value));
+        EXPECT_TRUE(IsSimilarToIntABNF(
+            request.headers.find("sec-ch-viewport-height")->second));
+        EXPECT_LT(0.0, value);
+
         VerifyNetworkQualityClientHints(request);
       }
     }
@@ -1032,6 +1038,12 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
           EXPECT_EQ(main_frame_viewport_width_observed_, value);
         }
 #endif
+
+        EXPECT_TRUE(base::StringToDouble(
+            request.headers.find("sec-ch-viewport-height")->second, &value));
+        EXPECT_TRUE(IsSimilarToIntABNF(
+            request.headers.find("sec-ch-viewport-height")->second));
+        EXPECT_LT(0.0, value);
 
         VerifyNetworkQualityClientHints(request);
       }
