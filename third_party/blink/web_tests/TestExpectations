@@ -6988,7 +6988,6 @@ crbug.com/1253971 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-eleme
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
 crbug.com/1318318 virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Pass Timeout ]
-crbug.com/1318449 [ Mac10.14 ] http/tests/inspector-protocol/window-open-effective-opener.js [ Failure Pass ]
 crbug.com/1318561 [ Linux ] external/wpt/x-frame-options/get-decode-split.html [ Failure Pass ]
 
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
@@ -7142,7 +7141,6 @@ crbug.com/1340716 [ Linux ] accessibility/notification-listeners.html [ Skip ]
 
 # Sheriff 2022-06-30
 crbug.com/1340781 fullscreen/full-screen-table-section.html [ Skip ]
-crbug.com/1327867 http/tests/inspector-protocol/network/initiator-minified.js [ Failure Pass ]
 
 # Temporarily disable the tests during the rollout of V8 that fixes the
 # behaviors that the test cases excersise.
