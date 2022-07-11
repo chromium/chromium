@@ -27,18 +27,17 @@
   OP(CreateTransferCacheEntryINTERNAL)            /* 268 */ \
   OP(DeleteTransferCacheEntryINTERNAL)            /* 269 */ \
   OP(UnlockTransferCacheEntryINTERNAL)            /* 270 */ \
-  OP(DeletePaintCacheTextBlobsINTERNALImmediate)  /* 271 */ \
-  OP(DeletePaintCachePathsINTERNALImmediate)      /* 272 */ \
-  OP(ClearPaintCacheINTERNAL)                     /* 273 */ \
-  OP(CopySubTextureINTERNALImmediate)             /* 274 */ \
-  OP(WritePixelsINTERNALImmediate)                /* 275 */ \
-  OP(ReadbackARGBImagePixelsINTERNALImmediate)    /* 276 */ \
-  OP(ReadbackYUVImagePixelsINTERNALImmediate)     /* 277 */ \
-  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)  /* 278 */ \
-  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate) /* 279 */ \
-  OP(TraceBeginCHROMIUM)                          /* 280 */ \
-  OP(TraceEndCHROMIUM)                            /* 281 */ \
-  OP(SetActiveURLCHROMIUM)                        /* 282 */
+  OP(DeletePaintCachePathsINTERNALImmediate)      /* 271 */ \
+  OP(ClearPaintCacheINTERNAL)                     /* 272 */ \
+  OP(CopySubTextureINTERNALImmediate)             /* 273 */ \
+  OP(WritePixelsINTERNALImmediate)                /* 274 */ \
+  OP(ReadbackARGBImagePixelsINTERNALImmediate)    /* 275 */ \
+  OP(ReadbackYUVImagePixelsINTERNALImmediate)     /* 276 */ \
+  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)  /* 277 */ \
+  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate) /* 278 */ \
+  OP(TraceBeginCHROMIUM)                          /* 279 */ \
+  OP(TraceEndCHROMIUM)                            /* 280 */ \
+  OP(SetActiveURLCHROMIUM)                        /* 281 */
 
 enum CommandId {
   kOneBeforeStartPoint =

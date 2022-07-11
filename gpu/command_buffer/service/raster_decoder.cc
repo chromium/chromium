@@ -805,9 +805,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DoUnlockTransferCacheEntryINTERNAL(GLuint entry_type, GLuint entry_id);
   void DoDeleteTransferCacheEntryINTERNAL(GLuint entry_type, GLuint entry_id);
   void RestoreStateForAttrib(GLuint attrib, bool restore_array_binding);
-  void DeletePaintCacheTextBlobsINTERNALHelper(
-      GLsizei n,
-      const volatile GLuint* paint_cache_ids);
   void DeletePaintCachePathsINTERNALHelper(
       GLsizei n,
       const volatile GLuint* paint_cache_ids);
@@ -3197,19 +3194,6 @@ class TransferCacheDeserializeHelperImpl final
 };
 
 }  // namespace
-
-void RasterDecoderImpl::DeletePaintCacheTextBlobsINTERNALHelper(
-    GLsizei n,
-    const volatile GLuint* paint_cache_ids) {
-  if (!use_gpu_raster_) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
-                       "glDeletePaintCacheEntriesINTERNAL",
-                       "No chromium raster support");
-    return;
-  }
-
-  paint_cache_->Purge(cc::PaintCacheDataType::kTextBlob, n, paint_cache_ids);
-}
 
 void RasterDecoderImpl::DeletePaintCachePathsINTERNALHelper(
     GLsizei n,
