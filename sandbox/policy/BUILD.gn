@@ -176,7 +176,7 @@ buildflag_header("sanitizer_buildflags") {
 
 buildflag_header("chromecast_sandbox_allowlist_buildflags") {
   header = "chromecast_sandbox_allowlist_buildflags.h"
-  flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_chromecast" ]
+  flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_castos" ]
 }
 
 # TODO(crbug.com/1097376): Figure out a better organization for //sandbox
