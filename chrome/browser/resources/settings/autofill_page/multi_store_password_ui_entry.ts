@@ -22,29 +22,18 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
 
     this.contents_ = MultiStorePasswordUiEntry.getContents_(entry);
 
-    this.setId(entry.id, entry.fromAccountStore);
-  }
-
-  /**
-   * Incorporates the id of |otherEntry|, as long as |otherEntry| matches
-   * |contents_| and the id corresponding to its store is not set. If these
-   * preconditions are not satisfied, results in a no-op.
-   * @return Whether the merge succeeded.
-   */
-  // TODO(crbug.com/1102294) Consider asserting frontendId as well.
-  mergeInPlace(otherEntry: chrome.passwordsPrivate.PasswordUiEntry): boolean {
-    const alreadyHasCopyFromStore =
-        (this.isPresentInAccount() && otherEntry.fromAccountStore) ||
-        (this.isPresentOnDevice() && !otherEntry.fromAccountStore);
-    if (alreadyHasCopyFromStore) {
-      return false;
+    switch (entry.storedIn) {
+      case chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT:
+        this.setId(entry.id, /* fromAccountStore= */ true);
+        break;
+      case chrome.passwordsPrivate.PasswordStoreSet.DEVICE:
+        this.setId(entry.id, /* fromAccountStore= */ false);
+        break;
+      case chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT:
+        this.setId(entry.id, /* fromAccountStore= */ false);
+        this.setId(entry.id, /* fromAccountStore= */ true);
+        break;
     }
-    if (JSON.stringify(this.contents_) !==
-        JSON.stringify(MultiStorePasswordUiEntry.getContents_(otherEntry))) {
-      return false;
-    }
-    this.setId(otherEntry.id, otherEntry.fromAccountStore);
-    return true;
   }
 
   get urls(): chrome.passwordsPrivate.UrlCollection {

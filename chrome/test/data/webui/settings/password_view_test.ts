@@ -114,8 +114,8 @@ suite('PasswordViewTest', function() {
 
   [{accountId: null, deviceId: 2, username: USERNAME},
    {accountId: 1, deviceId: null, username: USERNAME},
-   {accountId: null, deviceId: 3, username: USERNAME},
-   {accountId: 5, deviceId: 4, username: USERNAME2},
+   {accountId: 3, deviceId: 3, username: USERNAME2},
+   {accountId: 4, deviceId: null, username: USERNAME2},
   ]
       .forEach(
           item => test(
@@ -127,41 +127,29 @@ suite('PasswordViewTest', function() {
                   createPasswordEntry({
                     url: SITE,
                     username: USERNAME,
-                    frontendId: 1,
                     id: 1,
-                    fromAccountStore: true
+                    inAccountStore: true,
                   }),
-                  // entry in the device store
+                  // entry in the profile store
                   createPasswordEntry({
                     url: SITE,
                     username: USERNAME,
-                    frontendId: 2,
                     id: 2,
-                    fromAccountStore: false
+                    inProfileStore: true,
                   }),
-                  // second entry in the device store. Has conflicting site and
-                  // username
+                  // entry in the both stores
                   createPasswordEntry({
                     url: SITE,
-                    username: USERNAME,
-                    frontendId: 3,
+                    username: USERNAME2,
                     id: 3,
-                    fromAccountStore: false
+                    inProfileStore: true,
+                    inAccountStore: true,
                   }),
-                  // entry in both stores are the next two items
                   createPasswordEntry({
                     url: SITE,
                     username: USERNAME2,
-                    frontendId: 4,
                     id: 4,
-                    fromAccountStore: false
-                  }),
-                  createPasswordEntry({
-                    url: SITE,
-                    username: USERNAME2,
-                    frontendId: 4,
-                    id: 5,
-                    fromAccountStore: true
+                    inAccountStore: true
                   }),
                 ];
 
@@ -402,7 +390,7 @@ suite('PasswordViewTest', function() {
           'it is deleted and routed to passwords page',
       async function() {
         const entry = createPasswordEntry(
-            {url: SITE, username: USERNAME, id: ID, fromAccountStore: false});
+            {url: SITE, username: USERNAME, id: ID, inAccountStore: false});
 
         passwordManager.setPlaintextPassword(PASSWORD);
         passwordManager.data.passwords = [entry];
@@ -438,16 +426,9 @@ suite('PasswordViewTest', function() {
             url: SITE,
             username: USERNAME,
             id: ID,
-            frontendId: ID,
-            fromAccountStore: false
+            inAccountStore: true,
+            inProfileStore: true
           }),
-          createPasswordEntry({
-            url: SITE,
-            username: USERNAME,
-            id: ID,
-            frontendId: ID,
-            fromAccountStore: true
-          })
         ];
         const page = document.createElement('password-view');
         document.body.appendChild(page);

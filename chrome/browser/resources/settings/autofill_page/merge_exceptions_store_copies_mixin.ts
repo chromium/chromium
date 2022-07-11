@@ -42,8 +42,9 @@ export const MergeExceptionsStoreCopiesMixin = dedupingMixin(
         override connectedCallback() {
           super.connectedCallback();
 
-          this.setPasswordExceptionsListener_ = list => {
-            this.passwordExceptions = mergeExceptionsStoreDuplicates(list);
+          this.setPasswordExceptionsListener_ = exceptionList => {
+            this.passwordExceptions =
+                exceptionList.map(entry => new MultiStoreExceptionEntry(entry));
           };
 
           PasswordManagerImpl.getInstance().getExceptionList(
@@ -64,30 +65,3 @@ export const MergeExceptionsStoreCopiesMixin = dedupingMixin(
 
       return MergeExceptionsStoreCopiesMixin;
     });
-
-function mergeExceptionsStoreDuplicates(
-    exceptionList: chrome.passwordsPrivate.ExceptionEntry[]):
-    MultiStoreExceptionEntry[] {
-  const multiStoreEntries: MultiStoreExceptionEntry[] = [];
-  const frontendIdToMergedEntry: Map<number, MultiStoreExceptionEntry> =
-      new Map();
-  for (const entry of exceptionList) {
-    if (frontendIdToMergedEntry.has(entry.frontendId)) {
-      const mergeSucceded =
-          frontendIdToMergedEntry.get(entry.frontendId)!.mergeInPlace(entry);
-      if (mergeSucceded) {
-        // The merge is in-place, so nothing to be done.
-      } else {
-        // The merge can fail in weird cases despite |frontendId| matching.
-        // If so, just create another entry in the UI for |entry|. See also
-        // crbug.com/1114697.
-        multiStoreEntries.push(new MultiStoreExceptionEntry(entry));
-      }
-    } else {
-      const multiStoreEntry = new MultiStoreExceptionEntry(entry);
-      frontendIdToMergedEntry.set(entry.frontendId, multiStoreEntry);
-      multiStoreEntries.push(multiStoreEntry);
-    }
-  }
-  return multiStoreEntries;
-}

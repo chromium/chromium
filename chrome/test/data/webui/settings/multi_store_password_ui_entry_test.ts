@@ -8,46 +8,47 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {createPasswordEntry} from './passwords_and_autofill_fake_data.js';
 
 suite('MultiStorePasswordUiEntry', function() {
-  test('verifyIds', function() {
-    const deviceEntry = createPasswordEntry(
-        {url: 'g.com', username: 'user', id: 0, fromAccountStore: false});
-    const accountEntry = createPasswordEntry(
-        {url: 'g.com', username: 'user', id: 1, fromAccountStore: true});
+  test('verifyWhenInBothStores', function() {
+    const multiStoreEntry = createPasswordEntry({
+      url: 'g.com',
+      username: 'user',
+      id: 0,
+      inAccountStore: true,
+      inProfileStore: true
+    });
+
+    const multiStoreDeviceEntry =
+        new MultiStorePasswordUiEntry(multiStoreEntry);
+    assertTrue(multiStoreDeviceEntry.isPresentOnDevice());
+    assertTrue(multiStoreDeviceEntry.isPresentInAccount());
+    assertEquals(multiStoreDeviceEntry.getAnyId(), 0);
+  });
+
+  test('verifyInAccount', function() {
+    const accountEntry = createPasswordEntry({
+      url: 'g.com',
+      username: 'user',
+      id: 0,
+      inAccountStore: true,
+    });
+
+    const multiStoreDeviceEntry = new MultiStorePasswordUiEntry(accountEntry);
+    assertFalse(multiStoreDeviceEntry.isPresentOnDevice());
+    assertTrue(multiStoreDeviceEntry.isPresentInAccount());
+    assertEquals(multiStoreDeviceEntry.getAnyId(), 0);
+  });
+
+  test('verifyInProfile', function() {
+    const deviceEntry = createPasswordEntry({
+      url: 'g.com',
+      username: 'user',
+      id: 0,
+      inProfileStore: true,
+    });
 
     const multiStoreDeviceEntry = new MultiStorePasswordUiEntry(deviceEntry);
     assertTrue(multiStoreDeviceEntry.isPresentOnDevice());
     assertFalse(multiStoreDeviceEntry.isPresentInAccount());
     assertEquals(multiStoreDeviceEntry.getAnyId(), 0);
-
-    const multiStoreAccountEntry = new MultiStorePasswordUiEntry(accountEntry);
-    assertFalse(multiStoreAccountEntry.isPresentOnDevice());
-    assertTrue(multiStoreAccountEntry.isPresentInAccount());
-    assertEquals(multiStoreAccountEntry.getAnyId(), 1);
-
-    const multiStoreEntryFromBoth = new MultiStorePasswordUiEntry(deviceEntry);
-    assertTrue(multiStoreEntryFromBoth.mergeInPlace(accountEntry));
-    assertTrue(multiStoreEntryFromBoth.isPresentOnDevice());
-    assertTrue(multiStoreEntryFromBoth.isPresentInAccount());
-    assertTrue(
-        multiStoreEntryFromBoth.getAnyId() === 0 ||
-        multiStoreEntryFromBoth.getAnyId() === 1);
-  });
-
-  test('mergeFailsForRepeatedStore', function() {
-    const deviceEntry1 = createPasswordEntry(
-        {url: 'g.com', username: 'user', id: 0, fromAccountStore: false});
-    const deviceEntry2 = createPasswordEntry(
-        {url: 'g.com', username: 'user', id: 1, fromAccountStore: false});
-    assertFalse(
-        new MultiStorePasswordUiEntry(deviceEntry1).mergeInPlace(deviceEntry2));
-  });
-
-  test('mergeFailsForDifferentContents', function() {
-    const deviceEntry = createPasswordEntry(
-        {url: 'g.com', username: 'user', id: 0, fromAccountStore: false});
-    const accountEntry = createPasswordEntry(
-        {url: 'g.com', username: 'user2', id: 1, fromAccountStore: true});
-    assertFalse(
-        new MultiStorePasswordUiEntry(deviceEntry).mergeInPlace(accountEntry));
   });
 });

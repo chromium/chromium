@@ -148,6 +148,23 @@ ConvertToPasswordFormStores(
   return {};
 }
 
+extensions::api::passwords_private::PasswordStoreSet ConvertToAPIStore(
+    const base::flat_set<password_manager::PasswordForm::Store>& stores) {
+  if (stores.contains(password_manager::PasswordForm::Store::kAccountStore) &&
+      stores.contains(password_manager::PasswordForm::Store::kProfileStore)) {
+    return extensions::api::passwords_private::
+        PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT;
+  }
+  if (stores.contains(password_manager::PasswordForm::Store::kAccountStore)) {
+    return extensions::api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
+  }
+  if (stores.contains(password_manager::PasswordForm::Store::kProfileStore)) {
+    return extensions::api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+  }
+  NOTREACHED();
+  return extensions::api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -405,47 +422,32 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
   current_exceptions_.clear();
 
   for (const CredentialUIEntry& credential : credentials) {
-    // TODO(crbug.com/1201643): A separate entity should be created for every
-    // store where the credential is stored. This can be removed when the UI
-    // will support the new model.
-
     int id = credential_id_generator_.GenerateId(credential);
-    for (const password_manager::PasswordForm::Store& store :
-         credential.stored_in) {
-      if (credential.blocked_by_user) {
-        api::passwords_private::ExceptionEntry current_exception_entry;
-        current_exception_entry.urls =
-            CreateUrlCollectionFromCredential(credential);
-        current_exception_entry.id = id;
-        current_exception_entry.frontend_id = id;
+    if (credential.blocked_by_user) {
+      api::passwords_private::ExceptionEntry current_exception_entry;
+      current_exception_entry.urls =
+          CreateUrlCollectionFromCredential(credential);
+      current_exception_entry.id = id;
+      current_exceptions_.push_back(std::move(current_exception_entry));
+    } else {
+      api::passwords_private::PasswordUiEntry entry;
+      entry.urls = CreateUrlCollectionFromCredential(credential);
+      entry.username = base::UTF16ToUTF8(credential.username);
+      entry.password_note = base::UTF16ToUTF8(credential.note.value);
+      entry.id = id;
+      entry.stored_in = ConvertToAPIStore(credential.stored_in);
+      if (!credential.federation_origin.opaque()) {
+        std::u16string formatted_origin =
+            url_formatter::FormatOriginForSecurityDisplay(
+                credential.federation_origin,
+                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-        current_exception_entry.from_account_store =
-            store == password_manager::PasswordForm::Store::kAccountStore;
-        current_exceptions_.push_back(std::move(current_exception_entry));
-      } else {
-        api::passwords_private::PasswordUiEntry entry;
-        entry.urls = CreateUrlCollectionFromCredential(credential);
-        entry.username = base::UTF16ToUTF8(credential.username);
-        entry.password_note = base::UTF16ToUTF8(credential.note.value);
-        entry.id = id;
-        entry.frontend_id = id;
-
-        if (!credential.federation_origin.opaque()) {
-          std::u16string formatted_origin =
-              url_formatter::FormatOriginForSecurityDisplay(
-                  credential.federation_origin,
-                  url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-
-          entry.federation_text =
-              std::make_unique<std::string>(l10n_util::GetStringFUTF8(
-                  IDS_PASSWORDS_VIA_FEDERATION, formatted_origin));
-        }
-
-        entry.from_account_store =
-            store == password_manager::PasswordForm::Store::kAccountStore;
-
-        current_entries_.push_back(std::move(entry));
+        entry.federation_text =
+            std::make_unique<std::string>(l10n_util::GetStringFUTF8(
+                IDS_PASSWORDS_VIA_FEDERATION, formatted_origin));
       }
+
+      current_entries_.push_back(std::move(entry));
     }
   }
 

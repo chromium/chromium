@@ -44,19 +44,8 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
         override connectedCallback() {
           super.connectedCallback();
           this.setSavedPasswordsListener_ = passwordList => {
-            const mergedPasswordList =
-                this.mergePasswordsStoreDuplicates_(passwordList);
-
-            // getCombinedId() is unique for each |entry|. If both copies are
-            // removed, updateList() will consider this a removal. If only one
-            // copy is removed, this will be treated as a removal plus an
-            // insertion.
-            const getCombinedId =
-                (entry: MultiStorePasswordUiEntry) => [entry.deviceId,
-                                                       entry.accountId]
-                                                          .join('_');
-            this.updateList(
-                'savedPasswords', getCombinedId, mergedPasswordList);
+            this.savedPasswords =
+                passwordList.map(entry => new MultiStorePasswordUiEntry(entry));
           };
 
           PasswordManagerImpl.getInstance().getSavedPasswordList(
@@ -73,34 +62,6 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
               .removeSavedPasswordListChangedListener(
                   this.setSavedPasswordsListener_);
           this.setSavedPasswordsListener_ = null;
-        }
-
-        private mergePasswordsStoreDuplicates_(
-            passwordList: chrome.passwordsPrivate.PasswordUiEntry[]):
-            MultiStorePasswordUiEntry[] {
-          const multiStoreEntries: MultiStorePasswordUiEntry[] = [];
-          const frontendIdToMergedEntry =
-              new Map<number, MultiStorePasswordUiEntry>();
-          for (const entry of passwordList) {
-            if (frontendIdToMergedEntry.has(entry.frontendId)) {
-              const mergeSucceded =
-                  frontendIdToMergedEntry.get(entry.frontendId)!.mergeInPlace(
-                      entry);
-              if (mergeSucceded) {
-                // The merge is in-place, so nothing to be done.
-              } else {
-                // The merge can fail in weird cases despite |frontendId|
-                // matching. If so, just create another entry in the UI for
-                // |entry|. See also crbug.com/1114697.
-                multiStoreEntries.push(new MultiStorePasswordUiEntry(entry));
-              }
-            } else {
-              const multiStoreEntry = new MultiStorePasswordUiEntry(entry);
-              frontendIdToMergedEntry.set(entry.frontendId, multiStoreEntry);
-              multiStoreEntries.push(multiStoreEntry);
-            }
-          }
-          return multiStoreEntries;
         }
       }
 

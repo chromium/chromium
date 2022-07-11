@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerProxy, PasswordEditDialogElement, PasswordListItemElement, PasswordMoveMultiplePasswordsToAccountDialogElement, PasswordsExportDialogElement, PasswordsImportDialogElement, PasswordsSectionElement, PaymentsManagerProxy, PersonalDataChangedListener} from 'chrome://settings/lazy_load.js';
-import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
+import {MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -18,8 +17,8 @@ export type PasswordEntryParams = {
   username?: string,
   federationText?: string,
   id?: number,
-  frontendId?: number,
-  fromAccountStore?: boolean,
+  inAccountStore?: boolean,
+  inProfileStore?: boolean,
   note?: string,
 };
 
@@ -37,8 +36,17 @@ export function createPasswordEntry(params?: PasswordEntryParams):
   const url = params.url !== undefined ? params.url : 'www.foo.com';
   const username = params.username !== undefined ? params.username : 'user';
   const id = params.id !== undefined ? params.id : 42;
-  const frontendId = params.frontendId !== undefined ? params.frontendId : id;
-  const fromAccountStore = params.fromAccountStore || false;
+  // Fallback to device store if no parameter provided.
+  let storeType: chrome.passwordsPrivate.PasswordStoreSet =
+      chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+
+  if (params.inAccountStore && params.inProfileStore) {
+    storeType = chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT;
+  } else if (params.inAccountStore) {
+    storeType = chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
+  } else if (params.inProfileStore) {
+    storeType = chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+  }
   const note = params.note || '';
 
   return {
@@ -50,8 +58,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     username: username,
     federationText: params.federationText,
     id: id,
-    frontendId: frontendId,
-    fromAccountStore: fromAccountStore,
+    storedIn: storeType,
     passwordNote: note,
   };
 }
@@ -72,52 +79,29 @@ export type MultyStorePasswordEntryParams = {
  */
 export function createMultiStorePasswordEntry(
     params: MultyStorePasswordEntryParams): MultiStorePasswordUiEntry {
-  const dummyFrontendId = 42;
-  let deviceEntry, accountEntry;
+  const entryParams: PasswordEntryParams = {
+    url: params.url,
+    username: params.username,
+    federationText: params.federationText,
+    note: params.note,
+  };
+
   if (params.deviceId !== undefined) {
-    deviceEntry = createPasswordEntry({
-      url: params.url,
-      username: params.username,
-      federationText: params.federationText,
-      id: params.deviceId,
-      frontendId: dummyFrontendId,
-      fromAccountStore: false,
-      note: params.note,
-    });
+    entryParams.id = params.deviceId;
+    entryParams.inProfileStore = true;
   }
+
   if (params.accountId !== undefined) {
-    accountEntry = createPasswordEntry({
-      url: params.url,
-      username: params.username,
-      federationText: params.federationText,
-      id: params.accountId,
-      frontendId: dummyFrontendId,
-      fromAccountStore: true,
-      note: params.note,
-    });
+    entryParams.id = params.accountId;
+    entryParams.inAccountStore = true;
   }
 
-  if (deviceEntry && accountEntry) {
-    const mergedEntry = new MultiStorePasswordUiEntry(deviceEntry);
-    mergedEntry.mergeInPlace(accountEntry);
-    return mergedEntry;
-  }
-  if (deviceEntry) {
-    return new MultiStorePasswordUiEntry(deviceEntry);
-  }
-  if (accountEntry) {
-    return new MultiStorePasswordUiEntry(accountEntry);
-  }
-
-  assertNotReached();
-  return new MultiStorePasswordUiEntry(createPasswordEntry());
+  return new MultiStorePasswordUiEntry(createPasswordEntry(entryParams));
 }
 
 export type ExceptionEntryParams = {
   url?: string,
   id?: number,
-  frontendId?: number,
-  fromAccountStore?: boolean,
 };
 
 /**
@@ -131,8 +115,6 @@ export function createExceptionEntry(params?: ExceptionEntryParams):
   params = params || {};
   const url = params.url !== undefined ? params.url : 'www.foo.com';
   const id = params.id !== undefined ? params.id : 42;
-  const frontendId = params.frontendId !== undefined ? params.frontendId : id;
-  const fromAccountStore = params.fromAccountStore || false;
   return {
     urls: {
       origin: 'http://' + url + '/login',
@@ -140,8 +122,6 @@ export function createExceptionEntry(params?: ExceptionEntryParams):
       link: 'http://' + url + '/login',
     },
     id: id,
-    frontendId: frontendId,
-    fromAccountStore: fromAccountStore,
   };
 }
 
@@ -150,49 +130,6 @@ export type MultiStoreExceptionEntryParams = {
   accountId?: number,
   deviceId?: number,
 };
-
-/**
- * Creates a multi-store password item with the same mock data as
- * createExceptionEntry(), so it can be used for verifying deduplication result.
- * At least one of |accountId| and |deviceId| must be set.
- */
-export function createMultiStoreExceptionEntry(
-    params: MultiStoreExceptionEntryParams): MultiStoreExceptionEntry {
-  const dummyFrontendId = 42;
-  let deviceEntry, accountEntry;
-  if (params.deviceId !== undefined) {
-    deviceEntry = createExceptionEntry({
-      url: params.url,
-      id: params.deviceId,
-      frontendId: dummyFrontendId,
-      fromAccountStore: false
-    });
-  }
-  if (params.accountId !== undefined) {
-    accountEntry = createExceptionEntry({
-      url: params.url,
-      id: params.accountId,
-      frontendId: dummyFrontendId,
-      fromAccountStore: true
-    });
-  }
-
-  if (deviceEntry && accountEntry) {
-    const mergedEntry = new MultiStoreExceptionEntry(deviceEntry);
-    mergedEntry.mergeInPlace(accountEntry);
-    return mergedEntry;
-  }
-  if (deviceEntry) {
-    return new MultiStoreExceptionEntry(deviceEntry);
-  }
-  if (accountEntry) {
-    return new MultiStoreExceptionEntry(accountEntry);
-  }
-
-  assertNotReached();
-  return new MultiStoreExceptionEntry(createExceptionEntry());
-}
-
 
 /**
  * Creates a new fake address entry for testing.

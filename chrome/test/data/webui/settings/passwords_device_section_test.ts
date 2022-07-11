@@ -106,23 +106,20 @@ suite('PasswordsDeviceSection', function() {
   // Test verifies that account passwords are not displayed, whereas
   // device-only and device-and-account ones end up in the correct subsection.
   test('verifyPasswordsFilledSubsections', async function() {
-    const devicePassword = createPasswordEntry(
-        {username: 'device', id: 0, fromAccountStore: false});
-    const accountPassword = createPasswordEntry(
-        {username: 'account', id: 1, fromAccountStore: true});
-    // Create duplicate that gets merged.
-    const deviceCopyPassword = createPasswordEntry(
-        {username: 'both', frontendId: 42, id: 2, fromAccountStore: false});
-    const accountCopyPassword = createPasswordEntry(
-        {username: 'both', frontendId: 42, id: 3, fromAccountStore: true});
+    const devicePassword =
+        createPasswordEntry({username: 'device', id: 0, inProfileStore: true});
+    const accountPassword =
+        createPasswordEntry({username: 'account', id: 1, inAccountStore: true});
+    // Password present in both account and profile storage.
+    const deviceAndAccountPassword = createPasswordEntry(
+        {username: 'both', id: 2, inProfileStore: true, inAccountStore: true});
 
     // Shuffle entries a little.
     const passwordsDeviceSection =
         await createPasswordsDeviceSection(syncBrowserProxy, passwordManager, [
           devicePassword,
-          deviceCopyPassword,
           accountPassword,
-          accountCopyPassword,
+          deviceAndAccountPassword,
         ]);
 
     validatePasswordsSubsection(
@@ -132,7 +129,7 @@ suite('PasswordsDeviceSection', function() {
     validatePasswordsSubsection(
         passwordsDeviceSection.$.deviceAndAccountPasswordList, [
           createMultiStorePasswordEntry(
-              {username: 'both', deviceId: 2, accountId: 3}),
+              {username: 'both', deviceId: 2, accountId: 2}),
         ]);
     assertTrue(
         passwordsDeviceSection.shadowRoot!
@@ -146,8 +143,7 @@ suite('PasswordsDeviceSection', function() {
   // removes it from both lists.
   test('verifyPasswordListRemoveDeviceCopy', async function() {
     const passwordList = [
-      createPasswordEntry({frontendId: 42, id: 10, fromAccountStore: true}),
-      createPasswordEntry({frontendId: 42, id: 20, fromAccountStore: false}),
+      createPasswordEntry({id: 10, inAccountStore: true, inProfileStore: true}),
     ];
 
     const passwordsDeviceSection = await createPasswordsDeviceSection(
@@ -156,12 +152,11 @@ suite('PasswordsDeviceSection', function() {
         passwordsDeviceSection.$.deviceOnlyPasswordList, []);
     validatePasswordsSubsection(
         passwordsDeviceSection.$.deviceAndAccountPasswordList,
-        [createMultiStorePasswordEntry({accountId: 10, deviceId: 20})]);
+        [createMultiStorePasswordEntry({accountId: 10, deviceId: 10})]);
 
     // Remove device copy.
-    passwordList.splice(1, 1);
     passwordManager.lastCallback.addSavedPasswordListChangedListener!
-        (passwordList);
+        ([createPasswordEntry({id: 10, inAccountStore: true})]);
     flush();
 
     validatePasswordsSubsection(
@@ -174,8 +169,7 @@ suite('PasswordsDeviceSection', function() {
   // moves it to the other subsection.
   test('verifyPasswordListRemoveDeviceCopy', async function() {
     const passwordList = [
-      createPasswordEntry({frontendId: 42, id: 10, fromAccountStore: true}),
-      createPasswordEntry({frontendId: 42, id: 20, fromAccountStore: false}),
+      createPasswordEntry({id: 10, inAccountStore: true, inProfileStore: true}),
     ];
 
     const passwordsDeviceSection = await createPasswordsDeviceSection(
@@ -184,17 +178,16 @@ suite('PasswordsDeviceSection', function() {
         passwordsDeviceSection.$.deviceOnlyPasswordList, []);
     validatePasswordsSubsection(
         passwordsDeviceSection.$.deviceAndAccountPasswordList,
-        [createMultiStorePasswordEntry({accountId: 10, deviceId: 20})]);
+        [createMultiStorePasswordEntry({accountId: 10, deviceId: 10})]);
 
     // Remove account copy.
-    passwordList.splice(0, 1);
     passwordManager.lastCallback.addSavedPasswordListChangedListener!
-        (passwordList);
+        ([createPasswordEntry({id: 10, inProfileStore: true})]);
     flush();
 
     validatePasswordsSubsection(
         passwordsDeviceSection.$.deviceOnlyPasswordList,
-        [createMultiStorePasswordEntry({deviceId: 20})]);
+        [createMultiStorePasswordEntry({deviceId: 10})]);
     validatePasswordsSubsection(
         passwordsDeviceSection.$.deviceAndAccountPasswordList, []);
   });
@@ -253,12 +246,10 @@ suite('PasswordsDeviceSection', function() {
   // dialog and that clicking the "Move" button then moves the device copy.
   test('verifyMovesCorrectIdToAccount', async function() {
     // Create duplicated password that will be merged in the UI.
-    const accountCopy = createPasswordEntry(
-        {username: 'both', id: 2, frontendId: 42, fromAccountStore: true});
-    const deviceCopy = createPasswordEntry(
-        {username: 'both', id: 1, frontendId: 42, fromAccountStore: false});
+    const passwordOnAccountAndDevice = createPasswordEntry(
+        {username: 'both', id: 2, inAccountStore: true, inProfileStore: true});
     const passwordsDeviceSection = await createPasswordsDeviceSection(
-        syncBrowserProxy, passwordManager, [deviceCopy, accountCopy]);
+        syncBrowserProxy, passwordManager, [passwordOnAccountAndDevice]);
 
     // At first the dialog is not shown.
     assertFalse(!!passwordsDeviceSection.$.passwordsListHandler.shadowRoot!
@@ -279,10 +270,10 @@ suite('PasswordsDeviceSection', function() {
     assertTrue(!!moveToAccountDialog);
 
     // Click the Move button in the dialog. The API should be called with the id
-    // for the device copy. Verify the dialog disappears.
+    // of the entry. Verify the dialog disappears.
     moveToAccountDialog.$.moveButton.click();
     const movedId = await passwordManager.whenCalled('movePasswordsToAccount');
-    assertEquals(deviceCopy.id, movedId[0]);
+    assertEquals(passwordOnAccountAndDevice.id, movedId[0]);
   });
 
   // Test verifies that Chrome navigates to the standard passwords page if the
@@ -391,7 +382,7 @@ suite('PasswordsDeviceSection', function() {
   test(
       'moveMultiplePasswordsBannerVisibleWhenLocalPasswords', async function() {
         const devicePassword = createPasswordEntry(
-            {username: 'device', id: 0, fromAccountStore: false});
+            {username: 'device', id: 0, inProfileStore: true});
         const passwordsDeviceSection = await createPasswordsDeviceSection(
             syncBrowserProxy, passwordManager, [devicePassword]);
 
@@ -409,13 +400,13 @@ suite('PasswordsDeviceSection', function() {
           url: 'www.test.com',
           username: 'username',
           id: 0,
-          fromAccountStore: false
+          inProfileStore: true
         });
         const accountPassword = createPasswordEntry({
           url: 'www.test.com',
           username: 'username',
           id: 1,
-          fromAccountStore: true
+          inAccountStore: true
         });
 
         const passwordsDeviceSection = await createPasswordsDeviceSection(

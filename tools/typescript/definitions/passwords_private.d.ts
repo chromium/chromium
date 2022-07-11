@@ -58,16 +58,13 @@ declare global {
         username: string;
         federationText?: string;
         id: number;
-        frontendId: number;
-        fromAccountStore: boolean;
+        storedIn: PasswordStoreSet;
         passwordNote: string;
       }
 
       export interface ExceptionEntry {
         urls: UrlCollection;
         id: number;
-        frontendId: number;
-        fromAccountStore: boolean;
       }
 
       export interface PasswordExportProgress {
