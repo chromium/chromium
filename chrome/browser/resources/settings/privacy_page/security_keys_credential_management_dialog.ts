@@ -127,7 +127,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
   private dialogTitle_: string;
   private displayNameInputError_: string;
   private editingCredential_: Credential;
-  private editButtonVisible_: Boolean;
+  private editButtonVisible_: boolean;
   private errorMsg_: string;
   private minPinLength_: number;
   private newDisplayName_: string;

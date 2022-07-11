@@ -40,12 +40,12 @@ class CrDialogDemoComponent extends PolymerElement {
     };
   }
 
-  private autofocusInputs_: Boolean = false;
-  private isDialogOpen_: Boolean = false;
-  private showHeader_: Boolean = false;
-  private showFooter_: Boolean = false;
-  private showInputs_: Boolean = false;
-  private showScrollingBody_: Boolean = false;
+  private autofocusInputs_: boolean = false;
+  private isDialogOpen_: boolean = false;
+  private showHeader_: boolean = false;
+  private showFooter_: boolean = false;
+  private showInputs_: boolean = false;
+  private showScrollingBody_: boolean = false;
   private statusTexts_: string[] = [];
 
   private getDialog_(): CrDialogElement|null {

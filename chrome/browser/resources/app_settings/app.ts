@@ -81,7 +81,7 @@ export class WebAppSettingsAppElement extends PolymerElement {
     return app ? getAppIcon(app) : '';
   }
 
-  private appUnready_(app: App|null): Boolean {
+  private appUnready_(app: App|null): boolean {
     return !app;
   }
 }

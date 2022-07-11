@@ -154,7 +154,34 @@ module.exports = {
             },
           },
         },
-      }]
+      }],
+
+      // https://google.github.io/styleguide/tsguide.html#wrapper-types
+      '@typescript-eslint/ban-types': ['error', {
+        extendDefaults: false,
+        types: {
+          String: {
+            message: 'Use string instead',
+            fixWith: 'string',
+          },
+          Boolean: {
+            message: 'Use boolean instead',
+            fixWith: 'boolean',
+          },
+          Number: {
+            message: 'Use number instead',
+            fixWith: 'number',
+          },
+          Symbol: {
+            message: 'Use symbol instead',
+            fixWith: 'symbol',
+          },
+          BigInt: {
+            message: 'Use bigint instead',
+            fixWith: 'bigint',
+          },
+        }
+      }],
     }
   }]
 };

@@ -74,7 +74,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   }
 
   prefs: Object;
-  private searchEnginesPageTitle_: String;
+  private searchEnginesPageTitle_: string;
   private isActiveSearchEnginesFlagEnabled_: boolean;
   private searchEngines_: SearchEngine[];
   private searchEnginesFilter_: string;
@@ -128,7 +128,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
-  private computeSearchEnginesPageTitle_(): String {
+  private computeSearchEnginesPageTitle_(): string {
     return this.isActiveSearchEnginesFlagEnabled_ ?
         this.i18n('searchEnginesManageSiteSearch') :
         this.i18n('searchEnginesManage');

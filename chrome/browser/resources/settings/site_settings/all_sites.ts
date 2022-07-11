@@ -545,7 +545,7 @@ export class AllSitesElement extends AllSitesElementBase {
    * Checks if a filter is applied.
    * @return True if a filter is applied.
    */
-  private isFiltered_(): Boolean {
+  private isFiltered_(): boolean {
     return this.filter !== '';
   }
 

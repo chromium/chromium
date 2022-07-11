@@ -194,7 +194,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private authToken_: string;
   private profileIconUrl_: string;
   private isProfileActionable_: boolean;
-  private profileName_: String;
+  private profileName_: string;
 
   // <if expr="not chromeos_ash">
   storedAccounts: StoredAccount[]|null;

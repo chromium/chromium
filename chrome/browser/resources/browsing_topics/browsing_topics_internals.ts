@@ -239,7 +239,7 @@ function createClassificationResultRow(host: string, topics: WebUITopic[]) {
   return row;
 }
 
-async function asyncClassifyHosts(hosts: string[], sequenceNumber: Number) {
+async function asyncClassifyHosts(hosts: string[], sequenceNumber: number) {
   let topicsForHosts = [] as WebUITopic[][];
 
   if (hosts.length > 0) {

@@ -112,8 +112,8 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   showShortcut: boolean;
   showQueryUrl: boolean;
   collapseList: boolean;
-  nameColumnHeader: String;
-  expandListText: String;
+  nameColumnHeader: string;
+  expandListText: string;
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;
 
