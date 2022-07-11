@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
                        bool force_update_client);
   void ConfirmCompositionText();
   bool HasInputMethodResult();
-  bool NeedInsertChar(const std::u16string& result_text) const;
+  bool NeedInsertChar(const absl::optional<std::u16string>& result_text) const;
   [[nodiscard]] ui::EventDispatchDetails SendFakeProcessKeyEvent(
       ui::KeyEvent* event) const;
   void UpdateContextFocusState();
@@ -92,7 +92,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   // Tracks last commit result during one key dispatch event.
   absl::optional<CommitResult> last_commit_result_;
 
-  std::u16string result_text_;
+  absl::optional<std::u16string> result_text_;
 
   ui::CompositionText composition_;
 

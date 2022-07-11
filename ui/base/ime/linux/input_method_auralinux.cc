@@ -141,7 +141,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     suppress_non_key_input_until_ = base::TimeTicks::UnixEpoch();
     composition_changed_ = false;
     last_commit_result_.reset();
-    result_text_.clear();
+    result_text_ = absl::nullopt;
     base::AutoReset<bool> flipper(&is_sync_mode_, true);
     filtered = context_->DispatchKeyEvent(*event);
   }
@@ -277,15 +277,15 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchImeFilteredKeyPressEvent(
 InputMethodAuraLinux::CommitResult InputMethodAuraLinux::MaybeCommitResult(
     bool filtered,
     const KeyEvent& event) {
-  // Take the ownership of |result_text_|.
-  std::u16string result_text = std::move(result_text_);
-  result_text_.clear();
-
   // Note: |client| could be NULL because DispatchKeyEventPostIME could have
   // changed the text input client.
   TextInputClient* client = GetTextInputClient();
-  if (!client || result_text.empty())
+  if (!client || !result_text_)
     return CommitResult::kNoCommitString;
+
+  // Take the ownership of |result_text_|.
+  std::u16string result_text = std::move(*result_text_);
+  result_text_ = absl::nullopt;
 
   if (filtered && NeedInsertChar(result_text)) {
     for (const auto ch : result_text) {
@@ -419,7 +419,7 @@ void InputMethodAuraLinux::ResetContext() {
   context_->Reset();
 
   composition_ = CompositionText();
-  result_text_.clear();
+  result_text_ = absl::nullopt;
   is_sync_mode_ = false;
   composition_changed_ = false;
 }
@@ -447,8 +447,13 @@ void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
 
   // Discard the result iff in async-mode and the TextInputType is None
   // for backward compatibility.
-  if (is_sync_mode_ || !IsTextInputTypeNone())
-    result_text_.append(text);
+  if (is_sync_mode_ || !IsTextInputTypeNone()) {
+    if (result_text_) {
+      result_text_->append(text);
+    } else {
+      result_text_ = text;
+    }
+  }
 
   // Sync mode means this is called on a stack of DispatchKeyEvent(), so its
   // following code should handle the key dispatch and actual committing.
@@ -576,14 +581,14 @@ void InputMethodAuraLinux::OnPreeditUpdate(
 }
 
 bool InputMethodAuraLinux::HasInputMethodResult() {
-  return !result_text_.empty() || composition_changed_;
+  return result_text_ || composition_changed_;
 }
 
 bool InputMethodAuraLinux::NeedInsertChar(
-    const std::u16string& result_text) const {
+    const absl::optional<std::u16string>& result_text) const {
   return IsTextInputTypeNone() ||
-         (!composition_changed_ && composition_.text.empty() &&
-          result_text.length() == 1);
+         (!composition_changed_ && composition_.text.empty() && result_text &&
+          result_text->length() == 1);
 }
 
 ui::EventDispatchDetails InputMethodAuraLinux::SendFakeProcessKeyEvent(

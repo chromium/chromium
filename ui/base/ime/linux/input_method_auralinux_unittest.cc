@@ -539,6 +539,38 @@ TEST_F(InputMethodAuraLinuxTest, JapaneseCommit) {
   test_result_->Verify();
 }
 
+TEST_F(InputMethodAuraLinuxTest, EmptyCommit) {
+  context_->SetSyncMode(false);
+  context_->SetEatKey(true);
+
+  std::unique_ptr<TextInputClientForTesting> client(
+      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
+  input_method_auralinux_->SetFocusedTextInputClient(client.get());
+  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  key.set_character(L'a');
+  input_method_auralinux_->DispatchKeyEvent(&key);
+
+  input_method_auralinux_->OnPreeditStart();
+  CompositionText comp;
+  comp.text = u"a";
+  input_method_auralinux_->OnPreeditChanged(comp);
+
+  test_result_->ExpectAction("keydown:229");
+  test_result_->ExpectAction("compositionstart");
+  test_result_->ExpectAction("compositionupdate:a");
+  test_result_->Verify();
+
+  input_method_auralinux_->OnCommit(u"");
+  comp.text = u"";
+  input_method_auralinux_->OnPreeditChanged(comp);
+  input_method_auralinux_->OnPreeditEnd();
+
+  test_result_->ExpectAction("compositionend");
+  test_result_->ExpectAction("textinput:");
+  test_result_->Verify();
+}
+
 // crbug.com/463491
 void DeadKeyTest(TextInputType text_input_type,
                  InputMethodAuraLinux* input_method_auralinux,
@@ -733,6 +765,7 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithEmptyCommitTest) {
 
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("compositionend");
+  test_result_->ExpectAction("textinput:");
   test_result_->Verify();
 }
 
