@@ -13,7 +13,6 @@ FakeRgbkbdClient::~FakeRgbkbdClient() = default;
 
 void FakeRgbkbdClient::GetRgbKeyboardCapabilities(
     GetRgbKeyboardCapabilitiesCallback callback) {
-  get_rgb_keyboard_capabilities_call_count_++;
   std::move(callback).Run(capabilities_);
 }
 

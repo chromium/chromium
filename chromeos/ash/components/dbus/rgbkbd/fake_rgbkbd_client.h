@@ -38,8 +38,9 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
     capabilities_ = capabilities;
   }
 
-  int get_rgb_keyboard_capabilities_call_count() const {
-    return get_rgb_keyboard_capabilities_call_count_;
+  absl::optional<rgbkbd::RgbKeyboardCapabilities>
+  get_rgb_keyboard_capabilities() const {
+    return capabilities_;
   }
 
   bool get_caps_lock_state() const { return caps_lock_state_; }
@@ -54,8 +55,7 @@ class COMPONENT_EXPORT(RGBKBD) FakeRgbkbdClient : public RgbkbdClient {
 
  private:
   absl::optional<rgbkbd::RgbKeyboardCapabilities> capabilities_;
-  int get_rgb_keyboard_capabilities_call_count_ = 0;
-  bool caps_lock_state_;
+  bool caps_lock_state_ = false;
   bool is_rainbow_mode_set_ = false;
   RgbColor rgb_color_;
   int animation_mode_call_count_ = 0;

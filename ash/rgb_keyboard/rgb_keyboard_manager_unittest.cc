@@ -64,7 +64,9 @@ class RgbKeyboardManagerTest : public testing::Test {
 };
 
 TEST_F(RgbKeyboardManagerTest, GetKeyboardCapabilities) {
-  EXPECT_EQ(1, client_->get_rgb_keyboard_capabilities_call_count());
+  // kIndividualKey is the default for this test suite.
+  EXPECT_EQ(rgbkbd::RgbKeyboardCapabilities::kIndividualKey,
+            client_->get_rgb_keyboard_capabilities());
 }
 
 TEST_F(RgbKeyboardManagerTest, SetStaticRgbValues) {
