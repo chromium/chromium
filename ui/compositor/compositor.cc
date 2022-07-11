@@ -455,14 +455,6 @@ void Compositor::SetScaleAndSize(float scale,
   bool device_scale_factor_changed = device_scale_factor_ != scale;
   device_scale_factor_ = scale;
 
-#if DCHECK_IS_ON()
-  if (size_ != size_in_pixel && local_surface_id.is_valid()) {
-    // A new LocalSurfaceId must be set when the compositor size changes.
-    DCHECK_NE(local_surface_id, host_->local_surface_id_from_parent());
-    DCHECK_NE(local_surface_id, host_->local_surface_id_from_parent());
-  }
-#endif  // DECHECK_IS_ON()
-
   // cc requires the size to be non-empty (meaning DCHECKs if size is empty).
   if (!size_in_pixel.IsEmpty()) {
     bool size_changed = size_ != size_in_pixel;
