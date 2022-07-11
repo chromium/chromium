@@ -20,9 +20,23 @@ namespace content {
 class Beacon;
 class PendingBeaconService;
 
-// Holds a document's pending beacons. This class is responsible for triggering
-// the sending of beacons when a document is either discarded or hidden.
-// TODO(crbug.com/1293679): Send beacons when document is discarded or hidden.
+// PendingBeaconHost holds and manages a single blink::Document's pending
+// beacons in the browser process.
+//
+// PendingBeaconHost is created once per document and bound to a RenderFrameHost
+// by calling `PendingBeaconHost::CreateForCurrentDocument`. See also
+// `DocumentUserData` for the lifetime of this class.
+//
+// PendingBeaconHost creates a new Beacon when `CreateBeacon` is called remotely
+// by a document.
+//
+// PendingBeaconHost is also responsible for triggering the sending of beacons:
+// -  When `SendBeacon` is called, the corresponding queued beacon is sent out
+//    and removed from the host.
+// -  When the associated document is discarded or deleted, the host sends out
+//    all queued beacons in its destructor.
+// -  TODO(crbug.com/1293679): When the associated document is hidden, the host
+//    should send out beacons according to their timeout field.
 class CONTENT_EXPORT PendingBeaconHost
     : public blink::mojom::PendingBeaconHost,
       public DocumentUserData<PendingBeaconHost> {
@@ -31,12 +45,15 @@ class CONTENT_EXPORT PendingBeaconHost
   PendingBeaconHost(const PendingBeaconHost&) = delete;
   PendingBeaconHost& operator=(const PendingBeaconHost&) = delete;
 
+  // Creates a new browser-side `Beacon` instance and stores it in this host.
   void CreateBeacon(mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver,
                     const GURL& url,
                     blink::mojom::BeaconMethod method,
                     base::TimeDelta timeout) override;
 
+  // Deletes the `beacon` if exists.
   void DeleteBeacon(Beacon* beacon);
+  // Sends out the `beacon` if exists.
   void SendBeacon(Beacon* beacon);
 
   void SetReceiver(
@@ -50,6 +67,7 @@ class CONTENT_EXPORT PendingBeaconHost
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_factory,
       PendingBeaconService* service);
 
+  // Stores all the browser-side instances of `Beacon`.
   std::vector<std::unique_ptr<Beacon>> beacons_;
 
   mojo::Receiver<blink::mojom::PendingBeaconHost> receiver_;
