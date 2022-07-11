@@ -403,14 +403,16 @@ float CalculationExpressionAnchorQueryNode::Evaluate(
     switch (Type()) {
       case AnchorQueryType::kAnchor:
         if (const absl::optional<LayoutUnit> value =
-                anchor_evaluator->EvaluateAnchor(anchor_name_, AnchorSide()))
+                anchor_evaluator->EvaluateAnchor(anchor_name_, AnchorSide())) {
           return value->ToFloat();
+        }
         break;
       case AnchorQueryType::kAnchorSize:
         if (const absl::optional<LayoutUnit> value =
                 anchor_evaluator->EvaluateAnchorSize(anchor_name_,
-                                                     AnchorSize()))
+                                                     AnchorSize())) {
           return value->ToFloat();
+        }
         break;
     }
   }
