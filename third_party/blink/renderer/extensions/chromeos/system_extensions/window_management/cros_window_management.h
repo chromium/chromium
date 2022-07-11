@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -66,7 +67,10 @@ class CrosWindowManagement
       mojo::PendingReceiver<mojom::blink::CrosWindowManagementStartObserver>
           receiver);
 
-  HeapMojoRemote<mojom::blink::CrosWindowManagement> cros_window_management_;
+  HeapMojoRemote<mojom::blink::CrosWindowManagementFactory>
+      cros_window_management_factory_;
+  HeapMojoAssociatedRemote<mojom::blink::CrosWindowManagement>
+      cros_window_management_;
   HeapMojoReceiver<mojom::blink::CrosWindowManagementStartObserver,
                    CrosWindowManagement>
       receiver_;

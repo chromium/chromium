@@ -68,6 +68,14 @@ struct CrosScreenInfo {
   bool is_primary;
 };
 
+// Interface to bind CrosWindowManagement and CrosWindowManagementObserver.
+// Implemented by CrosWindowManagementContext which is a keyed service.
+interface CrosWindowManagementFactory {
+  // Binds a CrosWindowManagement interface associated with
+  // CrosWindowManagementFactory. Its lifetime is tied to that of the pipe.
+  Create(pending_associated_receiver<CrosWindowManagement> receiver);
+};
+
 // Chrome OS Window Management API for System Extensions.
 // Called by System Extensions Renderers and implemented by Ash Chrome.
 interface CrosWindowManagement {

@@ -38,7 +38,7 @@ CrosWindowManagementContextFactory::~CrosWindowManagementContextFactory() =
 
 KeyedService* CrosWindowManagementContextFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return nullptr;
+  return new CrosWindowManagementContext();
 }
 
 bool CrosWindowManagementContextFactory::ServiceIsCreatedWithBrowserContext()

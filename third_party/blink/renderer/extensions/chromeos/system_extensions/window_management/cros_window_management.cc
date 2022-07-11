@@ -43,15 +43,22 @@ void CrosWindowManagement::BindWindowManagerStartObserver(
 CrosWindowManagement::CrosWindowManagement(ExecutionContext& execution_context)
     : Supplement(execution_context),
       ExecutionContextClient(&execution_context),
+      cros_window_management_factory_(&execution_context),
       cros_window_management_(&execution_context),
       receiver_(this, &execution_context) {
-  auto receiver = cros_window_management_.BindNewPipeAndPassReceiver(
-      execution_context.GetTaskRunner(TaskType::kMiscPlatformAPI));
+  auto factory_receiver =
+      cros_window_management_factory_.BindNewPipeAndPassReceiver(
+          execution_context.GetTaskRunner(TaskType::kMiscPlatformAPI));
   execution_context.GetBrowserInterfaceBroker().GetInterface(
-      std::move(receiver));
+      std::move(factory_receiver));
+
+  auto impl_receiver = cros_window_management_.BindNewEndpointAndPassReceiver(
+      execution_context.GetTaskRunner(TaskType::kMiscPlatformAPI));
+  cros_window_management_factory_->Create(std::move(impl_receiver));
 }
 
 void CrosWindowManagement::Trace(Visitor* visitor) const {
+  visitor->Trace(cros_window_management_factory_);
   visitor->Trace(cros_window_management_);
   visitor->Trace(receiver_);
   visitor->Trace(windows_);
