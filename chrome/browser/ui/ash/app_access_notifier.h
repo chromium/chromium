@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_MICROPHONE_MUTE_NOTIFICATION_DELEGATE_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_MICROPHONE_MUTE_NOTIFICATION_DELEGATE_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_APP_ACCESS_NOTIFIER_H_
+#define CHROME_BROWSER_UI_ASH_APP_ACCESS_NOTIFIER_H_
 
 #include <list>
 #include <map>
@@ -25,21 +25,21 @@ class AppCapabilityAccessCache;
 class AppRegistryCache;
 }  // namespace apps
 
-// This is the concrete implementation of MicrophoneMuteNotificationDelegate,
-// which allows code relevant to microphone mute notifications that resides
-// under //ash to invoke functions/objects that actually reside under //chrome.
-class MicrophoneMuteNotificationDelegateImpl
+// This class is responsible for observing AppCapabilityAccessCache, notifying
+// to appropriate entities when an app is accessing camera/microphone. This is
+// also the concrete implementation of MicrophoneMuteNotificationDelegate, which
+// allows code relevant to microphone mute notifications that resides under
+// //ash to invoke functions/objects that actually reside under //chrome.
+class AppAccessNotifier
     : public ash::MicrophoneMuteNotificationDelegate,
       public apps::AppCapabilityAccessCache::Observer,
       public session_manager::SessionManagerObserver,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
-  MicrophoneMuteNotificationDelegateImpl();
-  MicrophoneMuteNotificationDelegateImpl(
-      const MicrophoneMuteNotificationDelegateImpl&) = delete;
-  MicrophoneMuteNotificationDelegateImpl& operator=(
-      const MicrophoneMuteNotificationDelegateImpl&) = delete;
-  ~MicrophoneMuteNotificationDelegateImpl() override;
+  AppAccessNotifier();
+  AppAccessNotifier(const AppAccessNotifier&) = delete;
+  AppAccessNotifier& operator=(const AppAccessNotifier&) = delete;
+  ~AppAccessNotifier() override;
 
   // ash::MicrophoneMuteNotificationDelegate
   absl::optional<std::u16string> GetAppAccessingMicrophone() override;
@@ -82,7 +82,8 @@ class MicrophoneMuteNotificationDelegateImpl
   using MruAppIdList = std::list<std::string>;
 
   // Each user has their own list of MRU apps.  It's intended to persist across
-  // multiple logouts/logins, and we specifically don't ever clear it.
+  // multiple logouts/logins, and we specifically don't ever clear it. This is
+  // used for the microphone mute notification.
   using MruAppIdMap = std::map<AccountId, MruAppIdList>;
   MruAppIdMap mic_using_app_ids;
 
@@ -105,8 +106,7 @@ class MicrophoneMuteNotificationDelegateImpl
                           apps::AppCapabilityAccessCache::Observer>
       app_capability_access_cache_observation_{this};
 
-  base::WeakPtrFactory<MicrophoneMuteNotificationDelegateImpl>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<AppAccessNotifier> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_MICROPHONE_MUTE_NOTIFICATION_DELEGATE_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_APP_ACCESS_NOTIFIER_H_

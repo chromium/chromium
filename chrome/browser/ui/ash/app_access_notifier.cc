@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/ash/app_access_notifier.h"
+
 #include <string>
 
+#include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ui/ash/microphone_mute_notification_delegate_impl.h"
-
-#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -70,8 +70,7 @@ absl::optional<std::u16string> MapAppIdToShortName(
 
 }  // namespace
 
-MicrophoneMuteNotificationDelegateImpl::
-    MicrophoneMuteNotificationDelegateImpl() {
+AppAccessNotifier::AppAccessNotifier() {
   // These checks are needed for testing, where SessionManager and/or
   // UserManager may not exist.
   session_manager::SessionManager* sm = session_manager::SessionManager::Get();
@@ -84,11 +83,9 @@ MicrophoneMuteNotificationDelegateImpl::
   }
 }
 
-MicrophoneMuteNotificationDelegateImpl::
-    ~MicrophoneMuteNotificationDelegateImpl() = default;
+AppAccessNotifier::~AppAccessNotifier() = default;
 
-absl::optional<std::u16string>
-MicrophoneMuteNotificationDelegateImpl::GetAppAccessingMicrophone() {
+absl::optional<std::u16string> AppAccessNotifier::GetAppAccessingMicrophone() {
   apps::AppRegistryCache* reg_cache = GetActiveUserAppRegistryCache();
   apps::AppCapabilityAccessCache* cap_cache =
       GetActiveUserAppCapabilityAccessCache();
@@ -100,7 +97,7 @@ MicrophoneMuteNotificationDelegateImpl::GetAppAccessingMicrophone() {
   return GetAppAccessingMicrophone(cap_cache, reg_cache);
 }
 
-void MicrophoneMuteNotificationDelegateImpl::OnCapabilityAccessUpdate(
+void AppAccessNotifier::OnCapabilityAccessUpdate(
     const apps::CapabilityAccessUpdate& update) {
   base::Erase(mic_using_app_ids[active_user_account_id_], update.AppId());
 
@@ -109,9 +106,8 @@ void MicrophoneMuteNotificationDelegateImpl::OnCapabilityAccessUpdate(
   }
 }
 
-void MicrophoneMuteNotificationDelegateImpl::
-    OnAppCapabilityAccessCacheWillBeDestroyed(
-        apps::AppCapabilityAccessCache* cache) {
+void AppAccessNotifier::OnAppCapabilityAccessCacheWillBeDestroyed(
+    apps::AppCapabilityAccessCache* cache) {
   app_capability_access_cache_observation_.Reset();
 }
 
@@ -127,7 +123,7 @@ void MicrophoneMuteNotificationDelegateImpl::
 // the job of CheckActiveUserChanged().
 //
 
-void MicrophoneMuteNotificationDelegateImpl::OnSessionStateChanged() {
+void AppAccessNotifier::OnSessionStateChanged() {
   session_manager::SessionState state =
       session_manager::SessionManager::Get()->session_state();
   if (state == session_manager::SessionState::ACTIVE) {
@@ -136,12 +132,11 @@ void MicrophoneMuteNotificationDelegateImpl::OnSessionStateChanged() {
   }
 }
 
-void MicrophoneMuteNotificationDelegateImpl::ActiveUserChanged(
-    user_manager::User* active_user) {
+void AppAccessNotifier::ActiveUserChanged(user_manager::User* active_user) {
   CheckActiveUserChanged();
 }
 
-AccountId MicrophoneMuteNotificationDelegateImpl::GetActiveUserAccountId() {
+AccountId AppAccessNotifier::GetActiveUserAccountId() {
   auto* manager = user_manager::UserManager::Get();
   const user_manager::User* active_user = manager->GetActiveUser();
   if (!active_user)
@@ -150,7 +145,7 @@ AccountId MicrophoneMuteNotificationDelegateImpl::GetActiveUserAccountId() {
   return active_user->GetAccountId();
 }
 
-void MicrophoneMuteNotificationDelegateImpl::CheckActiveUserChanged() {
+void AppAccessNotifier::CheckActiveUserChanged() {
   AccountId id = GetActiveUserAccountId();
   if (id == EmptyAccountId() || id == active_user_account_id_)
     return;
@@ -167,13 +162,12 @@ void MicrophoneMuteNotificationDelegateImpl::CheckActiveUserChanged() {
   }
 }
 
-apps::AppCapabilityAccessCache* MicrophoneMuteNotificationDelegateImpl::
-    GetActiveUserAppCapabilityAccessCache() {
+apps::AppCapabilityAccessCache*
+AppAccessNotifier::GetActiveUserAppCapabilityAccessCache() {
   return GetAppCapabilityAccessCache(GetActiveUserAccountId());
 }
 
-absl::optional<std::u16string>
-MicrophoneMuteNotificationDelegateImpl::GetAppAccessingMicrophone(
+absl::optional<std::u16string> AppAccessNotifier::GetAppAccessingMicrophone(
     apps::AppCapabilityAccessCache* capability_cache,
     apps::AppRegistryCache* registry_cache) {
   if (mic_using_app_ids[active_user_account_id_].empty())

@@ -26,6 +26,7 @@ class DisplaySettingsHandler;
 
 class AccessibilityControllerClient;
 class AmbientClientImpl;
+class AppAccessNotifier;
 class AppListClientImpl;
 class ArcOpenUrlDelegateImpl;
 class AshShellInit;
@@ -36,7 +37,6 @@ class ImeControllerClientImpl;
 class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
 class MediaClientImpl;
-class MicrophoneMuteNotificationDelegateImpl;
 class MobileDataNotifications;
 class NetworkConnectDelegateChromeOS;
 class NightLightClient;
@@ -129,8 +129,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   // Initialized in PostProfileInit in all configs:
   std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
   std::unique_ptr<MediaClientImpl> media_client_;
-  std::unique_ptr<MicrophoneMuteNotificationDelegateImpl>
-      microphone_mute_notification_delegate_;
+  std::unique_ptr<AppAccessNotifier> app_access_notifier_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;
   std::unique_ptr<AshWebViewFactoryImpl> ash_web_view_factory_;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/microphone_mute_notification_delegate_impl.h"
+#include "chrome/browser/ui/ash/app_access_notifier.h"
 
 #include <memory>
 
@@ -19,15 +19,12 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class TestMicrophoneMuteNotificationDelegateImpl
-    : public MicrophoneMuteNotificationDelegateImpl {
+class TestAppAccessNotifier : public AppAccessNotifier {
  public:
-  TestMicrophoneMuteNotificationDelegateImpl() = default;
-  TestMicrophoneMuteNotificationDelegateImpl(
-      const MicrophoneMuteNotificationDelegateImpl&) = delete;
-  TestMicrophoneMuteNotificationDelegateImpl& operator=(
-      const MicrophoneMuteNotificationDelegateImpl&) = delete;
-  ~TestMicrophoneMuteNotificationDelegateImpl() override = default;
+  TestAppAccessNotifier() = default;
+  TestAppAccessNotifier(const TestAppAccessNotifier&) = delete;
+  TestAppAccessNotifier& operator=(const TestAppAccessNotifier&) = delete;
+  ~TestAppAccessNotifier() override = default;
 
   void SetFakeActiveUserAccountId(AccountId id) {
     user_account_id_ = id;
@@ -40,14 +37,12 @@ class TestMicrophoneMuteNotificationDelegateImpl
   AccountId user_account_id_ = EmptyAccountId();
 };
 
-class MicrophoneMuteNotificationDelegateTest : public testing::Test {
+class AppAccessNotifierTest : public testing::Test {
  public:
-  MicrophoneMuteNotificationDelegateTest() = default;
-  MicrophoneMuteNotificationDelegateTest(
-      const MicrophoneMuteNotificationDelegateTest&) = delete;
-  MicrophoneMuteNotificationDelegateTest& operator=(
-      const MicrophoneMuteNotificationDelegateTest&) = delete;
-  ~MicrophoneMuteNotificationDelegateTest() override = default;
+  AppAccessNotifierTest() = default;
+  AppAccessNotifierTest(const AppAccessNotifierTest&) = delete;
+  AppAccessNotifierTest& operator=(const AppAccessNotifierTest&) = delete;
+  ~AppAccessNotifierTest() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -58,7 +53,7 @@ class MicrophoneMuteNotificationDelegateTest : public testing::Test {
         std::move(fake_user_manager));
 
     microphone_mute_notification_delegate_ =
-        std::make_unique<TestMicrophoneMuteNotificationDelegateImpl>();
+        std::make_unique<TestAppAccessNotifier>();
 
     SetupPrimaryUser();
   }
@@ -170,8 +165,7 @@ class MicrophoneMuteNotificationDelegateTest : public testing::Test {
   const AccountId account_id_secondary_user_ =
       AccountId::FromUserEmail(kSecondaryProfileName);
 
-  std::unique_ptr<TestMicrophoneMuteNotificationDelegateImpl>
-      microphone_mute_notification_delegate_;
+  std::unique_ptr<TestAppAccessNotifier> microphone_mute_notification_delegate_;
 
   apps::AppRegistryCache registry_cache_primary_user_;
   apps::AppCapabilityAccessCache capability_access_cache_primary_user_;
@@ -182,13 +176,13 @@ class MicrophoneMuteNotificationDelegateTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
-TEST_F(MicrophoneMuteNotificationDelegateTest, NoAppsLaunched) {
+TEST_F(AppAccessNotifierTest, NoAppsLaunched) {
   // Should return a completely value-free app_name.
   absl::optional<std::u16string> app_name = GetAppAccessingMicrophone();
   EXPECT_FALSE(app_name.has_value());
 }
 
-TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedNotUsingMicrophone) {
+TEST_F(AppAccessNotifierTest, AppLaunchedNotUsingMicrophone) {
   LaunchAppUsingMicrophone("id_rose", "name_rose", false);
 
   // Should return a completely value-free app_name.
@@ -196,7 +190,7 @@ TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedNotUsingMicrophone) {
   EXPECT_FALSE(app_name.has_value());
 }
 
-TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedUsingMicrophone) {
+TEST_F(AppAccessNotifierTest, AppLaunchedUsingMicrophone) {
   LaunchAppUsingMicrophone("id_rose", "name_rose", true);
 
   // Should return the name of our app.
@@ -205,8 +199,7 @@ TEST_F(MicrophoneMuteNotificationDelegateTest, AppLaunchedUsingMicrophone) {
   EXPECT_EQ(app_name, u"name_rose");
 }
 
-TEST_F(MicrophoneMuteNotificationDelegateTest,
-       MultipleAppsLaunchedUsingMicrophone) {
+TEST_F(AppAccessNotifierTest, MultipleAppsLaunchedUsingMicrophone) {
   LaunchAppUsingMicrophone("id_rose", "name_rose", true);
   LaunchAppUsingMicrophone("id_mars", "name_mars", true);
   LaunchAppUsingMicrophone("id_zara", "name_zara", true);
@@ -232,7 +225,7 @@ TEST_F(MicrophoneMuteNotificationDelegateTest,
   EXPECT_EQ(app_name, u"name_zara");
 }
 
-TEST_F(MicrophoneMuteNotificationDelegateTest, MultipleUsers) {
+TEST_F(AppAccessNotifierTest, MultipleUsers) {
   // Prepare the secondary user.
   SetupSecondaryUser();
 
@@ -279,7 +272,7 @@ TEST_F(MicrophoneMuteNotificationDelegateTest, MultipleUsers) {
   EXPECT_FALSE(app_name.has_value());
 }
 
-TEST_F(MicrophoneMuteNotificationDelegateTest, MultipleUsersMultipleApps) {
+TEST_F(AppAccessNotifierTest, MultipleUsersMultipleApps) {
   // Prepare the secondary user.
   SetupSecondaryUser();
 

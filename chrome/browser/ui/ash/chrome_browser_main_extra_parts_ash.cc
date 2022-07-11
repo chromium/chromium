@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
+#include "chrome/browser/ui/ash/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/ash_shell_init.h"
 #include "chrome/browser/ui/ash/ash_web_view_factory_impl.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
-#include "chrome/browser/ui/ash/microphone_mute_notification_delegate_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
@@ -265,8 +265,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   media_client_->Init();
 
   if (ash::features::IsMicMuteNotificationsEnabled()) {
-    microphone_mute_notification_delegate_ =
-        std::make_unique<MicrophoneMuteNotificationDelegateImpl>();
+    app_access_notifier_ = std::make_unique<AppAccessNotifier>();
   }
 
   // Check if Lacros is enabled for crash reporting here to give the user
@@ -350,7 +349,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   login_screen_client_.reset();
 
   if (ash::features::IsMicMuteNotificationsEnabled()) {
-    microphone_mute_notification_delegate_.reset();
+    app_access_notifier_.reset();
   }
 
   // Initialized in PreProfileInit (which may not get called in some tests).
