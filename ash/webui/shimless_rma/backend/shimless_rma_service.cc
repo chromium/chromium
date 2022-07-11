@@ -171,7 +171,6 @@ void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
       std::move(callback), /*reboot=*/true));
 }
 
-// TODO(gavindodd): Work out how to catch the restart in tests and add unit test
 void ShimlessRmaService::CriticalErrorExitToLogin(
     CriticalErrorExitToLoginCallback callback) {
   if (!critical_error_occurred_) {
@@ -183,7 +182,6 @@ void ShimlessRmaService::CriticalErrorExitToLogin(
       std::move(callback), /*reboot=*/false));
 }
 
-// TODO(gavindodd): Work out how to catch the reboot in tests and add unit test
 void ShimlessRmaService::CriticalErrorReboot(
     CriticalErrorRebootCallback callback) {
   if (!critical_error_occurred_) {
@@ -1397,6 +1395,11 @@ void ShimlessRmaService::OsUpdateOrNextRmadStateCallback(
                           /*can_exit=*/true, /*can_go_back=*/true,
                           rmad::RmadErrorCode::RMAD_ERROR_OK));
   }
+}
+
+void ShimlessRmaService::SetCriticalErrorOccurredForTest(
+    bool critical_error_occurred) {
+  critical_error_occurred_ = critical_error_occurred;
 }
 
 }  // namespace shimless_rma

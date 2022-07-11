@@ -193,6 +193,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // Sends a metric to the platform side when an OS update is requested.
   void SendMetricOnUpdateOs();
 
+  // Sets the critical_error_occurred_ variable, so that the tests can call
+  // functions that request reboots after an error.
+  void SetCriticalErrorOccurredForTest(bool critical_error_occurred);
+
  private:
   using TransitionStateCallback =
       base::OnceCallback<void(mojom::StateResultPtr)>;

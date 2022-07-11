@@ -1034,6 +1034,41 @@ TEST_F(ShimlessRmaServiceTest, AbortRmaRequestsFullReboot) {
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
+TEST_F(ShimlessRmaServiceTest,
+       CriticalErrorExitToLoginDoesntRequestFullReboot) {
+  const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->SetAbortable(true);
+  shimless_rma_provider_->SetCriticalErrorOccurredForTest(true);
+  base::RunLoop run_loop;
+  shimless_rma_provider_->CriticalErrorExitToLogin(
+      base::BindLambdaForTesting([&](rmad::RmadErrorCode error) {
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+}
+
+TEST_F(ShimlessRmaServiceTest, CriticalErrorRebootRequestsFullReboot) {
+  const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->SetAbortable(true);
+  shimless_rma_provider_->SetCriticalErrorOccurredForTest(true);
+  base::RunLoop run_loop;
+  shimless_rma_provider_->CriticalErrorReboot(
+      base::BindLambdaForTesting([&](rmad::RmadErrorCode error) {
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+}
+
 TEST_F(ShimlessRmaServiceTest, SetSameOwner) {
   const std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kDeviceDestination,
