@@ -57,13 +57,14 @@ export const FormSelectOptions = {
       displayText: 'Short Sentence (Left-to-Right)',
       value: 'Notification Title'
     },
-    {displayText: 'Short Sentence (Right-to-Left))', value: 'כותרת הודעה'}, {
+    {displayText: 'Short Sentence (Right-to-Left)', value: 'כותרת הודעה'},
+    {
       displayText: 'Long Sentence (Left-to-Right)',
       value:
           'Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers'
     },
     {
-      displayText: 'Long Sentence (Right-to-Left))',
+      displayText: 'Long Sentence (Right-to-Left)',
       value: 'המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. ציזבורגר'
     },
     {
@@ -71,23 +72,24 @@ export const FormSelectOptions = {
       value: 'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
     },
     {
-      displayText: 'Repetitive Characters (Right-to-Left))',
+      displayText: 'Repetitive Characters (Right-to-Left)',
       value: 'שששששששששששששששששששששששששששששששששששששששששששששששששששש'
-    }
+    },
+    {displayText: 'Empty', value: ''},
   ],
   MESSAGE_OPTIONS: [
     {
       displayText: 'One Sentence (Left-to-Right)',
       value: 'Notification content'
     },
-    {displayText: 'One Sentence (Right-to-Left))', value: 'תוכן הודעה'},
+    {displayText: 'One Sentence (Right-to-Left)', value: 'תוכן הודעה'},
     {
       displayText: 'Multiple Sentences (Left-to-Right)',
       value:
           'This is the notification\'s message.It may be able to stretch over multiple lines, or become visible when the notification is expanded by the user, depending on the notification center that\'s being used.'
     },
     {
-      displayText: 'Multiple Sentences (Right-to-Left))',
+      displayText: 'Multiple Sentences (Right-to-Left)',
       value:
           'זהו המסר של ההודעה. זה עשוי להיות מסוגל למתוח על קווים מרובים, או להיות גלוי, כאשר ההודעה מורחבת על ידי המשתמש, בהתאם להודעה שהמרכז נמצא בשימוש'
     },
@@ -97,7 +99,7 @@ export const FormSelectOptions = {
           'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
     },
     {
-      displayText: 'Repetitive Characters (Right-to-Left))',
+      displayText: 'Repetitive Characters (Right-to-Left)',
       value:
           'ששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששששש'
     },
@@ -177,14 +179,14 @@ export const FormSelectOptions = {
   ],
   PROGRESS_STATUS_OPTIONS: [
     {displayText: 'Short Sentence (Left-to-Right)', value: 'Progress Status'},
-    {displayText: 'Short Sentence (Right-to-Left))', value: 'כותרת הודעה'},
+    {displayText: 'Short Sentence (Right-to-Left)', value: 'כותרת הודעה'},
     {
       displayText: 'Long Sentence (Left-to-Right)',
       value:
           'Hamburgers: the cornerstone of any nutritious breakfast. Ch-cheeseburgers'
     },
     {
-      displayText: 'Long Sentence (Right-to-Left))',
+      displayText: 'Long Sentence (Right-to-Left)',
       value: 'המבורגרים: אבן הפינה של כל ארוחת בוקר מזינה. ציזבורגר'
     },
     {
@@ -192,7 +194,7 @@ export const FormSelectOptions = {
       value: 'sshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh'
     },
     {
-      displayText: 'Repetitive Characters (Right-to-Left))',
+      displayText: 'Repetitive Characters (Right-to-Left)',
       value: 'שששששששששששששששששששששששששששששששששששששששששששששששששששש'
     },
     {displayText: 'Unicode Emojis', value: '🌇😃🍈😆🍜🍻😋⛅⛳😚ඞ'},
