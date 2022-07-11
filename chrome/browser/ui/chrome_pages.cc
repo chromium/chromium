@@ -68,6 +68,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif
+
 using base::UserMetricsAction;
 
 namespace chrome {

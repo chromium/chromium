@@ -8,14 +8,9 @@
 #include <stddef.h>
 
 #include <iosfwd>
-#include <vector>
 
-#include "chrome/browser/web_applications/user_display_mode.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
 namespace web_app {
 
@@ -150,24 +145,6 @@ constexpr size_t kMaxApplicationDockMenuItems = 10;
 
 using DisplayMode = blink::mojom::DisplayMode;
 
-// When user_display_mode indicates a user preference for opening in
-// a browser tab, we open in a browser tab. If the developer has specified
-// the app should utilize more advanced display modes and/or fallback chain,
-// attempt honor those preferences. Otherwise, we open in a standalone
-// window (for app_display_mode 'standalone' or 'fullscreen'), or a minimal-ui
-// window (for app_display_mode 'browser' or 'minimal-ui').
-//
-// |is_isolated| overrides browser display mode for isolated apps because they
-// can't be open as a tab.
-DisplayMode ResolveEffectiveDisplayMode(
-    DisplayMode app_display_mode,
-    const std::vector<DisplayMode>& app_display_mode_overrides,
-    UserDisplayMode user_display_mode,
-    bool is_isolated);
-
-apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
-    DisplayMode display_mode);
-
 // The operation mode for Run on OS Login.
 enum class RunOnOsLoginMode {
   kMinValue = 0,
@@ -196,12 +173,6 @@ enum class RunOnOsLoginPolicy {
   // window.
   kRunWindowed = 2,
 };
-
-std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode);
-
-// Converts RunOnOsLoginMode from RunOnOsLoginMode to
-// apps::RunOnOsLoginMode.
-apps::RunOnOsLoginMode ConvertOsLoginMode(RunOnOsLoginMode login_mode);
 
 // Number of times IPH can be ignored for this app before it's muted.
 constexpr int kIphMuteAfterConsecutiveAppSpecificIgnores = 3;
@@ -265,8 +236,6 @@ enum class IconsDownloadedResult {
   kAbortedDueToFailure,
   kMaxValue = kAbortedDueToFailure,
 };
-
-const char* IconsDownloadedResultToString(IconsDownloadedResult result);
 
 // Generic result enumeration to be used for operations that can fail. If more
 // information is needed in a return value, we can move to something similar to

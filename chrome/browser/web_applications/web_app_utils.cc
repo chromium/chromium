@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -34,14 +35,17 @@
 #include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/grit/components_resources.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,7 +59,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -65,7 +68,10 @@
 #include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+namespace web_app {
+
 namespace {
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool g_enable_system_web_apps_in_lacros_for_testing = false;
 
@@ -85,9 +91,82 @@ GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
   return GURL("data:image/png;base64," + encoded);
 }
 
-}  // namespace
+// Note: This can never return kBrowser. This is because the user has
+// specified that the web app should be displayed in a window, and thus
+// the lowest fallback that we can go to is kMinimalUi.
+DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
+    DisplayMode app_display_mode) {
+  switch (app_display_mode) {
+    case DisplayMode::kBrowser:
+    case DisplayMode::kMinimalUi:
+      return DisplayMode::kMinimalUi;
+    case DisplayMode::kUndefined:
+      NOTREACHED();
+      [[fallthrough]];
+    case DisplayMode::kStandalone:
+    case DisplayMode::kFullscreen:
+      return DisplayMode::kStandalone;
+    case DisplayMode::kWindowControlsOverlay:
+      return DisplayMode::kWindowControlsOverlay;
+    case DisplayMode::kTabbed:
+      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip))
+        return DisplayMode::kTabbed;
+      else
+        return DisplayMode::kStandalone;
+  }
+}
 
-namespace web_app {
+absl::optional<DisplayMode> TryResolveUserDisplayMode(
+    UserDisplayMode user_display_mode) {
+  switch (user_display_mode) {
+    case UserDisplayMode::kBrowser:
+      return DisplayMode::kBrowser;
+    case UserDisplayMode::kTabbed:
+      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings))
+        return DisplayMode::kTabbed;
+      // Treat as standalone.
+      [[fallthrough]];
+    case UserDisplayMode::kStandalone:
+      break;
+  }
+
+  return absl::nullopt;
+}
+
+absl::optional<DisplayMode> TryResolveOverridesDisplayMode(
+    const std::vector<DisplayMode>& display_mode_overrides) {
+  for (DisplayMode override_display_mode : display_mode_overrides) {
+    DisplayMode resolved_display_mode =
+        ResolveAppDisplayModeForStandaloneLaunchContainer(
+            override_display_mode);
+    if (override_display_mode == resolved_display_mode) {
+      return resolved_display_mode;
+    }
+  }
+
+  return absl::nullopt;
+}
+
+DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
+    DisplayMode app_display_mode,
+    const std::vector<DisplayMode>& display_mode_overrides,
+    UserDisplayMode user_display_mode) {
+  const absl::optional<DisplayMode> resolved_display_mode =
+      TryResolveUserDisplayMode(user_display_mode);
+  if (resolved_display_mode.has_value()) {
+    return *resolved_display_mode;
+  }
+
+  const absl::optional<DisplayMode> resolved_override_display_mode =
+      TryResolveOverridesDisplayMode(display_mode_overrides);
+  if (resolved_override_display_mode.has_value()) {
+    return *resolved_override_display_mode;
+  }
+
+  return ResolveAppDisplayModeForStandaloneLaunchContainer(app_display_mode);
+}
+
+}  // namespace
 
 constexpr base::FilePath::CharType kManifestResourcesDirectoryName[] =
     FILE_PATH_LITERAL("Manifest Resources");
@@ -513,6 +592,70 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 
   return base::StartsWith(url.spec(), scope.spec(),
                           base::CompareCase::SENSITIVE);
+}
+
+DisplayMode ResolveEffectiveDisplayMode(
+    DisplayMode app_display_mode,
+    const std::vector<DisplayMode>& app_display_mode_overrides,
+    UserDisplayMode user_display_mode,
+    bool is_isolated) {
+  const DisplayMode resolved_display_mode =
+      ResolveNonIsolatedEffectiveDisplayMode(
+          app_display_mode, app_display_mode_overrides, user_display_mode);
+  if (is_isolated && resolved_display_mode == DisplayMode::kBrowser) {
+    return DisplayMode::kStandalone;
+  }
+
+  return resolved_display_mode;
+}
+
+apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
+    DisplayMode display_mode) {
+  switch (display_mode) {
+    case DisplayMode::kBrowser:
+      return apps::LaunchContainer::kLaunchContainerTab;
+    case DisplayMode::kMinimalUi:
+    case DisplayMode::kStandalone:
+    case DisplayMode::kFullscreen:
+    case DisplayMode::kWindowControlsOverlay:
+    case DisplayMode::kTabbed:
+      return apps::LaunchContainer::kLaunchContainerWindow;
+    case DisplayMode::kUndefined:
+      return apps::LaunchContainer::kLaunchContainerNone;
+  }
+}
+
+std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode) {
+  switch (mode) {
+    case RunOnOsLoginMode::kWindowed:
+      return "windowed";
+    case RunOnOsLoginMode::kMinimized:
+      return "minimized";
+    case RunOnOsLoginMode::kNotRun:
+      return "not run";
+  }
+}
+
+apps::RunOnOsLoginMode ConvertOsLoginMode(RunOnOsLoginMode login_mode) {
+  switch (login_mode) {
+    case RunOnOsLoginMode::kWindowed:
+      return apps::RunOnOsLoginMode::kWindowed;
+    case RunOnOsLoginMode::kNotRun:
+      return apps::RunOnOsLoginMode::kNotRun;
+    case RunOnOsLoginMode::kMinimized:
+      return apps::RunOnOsLoginMode::kUnknown;
+  }
+}
+
+const char* IconsDownloadedResultToString(IconsDownloadedResult result) {
+  switch (result) {
+    case IconsDownloadedResult::kCompleted:
+      return "Completed";
+    case IconsDownloadedResult::kPrimaryPageChanged:
+      return "PrimaryPageChanged";
+    case IconsDownloadedResult::kAbortedDueToFailure:
+      return "AbortedDueToFailure";
+  }
 }
 
 }  // namespace web_app

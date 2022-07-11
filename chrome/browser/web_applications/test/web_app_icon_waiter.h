@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_ICON_WAITER_H_
 
 #include "base/run_loop.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
+
+class Profile;
 
 class WebAppIconWaiter {
  public:
   explicit WebAppIconWaiter(Profile* profile, const web_app::AppId& app_id);
+
   void Wait();
 
  private:

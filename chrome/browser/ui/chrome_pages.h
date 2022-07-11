@@ -25,14 +25,16 @@
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/web_applications/web_app_utils.h"
-#endif
-
 namespace signin {
 enum class ConsentLevel;
 }  // namespace signin
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+namespace web_app {
+enum class AppSettingsPageEntryPoint;
+}  // namespace web_app
+#endif
 
 class Browser;
 class Profile;
