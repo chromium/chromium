@@ -82,7 +82,7 @@ function validateInterestGroup(interestGroup) {
   // serializing in declaration order.
   const userBiddingSignalsJSON =
       JSON.stringify(interestGroup.userBiddingSignals);
-  if (userBiddingSignalsJSON !== '{"some":"json","data":{"here":[1,2,3]}}')
+  if (userBiddingSignalsJSON !== '{"some":"json","stuff":{"here":[1,2]}}')
     throw 'Wrong userBiddingSignals ' + userBiddingSignalsJSON;
 
   if (interestGroup.ads.length !== 1)
