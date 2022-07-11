@@ -82,6 +82,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
+#include "chrome/browser/privacy_budget/active_sampling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -189,6 +190,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -1866,6 +1868,14 @@ void ChromeBrowserMainParts::OnFirstIdle() {
         base::BindOnce(&base::Process::CleanUpStaleProcessStates));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (blink::IdentifiabilityStudySettings::Get()->IsActive()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(&ActivelySampleIdentifiableSurfaces));
+  }
 }
 
 void ChromeBrowserMainParts::PostMainMessageLoopRun() {

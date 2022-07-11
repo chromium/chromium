@@ -183,6 +183,10 @@ class PrivacyBudgetBrowserTestWithTestRecorder
     // Android and Desktop.
     content::NavigateToURLBlockUntilNavigationsComplete(web_contents(),
                                                         GURL("about:blank"), 1);
+
+    // Ensure that the actively sampled surfaces reported at browser startup go
+    // through before we set up the test recorder.
+    content::RunAllTasksUntilIdle();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 

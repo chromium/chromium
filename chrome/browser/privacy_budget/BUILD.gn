@@ -4,6 +4,7 @@
 
 source_set("headers") {
   sources = [
+    "active_sampling.h",
     "encountered_surface_tracker.h",
     "identifiability_study_group_settings.h",
     "identifiability_study_state.h",
@@ -30,6 +31,7 @@ source_set("headers") {
 
 source_set("privacy_budget") {
   sources = [
+    "active_sampling.cc",
     "encountered_surface_tracker.cc",
     "identifiability_study_group_settings.cc",
     "identifiability_study_state.cc",
@@ -50,6 +52,7 @@ source_set("privacy_budget") {
     "//chrome/common/privacy_budget",
     "//components/prefs",
     "//components/ukm",
+    "//content/public/common",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
@@ -61,6 +64,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "active_sampling_unittest.cc",
     "encountered_surface_tracker_unittest.cc",
     "identifiability_study_group_settings_unittest.cc",
     "identifiability_study_state_unittest.cc",
@@ -81,6 +85,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/common/privacy_budget:test_support",
     "//chrome/test:test_support",
+    "//components/ukm:test_support",
     "//testing/gtest",
   ]
 }
