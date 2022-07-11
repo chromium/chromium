@@ -208,6 +208,8 @@ void PrefetchService::PrefetchUrl(
     }
   }
 
+  RecordExistingPrefetchWithMatchingURL(prefetch_container);
+
   DCHECK(all_prefetches_.find(prefetch_container_key) == all_prefetches_.end());
   all_prefetches_[prefetch_container_key] = prefetch_container;
 
@@ -885,6 +887,23 @@ void PrefetchService::SetHostNonUniqueFilterForTesting(
 void PrefetchService::SetURLLoaderFactoryForTesting(
     network::mojom::URLLoaderFactory* url_loader_factory) {
   g_url_loader_factory_for_testing = url_loader_factory;
+}
+
+void PrefetchService::RecordExistingPrefetchWithMatchingURL(
+    base::WeakPtr<PrefetchContainer> prefetch_container) const {
+  bool matching_prefetch = false;
+  for (const auto& prefetch_iter : all_prefetches_) {
+    if (prefetch_iter.second->GetURL() == prefetch_container->GetURL() &&
+        prefetch_iter.second->GetReferringRenderFrameHostId() !=
+            prefetch_container->GetReferringRenderFrameHostId()) {
+      matching_prefetch = true;
+      break;
+    }
+  }
+
+  base::UmaHistogramBoolean(
+      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL",
+      matching_prefetch);
 }
 
 }  // namespace content

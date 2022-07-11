@@ -184,6 +184,12 @@ class CONTENT_EXPORT PrefetchService {
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
+  // Checks if there is a prefetch in |all_prefetches_| with the same URL as
+  // |prefetch_container| but from a different referring render frame host.
+  // Records the result to a UMA histogram.
+  void RecordExistingPrefetchWithMatchingURL(
+      base::WeakPtr<PrefetchContainer> prefetch_container) const;
+
   raw_ptr<BrowserContext> browser_context_;
 
   // Delegate provided by embedder that controls specific behavior of |this|.

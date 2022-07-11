@@ -379,6 +379,8 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
   Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
 
   histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
+  histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);

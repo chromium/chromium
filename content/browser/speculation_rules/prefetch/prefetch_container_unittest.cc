@@ -4,6 +4,7 @@
 
 #include "content/browser/speculation_rules/prefetch/prefetch_container.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_status.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
 #include "content/browser/speculation_rules/prefetch/prefetched_mainframe_response_container.h"
@@ -162,6 +163,8 @@ TEST_F(PrefetchContainerTest, CookieListener) {
 }
 
 TEST_F(PrefetchContainerTest, CookieCopy) {
+  base::HistogramTester histogram_tester;
+
   PrefetchContainer prefetch_container(
       GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
       PrefetchType(/*use_isolated_network_context=*/true,
@@ -180,6 +183,10 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
   ASSERT_TRUE(SetCookie(GURL("https://test.com"), "test-cookie"));
   EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
 
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+  prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
+  task_environment()->FastForwardBy(base::Milliseconds(20));
+
   bool callback_called = false;
   prefetch_container.SetOnCookieCopyCompleteCallback(
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
@@ -189,6 +196,16 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
 
   EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieReadTime",
+      base::Milliseconds(10), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWriteTime",
+      base::Milliseconds(20), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
+      base::Milliseconds(30), 1);
 }
 
 }  // namespace

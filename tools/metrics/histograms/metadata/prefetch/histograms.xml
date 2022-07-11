@@ -27,6 +27,42 @@ chromium-metrics-reviews@google.com.
   <variant name="TLS" summary="TLS canary check"/>
 </variants>
 
+<histogram name="PrefetchProxy.AfterClick.Mainframe.CookieCopyTime" units="ms"
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    Cross-Origin prefetches requested via the Speculation Rules API are made in
+    an isolated network context. When the prefetched link is navigated to, the
+    cookies are copied from this isolated network context to the user's default
+    network context.
+
+    This histogram records the time required to copy cookies from the isolated
+    network context used for a prefetch to the user's default network context
+    after a prefetched link is navigated to.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.AfterClick.Mainframe.CookieReadTime" units="ms"
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    Cross-Origin prefetches requested via the Speculation Rules API are made in
+    an isolated network context. When the prefetched link is na vigated to, the
+    cookies are copied from this isolated network context to the user's default
+    network context.
+
+    This histogram records the time required to read the cookies from the
+    isolated network context used for a prefetch before being copied to the
+    user's default network context after a prefetched link is navigated to. Note
+    this does not include the time it takes to write the cookies to the default
+    network context.
+  </summary>
+</histogram>
+
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieWaitTime" units="ms"
     expires_after="2023-04-25">
   <owner>curranmax@chromium.org</owner>
@@ -36,6 +72,30 @@ chromium-metrics-reviews@google.com.
     Records the amount of time that the navigation to a previously prefetched
     page was delayed because cookies had to be copied from the isolated cookie
     jar.
+
+    This is only the amount of time in which the cookie copy process blocks
+    intercepting the navigation. The overall time it takes for the cookie copy
+    process is recorded to the
+    &quot;PrefetchProxy.AfterClick.Mainframe.Cookie(Copy|Read|Write)Time&quot;
+    histograms.
+  </summary>
+</histogram>
+
+<histogram name="PrefetchProxy.AfterClick.Mainframe.CookieWriteTime" units="ms"
+    expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    Cross-Origin prefetches requested via the Speculation Rules API are made in
+    an isolated network context. When the prefetched link is na vigated to, the
+    cookies are copied from this isolated network context to the user's default
+    network context.
+
+    This histogram records the time required to write cookies from the isolated
+    network context used for a prefetch to the user's default network context
+    after a prefetched link is navigated to. Note this does not include the time
+    it takes to read the cookies from the isolated network context.
   </summary>
 </histogram>
 
@@ -160,6 +220,18 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="PrefetchProxyCanaryCheckerClient"
       variants="PrefetchProxyCanaryCheckerClient"/>
+</histogram>
+
+<histogram name="PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL"
+    units="Boolean" expires_after="2023-04-25">
+  <owner>curranmax@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
+  <summary>
+    Records whether or not there was an existing prefetch with a matching URL
+    from a different referring page when a new prefetch is requested. This is
+    recorded everytime a prefetch is requested.
+  </summary>
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"

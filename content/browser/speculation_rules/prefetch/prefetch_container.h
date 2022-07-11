@@ -89,9 +89,11 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Before a prefetch can be served, any cookies added to the isolated network
   // context must be copied over to the default network context. These functions
-  // are used to check and update the status of this process.
+  // are used to check and update the status of this process, as well as record
+  // metrics about how long this process takes.
   bool IsIsolatedCookieCopyInProgress() const;
   void OnIsolatedCookieCopyStart();
+  void OnIsolatedCookiesReadCompleteAndWriteStart();
   void OnIsolatedCookieCopyComplete();
   void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
 
@@ -173,6 +175,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The current state of the cookie copy process for this prefetch.
   CookieCopyStatus cookie_copy_status_ = CookieCopyStatus::kNotStarted;
+
+  // The timestamps of when the overall cookie copy process starts, and midway
+  // when the cookies are read from the isolated network context and are about
+  // to be written to the default network context.
+  absl::optional<base::TimeTicks> cookie_copy_start_time_;
+  absl::optional<base::TimeTicks> cookie_read_end_and_write_start_time_;
 
   // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
   base::OnceClosure on_cookie_copy_complete_callback_;

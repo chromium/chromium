@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_document_manager.h"
@@ -21,6 +22,27 @@
 #include "url/gurl.h"
 
 namespace content {
+namespace {
+
+void RecordCookieCopyTimes(
+    const base::TimeTicks& cookie_copy_start_time,
+    const base::TimeTicks& cookie_read_end_and_write_start_time,
+    const base::TimeTicks& cookie_copy_end_time) {
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "PrefetchProxy.AfterClick.Mainframe.CookieReadTime",
+      cookie_read_end_and_write_start_time - cookie_copy_start_time,
+      base::TimeDelta(), base::Seconds(5), 50);
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWriteTime",
+      cookie_copy_end_time - cookie_read_end_and_write_start_time,
+      base::TimeDelta(), base::Seconds(5), 50);
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
+      cookie_copy_end_time - cookie_copy_start_time, base::TimeDelta(),
+      base::Seconds(5), 50);
+}
+
+}  // namespace
 
 PrefetchContainer::PrefetchContainer(
     const GlobalRenderFrameHostId& referring_render_frame_host_id,
@@ -87,12 +109,27 @@ void PrefetchContainer::OnIsolatedCookieCopyStart() {
   StopCookieListener();
 
   cookie_copy_status_ = CookieCopyStatus::kInProgress;
+
+  cookie_copy_start_time_ = base::TimeTicks::Now();
+}
+
+void PrefetchContainer::OnIsolatedCookiesReadCompleteAndWriteStart() {
+  DCHECK(IsIsolatedCookieCopyInProgress());
+
+  cookie_read_end_and_write_start_time_ = base::TimeTicks::Now();
 }
 
 void PrefetchContainer::OnIsolatedCookieCopyComplete() {
   DCHECK(IsIsolatedCookieCopyInProgress());
 
   cookie_copy_status_ = CookieCopyStatus::kCompleted;
+
+  if (cookie_copy_start_time_.has_value() &&
+      cookie_read_end_and_write_start_time_.has_value()) {
+    RecordCookieCopyTimes(*cookie_copy_start_time_,
+                          *cookie_read_end_and_write_start_time_,
+                          base::TimeTicks::Now());
+  }
 
   if (on_cookie_copy_complete_callback_)
     std::move(on_cookie_copy_complete_callback_).Run();
