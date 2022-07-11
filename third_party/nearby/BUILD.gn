@@ -731,15 +731,5 @@ if (is_chromeos_device) {
   # Test target is for running Skylab tests from Chrome builder.
   tast_test("nearby_share_tast_tests") {
     tast_attr_expr = "\"group:nearby-share-remote\""
-    deps = [ ":nearby_lacros_version_metadata" ]
-  }
-
-  # This target is required by Skylab recipe to upload chrome binary
-  # and artifacts to GCS.
-  process_version("nearby_lacros_version_metadata") {
-    sources = [ "//chrome/VERSION" ]
-    template_file = "metadata.json.in"
-    output = "$root_out_dir/metadata.json"
-    process_only = true
   }
 }
