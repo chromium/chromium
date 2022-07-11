@@ -69,7 +69,6 @@ void TabGroup::AddTab() {
   if (tab_count_ == 0) {
     controller_->CreateTabGroup(id_);
     TabGroupChange::VisualsChange visuals;
-    visuals.old_visuals = nullptr;
     controller_->ChangeTabGroupVisuals(id_, visuals);
   }
   controller_->ChangeTabGroupContents(id_);

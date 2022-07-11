@@ -265,8 +265,8 @@ struct TabGroupChange {
   struct VisualsChange : public Delta {
     VisualsChange();
     ~VisualsChange() override;
-    raw_ptr<const tab_groups::TabGroupVisualData> old_visuals;
-    raw_ptr<const tab_groups::TabGroupVisualData> new_visuals;
+    raw_ptr<const tab_groups::TabGroupVisualData> old_visuals = nullptr;
+    raw_ptr<const tab_groups::TabGroupVisualData> new_visuals = nullptr;
   };
 
   TabGroupChange(TabStripModel* model,
