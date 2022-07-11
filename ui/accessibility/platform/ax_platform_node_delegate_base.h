@@ -96,6 +96,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   bool HasAction(ax::mojom::Action action) const override;
   bool HasTextStyle(ax::mojom::TextStyle text_style) const override;
   ax::mojom::NameFrom GetNameFrom() const override;
+  ax::mojom::DescriptionFrom GetDescriptionFrom() const override;
   std::u16string GetTextContentUTF16() const override;
   std::u16string GetValueForControl() const override;
   const AXTree::Selection GetUnignoredSelection() const override;
@@ -171,6 +172,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   std::unique_ptr<AXPlatformNodeDelegate::ChildIterator> ChildrenEnd() override;
 
   const std::string& GetName() const override;
+  const std::string& GetDescription() const override;
   std::u16string GetHypertext() const override;
   const std::map<int, int>& GetHypertextOffsetToHyperlinkChildIndex()
       const override;

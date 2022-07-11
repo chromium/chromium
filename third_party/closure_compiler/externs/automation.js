@@ -461,6 +461,7 @@ chrome.automation.NameFromType = {
  */
 chrome.automation.DescriptionFromType = {
   ARIA_DESCRIPTION: 'ariaDescription',
+  ATTRIBUTE_EXPLICITLY_EMPTY: 'attributeExplicitlyEmpty',
   BUTTON_LABEL: 'buttonLabel',
   POPUP_ELEMENT: 'popupElement',
   RELATED_ELEMENT: 'relatedElement',

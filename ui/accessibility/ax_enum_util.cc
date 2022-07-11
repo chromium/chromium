@@ -1581,6 +1581,8 @@ const char* ToString(ax::mojom::DescriptionFrom description_from) {
       return "none";
     case ax::mojom::DescriptionFrom::kAriaDescription:
       return "ariaDescription";
+    case ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty:
+      return "attributeExplicitlyEmpty";
     case ax::mojom::DescriptionFrom::kButtonLabel:
       return "buttonLabel";
     case ax::mojom::DescriptionFrom::kPopupElement:

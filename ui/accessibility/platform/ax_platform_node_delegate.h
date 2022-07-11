@@ -170,6 +170,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool HasAction(ax::mojom::Action action) const = 0;
   virtual bool HasTextStyle(ax::mojom::TextStyle text_style) const = 0;
   virtual ax::mojom::NameFrom GetNameFrom() const = 0;
+  virtual ax::mojom::DescriptionFrom GetDescriptionFrom() const = 0;
 
   // Returns the text of this node and all descendant nodes; including text
   // found in embedded objects.
@@ -346,6 +347,11 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Returns the accessible name for the node.
   virtual const std::string& GetName() const = 0;
+
+  // Returns the accessible description for the node.
+  // An accessible description gives more information about the node in
+  // contrast to the accessible name which is a shorter label for the node.
+  virtual const std::string& GetDescription() const = 0;
 
   // Returns the text of this node and represent the text of descendant nodes
   // with a special character in place of every embedded object. This represents

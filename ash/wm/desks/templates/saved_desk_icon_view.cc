@@ -124,7 +124,8 @@ void SavedDeskIconView::SetIconIdentifierAndCount(
                                 ->incognito_window_color_provider());
 
   icon_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
-  icon_view_->GetViewAccessibility().OverrideName(app_title);
+  if (!app_title.empty())
+    icon_view_->GetViewAccessibility().OverrideName(app_title);
 
   // PWAs (e.g. Messages) should use icon identifier as they share the same app
   // id as Chrome and would return short name for app id as "Chromium" (see

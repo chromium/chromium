@@ -33,13 +33,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTest,
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
             message);
   EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
-
-  // TODO(crbug.com/1325879): Nothing sets the description-from attribute
-  // when Views override the description. If we fix that in OverrideDescription,
-  // the value will still not be carried over to the AXNodeData for the reason
-  // described in the issue.
   EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom),
-            static_cast<int32_t>(ax::mojom::DescriptionFrom::kNone));
+            static_cast<int32_t>(ax::mojom::DescriptionFrom::kAriaDescription));
 }
 
 IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTest,
