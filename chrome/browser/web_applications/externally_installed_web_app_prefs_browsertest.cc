@@ -14,8 +14,10 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/externally_installed_prefs_migration_metrics.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -41,26 +43,9 @@ class ExternallyInstalledWebAppPrefsBrowserTest
       const ExternallyInstalledWebAppPrefsBrowserTest&) = delete;
   ~ExternallyInstalledWebAppPrefsBrowserTest() override = default;
 
-  AppId SimulateInstallApp(const GURL& url,
-                           ExternalInstallSource install_source) {
-    auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
-    web_app_install_info->start_url = url;
-    web_app_install_info->title = u"App Title";
-    web_app_install_info->display_mode = DisplayMode::kBrowser;
-    web_app_install_info->user_display_mode = UserDisplayMode::kStandalone;
-    web_app_install_info->install_url = url;
-
-    AppId app_id;
-    {
-      app_id = test::InstallWebApp(
-          profile(), std::move(web_app_install_info),
-          /*overwrite_existing_manifest_fields=*/true,
-          ConvertExternalInstallSourceToInstallSource(install_source));
-    }
-    DCHECK(provider().registrar().IsInstalled(app_id));
-    ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-        .Insert(url, app_id, install_source);
-    return app_id;
+  void SimulateInstallApp(std::unique_ptr<WebApp> web_app) {
+    ScopedRegistryUpdate update(&provider().sync_bridge());
+    update->CreateApp(std::move(web_app));
   }
 
   base::flat_set<GURL> GetAppUrls(ExternalInstallSource install_source) {
@@ -99,17 +84,9 @@ class ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1333457)
-// All/ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration.
-// BasicOps/1 is failing on Mac and Windows builders.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_BasicOps DISABLED_BasicOps
-#else
-#define MAYBE_BasicOps BasicOps
-#endif
 IN_PROC_BROWSER_TEST_P(
     ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration,
-    MAYBE_BasicOps) {
+    BasicOps) {
   GURL url_a("https://a.example.com/");
   AppId id_a;
 
@@ -126,7 +103,11 @@ IN_PROC_BROWSER_TEST_P(
             GetAppUrls(ExternalInstallSource::kExternalPolicy));
 
   // Add some entries.
-  id_a = SimulateInstallApp(url_a, ExternalInstallSource::kExternalDefault);
+  auto web_app = test::CreateWebApp();
+  id_a = web_app->app_id();
+  SimulateInstallApp(std::move(web_app));
+  test::AddInstallUrlData(profile()->GetPrefs(), &provider().sync_bridge(),
+                          id_a, url_a, ExternalInstallSource::kExternalDefault);
 
   EXPECT_EQ(id_a, registrar.LookupExternalAppId(url_a).value_or("missing"));
   EXPECT_TRUE(registrar.HasExternalApp(id_a));
@@ -137,6 +118,7 @@ IN_PROC_BROWSER_TEST_P(
   // Uninstalling an underlying app still stores data in the external
   // prefs, but the registrar removes the app.
   test::UninstallWebApp(profile(), id_a);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   if (IsExternalPrefMigrationReadFromWebAppDBEnabled()) {
     EXPECT_FALSE(registrar.HasExternalApp(id_a));
