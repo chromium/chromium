@@ -468,13 +468,13 @@ class ServiceWorkerRequestHandler(
     normpath = path.replace('\\', '/')
     if normpath.endswith('/service_worker/resources/data/10K.txt'):
       return self.MakeResponse('c' * self._SIZE_10K, 'text/plain', False)
-    elif normpath.endswith('/service_worker/resources/data/1M.txt'):
+    if normpath.endswith('/service_worker/resources/data/1M.txt'):
       return self.MakeResponse('c' * self._SIZE_1M, 'text/plain', False)
-    elif self._FILE_NAME_PATTERN_1K.match(normpath):
+    if self._FILE_NAME_PATTERN_1K.match(normpath):
       return self.MakeResponse('c' * self._SIZE_1K, 'text/plain', False)
-    elif self._WORKER_NAME_PATTERN.match(normpath):
+    if self._WORKER_NAME_PATTERN.match(normpath):
       return self.MakeResponse(self._WORKER_BODY, 'text/javascript', False)
-    elif self._CHANGING_WORKER_NAME_PATTERN.match(normpath):
+    if self._CHANGING_WORKER_NAME_PATTERN.match(normpath):
       # Return different script content for each request.
       new_body = self._WORKER_BODY + '//' + str(self._request_count)
       return self.MakeResponse(new_body, 'text/javascript', False)

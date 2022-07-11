@@ -23,5 +23,4 @@ def main(config, args=None):
   process_return_code = results_processor.ProcessResults(options)
   if process_return_code != 0:
     return process_return_code
-  else:
-    return run_return_code
+  return run_return_code

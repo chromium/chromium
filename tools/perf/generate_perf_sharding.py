@@ -228,12 +228,11 @@ def _GetBuilderPlatforms(builders, waterfall):
   if builders:
     return {b for b in bot_platforms.ALL_PLATFORMS if b.name in
                 builders}
-  elif waterfall == 'perf':
+  if waterfall == 'perf':
     return bot_platforms.OFFICIAL_PLATFORMS
-  elif waterfall == 'perf-fyi':
+  if waterfall == 'perf-fyi':
     return bot_platforms.FYI_PLATFORMS
-  else:
-    return bot_platforms.ALL_PLATFORMS
+  return bot_platforms.ALL_PLATFORMS
 
 
 def _UpdateShardsForBuilders(args):

@@ -35,7 +35,6 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
 
   def CustomizeSystemTraceConfig(self, system_trace_config):
     """Override this to modify `system_trace_config` (a SystemTraceConfig)."""
-    pass
 
   # DO NOT OVERRIDE the methods below.
 

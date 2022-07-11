@@ -19,8 +19,8 @@ def TestResponse(code, content):
     response = httplib2.Response({'status': str(code)})
     if code != 200:
       raise request.BuildRequestError(url, response, content)
-    else:
-      return content
+    return content
+
   return Request
 
 

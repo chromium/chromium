@@ -35,8 +35,7 @@ def _CommaSeparate(values):
   assert isinstance(values, list)
   if values:
     return ','.join(values)
-  else:
-    return None
+  return None
 
 
 def DataFrameFromJson(data):

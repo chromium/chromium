@@ -150,17 +150,16 @@ class BenchmarkConfig(object):
 
   @property
   def stories(self):
-    if self._stories != None:
+    if self._stories is not None:
       return self._stories
-    else:
-      story_set = benchmark_utils.GetBenchmarkStorySet(self.benchmark())
-      abridged_story_set_tag = (
-          story_set.GetAbridgedStorySetTagFilter() if self.abridged else None)
-      story_filter_obj = story_filter.StoryFilter(
-          abridged_story_set_tag=abridged_story_set_tag)
-      stories = story_filter_obj.FilterStories(story_set)
-      self._stories = [story.name for story in stories]
-      return self._stories
+    story_set = benchmark_utils.GetBenchmarkStorySet(self.benchmark())
+    abridged_story_set_tag = (story_set.GetAbridgedStorySetTagFilter()
+                              if self.abridged else None)
+    story_filter_obj = story_filter.StoryFilter(
+        abridged_story_set_tag=abridged_story_set_tag)
+    stories = story_filter_obj.FilterStories(story_set)
+    self._stories = [story.name for story in stories]
+    return self._stories
 
 
 class ExecutableConfig(object):
@@ -781,3 +780,4 @@ def find_bot_platform(builder_name):
   for bot_platform in ALL_PLATFORMS:
     if bot_platform.name == builder_name:
       return bot_platform
+  return None

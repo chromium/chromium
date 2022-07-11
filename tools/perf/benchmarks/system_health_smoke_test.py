@@ -127,7 +127,6 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   def RunTest(self):
     class SinglePageBenchmark(benchmark_class):  # pylint: disable=no-init
       def CreateStorySet(self, options):
-        # pylint: disable=super-on-old-class
         story_set = super(SinglePageBenchmark, self).CreateStorySet(options)
         stories_to_remove = [s for s in story_set.stories if s !=
                              story_to_smoke_test]
@@ -248,8 +247,6 @@ def validate_smoke_test_name_versions():
         'list or remove them to save CQ capacity (see crbug.com/893615)). '
         'You can use crbug.com/878390 for the disabling reference.'
         '[StoryName] : [StoryVersion1],[StoryVersion2]...\n%s' % (msg))
-
-  return
 
 
 def load_tests(loader, standard_tests, pattern):

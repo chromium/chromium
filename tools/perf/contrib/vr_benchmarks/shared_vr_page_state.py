@@ -100,7 +100,7 @@ class AndroidSharedVrPageState(_SharedVrPageState):
   def _RemoveSystemVrCore(self):
     # Import done here since importing Devil on Windows breaks the Telemetry
     # unittests.
-    from devil.android import forwarder # pylint: disable=import-error
+    from devil.android import forwarder  # pylint: disable=import-error,import-outside-toplevel
     # Close the existing network controller since RemoveSystemPackages could
     # potentially reboot the device, which breaks the existing port forwarding
     # and makes it impossible to cleanly re-establish it if the network

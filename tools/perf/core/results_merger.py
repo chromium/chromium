@@ -76,8 +76,7 @@ def merge_test_results(shard_results_list, test_cross_device=False):
 
   if 'seconds_since_epoch' in shard_results_list[0]:
     return _merge_json_test_result_format(shard_results_list, test_cross_device)
-  else:
-    return _merge_simplified_json_format(shard_results_list)
+  return _merge_simplified_json_format(shard_results_list)
 
 
 def _merge_simplified_json_format(shard_results_list):
@@ -254,7 +253,7 @@ def merge_tries_v2(source, dest):
           raise MergeException(
               '%s:%s: %r not mergable, curr_node: %r\ndest_node: %r' %
               (prefix, k, v, curr_node, dest_node))
-        elif 'actual' in v and 'expected' in v:
+        if 'actual' in v and 'expected' in v:
           # v is test result of a story name which is already in dest
           _merging_cross_device_results(v, dest_node[k])
         else:
@@ -338,11 +337,10 @@ def merge_value(source, dest, key, merge_func):
     # The message attribute does not exist in Python 3, but Python 3's exception
     # chaining should get us equivalent functionality.
     if six.PY2:
-      e.message = "MergeFailure for %s\n%s" % (key, e.message)
+      e.message = "MergeFailure for %s\n%s" % (key, e.message)  # pylint: disable=attribute-defined-outside-init
       e.args = tuple([e.message] + list(e.args[1:]))
       raise
-    else:
-      raise MergeException('MergeFailure for %s\n%s' % (key, e))
+    raise MergeException('MergeFailure for %s\n%s' % (key, e))
   del source[key]
 
 

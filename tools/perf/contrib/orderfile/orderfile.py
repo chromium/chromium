@@ -119,7 +119,7 @@ class OrderfileStorySet(story.StorySet):
     assert self._PLATFORM in platforms.ALL_PLATFORMS, '{} not in {}'.format(
         self._PLATFORM, str(platforms.ALL_PLATFORMS))
     assert run_set in (self.TRAINING, self.TESTING, self.DEBUGGING)
-    assert test_variation >= 0 and test_variation < num_variations
+    assert 0 <= test_variation < num_variations
 
     self._run_set = run_set
     self._num_training = num_training
@@ -152,11 +152,12 @@ class OrderfileStorySet(story.StorySet):
     random.shuffle(possible_stories)
     if self._run_set == self.TRAINING:
       return possible_stories[:self._num_training]
-    elif self._run_set == self.TESTING:
+    if self._run_set == self.TESTING:
       return possible_stories[
           (self._num_training + self._test_variation * self._num_testing):
           (self._num_training + (self._test_variation + 1) * self._num_testing)]
     assert False, 'Bad run set {}'.format(self._run_set)
+    return None
 
 
 class _OrderfileBenchmark(system_health.MobileMemorySystemHealth):
@@ -210,10 +211,10 @@ class _OrderfileVariation(system_health.MobileMemorySystemHealth):
     if cls.STORY_RUN_SET == OrderfileStorySet.TESTING:
       return 'orderfile_generation.variation.testing{}'.format(
           cls.TEST_VARIATION)
-    elif cls.STORY_RUN_SET == OrderfileStorySet.TRAINING:
+    if cls.STORY_RUN_SET == OrderfileStorySet.TRAINING:
       return 'orderfile_generation.variation.training'
     assert False, 'Bad STORY_RUN_SET {}'.format(cls.STORY_RUN_SET)
-
+    return None
 
 # pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])

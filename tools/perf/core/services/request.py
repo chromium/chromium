@@ -69,12 +69,10 @@ class RequestError(OSError):
 
 class ClientError(RequestError):
   """Exception for 4xx HTTP client errors."""
-  pass
 
 
 class ServerError(RequestError):
   """Exception for 5xx HTTP server errors."""
-  pass
 
 
 def BuildRequestError(request, response, content):

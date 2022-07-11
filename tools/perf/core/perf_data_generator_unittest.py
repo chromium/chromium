@@ -13,7 +13,7 @@ import six
 # unicode. BytesIO works in Python 2, but then complains when given a str
 # instead of bytes in Python 3.
 if six.PY2:
-  from cStringIO import StringIO  # pylint: disable=wrong-import-order
+  from cStringIO import StringIO  # pylint: disable=wrong-import-order,import-error
 else:
   from io import StringIO  # pylint: disable=wrong-import-order
 

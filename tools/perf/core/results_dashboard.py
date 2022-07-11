@@ -27,7 +27,7 @@ import six.moves.urllib.parse  # pylint: disable=import-error
 import six.moves.urllib.request  # pylint: disable=import-error
 
 if six.PY2:
-  import httplib  # pylint: disable=wrong-import-order
+  import httplib  # pylint: disable=wrong-import-order,import-error
 else:
   import http.client as httplib  # pylint: disable=import-error
 
@@ -63,10 +63,9 @@ def LuciAuthTokenGeneratorCallback():
   p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if p.wait() == 0:
     return p.stdout.read().strip()
-  else:
-    raise RuntimeError(
-        'Error generating authentication token.\nStdout: %s\nStder:%s' %
-        (p.stdout.read(), p.stderr.read()))
+  raise RuntimeError(
+      'Error generating authentication token.\nStdout: %s\nStder:%s' %
+      (p.stdout.read(), p.stderr.read()))
 
 
 def SendResults(data, data_label, url, send_as_histograms=False,
@@ -362,7 +361,7 @@ def _RevisionNumberColumns(data, prefix):
     # The dashboard requires ordered integer revision numbers. If the revision
     # is not an integer or None, assume it's a git hash and send a timestamp.
     revision = _GetTimestamp()
-    if data['rev'] != None:
+    if data['rev'] is not None:
       revision_supplemental_columns[prefix + 'chromium'] = data['rev']
 
   # An explicit data['point_id'] overrides the default behavior.
@@ -480,7 +479,7 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
     if response.status in (403, 500):
       raise SendResultsRetryException('HTTP Response %d: %s' % (
           response.status, response.reason))
-    elif response.status != 200:
+    if response.status != 200:
       raise SendResultsFatalException('HTTP Response %d: %s' % (
           response.status, response.reason))
 

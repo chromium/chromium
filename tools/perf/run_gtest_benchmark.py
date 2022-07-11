@@ -122,8 +122,7 @@ def main(args):
   process_return_code = ProcessResults(options)
   if process_return_code != 0:
     return process_return_code
-  else:
-    return run_return_code
+  return run_return_code
 
 
 if __name__ == '__main__':

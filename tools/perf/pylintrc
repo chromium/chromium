@@ -29,7 +29,14 @@ disable=
   too-many-locals,
   too-many-public-methods,
   too-many-statements,
-  too-many-return-statements
+  too-many-return-statements,
+  # TODO(crbug/1342770): added for pylint 2.7
+  raise-missing-from, # python3 only
+  useless-object-inheritance, # python3 only
+  super-with-arguments, # python3 only
+  duplicate-code,
+  wrong-import-position,
+  wrong-import-order
 
 
 [REPORTS]

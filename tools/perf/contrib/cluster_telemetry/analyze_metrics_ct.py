@@ -72,10 +72,9 @@ def main():
     if result.returncode != 0:
       print('histograms_to_csv.HistogramsToCsv returned %d' % result.returncode)
       return result.returncode
-    else:
-      with open(args.output_csv, 'w') as f:
-        f.write(result.stdout.rstrip())
-      print('Output CSV created in file://' + args.output_csv)
+    with open(args.output_csv, 'w') as f:
+      f.write(result.stdout.rstrip())
+    print('Output CSV created in file://' + args.output_csv)
 
 
 if __name__ == '__main__':

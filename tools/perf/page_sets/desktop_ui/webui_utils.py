@@ -10,7 +10,7 @@ def Inspect(browser, url):
   # Wait for url to be inspectable.
   browser.supports_inspecting_webui = True
   tabs = browser.tabs
-  py_utils.WaitFor(lambda: any([True for tab in tabs if tab.url == url]), 10)
+  py_utils.WaitFor(lambda: any(True for tab in tabs if tab.url == url), 10)
   # Wait for url to load.
   tab = next(iter([tab for tab in tabs if tab.url == url]))
   action_runner = ActionRunner(tab)  # Recreate action_runner.

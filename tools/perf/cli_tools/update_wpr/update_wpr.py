@@ -303,10 +303,9 @@ class WprUpdater(object):
         '--browser-executable=%s' % self.binary,
         '--browser=exact',
       ]
-    elif self._IsDesktop():
+    if self._IsDesktop():
       return ['--browser=system']
-    else:
-      return ['--browser=android-system-chrome']
+    return ['--browser=android-system-chrome']
 
   def _RunBenchmark(self, log_name, live=False):
     args = [RUN_BENCHMARK, 'run'] + self._BrowserArgs()
@@ -388,8 +387,8 @@ class WprUpdater(object):
     """Returns the target that should be used for a Pinpoint job."""
     if configuration == 'android-pixel2-perf':
       return 'performance_test_suite_android_clank_monochrome_64_32_bundle'
-    elif configuration in ('linux-perf', 'win-10-perf',
-                           'mac-10_12_laptop_low_end-perf'):
+    if configuration in ('linux-perf', 'win-10-perf',
+                         'mac-10_12_laptop_low_end-perf'):
       return 'performance_test_suite'
     raise RuntimeError('Unknown configuration %s' % configuration)
 
@@ -410,7 +409,7 @@ class WprUpdater(object):
       cli_helpers.Comment(
           'Failed to start a Pinpoint job for {config} automatically:\n {err}',
           config=configuration, err=e.content)
-      return
+      return None
 
     cli_helpers.Info(
         'Started a Pinpoint job for {configuration} at {url}',
@@ -482,7 +481,7 @@ class WprUpdater(object):
 
     cli_helpers.Step('UPLOAD WPR: %s' % self.story)
     archives = self._GetWprArchivePathsAndUsageForStory()
-    for archive in set([a[0] for a in archives]):
+    for archive in {a[0] for a in archives}:
       if not os.path.exists(archive):
         continue
 
@@ -600,7 +599,7 @@ class WprUpdater(object):
             'Please update the story class to resolve the observed issues and '
             'then run this script again.')
         return
-      elif ans == 'metrics':
+      if ans == 'metrics':
         _OpenBrowser('file://%s.results.html' % live_out_file)
       elif ans == 'output':
         _OpenEditor(live_out_file)

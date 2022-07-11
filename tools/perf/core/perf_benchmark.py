@@ -76,7 +76,6 @@ class PerfBenchmark(benchmark.Benchmark):
 
   def SetExtraBrowserOptions(self, options):
     """To be overridden by perf benchmarks."""
-    pass
 
   def CustomizeOptions(self, finder_options, possible_browser=None):
     # Subclass of PerfBenchmark should override  SetExtraBrowserOptions to add

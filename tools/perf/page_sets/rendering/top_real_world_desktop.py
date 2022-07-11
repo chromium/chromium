@@ -74,9 +74,6 @@ class GoogleImageSearch2018Page(TopRealWorldDesktopPage):
         name_suffix=name_suffix,
         extra_browser_args=extra_browser_args)
 
-  def RunNavigateSteps(self, action_runner):
-    super(GoogleImageSearch2018Page, self).RunNavigateSteps(action_runner)
-
 
 class GooglePlus2018Page(TopRealWorldDesktopPage):
   """ Why: social; top google property; Public profile; infinite scrolls """

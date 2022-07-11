@@ -86,11 +86,10 @@ class RenderingStorySet(story.StorySet):
     if self._platform == platforms.DESKTOP:
       if os.name == 'nt':
         return 'representative_win_desktop'
-      else:
-        # There is no specific tag for linux, cros, etc,
-        # so just use mac's.
-        return 'representative_mac_desktop'
-    elif self._platform == platforms.MOBILE:
+      # There is no specific tag for linux, cros, etc,
+      # so just use mac's.
+      return 'representative_mac_desktop'
+    if self._platform == platforms.MOBILE:
       return 'representative_mobile'
     raise RuntimeError('Platform {} is not in the list of expected platforms.')
 

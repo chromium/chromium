@@ -74,7 +74,7 @@ def _GetHostArch():
     uname_arch = six.ensure_str(uname_arch)
   if uname_arch == 'armv7l':
     return 'arm'
-  elif uname_arch == 'aarch64':
+  if uname_arch == 'aarch64':
     return 'arm64'
   return uname_arch
 
@@ -87,9 +87,9 @@ def _GetLinuxBinaryArch(binary_name):
   file_arch = file_output.split(',')[1].strip()
   if file_arch == 'x86-64':
     return 'x86_64'
-  elif file_arch == 'ARM':
+  if file_arch == 'ARM':
     return 'arm'
-  elif file_arch == 'ARM aarch64':
+  if file_arch == 'ARM aarch64':
     return 'arm64'
   return file_arch
 

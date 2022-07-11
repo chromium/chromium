@@ -14,11 +14,9 @@ class Metric(object):
 
   def Start(self, page, tab):
     """Start collecting data for this metric."""
-    pass
 
   def Stop(self, page, tab):
     """Stop collecting data for this metric (if applicable)."""
-    pass
 
   def AddResults(self, tab, results):
     """Add the data collected into the results object for a measurement.

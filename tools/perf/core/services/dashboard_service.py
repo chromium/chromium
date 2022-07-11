@@ -88,8 +88,7 @@ def Timeseries(test_path, days=30):
   except request.ClientError as exc:
     if 'Invalid test_path' in exc.json['error']:
       raise KeyError(test_path)
-    else:
-      raise
+    raise
 
 
 def ListTestPaths(test_suite, sheriff):

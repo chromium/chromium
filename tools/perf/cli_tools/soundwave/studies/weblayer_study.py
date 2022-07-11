@@ -60,4 +60,3 @@ def IterTestPaths():
             series, bot=bot, measurement=measurement, test_case=test_case))
         yield timeseries.Key.FromDict(
             series, bot=bot, measurement=measurement, test_case=test_case)
-

@@ -39,7 +39,7 @@ def _CommonChecks(input_api, output_api, block_on_failure=False):
               output_api,
               extra_paths_list=_GetPathsToPrepend(input_api),
               pylintrc='pylintrc',
-              version='1.5')))
+              version='2.7')))
   return results
 
 

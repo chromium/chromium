@@ -9,4 +9,3 @@ ALWAYS_ONLINE = '''
       return true;
     },
   });'''
-

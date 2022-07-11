@@ -1646,8 +1646,7 @@ def _verify_benchmark_owners(benchmark_metadatas):
 def _create_csv(file_path):
   if sys.version_info.major == 2:
     return open(file_path, 'wb')
-  else:
-    return open(file_path, 'w', newline='')
+  return open(file_path, 'w', newline='')
 
 
 def update_benchmark_csv(file_path):
@@ -2021,9 +2020,7 @@ def main(args):
     if validate_all_files():
       print('All the perf config files are up-to-date. \\o/')
       return 0
-    else:
-      print('Not all perf config files are up-to-date. Please run %s '
-            'to update them.' % sys.argv[0])
-      return 1
-  else:
-    return 0 if update_all_files() else 1
+    print('Not all perf config files are up-to-date. Please run %s '
+          'to update them.' % sys.argv[0])
+    return 1
+  return 0 if update_all_files() else 1

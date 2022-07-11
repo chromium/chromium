@@ -47,10 +47,9 @@ def CompactResults(results):
   def Compact(result):
     if len(result) == 1:
       return result  # Test ran once; use same value.
-    elif all(r == 'Q' for r in result):
+    if all(r == 'Q' for r in result):
       return 'Q'  # All runs failed; test failed.
-    else:
-      return 'L'  # Sometimes failed, sometimes not; test flaky.
+    return 'L'  # Sometimes failed, sometimes not; test flaky.
 
   return results.map({r: Compact(r) for r in results.unique()})
 

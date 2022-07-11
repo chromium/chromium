@@ -22,6 +22,7 @@ def GetDeviceTotalMemory():
   for line in mem_info.splitlines():
     if line.startswith('MemTotal:'):
       return int(line.split()[1])
+  return None
 
 
 def AppendJSFlags(options, js_flags):

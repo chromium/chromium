@@ -108,7 +108,7 @@ def _ValidateShardingData(builder_name, test_config):
 
   shard_map_data.pop('extra_infos', None)
   shard_keys = set(shard_map_data.keys())
-  expected_shard_keys = set([str(i) for i in range(num_shards)])
+  expected_shard_keys = {str(i) for i in range(num_shards)}
   if shard_keys != expected_shard_keys:
     raise ValueError(
         'The shard configuration of %s does not match the expected expected '

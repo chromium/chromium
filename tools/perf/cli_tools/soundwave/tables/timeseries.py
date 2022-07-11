@@ -105,9 +105,8 @@ def _ParseConfigFromTestPath(test_path):
 def DataFrameFromJson(test_path, data):
   if isinstance(test_path, Key):
     return _DataFrameFromJsonV2(test_path, data)
-  else:
-    # TODO(crbug.com/907121): Remove when we can switch entirely to v2.
-    return _DataFrameFromJsonV1(test_path, data)
+  # TODO(crbug.com/907121): Remove when we can switch entirely to v2.
+  return _DataFrameFromJsonV1(test_path, data)
 
 
 def _DataFrameFromJsonV2(ts_key, data):

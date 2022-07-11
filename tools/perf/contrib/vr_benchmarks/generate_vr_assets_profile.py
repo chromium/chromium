@@ -28,7 +28,7 @@ def main():
   # Add the directory to the path so we can get the parse_version script.
   asset_dir = args.asset_dir
   sys.path.append(asset_dir)
-  #pylint: disable=import-error
+  #pylint: disable=import-error,import-outside-toplevel
   import parse_version
 
   # Get the assets version.
@@ -63,9 +63,9 @@ def main():
   # Only copy the files specified by the asset JSON file.
   with open(os.path.join(asset_dir,
         'vr_assets_component_files.json'), 'r') as asset_json_file:
-      asset_files = json.load(asset_json_file)
-      for asset in asset_files:
-        shutil.copy(os.path.join(asset_dir, asset), profile_dir)
+    asset_files = json.load(asset_json_file)
+    for asset in asset_files:
+      shutil.copy(os.path.join(asset_dir, asset), profile_dir)
 
   # Generate the manifest file.
   with open(os.path.join(profile_dir, 'manifest.json'), 'w') as manifest_file:

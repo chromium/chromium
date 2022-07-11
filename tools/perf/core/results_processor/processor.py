@@ -361,10 +361,9 @@ def GetTraceUrl(test_result):
   trace_artifact = artifacts.get(compute_metrics.HTML_TRACE_NAME, {})
   if 'viewUrl' in trace_artifact:
     return trace_artifact['viewUrl']
-  elif 'filePath' in trace_artifact:
+  if 'filePath' in trace_artifact:
     return 'file://' + trace_artifact['filePath']
-  else:
-    return None
+  return None
 
 
 def AddDiagnosticsToHistograms(test_result, test_suite_start, results_label,

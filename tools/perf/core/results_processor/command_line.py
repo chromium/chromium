@@ -182,10 +182,9 @@ def _CreateTopLevelParser(standalone):
         description='Standalone command line interface to results_processor.')
     # In standalone mode, both the parser and group are the same thing.
     return parser, parser
-  else:
-    parser = argparse.ArgumentParser(add_help=False)
-    group = parser.add_argument_group(title='Result processor options')
-    return parser, group
+  parser = argparse.ArgumentParser(add_help=False)
+  group = parser.add_argument_group(title='Result processor options')
+  return parser, group
 
 
 def _DefaultOutputDir():
@@ -197,8 +196,7 @@ def _DefaultOutputDir():
   main_module = sys.modules['__main__']
   if hasattr(main_module, '__file__'):
     return os.path.realpath(os.path.dirname(main_module.__file__))
-  else:
-    return os.getcwd()
+  return os.getcwd()
 
 
 def Sentences(*args):

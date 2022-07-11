@@ -48,8 +48,7 @@ def GetFileExtension(file_path):
   first_dot_index = filename.find('.')
   if first_dot_index == -1:
     return ''
-  else:
-    return filename[first_dot_index:]
+  return filename[first_dot_index:]
 
 
 def GetLocalTraceFileName(html_url):

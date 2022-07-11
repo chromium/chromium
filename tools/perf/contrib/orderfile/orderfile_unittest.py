@@ -22,36 +22,55 @@ class Orderfile(unittest.TestCase):
     self.maxDiff = None
 
   def testDefaults(self):
-    training = set([s.NAME for s in orderfile.OrderfileStorySet(
-        orderfile.OrderfileStorySet.TRAINING).RunSetStories()])
+    training = {
+        s.NAME
+        for s in orderfile.OrderfileStorySet(
+            orderfile.OrderfileStorySet.TRAINING).RunSetStories()
+    }
     self.assertEqual(orderfile.OrderfileStorySet.DEFAULT_TRAINING,
                      len(training))
-    testing = set([s.NAME for s in orderfile.OrderfileStorySet(
-        orderfile.OrderfileStorySet.TESTING).RunSetStories()])
+    testing = {
+        s.NAME
+        for s in orderfile.OrderfileStorySet(
+            orderfile.OrderfileStorySet.TESTING).RunSetStories()
+    }
     self.assertEqual(orderfile.OrderfileStorySet.DEFAULT_TESTING, len(testing))
     self.assertEqual(0, len(testing & training))
 
   def test25TrainingStories(self):
-    training = set([s.NAME for s in orderfile.OrderfileStorySet(
-        orderfile.OrderfileStorySet.TRAINING, num_training=25).RunSetStories()])
+    training = {
+        s.NAME
+        for s in
+        orderfile.OrderfileStorySet(orderfile.OrderfileStorySet.TRAINING,
+                                    num_training=25).RunSetStories()
+    }
     self.assertEqual(25, len(training))
-    testing = set([s.NAME for s in orderfile.OrderfileStorySet(
-        orderfile.OrderfileStorySet.TESTING,
-        num_training=25).RunSetStories()])
+    testing = {
+        s.NAME
+        for s in
+        orderfile.OrderfileStorySet(orderfile.OrderfileStorySet.TESTING,
+                                    num_training=25).RunSetStories()
+    }
     self.assertEqual(orderfile.OrderfileStorySet.DEFAULT_TESTING, len(testing))
     self.assertEqual(0, len(testing & training))
 
   def testTestingVariationStories(self):
-    training = set([s.NAME for s in orderfile.OrderfileStorySet(
-        orderfile.OrderfileStorySet.TRAINING, num_training=25,
-        num_variations=orderfile.OrderfileStorySet.NUM_VARIATION_BENCHMARKS,
-        test_variation=0).RunSetStories()])
-    testing = [set([s.NAME for s in orderfile.OrderfileStorySet(
-        orderfile.OrderfileStorySet.TESTING, num_training=25,
-        num_variations=orderfile.OrderfileStorySet.NUM_VARIATION_BENCHMARKS,
-        test_variation=i).RunSetStories()])
-               for i in range(
-                   orderfile.OrderfileStorySet.NUM_VARIATION_BENCHMARKS)]
+    training = {
+        s.NAME
+        for s in orderfile.OrderfileStorySet(
+            orderfile.OrderfileStorySet.TRAINING,
+            num_training=25,
+            num_variations=orderfile.OrderfileStorySet.NUM_VARIATION_BENCHMARKS,
+            test_variation=0).RunSetStories()
+    }
+    testing = [{
+        s.NAME
+        for s in orderfile.OrderfileStorySet(
+            orderfile.OrderfileStorySet.TESTING,
+            num_training=25,
+            num_variations=orderfile.OrderfileStorySet.NUM_VARIATION_BENCHMARKS,
+            test_variation=i).RunSetStories()
+    } for i in range(orderfile.OrderfileStorySet.NUM_VARIATION_BENCHMARKS)]
     self.assertEqual(25, len(training))
     for i in range(orderfile.OrderfileStorySet.NUM_VARIATION_BENCHMARKS):
       self.assertEqual(orderfile.OrderfileStorySet.DEFAULT_TESTING,

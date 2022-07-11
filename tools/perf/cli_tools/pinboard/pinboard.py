@@ -181,9 +181,8 @@ def LoadJobsState():
   local_path = CachedFilePath(JOBS_STATE_FILE)
   if os.path.exists(local_path) or DownloadFromCloudStorage(local_path):
     return LoadJsonFile(local_path)
-  else:
-    logging.info('No jobs state found. Creating empty state.')
-    return []
+  logging.info('No jobs state found. Creating empty state.')
+  return []
 
 
 def UpdateJobsState(state):
@@ -207,8 +206,7 @@ def GetCachedDataset():
   local_path = CachedFilePath(DATASET_PKL_FILE)
   if os.path.exists(local_path) or DownloadFromCloudStorage(local_path):
     return pd.read_pickle(local_path)
-  else:
-    return None
+  return None
 
 
 def UpdateCachedDataset(df):
@@ -382,8 +380,7 @@ def FindCommit(before_date=None, after_date=None):
     commit_time = pd.Timestamp(
         int(commit_time), unit='s', tz=TZ).isoformat()
     return revision, commit_time
-  else:
-    return None
+  return None
 
 
 def RevisionResultsFile(item):

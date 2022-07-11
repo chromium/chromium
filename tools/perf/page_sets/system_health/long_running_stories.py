@@ -34,9 +34,8 @@ class _LongRunningStory(system_health_story.SystemHealthStory):
     if cls.BACKGROUND:
       return ('Load %s then open a new blank tab and let the loaded page stay '
               'in background for %s seconds.' % (cls.URL, IDLE_TIME_IN_SECONDS))
-    else:
-      return ('Load %s then let it stay in foreground for %s seconds.' %
-              (cls.URL, IDLE_TIME_IN_SECONDS))
+    return ('Load %s then let it stay in foreground for %s seconds.' %
+            (cls.URL, IDLE_TIME_IN_SECONDS))
 
   def WillStartTracing(self, chrome_trace_config):
     # Long running stories generate large traces, so use a large tracing buffer

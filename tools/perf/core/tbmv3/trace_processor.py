@@ -87,10 +87,9 @@ def _RunTraceProcessor(*args):
   stderr = stderr.decode('utf-8')
   if p.returncode == 0:
     return stdout
-  else:
-    raise RuntimeError(
-        'Running trace processor failed. Command line:\n%s\nStderr:\n%s\n' %
-        (' '.join(args), stderr))
+  raise RuntimeError(
+      'Running trace processor failed. Command line:\n%s\nStderr:\n%s\n' %
+      (' '.join(args), stderr))
 
 
 def _CreateMetricFiles(metric_name):
@@ -139,8 +138,7 @@ class ProtoFieldInfo(object):
   def path_from_root(self):
     if self.parent is None:
       return [self]
-    else:
-      return self.parent.path_from_root + [self]
+    return self.parent.path_from_root + [self]
 
   def __repr__(self):
     return 'ProtoFieldInfo("%s", repeated=%s)' % (self.name, self.repeated)
@@ -207,12 +205,11 @@ def _PluckField(json_dict, field_path):
     for field_value in field_values:
       output.extend(_PluckField(field_value, path_tail))
     return output
-  else:
-    field_value = json_dict[path_head.name]
-    if isinstance(field_value, list):
-      raise InvalidTraceProcessorOutput(
-          'Field not marked as repeated but json value is list')
-    return _PluckField(field_value, path_tail)
+  field_value = json_dict[path_head.name]
+  if isinstance(field_value, list):
+    raise InvalidTraceProcessorOutput(
+        'Field not marked as repeated but json value is list')
+  return _PluckField(field_value, path_tail)
 
 
 def RunQuery(trace_processor_path, trace_file, sql_command):
@@ -345,7 +342,7 @@ def RunMetrics(trace_processor_path,
     if metric_proto is None:
       logging.warning('Metric not found in the output: %s', metric_name)
       continue
-    elif annotations is None:
+    if annotations is None:
       logging.info('Skipping metric %s because it has no field with unit.',
                    metric_name)
       continue

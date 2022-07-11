@@ -130,14 +130,13 @@ def Ask(question, answers=None, default=None):
     choice = input().strip()
     if default is not None and choice == '':
       return inputs[default]
-    elif choice in inputs:
+    if choice in inputs:
       return inputs[choice]
-    elif choice.lower() in inputs:
+    if choice.lower() in inputs:
       return inputs[choice.lower()]
-    else:
-      choices = sorted(['"%s"' % a for a in sorted(answers.keys())])
-      Error('Please respond with %s or %s.' % (
-        ', '.join(choices[:-1]), choices[-1]))
+    choices = sorted(['"%s"' % a for a in sorted(answers.keys())])
+    Error('Please respond with %s or %s.' %
+          (', '.join(choices[:-1]), choices[-1]))
 
 
 def Prompt(question, accept_empty=False):
@@ -187,5 +186,4 @@ def Run(command, ok_fail=False, **kwargs):
   except subprocess.CalledProcessError as cpe:
     if not ok_fail:
       raise
-    else:
-      return cpe.returncode
+    return cpe.returncode

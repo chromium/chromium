@@ -265,6 +265,6 @@ def _FormatHumanReadable(number):
     exponent += 1
   if digits >= 100:
     # Don't append a meaningless '.0' to an integer number.
-    digits = int(digits)  # pylint: disable=redefined-variable-type
+    digits = int(digits)
   # Exponent is now divisible by 3, between -3 and 6 inclusive: (-3, 0, 3, 6).
   return '%s%s' % (digits, metric_prefixes[exponent])
