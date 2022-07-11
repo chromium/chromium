@@ -4906,11 +4906,6 @@ const char kEnableNeuralPalmAdaptiveHoldName[] = "Palm Rejection Adaptive Hold";
 const char kEnableNeuralPalmAdaptiveHoldDescription[] =
     "Enable adaptive hold in palm rejection.  Not compatible with all devices.";
 
-const char kEnableNeuralPalmRejectionModelV2Name[] = "Palm Rejection Model V2";
-const char kEnableNeuralPalmRejectionModelV2Description[] =
-    "Uses an updated model for palm rejection.  Not compatible with all "
-    "devices.";
-
 const char kEnableNeuralStylusPalmRejectionName[] =
     "Enable Neural Palm Detection";
 const char kEnableNeuralStylusPalmRejectionDescription[] =

@@ -20,9 +20,6 @@ COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::Feature kEnableNeuralPalmAdaptiveHold;
 
 COMPONENT_EXPORT(EVENTS_OZONE)
-extern const base::Feature kEnableNeuralPalmRejectionModelV2;
-
-COMPONENT_EXPORT(EVENTS_OZONE)
 extern const base::Feature kEnableNeuralStylusReportFilter;
 
 COMPONENT_EXPORT(EVENTS_OZONE)

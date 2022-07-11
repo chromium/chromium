@@ -13,10 +13,7 @@ const base::Feature kEnableNeuralPalmDetectionFilter{
     "EnableNeuralPalmDetectionFilter", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEnableNeuralPalmAdaptiveHold{
-    "EnableNeuralPalmAdaptiveHold", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kEnableNeuralPalmRejectionModelV2{
-    "EnableNeuralPalmRejectionModelV2", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableNeuralPalmAdaptiveHold", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableNeuralStylusReportFilter{
     "EnableNeuralStylusReportFilter", base::FEATURE_DISABLED_BY_DEFAULT};
