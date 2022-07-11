@@ -22,7 +22,6 @@ enum PiiRadioButtons {
   INCLUDE_ALL = 'include-all',
   INCLUDE_NONE = 'include-none',
   INCLUDE_SOME = 'include-some',
-  UNSELECTED = 'unselected',
 }
 
 const PIISelectionElementBase = SupportToolPageMixin(PolymerElement);
@@ -40,7 +39,7 @@ export class PIISelectionElement extends PIISelectionElementBase {
     return {
       selectAll_: {
         type: Boolean,
-        value: false,
+        value: true,
       },
       detectedPIIItems_: {
         type: Array,
@@ -53,7 +52,7 @@ export class PIISelectionElement extends PIISelectionElementBase {
       },
       selectedRadioButton_: {
         type: String,
-        value: PiiRadioButtons.UNSELECTED,
+        value: PiiRadioButtons.INCLUDE_ALL,
       },
       showPIISelection_: {
         type: Boolean,
@@ -99,10 +98,6 @@ export class PIISelectionElement extends PIISelectionElementBase {
 
   private onSelectedRadioButtonChanged_(event: CustomEvent<{value: string}>) {
     this.selectedRadioButton_ = event.detail.value;
-    // this.selectedRadioButton_ is initialized as PiiRadioButtons.UNSELECTED by
-    // default and this value is not reachable once user modifies the value by
-    // selecting it in UI as it's not exposed in the UI. that's why we don't
-    // handle it in the if-else condition below.
     if (this.selectedRadioButton_ === PiiRadioButtons.INCLUDE_ALL) {
       this.setSelectAll_(true);
     } else if (this.selectedRadioButton_ === PiiRadioButtons.INCLUDE_NONE) {

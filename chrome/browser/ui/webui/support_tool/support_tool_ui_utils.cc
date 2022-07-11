@@ -111,7 +111,7 @@ base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
                       static_cast<int>(pii_entry.second.size()));
     // TODO(b/200511640): Set `keep` field to the value we'll get from URL's
     // pii_masking_on query if it exists.
-    pii_data_item.Set(support_tool_ui::kPiiItemKeepKey, false);
+    pii_data_item.Set(support_tool_ui::kPiiItemKeepKey, true);
     detected_pii_data_items.Append(base::Value(std::move(pii_data_item)));
   }
   return detected_pii_data_items;
