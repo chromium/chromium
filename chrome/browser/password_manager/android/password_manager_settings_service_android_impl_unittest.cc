@@ -65,7 +65,6 @@ class PasswordManagerSettingsServiceAndroidImplTest : public testing::Test {
   void SetPasswordsSync(bool enabled);
   void SetSettingsSync(bool enabled);
 
-  void AssertInitialMigrationDidntChangePrefs();
   void ExpectSettingsRetrievalFromBackend(size_t times);
 
   void ExpectSettingsRetrievalFromBackend();
@@ -172,24 +171,6 @@ void PasswordManagerSettingsServiceAndroidImplTest::SetSettingsSync(
                                                          selected_sync_types);
 }
 
-// TODO(crbug.com/1324648): Get rid of this method by not instantiating the
-// service when it's not needed from the beginning of the test.
-void PasswordManagerSettingsServiceAndroidImplTest::
-    AssertInitialMigrationDidntChangePrefs() {
-  // A migration already happened when the service was created in the test
-  // constructor, however because all prefs had default values, their values
-  // remained the same. Only the migration pref was set to true, signaling
-  // that the migration was executed.
-  ASSERT_EQ(pref_service()->GetUserPrefValue(
-                password_manager::prefs::kOfferToSavePasswordsEnabledGMS),
-            nullptr);
-  ASSERT_EQ(pref_service()->GetUserPrefValue(
-                password_manager::prefs::kAutoSignInEnabledGMS),
-            nullptr);
-  ASSERT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kSettingsMigratedToUPM));
-}
-
 void PasswordManagerSettingsServiceAndroidImplTest::
     ExpectSettingsRetrievalFromBackend(size_t times) {
   EXPECT_CALL(*bridge(),
@@ -246,11 +227,36 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        TestNoAdditionalMigration) {
-  InitializeSettingsService(/*password_sync_enabled=*/true,
-                            /*setting_sync_enabled=*/true);
-  AssertInitialMigrationDidntChangePrefs();
+  // Imitate the post-migration state by setting the migration pref.
+  pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
+                             true);
 
   // No additional migration should happen if the migration pref wasn't reset.
+  CreateNewService();
+  histogram_tester()->ExpectTotalCount(
+      "PasswordManager.MigratedSettingsUPMAndroid", 0);
+  EXPECT_EQ(pref_service()->GetUserPrefValue(
+                password_manager::prefs::kOfferToSavePasswordsEnabledGMS),
+            nullptr);
+  EXPECT_EQ(pref_service()->GetUserPrefValue(
+                password_manager::prefs::kAutoSignInEnabledGMS),
+            nullptr);
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       TestNewMigrationIfPrefUndoneSyncOff) {
+  // Reset the migration pref.
+  pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
+                             false);
+  // Set an explicit value on the "Offer to save passwords" pref.
+  pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
+                             false);
+
+  // No migration should happen if passwords sync is off, but the migration
+  // should be marked as done. This is because at a later point, when sync
+  // turns on, the GMS prefs will be updated as part of the sync state change
+  // instead of the migration.
+  SetPasswordsSync(false);
   CreateNewService();
   histogram_tester()->ExpectUniqueSample(
       "PasswordManager.MigratedSettingsUPMAndroid", true, 1);
@@ -265,40 +271,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
-       TestNewMigrationIfPrefUndoneSyncOff) {
-  InitializeSettingsService(/*password_sync_enabled=*/true,
-                            /*setting_sync_enabled=*/true);
-  AssertInitialMigrationDidntChangePrefs();
-
-  // Reset the migration pref.
-  pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
-                             false);
-  // Set an explicit value on the "Offer to save passwords" pref.
-  pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
-                             false);
-
-  // No migration should happen if passwords sync is off, but the migration
-  // should be marked as done.
-  SetPasswordsSync(false);
-  CreateNewService();
-  histogram_tester()->ExpectUniqueSample(
-      "PasswordManager.MigratedSettingsUPMAndroid", true, 2);
-  EXPECT_EQ(pref_service()->GetUserPrefValue(
-                password_manager::prefs::kOfferToSavePasswordsEnabledGMS),
-            nullptr);
-  EXPECT_EQ(pref_service()->GetUserPrefValue(
-                password_manager::prefs::kAutoSignInEnabledGMS),
-            nullptr);
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kSettingsMigratedToUPM));
-}
-
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        TestNewMigrationIfPrefUndoneSyncOn) {
-  InitializeSettingsService(/*password_sync_enabled=*/true,
-                            /*setting_sync_enabled=*/true);
-  AssertInitialMigrationDidntChangePrefs();
-
   // Reset the migration pref.
   pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
                              false);
@@ -310,7 +283,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   SetPasswordsSync(true);
   CreateNewService();
   histogram_tester()->ExpectUniqueSample(
-      "PasswordManager.MigratedSettingsUPMAndroid", true, 2);
+      "PasswordManager.MigratedSettingsUPMAndroid", true, 1);
   EXPECT_FALSE(pref_service()->GetBoolean(
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
   EXPECT_EQ(pref_service()->GetUserPrefValue(
@@ -320,10 +293,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        TestNewMigrationManagedPrefSetValue) {
-  InitializeSettingsService(/*password_sync_enabled=*/true,
-                            /*setting_sync_enabled=*/true);
-  AssertInitialMigrationDidntChangePrefs();
-
   // Reset the migration pref.
   pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
                              false);
@@ -336,9 +305,10 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
   // Create a new service and expect that the migration stores the user value,
   // not the one enforced by policy.
+  SetPasswordsSync(true);
   CreateNewService();
   histogram_tester()->ExpectUniqueSample(
-      "PasswordManager.MigratedSettingsUPMAndroid", true, 2);
+      "PasswordManager.MigratedSettingsUPMAndroid", true, 1);
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPM));
   EXPECT_TRUE(pref_service()->GetBoolean(
@@ -350,10 +320,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        TestNewMigrationManagedPrefDefaultValue) {
-  InitializeSettingsService(/*password_sync_enabled=*/true,
-                            /*setting_sync_enabled=*/true);
-  AssertInitialMigrationDidntChangePrefs();
-
   // Reset the migration pref.
   pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
                              false);
@@ -363,9 +329,10 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
   // Create a new service and expect that the migration doesn't change the
   // GMS pref value, because the user hasn't set any value.
+  SetPasswordsSync(true);
   CreateNewService();
   histogram_tester()->ExpectUniqueSample(
-      "PasswordManager.MigratedSettingsUPMAndroid", true, 2);
+      "PasswordManager.MigratedSettingsUPMAndroid", true, 1);
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kSettingsMigratedToUPM));
   EXPECT_TRUE(pref_service()->GetBoolean(
