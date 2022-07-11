@@ -3424,6 +3424,8 @@
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_beta',
+          # crbug/1343123: temporarily increasing readline timeout due to slow simulator start up time.
+          'xcode_14_readline_timeout',
           'xctest',
         ],
         'test_suites': {

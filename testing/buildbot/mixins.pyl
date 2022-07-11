@@ -1397,6 +1397,14 @@
       ],
     },
   },
+  'xcode_14_readline_timeout': {
+    '$mixin_append': {
+      'args': [
+        '--readline-timeout',
+        '600',
+      ],
+    },
+  },
   'xcode_parallelization': {
     '$mixin_append': {
       'args': [
