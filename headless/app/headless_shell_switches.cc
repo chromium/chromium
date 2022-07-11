@@ -111,8 +111,13 @@ const char kUseANGLE[] = "use-angle";
 const char kUserAgent[] = "user-agent";
 
 // Directory where the browser stores the user profile. Note that if this switch
-// is added, the session will no longer be Incognito.
+// is added, the session will no longer be Incognito, unless Incognito mode is
+// forced with --incognito switch.
 const char kUserDataDir[] = "user-data-dir";
+
+// Forces Incognito mode even if user data directory is specified using the
+// --user-data-dir switch.
+const char kIncognito[] = "incognito";
 
 // If set the system waits the specified number of virtual milliseconds before
 // deeming the page to be ready.  For determinism virtual time does not advance

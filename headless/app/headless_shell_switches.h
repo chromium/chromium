@@ -37,6 +37,7 @@ HEADLESS_EXPORT extern const char kUseANGLE[];
 HEADLESS_EXPORT extern const char kUseGL[];
 HEADLESS_EXPORT extern const char kUserAgent[];
 HEADLESS_EXPORT extern const char kUserDataDir[];
+HEADLESS_EXPORT extern const char kIncognito[];
 HEADLESS_EXPORT extern const char kVirtualTimeBudget[];
 HEADLESS_EXPORT extern const char kWindowSize[];
 HEADLESS_EXPORT extern const char kAuthServerAllowlist[];

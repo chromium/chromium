@@ -14,6 +14,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/devtools/domains/runtime.h"
 #include "headless/public/headless_browser.h"
@@ -235,6 +236,52 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, IncognitoMode) {
   // Similar to test above, but now we are in incognito mode,
   // so nothing should be written to this directory.
   EXPECT_TRUE(base::IsDirectoryEmpty(user_data_dir.GetPath()));
+}
+
+class HeadlessBrowserTestWithUserDataDirAndMaybeIncognito
+    : public HeadlessBrowserTest,
+      public testing::WithParamInterface<bool> {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessBrowserTest::SetUpCommandLine(command_line);
+
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
+  }
+
+ protected:
+  bool incognito() { return GetParam(); }
+
+  const base::FilePath& user_data_dir() const {
+    return user_data_dir_.GetPath();
+  }
+
+ private:
+  base::ScopedTempDir user_data_dir_;
+};
+
+INSTANTIATE_TEST_SUITE_P(HeadlessBrowserTestWithUserDataDirAndMaybeIncognito,
+                         HeadlessBrowserTestWithUserDataDirAndMaybeIncognito,
+                         testing::Values(false, true));
+
+IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithUserDataDirAndMaybeIncognito,
+                       IncognitoSwitch) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  HeadlessBrowserContext* browser_context = browser()
+                                                ->CreateBrowserContextBuilder()
+                                                .SetUserDataDir(user_data_dir())
+                                                .SetIncognitoMode(incognito())
+                                                .Build();
+
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder()
+          .SetInitialURL(embedded_test_server()->GetURL("/hello.html"))
+          .Build();
+
+  EXPECT_TRUE(WaitForLoad(web_contents));
+
+  EXPECT_EQ(incognito(), base::IsDirectoryEmpty(user_data_dir()));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ContextWebPreferences) {

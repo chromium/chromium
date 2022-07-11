@@ -797,7 +797,8 @@ int HeadlessShellMain(int argc, const char** argv) {
   if (command_line.HasSwitch(switches::kUserDataDir)) {
     builder.SetUserDataDir(
         command_line.GetSwitchValuePath(switches::kUserDataDir));
-    builder.SetIncognitoMode(false);
+    if (!command_line.HasSwitch(switches::kIncognito))
+      builder.SetIncognitoMode(false);
   }
 
   if (command_line.HasSwitch(switches::kWindowSize)) {
