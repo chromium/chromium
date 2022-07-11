@@ -580,18 +580,16 @@ void ExecuteTaskAfterMimeTypesCollected(
     FileTaskFinishedCallback done,
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector,
     std::unique_ptr<std::vector<std::string>> mime_types) {
-  if (task.task_type == TASK_TYPE_WEB_APP ||
-      task.task_type == TASK_TYPE_FILE_HANDLER) {
+  if (task.task_type == TASK_TYPE_ARC_APP &&
+      !ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
+    apps::RecordAppLaunchMetrics(profile, apps::AppType::kArc, task.app_id,
+                                 apps::mojom::LaunchSource::kFromFileManager,
+                                 apps::LaunchContainer::kLaunchContainerWindow);
+    ExecuteArcTask(profile, task, file_urls, *mime_types, std::move(done));
+  } else {
     ExecuteAppServiceTask(profile, task, file_urls, *mime_types,
                           std::move(done));
-    return;
   }
-
-  DCHECK_EQ(task.task_type, TASK_TYPE_ARC_APP);
-  apps::RecordAppLaunchMetrics(profile, apps::AppType::kArc, task.app_id,
-                               apps::mojom::LaunchSource::kFromFileManager,
-                               apps::LaunchContainer::kLaunchContainerWindow);
-  ExecuteArcTask(profile, task, file_urls, *mime_types, std::move(done));
 }
 
 void EndPostProcessFoundTasks(
@@ -1043,10 +1041,16 @@ void FindAllTypesOfTasks(Profile* profile,
   std::unique_ptr<std::vector<FullTaskDescriptor>> result_list(
       new std::vector<FullTaskDescriptor>);
 
-  // 1. Find and append ARC handler tasks.
-  FindArcTasks(profile, entries, file_urls, std::move(result_list),
-               base::BindOnce(&FindExtensionAndAppTasks, profile, entries,
-                              file_urls, std::move(callback)));
+  if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
+    // Skip FindArcTasks since ARC tasks are now found in App Service.
+    FindExtensionAndAppTasks(profile, entries, file_urls, std::move(callback),
+                             std::move(result_list));
+  } else {
+    // 1. Find and append ARC handler tasks.
+    FindArcTasks(profile, entries, file_urls, std::move(result_list),
+                 base::BindOnce(&FindExtensionAndAppTasks, profile, entries,
+                                file_urls, std::move(callback)));
+  }
 }
 
 void ChooseAndSetDefaultTask(const PrefService& pref_service,

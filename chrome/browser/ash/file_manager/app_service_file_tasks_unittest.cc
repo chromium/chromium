@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -15,11 +16,13 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
@@ -305,6 +308,28 @@ class AppServiceFileTasksTest : public testing::Test {
                                 apps::AppType::kChromeApp, true);
   }
 
+  apps::IntentFilterPtr CreateArcFileIntentFilter(std::string action,
+                                                  std::string mime_type) {
+    auto intent_filter = std::make_unique<apps::IntentFilter>();
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kAction, action,
+                                           apps::PatternMatchType::kNone);
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kFile,
+                                           mime_type,
+                                           apps::PatternMatchType::kMimeType);
+    return intent_filter;
+  }
+
+  std::string AddArcAppWithIntentFilter(const std::string& package,
+                                        const std::string& activity,
+                                        apps::IntentFilterPtr intent_filter) {
+    std::string app_id = ArcAppListPrefs::GetAppId(package, activity);
+    std::vector<apps::IntentFilterPtr> filters;
+    filters.push_back(std::move(intent_filter));
+    AddFakeAppWithIntentFilters(app_id, std::move(filters), apps::AppType::kArc,
+                                true);
+    return app_id;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -315,14 +340,19 @@ class AppServiceFileTasksTest : public testing::Test {
 class AppServiceFileTasksTestEnabled : public AppServiceFileTasksTest {
  public:
   AppServiceFileTasksTestEnabled() {
-    feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
+    feature_list_.InitWithFeatures(
+        {blink::features::kFileHandlingAPI,
+         ash::features::kArcAndGuestOsFileTasksUseAppService},
+        {});
   }
 };
 
 class AppServiceFileTasksTestDisabled : public AppServiceFileTasksTest {
  public:
   AppServiceFileTasksTestDisabled() {
-    feature_list_.InitWithFeatures({}, {blink::features::kFileHandlingAPI});
+    feature_list_.InitWithFeatures(
+        {}, {blink::features::kFileHandlingAPI,
+             ash::features::kArcAndGuestOsFileTasksUseAppService});
   }
 };
 
@@ -333,6 +363,23 @@ TEST_F(AppServiceFileTasksTestDisabled, FindAppServiceFileTasksText) {
   // Find apps for a "text/plain" file.
   std::vector<FullTaskDescriptor> tasks =
       FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
+  ASSERT_EQ(0U, tasks.size());
+}
+
+// ARC apps should not be found when kArcAndGuestOsFileTasksUseAppService is
+// disabled.
+TEST_F(AppServiceFileTasksTestDisabled, FindAppServiceArcApp) {
+  std::string text_mime_type = "text/plain";
+
+  // Create an app with a text file filter.
+  std::string text_package_name = "com.example.textViewer";
+  std::string text_activity = "TextViewerActivity";
+  std::string text_app_id = AddArcAppWithIntentFilter(
+      text_package_name, text_activity,
+      CreateArcFileIntentFilter(apps_util::kIntentActionView, text_mime_type));
+
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.txt", text_mime_type}});
   ASSERT_EQ(0U, tasks.size());
 }
 
@@ -598,6 +645,33 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {
   EXPECT_EQ(kExtensionId, tasks[0].task_descriptor.app_id);
   EXPECT_EQ("open title", tasks[0].task_title);
   EXPECT_EQ("open", tasks[0].task_descriptor.action_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_FALSE(tasks[0].is_file_extension_match);
+}
+
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceArcApp) {
+  std::string text_mime_type = "text/plain";
+  std::string image_mime_type = "image/jpeg";
+
+  // Create an app with a text file filter.
+  std::string text_package_name = "com.example.textViewer";
+  std::string text_activity = "TextViewerActivity";
+  std::string text_app_id = AddArcAppWithIntentFilter(
+      text_package_name, text_activity,
+      CreateArcFileIntentFilter(apps_util::kIntentActionView, text_mime_type));
+
+  // Create an app with an image file filter.
+  std::string image_package_name = "com.example.imageViewer";
+  std::string image_activity = "ImageViewerActivity";
+  std::string image_app_id = AddArcAppWithIntentFilter(
+      image_package_name, image_activity,
+      CreateArcFileIntentFilter(apps_util::kIntentActionView, image_mime_type));
+
+  // Check if only the text ARC app appears as a result.
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.txt", text_mime_type}});
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(text_app_id, tasks[0].task_descriptor.app_id);
   EXPECT_FALSE(tasks[0].is_generic_file_handler);
   EXPECT_FALSE(tasks[0].is_file_extension_match);
 }

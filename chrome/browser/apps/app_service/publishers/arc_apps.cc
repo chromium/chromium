@@ -411,11 +411,19 @@ arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
   arc::mojom::OpenUrlsRequestPtr request = arc::mojom::OpenUrlsRequest::New();
   request->action_type = GetArcActionType(intent->action);
   request->activity_name = activity.Clone();
-  for (const auto& content_url : content_urls) {
+  DCHECK_EQ(content_urls.size(), intent->files.value().size());
+  for (int i = 0; i < content_urls.size(); i++) {
+    auto content_url = content_urls[i];
     arc::mojom::ContentUrlWithMimeTypePtr url_with_type =
         arc::mojom::ContentUrlWithMimeType::New();
     url_with_type->content_url = content_url;
-    url_with_type->mime_type = intent->mime_type.value();
+    DCHECK(intent->files.value()[i]->mime_type.has_value() ||
+           intent->mime_type.has_value());
+    // Save the file's original mimetype to the URL if it exists. Otherwise, use
+    // the common intent mime type instead.
+    url_with_type->mime_type = intent->files.value()[i]->mime_type.has_value()
+                                   ? intent->files.value()[i]->mime_type.value()
+                                   : intent->mime_type.value();
     request->urls.push_back(std::move(url_with_type));
   }
   if (intent->share_text.has_value() || intent->share_title.has_value()) {
@@ -571,6 +579,16 @@ bool IsWebAppShellPackage(Profile* profile,
          apk_web_app_service->IsWebAppShellPackage(app_info.package_name);
 }
 
+bool IntentHasFilesAndMimeTypes(const apps::mojom::IntentPtr& intent) {
+  if (!intent->files.has_value()) {
+    return false;
+  }
+  bool all_files_have_mime_type = base::ranges::all_of(
+      *intent->files, [](apps::mojom::IntentFilePtr& file) {
+        return file->mime_type.has_value();
+      });
+  return all_files_have_mime_type || intent->mime_type.has_value();
+}
 }  // namespace
 
 namespace apps {
@@ -886,7 +904,9 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     int32_t session_id = new_window_info->window_id;
     int64_t display_id = new_window_info->display_id;
 
-    if (intent->mime_type.has_value() && intent->files.has_value()) {
+    // Check if the intent has files, and whether the intent has a mime type or
+    // all the individual files have mime types.
+    if (IntentHasFilesAndMimeTypes(intent)) {
       std::vector<GURL> file_urls;
       for (const auto& file : intent->files.value()) {
         file_urls.push_back(file->url);

@@ -1627,6 +1627,12 @@ const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay{
 // consent is per-user.
 const base::Feature kPerUserMetrics{"PerUserMetricsConsent",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Allows Files App to find and execute tasks using App Service for Arc and
+// Guest OS apps.
+const base::Feature kArcAndGuestOsFileTasksUseAppService{
+    "ArcAndGuestOsFileTasksUseAppService", base::FEATURE_DISABLED_BY_DEFAULT};
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreContextualNudgesEnabled() {
@@ -2374,6 +2380,10 @@ bool IsWebUITabStripTabDragIntegrationEnabled() {
 
 bool IsWifiSyncAndroidEnabled() {
   return base::FeatureList::IsEnabled(kWifiSyncAndroid);
+}
+
+bool ShouldArcAndGuestOsFileTasksUseAppService() {
+  return base::FeatureList::IsEnabled(kArcAndGuestOsFileTasksUseAppService);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {

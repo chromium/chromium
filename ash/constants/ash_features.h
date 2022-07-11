@@ -70,6 +70,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kArcAdbSideloadingFeature;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kArcInputOverlay;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kArcAndGuestOsFileTasksUseAppService;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kArcManagedAdbSideloadingSupport;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistAutoCorrect;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAssistEmojiEnhanced;
@@ -842,6 +844,8 @@ bool IsWallpaperGooglePhotosIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperPerDeskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripTabDragIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool ShouldArcAndGuestOsFileTasksUseAppService();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAttachApn();

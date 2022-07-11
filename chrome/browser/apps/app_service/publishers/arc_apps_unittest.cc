@@ -436,3 +436,87 @@ TEST_F(ArcAppsPublisherTest,
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result.value());
 }
+
+TEST_F(
+    ArcAppsPublisherTest,
+    LaunchAppWithIntent_ViewFileIntent_SendsOpenUrlRequestWithIndividualFileMimeTypes) {
+  SetUpFileSystemInstance();
+
+  auto file1 = apps::mojom::IntentFile::New();
+  file1->url = FileInDownloads(profile(), base::FilePath("test1.png"));
+  file1->mime_type = "image/png";
+
+  auto file2 = apps::mojom::IntentFile::New();
+  file2->url = FileInDownloads(profile(), base::FilePath("test2.jpeg"));
+  file2->mime_type = "image/jpeg";
+
+  std::vector<apps::mojom::IntentFilePtr> files;
+  files.push_back(std::move(file1));
+  files.push_back(std::move(file2));
+
+  auto intent = apps_util::CreateViewIntentFromFiles(std::move(files));
+
+  const auto& fake_apps = arc_test()->fake_apps();
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
+  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+
+  absl::optional<bool> result;
+  app_service_proxy()->LaunchAppWithIntent(
+      app_id, 0, std::move(intent), apps::mojom::LaunchSource::kFromFileManager,
+      /*window_info=*/nullptr,
+      base::BindLambdaForTesting(
+          [&result](bool callback_result) { result = callback_result; }));
+
+  FlushMojoCalls();
+
+  ASSERT_TRUE(result.has_value() && result.value());
+
+  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
+  auto& url_request = file_system_instance()->handledUrlRequests()[0];
+  ASSERT_EQ(url_request->action_type, arc::mojom::ActionType::VIEW);
+  ASSERT_EQ(url_request->urls.size(), 2);
+  ASSERT_EQ(url_request->urls[0]->mime_type, "image/png");
+  ASSERT_EQ(url_request->urls[1]->mime_type, "image/jpeg");
+  ASSERT_TRUE(
+      base::EndsWith(url_request->urls[0]->content_url.spec(), "test1.png"));
+  ASSERT_TRUE(
+      base::EndsWith(url_request->urls[1]->content_url.spec(), "test2.jpeg"));
+}
+
+TEST_F(ArcAppsPublisherTest,
+       LaunchAppWithIntent_ShareFileIntent_SendsOpenUrlRequest) {
+  SetUpFileSystemInstance();
+
+  std::string mime_type = "image/jpeg";
+  std::string file_name = "test.jpeg";
+
+  GURL url = FileInDownloads(profile(), base::FilePath(file_name));
+  auto intent = apps_util::CreateShareIntentFromFiles({url}, {mime_type});
+
+  const auto& fake_apps = arc_test()->fake_apps();
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
+  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+
+  absl::optional<bool> result;
+  app_service_proxy()->LaunchAppWithIntent(
+      app_id, 0, std::move(intent), apps::mojom::LaunchSource::kFromFileManager,
+      /*window_info=*/nullptr,
+      base::BindLambdaForTesting(
+          [&result](bool callback_result) { result = callback_result; }));
+
+  FlushMojoCalls();
+
+  ASSERT_TRUE(result.has_value() && result.value());
+
+  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
+  auto& url_request = file_system_instance()->handledUrlRequests()[0];
+  ASSERT_EQ(url_request->action_type, arc::mojom::ActionType::SEND);
+  ASSERT_EQ(url_request->urls.size(), 1);
+  ASSERT_EQ(url_request->urls[0]->mime_type, mime_type);
+  ASSERT_TRUE(
+      base::EndsWith(url_request->urls[0]->content_url.spec(), file_name));
+}
