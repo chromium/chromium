@@ -29,10 +29,6 @@ WaylandDisplayHandler::WaylandDisplayHandler(WaylandDisplayOutput* output,
 }
 
 WaylandDisplayHandler::~WaylandDisplayHandler() {
-  if (color_management_output_resource_)
-    wl_resource_set_user_data(color_management_output_resource_, nullptr);
-  if (xdg_output_resource_)
-    wl_resource_set_user_data(xdg_output_resource_, nullptr);
   output_->UnregisterOutput(output_resource_);
 }
 

@@ -18,8 +18,7 @@ namespace wayland {
 void xdg_output_destroy(wl_client* client, wl_resource* resource) {
   WaylandDisplayHandler* handler =
       GetUserDataAs<WaylandDisplayHandler>(resource);
-  if (handler)
-    handler->UnsetXdgOutputResource();
+  handler->UnsetXdgOutputResource();
   wl_resource_destroy(resource);
 }
 
@@ -47,10 +46,8 @@ void xdg_output_manager_get_xdg_output(wl_client* client,
 
   WaylandDisplayHandler* handler =
       GetUserDataAs<WaylandDisplayHandler>(output_resource);
-  if (handler) {
-    wl_resource_set_implementation(resource, &xdg_output_implementation,
-                                   handler, nullptr);
-  }
+  wl_resource_set_implementation(resource, &xdg_output_implementation, handler,
+                                 nullptr);
   handler->OnXdgOutputCreated(resource);
 }
 
