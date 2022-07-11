@@ -335,7 +335,8 @@ UserMediaRequest* UserMediaRequest::Create(
       error_state.ThrowTypeError("Mandatory zoom constraint is not supported");
       return nullptr;
     }
-  } else if (media_type == UserMediaRequest::MediaType::kDisplayMedia) {
+  } else if (media_type == UserMediaRequest::MediaType::kDisplayMedia ||
+             media_type == UserMediaRequest::MediaType::kDisplayMediaSet) {
     // https://w3c.github.io/mediacapture-screen-share/#mediadevices-additions
     // MediaDevices Additions
     // The user agent MUST reject audio-only requests.
@@ -351,6 +352,16 @@ UserMediaRequest* UserMediaRequest::Create(
     // either a dictionary value or a value of true.
     // 4. If requestedMediaTypes is the empty set, set requestedMediaTypes to a
     // set containing "video".
+    if (media_type == UserMediaRequest::MediaType::kDisplayMediaSet) {
+      if (!audio.IsNull()) {
+        error_state.ThrowTypeError("Audio requests are not supported");
+        return nullptr;
+      } else if (options->preferCurrentTab()) {
+        error_state.ThrowTypeError("preferCurrentTab is not supported");
+        return nullptr;
+      }
+    }
+
     if ((!audio.IsNull() && !audio.Advanced().IsEmpty()) ||
         (!video.IsNull() && !video.Advanced().IsEmpty())) {
       error_state.ThrowTypeError("Advanced constraints are not supported");

@@ -61,15 +61,21 @@ const char kFeaturePolicyBlocked[] =
 class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
  public:
   PromiseResolverCallbacks(
+      UserMediaRequest::MediaType media_type,
       ScriptPromiseResolver* resolver,
       base::OnceCallback<void(const String&, MediaStreamTrack*)>
           on_success_follow_up)
-      : resolver_(resolver),
+      : media_type_(media_type),
+        resolver_(resolver),
         on_success_follow_up_(std::move(on_success_follow_up)) {}
   ~PromiseResolverCallbacks() override = default;
 
   void OnSuccess(const MediaStreamVector& streams) override {
-    // TODO(crbug.com/1300883): Generalize to multiple streams.
+    if (media_type_ == UserMediaRequest::MediaType::kDisplayMediaSet) {
+      OnSuccessGetDisplayMediaSet(streams);
+      return;
+    }
+
     DCHECK_EQ(streams.size(), 1u);
     MediaStream* stream = streams[0];
 
@@ -79,6 +85,7 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
       // Only getDisplayMedia() calls set |on_success_follow_up_|.
       // Successful invocations of getDisplayMedia() always have exactly
       // one video track.
+      DCHECK_EQ(UserMediaRequest::MediaType::kDisplayMedia, media_type_);
       MediaStreamTrackVector video_tracks = stream->getVideoTracks();
       DCHECK_EQ(video_tracks.size(), 1u);
       video_track = video_tracks[0];
@@ -92,6 +99,7 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
       std::move(on_success_follow_up_).Run(stream->id(), video_track);
     }
   }
+
   void OnError(ScriptWrappable* callback_this_value,
                const V8MediaStreamError* error) override {
     resolver_->Reject(error);
@@ -103,6 +111,14 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
   }
 
  private:
+  void OnSuccessGetDisplayMediaSet(const MediaStreamVector& streams) {
+    DCHECK(!streams.IsEmpty());
+    DCHECK_EQ(UserMediaRequest::MediaType::kDisplayMediaSet, media_type_);
+    resolver_->Resolve(streams);
+  }
+
+  const UserMediaRequest::MediaType media_type_;
+
   Member<ScriptPromiseResolver> resolver_;
   base::OnceCallback<void(const String&, MediaStreamTrack*)>
       on_success_follow_up_;
@@ -231,7 +247,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 #endif
 
   auto* callbacks = MakeGarbageCollected<PromiseResolverCallbacks>(
-      resolver, std::move(on_success_follow_up));
+      media_type, resolver, std::move(on_success_follow_up));
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   UserMediaController* user_media = UserMediaController::From(window);
@@ -274,9 +290,17 @@ ScriptPromise MediaDevices::getDisplayMediaSet(
     ScriptState* script_state,
     const MediaStreamConstraints* options,
     ExceptionState& exception_state) {
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented.");
-  return ScriptPromise();
+  ExecutionContext* const context = GetExecutionContext();
+  if (!context) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "No media device controller available; is this a detached window?");
+    return ScriptPromise();
+  }
+
+  return SendUserMediaRequest(script_state,
+                              UserMediaRequest::MediaType::kDisplayMediaSet,
+                              options, exception_state);
 }
 
 ScriptPromise MediaDevices::getDisplayMedia(
