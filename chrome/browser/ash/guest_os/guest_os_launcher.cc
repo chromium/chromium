@@ -115,7 +115,7 @@ void LaunchBruschetta(Profile* profile,
               ResponseType::Unexpected("Failed to launch Bruschetta"));
           return;
         }
-        std::move(callback).Run(Success(name, /*container_name=*/""));
+        std::move(callback).Run(Success(name, /*container_name=*/"penguin"));
       },
       name, std::move(callback)));
 }

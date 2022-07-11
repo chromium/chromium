@@ -9,11 +9,10 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -53,6 +52,8 @@ class BruschettaLauncher {
   void EnsureDlcInstalled();
   void OnMountDlc(
       const chromeos::DlcserviceClient::InstallResult& install_result);
+
+  void OnContainerRunning(guest_os::GuestInfo info);
 
   std::string vm_name_;
   Profile* profile_;

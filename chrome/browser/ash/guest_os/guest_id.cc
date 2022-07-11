@@ -19,12 +19,10 @@ namespace guest_os {
 namespace {
 
 bool MatchContainerDict(const base::Value& dict, const GuestId& container_id) {
-  VmType type = VmTypeFromPref(dict);
   const std::string* vm_name = dict.FindStringKey(prefs::kVmNameKey);
   const std::string* container_name =
       dict.FindStringKey(prefs::kContainerNameKey);
-  return (type == container_id.vm_type) &&
-         (vm_name && *vm_name == container_id.vm_name) &&
+  return (vm_name && *vm_name == container_id.vm_name) &&
          (container_name && *container_name == container_id.container_name);
 }
 
@@ -72,11 +70,7 @@ base::Value::Dict GuestId::ToDictValue() const {
 }
 
 bool operator<(const GuestId& lhs, const GuestId& rhs) noexcept {
-  int result = static_cast<int>(lhs.vm_type) - static_cast<int>(rhs.vm_type);
-  if (result != 0) {
-    return result < 0;
-  }
-  result = lhs.vm_name.compare(rhs.vm_name);
+  int result = lhs.vm_name.compare(rhs.vm_name);
   if (result != 0) {
     return result < 0;
   }
@@ -84,8 +78,7 @@ bool operator<(const GuestId& lhs, const GuestId& rhs) noexcept {
 }
 
 bool operator==(const GuestId& lhs, const GuestId& rhs) noexcept {
-  return lhs.vm_type == rhs.vm_type && lhs.vm_name == rhs.vm_name &&
-         lhs.container_name == rhs.container_name;
+  return lhs.vm_name == rhs.vm_name && lhs.container_name == rhs.container_name;
 }
 
 std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id) {

@@ -24,8 +24,10 @@ TEST_F(GuestIdTest, GuestIdEquality) {
   auto container1 = GuestId{VmType::TERMINA, "test1", "test2"};
   auto container2 = GuestId{VmType::TERMINA, "test1", "test2"};
   auto container3 = GuestId{VmType::BOREALIS, "test2", "test1"};
+  auto container4 = GuestId{VmType::BOREALIS, "test1", "test2"};
 
   ASSERT_TRUE(container1 == container2);
+  ASSERT_TRUE(container1 == container4);  // Type is ignored for comparisons
   ASSERT_FALSE(container1 == container3);
   ASSERT_FALSE(container2 == container3);
 }

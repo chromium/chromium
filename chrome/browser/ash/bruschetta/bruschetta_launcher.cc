@@ -10,6 +10,8 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -133,6 +135,16 @@ void BruschettaLauncher::OnStartVm(
     return;
   }
 
+  auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
+  tracker->RunOnceContainerStarted(
+      guest_os::GuestId{guest_os::VmType::BRUSCHETTA, vm_name_, "penguin"},
+      base::BindOnce(&BruschettaLauncher::OnContainerRunning,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void BruschettaLauncher::OnContainerRunning(guest_os::GuestInfo info) {
+  // TODO(b/231390254): There's no way for Garcon to signal errors, we just hang
+  // forever. At the least we should have some timeouts.
   callbacks_.Notify(BruschettaResult::kSuccess);
 }
 
