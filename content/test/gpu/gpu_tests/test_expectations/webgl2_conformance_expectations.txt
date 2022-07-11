@@ -215,6 +215,11 @@ crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-obje
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
 crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/1206763 [ win intel ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
+# Failing at least on Pixel 4, both validating and passthrough
+crbug.com/1336010 [ android ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
+# Failing on at least NVIDIA and Intel
+crbug.com/1336010 [ linux ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
+crbug.com/1336010 [ win ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 
 # The validating command decoder suppressions here will not be fixed.
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
@@ -681,6 +686,7 @@ crbug.com/1081978 [ linux intel angle-opengl passthrough ] conformance2/textures
 crbug.com/angleproject/4242 [ linux intel angle-opengl passthrough ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 
 # Linux NVIDIA
+crbug.com/1343520 [ linux nvidia angle-opengl passthrough ] conformance2/textures/canvas/tex-2d-r8-red-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/angleproject/5783 [ linux nvidia angle-opengl passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 
