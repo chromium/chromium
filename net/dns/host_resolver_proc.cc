@@ -27,7 +27,7 @@ namespace net {
 
 HostResolverProc* HostResolverProc::default_proc_ = nullptr;
 
-HostResolverProc::HostResolverProc(HostResolverProc* previous,
+HostResolverProc::HostResolverProc(scoped_refptr<HostResolverProc> previous,
                                    bool allow_fallback_to_system_or_default)
     : allow_fallback_to_system_(allow_fallback_to_system_or_default) {
   SetPreviousProc(previous);
@@ -75,16 +75,17 @@ int HostResolverProc::ResolveUsingPrevious(
                                 addrlist, os_error);
 }
 
-void HostResolverProc::SetPreviousProc(HostResolverProc* proc) {
-  HostResolverProc* current_previous = previous_proc_.get();
-  previous_proc_ = nullptr;
+void HostResolverProc::SetPreviousProc(scoped_refptr<HostResolverProc> proc) {
+  auto current_previous = std::move(previous_proc_);
   // Now that we've guaranteed |this| is the last proc in a chain, we can
   // detect potential cycles using GetLastProc().
-  previous_proc_ = (GetLastProc(proc) == this) ? current_previous : proc;
+  previous_proc_ = (GetLastProc(proc.get()) == this)
+                       ? std::move(current_previous)
+                       : std::move(proc);
 }
 
-void HostResolverProc::SetLastProc(HostResolverProc* proc) {
-  GetLastProc(this)->SetPreviousProc(proc);
+void HostResolverProc::SetLastProc(scoped_refptr<HostResolverProc> proc) {
+  GetLastProc(this)->SetPreviousProc(std::move(proc));
 }
 
 // static
@@ -251,9 +252,9 @@ int SystemHostResolverProc::Resolve(const std::string& hostname,
 
 SystemHostResolverProc::~SystemHostResolverProc() = default;
 
-ProcTaskParams::ProcTaskParams(HostResolverProc* resolver_proc,
+ProcTaskParams::ProcTaskParams(scoped_refptr<HostResolverProc> resolver_proc,
                                size_t in_max_retry_attempts)
-    : resolver_proc(resolver_proc),
+    : resolver_proc(std::move(resolver_proc)),
       max_retry_attempts(in_max_retry_attempts),
       unresponsive_delay(kDnsDefaultUnresponsiveDelay) {
   // Maximum of 4 retry attempts for host resolution.

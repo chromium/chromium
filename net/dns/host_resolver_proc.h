@@ -30,7 +30,7 @@ class AddressList;
 class NET_EXPORT HostResolverProc
     : public base::RefCountedThreadSafe<HostResolverProc> {
  public:
-  explicit HostResolverProc(HostResolverProc* previous,
+  explicit HostResolverProc(scoped_refptr<HostResolverProc> previous,
                             bool allow_fallback_to_system_or_default = true);
 
   HostResolverProc(const HostResolverProc&) = delete;
@@ -74,11 +74,11 @@ class NET_EXPORT HostResolverProc
 
   // Sets the previous procedure in the chain.  Aborts if this would result in a
   // cycle.
-  void SetPreviousProc(HostResolverProc* proc);
+  void SetPreviousProc(scoped_refptr<HostResolverProc> proc);
 
   // Sets the last procedure in the chain, i.e. appends |proc| to the end of the
   // current chain.  Aborts if this would result in a cycle.
-  void SetLastProc(HostResolverProc* proc);
+  void SetLastProc(scoped_refptr<HostResolverProc> proc);
 
   // Returns the last procedure in the chain starting at |proc|.  Will return
   // NULL iff |proc| is NULL.
@@ -158,7 +158,8 @@ struct NET_EXPORT_PRIVATE ProcTaskParams {
       base::Seconds(6);
 
   // Sets up defaults.
-  ProcTaskParams(HostResolverProc* resolver_proc, size_t max_retry_attempts);
+  ProcTaskParams(scoped_refptr<HostResolverProc> resolver_proc,
+                 size_t max_retry_attempts);
 
   ProcTaskParams(const ProcTaskParams& other);
 

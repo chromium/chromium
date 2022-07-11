@@ -509,7 +509,7 @@ class RuleBasedHostResolverProc : public HostResolverProc {
  public:
   // If `allow_fallback` is false, no Proc fallback is allowed except to
   // `previous`.
-  explicit RuleBasedHostResolverProc(HostResolverProc* previous,
+  explicit RuleBasedHostResolverProc(scoped_refptr<HostResolverProc> previous,
                                      bool allow_fallback = true);
 
   // Any hostname matching the given pattern will be replaced with the given

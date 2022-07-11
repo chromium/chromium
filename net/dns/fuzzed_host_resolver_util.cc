@@ -376,7 +376,8 @@ class FuzzedHostResolverManager : public HostResolverManager {
         net_log_(net_log),
         data_provider_weak_factory_(data_provider) {
     ProcTaskParams proc_task_params(
-        new FuzzedHostResolverProc(data_provider_weak_factory_.GetWeakPtr()),
+        base::MakeRefCounted<FuzzedHostResolverProc>(
+            data_provider_weak_factory_.GetWeakPtr()),
         // Retries are only used when the original request hangs, which this
         // class currently can't simulate.
         0 /* max_retry_attempts */);

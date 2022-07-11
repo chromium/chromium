@@ -99,7 +99,7 @@ class ContextHostResolverTest : public ::testing::Test,
     EXPECT_TRUE(dns_client_->GetEffectiveConfig());
 
     scoped_refptr<HostResolverProc> proc = CreateCatchAllHostResolverProc();
-    manager_->set_proc_params_for_test(ProcTaskParams(proc.get(), 1u));
+    manager_->set_proc_params_for_test(ProcTaskParams(proc, 1u));
   }
 
   raw_ptr<MockDnsClient> dns_client_;

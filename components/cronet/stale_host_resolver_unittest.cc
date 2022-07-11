@@ -182,7 +182,7 @@ class StaleHostResolverTest : public testing::Test {
     if (context)
       inner_resolver->SetRequestContext(context);
 
-    net::ProcTaskParams proc_params(mock_proc_.get(), 1u);
+    net::ProcTaskParams proc_params(mock_proc_, 1u);
     inner_resolver->SetProcParamsForTesting(proc_params);
     if (dns_client) {
       inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(

@@ -1136,9 +1136,10 @@ RuleBasedHostResolverProc::Rule::Rule(const Rule& other) = default;
 
 RuleBasedHostResolverProc::Rule::~Rule() = default;
 
-RuleBasedHostResolverProc::RuleBasedHostResolverProc(HostResolverProc* previous,
-                                                     bool allow_fallback)
-    : HostResolverProc(previous, allow_fallback) {}
+RuleBasedHostResolverProc::RuleBasedHostResolverProc(
+    scoped_refptr<HostResolverProc> previous,
+    bool allow_fallback)
+    : HostResolverProc(std::move(previous), allow_fallback) {}
 
 void RuleBasedHostResolverProc::AddRule(const std::string& host_pattern,
                                         const std::string& replacement) {
@@ -1365,15 +1366,15 @@ void RuleBasedHostResolverProc::AddRuleInternal(const Rule& rule) {
 }
 
 scoped_refptr<RuleBasedHostResolverProc> CreateCatchAllHostResolverProc() {
-  RuleBasedHostResolverProc* catchall =
-      new RuleBasedHostResolverProc(/*previous=*/nullptr,
-                                    /*allow_fallback=*/false);
+  auto catchall =
+      base::MakeRefCounted<RuleBasedHostResolverProc>(/*previous=*/nullptr,
+                                                      /*allow_fallback=*/false);
   // Note that IPv6 lookups fail.
   catchall->AddIPLiteralRule("*", "127.0.0.1", "localhost");
 
   // Next add a rules-based layer that the test controls.
   return base::MakeRefCounted<RuleBasedHostResolverProc>(
-      catchall, /*allow_fallback=*/false);
+      std::move(catchall), /*allow_fallback=*/false);
 }
 
 //-----------------------------------------------------------------------------
@@ -1515,7 +1516,7 @@ ScopedDefaultHostResolverProc::~ScopedDefaultHostResolverProc() {
 void ScopedDefaultHostResolverProc::Init(HostResolverProc* proc) {
   current_proc_ = proc;
   previous_proc_ = HostResolverProc::SetDefault(current_proc_.get());
-  current_proc_->SetLastProc(previous_proc_.get());
+  current_proc_->SetLastProc(previous_proc_);
 }
 
 }  // namespace net
