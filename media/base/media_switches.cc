@@ -463,6 +463,12 @@ const base::Feature kGlobalMediaControls {
 const base::Feature kGlobalMediaControlsAutoDismiss{
     "GlobalMediaControlsAutoDismiss", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Show Cast sessions in Global Media Controls.
+const base::Feature kGlobalMediaControlsForCast{
+    "GlobalMediaControlsForCast", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Allow Global Media Controls in system tray of CrOS.
 const base::Feature kGlobalMediaControlsForChromeOS{
     "GlobalMediaControlsForChromeOS", base::FEATURE_ENABLED_BY_DEFAULT};

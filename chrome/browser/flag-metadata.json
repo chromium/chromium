@@ -3604,6 +3604,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "global-media-controls-for-cast",
+    "owners": [ "takumif", "openscreen-eng@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "global-media-controls-modern-ui",
     "owners": [ "steimel", "media-dev" ],
     "expiry_milestone": 110

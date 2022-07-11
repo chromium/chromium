@@ -1474,6 +1474,10 @@ const char kFullUserAgentDescription[] =
     "If set, use the full (non-reduced) user agent string for the User-Agent "
     "request header and the JS APIs.";
 
+const char kGlobalMediaControlsForCastName[] = "Global Media Controls for Cast";
+const char kGlobalMediaControlsForCastDescription[] =
+    "Shows Cast sessions in the Global Media Controls UI.";
+
 const char kGlobalMediaControlsModernUIName[] =
     "Global Media Controls Modern UI";
 

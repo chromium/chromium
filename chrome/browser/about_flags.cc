@@ -6461,6 +6461,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMouseSubframeNoImplicitCaptureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kMouseSubframeNoImplicitCapture)},
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"global-media-controls-for-cast",
+     flag_descriptions::kGlobalMediaControlsForCastName,
+     flag_descriptions::kGlobalMediaControlsForCastDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kGlobalMediaControlsForCast)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
     {"global-media-controls-modern-ui",

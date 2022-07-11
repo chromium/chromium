@@ -144,6 +144,9 @@ MEDIA_EXPORT extern const base::Feature kFallbackAfterDecodeError;
 MEDIA_EXPORT extern const base::Feature kGav1VideoDecoder;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControls;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsAutoDismiss;
+#if BUILDFLAG(IS_CHROMEOS)
+MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsForCast;
+#endif
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsForChromeOS;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsPictureInPicture;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsSeamlessTransfer;

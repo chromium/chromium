@@ -823,6 +823,9 @@ extern const char kForceUiDirectionDescription[];
 extern const char kFullUserAgentName[];
 extern const char kFullUserAgentDescription[];
 
+extern const char kGlobalMediaControlsForCastName[];
+extern const char kGlobalMediaControlsForCastDescription[];
+
 extern const char kGlobalMediaControlsModernUIName[];
 extern const char kGlobalMediaControlsModernUIDescription[];
 
