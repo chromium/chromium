@@ -3519,6 +3519,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kCellularBypassESimInstallationConnectivityCheck)},
+    {"cellular-custom-apn-profiles",
+     flag_descriptions::kCellularCustomAPNProfilesName,
+     flag_descriptions::kCellularCustomAPNProfilesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCellularCustomAPNProfiles)},
     {"cellular-forbid-attach-apn",
      flag_descriptions::kCellularForbidAttachApnName,
      flag_descriptions::kCellularForbidAttachApnDescription, kOsCrOS,

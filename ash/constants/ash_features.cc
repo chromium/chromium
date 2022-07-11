@@ -293,6 +293,9 @@ const base::Feature kCellularBypassESimInstallationConnectivityCheck{
     "CellularBypassESimInstallationConnectivityCheck",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCellularCustomAPNProfiles{
+    "CellularCustomAPNProfiles", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the value of |kCellularUseAttachApn| should have no effect and
 // and the LTE attach APN configuration will not be sent to the modem. This
 // flag exists because the |kCellularUseAttachApn| flag can be enabled

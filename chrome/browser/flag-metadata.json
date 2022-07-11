@@ -802,6 +802,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "cellular-custom-apn-profiles",
+    "owners": [ "eariassoto@google.com", "gordonseto@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "cellular-forbid-attach-apn",
     "owners": [ "hsuregan", "cros-connectivity@google.com" ],
     "expiry_milestone": 105

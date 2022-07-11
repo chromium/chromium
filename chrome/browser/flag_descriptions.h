@@ -2608,6 +2608,9 @@ extern const char kCategoricalSearchDescription[];
 extern const char kCellularBypassESimInstallationConnectivityCheckName[];
 extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
 
+extern const char kCellularCustomAPNProfilesName[];
+extern const char kCellularCustomAPNProfilesDescription[];
+
 extern const char kCellularForbidAttachApnName[];
 extern const char kCellularForbidAttachApnDescription[];
 

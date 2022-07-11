@@ -127,6 +127,8 @@ extern const base::Feature kCaptureModeSelfieCamera;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularBypassESimInstallationConnectivityCheck;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCellularCustomAPNProfiles;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularForbidAttachApn;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularUseAttachApn;
