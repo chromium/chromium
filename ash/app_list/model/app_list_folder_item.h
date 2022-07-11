@@ -90,6 +90,7 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   void OnListItemRemoved(size_t index, AppListItem* item) override;
 
   // AppListItemObserver:
+  void ItemBadgeVisibilityChanged() override;
   void ItemIsNewInstallChanged() override;
 
   // Whether this is a system created folder like the Linux apps folder or the
@@ -126,6 +127,10 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   // Sets the "new install" property on this folder item if any of the items
   // inside the folder are new installs.
   void UpdateIsNewInstall();
+
+  // Adds a notification badge on this folder item if any of the items inside
+  // the folder are new installs.
+  void UpdateNotificationBadge();
 
   // The type of folder; may affect behavior of folder views.
   const FolderType folder_type_;

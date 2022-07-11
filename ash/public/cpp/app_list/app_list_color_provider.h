@@ -45,6 +45,7 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetFolderHintTextColor() const = 0;
   virtual SkColor GetFolderNameBorderColor(bool active) const = 0;
   virtual SkColor GetFolderNameSelectionColor() const = 0;
+  virtual SkColor GetFolderNotificationBadgeColor() const = 0;
   virtual SkColor GetContentsBackgroundColor() const = 0;
   virtual SkColor GetGridBackgroundCardActiveColor() const = 0;
   virtual SkColor GetGridBackgroundCardInactiveColor() const = 0;

@@ -341,14 +341,12 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
                             false /*animate*/);
   }
 
-  if (!is_folder_) {
-    notification_indicator_ =
-        AddChildView(std::make_unique<AppNotificationIndicatorView>(
-            item->notification_badge_color()));
-    notification_indicator_->SetPaintToLayer();
-    notification_indicator_->layer()->SetFillsBoundsOpaquely(false);
-    notification_indicator_->SetVisible(item->has_notification_badge());
-  }
+  notification_indicator_ =
+      AddChildView(std::make_unique<AppNotificationIndicatorView>(
+          item->GetNotificationBadgeColor()));
+  notification_indicator_->SetPaintToLayer();
+  notification_indicator_->layer()->SetFillsBoundsOpaquely(false);
+  notification_indicator_->SetVisible(item->has_notification_badge());
 
   title_ = AddChildView(std::move(title));
 
@@ -878,8 +876,7 @@ void AppListItemView::Layout() {
         kNewInstallDotSize, kNewInstallDotSize);
   }
 
-  if (notification_indicator_)
-    notification_indicator_->SetBoundsRect(icon_bounds);
+  notification_indicator_->SetBoundsRect(icon_bounds);
 }
 
 gfx::Size AppListItemView::CalculatePreferredSize() const {
@@ -1018,8 +1015,10 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
 
 void AppListItemView::OnThemeChanged() {
   views::Button::OnThemeChanged();
-  if (item_weak_)
+  if (item_weak_) {
     item_weak_->RequestFolderIconUpdate();
+    notification_indicator_->SetColor(item_weak_->GetNotificationBadgeColor());
+  }
   title_->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
       grid_delegate_->IsInFolder()));
   SchedulePaint();
@@ -1102,7 +1101,7 @@ bool AppListItemView::IsShowingAppMenu() const {
 }
 
 bool AppListItemView::IsNotificationIndicatorShownForTest() const {
-  return notification_indicator_ && notification_indicator_->GetVisible();
+  return notification_indicator_->GetVisible();
 }
 
 void AppListItemView::SetContextMenuShownCallbackForTest(
@@ -1266,13 +1265,12 @@ void AppListItemView::ItemNameChanged() {
 }
 
 void AppListItemView::ItemBadgeVisibilityChanged() {
-  if (notification_indicator_ && icon_)
+  if (icon_)
     notification_indicator_->SetVisible(item_weak_->has_notification_badge());
 }
 
 void AppListItemView::ItemBadgeColorChanged() {
-  if (notification_indicator_)
-    notification_indicator_->SetColor(item_weak_->notification_badge_color());
+  notification_indicator_->SetColor(item_weak_->GetNotificationBadgeColor());
 }
 
 void AppListItemView::ItemIsNewInstallChanged() {

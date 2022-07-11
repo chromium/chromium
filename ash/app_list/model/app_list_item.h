@@ -57,6 +57,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // and UI would be updated since it also observe ItemIconChanged.
   void SetIconVersion(int icon_version);
 
+  SkColor GetNotificationBadgeColor() const;
   void SetNotificationBadgeColor(const SkColor color);
 
   const std::string& GetDisplayName() const {
@@ -115,8 +116,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   bool is_page_break() const { return metadata_->is_page_break; }
 
   bool has_notification_badge() const { return has_notification_badge_; }
-
-  SkColor notification_badge_color() const { return metadata_->badge_color; }
 
   bool is_new_install() const { return metadata_->is_new_install; }
 

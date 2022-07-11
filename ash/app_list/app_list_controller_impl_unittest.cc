@@ -793,6 +793,63 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
   EXPECT_FALSE(item_view->IsNotificationIndicatorShownForTest());
 }
 
+TEST_F(AppListControllerImplTestWithNotificationBadging,
+       NotificationBadgeUpdateForFolderTest) {
+  std::string folder_id = "folder_1";
+  AppListModel* model = GetAppListModel();
+  model->CreateFolderItem(folder_id);
+  model->AddItemToFolder(std::make_unique<AppListItem>("app_1"), folder_id);
+  model->AddItemToFolder(std::make_unique<AppListItem>("app_2"), folder_id);
+
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  test::AppsGridViewTestApi apps_grid_view_test_api(GetAppsGridView());
+  const AppListItemView* folder_view =
+      apps_grid_view_test_api.GetViewAtIndex(GridIndex(0, 0));
+  ASSERT_TRUE(folder_view);
+
+  EXPECT_FALSE(folder_view->IsNotificationIndicatorShownForTest());
+
+  UpdateAppHasBadge("app_1", /*app_has_badge=*/true);
+  EXPECT_TRUE(folder_view->IsNotificationIndicatorShownForTest());
+
+  UpdateAppHasBadge("app_2", /*app_has_badge=*/true);
+  EXPECT_TRUE(folder_view->IsNotificationIndicatorShownForTest());
+
+  UpdateAppHasBadge("app_1", /*app_has_badge=*/false);
+  EXPECT_TRUE(folder_view->IsNotificationIndicatorShownForTest());
+
+  UpdateAppHasBadge("app_2", /*app_has_badge=*/false);
+  EXPECT_FALSE(folder_view->IsNotificationIndicatorShownForTest());
+}
+
+TEST_F(AppListControllerImplTestWithNotificationBadging,
+       NotificationBadgeUpdateAfterAddingRemovingAppTest) {
+  std::string folder_id = "folder_1";
+  AppListModel* model = GetAppListModel();
+  model->CreateFolderItem(folder_id);
+  AppListItem* app = model->AddItem(std::make_unique<AppListItem>("app_1"));
+  model->AddItemToFolder(std::make_unique<AppListItem>("app_2"), folder_id);
+
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  test::AppsGridViewTestApi apps_grid_view_test_api(GetAppsGridView());
+  const AppListItemView* folder_view =
+      apps_grid_view_test_api.GetViewAtIndex(GridIndex(0, 0));
+  ASSERT_TRUE(folder_view);
+
+  EXPECT_FALSE(folder_view->IsNotificationIndicatorShownForTest());
+
+  UpdateAppHasBadge("app_1", /*app_has_badge=*/true);
+  EXPECT_FALSE(folder_view->IsNotificationIndicatorShownForTest());
+
+  model->MoveItemToFolder(app, folder_id);
+  EXPECT_TRUE(folder_view->IsNotificationIndicatorShownForTest());
+
+  model->MoveItemToRootAt(app, model->FindFolderItem(folder_id)->position());
+  EXPECT_FALSE(folder_view->IsNotificationIndicatorShownForTest());
+}
+
 // Verifies that the pinned app should still show after canceling the drag from
 // AppsGridView to Shelf (https://crbug.com/1021768).
 TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {

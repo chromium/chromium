@@ -92,6 +92,10 @@ SkColor TestAppListColorProvider::GetFolderNameSelectionColor() const {
   return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 
+SkColor TestAppListColorProvider::GetFolderNotificationBadgeColor() const {
+  return SK_ColorWHITE;
+}
+
 SkColor TestAppListColorProvider::GetContentsBackgroundColor() const {
   return gfx::kGoogleGrey200;
 }

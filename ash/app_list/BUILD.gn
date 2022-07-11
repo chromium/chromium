@@ -206,6 +206,7 @@ source_set("app_list") {
     "//ui/base",
     "//ui/base/ime",
     "//ui/base/ime/ash",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/color",
     "//ui/compositor",
     "//ui/compositor_extra",

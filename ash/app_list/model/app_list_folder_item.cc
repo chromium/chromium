@@ -85,11 +85,17 @@ void AppListFolderItem::OnAppListConfigCreated(AppListConfigType config_type) {
 void AppListFolderItem::OnListItemAdded(size_t index, AppListItem* item) {
   item->AddObserver(this);
   UpdateIsNewInstall();
+  UpdateNotificationBadge();
 }
 
 void AppListFolderItem::OnListItemRemoved(size_t index, AppListItem* item) {
   item->RemoveObserver(this);
   UpdateIsNewInstall();
+  UpdateNotificationBadge();
+}
+
+void AppListFolderItem::ItemBadgeVisibilityChanged() {
+  UpdateNotificationBadge();
 }
 
 void AppListFolderItem::ItemIsNewInstallChanged() {
@@ -176,6 +182,17 @@ void AppListFolderItem::UpdateIsNewInstall() {
   // The folder is marked with the "new install" dot if it contains an item that
   // is a new install.
   SetIsNewInstall(contains_new_install_item);
+}
+
+void AppListFolderItem::UpdateNotificationBadge() {
+  bool contains_item_with_notification_badge = false;
+  for (size_t i = 0; i < item_list_->item_count(); ++i) {
+    if (item_list_->item_at(i)->has_notification_badge()) {
+      contains_item_with_notification_badge = true;
+      break;
+    }
+  }
+  AppListItem::UpdateNotificationBadge(contains_item_with_notification_badge);
 }
 
 }  // namespace ash

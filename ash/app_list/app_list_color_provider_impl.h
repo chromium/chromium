@@ -36,6 +36,7 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetFolderHintTextColor() const override;
   SkColor GetFolderNameBorderColor(bool active) const override;
   SkColor GetFolderNameSelectionColor() const override;
+  SkColor GetFolderNotificationBadgeColor() const override;
   SkColor GetContentsBackgroundColor() const override;
   SkColor GetGridBackgroundCardActiveColor() const override;
   SkColor GetGridBackgroundCardInactiveColor() const override;
