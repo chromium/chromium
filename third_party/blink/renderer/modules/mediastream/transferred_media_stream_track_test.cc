@@ -35,7 +35,7 @@ class TransferredMediaStreamTrackTest : public testing::Test {
   void CustomSetUp(V8TestingScope& scope) {
     transferred_track_ = MakeGarbageCollected<TransferredMediaStreamTrack>(
         scope.GetExecutionContext(),
-        TransferredValues{
+        MediaStreamTrack::TransferredValues{
             .kind = "video",
             .id = "",
             .label = "dummy",

@@ -38,17 +38,6 @@ class MediaStream;
 class MediaTrackSettings;
 class ScriptState;
 
-struct TransferredValues {
-  base::UnguessableToken session_id;
-  String kind;
-  String id;
-  String label;
-  bool enabled;
-  bool muted;
-  WebMediaStreamTrack::ContentHintType content_hint;
-  MediaStreamSource::ReadyState ready_state;
-};
-
 String ContentHintToString(
     const WebMediaStreamTrack::ContentHintType& content_hint);
 
@@ -64,6 +53,18 @@ class MODULES_EXPORT MediaStreamTrack
    public:
     virtual ~Observer() = default;
     virtual void TrackChangedState() = 0;
+  };
+
+  // For carrying data to the FromTransferredState method.
+  struct TransferredValues {
+    base::UnguessableToken session_id;
+    String kind;
+    String id;
+    String label;
+    bool enabled;
+    bool muted;
+    WebMediaStreamTrack::ContentHintType content_hint;
+    MediaStreamSource::ReadyState ready_state;
   };
 
   // Create a MediaStreamTrack instance as a result of a transfer into this

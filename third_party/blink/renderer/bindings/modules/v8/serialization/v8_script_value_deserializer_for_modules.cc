@@ -556,15 +556,15 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
   }
 
   return MediaStreamTrack::FromTransferredState(
-      GetScriptState(),
-      TransferredValues{.session_id = session_id,
-                        .kind = kind,
-                        .id = id,
-                        .label = label,
-                        .enabled = static_cast<bool>(enabled),
-                        .muted = static_cast<bool>(muted),
-                        .content_hint = DeserializeContentHint(contentHint),
-                        .ready_state = DeserializeReadyState(readyState)});
+      GetScriptState(), MediaStreamTrack::TransferredValues{
+                            .session_id = session_id,
+                            .kind = kind,
+                            .id = id,
+                            .label = label,
+                            .enabled = static_cast<bool>(enabled),
+                            .muted = static_cast<bool>(muted),
+                            .content_hint = DeserializeContentHint(contentHint),
+                            .ready_state = DeserializeReadyState(readyState)});
 }
 
 CropTarget* V8ScriptValueDeserializerForModules::ReadCropTarget() {
