@@ -168,7 +168,7 @@ void ShimlessRmaService::TransitionPreviousState(
 void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
   RmadClient::Get()->AbortRma(base::BindOnce(
       &ShimlessRmaService::OnAbortRmaResponse, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), /*reboot=*/false));
+      std::move(callback), /*reboot=*/true));
 }
 
 // TODO(gavindodd): Work out how to catch the restart in tests and add unit test
