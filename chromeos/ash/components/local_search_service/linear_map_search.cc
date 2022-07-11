@@ -15,14 +15,12 @@
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 namespace {
 
-using chromeos::string_matching::FuzzyTokenizedStringMatch;
-using chromeos::string_matching::TokenizedString;
-
+using ::chromeos::string_matching::FuzzyTokenizedStringMatch;
+using ::chromeos::string_matching::TokenizedString;
 using Positions = std::vector<local_search_service::Position>;
 using TokenizedStringWithId =
     std::pair<std::string, std::unique_ptr<TokenizedString>>;
@@ -193,5 +191,4 @@ std::vector<Result> LinearMapSearch::GetSearchResults(
   return results;
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

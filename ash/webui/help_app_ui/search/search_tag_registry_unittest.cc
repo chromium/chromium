@@ -10,15 +10,8 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace ash::help_app {
 
-// TODO(https://crbug.com/1164001): Remove if local_service_service::mojom
-// moved to ash.
-namespace local_search_service {
-namespace mojom = ::chromeos::local_search_service::mojom;
-}  // namespace local_search_service
-
-namespace help_app {
 namespace {
 
 class FakeObserver : public SearchTagRegistry::Observer {
@@ -186,5 +179,4 @@ TEST_F(HelpAppSearchTagRegistryTest, MultipleUpdate) {
   EXPECT_EQ(result.title, u"Title 3");
 }
 
-}  // namespace help_app
-}  // namespace ash
+}  // namespace ash::help_app

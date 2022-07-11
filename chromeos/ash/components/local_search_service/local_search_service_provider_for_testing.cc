@@ -6,8 +6,7 @@
 
 #include <memory>
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 LocalSearchServiceProviderForTesting::LocalSearchServiceProviderForTesting() {
   LocalSearchServiceProvider::Set(this);
@@ -22,5 +21,4 @@ void LocalSearchServiceProviderForTesting::BindLocalSearchService(
   service_ = std::make_unique<LocalSearchService>(std::move(receiver));
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

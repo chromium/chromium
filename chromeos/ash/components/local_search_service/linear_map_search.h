@@ -13,13 +13,11 @@
 #include "chromeos/ash/components/local_search_service/index.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 
-namespace chromeos {
-
-namespace string_matching {
+namespace chromeos::string_matching {
 class TokenizedString;
-}  // namespace string_matching
+}
 
-namespace local_search_service {
+namespace ash::local_search_service {
 
 // A map from key to a vector of (tag-id, tokenized tag).
 typedef std::map<
@@ -63,7 +61,6 @@ class LinearMapSearch : public Index {
   KeyToTagVector data_;
 };
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_LINEAR_MAP_SEARCH_H_

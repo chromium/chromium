@@ -10,8 +10,8 @@
 
 class PrefService;
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
+
 class LocalSearchServiceProxy;
 
 class LocalSearchServiceProxyFactory
@@ -41,14 +41,6 @@ class LocalSearchServiceProxyFactory
       content::BrowserContext* context) const override;
 };
 
-}  // namespace local_search_service
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace local_search_service {
-using ::chromeos::local_search_service::LocalSearchServiceProxyFactory;
-}  // namespace local_search_service
-}  // namespace ash
+}  // namespace ash::local_search_service
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_CPP_LOCAL_SEARCH_SERVICE_PROXY_FACTORY_H_

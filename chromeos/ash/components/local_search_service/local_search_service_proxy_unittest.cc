@@ -12,8 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 class LocalSearchServiceProxyTest : public testing::Test {
  public:
@@ -83,5 +82,4 @@ TEST_F(LocalSearchServiceProxyTest, TestWithoutLocalState) {
   CheckReporter(/*is_null_expected*/ true);
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

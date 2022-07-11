@@ -33,8 +33,7 @@ class HelpAppUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<help_app::mojom::PageHandlerFactory> receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<chromeos::local_search_service::mojom::Index>
-          index_receiver);
+      mojo::PendingReceiver<local_search_service::mojom::Index> index_receiver);
 
   // The search handler is used to update the search index for launcher search.
   void BindInterface(

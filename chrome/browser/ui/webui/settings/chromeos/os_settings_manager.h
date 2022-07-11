@@ -20,6 +20,8 @@
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class ArcAppListPrefs;
@@ -39,13 +41,7 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-namespace chromeos {
-
-namespace local_search_service {
-class LocalSearchServiceProxy;
-}  // namespace local_search_service
-
-namespace settings {
+namespace chromeos::settings {
 
 class Hierarchy;
 class OsSettingsSections;
@@ -135,7 +131,6 @@ class OsSettingsManager : public KeyedService {
   std::unique_ptr<AppNotificationHandler> app_notification_handler_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace chromeos::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_OS_SETTINGS_MANAGER_H_

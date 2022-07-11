@@ -15,7 +15,11 @@
 
 namespace chromeos {
 namespace settings {
+
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating this file to ns ash.
+namespace local_search_service = ::ash::local_search_service;
 
 class FakeObserver : public SearchTagRegistry::Observer {
  public:

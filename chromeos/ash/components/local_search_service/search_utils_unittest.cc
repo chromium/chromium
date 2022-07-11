@@ -10,8 +10,7 @@
 #include "chromeos/ash/components/local_search_service/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 TEST(SearchUtilsTest, PrefixMatch) {
   // Query is a prefix of text, score is the ratio.
@@ -74,5 +73,4 @@ TEST(SearchUtilsTest, RelevanceCoefficient) {
               0.001);
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

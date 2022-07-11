@@ -35,6 +35,8 @@
 namespace chromeos {
 namespace settings {
 
+namespace local_search_service = ::ash::local_search_service;
+
 // Verifies the OsSettingsManager initialization flow. Behavioral functionality
 // is tested via unit tests on the sub-elements owned by OsSettingsManager.
 class OsSettingsManagerTest : public testing::Test {

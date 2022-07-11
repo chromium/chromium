@@ -60,8 +60,8 @@ class SearchTagRegistry {
     std::unordered_map<std::string, ConceptWithShouldAddBool> pending_updates_;
   };
 
-  SearchTagRegistry(local_search_service::LocalSearchServiceProxy*
-                        local_search_service_proxy);
+  explicit SearchTagRegistry(local_search_service::LocalSearchServiceProxy*
+                                 local_search_service_proxy);
   SearchTagRegistry(const SearchTagRegistry& other) = delete;
   SearchTagRegistry& operator=(const SearchTagRegistry& other) = delete;
   virtual ~SearchTagRegistry();
@@ -94,7 +94,7 @@ class SearchTagRegistry {
   void NotifyRegistryDeleted(uint32_t /*num_deleted*/);
 
   // Index used by the LocalSearchService for string matching.
-  mojo::Remote<local_search_service::mojom::Index> index_remote_;
+  mojo::Remote<ash::local_search_service::mojom::Index> index_remote_;
 
   // In-memory cache of all results which have been added to the
   // LocalSearchService. Contents are kept in sync with |index_remote_|.

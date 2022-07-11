@@ -11,9 +11,10 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
+
 namespace {
+
 // (content-id, content).
 using ContentWithId = std::pair<std::string, std::string>;
 
@@ -162,5 +163,4 @@ TEST_F(LocalSearchServiceTest, BindMultipleTimes) {
   IndexGetSizeAndCheckResults(&third_index_remote, 0u);
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

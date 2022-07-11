@@ -32,8 +32,8 @@ PersonalizationAppManagerFactory::PersonalizationAppManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "PersonalizationAppManager",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(::chromeos::local_search_service::LocalSearchServiceProxyFactory::
-                GetInstance());
+  DependsOn(
+      local_search_service::LocalSearchServiceProxyFactory::GetInstance());
 }
 
 PersonalizationAppManagerFactory::~PersonalizationAppManagerFactory() = default;
@@ -43,7 +43,7 @@ KeyedService* PersonalizationAppManagerFactory::BuildServiceInstanceFor(
   DCHECK(context && !context->IsOffTheRecord())
       << "PersonalizationAppManager requires a real browser context";
 
-  auto* local_search_service_proxy = ::chromeos::local_search_service::
+  auto* local_search_service_proxy = local_search_service::
       LocalSearchServiceProxyFactory::GetForBrowserContext(context);
   DCHECK(local_search_service_proxy);
 

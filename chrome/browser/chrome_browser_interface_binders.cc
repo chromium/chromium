@@ -1049,7 +1049,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::help_app::mojom::PageHandlerFactory, ash::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::local_search_service::mojom::Index, ash::HelpAppUI>(map);
+      ash::local_search_service::mojom::Index, ash::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<ash::help_app::mojom::SearchHandler,
                                          ash::HelpAppUI>(map);

@@ -13,8 +13,7 @@
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 local_search_service::Content::Content(const std::string& id,
                                        const std::u16string& content,
@@ -63,5 +62,4 @@ Token::Token(const Token& token)
     : content(token.content), positions(token.positions) {}
 Token::~Token() = default;
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service
