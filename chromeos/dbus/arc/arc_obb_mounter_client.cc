@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "chromeos/dbus/arc/fake_arc_obb_mounter_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -17,6 +18,8 @@
 namespace chromeos {
 
 namespace {
+
+ArcObbMounterClient* g_instance = nullptr;
 
 class ArcObbMounterClientImpl : public ArcObbMounterClient {
  public:
@@ -56,7 +59,6 @@ class ArcObbMounterClientImpl : public ArcObbMounterClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- protected:
   // DBusClient override.
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
@@ -78,13 +80,36 @@ class ArcObbMounterClientImpl : public ArcObbMounterClient {
 
 }  // namespace
 
-ArcObbMounterClient::ArcObbMounterClient() = default;
-
-ArcObbMounterClient::~ArcObbMounterClient() = default;
+// static
+ArcObbMounterClient* ArcObbMounterClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<ArcObbMounterClient> ArcObbMounterClient::Create() {
-  return std::make_unique<ArcObbMounterClientImpl>();
+void ArcObbMounterClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new ArcObbMounterClientImpl())->Init(bus);
+}
+
+// static
+void ArcObbMounterClient::InitializeFake() {
+  (new FakeArcObbMounterClient())->Init(nullptr);
+}
+
+// static
+void ArcObbMounterClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+ArcObbMounterClient::ArcObbMounterClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+ArcObbMounterClient::~ArcObbMounterClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

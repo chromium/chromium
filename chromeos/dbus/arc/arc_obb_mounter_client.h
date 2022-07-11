@@ -7,10 +7,8 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -24,12 +22,17 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcObbMounterClient
     : public DBusClient {
  public:
-  ArcObbMounterClient();
-  ~ArcObbMounterClient() override;
+  // Returns the global instance if initialized. May return null.
+  static ArcObbMounterClient* Get();
 
-  // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<ArcObbMounterClient> Create();
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
 
   // Mounts the specified OBB at the specified mount path, with the owner GID
   // set to the given value.
@@ -41,6 +44,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcObbMounterClient
   // Unmounts the OBB mounted at the specified path.
   virtual void UnmountObb(const std::string& mount_path,
                           VoidDBusMethodCallback callback) = 0;
+
+ protected:
+  // Initialize() should be used instead.
+  ArcObbMounterClient();
+  ~ArcObbMounterClient() override;
 };
 
 }  // namespace chromeos

@@ -5,10 +5,6 @@
 #include "chromeos/dbus/dbus_clients_browser.h"
 
 #include "base/check.h"
-#include "chromeos/dbus/arc/arc_midis_client.h"
-#include "chromeos/dbus/arc/arc_obb_mounter_client.h"
-#include "chromeos/dbus/arc/fake_arc_midis_client.h"
-#include "chromeos/dbus/arc/fake_arc_obb_mounter_client.h"
 #include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "chromeos/dbus/cec_service/fake_cec_service_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
@@ -36,8 +32,6 @@ namespace chromeos {
 #endif  // USE_REAL_DBUS_CLIENTS
 
 DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
-  arc_obb_mounter_client_ =
-      CREATE_DBUS_CLIENT(ArcObbMounterClient, use_real_clients);
   cec_service_client_ = CREATE_DBUS_CLIENT(CecServiceClient, use_real_clients);
   cros_disks_client_ = CREATE_DBUS_CLIENT(CrosDisksClient, use_real_clients);
   debug_daemon_client_ =
@@ -51,7 +45,6 @@ DBusClientsBrowser::~DBusClientsBrowser() = default;
 void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   DCHECK(DBusThreadManager::IsInitialized());
 
-  arc_obb_mounter_client_->Init(system_bus);
   cec_service_client_->Init(system_bus);
   cros_disks_client_->Init(system_bus);
   debug_daemon_client_->Init(system_bus);
