@@ -136,7 +136,7 @@ i like that.")
 
 ### Diagnose The Issue
 
-![alt text](life-of-a-security-issue.png "Life of a security issue.")
+![alt text](sheriff-life-of-an-issue.png "Life of a security issue.")
 
 * **If the report is invalid**, remove the **Restrict-View-SecurityTeam** label
   and mark it **WontFix**.

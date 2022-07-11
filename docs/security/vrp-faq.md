@@ -89,3 +89,9 @@ Examples of in-scope Site Isolation issues:
  * Cross-Origin Read Blocking (CORB) bypass: https://crbug.com/927849
  * Disclosing IndexedDB data to a cross-site renderer process:
    https://crbug.com/917668
+
+## When will a CVE number be issued for a security bug?
+
+A CVE number will be assigned to a security issue just prior to the fix being
+released to the Chrome stable channel. For more information see [Life of a
+Security Issue](life-of-a-security-issue.md).
