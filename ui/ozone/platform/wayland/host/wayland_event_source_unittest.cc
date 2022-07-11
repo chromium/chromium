@@ -10,6 +10,7 @@
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
+#include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
@@ -112,6 +113,43 @@ TEST_P(WaylandEventSourceTest, CheckPointerButtonHandling) {
   EXPECT_FALSE(pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON));
   EXPECT_FALSE(
       pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+}
+
+// Verify WaylandEventSource properly manages its internal state as pointer
+// button events are sent. More specifically - pointer flags.
+TEST_P(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
+  MockPlatformWindowDelegate delegate;
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_TOUCH);
+
+  auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate);
+  Sync();
+
+  ASSERT_TRUE(server_.seat()->touch());
+
+  uint32_t serial = 0;
+  uint32_t tstamp = 0;
+  wl_resource* surface_res =
+      server_
+          .GetObject<wl::MockSurface>(window1->root_surface()->GetSurfaceId())
+          ->resource();
+  wl_resource* touch_res = server_.seat()->touch()->resource();
+
+  wl_touch_send_down(touch_res, serial++, tstamp++, surface_res, /*id=*/0, 0,
+                     0);
+  wl_touch_send_down(touch_res, serial++, tstamp++, surface_res, /*id=*/1, 0,
+                     0);
+
+  Sync();
+
+  // Removint the target during touch event sequece should not cause crash.
+  window1.reset();
+
+  wl_touch_send_frame(touch_res);
+  EXPECT_CALL(delegate, DispatchEvent(_)).Times(0);
+
+  Sync();
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

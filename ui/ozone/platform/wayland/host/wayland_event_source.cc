@@ -493,7 +493,9 @@ void WaylandEventSource::SetTouchTargetAndDispatchTouchEvent(
     TouchEvent* event) {
   auto iter = touch_points_.find(event->pointer_details().id);
   auto target = iter != touch_points_.end() ? iter->second->window : nullptr;
-
+  // Skip if the touch target has alrady been removed.
+  if (!target.get())
+    return;
   SetTargetAndDispatchEvent(event, target.get());
 }
 
