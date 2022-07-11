@@ -338,7 +338,7 @@ void HttpNetworkTransaction::DidDrainBodyForAuthRestart(bool keep_alive) {
   if (stream_.get()) {
     total_received_bytes_ += stream_->GetTotalReceivedBytes();
     total_sent_bytes_ += stream_->GetTotalSentBytes();
-    HttpStream* new_stream = nullptr;
+    std::unique_ptr<HttpStream> new_stream;
     if (keep_alive && stream_->CanReuseConnection()) {
       // We should call connection_->set_idle_time(), but this doesn't occur
       // often enough to be worth the trouble.
@@ -358,7 +358,7 @@ void HttpNetworkTransaction::DidDrainBodyForAuthRestart(bool keep_alive) {
       DCHECK_EQ(0, new_stream->GetTotalSentBytes());
       next_state_ = STATE_CONNECTED_CALLBACK;
     }
-    stream_.reset(new_stream);
+    stream_ = std::move(new_stream);
   }
 
   // Reset the other member variables.

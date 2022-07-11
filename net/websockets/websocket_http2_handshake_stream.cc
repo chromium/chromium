@@ -235,7 +235,8 @@ void WebSocketHttp2HandshakeStream::SetPriority(RequestPriority priority) {
     stream_->SetPriority(priority_);
 }
 
-HttpStream* WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
+std::unique_ptr<HttpStream>
+WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
   // Renewing the stream is not supported.
   return nullptr;
 }

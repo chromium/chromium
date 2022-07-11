@@ -64,7 +64,7 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
 
   void Close(bool not_reusable) override;
 
-  HttpStream* RenewStreamForAuth() override;
+  std::unique_ptr<HttpStream> RenewStreamForAuth() override;
 
   bool IsResponseBodyComplete() const override;
 

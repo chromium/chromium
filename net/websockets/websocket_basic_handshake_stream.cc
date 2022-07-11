@@ -385,7 +385,8 @@ void WebSocketBasicHandshakeStream::SetPriority(RequestPriority priority) {
   // gone, then copy whatever has happened there over here.
 }
 
-HttpStream* WebSocketBasicHandshakeStream::RenewStreamForAuth() {
+std::unique_ptr<HttpStream>
+WebSocketBasicHandshakeStream::RenewStreamForAuth() {
   DCHECK(IsResponseBodyComplete());
   DCHECK(!parser()->IsMoreDataBuffered());
   // The HttpStreamParser object still has a pointer to the connection. Just to
@@ -400,7 +401,7 @@ HttpStream* WebSocketBasicHandshakeStream::RenewStreamForAuth() {
 
   stream_request_->OnBasicHandshakeStreamCreated(handshake_stream.get());
 
-  return handshake_stream.release();
+  return handshake_stream;
 }
 
 const std::set<std::string>& WebSocketBasicHandshakeStream::GetDnsAliases()

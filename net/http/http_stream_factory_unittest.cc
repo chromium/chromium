@@ -170,7 +170,7 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
   void Drain(HttpNetworkSession* session) override {}
   void PopulateNetErrorDetails(NetErrorDetails* details) override { return; }
   void SetPriority(RequestPriority priority) override {}
-  HttpStream* RenewStreamForAuth() override { return nullptr; }
+  std::unique_ptr<HttpStream> RenewStreamForAuth() override { return nullptr; }
   const std::set<std::string>& GetDnsAliases() const override {
     static const base::NoDestructor<std::set<std::string>> nullset_result;
     return *nullset_result;

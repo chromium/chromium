@@ -128,7 +128,7 @@ class MockHttpStream : public HttpStream {
     result_waiter_->set_result(not_reusable);
   }
 
-  HttpStream* RenewStreamForAuth() override { return nullptr; }
+  std::unique_ptr<HttpStream> RenewStreamForAuth() override { return nullptr; }
 
   bool IsResponseBodyComplete() const override { return is_complete_; }
 

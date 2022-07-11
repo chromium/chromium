@@ -194,7 +194,7 @@ class NET_EXPORT_PRIVATE HttpStream {
   // called on the old stream.  The caller should ensure that the response body
   // from the previous request is drained before calling this method.  If the
   // subclass does not support renewing the stream, NULL is returned.
-  virtual HttpStream* RenewStreamForAuth() = 0;
+  virtual std::unique_ptr<HttpStream> RenewStreamForAuth() = 0;
 
   virtual void SetRequestHeadersCallback(RequestHeadersCallback callback) = 0;
 

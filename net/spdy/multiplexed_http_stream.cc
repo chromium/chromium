@@ -44,7 +44,7 @@ void MultiplexedHttpStream::Drain(HttpNetworkSession* session) {
   delete this;
 }
 
-HttpStream* MultiplexedHttpStream::RenewStreamForAuth() {
+std::unique_ptr<HttpStream> MultiplexedHttpStream::RenewStreamForAuth() {
   return nullptr;
 }
 
