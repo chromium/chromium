@@ -58,7 +58,13 @@ class FindTextTestClient : public TestClient {
 };
 
 void ExpectInitialSearchResults(FindTextTestClient& client, int count) {
-  DCHECK_GT(count, 0);
+  DCHECK_GE(count, 0);
+
+  if (count == 0) {
+    EXPECT_CALL(client,
+                NotifyNumberOfFindResultsChanged(0, /*final_result=*/true));
+    return;
+  }
 
   InSequence sequence;
 
@@ -137,8 +143,7 @@ TEST_F(FindTextTest, FindVisibleCroppedText) {
   ASSERT_TRUE(engine);
 
   // Only one instance of the word "world" is visible. The other is cropped out.
-  // TODO(crbug.com/1343175): The correct behavior is to return 1 result.
-  ExpectInitialSearchResults(client, 2);
+  ExpectInitialSearchResults(client, 1);
   engine->StartFind("world", /*case_sensitive=*/true);
 }
 
@@ -149,8 +154,7 @@ TEST_F(FindTextTest, FindHiddenCroppedText) {
   ASSERT_TRUE(engine);
 
   // The word "Hello" is cropped out.
-  // TODO(crbug.com/1343175): The correct behavior is to return no results.
-  ExpectInitialSearchResults(client, 1);
+  ExpectInitialSearchResults(client, 0);
   engine->StartFind("Hello", /*case_sensitive=*/true);
 }
 

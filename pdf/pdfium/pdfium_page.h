@@ -69,6 +69,9 @@ class PDFiumPage {
   // Get the bounds of the page with the crop box applied, in page pixels.
   gfx::RectF GetCroppedRect();
 
+  // Returns if the character at `char_index` is within `page_bounds`.
+  bool IsCharInPageBounds(int char_index, const gfx::RectF& page_bounds);
+
   // For all the links on the page, get their urls, underlying text ranges and
   // bounding boxes.
   std::vector<AccessibilityLinkInfo> GetLinkInfo(

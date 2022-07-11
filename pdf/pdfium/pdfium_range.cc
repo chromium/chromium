@@ -117,15 +117,9 @@ std::u16string PDFiumRange::GetText() const {
     std::u16string in_bound_text;
     in_bound_text.reserve(result.size());
     for (int i = 0; i < count; ++i) {
-      gfx::RectF char_bounds = page_->GetCharBounds(index + i);
-
-      // Make sure `char_bounds` has a minimum size so Intersects() works
-      // correctly.
-      if (char_bounds.IsEmpty()) {
-        static constexpr gfx::SizeF kMinimumSize(0.0001f, 0.0001f);
-        char_bounds.set_size(kMinimumSize);
-      }
-      if (page_bounds.Intersects(char_bounds))
+      // Filter out characters outside the page bounds, which are semantically
+      // not part of the page.
+      if (page_->IsCharInPageBounds(index + i, page_bounds))
         in_bound_text += result[i];
     }
     result = in_bound_text;

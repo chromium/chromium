@@ -102,6 +102,37 @@ TEST_F(PDFiumPageTest, Constructor) {
   EXPECT_FALSE(page.available());
 }
 
+TEST_F(PDFiumPageTest, IsCharInPageBounds) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage page(engine.get(), 0);
+  EXPECT_FALSE(page.available());
+  EXPECT_EQ(page.GetCharCount(), 0);
+
+  page.MarkAvailable();
+  EXPECT_TRUE(page.available());
+  EXPECT_EQ(page.GetCharCount(), 30);
+
+  const gfx::RectF page_bounds = page.GetCroppedRect();
+  EXPECT_EQ(page_bounds, gfx::RectF(193.33333f, 129.33333f));
+
+  EXPECT_EQ(page.GetCharAtIndex(0), 'H');
+  EXPECT_FALSE(page.IsCharInPageBounds(0, page_bounds));
+  EXPECT_EQ(page.GetCharAtIndex(12), '!');
+  EXPECT_TRUE(page.IsCharInPageBounds(12, page_bounds));
+  EXPECT_EQ(page.GetCharAtIndex(13), '\r');
+  EXPECT_TRUE(page.IsCharInPageBounds(13, page_bounds));
+  EXPECT_EQ(page.GetCharAtIndex(14), '\n');
+  EXPECT_TRUE(page.IsCharInPageBounds(14, page_bounds));
+  EXPECT_EQ(page.GetCharAtIndex(15), 'G');
+  EXPECT_FALSE(page.IsCharInPageBounds(15, page_bounds));
+  EXPECT_EQ(page.GetCharAtIndex(29), '!');
+  EXPECT_FALSE(page.IsCharInPageBounds(29, page_bounds));
+}
+
 class PDFiumPageLinkTest : public PDFiumTestBase {
  public:
   PDFiumPageLinkTest() = default;

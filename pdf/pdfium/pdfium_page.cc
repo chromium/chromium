@@ -562,6 +562,19 @@ gfx::RectF PDFiumPage::GetCroppedRect() {
   return FloatPageRectToPixelRect(page, rect);
 }
 
+bool PDFiumPage::IsCharInPageBounds(int char_index,
+                                    const gfx::RectF& page_bounds) {
+  gfx::RectF char_bounds = GetCharBounds(char_index);
+
+  // Make sure `char_bounds` has a minimum size so Intersects() works correctly.
+  if (char_bounds.IsEmpty()) {
+    static constexpr gfx::SizeF kMinimumSize(0.0001f, 0.0001f);
+    char_bounds.set_size(kMinimumSize);
+  }
+
+  return page_bounds.Intersects(char_bounds);
+}
+
 std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
     const std::vector<AccessibilityTextRunInfo>& text_runs) {
   std::vector<AccessibilityLinkInfo> link_info;
