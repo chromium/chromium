@@ -104,12 +104,7 @@ message GetUpdateTriggers {
   // An opaque-to-the-client string of bytes, received through a notification,
   // that the server may interpret as a hint about the location of the latest
   // version of the data for this type.
-  //
-  // Note that this will eventually replace the 'optional' field of the same
-  // name defined in the progress marker, but the client and server should
-  // support both until it's safe to deprecate the old one.
-  //
-  // This field was introduced in M29.
+  // Introduced in M29.
   repeated string notification_hint = 1;
 
   // This flag is set if the client was forced to drop hints because the number
