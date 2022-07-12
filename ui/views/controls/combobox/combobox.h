@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/prefix_delegate.h"
 #include "ui/views/metadata/view_factory.h"
@@ -71,11 +72,19 @@ class VIEWS_EXPORT Combobox : public View,
     callback_ = std::move(callback);
   }
 
+  // Set menu model.
+  void SetMenuModel(std::unique_ptr<ui::MenuModel> menu_model) {
+    menu_model_ = std::move(menu_model);
+  }
+
   // Gets/Sets the selected index.
   int GetSelectedIndex() const { return selected_index_; }
   void SetSelectedIndex(int index);
   [[nodiscard]] base::CallbackListSubscription AddSelectedIndexChangedCallback(
       views::PropertyChangedCallback callback);
+
+  // Called when there has been a selection from the menu.
+  void MenuSelectionAt(int index);
 
   // Looks for the first occurrence of |value| in |model()|. If found, selects
   // the found index and returns true. Otherwise simply noops and returns false.
@@ -151,8 +160,6 @@ class VIEWS_EXPORT Combobox : public View,
  private:
   friend class test::ComboboxTestApi;
 
-  class ComboboxMenuModel;
-
   // Updates the border according to the current node_data.
   void UpdateBorder();
 
@@ -170,9 +177,6 @@ class VIEWS_EXPORT Combobox : public View,
 
   // Cleans up after the menu as closed
   void OnMenuClosed(Button::ButtonState original_button_state);
-
-  // Called when there has been a selection from the menu.
-  void MenuSelectionAt(int index);
 
   // Called when the selection is changed by the user.
   void OnPerformAction();

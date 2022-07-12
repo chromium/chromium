@@ -18,7 +18,6 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -33,6 +32,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/combobox/combobox_menu_model.h"
 #include "ui/views/controls/combobox/combobox_util.h"
 #include "ui/views/controls/combobox/empty_combobox_model.h"
 #include "ui/views/controls/focus_ring.h"
@@ -140,100 +140,6 @@ int GetAdjacentIndex(ui::ComboboxModel* model, int increment, int index) {
 #endif
 
 }  // namespace
-
-// Adapts a ui::ComboboxModel to a ui::MenuModel.
-class Combobox::ComboboxMenuModel : public ui::MenuModel {
- public:
-  ComboboxMenuModel(Combobox* owner, ui::ComboboxModel* model)
-      : owner_(owner), model_(model) {}
-  ComboboxMenuModel(const ComboboxMenuModel&) = delete;
-  ComboboxMenuModel& operator&(const ComboboxMenuModel&) = delete;
-  ~ComboboxMenuModel() override = default;
-
- private:
-  bool UseCheckmarks() const {
-    return MenuConfig::instance().check_selected_combobox_item;
-  }
-
-  // Overridden from MenuModel:
-  bool HasIcons() const override {
-    for (int i = 0; i < GetItemCount(); ++i) {
-      if (!GetIconAt(i).IsEmpty())
-        return true;
-    }
-    return false;
-  }
-
-  int GetItemCount() const override { return model_->GetItemCount(); }
-
-  ItemType GetTypeAt(int index) const override {
-    if (model_->IsItemSeparatorAt(index))
-      return TYPE_SEPARATOR;
-    return UseCheckmarks() ? TYPE_CHECK : TYPE_COMMAND;
-  }
-
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override {
-    return ui::NORMAL_SEPARATOR;
-  }
-
-  int GetCommandIdAt(int index) const override {
-    // Define the id of the first item in the menu (since it needs to be > 0)
-    constexpr int kFirstMenuItemId = 1000;
-    return index + kFirstMenuItemId;
-  }
-
-  std::u16string GetLabelAt(int index) const override {
-    // Inserting the Unicode formatting characters if necessary so that the
-    // text is displayed correctly in right-to-left UIs.
-    std::u16string text = model_->GetDropDownTextAt(index);
-    base::i18n::AdjustStringForLocaleDirection(&text);
-    return text;
-  }
-
-  std::u16string GetSecondaryLabelAt(int index) const override {
-    std::u16string text = model_->GetDropDownSecondaryTextAt(index);
-    base::i18n::AdjustStringForLocaleDirection(&text);
-    return text;
-  }
-
-  bool IsItemDynamicAt(int index) const override { return true; }
-
-  const gfx::FontList* GetLabelFontListAt(int index) const override {
-    return &owner_->GetFontList();
-  }
-
-  bool GetAcceleratorAt(int index,
-                        ui::Accelerator* accelerator) const override {
-    return false;
-  }
-
-  bool IsItemCheckedAt(int index) const override {
-    return UseCheckmarks() && index == owner_->selected_index_;
-  }
-
-  int GetGroupIdAt(int index) const override { return -1; }
-
-  ui::ImageModel GetIconAt(int index) const override {
-    return model_->GetDropDownIconAt(index);
-  }
-
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
-    return nullptr;
-  }
-
-  bool IsEnabledAt(int index) const override {
-    return model_->IsItemEnabledAt(index);
-  }
-
-  void ActivatedAt(int index) override { owner_->MenuSelectionAt(index); }
-
-  void ActivatedAt(int index, int event_flags) override { ActivatedAt(index); }
-
-  MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
-
-  raw_ptr<Combobox> owner_;           // Weak. Owns this.
-  raw_ptr<ui::ComboboxModel> model_;  // Weak.
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Combobox, public:

@@ -39,6 +39,10 @@ void ReadAnythingController::OnFontChoiceChanged(int new_choice) {
       model_->GetFontModel()->GetFontNameAt(new_choice));
 }
 
+ui::ComboboxModel* ReadAnythingController::GetFontComboboxModel() {
+  return static_cast<ui::ComboboxModel*>(model_->GetFontModel());
+}
+
 void ReadAnythingController::OnFontSizeChanged(bool increase) {
   if (increase) {
     model_->IncreaseTextSize();

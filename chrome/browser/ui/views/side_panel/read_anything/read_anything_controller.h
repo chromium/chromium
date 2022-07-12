@@ -11,12 +11,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
+#include "ui/base/models/combobox_model.h"
 
 class Browser;
 
@@ -32,6 +34,7 @@ class Browser;
 //  as the browser.
 //
 class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
+                               public ReadAnythingFontCombobox::Delegate,
                                public ReadAnythingPageHandler::Delegate,
                                public TabStripModelObserver,
                                public content::WebContentsObserver {
@@ -48,8 +51,11 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
 
  private:
   // ReadAnythingToolbarView::Delegate:
-  void OnFontChoiceChanged(int new_choice) override;
   void OnFontSizeChanged(bool increase) override;
+
+  // ReadAnythingFontCombobox::Delegate:
+  void OnFontChoiceChanged(int new_choice) override;
+  ui::ComboboxModel* GetFontComboboxModel() override;
 
   // ReadAnythingPageHandler::Delegate:
   void OnUIReady() override;

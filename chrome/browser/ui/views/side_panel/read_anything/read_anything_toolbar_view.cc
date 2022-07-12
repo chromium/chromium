@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "components/vector_icons/cc_macros.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_id.h"
@@ -26,10 +25,10 @@
 
 ReadAnythingToolbarView::ReadAnythingToolbarView(
     ReadAnythingCoordinator* coordinator,
-    ReadAnythingToolbarView::Delegate* delegate)
-    : delegate_(delegate), coordinator_(std::move(coordinator)) {
+    ReadAnythingToolbarView::Delegate* toolbar_delegate,
+    ReadAnythingFontCombobox::Delegate* font_combobox_delegate)
+    : delegate_(toolbar_delegate), coordinator_(std::move(coordinator)) {
   coordinator_->AddObserver(this);
-  auto* font_model = coordinator_->GetModel()->GetFontModel();
 
   // Create and set a BoxLayout LayoutManager for this view.
   auto layout = std::make_unique<views::BoxLayout>(
@@ -42,14 +41,8 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   SetLayoutManager(std::move(layout));
 
   // Create a font selection combobox for the toolbar.
-  auto combobox = std::make_unique<views::Combobox>();
-  combobox->SetCallback(
-      base::BindRepeating(&ReadAnythingToolbarView::FontNameChangedCallback,
-                          weak_pointer_factory_.GetWeakPtr()));
-  combobox->SetSizeToLargestLabel(true);
-  // TODO(1266555): This is placeholder text, remove for final UI.
-  combobox->SetTooltipTextAndAccessibleName(u"Font Choice");
-  combobox->SetModel(font_model);
+  auto combobox =
+      std::make_unique<ReadAnythingFontCombobox>(font_combobox_delegate);
 
   // Create the decrease/increase text size buttons.
   // TODO(1266555): These use placeholder text, update for final UI.
@@ -73,11 +66,6 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   decrease_text_size_button_ = AddChildView(std::move(decrease_size_button));
   increase_text_size_button_ = AddChildView(std::move(increase_size_button));
   AddChildView(Separator());
-}
-
-void ReadAnythingToolbarView::FontNameChangedCallback() {
-  if (delegate_)
-    delegate_->OnFontChoiceChanged(font_combobox_->GetSelectedIndex());
 }
 
 void ReadAnythingToolbarView::DecreaseFontSizeCallback() {

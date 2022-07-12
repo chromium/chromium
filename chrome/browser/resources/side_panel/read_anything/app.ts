@@ -63,14 +63,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // Defines the valid font names that can be passed to front-end and maps
   // them to a corresponding class style in app.html. Must stay in-sync with
   // the names set in read_anything_font_model.cc.
-  private defaultFontName: string = 'standard';
-  private validFontNames: Array<{name: string, cssClass: string}> = [
-    {name: 'Standard font', cssClass: 'standard'},
-    {name: 'Serif', cssClass: 'serif'},
-    {name: 'Sans-serif', cssClass: 'sans-serif'},
-    {name: 'Arial', cssClass: 'arial'},
-    {name: 'Open Sans', cssClass: 'open-sans'},
-    {name: 'Calibri', cssClass: 'calibri'}
+  private defaultFontName: string = 'Standard font';
+  private validFontNames: Array<{name: string}> = [
+    {name: 'Standard font'}, {name: 'Sans'}, {name: 'Serif'}, {name: 'Arial'},
+    {name: 'Roboto'}, {name: 'Courier New'}, {name: 'Comic Sans MS'},
+    {name: 'Webdings'}, {name: 'Impact'}
   ];
 
   override connectedCallback() {
@@ -174,10 +171,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   updateFontName() {
     // Validate that the given font name is a valid choice, or use the default.
     const validFontName = this.validFontNames.find(
-        (f: {name: string, cssClass: string}) =>
-            f.name === chrome.readAnything.fontName);
-    this.fontName_ =
-        validFontName ? validFontName.cssClass : this.defaultFontName;
+        (f: {name: string}) => f.name === chrome.readAnything.fontName);
+    this.fontName_ = validFontName ? validFontName.name : this.defaultFontName;
   }
 
   updateFontSize() {

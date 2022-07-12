@@ -16,8 +16,14 @@ using testing::IsTrue;
 class MockReadAnythingToolbarViewDelegate
     : public ReadAnythingToolbarView::Delegate {
  public:
-  MOCK_METHOD(void, OnFontChoiceChanged, (int new_choice), (override));
   MOCK_METHOD(void, OnFontSizeChanged, (bool increase), (override));
+};
+
+class MockReadAnythingFontComboboxDelegate
+    : public ReadAnythingFontCombobox::Delegate {
+ public:
+  MOCK_METHOD(void, OnFontChoiceChanged, (int new_choice), (override));
+  MOCK_METHOD(ui::ComboboxModel*, GetFontComboboxModel, (), (override));
 };
 
 class MockReadAnythingCoordinator : public ReadAnythingCoordinator {
@@ -48,44 +54,36 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
     coordinator_ = std::make_unique<MockReadAnythingCoordinator>(browser());
 
     toolbar_view_ = std::make_unique<ReadAnythingToolbarView>(
-        coordinator_.get(), &delegate_);
+        coordinator_.get(), &toolbar_delegate_, &font_combobox_delegate_);
   }
 
   void TearDownOnMainThread() override { coordinator_ = nullptr; }
 
   // Wrapper methods around the ReadAnythingToolbarView.
 
-  void FontNameChangedCallback() { toolbar_view_->FontNameChangedCallback(); }
-
   void DecreaseFontSizeCallback() { toolbar_view_->DecreaseFontSizeCallback(); }
 
   void IncreaseFontSizeCallback() { toolbar_view_->IncreaseFontSizeCallback(); }
 
  protected:
-  MockReadAnythingToolbarViewDelegate delegate_;
+  MockReadAnythingToolbarViewDelegate toolbar_delegate_;
+  MockReadAnythingFontComboboxDelegate font_combobox_delegate_;
 
  private:
   std::unique_ptr<ReadAnythingToolbarView> toolbar_view_;
   std::unique_ptr<MockReadAnythingCoordinator> coordinator_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, FontNameChanged) {
-  EXPECT_CALL(delegate_, OnFontChoiceChanged(_)).Times(1);
-  EXPECT_CALL(delegate_, OnFontSizeChanged(_)).Times(0);
-
-  FontNameChangedCallback();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, DecreaseTextSizeClicked) {
-  EXPECT_CALL(delegate_, OnFontChoiceChanged(_)).Times(0);
-  EXPECT_CALL(delegate_, OnFontSizeChanged(IsFalse())).Times(1);
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, DecreaseFontSizeCallback) {
+  EXPECT_CALL(toolbar_delegate_, OnFontSizeChanged(false)).Times(1);
+  EXPECT_CALL(toolbar_delegate_, OnFontSizeChanged(true)).Times(0);
 
   DecreaseFontSizeCallback();
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, IncreaseTextSizeClicked) {
-  EXPECT_CALL(delegate_, OnFontChoiceChanged(_)).Times(0);
-  EXPECT_CALL(delegate_, OnFontSizeChanged(IsTrue())).Times(1);
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, IncreaseFontSizeCallback) {
+  EXPECT_CALL(toolbar_delegate_, OnFontSizeChanged(false)).Times(0);
+  EXPECT_CALL(toolbar_delegate_, OnFontSizeChanged(true)).Times(1);
 
   IncreaseFontSizeCallback();
 }

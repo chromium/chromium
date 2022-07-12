@@ -19,6 +19,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/combobox_model.h"
 
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser) {
@@ -82,8 +83,10 @@ void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
   // Create the views.
-  auto toolbar =
-      std::make_unique<ReadAnythingToolbarView>(this, controller_.get());
+  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
+      this,
+      /* ReadAnythingToolbarView::Delegate* = */ controller_.get(),
+      /* ReadAnythingFontCombobox::Delegate* = */ controller_.get());
 
   Browser* browser = &GetBrowser();
   auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(

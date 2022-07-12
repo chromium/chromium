@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/view.h"
@@ -25,12 +26,13 @@ class ReadAnythingToolbarView : public views::View,
  public:
   class Delegate {
    public:
-    virtual void OnFontChoiceChanged(int new_choice) = 0;
     virtual void OnFontSizeChanged(bool increase) = 0;
   };
 
-  ReadAnythingToolbarView(ReadAnythingCoordinator* coordinator,
-                          ReadAnythingToolbarView::Delegate* delegate);
+  ReadAnythingToolbarView(
+      ReadAnythingCoordinator* coordinator,
+      ReadAnythingToolbarView::Delegate* toolbar_delegate,
+      ReadAnythingFontCombobox::Delegate* font_combobox_delegate);
   ReadAnythingToolbarView(const ReadAnythingToolbarView&) = delete;
   ReadAnythingToolbarView& operator=(const ReadAnythingToolbarView&) = delete;
   ~ReadAnythingToolbarView() override;
@@ -41,7 +43,6 @@ class ReadAnythingToolbarView : public views::View,
  private:
   friend class ReadAnythingToolbarViewTest;
 
-  void FontNameChangedCallback();
   void DecreaseFontSizeCallback();
   void IncreaseFontSizeCallback();
 

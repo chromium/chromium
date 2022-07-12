@@ -34,23 +34,35 @@ suite('ReadAnythingAppTest', () => {
   }
 
   test('updateFontName', () => {
-    chrome.readAnything.setFontNameForTesting('Standard');
-    assertFontName('Roboto, Arial, sans-serif');
+    chrome.readAnything.setFontNameForTesting('Standard font');
+    assertFontName('"Standard font"');
 
-    chrome.readAnything.setFontNameForTesting('Sans-serif');
-    assertFontName('Roboto, Tahoma, sans-serif');
+    chrome.readAnything.setFontNameForTesting('Sans');
+    assertFontName('Sans');
 
     chrome.readAnything.setFontNameForTesting('Serif');
-    assertFontName('Didot, Georgia, serif');
+    assertFontName('serif');
 
     chrome.readAnything.setFontNameForTesting('Arial');
-    assertFontName('Arial, Verdona, sans-serif');
+    assertFontName('Arial');
 
-    chrome.readAnything.setFontNameForTesting('Open Sans');
-    assertFontName('"Open Sans", Courier, sans-serif');
+    chrome.readAnything.setFontNameForTesting('Roboto');
+    assertFontName('Roboto');
 
-    chrome.readAnything.setFontNameForTesting('Calibri');
-    assertFontName('Calibri, "Times New Roman", serif');
+    chrome.readAnything.setFontNameForTesting('Courier New');
+    assertFontName('"Courier New"');
+
+    chrome.readAnything.setFontNameForTesting('Comic Sans MS');
+    assertFontName('"Comic Sans MS"');
+
+    chrome.readAnything.setFontNameForTesting('Webdings');
+    assertFontName('Webdings');
+
+    chrome.readAnything.setFontNameForTesting('Impact');
+    assertFontName('Impact');
+
+    chrome.readAnything.setFontNameForTesting('foo_bar_baz');
+    assertFontName('"Standard font"');
   });
 
   test('updateContent paragraph', () => {

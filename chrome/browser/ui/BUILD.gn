@@ -4806,6 +4806,8 @@ static_library("ui") {
       "views/side_panel/read_anything/read_anything_controller.h",
       "views/side_panel/read_anything/read_anything_coordinator.cc",
       "views/side_panel/read_anything/read_anything_coordinator.h",
+      "views/side_panel/read_anything/read_anything_font_combobox.cc",
+      "views/side_panel/read_anything/read_anything_font_combobox.h",
       "views/side_panel/read_anything/read_anything_model.cc",
       "views/side_panel/read_anything/read_anything_model.h",
       "views/side_panel/read_anything/read_anything_toolbar_view.cc",

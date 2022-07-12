@@ -34,6 +34,7 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   bool IsValidFontName(const std::string& font_name);
   bool IsValidFontIndex(int index);
   void SetDefaultIndexFromPrefsFontName(std::string prefs_font_name);
+  std::string GetLabelFontListAt(int index);
 
  protected:
   // ui::Combobox implementation:
