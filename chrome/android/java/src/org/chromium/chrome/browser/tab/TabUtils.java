@@ -282,7 +282,7 @@ public class TabUtils {
                 org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_thumbnail_margin);
         int heightMargins = (2 * tabGridCardMargin) + thumbnailMargin;
         final int titleHeight = (int) context.getResources().getDimension(
-                org.chromium.chrome.tab_ui.R.dimen.tab_list_card_title_height);
+                org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_header_height);
         return titleHeight + heightMargins;
     }
 
