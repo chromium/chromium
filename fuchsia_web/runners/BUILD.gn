@@ -65,8 +65,6 @@ source_set("cast_runner_core") {
     "cast/cast_runner_switches.h",
     "cast/cast_streaming.cc",
     "cast/cast_streaming.h",
-    "cast/create_web_message.cc",
-    "cast/create_web_message.h",
     "cast/named_message_port_connector_fuchsia.cc",
     "cast/named_message_port_connector_fuchsia.h",
     "cast/pending_cast_component.cc",

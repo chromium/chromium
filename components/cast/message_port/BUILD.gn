@@ -67,9 +67,15 @@ source_set("public") {
 
 if (is_fuchsia) {
   source_set("message_port_fuchsia") {
-    public = [ "fuchsia/message_port_fuchsia.h" ]
+    public = [
+      "fuchsia/create_web_message.h",
+      "fuchsia/message_port_fuchsia.h",
+    ]
 
-    sources = [ "fuchsia/message_port_fuchsia.cc" ]
+    sources = [
+      "fuchsia/create_web_message.cc",
+      "fuchsia/message_port_fuchsia.cc",
+    ]
 
     public_deps = [
       ":public",

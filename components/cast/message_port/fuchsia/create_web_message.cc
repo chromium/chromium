@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/runners/cast/create_web_message.h"
+#include "components/cast/message_port/fuchsia/create_web_message.h"
 
 #include "base/fuchsia/mem_buffer_util.h"
+#include "base/strings/string_piece.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
+#include "components/cast/message_port/message_port.h"
 
 fuchsia::web::WebMessage CreateWebMessage(
     base::StringPiece message,
