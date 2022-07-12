@@ -4,7 +4,9 @@
 
 #include "chromecast/media/audio/cast_audio_output_device.h"
 
+#include <cstdint>
 #include <limits>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -60,8 +62,6 @@ class CastAudioOutputDevice::Internal
     app_media_info_manager_->GetCastApplicationMediaInfo(base::BindOnce(
         &Internal::OnApplicationMediaInfoReceived, base::Unretained(this)));
   }
-
-  void InvalidateOutputDevice() { output_device_.reset(); }
 
   void Start() {
     playback_started_ = true;
@@ -280,26 +280,31 @@ CastAudioOutputDevice::~CastAudioOutputDevice() = default;
 void CastAudioOutputDevice::Initialize(const ::media::AudioParameters& params,
                                        RenderCallback* callback) {
   DCHECK(callback);
+  DCHECK(!render_callback_);
   {
     base::AutoLock lock(callback_lock_);
-    render_callback_ = callback;
+    active_render_callback_ = callback;
   }
+  render_callback_ = callback;
   internal_.AsyncCall(&Internal::Initialize)
       .WithArgs(scoped_refptr<CastAudioOutputDevice>(this), params);
 }
 
 void CastAudioOutputDevice::Start() {
+  {
+    base::AutoLock lock(callback_lock_);
+    active_render_callback_ = render_callback_;
+  }
   internal_.AsyncCall(&Internal::Start);
 }
 
 void CastAudioOutputDevice::Stop() {
   {
     base::AutoLock lock(callback_lock_);
-    render_callback_ = nullptr;
+    active_render_callback_ = nullptr;
   }
 
   Flush();
-  internal_.AsyncCall(&Internal::InvalidateOutputDevice);
 }
 
 void CastAudioOutputDevice::Pause() {
@@ -346,19 +351,19 @@ bool CastAudioOutputDevice::CurrentThreadIsRenderingThread() {
 
 void CastAudioOutputDevice::OnBackendError() {
   base::AutoLock lock(callback_lock_);
-  if (render_callback_)
-    render_callback_->OnRenderError();
+  if (active_render_callback_)
+    active_render_callback_->OnRenderError();
 }
 
 int CastAudioOutputDevice::ReadBuffer(base::TimeDelta delay,
                                       ::media::AudioBus* audio_bus) {
   DCHECK(audio_bus);
   base::AutoLock lock(callback_lock_);
-  if (!render_callback_) {
+  if (!active_render_callback_) {
     return 0;
   }
-  return render_callback_->Render(delay, base::TimeTicks(),
-                                  /*frames_skipped=*/0, audio_bus);
+  return active_render_callback_->Render(delay, base::TimeTicks(),
+                                         /*frames_skipped=*/0, audio_bus);
 }
 
 }  // namespace media
