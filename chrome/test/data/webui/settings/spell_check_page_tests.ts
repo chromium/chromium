@@ -319,7 +319,7 @@ suite('spell check page', function() {
   });
 
   // <if expr="_google_chrome">
-  suite(languages_page_tests.TestNames.SpellcheckOfficialBuild, function() {
+  suite(spell_check_page_tests.TestNames.SpellcheckOfficialBuild, function() {
     test('enabling and disabling the spelling service', () => {
       const previousValue =
           spellcheckPage.prefs.spellcheck.use_spelling_service.value;
