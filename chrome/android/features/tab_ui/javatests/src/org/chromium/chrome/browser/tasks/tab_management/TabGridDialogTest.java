@@ -113,7 +113,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.concurrent.ExecutionException;
@@ -562,8 +562,8 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    // TODO Enable for Tablets (crbug.com/1342387)
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    // TODO(https://crbug.com/1342387): Enable for tablets.
+    @DisableIf.Device(type = UiDisableIf.TABLET)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
@@ -698,6 +698,7 @@ public class TabGridDialogTest {
     @DisableIf.
     Build(sdk_is_greater_than = VERSION_CODES.N_MR1, message = "https://crbug.com/1124336")
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1124336")
+    @DisableIf.Device(type = UiDisableIf.TABLET)
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabsWithThumbnail(mActivityTestRule, 2, 0, "about:blank");
@@ -922,7 +923,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisableIf.Device(type = UiDisableIf.TABLET)
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", START_SURFACE_BASE_PARAMS + "/single"})
     public void testDialogSetup_WithStartSurface() throws Exception {
@@ -963,10 +964,11 @@ public class TabGridDialogTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", START_SURFACE_BASE_PARAMS + "/single"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.M,
-            message = "crbug.com/1119899, crbug.com/1131545")
-    public void
-    testUndoClosureInDialog_WithStartSurface() throws Exception {
+    @DisableIf.
+    Build(sdk_is_greater_than = VERSION_CODES.M, message = "crbug.com/1119899, crbug.com/1131545")
+    // TODO(https://crbug.com/1342387): Enable for tablets.
+    @DisableIf.Device(type = UiDisableIf.TABLET)
+    public void testUndoClosureInDialog_WithStartSurface() throws Exception {
         // Create a tab group with 2 tabs.
         finishActivity(mActivityTestRule.getActivity());
         createThumbnailBitmapAndWriteToFile(0);
