@@ -701,7 +701,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnMarketingOptInScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<PackagedLicenseScreen>(
-      oobe_ui->GetView<PackagedLicenseScreenHandler>(),
+      oobe_ui->GetView<PackagedLicenseScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnPackagedLicenseScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<GaiaScreen>(

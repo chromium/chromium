@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/browser_process.h"
@@ -34,19 +35,13 @@ std::string PackagedLicenseScreen::GetResultString(Result result) {
 }
 
 PackagedLicenseScreen::PackagedLicenseScreen(
-    PackagedLicenseView* view,
+    base::WeakPtr<PackagedLicenseView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(PackagedLicenseView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
-      exit_callback_(exit_callback) {
-  if (view_)
-    view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-PackagedLicenseScreen::~PackagedLicenseScreen() {
-  if (view_)
-    view_->Unbind();
-}
+PackagedLicenseScreen::~PackagedLicenseScreen() = default;
 
 bool PackagedLicenseScreen::MaybeSkip(WizardContext* context) {
   policy::EnrollmentConfig config =
@@ -71,19 +66,17 @@ void PackagedLicenseScreen::ShowImpl() {
     view_->Show();
 }
 
-void PackagedLicenseScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-}
+void PackagedLicenseScreen::HideImpl() {}
 
-void PackagedLicenseScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void PackagedLicenseScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+
   if (action_id == kUserActionEnrollButtonClicked)
     exit_callback_.Run(Result::ENROLL);
   else if (action_id == kUserActionDontEnrollButtonClicked)
     exit_callback_.Run(Result::DONT_ENROLL);
   else
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
 }
 
 bool PackagedLicenseScreen::HandleAccelerator(LoginAcceleratorAction action) {

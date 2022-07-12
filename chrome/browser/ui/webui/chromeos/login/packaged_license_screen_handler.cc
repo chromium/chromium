@@ -10,34 +10,13 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId PackagedLicenseView::kScreenId;
-
 PackagedLicenseScreenHandler::PackagedLicenseScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.PackagedLicenseScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-PackagedLicenseScreenHandler::~PackagedLicenseScreenHandler() {}
+PackagedLicenseScreenHandler::~PackagedLicenseScreenHandler() = default;
 
 void PackagedLicenseScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
   ShowInWebUI();
-}
-
-void PackagedLicenseScreenHandler::Hide() {}
-
-void PackagedLicenseScreenHandler::Bind(PackagedLicenseScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void PackagedLicenseScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 void PackagedLicenseScreenHandler::DeclareLocalizedValues(
@@ -51,13 +30,6 @@ void PackagedLicenseScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_PACKAGED_LICENSE_ENROLL_BUTTON_LABEL);
   builder->Add("oobePackagedLicenseDontEnroll",
                IDS_OOBE_PACKAGED_LICENSE_DONT_ENROLL_BUTTON_LABEL);
-}
-
-void PackagedLicenseScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
 }
 
 }  // namespace chromeos
