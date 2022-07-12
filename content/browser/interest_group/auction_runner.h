@@ -199,6 +199,10 @@ class CONTENT_EXPORT AuctionRunner {
   //
   // `browser_signals` signals from the browser about the auction that are the
   //  same for all worklets.
+  //
+  //  `callback` is invoked on auction completion. It should synchronously
+  //  destroy this AuctionRunner object. `callback` won't be invoked until after
+  //  CreateAndStart() returns.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
@@ -520,11 +524,12 @@ class CONTENT_EXPORT AuctionRunner {
     void OnOneLoadCompleted();
 
     // Invoked once the interest group load phase has completed. Never called
-    // synchronously from StartLoadInterestGroupsPhase(), to avoid reentrancy.
-    // `auction_result` is the result of trying to load the interest groups that
-    // can participate in the auction. It's AuctionResult::kSuccess if there are
-    // interest groups that can take part in the auction, and a failure value
-    // otherwise.
+    // synchronously from StartLoadInterestGroupsPhase(), to avoid reentrancy
+    // (AuctionRunner::callback_ cannot be invoked until
+    // AuctionRunner::CreateAndStart() completes). `auction_result` is the
+    // result of trying to load the interest groups that can participate in the
+    // auction. It's AuctionResult::kSuccess if there are interest groups that
+    // can take part in the auction, and a failure value otherwise.
     void OnStartLoadInterestGroupsPhaseComplete(AuctionResult auction_result);
 
     // -------------------------------------
