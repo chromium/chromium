@@ -168,19 +168,16 @@ class AsyncFunctionRunner {
     return function->GetError();
   }
 
-  void WaitForTwoResults(ExtensionFunction* function,
-                         base::Value* first_result,
-                         base::Value* second_result) {
+  void WaitForOneResult(ExtensionFunction* function, base::Value* result) {
     RunMessageLoopUntilResponse();
     EXPECT_TRUE(function->GetError().empty())
         << "Unexpected error: " << function->GetError();
     EXPECT_NE(nullptr, function->GetResultList());
 
     const auto& result_list = *function->GetResultList();
-    EXPECT_EQ(2ul, result_list.size());
+    EXPECT_EQ(1ul, result_list.size());
 
-    *first_result = result_list[0].Clone();
-    *second_result = result_list[1].Clone();
+    *result = result_list[0].Clone();
   }
 
  private:
@@ -206,11 +203,8 @@ class AsyncExtensionBrowserTest : public ExtensionBrowserTest {
     return async_function_runner_->WaitForError(function);
   }
 
-  void WaitForTwoResults(ExtensionFunction* function,
-                         base::Value* first_result,
-                         base::Value* second_result) {
-    return async_function_runner_->WaitForTwoResults(function, first_result,
-                                                     second_result);
+  void WaitForOneResult(ExtensionFunction* function, base::Value* result) {
+    return async_function_runner_->WaitForOneResult(function, result);
   }
 
  private:
@@ -990,29 +984,19 @@ class GetAuthTokenFunctionTest
                                Browser* browser,
                                std::string* access_token,
                                std::set<std::string>* granted_scopes) {
-    EXPECT_TRUE(
-        utils::RunFunction(function, args, browser, api_test_utils::NONE));
+    std::unique_ptr<base::Value> result_value =
+        utils::RunFunctionAndReturnSingleResult(function, args, browser);
+    ASSERT_TRUE(result_value);
+    std::unique_ptr<api::identity::GetAuthTokenResult> result =
+        api::identity::GetAuthTokenResult::FromValue(*result_value);
+    ASSERT_TRUE(result);
 
-    EXPECT_TRUE(function->GetError().empty())
-        << "Unexpected error: " << function->GetError();
-    EXPECT_NE(nullptr, function->GetResultList());
-
-    const auto& result_list = *function->GetResultList();
-    EXPECT_EQ(2ul, result_list.size());
-
-    const auto& access_token_value = result_list[0];
-    const auto& granted_scopes_value = result_list[1];
-    EXPECT_TRUE(access_token_value.is_string());
-    EXPECT_TRUE(granted_scopes_value.is_list());
-
-    std::set<std::string> scopes;
-    for (const auto& scope : granted_scopes_value.GetListDeprecated()) {
-      EXPECT_TRUE(scope.is_string());
-      scopes.insert(scope.GetString());
-    }
-
-    *access_token = access_token_value.GetString();
-    *granted_scopes = std::move(scopes);
+    EXPECT_NE(nullptr, result->token);
+    *access_token = *result->token;
+    EXPECT_NE(nullptr, result->granted_scopes);
+    std::set<std::string> granted_scopes_map(result->granted_scopes->begin(),
+                                             result->granted_scopes->end());
+    *granted_scopes = std::move(granted_scopes_map);
   }
 
   void WaitForGetAuthTokenResults(
@@ -1020,25 +1004,22 @@ class GetAuthTokenFunctionTest
       std::string* access_token,
       std::set<std::string>* granted_scopes,
       AsyncFunctionRunner* function_runner = nullptr) {
-    base::Value access_token_value;
-    base::Value granted_scopes_value;
+    base::Value result_value;
     if (function_runner == nullptr) {
-      WaitForTwoResults(function, &access_token_value, &granted_scopes_value);
+      WaitForOneResult(function, &result_value);
     } else {
-      function_runner->WaitForTwoResults(function, &access_token_value,
-                                         &granted_scopes_value);
+      function_runner->WaitForOneResult(function, &result_value);
     }
-    EXPECT_TRUE(access_token_value.is_string());
-    EXPECT_TRUE(granted_scopes_value.is_list());
+    std::unique_ptr<api::identity::GetAuthTokenResult> result =
+        api::identity::GetAuthTokenResult::FromValue(result_value);
+    ASSERT_TRUE(result);
 
-    std::set<std::string> scopes;
-    for (const auto& scope : granted_scopes_value.GetListDeprecated()) {
-      EXPECT_TRUE(scope.is_string());
-      scopes.insert(scope.GetString());
-    }
-
-    *access_token = access_token_value.GetString();
-    *granted_scopes = std::move(scopes);
+    ASSERT_NE(nullptr, result->token);
+    *access_token = *result->token;
+    ASSERT_NE(nullptr, result->granted_scopes);
+    std::set<std::string> granted_scopes_map(result->granted_scopes->begin(),
+                                             result->granted_scopes->end());
+    *granted_scopes = std::move(granted_scopes_map);
   }
 
  private:

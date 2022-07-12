@@ -15,6 +15,7 @@
 #include "chrome/grit/renderer_resources.h"
 #include "chrome/renderer/extensions/app_hooks_delegate.h"
 #include "chrome/renderer/extensions/extension_hooks_delegate.h"
+#include "chrome/renderer/extensions/identity_hooks_delegate.h"
 #include "chrome/renderer/extensions/media_galleries_custom_bindings.h"
 #include "chrome/renderer/extensions/notifications_native_handler.h"
 #include "chrome/renderer/extensions/page_capture_custom_bindings.h"
@@ -243,6 +244,8 @@ void ChromeExtensionsDispatcherDelegate::InitializeBindingsSystem(
   bindings->GetHooksForAPI("tabs")->SetDelegate(
       std::make_unique<extensions::TabsHooksDelegate>(
           bindings_system->messaging_service()));
+  bindings->GetHooksForAPI("identity")
+      ->SetDelegate(std::make_unique<extensions::IdentityHooksDelegate>());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bindings->GetHooksForAPI("accessibilityPrivate")
       ->SetDelegate(

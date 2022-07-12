@@ -89,8 +89,15 @@ namespace identity {
     boolean? interactive;
   };
 
-  callback GetAuthTokenCallback = void (optional DOMString token,
-                                        optional DOMString[] grantedScopes);
+  dictionary GetAuthTokenResult {
+    // The specific token associated with the request.
+    DOMString? token;
+
+    // A list of OAuth2 scopes granted to the extension.
+    DOMString[]? grantedScopes;
+  };
+
+  callback GetAuthTokenCallback = void (GetAuthTokenResult result);
   callback GetAccountsCallback = void (AccountInfo[] accounts);
   callback GetProfileUserInfoCallback = void (ProfileUserInfo userInfo);
   callback InvalidateAuthTokenCallback = void ();
@@ -120,14 +127,19 @@ namespace identity {
     // context. In particular, do not use <code>getAuthToken</code>
     // interactively when your app is first launched.
     //
+    // Note: When called with a callback, instead of returning an object this
+    // function will return the two properties as separate arguments passed to
+    // the callback.
+    //
     // |details| : Token options.
     // |callback| : Called with an OAuth2 access token as specified by the
     // manifest, or undefined if there was an error. The
     // <code>grantedScopes</code> parameter is populated since Chrome 87. When
     // available, this parameter contains the list of granted scopes
     // corresponding with the returned token.
-    static void getAuthToken(optional TokenDetails details,
-                             optional GetAuthTokenCallback callback);
+    [supportsPromises] static void getAuthToken(
+        optional TokenDetails details,
+        optional GetAuthTokenCallback callback);
 
     // Retrieves email address and obfuscated gaia id of the user
     // signed into a profile.
