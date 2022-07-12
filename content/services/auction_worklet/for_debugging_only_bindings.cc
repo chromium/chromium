@@ -26,10 +26,12 @@
 
 namespace auction_worklet {
 
-ForDebuggingOnlyBindings::ForDebuggingOnlyBindings(
-    AuctionV8Helper* v8_helper,
-    v8::Local<v8::ObjectTemplate> global_template)
-    : v8_helper_(v8_helper) {
+ForDebuggingOnlyBindings::ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper)
+    : v8_helper_(v8_helper) {}
+ForDebuggingOnlyBindings::~ForDebuggingOnlyBindings() = default;
+
+void ForDebuggingOnlyBindings::FillInGlobalTemplate(
+    v8::Local<v8::ObjectTemplate> global_template) {
   v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::External> v8_this = v8::External::New(isolate, this);
   v8::Local<v8::ObjectTemplate> debugging_template =
@@ -62,7 +64,10 @@ ForDebuggingOnlyBindings::ForDebuggingOnlyBindings(
                        debugging_template);
 }
 
-ForDebuggingOnlyBindings::~ForDebuggingOnlyBindings() = default;
+void ForDebuggingOnlyBindings::Reset() {
+  loss_report_url_ = absl::nullopt;
+  win_report_url_ = absl::nullopt;
+}
 
 void ForDebuggingOnlyBindings::ReportAdAuctionLoss(
     const v8::FunctionCallbackInfo<v8::Value>& args) {

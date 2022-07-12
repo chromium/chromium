@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/context_recycler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
@@ -16,19 +17,22 @@
 namespace auction_worklet {
 
 // Class to manage bindings for setting ad beacon URLs. Expected to be
-// used for a short-lived v8::Context. Allows only a single call for the ad
-// beacon reporting map. On any subequent calls registerAdBeacon throws an
-// exception and keeps the previous ad_beacon_map_ state. registerAdBeacon also
-// throws on invalid URLs or non-HTTPS URLs in the map.
-class RegisterAdBeaconBindings {
+// used for a for a context managed by ContextRecycler. Allows only a single
+// call for the ad beacon reporting map. On any subequent calls registerAdBeacon
+// throws an exception and keeps the previous ad_beacon_map_ state.
+// registerAdBeacon also throws on invalid URLs or non-HTTPS URLs in the map.
+class RegisterAdBeaconBindings : public Bindings {
  public:
-  // Add registerAdBeaconBindings object to `global_template`. The
-  // RegisterAdBeaconBindings must outlive the template.
-  RegisterAdBeaconBindings(AuctionV8Helper* v8_helper,
-                           v8::Local<v8::ObjectTemplate> global_template);
+  explicit RegisterAdBeaconBindings(AuctionV8Helper* v8_helper);
   RegisterAdBeaconBindings(const RegisterAdBeaconBindings&) = delete;
   RegisterAdBeaconBindings& operator=(const RegisterAdBeaconBindings&) = delete;
-  ~RegisterAdBeaconBindings();
+  ~RegisterAdBeaconBindings() override;
+
+  // Add registerAdBeaconBindings object to `global_template`. The
+  // RegisterAdBeaconBindings must outlive the template.
+  void FillInGlobalTemplate(
+      v8::Local<v8::ObjectTemplate> global_template) override;
+  void Reset() override;
 
   base::flat_map<std::string, GURL> TakeAdBeaconMap() {
     return std::move(ad_beacon_map_);

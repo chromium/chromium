@@ -22,10 +22,13 @@
 
 namespace auction_worklet {
 
-SetPriorityBindings::SetPriorityBindings(
-    AuctionV8Helper* v8_helper,
-    v8::Local<v8::ObjectTemplate> global_template)
-    : v8_helper_(v8_helper) {
+SetPriorityBindings::SetPriorityBindings(AuctionV8Helper* v8_helper)
+    : v8_helper_(v8_helper) {}
+
+SetPriorityBindings::~SetPriorityBindings() = default;
+
+void SetPriorityBindings::FillInGlobalTemplate(
+    v8::Local<v8::ObjectTemplate> global_template) {
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
   v8::Local<v8::FunctionTemplate> v8_template = v8::FunctionTemplate::New(
@@ -35,7 +38,10 @@ SetPriorityBindings::SetPriorityBindings(
                        v8_template);
 }
 
-SetPriorityBindings::~SetPriorityBindings() = default;
+void SetPriorityBindings::Reset() {
+  set_priority_ = absl::nullopt;
+  exception_thrown_ = false;
+}
 
 void SetPriorityBindings::SetPriority(
     const v8::FunctionCallbackInfo<v8::Value>& args) {

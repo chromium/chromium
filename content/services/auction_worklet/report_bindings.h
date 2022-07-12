@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/context_recycler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
@@ -15,18 +16,21 @@
 namespace auction_worklet {
 
 // Class to manage bindings for setting a report URL. Expected to be used for a
-// short-lived v8::Context. Allows only a single call for a report URL. On any
-// subequent calls, clears the report URL and throws an exception. Also throws
-// on invalid URLs or non-HTTPS URLs.
-class ReportBindings {
+// context managed by ContextRecycler.. Allows only a single call for a report
+// URL. On any subequent calls, clears the report URL and throws an exception.
+// Also throws on invalid URLs or non-HTTPS URLs.
+class ReportBindings : public Bindings {
  public:
-  // Add report method to `global_template`. The ReportBindings must outlive
-  // the template.
-  ReportBindings(AuctionV8Helper* v8_helper,
-                 v8::Local<v8::ObjectTemplate> global_template);
+  explicit ReportBindings(AuctionV8Helper* v8_helper);
   ReportBindings(const ReportBindings&) = delete;
   ReportBindings& operator=(const ReportBindings&) = delete;
-  ~ReportBindings();
+  ~ReportBindings() override;
+
+  // Add report method to `global_template`. The ReportBindings must outlive
+  // the template.
+  void FillInGlobalTemplate(
+      v8::Local<v8::ObjectTemplate> global_template) override;
+  void Reset() override;
 
   const absl::optional<GURL>& report_url() const { return report_url_; }
 

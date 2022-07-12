@@ -351,16 +351,13 @@ void BidderWorklet::V8State::ReportWin(
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
 
-  v8::Local<v8::ObjectTemplate> global_template =
-      v8::ObjectTemplate::New(isolate);
-  ReportBindings report_bindings(v8_helper_.get(), global_template);
-  RegisterAdBeaconBindings register_ad_beacon_bindings(v8_helper_.get(),
-                                                       global_template);
-
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
-  v8::Local<v8::Context> context = v8_helper_->CreateContext(global_template);
-  v8::Context::Scope context_scope(context);
+  ContextRecycler context_recycler(v8_helper_.get());
+  context_recycler.AddReportBindings();
+  context_recycler.AddRegisterAdBeaconBindings();
+  ContextRecyclerScope context_recycler_scope(context_recycler);
+  v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
   std::vector<v8::Local<v8::Value>> args;
   if (!AppendJsonValueOrNull(v8_helper_.get(), context, auction_signals_json,
@@ -431,8 +428,9 @@ void BidderWorklet::V8State::ReportWin(
   // This covers both the case where a report URL was provided, and the case one
   // was not.
   PostReportWinCallbackToUserThread(
-      std::move(callback), report_bindings.report_url(),
-      register_ad_beacon_bindings.TakeAdBeaconMap(), std::move(errors_out));
+      std::move(callback), context_recycler.report_bindings()->report_url(),
+      context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
+      std::move(errors_out));
 }
 
 void BidderWorklet::V8State::GenerateBid(
@@ -459,21 +457,19 @@ void BidderWorklet::V8State::GenerateBid(
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
-  v8::Local<v8::ObjectTemplate> global_template =
-      v8::ObjectTemplate::New(isolate);
-  ForDebuggingOnlyBindings for_debugging_only_bindings(v8_helper_.get(),
-                                                       global_template);
-  SetBidBindings set_bid_bindings(
-      v8_helper_.get(), global_template, start,
-      browser_signal_top_level_seller_origin.has_value(),
-      bidder_worklet_non_shared_params->ads,
-      bidder_worklet_non_shared_params->ad_components);
-  SetPriorityBindings set_priority_bindings(v8_helper_.get(), global_template);
-
   // Short lived context, to avoid leaking data at global scope between either
   // repeated calls to this worklet, or to calls to any other worklet.
-  v8::Local<v8::Context> context = v8_helper_->CreateContext(global_template);
-  v8::Context::Scope context_scope(context);
+  ContextRecycler context_recycler(v8_helper_.get());
+  context_recycler.AddForDebuggingOnlyBindings();
+  context_recycler.AddSetBidBindings();
+  context_recycler.AddSetPriorityBindings();
+
+  ContextRecyclerScope context_recycler_scope(context_recycler);
+  v8::Local<v8::Context> context = context_recycler_scope.GetContext();
+  context_recycler.set_bid_bindings()->ReInitialize(
+      start, browser_signal_top_level_seller_origin.has_value(),
+      &bidder_worklet_non_shared_params->ads,
+      &bidder_worklet_non_shared_params->ad_components);
 
   std::vector<v8::Local<v8::Value>> args;
   v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
@@ -633,30 +629,32 @@ void BidderWorklet::V8State::GenerateBid(
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "generate_bid", trace_id);
 
   if (got_return_value) {
-    set_bid_bindings.SetBid(
+    context_recycler.set_bid_bindings()->SetBid(
         generate_bid_result,
         base::StrCat({script_source_url_.spec(), " generateBid() "}),
         errors_out);
   }
 
-  if (!set_bid_bindings.has_bid()) {
+  if (!context_recycler.set_bid_bindings()->has_bid()) {
     // If we either don't have a valid return value, or we have no return value
     // and no intermediate result was given through setBid, return an error.
     // Keep debug loss reports since `generateBid()` might use it to detect
     // script timeout or failures.
     PostErrorBidCallbackToUserThread(
         std::move(callback), std::move(errors_out),
-        for_debugging_only_bindings.TakeLossReportUrl());
+        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl());
     return;
   }
 
   user_thread_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), set_bid_bindings.TakeBid(),
-                                bidding_signals_data_version,
-                                for_debugging_only_bindings.TakeLossReportUrl(),
-                                for_debugging_only_bindings.TakeWinReportUrl(),
-                                set_priority_bindings.set_priority(),
-                                std::move(errors_out)));
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback), context_recycler.set_bid_bindings()->TakeBid(),
+          bidding_signals_data_version,
+          context_recycler.for_debugging_only_bindings()->TakeLossReportUrl(),
+          context_recycler.for_debugging_only_bindings()->TakeWinReportUrl(),
+          context_recycler.set_priority_bindings()->set_priority(),
+          std::move(errors_out)));
 }
 
 void BidderWorklet::V8State::ConnectDevToolsAgent(

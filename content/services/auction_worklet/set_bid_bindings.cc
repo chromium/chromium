@@ -62,18 +62,25 @@ mojom::BidderWorkletBidPtr SetBidBindings::TakeBid() {
   return std::move(bid_);
 }
 
-SetBidBindings::SetBidBindings(
-    AuctionV8Helper* v8_helper,
-    v8::Local<v8::ObjectTemplate> global_template,
+SetBidBindings::SetBidBindings(AuctionV8Helper* v8_helper)
+    : v8_helper_(v8_helper) {}
+
+SetBidBindings::~SetBidBindings() = default;
+
+void SetBidBindings::ReInitialize(
     base::TimeTicks start,
     bool has_top_level_seller_origin,
-    const absl::optional<std::vector<blink::InterestGroup::Ad>>& ads,
-    const absl::optional<std::vector<blink::InterestGroup::Ad>>& ad_components)
-    : v8_helper_(v8_helper),
-      start_(start),
-      has_top_level_seller_origin_(has_top_level_seller_origin),
-      ads_(ads),
-      ad_components_(ad_components) {
+    const absl::optional<std::vector<blink::InterestGroup::Ad>>* ads,
+    const absl::optional<std::vector<blink::InterestGroup::Ad>>*
+        ad_components) {
+  start_ = start;
+  has_top_level_seller_origin_ = has_top_level_seller_origin;
+  ads_ = ads;
+  ad_components_ = ad_components;
+}
+
+void SetBidBindings::FillInGlobalTemplate(
+    v8::Local<v8::ObjectTemplate> global_template) {
   v8::Local<v8::External> v8_this =
       v8::External::New(v8_helper_->isolate(), this);
   v8::Local<v8::FunctionTemplate> v8_template = v8::FunctionTemplate::New(
@@ -83,8 +90,14 @@ SetBidBindings::SetBidBindings(
                        v8_template);
 }
 
-SetBidBindings::~SetBidBindings() = default;
+void SetBidBindings::Reset() {
+  bid_.reset();
+  // Make sure we don't keep any dangling references to auction input.
+  ads_ = nullptr;
+  ad_components_ = nullptr;
+}
 
+// static
 void SetBidBindings::SetBid(const v8::FunctionCallbackInfo<v8::Value>& args) {
   SetBidBindings* bindings =
       static_cast<SetBidBindings*>(v8::External::Cast(*args.Data())->Value());
@@ -114,6 +127,9 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   bid_.reset();
+
+  DCHECK(ads_ && ad_components_)
+      << "ReInitialize() must be called before each use";
 
   if (!generate_bid_result->IsObject()) {
     errors_out.push_back(base::StrCat({error_prefix, "bid not an object."}));
@@ -171,7 +187,8 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   }
 
   GURL render_url(render_url_string);
-  if (!IsAllowedAdUrl(render_url, error_prefix, "render", *ads_, errors_out)) {
+  if (!IsAllowedAdUrl(render_url, error_prefix, "render", ads_->value(),
+                      errors_out)) {
     return false;
   }
 
@@ -179,7 +196,7 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   v8::Local<v8::Value> ad_components;
   if (result_dict.Get("adComponents", &ad_components) &&
       !ad_components->IsNullOrUndefined()) {
-    if (!ad_components_) {
+    if (!ad_components_->has_value()) {
       errors_out.push_back(
           base::StrCat({error_prefix,
                         "bid contains adComponents but InterestGroup has no "
@@ -215,7 +232,7 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
 
       GURL ad_component_url(url_string);
       if (!IsAllowedAdUrl(ad_component_url, error_prefix, "adComponents",
-                          *ad_components_, errors_out)) {
+                          ad_components_->value(), errors_out)) {
         return false;
       }
       ad_component_urls->emplace_back(std::move(ad_component_url));

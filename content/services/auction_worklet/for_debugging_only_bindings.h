@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/context_recycler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
@@ -15,18 +16,21 @@
 namespace auction_worklet {
 
 // Class to manage bindings for setting a debugging report URL. Expected to be
-// used for a short-lived v8::Context. The URL passed to the last successful
-// call will be used as the reporting URL. Throws on invalid URLs or non-HTTPS
-// URLs.
-class ForDebuggingOnlyBindings {
+// used for a context managed by ContextRecycler. The URL passed to the last
+// successful call will be used as the reporting URL. Throws on invalid URLs or
+// non-HTTPS URLs.
+class ForDebuggingOnlyBindings : public Bindings {
  public:
-  // Add forDebuggingOnly object to `global_template`. The
-  // ForDebuggingOnlyBindings must outlive the template.
-  ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper,
-                           v8::Local<v8::ObjectTemplate> global_template);
+  explicit ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper);
   ForDebuggingOnlyBindings(const ForDebuggingOnlyBindings&) = delete;
   ForDebuggingOnlyBindings& operator=(const ForDebuggingOnlyBindings&) = delete;
-  ~ForDebuggingOnlyBindings();
+  ~ForDebuggingOnlyBindings() override;
+
+  // Add forDebuggingOnly object to `global_template`. The
+  // ForDebuggingOnlyBindings must outlive the template.
+  void FillInGlobalTemplate(
+      v8::Local<v8::ObjectTemplate> global_template) override;
+  void Reset() override;
 
   absl::optional<GURL> TakeLossReportUrl() {
     return std::move(loss_report_url_);
