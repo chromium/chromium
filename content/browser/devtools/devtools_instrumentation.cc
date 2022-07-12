@@ -5,7 +5,6 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 
 #include "base/containers/adapters.h"
-#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 #include "components/download/public/common/download_create_info.h"
@@ -44,10 +43,8 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/http/http_request_headers.h"
-#include "net/proxy_resolution/proxy_config.h"
 #include "net/quic/web_transport_error.h"
 #include "net/ssl/ssl_info.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -418,10 +415,14 @@ void OnNavigationRequestFailed(
 
   // If a BFCache navigation fails, it will be restarted as a regular
   // navigation, so we don't want to report this failure.
-  // TODO(https://crbug.com/1195751): Stop reporting this for Prerender as well
-  // after it supports fallback to regular navigation on activation failures.
   if (nav_request.IsServedFromBackForwardCache())
     return;
+
+  // Activation of a prerender page is synchronous with its own activation flow
+  // (crrev.com/c/2992411); if the prerender is cancelled (e.g. speculation rule
+  // removed), the flow will fallback to a normal navigation, which is no longer
+  // considered as a page activation.
+  DCHECK(!nav_request.IsPageActivation());
 
   DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete, id,
                    protocol::Network::ResourceTypeEnum::Document, status);
