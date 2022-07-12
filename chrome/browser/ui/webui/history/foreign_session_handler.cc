@@ -221,19 +221,19 @@ sync_sessions::OpenTabsUIDelegate* ForeignSessionHandler::GetOpenTabsUIDelegate(
 }
 
 void ForeignSessionHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "deleteForeignSession",
       base::BindRepeating(&ForeignSessionHandler::HandleDeleteForeignSession,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getForeignSessions",
       base::BindRepeating(&ForeignSessionHandler::HandleGetForeignSessions,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openForeignSession",
       base::BindRepeating(&ForeignSessionHandler::HandleOpenForeignSession,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setForeignSessionCollapsed",
       base::BindRepeating(
           &ForeignSessionHandler::HandleSetForeignSessionCollapsed,
@@ -288,10 +288,10 @@ std::u16string ForeignSessionHandler::FormatSessionTime(
 }
 
 void ForeignSessionHandler::HandleGetForeignSessions(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   CHECK(!initial_session_list_.is_none());
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, std::move(initial_session_list_));
 
   // Clear the initial list so that it will be reset in AllowJavascript if the
@@ -356,33 +356,30 @@ base::Value ForeignSessionHandler::GetForeignSessions() {
 }
 
 void ForeignSessionHandler::HandleOpenForeignSession(
-    const base::ListValue* args) {
-  size_t num_args = args->GetListDeprecated().size();
+    const base::Value::List& args) {
+  size_t num_args = args.size();
   // Expect either 1 or 8 args. For restoring an entire session, only
   // one argument is required -- the session tag. To restore a tab,
   // the additional args required are the window id, the tab id,
   // and 4 properties of the event object (button, altKey, ctrlKey,
   // metaKey, shiftKey) for determining how to open the tab.
   if (num_args != 8U && num_args != 1U) {
-    LOG(ERROR) << "openForeignSession called with "
-               << args->GetListDeprecated().size() << " arguments.";
+    LOG(ERROR) << "openForeignSession called with " << args.size()
+               << " arguments.";
     return;
   }
 
   // Extract the session tag (always provided).
-  if (!args->GetListDeprecated()[0].is_string()) {
+  if (!args[0].is_string()) {
     LOG(ERROR) << "Failed to extract session tag.";
     return;
   }
-  const std::string& session_string_value =
-      args->GetListDeprecated()[0].GetString();
+  const std::string& session_string_value = args[0].GetString();
 
   // Extract window number.
   int window_num = -1;
-  if (num_args >= 2 &&
-      (!args->GetListDeprecated()[1].is_string() ||
-       !base::StringToInt(args->GetListDeprecated()[1].GetString(),
-                          &window_num))) {
+  if (num_args >= 2 && (!args[1].is_string() ||
+                        !base::StringToInt(args[1].GetString(), &window_num))) {
     LOG(ERROR) << "Failed to extract window number.";
     return;
   }
@@ -390,9 +387,8 @@ void ForeignSessionHandler::HandleOpenForeignSession(
   // Extract tab id.
   SessionID::id_type tab_id_value = 0;
   if (num_args >= 3 &&
-      (!args->GetListDeprecated()[2].is_string() ||
-       !base::StringToInt(args->GetListDeprecated()[2].GetString(),
-                          &tab_id_value))) {
+      (!args[2].is_string() ||
+       !base::StringToInt(args[2].GetString(), &tab_id_value))) {
     LOG(ERROR) << "Failed to extract tab SessionID.";
     return;
   }
@@ -408,18 +404,18 @@ void ForeignSessionHandler::HandleOpenForeignSession(
 }
 
 void ForeignSessionHandler::HandleDeleteForeignSession(
-    const base::ListValue* args) {
-  if (args->GetListDeprecated().size() != 1U) {
+    const base::Value::List& args) {
+  if (args.size() != 1U) {
     LOG(ERROR) << "Wrong number of args to deleteForeignSession";
     return;
   }
 
   // Get the session tag argument (required).
-  if (!args->GetListDeprecated()[0].is_string()) {
+  if (!args[0].is_string()) {
     LOG(ERROR) << "Unable to extract session tag";
     return;
   }
-  const std::string& session_tag = args->GetListDeprecated()[0].GetString();
+  const std::string& session_tag = args[0].GetString();
 
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       GetOpenTabsUIDelegate(web_ui());
@@ -428,25 +424,24 @@ void ForeignSessionHandler::HandleDeleteForeignSession(
 }
 
 void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
-    const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
-  if (list.size() != 2U) {
+    const base::Value::List& args) {
+  if (args.size() != 2U) {
     LOG(ERROR) << "Wrong number of args to setForeignSessionCollapsed";
     return;
   }
 
   // Get the session tag argument (required).
-  if (!args->GetListDeprecated()[0].is_string()) {
+  if (!args[0].is_string()) {
     LOG(ERROR) << "Unable to extract session tag";
     return;
   }
-  const std::string& session_tag = args->GetListDeprecated()[0].GetString();
+  const std::string& session_tag = args[0].GetString();
 
-  if (!list[1].is_bool()) {
+  if (!args[1].is_bool()) {
     LOG(ERROR) << "Unable to extract boolean argument";
     return;
   }
-  const bool is_collapsed = list[1].GetBool();
+  const bool is_collapsed = args[1].GetBool();
 
   // Store session tags for collapsed sessions in a preference so that the
   // collapsed state persists.

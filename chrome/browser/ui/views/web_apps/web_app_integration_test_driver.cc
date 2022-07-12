@@ -723,12 +723,12 @@ void WebAppIntegrationTestDriver::InstallLocally(Site site) {
   test_web_ui.set_web_contents(web_contents);
   TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
                                  &test_web_ui);
-  base::ListValue web_app_ids;
+  base::Value::List web_app_ids;
   web_app_ids.Append(app_id);
 
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
-  handler.HandleInstallAppLocally(&web_app_ids);
+  handler.HandleInstallAppLocally(web_app_ids);
   observer.Wait();
   AfterStateChangeAction();
 }
@@ -1013,10 +1013,10 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
   test_web_ui.set_web_contents(web_contents);
   TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
                                  &test_web_ui);
-  base::ListValue web_app_ids;
+  base::Value::List web_app_ids;
   web_app_ids.Append(app_id);
   content::WebContentsAddedObserver nav_observer;
-  handler.HandleShowAppInfo(&web_app_ids);
+  handler.HandleShowAppInfo(web_app_ids);
   // Wait for new web content to be created.
   nav_observer.GetWebContents();
   AfterStateChangeAction();
@@ -1038,16 +1038,16 @@ void WebAppIntegrationTestDriver::CreateShortcutFromChromeApps(Site site) {
   test_web_ui.set_web_contents(web_contents);
   TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
                                  &test_web_ui);
-  base::ListValue web_app_ids;
+  base::Value::List web_app_ids;
   web_app_ids.Append(app_id);
 #if BUILDFLAG(IS_MAC)
   base::RunLoop loop;
-  handler.HandleCreateAppShortcut(loop.QuitClosure(), &web_app_ids);
+  handler.HandleCreateAppShortcut(loop.QuitClosure(), web_app_ids);
   loop.Run();
 #else
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "CreateChromeApplicationShortcutView");
-  handler.HandleCreateAppShortcut(base::DoNothing(), &web_app_ids);
+  handler.HandleCreateAppShortcut(base::DoNothing(), web_app_ids);
   FlushShortcutTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(widget != nullptr);
@@ -1344,9 +1344,9 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   test_web_ui.set_web_contents(web_contents);
   TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
                                  &test_web_ui);
-  base::ListValue web_app_ids;
+  base::Value::List web_app_ids;
   web_app_ids.Append(app_id);
-  handler.HandleUninstallApp(&web_app_ids);
+  handler.HandleUninstallApp(web_app_ids);
 #endif
 
   observer.Wait();

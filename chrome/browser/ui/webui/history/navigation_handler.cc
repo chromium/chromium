@@ -19,14 +19,13 @@ NavigationHandler::NavigationHandler() {}
 NavigationHandler::~NavigationHandler() {}
 
 void NavigationHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "navigateToUrl",
       base::BindRepeating(&NavigationHandler::HandleNavigateToUrl,
                           base::Unretained(this)));
 }
 
-void NavigationHandler::HandleNavigateToUrl(const base::ListValue* args) {
-  base::Value::ConstListView list = args->GetListDeprecated();
+void NavigationHandler::HandleNavigateToUrl(const base::Value::List& list) {
   const std::string& url_string = list[0].GetString();
   const std::string& target_string = list[1].GetString();
   double button = list[2].GetDouble();

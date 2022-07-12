@@ -130,12 +130,12 @@ class AppLauncherHandler
   void FillPromoDictionary(base::DictionaryValue* value);
 
   // Handles the "launchApp" message with unused |args|.
-  void HandleGetApps(const base::ListValue* args);
+  void HandleGetApps(const base::Value::List& args);
 
   // Handles the "launchApp" message with |args| containing [extension_id,
   // source] with optional [url, disposition], |disposition| defaulting to
   // CURRENT_TAB.
-  void HandleLaunchApp(const base::ListValue* args);
+  void HandleLaunchApp(const base::Value::List& args);
 
   void LaunchApp(std::string extension_id,
                  extension_misc::AppLaunchBucket launch_bucket,
@@ -145,49 +145,49 @@ class AppLauncherHandler
 
   // Handles the "setLaunchType" message with args containing [extension_id,
   // launch_type].
-  void HandleSetLaunchType(const base::ListValue* args);
+  void HandleSetLaunchType(const base::Value::List& args);
 
   // Handles the "uninstallApp" message with |args| containing [extension_id]
   // and an optional bool to not confirm the uninstall when true, defaults to
   // false.
-  void HandleUninstallApp(const base::ListValue* args);
+  void HandleUninstallApp(const base::Value::List& args);
 
   // Handles the "createAppShortcut" message with |args| containing
   // [extension_id].
   void HandleCreateAppShortcut(base::OnceClosure done,
-                               const base::ListValue* args);
+                               const base::Value::List& args);
 
   // Handles the "installAppLocally" message with |args| containing
   // [extension_id].
-  void HandleInstallAppLocally(const base::ListValue* args);
+  void HandleInstallAppLocally(const base::Value::List& args);
 
   // Handles the "showAppInfo" message with |args| containing [extension_id].
-  void HandleShowAppInfo(const base::ListValue* args);
+  void HandleShowAppInfo(const base::Value::List& args);
 
   // Handles the "reorderApps" message with |args| containing [dragged_app_id,
   // app_order].
-  void HandleReorderApps(const base::ListValue* args);
+  void HandleReorderApps(const base::Value::List& args);
 
   // Handles the "setPageIndex" message with |args| containing [extension_id,
   // page_index].
-  void HandleSetPageIndex(const base::ListValue* args);
+  void HandleSetPageIndex(const base::Value::List& args);
 
   // Handles "saveAppPageName" message with |args| containing [name,
   // page_index].
-  void HandleSaveAppPageName(const base::ListValue* args);
+  void HandleSaveAppPageName(const base::Value::List& args);
 
   // Handles "generateAppForLink" message with |args| containing [url, title,
   // page_index].
-  void HandleGenerateAppForLink(const base::ListValue* args);
+  void HandleGenerateAppForLink(const base::Value::List& args);
 
   // Handles "pageSelected" message with |args| containing [page_index].
-  void HandlePageSelected(const base::ListValue* args);
+  void HandlePageSelected(const base::Value::List& args);
 
   // Handles "runOnOsLogin" message with |args| containing [app_id, mode]
-  void HandleRunOnOsLogin(const base::ListValue* args);
+  void HandleRunOnOsLogin(const base::Value::List& args);
 
   // Handles "deprecatedDialogLinkClicked" message with no |args|
-  void HandleLaunchDeprecatedAppDialog(const base::ListValue* args);
+  void HandleLaunchDeprecatedAppDialog(const base::Value::List& args);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AppLauncherHandlerTest,

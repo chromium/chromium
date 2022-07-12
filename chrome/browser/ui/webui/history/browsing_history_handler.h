@@ -40,16 +40,16 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   void StartQueryHistory();
 
   // Handler for the "queryHistory" message.
-  void HandleQueryHistory(const base::ListValue* args);
+  void HandleQueryHistory(const base::Value::List& args);
 
   // Handler for the "queryHistoryContinuation" message.
-  void HandleQueryHistoryContinuation(const base::ListValue* args);
+  void HandleQueryHistoryContinuation(const base::Value::List& args);
 
   // Handler for the "removeVisits" message.
-  void HandleRemoveVisits(const base::ListValue* args);
+  void HandleRemoveVisits(const base::Value::List& args);
 
   // Handler for "clearBrowsingData" message.
-  void HandleClearBrowsingData(const base::ListValue* args);
+  void HandleClearBrowsingData(const base::Value::List& args);
 
   // Handler for "removeBookmark" message.
   void HandleRemoveBookmark(const base::Value::List& args);

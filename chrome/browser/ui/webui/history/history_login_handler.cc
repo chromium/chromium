@@ -25,12 +25,12 @@ HistoryLoginHandler::HistoryLoginHandler(base::RepeatingClosure signin_callback)
 HistoryLoginHandler::~HistoryLoginHandler() {}
 
 void HistoryLoginHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "otherDevicesInitialized",
       base::BindRepeating(&HistoryLoginHandler::HandleOtherDevicesInitialized,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startSignInFlow",
       base::BindRepeating(&HistoryLoginHandler::HandleStartSignInFlow,
                           base::Unretained(this)));
@@ -49,7 +49,7 @@ void HistoryLoginHandler::OnJavascriptDisallowed() {
 }
 
 void HistoryLoginHandler::HandleOtherDevicesInitialized(
-    const base::ListValue* /*args*/) {
+    const base::Value::List& /*args*/) {
   AllowJavascript();
 }
 
@@ -62,7 +62,7 @@ void HistoryLoginHandler::ProfileInfoChanged() {
 }
 
 void HistoryLoginHandler::HandleStartSignInFlow(
-    const base::ListValue* /*args*/) {
+    const base::Value::List& /*args*/) {
   Profile* profile = Profile::FromWebUI(web_ui());
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       profile,

@@ -29,10 +29,10 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
 
  private:
   // Handler for the "otherDevicesInitialized" message. No args.
-  void HandleOtherDevicesInitialized(const base::ListValue* args);
+  void HandleOtherDevicesInitialized(const base::Value::List& args);
 
   // Handler for the "startSignInFlow" message. No args.
-  void HandleStartSignInFlow(const base::ListValue* args);
+  void HandleStartSignInFlow(const base::Value::List& args);
 
   // Called by |profile_info_watcher_| on desktop if profile info changes.
   void ProfileInfoChanged();

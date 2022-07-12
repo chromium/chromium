@@ -312,20 +312,20 @@ void BrowsingHistoryHandler::RegisterMessages() {
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "queryHistory",
       base::BindRepeating(&BrowsingHistoryHandler::HandleQueryHistory,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "queryHistoryContinuation",
       base::BindRepeating(
           &BrowsingHistoryHandler::HandleQueryHistoryContinuation,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "removeVisits",
       base::BindRepeating(&BrowsingHistoryHandler::HandleRemoveVisits,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearBrowsingData",
       base::BindRepeating(&BrowsingHistoryHandler::HandleClearBrowsingData,
                           base::Unretained(this)));
@@ -348,9 +348,9 @@ void BrowsingHistoryHandler::StartQueryHistory() {
   SendHistoryQuery(150, std::u16string());
 }
 
-void BrowsingHistoryHandler::HandleQueryHistory(const base::ListValue* args) {
+void BrowsingHistoryHandler::HandleQueryHistory(const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
   if (!initial_results_.is_none()) {
     ResolveJavascriptCallback(callback_id, std::move(initial_results_));
     initial_results_ = base::Value();
@@ -373,9 +373,9 @@ void BrowsingHistoryHandler::HandleQueryHistory(const base::ListValue* args) {
   // - the text to search for (may be empty)
   // - the maximum number of results to return (may be 0, meaning that there
   //   is no maximum).
-  const base::Value& search_text = args->GetListDeprecated()[1];
+  const base::Value& search_text = args[1];
 
-  const base::Value& count = args->GetListDeprecated()[2];
+  const base::Value& count = args[2];
   if (!count.is_int()) {
     NOTREACHED() << "Failed to convert argument 2.";
     return;
@@ -401,9 +401,9 @@ void BrowsingHistoryHandler::SendHistoryQuery(int max_count,
 }
 
 void BrowsingHistoryHandler::HandleQueryHistoryContinuation(
-    const base::ListValue* args) {
-  CHECK_EQ(args->GetListDeprecated().size(), 1U);
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+    const base::Value::List& args) {
+  CHECK_EQ(args.size(), 1U);
+  const base::Value& callback_id = args[0];
   // Cancel the previous query if it is still in flight.
   if (!query_history_callback_id_.empty()) {
     RejectJavascriptCallback(base::Value(query_history_callback_id_),
@@ -415,15 +415,15 @@ void BrowsingHistoryHandler::HandleQueryHistoryContinuation(
   std::move(query_history_continuation_).Run();
 }
 
-void BrowsingHistoryHandler::HandleRemoveVisits(const base::ListValue* args) {
-  CHECK_EQ(args->GetListDeprecated().size(), 2U);
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+void BrowsingHistoryHandler::HandleRemoveVisits(const base::Value::List& args) {
+  CHECK_EQ(args.size(), 2U);
+  const base::Value& callback_id = args[0];
   CHECK(remove_visits_callback_.empty());
   remove_visits_callback_ = callback_id.GetString();
 
   std::vector<BrowsingHistoryService::HistoryEntry> items_to_remove;
-  const base::Value& items = args->GetListDeprecated()[1];
-  base::Value::ConstListView list = items.GetListDeprecated();
+  const base::Value& items = args[1];
+  const base::Value::List& list = items.GetList();
   items_to_remove.reserve(list.size());
   for (size_t i = 0; i < list.size(); ++i) {
     // Each argument is a dictionary with properties "url" and "timestamps".
@@ -461,7 +461,7 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::ListValue* args) {
 }
 
 void BrowsingHistoryHandler::HandleClearBrowsingData(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // TODO(beng): This is an improper direct dependency on Browser. Route this
   // through some sort of delegate.
   Browser* browser =

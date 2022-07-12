@@ -109,14 +109,14 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
                        DialogLaunchedForForceInstalledApp) {
   auto handler = CreateLauncherHandler();
 
-  base::ListValue input;
+  base::Value::List input;
   input.Append(app_id_);
   input.Append(extension_misc::AppLaunchBucket::APP_LAUNCH_NTP_APPS_MENU);
 
   auto waiter =
       views::NamedWidgetShownWaiter(views::test::AnyWidgetTestPasskey{},
                                     "ForceInstalledDeprecatedAppsDialogView");
-  handler.HandleLaunchApp(&input);
+  handler.HandleLaunchApp(input);
   // Widget is shown.
   EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
 }
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
   extensions::SetPreinstalledAppIdForTesting(app_id_.c_str());
   auto handler = CreateLauncherHandler();
 
-  base::ListValue input;
+  base::Value::List input;
   input.Append(app_id_);
   input.Append(extension_misc::AppLaunchBucket::APP_LAUNCH_NTP_APPS_MENU);
   bool disable_preinstalled_apps = GetParam();
@@ -136,13 +136,13 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
     auto waiter =
         views::NamedWidgetShownWaiter(views::test::AnyWidgetTestPasskey{},
                                       "ForceInstalledDeprecatedAppsDialogView");
-    handler.HandleLaunchApp(&input);
+    handler.HandleLaunchApp(input);
     // Widget is shown.
     EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
   } else {
     ui_test_utils::UrlLoadObserver url_observer(
         GURL(kAppUrl), content::NotificationService::AllSources());
-    handler.HandleLaunchApp(&input);
+    handler.HandleLaunchApp(input);
     // Preinstalled chrome app is launched.
     url_observer.Wait();
   }
