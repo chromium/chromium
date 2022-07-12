@@ -114,9 +114,20 @@ Node& RootScrollerController::EffectiveRootScroller() const {
 void RootScrollerController::DidResizeFrameView() {
   DCHECK(document_);
 
-  Page* page = document_->GetPage();
-  if (document_->GetFrame() && document_->GetFrame()->IsMainFrame() && page)
-    page->GlobalRootScrollerController().DidResizeViewport();
+  // TODO(bokan): This method is called from the LocalFrameView but before it's
+  // attached to the document so View() can be nullptr. It's not great that we
+  // might avoid calling DidResizeViewport on the initial size but it doesn't
+  // currently matter since GlobalRootScrollerController().DidResizeViewport()
+  // is used only to invalidate paint and compositing which is unnecessary when
+  // creating the view.
+  if (document_->View()) {
+    // RootFrameViewport exists only in pages with a RootScroller, see
+    // LocalFrameView::InitializeRootScroller.
+    if (document_->View()->GetRootFrameViewport()) {
+      DCHECK(document_->GetFrame()->IsMainFrame());
+      document_->GetPage()->GlobalRootScrollerController().DidResizeViewport();
+    }
+  }
 
   // If the effective root scroller in this Document is a Frame, it'll match
   // its parent's frame rect. We can't rely on layout to kick it to update its
@@ -375,8 +386,14 @@ Element* RootScrollerController::ImplicitRootScrollerFromCandidates() {
   if (!document_->GetLayoutView())
     return nullptr;
 
-  if (!document_->GetFrame()->IsMainFrame())
+  DCHECK(document_->View());
+
+  // RootFrameViewport exists only in pages with a RootScroller, see
+  // LocalFrameView::InitializeRootScroller.
+  if (!document_->View()->GetRootFrameViewport())
     return nullptr;
+
+  DCHECK(document_->GetFrame()->IsMainFrame());
 
   bool multiple_matches = false;
 
@@ -410,8 +427,10 @@ void RootScrollerController::ElementRemoved(const Element& element) {
 
 void RootScrollerController::ConsiderForImplicit(Node& node) {
   DCHECK(RuntimeEnabledFeatures::ImplicitRootScrollerEnabled());
-  if (!document_->GetFrame()->IsMainFrame())
+  if (!document_->View()->GetRootFrameViewport())
     return;
+
+  DCHECK(document_->GetFrame()->IsMainFrame());
 
   if (document_->GetPage()->GetChromeClient().IsPopup())
     return;
