@@ -31,7 +31,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
@@ -104,9 +103,6 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL))
                 .when(mUrlFormatterJniMock)
                 .fixupUrl(UrlConstants.NTP_NON_NATIVE_URL);
-
-        LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
-        Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
 
         CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
 
