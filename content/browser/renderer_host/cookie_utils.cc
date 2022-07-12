@@ -209,7 +209,10 @@ void EmitCookieWarningsAndMetrics(
     partitioned_cookies_exist =
         partitioned_cookies_exist ||
         (cookie->cookie_or_line->is_cookie() &&
-         cookie->cookie_or_line->get_cookie().IsPartitioned());
+         cookie->cookie_or_line->get_cookie().IsPartitioned() &&
+         // Ignore nonced partition keys since this metric is meant to track
+         // usage of the Partitioned attribute.
+         !cookie->cookie_or_line->get_cookie().PartitionKey()->nonce());
 
     breaking_context_downgrade =
         breaking_context_downgrade ||
