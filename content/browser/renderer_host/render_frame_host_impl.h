@@ -4268,6 +4268,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(crbug.com/936696): Revisit after RenderDocument ships.
   float page_scale_factor_ = 1.f;
 
+  // Emit a DumpWithoutCrashing() when |this| is deleted and this flag is reset.
+  bool check_deletion_for_bug_1276535_ = false;
+
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently
   // active document in the corresponding RenderFrame.

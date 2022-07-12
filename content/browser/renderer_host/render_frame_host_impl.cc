@@ -1728,6 +1728,11 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 RenderFrameHostImpl::~RenderFrameHostImpl() {
   TRACE_EVENT("navigation", "~RenderFrameHostImpl()",
               ChromeTrackEvent::kRenderFrameHost, this);
+  // See https://crbug.com/1276535
+  if (check_deletion_for_bug_1276535_) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   // The lifetime of this object has ended, so remove it from the id map before
   // calling any delegates/observers, so that any calls to |FromID| no longer
   // return |this|.
@@ -8434,6 +8439,7 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
 void RenderFrameHostImpl::PendingDeletionCheckCompleted() {
   if (lifecycle_state() == LifecycleStateImpl::kReadyToBeDeleted &&
       children_.empty()) {
+    check_deletion_for_bug_1276535_ = false;
     if (is_waiting_for_unload_ack_) {
       OnUnloaded();  // Delete |this|.
       // Do not add code after this.
@@ -8445,51 +8451,37 @@ void RenderFrameHostImpl::PendingDeletionCheckCompleted() {
 
 void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
   if (children_.empty()) {
-    PendingDeletionCheckCompleted();
-    // |this| is potentially deleted. Do not add code after this.
+    PendingDeletionCheckCompleted();  // This might delete |this|.
+    // DO NOT add code after this.
     return;
   }
 
-  // Collect children first before calling PendingDeletionCheckCompleted() on
-  // them, because it may delete them.
+  base::WeakPtr<RenderFrameHostImpl> self = GetWeakPtr();
+  check_deletion_for_bug_1276535_ = true;
+
+  // Collect children first before calling PendingDeletionCheckCompleted(). It
+  // can delete them and invalidate |children_|. When the last child has been
+  // deleted, it might also delete |this|.
   //
-  // Note: In https://crbug.com/1276535, we believe as a side effect of deleting
-  // on RenderFrameHost, a sibling gets deleted. As an attempt to verify this,
-  // this holds WeakPtr<T> instead of T*.
-  std::vector<base::WeakPtr<RenderFrameHostImpl>> children_rfh;
+  // https://crbug.com/1276535: We collect WeakPtr, because we suspect deleting
+  // a child might delete the whole WebContent and everything it contained.
+  std::vector<base::WeakPtr<RenderFrameHostImpl>> weak_children;
   for (std::unique_ptr<FrameTreeNode>& child : children_) {
     RenderFrameHostImpl* child_rfh = child->current_frame_host();
-    if (!child_rfh) {
-      // A FrameTreeNode is guaranteed to hold a RenderFrameHost.
-      // Note: This is not entirely true anymore, due to Prerender. Maybe this
-      // is a clue to https://crbug.com/1276535 ?
-      static auto* const crash_key_location = AllocateCrashKeyString(
-          "pending_deletion_check_completed_subtree_location_1",
-          base::debug::CrashKeySize::Size32);
-      SetCrashKeyString(crash_key_location, "true");
-      static auto* const crash_key_prerender = AllocateCrashKeyString(
-          "prerender", base::debug::CrashKeySize::Size32);
-      SetCrashKeyString(crash_key_prerender,
-                        frame_tree()->is_prerendering() ? "true" : "false");
-      base::debug::DumpWithoutCrashing();
-      continue;
-    }
-    children_rfh.push_back(child_rfh->GetWeakPtr());
+    CHECK(child_rfh);
+    weak_children.push_back(child_rfh->GetWeakPtr());
   }
 
-  for (base::WeakPtr<RenderFrameHostImpl>& child_rfh : children_rfh) {
-    if (!child_rfh) {
-      // A RenderFrameHost has been deleted, as a result of calling
-      // PendingDeletionCheckCompletedOnSubtree(), this would be unexpected.
-      // Please report to: https://crbug.com/1276535
-      static auto* const crash_key_location = AllocateCrashKeyString(
-          "pending_deletion_check_completed_subtree_location_2",
-          base::debug::CrashKeySize::Size32);
-      SetCrashKeyString(crash_key_location, "true");
-      base::debug::DumpWithoutCrashing();
-      continue;
+  // DO NOT use |this| after this line.
+
+  for (base::WeakPtr<RenderFrameHostImpl>& child_rfh : weak_children) {
+    if (child_rfh) {
+      child_rfh->PendingDeletionCheckCompletedOnSubtree();
     }
-    child_rfh->PendingDeletionCheckCompletedOnSubtree();
+  }
+
+  if (self) {
+    check_deletion_for_bug_1276535_ = false;
   }
 }
 
