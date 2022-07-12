@@ -17,7 +17,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class Widget;

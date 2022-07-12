@@ -225,6 +225,7 @@ bool ActionTap::ParseJsonFromMouse(const base::Value& value) {
 bool ActionTap::RewriteEvent(const ui::Event& origin,
                              const gfx::RectF& content_bounds,
                              const bool is_mouse_locked,
+                             const gfx::Transform* rotation_transform,
                              std::list<ui::TouchEvent>& touch_events,
                              bool& keep_original_event) {
   if (!IsBound(*current_binding_) ||
@@ -240,8 +241,9 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
   // Rewrite for key event.
   if (IsKeyboardBound(*current_binding())) {
     auto* key_event = origin.AsKeyEvent();
-    bool rewritten = RewriteKeyEvent(key_event, content_bounds, touch_events,
-                                     keep_original_event);
+    bool rewritten =
+        RewriteKeyEvent(key_event, content_bounds, rotation_transform,
+                        touch_events, keep_original_event);
     LogTouchEvents(touch_events);
     return rewritten;
   }
@@ -249,7 +251,8 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
   if (!is_mouse_locked)
     return false;
   auto* mouse_event = origin.AsMouseEvent();
-  auto rewritten = RewriteMouseEvent(mouse_event, touch_events, content_bounds);
+  bool rewritten = RewriteMouseEvent(mouse_event, content_bounds,
+                                     rotation_transform, touch_events);
   LogTouchEvents(touch_events);
   return rewritten;
 }
@@ -280,6 +283,7 @@ void ActionTap::Unbind(const InputElement& input_element) {
 
 bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                 const gfx::RectF& content_bounds,
+                                const gfx::Transform* rotation_transform,
                                 std::list<ui::TouchEvent>& rewritten_events,
                                 bool& keep_original_event) {
   DCHECK(key_event);
@@ -302,15 +306,15 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
     DCHECK(touch_id_);
     if (!touch_id_)
       return false;
-    auto pos = CalculateTouchPosition(content_bounds);
+    auto pos = CalculateTouchPosition(content_bounds, rotation_transform);
     if (!pos)
       return false;
     last_touch_root_location_ = *pos;
 
-    rewritten_events.emplace_back(ui::TouchEvent(
+    rewritten_events.emplace_back(
         ui::EventType::ET_TOUCH_PRESSED, last_touch_root_location_,
         last_touch_root_location_, key_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_)));
+        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
     ui::Event::DispatcherApi(&(rewritten_events.back()))
         .set_target(target_window_);
     if (!current_binding_->is_modifier_key()) {
@@ -321,10 +325,10 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
       // can still receive the release event. To avoid error in
       // AcceleratorHistory, original press event is still sent.
       keep_original_event = true;
-      rewritten_events.emplace_back(ui::TouchEvent(
+      rewritten_events.emplace_back(
           ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
           last_touch_root_location_, key_event->time_stamp(),
-          ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_)));
+          ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
       ui::Event::DispatcherApi(&(rewritten_events.back()));
       OnTouchReleased();
     }
@@ -332,10 +336,10 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
     if (!VerifyOnKeyRelease(key_event->code()))
       return true;
 
-    rewritten_events.emplace_back(ui::TouchEvent(
+    rewritten_events.emplace_back(
         ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
         last_touch_root_location_, key_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_)));
+        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
     ui::Event::DispatcherApi(&(rewritten_events.back()))
         .set_target(target_window_);
 
@@ -348,8 +352,9 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
 }
 
 bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
-                                  std::list<ui::TouchEvent>& rewritten_events,
-                                  const gfx::RectF& content_bounds) {
+                                  const gfx::RectF& content_bounds,
+                                  const gfx::Transform* rotation_transform,
+                                  std::list<ui::TouchEvent>& rewritten_events) {
   DCHECK(mouse_event);
 
   auto type = mouse_event->type();
@@ -366,7 +371,8 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
 
   if (!touch_id_) {
     touch_id_ = TouchIdManager::GetInstance()->ObtainTouchID();
-    auto touch_down_pos = CalculateTouchPosition(content_bounds);
+    auto touch_down_pos =
+        CalculateTouchPosition(content_bounds, rotation_transform);
     if (touch_down_pos) {
       last_touch_root_location_ = *touch_down_pos;
     } else {
@@ -376,15 +382,15 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
       float scale = target_window_->GetHost()->device_scale_factor();
       last_touch_root_location_.Scale(scale);
     }
-    rewritten_events.emplace_back(ui::TouchEvent(
+    rewritten_events.emplace_back(
         ui::EventType::ET_TOUCH_PRESSED, last_touch_root_location_,
         last_touch_root_location_, mouse_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_)));
+        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
   } else {
-    rewritten_events.emplace_back(ui::TouchEvent(
+    rewritten_events.emplace_back(
         ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
         last_touch_root_location_, mouse_event->time_stamp(),
-        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_)));
+        ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
     OnTouchReleased();
   }
   ui::Event::DispatcherApi(&(rewritten_events.back()))

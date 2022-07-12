@@ -273,7 +273,8 @@ bool Action::IsOverlapped(const InputElement& input_element) {
 }
 
 absl::optional<gfx::PointF> Action::CalculateTouchPosition(
-    const gfx::RectF& content_bounds) {
+    const gfx::RectF& content_bounds,
+    const gfx::Transform* rotation_transform) {
   if (locations_.empty())
     return absl::nullopt;
   DCHECK(current_position_index_ < locations_.size());
@@ -288,6 +289,8 @@ absl::optional<gfx::PointF> Action::CalculateTouchPosition(
 
   gfx::PointF root_location = gfx::PointF(root_point);
   root_location.Scale(scale);
+  if (rotation_transform)
+    rotation_transform->TransformPoint(&root_location);
 
   VLOG(1) << "Calculate touch position: local position {" << point.ToString()
           << "}, root location {" << root_point.ToString()

@@ -101,6 +101,9 @@ class TouchInjector : public ui::EventRewriter {
   void RegisterEventRewriter();
   // Unregister the EventRewriter.
   void UnRegisterEventRewriter();
+  // Update info for touch injector. For example, update transform information
+  // if there is screen rotation.
+  void Update();
   // Change bindings. This could be from user editing from display overlay
   // (|mode| = DisplayMode::kEdit) or from customized protobuf data (|mode| =
   // DisplayMode::kView).
@@ -205,6 +208,7 @@ class TouchInjector : public ui::EventRewriter {
                           &ui::EventSource::RemoveEventRewriter>
       observation_{this};
   std::unique_ptr<KeyCommand> mouse_lock_;
+  std::unique_ptr<gfx::Transform> rotation_transform_;
   bool text_input_active_ = false;
   // The mouse is unlocked by default.
   bool is_mouse_locked_ = false;

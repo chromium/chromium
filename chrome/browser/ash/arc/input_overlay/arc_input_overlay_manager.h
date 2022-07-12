@@ -25,6 +25,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/display/display_observer.h"
 
 namespace content {
 class BrowserContext;
@@ -40,7 +41,8 @@ class ArcInputOverlayManager : public KeyedService,
                                public aura::EnvObserver,
                                public aura::WindowObserver,
                                public aura::client::FocusChangeObserver,
-                               public ash::TabletModeObserver {
+                               public ash::TabletModeObserver,
+                               public display::DisplayObserver {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -78,6 +80,10 @@ class ArcInputOverlayManager : public KeyedService,
   // ash::TabletModeObserver:
   void OnTabletModeStarting() override;
   void OnTabletModeEnded() override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
 
  private:
   friend class ArcInputOverlayManagerTest;

@@ -29,6 +29,7 @@ class ActionMove : public Action {
   bool RewriteEvent(const ui::Event& origin,
                     const gfx::RectF& content_bounds,
                     const bool is_mouse_locked,
+                    const gfx::Transform* rotation_transform,
                     std::list<ui::TouchEvent>& touch_events,
                     bool& keep_original_event) override;
   gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
@@ -87,16 +88,19 @@ class ActionMove : public Action {
   bool ParseJsonFromMouse(const base::Value& value);
   bool RewriteKeyEvent(const ui::KeyEvent* key_event,
                        const gfx::RectF& content_bounds,
+                       const gfx::Transform* rotation_transform,
                        std::list<ui::TouchEvent>& rewritten_events);
   bool RewriteMouseEvent(const ui::MouseEvent* mouse_event,
                          const gfx::RectF& content_bounds,
+                         const gfx::Transform* rotation_transform,
                          std::list<ui::TouchEvent>& rewritten_events);
 
   // For key-bound move.
   void CalculateMoveVector(gfx::PointF& touch_press_pos,
                            int direction_index,
                            bool key_press,
-                           const gfx::RectF& content_bounds);
+                           const gfx::RectF& content_bounds,
+                           const gfx::Transform* rotation_transform);
 
   // For mouse-bound move.
   // Return the bounds in the root window.

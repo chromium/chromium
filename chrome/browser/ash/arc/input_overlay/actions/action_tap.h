@@ -24,6 +24,7 @@ class ActionTap : public Action {
   bool RewriteEvent(const ui::Event& origin,
                     const gfx::RectF& content_bounds,
                     const bool is_mouse_locked,
+                    const gfx::Transform* rotation_transform,
                     std::list<ui::TouchEvent>& touch_events,
                     bool& keep_original_event) override;
   gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
@@ -70,11 +71,13 @@ class ActionTap : public Action {
   bool ParseJsonFromMouse(const base::Value& value);
   bool RewriteKeyEvent(const ui::KeyEvent* key_event,
                        const gfx::RectF& content_bounds,
+                       const gfx::Transform* rotation_transform,
                        std::list<ui::TouchEvent>& rewritten_events,
                        bool& keep_original_event);
   bool RewriteMouseEvent(const ui::MouseEvent* mouse_event,
-                         std::list<ui::TouchEvent>& rewritten_events,
-                         const gfx::RectF& content_bounds);
+                         const gfx::RectF& content_bounds,
+                         const gfx::Transform* rotation_transform,
+                         std::list<ui::TouchEvent>& rewritten_events);
 };
 
 }  // namespace input_overlay

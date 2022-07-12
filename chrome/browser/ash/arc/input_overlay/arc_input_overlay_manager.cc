@@ -20,6 +20,7 @@
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/display/manager/display_manager.h"
 
 namespace arc {
 namespace {
@@ -82,15 +83,18 @@ ArcInputOverlayManager::ArcInputOverlayManager(
     : input_method_observer_(std::make_unique<InputMethodObserver>(this)) {
   if (aura::Env::HasInstance())
     env_observation_.Observe(aura::Env::GetInstance());
-  if (ash::Shell::HasInstance() &&
-      ash::Shell::Get()->tablet_mode_controller()) {
-    ash::Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  }
-  if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
-    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
-        ->AddObserver(this);
-  }
+  if (ash::Shell::HasInstance()) {
+    if (ash::Shell::Get()->tablet_mode_controller())
+      ash::Shell::Get()->tablet_mode_controller()->AddObserver(this);
 
+    if (ash::Shell::Get()->display_manager())
+      ash::Shell::Get()->display_manager()->AddObserver(this);
+
+    if (ash::Shell::GetPrimaryRootWindow()) {
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+          ->AddObserver(this);
+    }
+  }
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        // Should not block shutdown.
@@ -357,20 +361,31 @@ void ArcInputOverlayManager::OnWindowBoundsChanged(
     return;
   if (display_overlay_controller_)
     display_overlay_controller_->OnWindowBoundsChanged();
+
+  auto it = input_overlay_enabled_windows_.find(window);
+  if (it == input_overlay_enabled_windows_.end())
+    return;
+
+  it->second->Update();
 }
 
 void ArcInputOverlayManager::Shutdown() {
   UnRegisterWindow(registered_top_level_window_);
   window_observations_.RemoveAllObservations();
-  if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
-    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
-        ->RemoveObserver(this);
+  if (ash::Shell::HasInstance()) {
+    if (ash::Shell::GetPrimaryRootWindow()) {
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+          ->RemoveObserver(this);
+    }
+
+    if (ash::Shell::Get()->tablet_mode_controller())
+      ash::Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+
+    if (ash::Shell::Get()->display_manager())
+      ash::Shell::Get()->display_manager()->RemoveObserver(this);
   }
-  if (ash::Shell::HasInstance() &&
-      ash::Shell::Get()->tablet_mode_controller()) {
-    ash::Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-  }
-  env_observation_.Reset();
+  if (aura::Env::HasInstance())
+    env_observation_.Reset();
 }
 
 void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
@@ -400,6 +415,19 @@ void ArcInputOverlayManager::OnTabletModeStarting() {
 
 void ArcInputOverlayManager::OnTabletModeEnded() {
   RegisterFocusedWindow();
+}
+
+void ArcInputOverlayManager::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t metrics) {
+  if (!registered_top_level_window_)
+    return;
+
+  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
+  if (it == input_overlay_enabled_windows_.end())
+    return;
+
+  it->second->Update();
 }
 
 }  // namespace arc
