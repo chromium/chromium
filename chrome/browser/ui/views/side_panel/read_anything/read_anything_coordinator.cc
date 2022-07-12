@@ -23,16 +23,29 @@
 
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser) {
-  // Create the model.
-  std::string prefs_font_name;
-  if (browser->profile() && browser->profile()->GetPrefs()) {
-    prefs_font_name = browser->profile()->GetPrefs()->GetString(
-        prefs::kAccessibilityReadAnythingFontName);
-  }
-  model_ = std::make_unique<ReadAnythingModel>(prefs_font_name);
+  // Create the model and initialize it with user prefs (if present).
+  model_ = std::make_unique<ReadAnythingModel>();
+  InitModelWithUserPrefs(browser);
 
   // Create the controller.
   controller_ = std::make_unique<ReadAnythingController>(model_.get(), browser);
+}
+
+void ReadAnythingCoordinator::InitModelWithUserPrefs(Browser* browser) {
+  if (!browser->profile() || !browser->profile()->GetPrefs())
+    return;
+
+  std::string prefs_font_name;
+  prefs_font_name = browser->profile()->GetPrefs()->GetString(
+      prefs::kAccessibilityReadAnythingFontName);
+
+  double prefs_font_scale;
+  prefs_font_scale = browser->profile()->GetPrefs()->GetDouble(
+      prefs::kAccessibilityReadAnythingFontScale);
+
+  model_->Init(
+      /* font name = */ prefs_font_name,
+      /* font scale = */ prefs_font_scale);
 }
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {

@@ -17,6 +17,7 @@ namespace prefs {
 #if !BUILDFLAG(IS_ANDROID)
 
 extern const char kAccessibilityReadAnythingFontName[];
+extern const char kAccessibilityReadAnythingFontScale[];
 
 }  // namespace prefs
 

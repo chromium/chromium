@@ -49,6 +49,9 @@ void ReadAnythingController::OnFontSizeChanged(bool increase) {
   } else {
     model_->DecreaseTextSize();
   }
+
+  browser_->profile()->GetPrefs()->SetDouble(
+      prefs::kAccessibilityReadAnythingFontScale, model_->GetFontScale());
 }
 
 void ReadAnythingController::OnUIReady() {

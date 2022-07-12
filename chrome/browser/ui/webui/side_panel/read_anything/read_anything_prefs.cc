@@ -10,9 +10,13 @@
 namespace prefs {
 
 #if !BUILDFLAG(IS_ANDROID)
-// String to represent the user's preferred font for the read anything UI.
+// String to represent the user's preferred font name for the read anything UI.
 const char kAccessibilityReadAnythingFontName[] =
     "settings.a11y.read_anything.font_name";
+
+// Double to represent the user's preferred font size scaling factor.
+const char kAccessibilityReadAnythingFontScale[] =
+    "settings.a11y.read_anything.font_scale";
 
 }  // namespace prefs
 
@@ -20,6 +24,9 @@ void RegisterReadAnythingProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kAccessibilityReadAnythingFontName,
                                kReadAnythingDefaultFontName,
+                               user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale,
+                               kReadAnythingDefaultFontScale,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

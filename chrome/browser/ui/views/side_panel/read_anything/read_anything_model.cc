@@ -11,26 +11,31 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 
-ReadAnythingModel::ReadAnythingModel(std::string prefs_font_name)
-    : font_model_(std::make_unique<ReadAnythingFontModel>()) {
-  // If this profile has previously selected a preferred font name choice,
-  // check that it is still a valid font, and if so, make it the default.
-  if (font_model_->IsValidFontName(prefs_font_name)) {
-    font_model_->SetDefaultIndexFromPrefsFontName(prefs_font_name);
-    font_name_ = prefs_font_name;
-  }
-
-  // TODO(1266555): Add font size to users prefs and initialize here.
-  font_size_ = 18.0f;
-}
+ReadAnythingModel::ReadAnythingModel()
+    : font_name_(kReadAnythingDefaultFontName),
+      font_scale_(kReadAnythingDefaultFontScale),
+      font_model_(std::make_unique<ReadAnythingFontModel>()) {}
 
 ReadAnythingModel::~ReadAnythingModel() = default;
+
+void ReadAnythingModel::Init(std::string& font_name, double font_scale) {
+  // If this profile has previously selected a preferred font name choice,
+  // check that it is still a valid font, and then assign if so.
+  if (font_model_->IsValidFontName(font_name)) {
+    font_model_->SetDefaultIndexFromPrefsFontName(font_name);
+    font_name_ = font_name;
+  }
+
+  font_scale_ = font_scale;
+}
 
 void ReadAnythingModel::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
   NotifyFontNameUpdated();
   NotifyAXTreeDistilled();
+  NotifyFontSizeChanged();
 }
 
 void ReadAnythingModel::RemoveObserver(Observer* obs) {
@@ -57,12 +62,18 @@ void ReadAnythingModel::SetDistilledAXTree(
 
 // TODO(1266555): Update with text scaling approach based on UI/UX feedback.
 void ReadAnythingModel::DecreaseTextSize() {
-  font_size_ *= 0.83333f;
+  font_scale_ -= 0.2f;
+  if (font_scale_ < kReadAnythingMinimumFontScale)
+    font_scale_ = kReadAnythingMinimumFontScale;
+
   NotifyFontSizeChanged();
 }
 
 void ReadAnythingModel::IncreaseTextSize() {
-  font_size_ *= 1.2f;
+  font_scale_ += 0.2;
+  if (font_scale_ > kReadAnythingMaximumFontScale)
+    font_scale_ = kReadAnythingMaximumFontScale;
+
   NotifyFontSizeChanged();
 }
 
@@ -80,7 +91,7 @@ void ReadAnythingModel::NotifyAXTreeDistilled() {
 
 void ReadAnythingModel::NotifyFontSizeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnFontSizeChanged(font_size_);
+    obs.OnFontSizeChanged(kReadAnythingDefaultFontSize * font_scale_);
   }
 }
 

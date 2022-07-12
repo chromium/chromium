@@ -69,10 +69,12 @@ class ReadAnythingModel {
     virtual void OnFontSizeChanged(const float new_font_size) = 0;
   };
 
-  explicit ReadAnythingModel(std::string prefs_font_name);
+  ReadAnythingModel();
   ReadAnythingModel(const ReadAnythingModel&) = delete;
   ReadAnythingModel& operator=(const ReadAnythingModel&) = delete;
   ~ReadAnythingModel();
+
+  void Init(std::string& font_name, double font_scale);
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
@@ -85,6 +87,7 @@ class ReadAnythingModel {
   void IncreaseTextSize();
 
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
+  double GetFontScale() { return font_scale_; }
 
  private:
   void NotifyAXTreeDistilled();
@@ -93,7 +96,10 @@ class ReadAnythingModel {
 
   // State:
   std::string font_name_;
-  float font_size_;
+
+  // Font scale, a double to multiply the default font size by to get the user
+  // preferred font size. This number is opaque to the user.
+  double font_scale_;
 
   // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
   // scrolls in sync.
