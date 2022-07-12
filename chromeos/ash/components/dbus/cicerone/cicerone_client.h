@@ -353,6 +353,20 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public DBusClient {
       DBusMethodCallback<vm_tools::cicerone::GetVshSessionResponse>
           callback) = 0;
 
+  // Attaches a USB device to a LXD container.
+  // |callback| is called when the method completes.
+  virtual void AttachUsbToContainer(
+      const vm_tools::cicerone::AttachUsbToContainerRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::AttachUsbToContainerResponse>
+          callback) = 0;
+
+  // Detaches a USB device from a LXD container.
+  // |callback| is called when the method completes.
+  virtual void DetachUsbFromContainer(
+      const vm_tools::cicerone::DetachUsbFromContainerRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::DetachUsbFromContainerResponse>
+          callback) = 0;
+
   // Send signal with files user has selected in SelectFile dialog. This is sent
   // in response to VmApplicationsServiceProvider::SelectFile().
   virtual void FileSelected(
