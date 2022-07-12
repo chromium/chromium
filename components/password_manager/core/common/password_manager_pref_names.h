@@ -32,6 +32,12 @@ extern const char kCredentialsEnableAutosignin[];
 // this setting instead.
 extern const char kCredentialsEnableService[];
 
+#if BUILDFLAG(IS_IOS)
+// The value of this preference determines whether the user had enabled the
+// credential provider in their iOS settings at startup.
+extern const char kCredentialProviderEnabledOnStartup[];
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 // Boolean controlling whether the password manager allows automatic signing in
 // through Credential Management API. This pref is not synced. Its value is set

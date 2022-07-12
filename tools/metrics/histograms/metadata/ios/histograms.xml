@@ -257,6 +257,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.CredentialExtension.IsEnabled.Startup" enum="Boolean"
+    expires_after="2023-07-01">
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Logged once per app launch. Logs on startup whether the user had enabled the
+    credential provider in their iOS settings.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CredentialExtension.KeychainSavePasswordFailureCount"
     units="count" expires_after="2022-12-11">
   <owner>rkgibson@chromium.org</owner>
@@ -365,6 +375,17 @@ chromium-metrics-reviews@google.com.
     The number of times the Credential Extension user unobfuscated a Password
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
     Note: events where the count is zero were removed in M91.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.StatusDidChangeTo.Startup"
+    enum="Boolean" expires_after="2023-07-01">
+  <owner>veronguyen@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Logged once per app launch if the status did changed. Logs the new status
+    value (enabled/disabled) of the credential provider in the user's iOS
+    settings on startup.
   </summary>
 </histogram>
 

@@ -442,4 +442,16 @@ bool UsesPasswordManagerGoogleBranding(bool is_syncing) {
 #endif  // GOOGLE_CHROME_BRANDING
 }
 
+#if BUILDFLAG(IS_IOS)
+bool IsCredentialProviderEnabledOnStartup(const PrefService* prefs) {
+  return prefs->GetBoolean(
+      password_manager::prefs::kCredentialProviderEnabledOnStartup);
+}
+
+void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(
+      password_manager::prefs::kCredentialProviderEnabledOnStartup, enabled);
+}
+#endif
+
 }  // namespace password_manager_util

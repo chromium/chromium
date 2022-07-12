@@ -12,6 +12,11 @@ namespace prefs {
 const char kCredentialsEnableAutosignin[] = "credentials_enable_autosignin";
 const char kCredentialsEnableService[] = "credentials_enable_service";
 
+#if BUILDFLAG(IS_IOS)
+const char kCredentialProviderEnabledOnStartup[] =
+    "credential_provider_enabled_on_startup";
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 const char kAutoSignInEnabledGMS[] = "profile.auto_sign_in_enabled_gms";
 const char kOfferToSavePasswordsEnabledGMS[] =

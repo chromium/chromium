@@ -190,6 +190,16 @@ std::string GetSignonRealm(const GURL& url);
 // and only when user |is_syncing| in Chromium builds.
 bool UsesPasswordManagerGoogleBranding(bool is_syncing);
 
+#if BUILDFLAG(IS_IOS)
+// Returns a boolean indicating whether the user had enabled the credential
+// provider in their iOS settings at startup.
+bool IsCredentialProviderEnabledOnStartup(const PrefService* prefs);
+
+// Sets the boolean indicating whether the user had enabled the credential
+// provider in their iOS settings at startup.
+void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled);
+#endif
+
 }  // namespace password_manager_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_UTIL_H_
