@@ -988,6 +988,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
+     * Set container view on which GTS toolbar needs to inflate.
+     * @param containerView view containing GTS fullscreen toolbar.
+     */
+    public void setTabSwitcherFullScreenView(ViewGroup containerView) {
+        ViewStub toolbarStub =
+                containerView.findViewById(R.id.fullscreen_tab_switcher_toolbar_stub);
+        mToolbar.setFullScreenToolbarStub(toolbarStub);
+    }
+
+    /**
      * Handle a layout change event.
      * @param layoutType The layout being switched to.
      * @param showToolbar Whether the toolbar should be shown.
@@ -1035,13 +1045,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             Callback<LoadUrlParams> logoClickedCallback) {
         ViewStub tabSwitcherToolbarStub = mActivity.findViewById(R.id.tab_switcher_toolbar_stub);
         ViewStub tabSwitcherFullscreenToolbarStub = null;
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(mActivity)) {
-            // Need to inflate grid_tab_switcher_view_holder_stub, as it contains
-            // fullscreen_tab_switcher_toolbar_stub.
-            ((ViewStub) mActivity.findViewById(R.id.grid_tab_switcher_view_holder_stub)).inflate();
-            tabSwitcherFullscreenToolbarStub =
-                    mActivity.findViewById(R.id.fullscreen_tab_switcher_toolbar_stub);
-        }
+
         // clang-format off
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer,
                 tabSwitcherToolbarStub, tabSwitcherFullscreenToolbarStub, toolbarLayout,

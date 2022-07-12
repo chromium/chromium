@@ -3144,10 +3144,17 @@ const FeatureEntry::FeatureVariation kUseMultipleOverlaysVariations[] = {
 const FeatureEntry::FeatureParam kGridTabSwitcherForTabletsPolished[] = {
     {"enable_launch_polish", "true"}};
 
+const FeatureEntry::FeatureParam kGridTabSwitcherForTabletsDelayCreation[] = {
+    {"delay_creation", "true"},
+    {"enable_launch_polish", "true"}};
+
 const FeatureEntry::FeatureVariation kGridTabSwitcherForTabletsVariations[] = {
     {"(Polished)", kGridTabSwitcherForTabletsPolished,
      std::size(kGridTabSwitcherForTabletsPolished), nullptr},
+    {"(DelayCreatePolish)", kGridTabSwitcherForTabletsDelayCreation,
+     std::size(kGridTabSwitcherForTabletsDelayCreation), nullptr},
 };
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

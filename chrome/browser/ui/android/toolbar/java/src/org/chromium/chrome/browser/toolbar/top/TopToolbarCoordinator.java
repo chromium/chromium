@@ -201,6 +201,16 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.setInvalidatorCallback(invalidatorCallback);
     }
 
+    /**
+     * Set fullscreen GTS toolbar stub
+     * @param toolbarStub stub to set.
+     */
+    public void setFullScreenToolbarStub(ViewStub toolbarStub) {
+        if (mTabSwitcherModeCoordinator != null) {
+            mTabSwitcherModeCoordinator.setFullScreenToolbarStub(toolbarStub);
+        }
+    }
+
     private boolean isTabletGridTabSwitcherEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
     }

@@ -3312,6 +3312,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabSwitcher.CreationTime" units="ms"
+    expires_after="2022-12-31">
+  <owner>skavuluru@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the time taken to create the StartSurfaceCoordinator and grid tab
+    switcher views. Only recorded for tablets.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabSwitcher.IncognitoClickedIsEmpty" enum="Boolean"
     expires_after="2022-09-01">
   <owner>sideyilmaz@chromium.org</owner>
@@ -3319,6 +3330,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted every time a user uses Incognito button on Tab Switcher. Records
     whether or not there is any Incognito tab when Incognito button is clicked.
+  </summary>
+</histogram>
+
+<histogram name="Android.TabSwitcher.SetupRecyclerView.Time" units="ms"
+    expires_after="2022-12-31">
+  <owner>skavuluru@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the time taken to create TabListCoordinator, which inflates the
+    RecyclerView for the grid tab switcher, and bind views.
   </summary>
 </histogram>
 

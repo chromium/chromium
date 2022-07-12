@@ -8,7 +8,7 @@ import android.content.Context;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -67,28 +67,28 @@ public class LayoutManagerChrome
     private LayoutStateObserver mTabSwitcherFocusLayoutStateObserver;
 
     protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private boolean mFinishNativeInitialization;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
      * @param host         A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param createOverviewLayout Whether overview layout should be created or not.
-     * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
-     *                     should be used, otherwise GTS should be used.
+     * @param startSurfaceSupplier Supplier for an interface to talk to the Grid Tab Switcher.
+     *         Creates overviewLayout with this surface if this is has value. If not, {@link
+     *         #showLayout(int, boolean)} will create overviewLayout.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param jankTracker Tracker for surface jank.
      * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *         when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      */
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
-            boolean createOverviewLayout, @Nullable StartSurface startSurface,
+            Supplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
             ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
-        Context context = host.getContext();
-        LayoutRenderHost renderHost = host.getLayoutRenderHost();
 
         // Build Event Filter Handlers
         mToolbarSwipeHandler = createToolbarSwipeHandler(/* supportSwipeDown = */ true);
@@ -105,26 +105,50 @@ public class LayoutManagerChrome
             }
         });
 
-        if (createOverviewLayout) {
-            if (startSurface != null) {
-                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
+        if (startSurfaceSupplier.hasValue()) {
+            createOverviewLayout(startSurfaceSupplier.get(), jankTracker, scrimCoordinator,
+                    tabSwitcherScrimAnchor);
+        }
+    }
 
-                mOverviewLayout = StartSurfaceDelegate.createTabSwitcherAndStartSurfaceLayout(
-                        context, this, renderHost, startSurface, jankTracker,
-                        tabSwitcherScrimAnchor, scrimCoordinator);
+    /**
+     * Creates @{@link org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout}
+     * @param startSurface An interface to talk to the Grid Tab Switcher
+     * @param jankTracker Jank tracker.
+     * @param scrimCoordinator scrim coordinator for GTS
+     * @param tabSwitcherScrimAnchor scrim anchor view for GTS
+     */
+    protected void createOverviewLayout(@NonNull StartSurface startSurface,
+            @NonNull JankTracker jankTracker, ScrimCoordinator scrimCoordinator,
+            ViewGroup tabSwitcherScrimAnchor) {
+        assert mOverviewLayout == null
+                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mHost.getContext());
+        mOverviewLayout = StartSurfaceDelegate.createTabSwitcherAndStartSurfaceLayout(
+                mHost.getContext(), this, mHost.getLayoutRenderHost(), startSurface, jankTracker,
+                tabSwitcherScrimAnchor, scrimCoordinator);
 
-                if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(context)) {
-                    mTabSwitcherFocusLayoutStateObserver = new LayoutStateObserver() {
-                        @Override
-                        public void onFinishedShowing(int layoutType) {
-                            if (layoutType == LayoutType.TAB_SWITCHER) {
-                                startSurface.getGridTabListDelegate().requestFocusOnCurrentTab();
-                            }
-                        }
-                    };
-                    addObserver(mTabSwitcherFocusLayoutStateObserver);
+        if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mHost.getContext())) {
+            mTabSwitcherFocusLayoutStateObserver = new LayoutStateObserver() {
+                @Override
+                public void onFinishedShowing(int layoutType) {
+                    if (layoutType == LayoutType.TAB_SWITCHER) {
+                        startSurface.getGridTabListDelegate().requestFocusOnCurrentTab();
+                    }
                 }
-            }
+            };
+            addObserver(mTabSwitcherFocusLayoutStateObserver);
+        }
+
+        if (mTabContentManagerSupplier.hasValue()) {
+            mOverviewLayout.setTabContentManager(mTabContentManagerSupplier.get());
+        }
+
+        if (getTabModelSelector() != null) {
+            mOverviewLayout.setTabModelSelector(
+                    getTabModelSelector(), mTabContentManagerSupplier.get());
+        }
+        if (mFinishNativeInitialization) {
+            mOverviewLayout.onFinishNativeInitialization();
         }
     }
 
@@ -178,6 +202,7 @@ public class LayoutManagerChrome
             mOverviewLayout.setTabModelSelector(selector, content);
             mOverviewLayout.onFinishNativeInitialization();
         }
+        mFinishNativeInitialization = true;
     }
 
     @Override
