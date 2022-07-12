@@ -30,6 +30,7 @@ const char kBundleRequestId[] = "bundle-devtools-request-id";
 const char kResourceUrl[] = "https://example.com/";
 const char kResourceUrl2[] = "https://example.com/another";
 const char kResourceUrl3[] = "https://example.com/yetanother";
+const char kInvalidResourceUrl[] = "ftp://foo";
 const char kResourceRequestId[] = "resource-1-devtools-request-id";
 const char kResourceRequestId2[] = "resource-2-devtools-request-id";
 const char kResourceRequestId3[] = "resource-3-devtools-request-id";
@@ -300,6 +301,44 @@ TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
       1);
 }
 
+TEST_F(WebBundleURLLoaderFactoryTest, MetadataWithInvalidExchangeUrl) {
+  base::HistogramTester histogram_tester;
+  auto request = StartRequest(GURL(kInvalidResourceUrl), kResourceRequestId);
+
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kInvalidResourceUrl,
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "body");
+  WriteBundle(builder.CreateBundle());
+  FinishWritingBundle();
+
+  EXPECT_CALL(*devtools_observer_,
+              OnSubresourceWebBundleMetadataError(
+                  kBundleRequestId, Eq("Exchange URL is not valid.")));
+  EXPECT_CALL(*devtools_observer_, OnSubresourceWebBundleInnerResponse(_, _, _))
+      .Times(0);
+  request.client->RunUntilComplete();
+  RunUntilBundleError();
+
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            request.client->completion_status().error_code);
+  EXPECT_EQ(last_bundle_error()->first,
+            mojom::WebBundleErrorType::kMetadataParseError);
+  EXPECT_EQ(last_bundle_error()->second, "Exchange URL is not valid.");
+
+  // Requests made after metadata parse error should also fail.
+  auto request2 = StartRequest(GURL(kInvalidResourceUrl), kResourceRequestId);
+  request2.client->RunUntilComplete();
+
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            request2.client->completion_status().error_code);
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+          kMetadataParseError,
+      1);
+}
+
 TEST_F(WebBundleURLLoaderFactoryTest, ResponseParseError) {
   web_package::WebBundleBuilder builder;
   // An invalid response.
@@ -483,7 +522,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, TruncatedBundle) {
   EXPECT_EQ(last_bundle_error()->second, "Error reading response header.");
 }
 
-TEST_F(WebBundleURLLoaderFactoryTest, CrossOiginJson) {
+TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginJson) {
   WriteBundle(CreateCrossOriginBundle());
   FinishWritingBundle();
 

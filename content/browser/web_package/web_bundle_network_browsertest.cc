@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/web_package/web_bundle_browsertest_base.h"
+#include "content/browser/web_package/web_bundle_utils.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -258,6 +259,46 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, PrimaryURLNotFound) {
   SetContents(std::string(bundle.begin(), bundle.end()));
   TestNavigationFailure(
       wbn_url, "Web Bundle is missing the Primary URL to navigate to.");
+}
+
+IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
+                       PrimaryURLHasInvalidScheme) {
+  const std::string wbn_path = "/web_bundle/test.wbn";
+  RegisterRequestHandler(wbn_path);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL wbn_url = embedded_test_server()->GetURL(wbn_path);
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL("foo://bar/");
+  builder.AddExchange("foo://bar/",
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<title>Ready</title>");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  SetContents(std::string(bundle.begin(), bundle.end()));
+  TestNavigationFailure(wbn_url,
+                        web_bundle_utils::kInvalidPrimaryUrlErrorMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, ExchangeHasInvalidScheme) {
+  const std::string wbn_path = "/web_bundle/test.wbn";
+  const std::string primary_url_path = "/web_bundle/test.html";
+  RegisterRequestHandler(wbn_path);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL wbn_url = embedded_test_server()->GetURL(wbn_path);
+  const GURL primary_url = embedded_test_server()->GetURL(primary_url_path);
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(primary_url.spec());
+  builder.AddExchange(primary_url.spec(),
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<title>Ready</title>");
+  builder.AddExchange("foo://bar",
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<title>Ready</title>");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  SetContents(std::string(bundle.begin(), bundle.end()));
+  TestNavigationFailure(wbn_url,
+                        web_bundle_utils::kInvalidExchangeUrlErrorMessage);
 }
 
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest, OriginMismatch) {

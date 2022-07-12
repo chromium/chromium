@@ -73,6 +73,8 @@ TEST_F(WebBundleReaderTest, ReadMetadata) {
       GetReader()->HasEntry(GURL("https://user:pass@test.example.org/")));
   EXPECT_TRUE(GetReader()->HasEntry(GURL("https://test.example.org/#ref")));
   EXPECT_FALSE(GetReader()->HasEntry(GURL("https://test.example.org/404")));
+  EXPECT_EQ(GetReader()->GetEntries(),
+            std::vector({GURL("https://test.example.org")}));
 }
 
 TEST_F(WebBundleReaderTest, ReadResponse) {

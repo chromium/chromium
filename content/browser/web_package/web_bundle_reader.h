@@ -82,6 +82,10 @@ class CONTENT_EXPORT WebBundleReader final
   // Should be called after ReadMetadata finishes.
   bool HasEntry(const GURL& url) const;
 
+  // Returns a list of the URLs of all exchanges contained in this web bundle.
+  // Should be called after ReadMetadata finishes.
+  std::vector<GURL> GetEntries() const;
+
   // Returns the bundle's primary URL.
   // Should be called after ReadMetadata finishes.
   const GURL& GetPrimaryURL() const;

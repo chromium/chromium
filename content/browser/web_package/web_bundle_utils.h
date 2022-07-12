@@ -49,6 +49,11 @@ constexpr char kNoSniffErrorMessage[] =
 constexpr char kNoPrimaryUrlErrorMessage[] =
     "Web Bundle is missing the Primary URL to navigate to.";
 
+constexpr char kInvalidPrimaryUrlErrorMessage[] =
+    "Primary URL is not a valid exchange URL.";
+
+constexpr char kInvalidExchangeUrlErrorMessage[] = "Exchange URL is not valid.";
+
 extern const net::NetworkTrafficAnnotationTag kTrafficAnnotation;
 
 // Adds |error_message| to the console and calls OnComplete() of |client|.
@@ -95,6 +100,11 @@ bool GetWebBundleFileMimeTypeFromFile(const base::FilePath& path,
 CONTENT_EXPORT GURL
 GetSynthesizedUrlForWebBundle(const GURL& web_bundle_file_url,
                               const GURL& url_in_bundles);
+
+// Checks whether the URL is allowed to be used as the URL of an exchange.
+// TODO(crbug.com/966753): Revisit this once
+// https://github.com/WICG/webpackage/issues/468 is resolved.
+bool IsAllowedExchangeUrl(const GURL& url);
 
 }  // namespace web_bundle_utils
 }  // namespace content

@@ -56,8 +56,7 @@ void WebBundleInterceptorForHistoryNavigationFromFileOrFromTrustableFile::
   if (metadata_error_) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         mojo::Remote<network::mojom::URLLoaderClient>(std::move(client)),
-        frame_tree_node_id_,
-        web_bundle_utils::GetMetadataParseErrorMessage(metadata_error_));
+        frame_tree_node_id_, *metadata_error_);
     return;
   }
 
@@ -77,9 +76,17 @@ void WebBundleInterceptorForHistoryNavigationFromFileOrFromTrustableFile::
   DCHECK(!url_loader_factory_);
 
   if (error) {
-    metadata_error_ = std::move(error);
+    metadata_error_ =
+        web_bundle_utils::GetMetadataParseErrorMessage(std::move(error));
   } else {
-    CreateWebBundleURLLoaderFactory(std::move(reader_));
+    if (!web_bundle_utils::IsAllowedExchangeUrl(reader_->GetPrimaryURL())) {
+      metadata_error_ = web_bundle_utils::kInvalidPrimaryUrlErrorMessage;
+    } else if (!base::ranges::all_of(reader_->GetEntries(),
+                                     &web_bundle_utils::IsAllowedExchangeUrl)) {
+      metadata_error_ = web_bundle_utils::kInvalidExchangeUrlErrorMessage;
+    } else {
+      CreateWebBundleURLLoaderFactory(std::move(reader_));
+    }
   }
 
   if (pending_receiver_) {

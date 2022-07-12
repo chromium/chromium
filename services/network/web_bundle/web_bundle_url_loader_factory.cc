@@ -5,6 +5,7 @@
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -709,6 +710,20 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
     return;
   }
 
+  if (!base::ranges::all_of(metadata->requests, [this](const auto& entry) {
+        return IsAllowedExchangeUrl(entry.first);
+      })) {
+    std::string error_message = "Exchange URL is not valid.";
+    ReportErrorAndCancelPendingLoaders(
+        SubresourceWebBundleLoadResult::kMetadataParseError,
+        mojom::WebBundleErrorType::kMetadataParseError, error_message);
+    if (devtools_request_id_) {
+      devtools_observer_->OnSubresourceWebBundleMetadataError(
+          *devtools_request_id_, error_message);
+    }
+    return;
+  }
+
   metadata_ = std::move(metadata);
   if (devtools_observer_ && devtools_request_id_) {
     std::vector<GURL> urls;
@@ -732,6 +747,11 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
   for (auto loader : pending_loaders_)
     StartLoad(loader);
   pending_loaders_.clear();
+}
+
+bool WebBundleURLLoaderFactory::IsAllowedExchangeUrl(const GURL& relative_url) {
+  GURL url = bundle_url_.Resolve(relative_url.spec());
+  return url.SchemeIsHTTPOrHTTPS() || web_package::IsValidUuidInPackageURL(url);
 }
 
 void WebBundleURLLoaderFactory::OnResponseParsed(

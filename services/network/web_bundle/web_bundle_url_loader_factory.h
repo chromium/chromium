@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   void StartLoad(base::WeakPtr<URLLoader> loader);
   void OnMetadataParsed(web_package::mojom::BundleMetadataPtr metadata,
                         web_package::mojom::BundleMetadataParseErrorPtr error);
+  bool IsAllowedExchangeUrl(const GURL& relative_url);
   void OnResponseParsed(base::WeakPtr<URLLoader> loader,
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);

@@ -74,7 +74,7 @@ class WebBundleInterceptorForTrustableFile final
   std::unique_ptr<WebBundleURLLoaderFactory> url_loader_factory_;
 
   GURL primary_url_;
-  web_package::mojom::BundleMetadataParseErrorPtr metadata_error_;
+  absl::optional<std::string> metadata_error_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

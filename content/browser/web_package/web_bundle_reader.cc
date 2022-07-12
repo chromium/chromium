@@ -315,6 +315,17 @@ bool WebBundleReader::HasEntry(const GURL& url) const {
   return entries_.contains(net::SimplifyUrlForRequest(url));
 }
 
+std::vector<GURL> WebBundleReader::GetEntries() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(state_, State::kInitial);
+
+  std::vector<GURL> entries;
+  entries.reserve(entries_.size());
+  base::ranges::transform(entries_, std::back_inserter(entries),
+                          [](const auto& entry) { return entry.first; });
+  return entries;
+}
+
 const GURL& WebBundleReader::GetPrimaryURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kInitial);

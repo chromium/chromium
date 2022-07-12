@@ -70,7 +70,7 @@ class WebBundleInterceptorForHistoryNavigationFromFileOrFromTrustableFile final
   mojo::PendingReceiver<network::mojom::URLLoader> pending_receiver_;
   mojo::PendingRemote<network::mojom::URLLoaderClient> pending_client_;
 
-  web_package::mojom::BundleMetadataParseErrorPtr metadata_error_;
+  absl::optional<std::string> metadata_error_;
 
   base::WeakPtrFactory<
       WebBundleInterceptorForHistoryNavigationFromFileOrFromTrustableFile>

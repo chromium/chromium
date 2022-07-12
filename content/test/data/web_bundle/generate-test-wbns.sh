@@ -46,6 +46,18 @@ xxd -p broken_bundle_base_b2.wbn |
   sed 's/3a737461747573/3a787878787878/3' |
   xxd -r -p > broken_bundle_broken_script_entry_b2.wbn
 
+gen-bundle \
+  -version b2 \
+  -har foo_url.har \
+  -primaryURL foo://bar/ \
+  -o foo_primary_url_bundle_b2.wbn
+
+gen-bundle \
+  -version b2 \
+  -har foo_url.har \
+  -primaryURL https://test.example.org/ \
+  -o foo_base_url_bundle_b2.wbn
+
 # Generate a WBN which will be used as a cross origin bundle.
 gen-bundle \
   -version b2 \

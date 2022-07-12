@@ -129,6 +129,10 @@ GURL GetSynthesizedUrlForWebBundle(const GURL& web_bundle_file_url,
   return web_bundle_file_url.ReplaceComponents(replacements);
 }
 
+bool IsAllowedExchangeUrl(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS();
+}
+
 void CompleteWithInvalidWebBundleError(
     mojo::Remote<network::mojom::URLLoaderClient> client,
     int frame_tree_node_id,

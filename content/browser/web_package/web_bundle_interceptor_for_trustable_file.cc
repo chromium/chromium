@@ -50,8 +50,7 @@ void WebBundleInterceptorForTrustableFile::CreateURLLoader(
   if (metadata_error_) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         mojo::Remote<network::mojom::URLLoaderClient>(std::move(client)),
-        frame_tree_node_id_,
-        web_bundle_utils::GetMetadataParseErrorMessage(metadata_error_));
+        frame_tree_node_id_, *metadata_error_);
     return;
   }
 
@@ -61,13 +60,6 @@ void WebBundleInterceptorForTrustableFile::CreateURLLoader(
     pending_resource_request_ = resource_request;
     pending_receiver_ = std::move(receiver);
     pending_client_ = std::move(client);
-    return;
-  }
-
-  if (primary_url_.is_empty()) {
-    web_bundle_utils::CompleteWithInvalidWebBundleError(
-        mojo::Remote<network::mojom::URLLoaderClient>(std::move(client)),
-        frame_tree_node_id_, web_bundle_utils::kNoPrimaryUrlErrorMessage);
     return;
   }
 
@@ -100,11 +92,22 @@ void WebBundleInterceptorForTrustableFile::OnMetadataReady(
   DCHECK(!url_loader_factory_);
 
   if (error) {
-    metadata_error_ = std::move(error);
+    metadata_error_ =
+        web_bundle_utils::GetMetadataParseErrorMessage(std::move(error));
   } else {
     primary_url_ = reader_->GetPrimaryURL();
-    url_loader_factory_ = std::make_unique<WebBundleURLLoaderFactory>(
-        std::move(reader_), frame_tree_node_id_);
+
+    if (primary_url_.is_empty()) {
+      metadata_error_ = web_bundle_utils::kNoPrimaryUrlErrorMessage;
+    } else if (!web_bundle_utils::IsAllowedExchangeUrl(primary_url_)) {
+      metadata_error_ = web_bundle_utils::kInvalidPrimaryUrlErrorMessage;
+    } else if (!base::ranges::all_of(reader_->GetEntries(),
+                                     &web_bundle_utils::IsAllowedExchangeUrl)) {
+      metadata_error_ = web_bundle_utils::kInvalidExchangeUrlErrorMessage;
+    } else {
+      url_loader_factory_ = std::make_unique<WebBundleURLLoaderFactory>(
+          std::move(reader_), frame_tree_node_id_);
+    }
   }
 
   if (pending_receiver_) {

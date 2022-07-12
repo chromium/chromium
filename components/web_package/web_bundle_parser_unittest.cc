@@ -313,14 +313,26 @@ TEST_F(WebBundleParserTest, RequestURLIsNotUTF8) {
   ExpectFormatError(ParseUnsignedBundle(&data_source));
 }
 
-TEST_F(WebBundleParserTest, RequestURLHasBadScheme) {
+// TODO(crbug.com/966753): Revisit this once
+// https://github.com/WICG/webpackage/issues/468 is resolved.
+TEST_F(WebBundleParserTest, RequestURLHasNonStandardScheme) {
   WebBundleBuilder builder;
-  builder.AddExchange("file:///tmp/foo",
+  builder.AddExchange("foo://bar",
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "payload");
   TestDataSource data_source(builder.CreateBundle());
 
-  ExpectFormatError(ParseUnsignedBundle(&data_source));
+  ASSERT_TRUE(ParseUnsignedBundle(&data_source).first);
+}
+
+TEST_F(WebBundleParserTest, RequestURLHasIsolatedAppScheme) {
+  WebBundleBuilder builder;
+  builder.AddExchange("isolated-app://foo",
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  TestDataSource data_source(builder.CreateBundle());
+
+  ASSERT_TRUE(ParseUnsignedBundle(&data_source).first);
 }
 
 TEST_F(WebBundleParserTest, RequestURLHasCredentials) {
@@ -357,17 +369,6 @@ TEST_F(WebBundleParserTest, RequestURLIsValidUuidInPackage) {
   ASSERT_EQ(metadata->requests.size(), 1u);
   auto location = FindResponse(metadata, GURL(uuid_in_package));
   ASSERT_TRUE(location);
-}
-
-TEST_F(WebBundleParserTest, RequestURLIsInvalidUuidInPackage) {
-  const char uuid_in_package[] = "uuid-in-package:invalid";
-  WebBundleBuilder builder;
-  builder.AddExchange(uuid_in_package,
-                      {{":status", "200"}, {"content-type", "text/plain"}},
-                      "payload");
-  TestDataSource data_source(builder.CreateBundle());
-
-  ExpectFormatError(ParseUnsignedBundle(&data_source));
 }
 
 TEST_F(WebBundleParserTest, NoStatusInResponseHeaders) {
