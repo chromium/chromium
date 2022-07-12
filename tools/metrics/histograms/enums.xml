@@ -75609,6 +75609,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Other Payment App"/>
 </enum>
 
+<enum name="PaymentRequestPrePurchaseQuery">
+  <int value="0" label="Other type of query"/>
+  <int value="1" label="Service Worker event"/>
+  <int value="2" label="Android intent"/>
+</enum>
+
 <enum name="PaymentRequestRequestedInformation">
   <int value="0" label="None"/>
   <int value="1" label="Email"/>

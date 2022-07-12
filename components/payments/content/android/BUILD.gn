@@ -222,6 +222,7 @@ android_library("full_java") {
   ]
   srcjar_deps = [
     ":payments_journey_logger_enum_javagen",
+    ":pre_purchase_query_enum_javagen",
     ":prefs_strings_generated_srcjar",
   ]
   resources_package = "org.chromium.components.payments"
@@ -307,6 +308,10 @@ java_cpp_enum("app_creation_failure_reason_generated_enum") {
 
 java_cpp_enum("payments_journey_logger_enum_javagen") {
   sources = [ "//components/payments/core/journey_logger.h" ]
+}
+
+java_cpp_enum("pre_purchase_query_enum_javagen") {
+  sources = [ "//components/payments/core/pre_purchase_query.h" ]
 }
 
 robolectric_library("junit_test_support") {

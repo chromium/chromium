@@ -57,6 +57,7 @@ static_library("core") {
     "payments_experimental_features.h",
     "payments_validators.cc",
     "payments_validators.h",
+    "pre_purchase_query.h",
     "secure_payment_confirmation_credential.cc",
     "secure_payment_confirmation_credential.h",
     "secure_payment_confirmation_metrics.cc",
