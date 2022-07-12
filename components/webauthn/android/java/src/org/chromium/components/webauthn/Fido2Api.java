@@ -1040,11 +1040,6 @@ public final class Fido2Api {
             }
             final int endPosition = addLengthToParcelPosition(header.second, parcel);
 
-            // The original version of this API returned only discoverable credentials, not usable
-            // for Secure Payment Confirmation. If the tags are missing, this is the default.
-            details.mIsDiscoverable = true;
-            details.mIsPayment = false;
-
             while (parcel.dataPosition() < endPosition) {
                 header = readHeader(parcel);
                 switch (header.first) {
@@ -1060,23 +1055,13 @@ public final class Fido2Api {
                     case 4:
                         details.mCredentialId = parcel.createByteArray();
                         break;
-                    case 5:
-                        details.mIsDiscoverable = parcel.readInt() != 0;
-                        break;
-                    case 6:
-                        details.mIsPayment = parcel.readInt() != 0;
-                        break;
                     default:
                         // unknown tag. Skip over it.
                         parcel.setDataPosition(addLengthToParcelPosition(header.second, parcel));
                 }
             }
-            if (details.mCredentialId == null) {
-                throw new IllegalArgumentException();
-            }
-            if (details.mIsDiscoverable
-                    && (details.mUserName == null || details.mUserDisplayName == null
-                            || details.mUserId == null)) {
+            if (details.mUserName == null || details.mUserDisplayName == null
+                    || details.mUserId == null || details.mCredentialId == null) {
                 throw new IllegalArgumentException();
             }
             credentials.add(details);

@@ -41,7 +41,6 @@ import org.chromium.url.Origin;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -270,13 +269,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         if (mBrowserBridge == null) {
             mBrowserBridge = new WebAuthnBrowserBridge();
         }
-        List<WebAuthnCredentialDetails> discoverableCredentials = new ArrayList<>();
-        for (WebAuthnCredentialDetails credential : credentials) {
-            if (credential.mIsDiscoverable) {
-                discoverableCredentials.add(credential);
-            }
-        }
-        mBrowserBridge.onCredentialsDetailsListReceived(frameHost, discoverableCredentials,
+        mBrowserBridge.onCredentialsDetailsListReceived(frameHost, credentials,
                 (selectedCredentialId)
                         -> dispatchGetAssertionRequest(
                                 options, callerOriginString, clientDataHash, selectedCredentialId));
