@@ -199,6 +199,18 @@
       "use_goma": true
     }
   },
+  "lacros-arm64-generic-rel": {
+    "args_file": "//build/args/chromeos/arm64-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": true,
+      "is_chromeos_device": true,
+      "is_debug": false,
+      "ozone_platform_headless": true,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-cfm-rel": {
     "gn_args": {
       "dcheck_always_on": true,

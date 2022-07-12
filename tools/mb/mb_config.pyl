@@ -167,6 +167,7 @@
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
+      'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
@@ -1038,6 +1039,7 @@
       'gpu-fyi-try-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks',
+      'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks',
       'linux-cfm-rel': 'linux_cfm_release_trybot',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
@@ -2108,6 +2110,14 @@
 
     'chromeos_arm64-generic_lacros_official': [
       'chromeos_arm64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+    ],
+
+    'chromeos_arm64-generic_lacros_rel_dchecks': [
+      'chromeos_arm64-generic-crostoolchain', 'lacros', 'release', 'dcheck_always_on',
+    ],
+
+    'chromeos_arm64-generic_lacros_rel_reclient': [
+      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'release',
     ],
 
     'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient': [
@@ -3787,6 +3797,10 @@
 
     'chromeos_arm64-generic-crostoolchain': {
       'mixins': ['chromeos_device', 'arm64-generic-crostoolchain',]
+    },
+
+    'chromeos_arm64-generic-crostoolchain_reclient': {
+      'mixins': ['chromeos_device_reclient', 'arm64-generic-crostoolchain',]
     },
 
     'chromeos_codecs': {

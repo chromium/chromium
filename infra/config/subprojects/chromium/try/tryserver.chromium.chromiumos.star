@@ -119,6 +119,15 @@ try_.builder(
 )
 
 try_.builder(
+    name = "lacros-arm64-generic-rel",
+    mirrors = [
+        "ci/lacros-arm64-generic-rel",
+    ],
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "linux-chromeos-compile-dbg",
     mirrors = [
         "ci/linux-chromeos-dbg",

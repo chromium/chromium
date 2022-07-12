@@ -601,6 +601,45 @@ ci.builder(
 )
 
 ci.builder(
+    name = "lacros-arm64-generic-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "checkout_lacros_sdk",
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_cros_boards = [
+                "arm64-generic",
+            ],
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros|arm64",
+        short_name = "arm64",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = "main",
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    # TODO(https://crbug.com/1342761): enable sheriff rotation and tree_closing
+    # when the builder is stable.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+)
+
+ci.builder(
     name = "linux-chromeos-dbg",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
