@@ -55,17 +55,28 @@ def fyi_reclient_staging_builder(
         *,
         name,
         console_view_category,
-        reclient_instance = "rbe-chromium-trusted",
+        reclient_instance = "rbe-chromium-%s",
         **kwargs):
-    return ci.builder(
-        name = name,
-        reclient_instance = reclient_instance,
-        console_view_entry = consoles.console_view_entry(
-            category = "rbe|" + console_view_category,
-            short_name = "rcs",
+    return [
+        ci.builder(
+            name = name,
+            reclient_instance = reclient_instance % "trusted",
+            console_view_entry = consoles.console_view_entry(
+                category = "rbe|" + console_view_category,
+                short_name = "rcs",
+            ),
+            **kwargs
         ),
-        **kwargs
-    )
+        ci.builder(
+            name = name + " untrusted",
+            reclient_instance = reclient_instance % "untrusted",
+            console_view_entry = consoles.console_view_entry(
+                category = "rbecq|" + console_view_category,
+                short_name = "rcs",
+            ),
+            **kwargs
+        ),
+    ]
 
 def fyi_reclient_test_builder(
         *,
@@ -75,19 +86,7 @@ def fyi_reclient_test_builder(
     return fyi_reclient_staging_builder(
         name = name,
         console_view_category = console_view_category,
-        reclient_instance = "rbe-chromium-trusted-test",
-        **kwargs
-    )
-
-def fyi_reclient_gvisor_test_builder(
-        *,
-        name,
-        console_view_category,
-        **kwargs):
-    return fyi_reclient_staging_builder(
-        name = name,
-        console_view_category = console_view_category,
-        reclient_instance = "rbe-chromium-untrusted-test",
+        reclient_instance = "rbe-chromium-%s-test",
         **kwargs
     )
 
@@ -198,29 +197,6 @@ fyi_reclient_staging_builder(
 
 fyi_reclient_test_builder(
     name = "Win x64 Builder reclient test",
-    builder_spec = builder_config.copy_from(
-        "ci/Win x64 Builder",
-        lambda spec: structs.evolve(
-            spec,
-            gclient_config = structs.extend(
-                spec.gclient_config,
-                apply_configs = [
-                    "enable_reclient",
-                    "reclient_test",
-                ],
-            ),
-            build_gs_bucket = "chromium-fyi-archive",
-        ),
-    ),
-    builderless = True,
-    console_view_category = "win",
-    cores = 32,
-    execution_timeout = 5 * time.hour,
-    os = os.WINDOWS_ANY,
-)
-
-fyi_reclient_gvisor_test_builder(
-    name = "Win x64 Builder reclient gVisor cross test",
     builder_spec = builder_config.copy_from(
         "ci/Win x64 Builder",
         lambda spec: structs.evolve(

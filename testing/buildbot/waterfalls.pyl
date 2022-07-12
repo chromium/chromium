@@ -2984,16 +2984,6 @@
           'scripts': 'chromium_win_scripts',
         },
       },
-      'Win x64 Builder reclient gVisor cross test': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030
-        'additional_compile_targets': [
-          'pdf_fuzzers'
-        ],
-        'test_suites': {
-          'scripts': 'chromium_win_scripts',
-        },
-      },
       'Win x64 Builder reclient staging': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030
@@ -3004,7 +2994,27 @@
           'scripts': 'chromium_win_scripts',
         },
       },
+      'Win x64 Builder reclient staging untrusted': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030
+        'additional_compile_targets': [
+          'pdf_fuzzers'
+        ],
+        'test_suites': {
+          'scripts': 'chromium_win_scripts',
+        },
+      },
       'Win x64 Builder reclient test': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030
+        'additional_compile_targets': [
+          'pdf_fuzzers'
+        ],
+        'test_suites': {
+          'scripts': 'chromium_win_scripts',
+        },
+      },
+      'Win x64 Builder reclient test untrusted': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/7b147a6777cb32d6a12e1716c61a0ed50dc1229a:testing/buildbot/waterfalls.pyl;l=6023-6030
         'additional_compile_targets': [
@@ -5423,7 +5433,27 @@
           'all'
         ],
       },
+      'Linux Builder reclient staging untrusted': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
       'Linux Builder reclient test': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
+      'Linux Builder reclient test untrusted': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
         'mixins': [
@@ -5438,7 +5468,17 @@
           'all',
         ],
       },
+      'Mac Builder reclient staging untrusted': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'Mac Builder reclient test': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'Mac Builder reclient test untrusted': {
         'additional_compile_targets': [
           'all',
         ],
@@ -5450,7 +5490,21 @@
           'chromiumos_preflight',
         ],
       },
+      'Simple Chrome Builder reclient staging untrusted': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+      },
       'Simple Chrome Builder reclient test': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+      },
+      'Simple Chrome Builder reclient test untrusted': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
         'additional_compile_targets': [
@@ -5471,6 +5525,20 @@
           'xctest',
         ],
       },
+      'ios-simulator reclient staging untrusted': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'mac_11_or_12_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+      },
       'ios-simulator reclient test': {
         'additional_compile_targets': [
           'all',
@@ -5485,6 +5553,20 @@
           'xctest',
         ],
       },
+      'ios-simulator reclient test untrusted': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'mac_11_or_12_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+      },
       'mac-arm64-rel reclient staging': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=5119;drc=0cad2921efb9c2d4248496f10eb24aa1d9769dd4
@@ -5492,7 +5574,21 @@
           'all',
         ],
       },
+      'mac-arm64-rel reclient staging untrusted': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=5119;drc=0cad2921efb9c2d4248496f10eb24aa1d9769dd4
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'mac-arm64-rel reclient test': {
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=5119;drc=0cad2921efb9c2d4248496f10eb24aa1d9769dd4
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'mac-arm64-rel reclient test untrusted': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=5119;drc=0cad2921efb9c2d4248496f10eb24aa1d9769dd4
         'additional_compile_targets': [
