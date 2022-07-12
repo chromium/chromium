@@ -15,6 +15,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "dbus/dbus_export.h"
 #include "dbus/object_path.h"
 
@@ -287,7 +288,7 @@ class CHROME_DBUS_EXPORT MessageWriter {
   void AppendInt64(int64_t value);
   void AppendUint64(uint64_t value);
   void AppendDouble(double value);
-  void AppendString(const std::string& value);
+  void AppendString(base::StringPiece value);
   void AppendObjectPath(const ObjectPath& value);
 
   // Appends a file descriptor to the message.
