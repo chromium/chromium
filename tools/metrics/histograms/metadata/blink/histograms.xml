@@ -62,6 +62,10 @@ chromium-metrics-reviews@google.com.
     Time spent updating accessibility in the Blink document lifecycle.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -83,6 +87,10 @@ chromium-metrics-reviews@google.com.
     observation attributed to anchor element metrics is updated.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -101,6 +109,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note that the histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -554,6 +566,10 @@ chromium-metrics-reviews@google.com.
 
     Note: As of M70, this histogram has stopped recording metrics on machines
     with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -573,6 +589,10 @@ chromium-metrics-reviews@google.com.
 
     Note: this histogram has stopped recording metrics on machines with
     low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -617,6 +637,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -789,6 +813,10 @@ chromium-metrics-reviews@google.com.
     intersection observation is made for the Display Locking reason.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1276,6 +1304,10 @@ chromium-metrics-reviews@google.com.
     time spent in Blink Document::UpdateStyleAndLayout.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1307,6 +1339,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1327,6 +1363,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1663,6 +1703,10 @@ chromium-metrics-reviews@google.com.
 
     Note: This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1694,6 +1738,10 @@ chromium-metrics-reviews@google.com.
 
     Note: As of M70, this histogram has stopped recording metrics on machines
     with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1724,6 +1772,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1743,6 +1795,10 @@ chromium-metrics-reviews@google.com.
     when an intersection observation is made for the Javascript reason.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1801,6 +1857,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1868,6 +1928,10 @@ chromium-metrics-reviews@google.com.
     loaded image should be loaded.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1908,6 +1972,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram will not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -1928,6 +1996,10 @@ chromium-metrics-reviews@google.com.
     video auto-play).
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -2059,6 +2131,10 @@ chromium-metrics-reviews@google.com.
 
     Note: As of M70, this histogram has stopped recording metrics on machines
     with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -2077,6 +2153,10 @@ chromium-metrics-reviews@google.com.
     CSSParserContext has a document available.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -2127,6 +2207,10 @@ chromium-metrics-reviews@google.com.
 
     Note: As of M70, this histogram has stopped recording metrics on machines
     with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -2312,6 +2396,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -2332,6 +2420,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -2502,6 +2594,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -2544,6 +2640,10 @@ chromium-metrics-reviews@google.com.
     Blink.IntersectionObservation.UpdateTime metric.
 
     This histogram only records metrics on machines with high-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -2958,6 +3058,10 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -3067,6 +3171,10 @@ chromium-metrics-reviews@google.com.
 
     Note: This histogram does not record metrics on machines with low-resolution
     clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
+    aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
