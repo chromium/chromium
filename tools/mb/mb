@@ -5,4 +5,4 @@
 
 base_dir=$(dirname "$0")
 
-PYTHONDONTWRITEBYTECODE=1 exec python "$base_dir/mb.py" "$@"
+PYTHONDONTWRITEBYTECODE=1 exec python3 "$base_dir/mb.py" "$@"
