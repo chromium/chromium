@@ -7135,6 +7135,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.NewBrowserWindow" enum="KioskBrowserWindowType"
+    expires_after="2023-07-01">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records a new browser window type once a new browser window
+    is attempted to be shown in a kiosk session. Currently distinguishes only
+    settings page from others, which get closed immediately.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.SecondaryApps.InstallSuccessful" enum="BooleanYesNo"
     expires_after="2022-10-01">
   <owner>yixie@chromium.org</owner>

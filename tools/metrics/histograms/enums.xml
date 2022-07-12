@@ -52612,6 +52612,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Http Error"/>
 </enum>
 
+<enum name="KioskBrowserWindowType">
+  <int value="0" label="Settings Page"/>
+  <int value="1" label="Other, immediately closed"/>
+</enum>
+
 <enum name="KioskLaunchError">
   <int value="0" label="No error"/>
   <int value="1" label="Has pending launch"/>

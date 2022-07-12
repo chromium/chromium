@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,6 +12,8 @@
 #include "chrome/browser/ui/browser_window.h"
 
 namespace chromeos {
+
+const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
 
 AppSessionBrowserWindowHandler::AppSessionBrowserWindowHandler(
     Profile* profile,
@@ -36,15 +39,19 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
       active_tab ? active_tab->GetURL().spec() : std::string();
 
   if (KioskSettingsNavigationThrottle::IsSettingsPage(url_string)) {
+    base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
+                                  KioskBrowserWindowType::kSettingsPage);
     HandleNewSettingsWindow(browser, url_string);
   } else {
+    base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
+                                  KioskBrowserWindowType::kOther);
     LOG(WARNING) << "Browser opened in kiosk session"
                  << ", url=" << url_string;
     browser->window()->Close();
   }
 
   on_browser_window_added_callback_.Run();
-}  // namespace chromeos
+}
 
 void AppSessionBrowserWindowHandler::HandleNewSettingsWindow(
     Browser* browser,

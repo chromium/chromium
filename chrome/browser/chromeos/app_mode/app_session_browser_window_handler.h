@@ -15,6 +15,17 @@
 
 namespace chromeos {
 
+extern const char kKioskNewBrowserWindowHistogram[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with respective enum in tools/metrics/histograms/enums.xml
+enum class KioskBrowserWindowType {
+  kSettingsPage = 0,
+  kOther = 1,
+  kMaxValue = kOther,
+};
+
 // This class monitors for the addition and removal of new browser windows
 // during the kiosk session. On construction it gets a main browser handle
 // stored as |browser_|.
