@@ -35,12 +35,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   AuthenticatorDialogTest(const AuthenticatorDialogTest&) = delete;
   AuthenticatorDialogTest& operator=(const AuthenticatorDialogTest&) = delete;
 
-  void SetUp() override {
-    // Enable all upcoming features so that people can see the UI.
-    scoped_feature_list_.InitWithFeatures({features::kWebAuthCable}, {});
-    DialogBrowserTest::SetUp();
-  }
-
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Web modal dialogs' bounds may exceed the display's work area.
@@ -302,7 +296,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;
   base::RepeatingTimer timer_;
   int bio_samples_remaining_ = 5;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Run with:

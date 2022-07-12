@@ -295,10 +295,8 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
     transports.insert(device::FidoTransportProtocol::kInternal);
   }
 
-  if (base::FeatureList::IsEnabled(features::kWebAuthCable)) {
-    transports.insert(
-        device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
-  }
+  transports.insert(
+      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
 
   // kAndroidAccessory doesn't work on Windows because of USB stack issues.
   // Note: even if this value were inserted it wouldn't take effect on Windows

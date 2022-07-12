@@ -285,7 +285,6 @@ CONTENT_EXPORT extern const base::Feature kWebAssemblyLazyCompilation;
 CONTENT_EXPORT extern const base::Feature kWebAssemblySimd;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyTiering;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyTrapHandler;
-CONTENT_EXPORT extern const base::Feature kWebAuthCable;
 CONTENT_EXPORT extern const base::Feature kWebAuthConditionalUI;
 CONTENT_EXPORT extern const base::Feature kWebBluetooth;
 CONTENT_EXPORT extern const base::Feature kWebBluetoothNewPermissionsBackend;

@@ -1098,12 +1098,6 @@ const base::Feature kWebAssemblyTrapHandler {
 #endif
 };
 
-// Controls whether CTAP2 devices can communicate via the WebAuthentication API
-// using pairingless BLE protocol.
-// https://w3c.github.io/webauthn
-const base::Feature kWebAuthCable{"WebAuthenticationCable",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether WebAuthn conditional UI requests are supported.
 const base::Feature kWebAuthConditionalUI{"WebAuthenticationConditionalUI",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
