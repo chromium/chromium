@@ -1004,6 +1004,11 @@
                   'media/cdm/|' \
                   'third_party/widevine/cdm/'
     },
+    'enterprise_connectors': {
+        'filepath': 'chrome/browser/enterprise/connectors/|' \
+                    'chrome/browser/safe_browsing/cloud_content_scanning/|' \
+                    'components/enterprise/common/proto/'
+    },
     'enterprise_reporting_private': {
       'filepath': 'chrome/common/extensions/api/enterprise_reporting_private.idl|' \
                   'chrome/browser/extensions/api/enterprise_reporting_private/|' \
@@ -2549,6 +2554,7 @@
     'downloads_ui': ['dtrainor+watch@chromium.org'],
     'drive_resource_metadata': ['hashimoto+watch@chromium.org'],
     'eme': ['eme-reviews@chromium.org'],
+    'enterprise_connectors': ['dpr-eng@google.com'],
     'enterprise_reporting_private': ['domfc+watch@chromium.org',
                                      'anthonyvd+watch@chormium.org'],
     'exo': ['crostini-ui+exo@chromium.org',
