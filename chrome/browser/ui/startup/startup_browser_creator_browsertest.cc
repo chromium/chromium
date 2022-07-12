@@ -1461,20 +1461,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
   }
   DisableWelcomePages({profile1, profile2});
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros only supports syncing profiles for now.
-  // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles
-  // are allowed.
-  ProfileAttributesStorage* attributes_storage =
-      &profile_manager->GetProfileAttributesStorage();
-  attributes_storage->GetProfileAttributesWithPath(profile1->GetPath())
-      ->SetAuthInfo("gaia_id_1", u"email_1",
-                    /*is_consented_primary_account=*/true);
-  attributes_storage->GetProfileAttributesWithPath(profile2->GetPath())
-      ->SetAuthInfo("gaia_id_2", u"email_2",
-                    /*is_consented_primary_account=*/true);
-#endif
-
   // Don't delete Profiles too early.
   ScopedProfileKeepAlive profile1_keep_alive(
       profile1, ProfileKeepAliveOrigin::kBrowserWindow);
@@ -2397,20 +2383,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
         dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
     ASSERT_TRUE(profile2);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros only supports syncing profiles for now.
-  // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles
-  // are allowed.
-  ProfileAttributesStorage* attributes_storage =
-      &profile_manager->GetProfileAttributesStorage();
-  attributes_storage->GetProfileAttributesWithPath(profile1->GetPath())
-      ->SetAuthInfo("gaia_id_1", u"email_1",
-                    /*is_consented_primary_account=*/true);
-  attributes_storage->GetProfileAttributesWithPath(profile2->GetPath())
-      ->SetAuthInfo("gaia_id_2", u"email_2",
-                    /*is_consented_primary_account=*/true);
-#endif
 
   DisableWelcomePages({profile1, profile2});
 
@@ -3936,12 +3908,10 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
               .GetProfileAttributesWithPath(profile_path);
       ASSERT_NE(entry, nullptr);
       entry->SetActiveTimeToNow();
-      // Enabling sync, as Lacros only supports syncing profiles, see
-      // https://crbug.com/1260291.
       entry->SetAuthInfo(
           base::StringPrintf("gaia_id_%i", i),
           base::UTF8ToUTF16(base::StringPrintf("user%i@gmail.com", i)),
-          /*is_consented_primary_account=*/true);
+          /*is_consented_primary_account=*/false);
     }
   }
 };
