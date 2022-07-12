@@ -27,6 +27,17 @@ ScopedReservation::ScopedReservation(
   size_ = size;
 }
 
+ScopedReservation::ScopedReservation(
+    uint64_t size,
+    const ScopedReservation& other_reservation) noexcept
+    : resource_interface_(other_reservation.resource_interface_) {
+  if (size == 0uL || !resource_interface_.get() ||
+      !resource_interface_->Reserve(size)) {
+    return;
+  }
+  size_ = size;
+}
+
 ScopedReservation::ScopedReservation(ScopedReservation&& other) noexcept
     : resource_interface_(other.resource_interface_),
       size_(std::exchange(other.size_, absl::nullopt)) {}

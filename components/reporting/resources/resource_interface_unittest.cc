@@ -188,6 +188,27 @@ TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingHandOvers) {
               Eq(resource_interface()->GetTotal() - 1));
 }
 
+TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingCopyHandOvers) {
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_interface());
+  EXPECT_TRUE(scoped_reservation.reserved());
+
+  for (; size >= 2; size /= 2) {
+    ScopedReservation another_reservation(size / 2, scoped_reservation);
+    EXPECT_TRUE(another_reservation.reserved());
+    scoped_reservation.HandOver(another_reservation);
+  }
+  EXPECT_THAT(resource_interface()->GetUsed(),
+              Eq(resource_interface()->GetTotal() - 1));
+}
+
+TEST_P(ResourceInterfaceTest, ScopedReservationFailureToCopyFromEmpty) {
+  ScopedReservation scoped_reservation;
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation another_reservation(size, scoped_reservation);
+  EXPECT_FALSE(scoped_reservation.reserved());
+}
+
 TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingHandOversToEmpty) {
   ScopedReservation scoped_reservation;
   EXPECT_FALSE(scoped_reservation.reserved());

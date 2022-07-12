@@ -76,6 +76,10 @@ class ScopedReservation {
   ScopedReservation(
       uint64_t size,
       scoped_refptr<ResourceInterface> resource_interface) noexcept;
+  // New reservation on the same resource interface as |other_reservation|.
+  ScopedReservation(uint64_t size,
+                    const ScopedReservation& other_reservation) noexcept;
+  // Move constructor.
   ScopedReservation(ScopedReservation&& other) noexcept;
   ScopedReservation(const ScopedReservation& other) = delete;
   ScopedReservation& operator=(ScopedReservation&& other) = delete;
