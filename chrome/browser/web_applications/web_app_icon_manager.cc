@@ -796,6 +796,11 @@ void WebAppIconManager::ReadIcons(const AppId& app_id,
                                   const SortedSizesPx& icon_sizes,
                                   ReadIconsCallback callback) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!registrar_->GetAppById(app_id)) {
+    std::move(callback).Run(std::map<SquareSizePx, SkBitmap>());
+    return;
+  }
   DCHECK(HasIcons(app_id, purpose, icon_sizes));
 
   icon_task_runner_->PostTaskAndReplyWithResult(
