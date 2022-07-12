@@ -25,6 +25,7 @@ enum class BruschettaResult {
   kDlcInstallError,
   kBiosNotAccessible,
   kStartVmFailed,
+  kTimeout,
 };
 
 // Launches Bruschetta. One instance per VM.
@@ -56,11 +57,14 @@ class BruschettaLauncher {
 
   void OnContainerRunning(guest_os::GuestInfo info);
 
+  void OnTimeout();
+
   std::string vm_name_;
   Profile* profile_;
 
   // Callbacks to run once an in-progress launch finishes.
   base::OnceCallbackList<void(BruschettaResult)> callbacks_;
+  absl::optional<base::CallbackListSubscription> subscription_;
 
   // Must be last.
   base::WeakPtrFactory<BruschettaLauncher> weak_factory_{this};

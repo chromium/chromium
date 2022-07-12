@@ -11,6 +11,8 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -73,7 +75,8 @@ class BruschettaLauncherTest : public testing::Test,
     return base::WriteFile(bios_path_, "");
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::RunLoop run_loop_;
   TestingProfile profile_;
   base::FilePath bios_path_;
@@ -167,6 +170,23 @@ TEST_F(BruschettaLauncherTest, SeparateLaunchRequestsAreNotBatched) {
   }
 
   ASSERT_EQ(FakeConciergeClient()->start_vm_call_count(), num_repeats);
+}
+
+// We should timeout if launch takes too long.
+TEST_F(BruschettaLauncherTest, LaunchTimeout) {
+  vm_tools::concierge::VmStoppedSignal signal;
+  signal.set_name("vm_name");
+  FakeConciergeClient()->NotifyVmStopped(
+      signal);  // Notify stopped to clear the session tracker.
+
+  BruschettaResult last_result = BruschettaResult::kUnknown;
+  launcher_->EnsureRunning(StoreResultThenQuitRunLoop(&last_result));
+  // Run until we're idle, rather than all the way until the run loop is
+  // killed, so we can still run things next time through the loop.
+  this->task_environment_.FastForwardBy(base::Minutes(3));
+  ASSERT_EQ(last_result, BruschettaResult::kUnknown);  // No result yet.
+  this->task_environment_.FastForwardBy(base::Minutes(2));
+  ASSERT_EQ(last_result, BruschettaResult::kTimeout);  // Timed out.
 }
 
 }  // namespace bruschetta

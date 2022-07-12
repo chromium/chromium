@@ -141,20 +141,20 @@ void GuestOsSessionTracker::OnContainerShutdown(
   guests_.erase(id);
 }
 
-void GuestOsSessionTracker::RunOnceContainerStarted(
+base::CallbackListSubscription GuestOsSessionTracker::RunOnceContainerStarted(
     GuestId id,
     base::OnceCallback<void(GuestInfo)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto iter = guests_.find(id);
   if (iter != guests_.end()) {
     std::move(callback).Run(iter->second);
-    return;
+    return base::CallbackListSubscription();
   }
   auto& cb_list = container_start_callbacks_[id];
   if (!cb_list) {
     cb_list = std::make_unique<base::OnceCallbackList<void(GuestInfo)>>();
   }
-  cb_list->AddUnsafe(std::move(callback));
+  return cb_list->Add(std::move(callback));
 }
 
 void GuestOsSessionTracker::AddGuestForTesting(const GuestId& id,

@@ -134,7 +134,7 @@ TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedAlreadyRunning) {
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
   GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
   bool called = false;
-  tracker_.RunOnceContainerStarted(
+  auto _ = tracker_.RunOnceContainerStarted(
       id,
       base::BindLambdaForTesting([&called](GuestInfo info) { called = true; }));
   task_environment_.RunUntilIdle();
@@ -145,7 +145,7 @@ TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedDelayedStart) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
   bool called = false;
-  tracker_.RunOnceContainerStarted(
+  auto _ = tracker_.RunOnceContainerStarted(
       id,
       base::BindLambdaForTesting([&called](GuestInfo info) { called = true; }));
   task_environment_.RunUntilIdle();
@@ -153,6 +153,22 @@ TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedDelayedStart) {
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(called);
+}
+
+TEST_F(GuestOsSessionTrackerTest, RunOnceContainerStartedCancel) {
+  FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
+  GuestId id{VmType::UNKNOWN, "vm_name", "penguin"};
+  bool called = false;
+  static_cast<void>(tracker_.RunOnceContainerStarted(
+      id, base::BindLambdaForTesting(
+              [&called](GuestInfo info) { called = true; })));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(called);
+  FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
+  task_environment_.RunUntilIdle();
+
+  // We dropped the subscription, so it should've been cancelled straight away.
+  EXPECT_FALSE(called);
 }
 
 }  // namespace guest_os
