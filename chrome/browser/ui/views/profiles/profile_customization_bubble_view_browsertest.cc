@@ -101,7 +101,13 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
+// TODO(crbug.com/1343668): Flaky on Linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_IPH DISABLED_IPH
+#else
+#define MAYBE_IPH IPH
+#endif
+IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, MAYBE_IPH) {
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
   auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   // Create the customization bubble, owned by the view hierarchy.
