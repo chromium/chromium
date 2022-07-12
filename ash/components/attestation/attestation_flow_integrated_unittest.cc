@@ -20,8 +20,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
@@ -42,12 +42,8 @@ using testing::StrictMock;
 
 class AttestationFlowIntegratedTest : public testing::Test {
  public:
-  AttestationFlowIntegratedTest() {
-    chromeos::AttestationClient::InitializeFake();
-  }
-  ~AttestationFlowIntegratedTest() override {
-    chromeos::AttestationClient::Shutdown();
-  }
+  AttestationFlowIntegratedTest() { AttestationClient::InitializeFake(); }
+  ~AttestationFlowIntegratedTest() override { AttestationClient::Shutdown(); }
   void QuitRunLoopCertificateCallback(
       AttestationFlowIntegrated::CertificateCallback callback,
       AttestationStatus status,
@@ -68,9 +64,8 @@ class AttestationFlowIntegratedTest : public testing::Test {
                                    request.certificate_profile()),
                                request.request_origin()));
     }
-    chromeos::AttestationClient::Get()
-        ->GetTestInterface()
-        ->AllowlistCertificateRequest(request);
+    AttestationClient::Get()->GetTestInterface()->AllowlistCertificateRequest(
+        request);
   }
   void Run() {
     base::RunLoop run_loop;
@@ -84,9 +79,8 @@ class AttestationFlowIntegratedTest : public testing::Test {
 };
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -137,9 +131,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
 // is created by the factory function to make sure that the factory function
 // instantiates an object of the intended type.
 TEST_F(AttestationFlowIntegratedTest, GetCertificateCreatedByFactory) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -192,9 +185,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateCreatedByFactory) {
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateFailed) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -225,9 +217,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailed) {
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateFailedInvalidProfile) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -255,7 +246,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailedInvalidProfile) {
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotPrepared) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsSequence({false, true});
 
@@ -290,9 +281,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotPrepared) {
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(false);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      false);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -324,9 +314,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationTestAca) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -361,9 +350,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAcaTypeFromCommandline) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(chromeos::switches::kAttestationServer,
                                   "test");
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -395,9 +383,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAcaTypeFromCommandline) {
 }
 
 TEST_F(AttestationFlowIntegratedTest, GetMachineCertificate) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -433,9 +420,8 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificate) {
 // TODO(b/179364923): Develop a better API design along with strict assertion
 // instead of silently removing the username.
 TEST_F(AttestationFlowIntegratedTest, GetMachineCertificateWithAccountId) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
@@ -467,9 +453,8 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificateWithAccountId) {
 
 TEST_F(AttestationFlowIntegratedTest,
        GetCertificateAttestationKeyNameFromProfile) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(

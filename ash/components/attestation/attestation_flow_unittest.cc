@@ -18,7 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,8 +44,8 @@ constexpr char kFakeUserEmail[] = "fake@test.com";
 
 class AttestationFlowTest : public testing::Test {
  public:
-  AttestationFlowTest() { chromeos::AttestationClient::InitializeFake(); }
-  ~AttestationFlowTest() override { chromeos::AttestationClient::Shutdown(); }
+  AttestationFlowTest() { AttestationClient::InitializeFake(); }
+  ~AttestationFlowTest() override { AttestationClient::Shutdown(); }
   void QuitRunLoopCertificateCallback(
       AttestationFlow::CertificateCallback callback,
       AttestationStatus status,
@@ -79,13 +79,12 @@ TEST_F(AttestationFlowTest, GetCertificate) {
 
   // Set the enrollment status as `false` so the full enrollment flow is
   // triggered.
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   // Use StrictMock when we want to verify invocation frequency.
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
@@ -102,7 +101,7 @@ TEST_F(AttestationFlowTest, GetCertificate) {
 
   const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
 
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           kFakeUserEmail, "fake_origin",
@@ -156,13 +155,12 @@ TEST_F(AttestationFlowTest, GetCertificateCreatedByFactory) {
 
   // Set the enrollment status as `false` so the full enrollment flow is
   // triggered.
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   // Use StrictMock when we want to verify invocation frequency.
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
@@ -179,7 +177,7 @@ TEST_F(AttestationFlowTest, GetCertificateCreatedByFactory) {
 
   const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
 
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           kFakeUserEmail, "fake_origin",
@@ -233,13 +231,12 @@ TEST_F(AttestationFlowTest, GetCertificate_Ecc) {
 
   // Set the enrollment status as `false` so the full enrollment flow is
   // triggered.
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   // Use StrictMock when we want to verify invocation frequency.
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
@@ -256,7 +253,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Ecc) {
 
   const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
 
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           kFakeUserEmail, "fake_origin",
@@ -309,19 +306,17 @@ TEST_F(AttestationFlowTest, GetCertificate_TestACA) {
 
   // Set the enrollment status as `false` so the full enrollment flow is
   // triggered.
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   // Set the ACA type to test ACA so we can make sure the enroll request and the
   // certificate request has the right ACA type.
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->set_aca_type_for_legacy_flow(::attestation::TEST_ACA);
+  AttestationClient::Get()->GetTestInterface()->set_aca_type_for_legacy_flow(
+      ::attestation::TEST_ACA);
 
   // Use StrictMock when we want to verify invocation frequency.
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
@@ -340,7 +335,7 @@ TEST_F(AttestationFlowTest, GetCertificate_TestACA) {
 
   const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
 
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           kFakeUserEmail, "fake_origin",
@@ -389,11 +384,11 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
   // Verify the order of calls in a sequence.
   Sequence flow_order;
 
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsSequence({false, true});
 
@@ -412,7 +407,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
 
   const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
 
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           kFakeUserEmail, "fake_origin",
@@ -463,13 +458,12 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(false);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      false);
 
   // We're not expecting any server calls in this case; StrictMock will verify.
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
@@ -497,11 +491,11 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(
           ::attestation::STATUS_NOT_AVAILABLE);
@@ -534,13 +528,12 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
 TEST_F(AttestationFlowTest, GetCertificate_NoEK) {
   AttestationClient::Get()->GetTestInterface()->set_enroll_request_status(
       ::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   // We're not expecting any server calls in this case; StrictMock will verify.
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
@@ -562,13 +555,12 @@ TEST_F(AttestationFlowTest, GetCertificate_NoEK) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_EKRejected) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
   proxy->DeferToFake(false);
@@ -595,13 +587,12 @@ TEST_F(AttestationFlowTest, GetCertificate_EKRejected) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_FailEnroll) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(false);
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(true);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
 
   std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
   proxy->DeferToFake(true);
@@ -631,11 +622,11 @@ TEST_F(AttestationFlowTest, GetCertificate_FailEnroll) {
 }
 
 TEST_F(AttestationFlowTest, GetMachineCertificateAlreadyEnrolled) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           /*username=*/"", /*request_origin=*/"",
@@ -686,11 +677,11 @@ TEST_F(AttestationFlowTest, GetMachineCertificateAlreadyEnrolled) {
 // TODO(b/179364923): Develop a better API design along with strict assertion
 // instead of silently removing the username.
 TEST_F(AttestationFlowTest, GetMachineCertificateWithUsername) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           /*username=*/"", /*request_origin=*/"",
@@ -739,11 +730,11 @@ TEST_F(AttestationFlowTest, GetMachineCertificateWithUsername) {
 }
 
 TEST_F(AttestationFlowTest, GetEnrollmentCertificateAlreadyEnrolled) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           /*username=*/"", /*request_origin=*/"",
@@ -790,11 +781,11 @@ TEST_F(AttestationFlowTest, GetEnrollmentCertificateAlreadyEnrolled) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_FailCreateCertRequest) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           kFakeUserEmail, "fake_origin",
@@ -821,11 +812,11 @@ TEST_F(AttestationFlowTest, GetCertificate_FailCreateCertRequest) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_CertRequestRejected) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           /*username=*/"", /*request_origin=*/"",
@@ -858,11 +849,11 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestRejected) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_CertRequestBadRequest) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           /*username=*/"", /*request_origin=*/"",
@@ -900,7 +891,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestBadRequest) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_FailIsEnrolled) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_status(::attestation::STATUS_DBUS_ERROR);
@@ -925,11 +916,11 @@ TEST_F(AttestationFlowTest, GetCertificate_FailIsEnrolled) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_CheckExisting) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistLegacyCreateCertificateRequest(
           /*username=*/"", /*request_origin=*/"",
@@ -975,11 +966,11 @@ TEST_F(AttestationFlowTest, GetCertificate_CheckExisting) {
 }
 
 TEST_F(AttestationFlowTest, GetCertificate_AlreadyExists) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->GetMutableKeyInfoReply("", kEnterpriseUserKey)
       ->set_certificate("fake_cert");
@@ -1009,11 +1000,11 @@ TEST_F(AttestationFlowTest, GetCertificate_AlreadyExists) {
 // TODO(b/179364923): Develop a better API design along with strict assertion
 // instead of silently removing the username.
 TEST_F(AttestationFlowTest, GetCertificate_LookupMachineKeyWithAccountId) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->mutable_status_reply()
       ->set_enrolled(true);
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->GetMutableKeyInfoReply("", kEnterpriseMachineKey)
       ->set_certificate("fake_cert");

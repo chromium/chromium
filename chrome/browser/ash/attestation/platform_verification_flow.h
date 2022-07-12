@@ -13,10 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): forward declare AttestationClient
-// before ChromeOS source migration.
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
 #include "url/gurl.h"
@@ -32,6 +29,9 @@ class User;
 }  // namespace user_manager
 
 namespace ash {
+
+class AttestationClient;
+
 namespace attestation {
 
 class AttestationFlow;

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

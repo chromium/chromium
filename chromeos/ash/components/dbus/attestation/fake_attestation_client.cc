@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 
 #include <utility>
 
@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "third_party/cros_system_api/dbus/attestation/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr int kCertificateNotAssigned = 0;
@@ -563,4 +563,4 @@ AttestationClient::TestInterface* FakeAttestationClient::GetTestInterface() {
   return this;
 }
 
-}  // namespace chromeos
+}  // namespace ash

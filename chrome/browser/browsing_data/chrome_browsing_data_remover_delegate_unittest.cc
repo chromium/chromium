@@ -177,7 +177,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"  // nogncheck
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -2078,18 +2078,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   user_manager::ScopedUserManager user_manager_enabler(
       base::WrapUnique(mock_user_manager));
 
-  chromeos::AttestationClient::InitializeFake();
+  ash::AttestationClient::InitializeFake();
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES, false);
 
   const std::vector<::attestation::DeleteKeysRequest>& history =
-      chromeos::AttestationClient::Get()
-          ->GetTestInterface()
-          ->delete_keys_history();
+      ash::AttestationClient::Get()->GetTestInterface()->delete_keys_history();
   EXPECT_EQ(history.size(), 1u);
 
-  chromeos::AttestationClient::Shutdown();
+  ash::AttestationClient::Shutdown();
 }
 #endif
 

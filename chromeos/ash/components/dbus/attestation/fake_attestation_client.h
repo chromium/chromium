@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ATTESTATION_FAKE_ATTESTATION_CLIENT_H_
-#define CHROMEOS_DBUS_ATTESTATION_FAKE_ATTESTATION_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ATTESTATION_FAKE_ATTESTATION_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ATTESTATION_FAKE_ATTESTATION_CLIENT_H_
 
-#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 
 #include <deque>
 #include <map>
@@ -16,12 +16,12 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
+class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) FakeAttestationClient
     : public AttestationClient,
       public AttestationClient::TestInterface {
  public:
@@ -255,6 +255,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       ::attestation::STATUS_SUCCESS;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ATTESTATION_FAKE_ATTESTATION_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ATTESTATION_FAKE_ATTESTATION_CLIENT_H_

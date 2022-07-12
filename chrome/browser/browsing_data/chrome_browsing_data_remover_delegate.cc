@@ -173,8 +173,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"  // nogncheck
 #include "chromeos/dbus/dbus_thread_manager.h"              // nogncheck
 #include "components/user_manager/user.h"
@@ -1071,7 +1071,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             &ChromeBrowsingDataRemoverDelegate::OnClearPlatformKeys,
             weak_ptr_factory_.GetWeakPtr(),
             CreateTaskCompletionClosure(TracingDataType::kTpmAttestationKeys));
-        chromeos::AttestationClient::Get()->DeleteKeys(
+        ash::AttestationClient::Get()->DeleteKeys(
             request, base::BindOnce(
                          [](decltype(callback) cb,
                             const ::attestation::DeleteKeysReply& reply) {

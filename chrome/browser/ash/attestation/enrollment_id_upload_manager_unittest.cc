@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/mock_enrollment_certificate_uploader.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

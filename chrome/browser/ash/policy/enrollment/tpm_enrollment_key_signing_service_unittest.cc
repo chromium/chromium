@@ -12,8 +12,8 @@
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,10 +28,10 @@ namespace policy {
 class TpmEnrollmentKeySigningServiceTest : public testing::Test {
  public:
   TpmEnrollmentKeySigningServiceTest() {
-    chromeos::AttestationClient::InitializeFake();
+    ash::AttestationClient::InitializeFake();
   }
   ~TpmEnrollmentKeySigningServiceTest() override {
-    chromeos::AttestationClient::Shutdown();
+    ash::AttestationClient::Shutdown();
   }
 
   static void SaveChallengeResponseAndRunCallback(
@@ -50,7 +50,7 @@ class TpmEnrollmentKeySigningServiceTest : public testing::Test {
 };
 
 TEST_F(TpmEnrollmentKeySigningServiceTest, SigningSuccess) {
-  chromeos::AttestationClient::Get()
+  ash::AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistSignSimpleChallengeKey(
           /*username=*/"",
@@ -72,7 +72,7 @@ TEST_F(TpmEnrollmentKeySigningServiceTest, SigningSuccess) {
   ::attestation::SignedData result_challenge_response;
   result_challenge_response.set_data(returned_signed_data.data());
   result_challenge_response.set_signature(returned_signed_data.signature());
-  EXPECT_TRUE(chromeos::AttestationClient::Get()
+  EXPECT_TRUE(ash::AttestationClient::Get()
                   ->GetTestInterface()
                   ->VerifySimpleChallengeResponse(kFakeChallenge,
                                                   result_challenge_response));

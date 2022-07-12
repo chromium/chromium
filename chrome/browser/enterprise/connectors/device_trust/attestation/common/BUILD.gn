@@ -27,7 +27,8 @@ source_set("types") {
   public_deps = [ "//build:chromeos_buildflags" ]
 
   if (is_chromeos_ash) {
-    public_deps += [ "//chromeos/dbus/attestation:attestation_proto" ]
+    public_deps +=
+        [ "//chromeos/ash/components/dbus/attestation:attestation_proto" ]
   } else {
     public_deps += [ "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto" ]
   }

@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/cert/x509_certificate.h"

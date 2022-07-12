@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -117,9 +117,7 @@ const std::string& GetPublicKey() {
 
 void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
   const std::vector<::attestation::DeleteKeysRequest> delete_keys_history =
-      chromeos::AttestationClient::Get()
-          ->GetTestInterface()
-          ->delete_keys_history();
+      AttestationClient::Get()->GetTestInterface()->delete_keys_history();
   EXPECT_EQ(delete_keys_history.size(), 1u);
   EXPECT_EQ(delete_keys_history[0].username().empty(),
             cert_scope != CertScope::kUser);
@@ -397,7 +395,7 @@ class CertProvisioningWorkerTest : public ::testing::Test {
   ~CertProvisioningWorkerTest() override = default;
 
   void SetUp() override {
-    ::chromeos::AttestationClient::InitializeFake();
+    AttestationClient::InitializeFake();
     // There should not be any calls to callback before this expect is
     // overridden.
     EXPECT_CALL(callback_observer_, Callback).Times(0);
@@ -409,7 +407,7 @@ class CertProvisioningWorkerTest : public ::testing::Test {
   void TearDown() override {
     EXPECT_FALSE(
         attestation::TpmChallengeKeySubtleFactory::WillReturnTestingInstance());
-    ::chromeos::AttestationClient::Shutdown();
+    AttestationClient::Shutdown();
   }
 
  protected:

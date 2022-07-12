@@ -13,9 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): forward declare after it moved to ash.
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -23,6 +21,9 @@
 class AccountId;
 
 namespace ash {
+
+class AttestationClient;
+
 namespace attestation {
 
 // Interface for access to the Privacy CA server.

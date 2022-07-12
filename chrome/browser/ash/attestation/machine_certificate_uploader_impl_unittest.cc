@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

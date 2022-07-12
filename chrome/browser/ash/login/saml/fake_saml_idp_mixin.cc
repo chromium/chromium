@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -9,7 +9,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/attestation/attestation_ca.pb.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 
 namespace enterprise_connectors {
 

@@ -14,7 +14,7 @@
 #include "ash/components/attestation/attestation_flow_type_decider.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
 

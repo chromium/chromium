@@ -24,8 +24,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -225,7 +225,7 @@ TpmChallengeKeySubtleTestBase::TpmChallengeKeySubtleTestBase(
     : test_profile_choice_(test_profile_choice),
       testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
   ::chromeos::TpmManagerClient::InitializeFake();
-  ::chromeos::AttestationClient::InitializeFake();
+  AttestationClient::InitializeFake();
   CHECK(testing_profile_manager_.SetUp());
 
   challenge_key_subtle_ = std::make_unique<TpmChallengeKeySubtleImpl>(
@@ -237,7 +237,7 @@ TpmChallengeKeySubtleTestBase::TpmChallengeKeySubtleTestBase(
 }
 
 TpmChallengeKeySubtleTestBase::~TpmChallengeKeySubtleTestBase() {
-  ::chromeos::AttestationClient::Shutdown();
+  AttestationClient::Shutdown();
   ::chromeos::TpmManagerClient::Shutdown();
 }
 
@@ -511,9 +511,8 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, KeyExists) {
 }
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationNotPrepared) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(false);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      false);
 
   RunOneStepAndExpect(KEY_DEVICE,
                       /*will_register_key=*/false, kEmptyKeyName,
@@ -523,9 +522,8 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationNotPrepared) {
 
 // Test that we get a proper error message in case we don't have a TPM.
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationUnsupported) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(false);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      false);
   chromeos::TpmManagerClient::Get()
       ->GetTestInterface()
       ->mutable_nonsensitive_status_reply()
@@ -539,7 +537,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationUnsupported) {
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
        AttestationPreparedDbusFailed) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(::attestation::STATUS_DBUS_ERROR);
 
@@ -550,7 +548,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
        AttestationPreparedServiceInternalError) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(
           ::attestation::STATUS_NOT_AVAILABLE);

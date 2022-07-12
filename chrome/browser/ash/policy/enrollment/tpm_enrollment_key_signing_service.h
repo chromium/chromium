@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "components/policy/core/common/cloud/signing_service.h"
 
 namespace policy {

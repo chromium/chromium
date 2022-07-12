@@ -8,7 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 

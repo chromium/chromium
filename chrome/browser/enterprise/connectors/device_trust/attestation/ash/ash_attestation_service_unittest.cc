@@ -20,8 +20,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/attestation/attestation_ca.pb.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -103,7 +103,7 @@ class AshAttestationServiceTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    chromeos::AttestationClient::InitializeFake();
+    ash::AttestationClient::InitializeFake();
 
     mock_challenge_key_ = InjectMockChallengeKey();
     attestation_service_ =

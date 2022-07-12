@@ -18,9 +18,9 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,11 +69,9 @@ class PlatformVerificationFlowTest : public ::testing::Test {
       : certificate_status_(ATTESTATION_SUCCESS),
         fake_certificate_index_(0),
         result_(PlatformVerificationFlow::INTERNAL_ERROR) {
-    ::chromeos::AttestationClient::InitializeFake();
+    AttestationClient::InitializeFake();
   }
-  ~PlatformVerificationFlowTest() override {
-    ::chromeos::AttestationClient::Shutdown();
-  }
+  ~PlatformVerificationFlowTest() override { AttestationClient::Shutdown(); }
 
   void SetUp() {
     // Create a verifier for tests to call.
@@ -212,7 +210,7 @@ TEST_F(PlatformVerificationFlowTest, ChallengeSigningError) {
 }
 
 TEST_F(PlatformVerificationFlowTest, DBusFailure) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(::attestation::STATUS_DBUS_ERROR);
   verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
@@ -222,7 +220,7 @@ TEST_F(PlatformVerificationFlowTest, DBusFailure) {
 }
 
 TEST_F(PlatformVerificationFlowTest, AttestationServiceInternalError) {
-  chromeos::AttestationClient::Get()
+  AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(
           ::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
@@ -343,9 +341,8 @@ TEST_F(PlatformVerificationFlowTest, UnsupportedMode) {
 }
 
 TEST_F(PlatformVerificationFlowTest, AttestationNotPrepared) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ConfigureEnrollmentPreparations(false);
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      false);
   verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
                                   kTestChallenge, CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();

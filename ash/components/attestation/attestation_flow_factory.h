@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 
 namespace ash {
 namespace attestation {

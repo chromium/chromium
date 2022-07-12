@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_ATTESTATION_ATTESTATION_CLIENT_H_
-#define CHROMEOS_DBUS_ATTESTATION_ATTESTATION_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ATTESTATION_ATTESTATION_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_ATTESTATION_ATTESTATION_CLIENT_H_
 
 #include <deque>
 #include <vector>
@@ -11,18 +11,18 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 
 namespace dbus {
 class Bus;
 }
 
-namespace chromeos {
+namespace ash {
 
 // AttestationClient is used to communicate with the org.chromium.Attestation
 // service. All method should be called from the origin thread (UI thread) which
 // initializes the DBusThreadManager instance.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
+class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) AttestationClient {
  public:
   using GetKeyInfoCallback =
       base::OnceCallback<void(const ::attestation::GetKeyInfoReply&)>;
@@ -328,12 +328,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
   virtual ~AttestationClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove before finalizing ChromeOS
-// source migration.
-namespace ash {
-using ::chromeos::AttestationClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_ATTESTATION_ATTESTATION_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_ATTESTATION_ATTESTATION_CLIENT_H_

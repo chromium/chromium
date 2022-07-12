@@ -92,13 +92,11 @@ std::string GetDmTokenFromPolicy(const std::string& blob) {
 }
 
 void AllowlistSimpleChallengeSigningKey() {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->AllowlistSignSimpleChallengeKey(
-          /*username=*/"",
-          attestation::GetKeyNameForProfile(
-              chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-              ""));
+  AttestationClient::Get()->GetTestInterface()->AllowlistSignSimpleChallengeKey(
+      /*username=*/"",
+      attestation::GetKeyNameForProfile(
+          chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
+          ""));
 }
 
 class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {

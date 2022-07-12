@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/certificate_util.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "components/account_id/account_id.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 

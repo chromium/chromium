@@ -17,9 +17,9 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -50,9 +50,7 @@ constexpr base::TimeDelta kCertProfileRenewalPeriod = base::Seconds(0);
 
 void VerifyDeleteKeysByPrefixCalledOnce(CertScope cert_scope) {
   const std::vector<::attestation::DeleteKeysRequest> delete_keys_history =
-      chromeos::AttestationClient::Get()
-          ->GetTestInterface()
-          ->delete_keys_history();
+      AttestationClient::Get()->GetTestInterface()->delete_keys_history();
   // Use `ASSERT_EQ()` so the checks that follows don't crash.
   ASSERT_EQ(delete_keys_history.size(), 1U);
   EXPECT_EQ(delete_keys_history[0].username().empty(),
@@ -64,9 +62,7 @@ void VerifyDeleteKeysByPrefixCalledOnce(CertScope cert_scope) {
 
 void ExpectDeleteKeysByPrefixNeverCalled() {
   const std::vector<::attestation::DeleteKeysRequest> delete_keys_history =
-      chromeos::AttestationClient::Get()
-          ->GetTestInterface()
-          ->delete_keys_history();
+      AttestationClient::Get()->GetTestInterface()->delete_keys_history();
   EXPECT_TRUE(delete_keys_history.empty());
 }
 
@@ -143,13 +139,13 @@ class CertProvisioningSchedulerTest : public testing::Test {
   }
 
   void SetUp() override {
-    chromeos::AttestationClient::InitializeFake();
+    AttestationClient::InitializeFake();
     CertProvisioningWorkerFactory::SetFactoryForTesting(&mock_factory_);
   }
 
   void TearDown() override {
     CertProvisioningWorkerFactory::SetFactoryForTesting(nullptr);
-    chromeos::AttestationClient::Shutdown();
+    AttestationClient::Shutdown();
   }
 
   void AddOnlineWifiNetwork() {
@@ -780,9 +776,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
     VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
   }
 
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->ClearDeleteKeysHistory();
+  AttestationClient::Get()->GetTestInterface()->ClearDeleteKeysHistory();
 
   {
     CertProfile cert_profile(kCertProfileId, kCertProfileName,

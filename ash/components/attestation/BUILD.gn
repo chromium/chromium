@@ -12,8 +12,8 @@ component("attestation") {
   deps = [
     "//ash/components/cryptohome",
     "//base",
-    "//chromeos/dbus/attestation",
-    "//chromeos/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/dbus/common",
     "//components/account_id",
     "//crypto",
@@ -41,7 +41,7 @@ source_set("test_support") {
   public_deps = [ ":attestation" ]
   deps = [
     "//base/test:test_support",
-    "//chromeos/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/dbus/constants:constants",
     "//components/account_id",
     "//net",
@@ -63,9 +63,9 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/components/cryptohome",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/dbus:test_support",
-    "//chromeos/dbus/attestation",
-    "//chromeos/dbus/attestation:attestation_proto",
     "//components/account_id",
     "//testing/gmock",
     "//testing/gtest",

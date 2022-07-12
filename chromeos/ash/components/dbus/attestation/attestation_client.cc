@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 
 #include <utility>
 
@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -24,7 +24,7 @@
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/attestation/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Values for the attestation server switch.
@@ -335,7 +335,7 @@ bool AttestationClient::IsAttestationPrepared(
 ::attestation::VAType AttestationClient::GetVerifiedAccessServerType() {
   std::string value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kAttestationServer);
+          chromeos::switches::kAttestationServer);
   if (value.empty() || value == kAttestationServerDefault) {
     return ::attestation::DEFAULT_VA;
   }
@@ -347,4 +347,4 @@ bool AttestationClient::IsAttestationPrepared(
   return attestation::DEFAULT_VA;
 }
 
-}  // namespace chromeos
+}  // namespace ash

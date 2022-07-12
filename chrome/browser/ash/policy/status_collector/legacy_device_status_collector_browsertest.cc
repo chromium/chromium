@@ -63,6 +63,7 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
@@ -75,7 +76,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -883,7 +883,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     chromeos::CrasAudioHandler::InitializeForTesting();
     ash::UserDataAuthClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::AttestationClient::InitializeFake();
+    ash::AttestationClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
 
@@ -905,7 +905,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     ash::CiceroneClient::Shutdown();
     chromeos::LoginState::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
-    chromeos::AttestationClient::Shutdown();
+    ash::AttestationClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     ash::UserDataAuthClient::Shutdown();
     chromeos::CrasAudioHandler::Shutdown();
@@ -2386,9 +2386,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, TpmStatusReporting) {
   tpm_status_reply->set_is_enabled(true);
   tpm_status_reply->set_is_owned(true);
   tpm_status_reply->set_is_owner_password_present(false);
-  auto* enrollment_status_reply = chromeos::AttestationClient::Get()
-                                      ->GetTestInterface()
-                                      ->mutable_status_reply();
+  auto* enrollment_status_reply =
+      ash::AttestationClient::Get()->GetTestInterface()->mutable_status_reply();
   enrollment_status_reply->set_prepared_for_enrollment(true);
   enrollment_status_reply->set_enrolled(false);
   auto* da_info_reply = chromeos::TpmManagerClient::Get()
@@ -2456,9 +2455,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, TpmStatusReportingAnyDBusError) {
   auto* tpm_status_reply = chromeos::TpmManagerClient::Get()
                                ->GetTestInterface()
                                ->mutable_nonsensitive_status_reply();
-  auto* enrollment_status_reply = chromeos::AttestationClient::Get()
-                                      ->GetTestInterface()
-                                      ->mutable_status_reply();
+  auto* enrollment_status_reply =
+      ash::AttestationClient::Get()->GetTestInterface()->mutable_status_reply();
   auto* da_info_reply = chromeos::TpmManagerClient::Get()
                             ->GetTestInterface()
                             ->mutable_dictionary_attack_info_reply();

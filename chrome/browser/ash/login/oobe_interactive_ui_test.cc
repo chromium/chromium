@@ -916,7 +916,7 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
   ~OobeZeroTouchInteractiveUITest() override = default;
 
   void SetUpOnMainThread() override {
-    chromeos::AttestationClient::Get()
+    AttestationClient::Get()
         ->GetTestInterface()
         ->AllowlistSignSimpleChallengeKey(
             /*username=*/"", attestation::GetKeyNameForProfile(
