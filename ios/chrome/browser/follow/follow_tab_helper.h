@@ -16,6 +16,10 @@ namespace web {
 class WebState;
 }
 
+namespace feature_engagement {
+class Tracker;
+}
+
 @class FollowWebPageURLs;
 @protocol FollowIPHPresenter;
 @protocol FollowMenuUpdater;
@@ -29,9 +33,11 @@ class FollowTabHelper : public web::WebStateObserver,
 
   ~FollowTabHelper() override;
 
-  // Creates the TabHelper and attaches to |web_state|. |web_state| must not be
-  // null.
-  static void CreateForWebState(web::WebState* web_state);
+  // Creates the TabHelper and attaches to |web_state| and
+  // |feature_engagement_tracker|. |web_state| must not be null.
+  static void CreateForWebState(
+      web::WebState* web_state,
+      feature_engagement::Tracker* feature_engagement_tracker);
 
   // Sets the presenter for follow in-product help (IPH). |presenter| is not
   // retained by this tab helper.
@@ -54,7 +60,8 @@ class FollowTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<FollowTabHelper>;
 
-  explicit FollowTabHelper(web::WebState* web_state);
+  FollowTabHelper(web::WebState* web_state,
+                  feature_engagement::Tracker* feature_engagement_tracker);
 
   // web::WebStateObserver implementation.
   void DidStartNavigation(web::WebState* web_state,
@@ -71,6 +78,8 @@ class FollowTabHelper : public web::WebStateObserver,
   void UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls);
 
   web::WebState* web_state_ = nullptr;
+
+  feature_engagement::Tracker* feature_engagement_tracker_ = nullptr;
 
   // Presenter for follow in-product help (IPH).
   __weak id<FollowIPHPresenter> follow_iph_presenter_ = nil;
