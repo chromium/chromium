@@ -241,6 +241,15 @@ CSSPropertyValueSet::GetPropertyValue<AtRuleDescriptorID>(
 template CORE_EXPORT String
 CSSPropertyValueSet::GetPropertyValue<AtomicString>(const AtomicString&) const;
 
+String CSSPropertyValueSet::GetPropertyValueWithHint(
+    const AtomicString& property_name,
+    unsigned index) const {
+  const CSSValue* value = GetPropertyCSSValueWithHint(property_name, index);
+  if (value)
+    return value->CssText();
+  return g_empty_string;
+}
+
 template <typename T>
 const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue(
     const T& property) const {
@@ -255,6 +264,13 @@ template CORE_EXPORT const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue<
     AtRuleDescriptorID>(const AtRuleDescriptorID&) const;
 template CORE_EXPORT const CSSValue* CSSPropertyValueSet::GetPropertyCSSValue<
     AtomicString>(const AtomicString&) const;
+
+const CSSValue* CSSPropertyValueSet::GetPropertyCSSValueWithHint(
+    const AtomicString& property_name,
+    unsigned index) const {
+  DCHECK_EQ(property_name, PropertyAt(index).Name().ToAtomicString());
+  return &PropertyAt(index).Value();
+}
 
 void CSSPropertyValueSet::Trace(Visitor* visitor) const {
   if (is_mutable_)
@@ -328,6 +344,13 @@ template CORE_EXPORT bool CSSPropertyValueSet::PropertyIsImportant<
     CSSPropertyID>(const CSSPropertyID&) const;
 template bool CSSPropertyValueSet::PropertyIsImportant<AtomicString>(
     const AtomicString&) const;
+
+bool CSSPropertyValueSet::PropertyIsImportantWithHint(
+    const AtomicString& property_name,
+    unsigned index) const {
+  DCHECK_EQ(property_name, PropertyAt(index).Name().ToAtomicString());
+  return PropertyAt(index).IsImportant();
+}
 
 bool CSSPropertyValueSet::ShorthandIsImportant(
     CSSPropertyID property_id) const {

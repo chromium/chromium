@@ -466,6 +466,20 @@ String CSSComputedStyleDeclaration::GetPropertyValueInternal(
   return GetPropertyValue(property_id);
 }
 
+String CSSComputedStyleDeclaration::GetPropertyValueWithHint(
+    const String& property_name,
+    unsigned index) {
+  NOTREACHED();
+  return "";
+}
+
+String CSSComputedStyleDeclaration::GetPropertyPriorityWithHint(
+    const String& property_name,
+    unsigned index) {
+  NOTREACHED();
+  return "";
+}
+
 void CSSComputedStyleDeclaration::SetPropertyInternal(
     CSSPropertyID id,
     const String&,

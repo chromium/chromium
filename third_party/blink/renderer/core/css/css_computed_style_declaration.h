@@ -117,6 +117,10 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
   const CSSValue* GetPropertyCSSValueInternal(
       const AtomicString& custom_property_name) override;
   String GetPropertyValueInternal(CSSPropertyID) override;
+  String GetPropertyValueWithHint(const String& property_name,
+                                  unsigned index) override;
+  String GetPropertyPriorityWithHint(const String& property_name,
+                                     unsigned index) override;
   void SetPropertyInternal(CSSPropertyID,
                            const String& custom_property_name,
                            const String& value,

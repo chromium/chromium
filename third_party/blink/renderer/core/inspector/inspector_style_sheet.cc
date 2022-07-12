@@ -800,26 +800,28 @@ String CanonicalCSSText(CSSRule* rule) {
   if (!style_rule)
     return rule->cssText();
 
-  Vector<String> property_names;
+  Vector<std::pair<unsigned, String>> properties;
   CSSStyleDeclaration* style = style_rule->style();
   for (unsigned i = 0; i < style->length(); ++i)
-    property_names.push_back(style->item(i));
+    properties.emplace_back(i, style->item(i));
 
-  std::sort(property_names.begin(), property_names.end(),
-            WTF::CodeUnitCompareLessThan);
+  std::sort(properties.begin(), properties.end(),
+            [](const auto& a, const auto& b) -> bool {
+              return WTF::CodeUnitCompareLessThan(a.second, b.second);
+            });
 
   StringBuilder builder;
   builder.Append(style_rule->selectorText());
   builder.Append('{');
-  for (unsigned i = 0; i < property_names.size(); ++i) {
-    String name = property_names.at(i);
+  for (const auto& [index, name] : properties) {
     builder.Append(' ');
     builder.Append(name);
     builder.Append(':');
-    builder.Append(style->getPropertyValue(name));
-    if (!style->getPropertyPriority(name).IsEmpty()) {
+    builder.Append(style->GetPropertyValueWithHint(name, index));
+    String priority = style->GetPropertyPriorityWithHint(name, index);
+    if (!priority.IsEmpty()) {
       builder.Append(' ');
-      builder.Append(style->getPropertyPriority(name));
+      builder.Append(priority);
     }
     builder.Append(';');
   }
@@ -920,13 +922,12 @@ void InspectorStyle::PopulateAllProperties(
             CssPropertyID(style_->GetExecutionContext(), name)))
       continue;
 
-    String value = style_->getPropertyValue(name);
-    bool important = !style_->getPropertyPriority(name).IsEmpty();
+    String value = style_->GetPropertyValueWithHint(name, i);
+    bool important = !style_->GetPropertyPriorityWithHint(name, i).IsEmpty();
     if (important)
       value = value + " !important";
-    result.push_back(CSSPropertySourceData(
-        name, value, !style_->getPropertyPriority(name).IsEmpty(), false, true,
-        SourceRange()));
+    result.push_back(CSSPropertySourceData(name, value, important, false, true,
+                                           SourceRange()));
   }
 }
 

@@ -111,6 +111,13 @@ class CORE_EXPORT CSSPropertyValueSet
   template <typename T>  // CSSPropertyID or AtomicString
   bool PropertyIsImportant(const T& property) const;
 
+  const CSSValue* GetPropertyCSSValueWithHint(const AtomicString& property_name,
+                                              unsigned index) const;
+  String GetPropertyValueWithHint(const AtomicString& property_name,
+                                  unsigned index) const;
+  bool PropertyIsImportantWithHint(const AtomicString& property_name,
+                                   unsigned index) const;
+
   bool ShorthandIsImportant(CSSPropertyID) const;
   bool ShorthandIsImportant(const AtomicString& custom_property_name) const {
     // Custom properties are never shorthands.

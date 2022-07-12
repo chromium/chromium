@@ -71,6 +71,10 @@ class AbstractPropertySetCSSStyleDeclaration : public CSSStyleDeclaration {
   const CSSValue* GetPropertyCSSValueInternal(
       const AtomicString& custom_property_name) final;
   String GetPropertyValueInternal(CSSPropertyID) final;
+  String GetPropertyValueWithHint(const String& property_name,
+                                  unsigned index) final;
+  String GetPropertyPriorityWithHint(const String& property_name,
+                                     unsigned index) final;
   void SetPropertyInternal(CSSPropertyID,
                            const String& custom_property_name,
                            const String& value,

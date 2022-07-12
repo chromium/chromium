@@ -81,6 +81,16 @@ class CORE_EXPORT CSSStyleDeclaration : public ScriptWrappable,
   virtual const CSSValue* GetPropertyCSSValueInternal(
       const AtomicString& custom_property_name) = 0;
   virtual String GetPropertyValueInternal(CSSPropertyID) = 0;
+  // When determining the index of a css property in CSSPropertyValueSet,
+  // the value and priority can be obtained directly through the index.
+  // GetPropertyValueWithHint and GetPropertyPriorityWithHint are O(1).
+  // getPropertyValue and getPropertyPriority are O(n),
+  // because the array needs to be traversed to find the index.
+  // See https://crbug.com/1339812 for more details.
+  virtual String GetPropertyValueWithHint(const String& property_name,
+                                          unsigned index) = 0;
+  virtual String GetPropertyPriorityWithHint(const String& property_name,
+                                             unsigned index) = 0;
   virtual void SetPropertyInternal(CSSPropertyID,
                                    const String& property_value,
                                    const String& value,

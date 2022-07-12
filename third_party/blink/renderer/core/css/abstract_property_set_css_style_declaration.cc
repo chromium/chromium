@@ -185,6 +185,37 @@ String AbstractPropertySetCSSStyleDeclaration::GetPropertyValueInternal(
   return PropertySet().GetPropertyValue(property_id);
 }
 
+String AbstractPropertySetCSSStyleDeclaration::GetPropertyValueWithHint(
+    const String& property_name,
+    unsigned index) {
+  CSSPropertyID property_id =
+      CssPropertyID(GetExecutionContext(), property_name);
+  if (!IsValidCSSPropertyID(property_id))
+    return String();
+  if (property_id == CSSPropertyID::kVariable) {
+    return PropertySet().GetPropertyValueWithHint(AtomicString(property_name),
+                                                  index);
+  }
+  return PropertySet().GetPropertyValue(property_id);
+}
+
+String AbstractPropertySetCSSStyleDeclaration::GetPropertyPriorityWithHint(
+    const String& property_name,
+    unsigned index) {
+  CSSPropertyID property_id =
+      CssPropertyID(GetExecutionContext(), property_name);
+  if (!IsValidCSSPropertyID(property_id))
+    return String();
+  bool important = false;
+  if (property_id == CSSPropertyID::kVariable) {
+    important = PropertySet().PropertyIsImportantWithHint(
+        AtomicString(property_name), index);
+  } else {
+    important = PropertySet().PropertyIsImportant(property_id);
+  }
+  return important ? "important" : "";
+}
+
 DISABLE_CFI_PERF
 void AbstractPropertySetCSSStyleDeclaration::SetPropertyInternal(
     CSSPropertyID unresolved_property,
