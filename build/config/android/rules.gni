@@ -1396,31 +1396,24 @@ if (enable_java_templates) {
     _android_manifest =
         "$target_gen_dir/$target_name.AndroidManifest.merged.xml"
 
-    # TODO(crbug.com/1335599): Fix this test suite.
-    if (target_name == "clank_junit_tests") {
-      group(_merge_manifest_target_name) {
+    merge_manifests(_merge_manifest_target_name) {
+      if (defined(invoker.android_manifest)) {
+        input_manifest = invoker.android_manifest
+      } else {
+        input_manifest = "//build/android/AndroidManifest.xml"
       }
-      _android_manifest = "//build/android/AndroidManifest.xml"
-    } else {
-      merge_manifests(_merge_manifest_target_name) {
-        if (defined(invoker.android_manifest)) {
-          input_manifest = invoker.android_manifest
-        } else {
-          input_manifest = "//build/android/AndroidManifest.xml"
-        }
 
-        if (defined(_package_name)) {
-          manifest_package = _package_name
-        }
-        output_manifest = _android_manifest
-        build_config = _build_config
-        min_sdk_version = default_min_sdk_version
-        target_sdk_version = android_sdk_version
-        deps = _non_java_deps + _java_assetres_deps +
-               [ ":$_build_config_target_name" ]
-        if (defined(invoker.android_manifest_dep)) {
-          deps += [ invoker.android_manifest_dep ]
-        }
+      if (defined(_package_name)) {
+        manifest_package = _package_name
+      }
+      output_manifest = _android_manifest
+      build_config = _build_config
+      min_sdk_version = default_min_sdk_version
+      target_sdk_version = android_sdk_version
+      deps = _non_java_deps + _java_assetres_deps +
+             [ ":$_build_config_target_name" ]
+      if (defined(invoker.android_manifest_dep)) {
+        deps += [ invoker.android_manifest_dep ]
       }
     }
 
