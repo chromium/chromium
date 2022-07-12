@@ -86,7 +86,7 @@ TEST_F(FileTypePoliciesTest, UnpackResourceBundle) {
   EXPECT_EQ(DownloadFileType::ALLOW_AUTO_OPEN,
             file_type.platform_settings(0).auto_open_hint());
 #else
-  EXPECT_EQ(DownloadFileType::DANGEROUS,
+  EXPECT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
             file_type.platform_settings(0).danger_level());
   EXPECT_EQ(DownloadFileType::DISALLOW_AUTO_OPEN,
             file_type.platform_settings(0).auto_open_hint());

@@ -12,7 +12,7 @@
 ## version id is larger than the version id in download_file_types.asciipb. If
 ## there isn't an ongoing experiment, this version id is equal to the version id
 ## in download_file_types.asciipb.
-version_id: 51
+version_id: 52
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -120,7 +120,7 @@ file_types {
   uma_value: 68
   ping_setting: FULL_PING
   platform_settings {
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -129,7 +129,7 @@ file_types {
   uma_value: 69
   ping_setting: FULL_PING
   platform_settings {
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -742,7 +742,7 @@ file_types {
   uma_value: 13
   ping_setting: FULL_PING
   platform_settings {
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
   platform_settings {
@@ -849,17 +849,17 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_LINUX
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1292,7 +1292,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1736,7 +1736,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1746,7 +1746,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1759,7 +1759,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1769,7 +1769,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -1779,7 +1779,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2187,7 +2187,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2245,7 +2245,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2256,7 +2256,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: ALLOW_AUTO_OPEN
   }
 }
@@ -2278,7 +2278,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2404,7 +2404,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: ALLOW_AUTO_OPEN
   }
 }
@@ -2418,7 +2418,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: ALLOW_AUTO_OPEN
   }
 }
@@ -2471,7 +2471,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: ALLOW_AUTO_OPEN
   }
 }
@@ -2532,7 +2532,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2652,7 +2652,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -2834,7 +2834,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3184,7 +3184,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3194,7 +3194,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3204,7 +3204,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3214,7 +3214,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3224,7 +3224,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
@@ -3234,7 +3234,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_MAC
-    danger_level: DANGEROUS
+    danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }

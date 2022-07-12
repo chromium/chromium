@@ -181,8 +181,9 @@ class ChromeDownloadManagerDelegate
       mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver);
 
   // Return true if the downloaded file should be blocked based on the current
-  // download restriction pref and |danger_type|.
-  bool ShouldBlockFile(download::DownloadDangerType danger_type) const;
+  // download restriction pref, the file type, and |danger_type|.
+  bool ShouldBlockFile(download::DownloadItem* item,
+                       download::DownloadDangerType danger_type) const;
 
  protected:
   virtual safe_browsing::DownloadProtectionService*

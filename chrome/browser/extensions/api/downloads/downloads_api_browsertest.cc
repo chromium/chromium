@@ -48,6 +48,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1853,7 +1854,7 @@ class CustomResponse : public net::test_server::HttpResponse {
   void SendResponse(
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
     base::StringPairs headers = {
-        //"HTTP/1.1 200 OK\r\n"
+        // "HTTP/1.1 200 OK\r\n"
         {"Content-type", "application/octet-stream"},
         {"Cache-Control", "max-age=0"},
     };
@@ -3196,6 +3197,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
     DownloadExtensionTest_OnDeterminingFilename_SafeOverride) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
+      safe_browsing::ScopedMarkAllFilesDangerousForTesting();
+
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -4610,6 +4614,9 @@ void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
 #endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        MAYBE_DownloadExtensionTest_AcceptDanger) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
+      safe_browsing::ScopedMarkAllFilesDangerousForTesting();
+
   // Download a file that will be marked dangerous; click the browser action
   // button; the browser action poup will call acceptDanger(); when the
   // DownloadDangerPrompt is created, pretend that the user clicks the Accept

@@ -652,7 +652,8 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
              download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT)) {
       DVLOG(2) << __func__
                << "() SB service disabled. Marking download as DANGEROUS FILE";
-      if (ShouldBlockFile(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE)) {
+      if (ShouldBlockFile(item,
+                          download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE)) {
         MaybeReportDangerousDownloadBlocked(
             download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
             item->GetTargetFilePath().AsUTF8Unsafe(), item);
@@ -1273,16 +1274,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
     switch (result) {
       case safe_browsing::DownloadCheckResult::UNKNOWN:
-        // The check failed or was inconclusive.
-        if (DownloadItemModel(item).GetDangerLevel() !=
-            DownloadFileType::NOT_DANGEROUS) {
-          danger_type = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
-        }
-        break;
       case safe_browsing::DownloadCheckResult::SAFE:
-        // If this file type require explicit consent, then set the danger type
-        // to DANGEROUS_FILE so that the user be required to manually vet
-        // whether the download is intended or not.
+        // For DANGEROUS file types, we still want to warng the user, even if
+        // Safe Browsing is unsure about the file.
         if (DownloadItemModel(item).GetDangerLevel() ==
             DownloadFileType::DANGEROUS) {
           danger_type = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
@@ -1356,7 +1350,7 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       } else {
         item->OnAsyncScanningCompleted(danger_type);
       }
-    } else if (ShouldBlockFile(danger_type)) {
+    } else if (ShouldBlockFile(item, danger_type)) {
       // Specifying a dangerous type here would take precedence over the
       // blocking of the file. For BLOCKED_TOO_LARGE and
       // BLOCKED_PASSWORD_PROTECTED, we want to display more clear UX, so
@@ -1506,7 +1500,7 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
 
     DownloadItemModel(item).SetDangerLevel(target_info->danger_level);
   }
-  if (ShouldBlockFile(target_info->danger_type)) {
+  if (ShouldBlockFile(item, target_info->danger_type)) {
     MaybeReportDangerousDownloadBlocked(
         download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
         target_info->target_path.AsUTF8Unsafe(), item);
@@ -1581,6 +1575,7 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
 }
 
 bool ChromeDownloadManagerDelegate::ShouldBlockFile(
+    download::DownloadItem* item,
     download::DownloadDangerType danger_type) const {
   DownloadPrefs::DownloadRestriction download_restriction =
       download_prefs_->download_restriction();
@@ -1594,19 +1589,26 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
       download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE)
     return true;
 
+  bool file_type_dangerous =
+      (DownloadItemModel(item).GetDangerLevel() !=
+           DownloadFileType::NOT_DANGEROUS &&
+       danger_type == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+
   switch (download_restriction) {
     case (DownloadPrefs::DownloadRestriction::NONE):
       return false;
 
     case (DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES):
-      return danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+      return danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS ||
+             file_type_dangerous;
 
     case (DownloadPrefs::DownloadRestriction::DANGEROUS_FILES): {
       return (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT ||
               danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
               danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
               danger_type ==
-                  download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE);
+                  download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE ||
+              file_type_dangerous);
     }
 
     case (DownloadPrefs::DownloadRestriction::MALICIOUS_FILES): {

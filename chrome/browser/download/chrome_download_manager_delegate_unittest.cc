@@ -673,7 +673,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, MaybeDangerousContent) {
     DetermineDownloadTargetResult result;
     DetermineDownloadTarget(download_item.get(), &result);
 
-    EXPECT_EQ(DownloadFileType::DANGEROUS,
+    EXPECT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
               DownloadItemModel(download_item.get()).GetDangerLevel());
     EXPECT_EQ(download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
               result.danger_type);
@@ -1437,7 +1437,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
      safe_browsing::DownloadCheckResult::UNKNOWN,
      DownloadPrefs::DownloadRestriction::NONE,
 
-     download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      /*blocked=*/false},
 
     // UNKNOWN verdict for a potentially dangerous file blocked by policy.
@@ -1455,7 +1455,7 @@ const SafeBrowsingTestParameters kSafeBrowsingTestCases[] = {
      safe_browsing::DownloadCheckResult::UNKNOWN,
      DownloadPrefs::DownloadRestriction::MALICIOUS_FILES,
 
-     download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
      /*blocked=*/false},
 
     // DANGEROUS verdict for a potentially dangerous file.

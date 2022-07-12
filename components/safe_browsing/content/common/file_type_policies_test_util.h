@@ -25,6 +25,8 @@ class FileTypePoliciesTestOverlay {
  public:
   FileTypePoliciesTestOverlay();
   ~FileTypePoliciesTestOverlay();
+  FileTypePoliciesTestOverlay(FileTypePoliciesTestOverlay&&);
+  FileTypePoliciesTestOverlay& operator=(FileTypePoliciesTestOverlay&&);
 
   // Swaps the contents bewtween the existing config and |new_config|.
   void SwapConfig(std::unique_ptr<DownloadFileTypeConfig>& new_config) const;
@@ -35,6 +37,8 @@ class FileTypePoliciesTestOverlay {
  private:
   std::unique_ptr<DownloadFileTypeConfig> orig_config_;
 };
+
+FileTypePoliciesTestOverlay ScopedMarkAllFilesDangerousForTesting();
 
 }  // namespace safe_browsing
 
