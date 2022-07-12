@@ -151,10 +151,36 @@ function iframe_test(description, iframe_origin, popup_origin, headers,
             assert_equals(
               await iframeCanAccessProperty(iframe_token, "document"),
               popup_origin === iframe_origin ? "true" : "false",
-              'Popup has page has dom access to the popup?');
+              'Iframe has dom access to the popup?');
             assert_equals(
               await iframeCanAccessProperty(iframe_token, "frames"), "true",
-              'Main page has cross origin access to the popup?');
+              'Iframe has cross origin access to the popup?');
+          }
+          break;
+        }
+        case 'restricted': {
+          assert_equals(
+            await evaluate(popup_token, 'opener != null'), "true",
+            'Popup has an opener?');
+          assert_equals(
+            await evaluate(popup_token, `name === '${popup_token}'`), "true",
+            'Popup has a name?');
+
+          // When the popup was created using window.open, we've kept a handle
+          // and we can do extra verifications.
+          if (popup_via === 'window_open') {
+            assert_equals(
+              await evaluate(iframe_token, 'popup.closed'), "false",
+              'Popup appears closed from iframe?');
+            assert_equals(
+              await iframeCanAccessProperty(iframe_token, "document"), "false",
+              'Iframe has dom access to the popup?');
+            assert_equals(
+              await iframeCanAccessProperty(iframe_token, "frames"), "false",
+              'Iframe has cross origin access to the popup?');
+            assert_equals(
+              await iframeCanAccessProperty(iframe_token, "closed"), "true",
+              'Iframe has limited cross origin access to the popup?');
           }
           break;
         }
