@@ -19,7 +19,9 @@
 
 // SANITIZER_CHECK's use case is severe, but recoverable situations that need
 // priority debugging. They trigger on Clusterfuzz, debug and sanitizer builds.
-#if defined(AX_FAIL_FAST_BUILD)
+// Prefer DCHECK() when enabled because it logs messages in the crash tool,
+// unlike CHECK().
+#if defined(AX_FAIL_FAST_BUILD) && !DCHECK_IS_ON()
 #define SANITIZER_CHECK(val) CHECK(val)
 #define SANITIZER_CHECK_EQ(val1, val2) CHECK_EQ(val1, val2)
 #define SANITIZER_CHECK_NE(val1, val2) CHECK_NE(val1, val2)
@@ -38,6 +40,6 @@
 #define SANITIZER_CHECK_GE(val1, val2) DCHECK_GE(val1, val2)
 #define SANITIZER_CHECK_GT(val1, val2) DCHECK_GT(val1, val2)
 #define SANITIZER_NOTREACHED() NOTREACHED()
-#endif  // AX_FAIL_FAST_BUIL
+#endif  // AX_FAIL_FAST_BUILD && !DCHECK_IS_ON()
 
 #endif  // UI_ACCESSIBILITY_AX_COMMON_H_
