@@ -2768,10 +2768,6 @@ source_set("browser") {
         "renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.h",
       ]
     }
-
-    if (is_linux || is_chromeos) {
-      deps += [ "//components/services/font:ppapi_fontconfig_matching" ]
-    }
   }
 
   if (enable_library_cdms) {

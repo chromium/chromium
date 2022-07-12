@@ -16,13 +16,13 @@
 #include "build/chromeos_buildflags.h"
 #include "components/services/font/fontconfig_matching.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "pdf/buildflags.h"
 #include "skia/ext/skia_utils_base.h"
 #include "ui/gfx/font_fallback_linux.h"
 #include "ui/gfx/font_render_params.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "components/services/font/ppapi_fontconfig_matching.h"  // nogncheck
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/services/font/pdf_fontconfig_matching.h"  // nogncheck
 #endif
 
 static_assert(
@@ -268,7 +268,7 @@ void FontServiceApp::MatchFontWithFallback(
     MatchFontWithFallbackCallback callback) {
   TRACE_EVENT0("fonts", "FontServiceApp::MatchFontWithFallback");
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PDF)
   base::File matched_font_file;
   int font_file_descriptor = MatchFontFaceWithFallback(
       family, is_bold, is_italic, charset, fallbackFamilyType);

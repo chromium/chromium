@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/font/ppapi_fontconfig_matching.h"
+#include "components/services/font/pdf_fontconfig_matching.h"
 
 #include <fcntl.h>
 #include <fontconfig/fontconfig.h>
@@ -16,8 +16,8 @@
 
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
-#include "ppapi/c/private/pp_private_font_charset.h"
-#include "ppapi/c/trusted/ppb_browser_font_trusted.h"
+#include "third_party/blink/public/platform/web_font_description.h"
+#include "third_party/pdfium/public/fpdf_sysfontinfo.h"
 
 namespace {
 
@@ -45,30 +45,50 @@ bool MSCharSetToFontconfig(FcLangSet* langset, unsigned fdwCharSet) {
 
   bool is_lgc = false;
   switch (fdwCharSet) {
-    case PP_PRIVATEFONTCHARSET_ANSI:
+    case FXFONT_ANSI_CHARSET:
     // These values I don't really know what to do with, so I'm going to map
     // them to English also.
-    case PP_PRIVATEFONTCHARSET_DEFAULT:
-    case PP_PRIVATEFONTCHARSET_MAC:
-    case PP_PRIVATEFONTCHARSET_OEM:
-    case PP_PRIVATEFONTCHARSET_SYMBOL:
+    case FXFONT_DEFAULT_CHARSET:
+    case FXFONT_SYMBOL_CHARSET:
       is_lgc = true;
       FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("en"));
       break;
-    case PP_PRIVATEFONTCHARSET_BALTIC:
-      // The three baltic languages.
-      is_lgc = true;
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("et"));
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("lv"));
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("lt"));
+    case FXFONT_SHIFTJIS_CHARSET:
+      // Japanese
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("ja"));
       break;
-    case PP_PRIVATEFONTCHARSET_CHINESEBIG5:
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("zh-tw"));
+    case FXFONT_HANGEUL_CHARSET:
+      // Korean
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("ko"));
       break;
-    case PP_PRIVATEFONTCHARSET_GB2312:
+    case FXFONT_GB2312_CHARSET:
       FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("zh-cn"));
       break;
-    case PP_PRIVATEFONTCHARSET_EASTEUROPE:
+    case FXFONT_CHINESEBIG5_CHARSET:
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("zh-tw"));
+      break;
+    case FXFONT_GREEK_CHARSET:
+      is_lgc = true;
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("el"));
+      break;
+    case FXFONT_VIETNAMESE_CHARSET:
+      is_lgc = true;
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("vi"));
+      break;
+    case FXFONT_HEBREW_CHARSET:
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("he"));
+      break;
+    case FXFONT_ARABIC_CHARSET:
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("ar"));
+      break;
+    case FXFONT_CYRILLIC_CHARSET:
+      is_lgc = true;
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("ru"));
+      break;
+    case FXFONT_THAI_CHARSET:
+      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("th"));
+      break;
+    case FXFONT_EASTERNEUROPEAN_CHARSET:
       // A scattering of eastern European languages.
       is_lgc = true;
       FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("pl"));
@@ -76,40 +96,6 @@ bool MSCharSetToFontconfig(FcLangSet* langset, unsigned fdwCharSet) {
       FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("sk"));
       FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("hu"));
       FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("hr"));
-      break;
-    case PP_PRIVATEFONTCHARSET_GREEK:
-      is_lgc = true;
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("el"));
-      break;
-    case PP_PRIVATEFONTCHARSET_HANGUL:
-    case PP_PRIVATEFONTCHARSET_JOHAB:
-      // Korean
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("ko"));
-      break;
-    case PP_PRIVATEFONTCHARSET_RUSSIAN:
-      is_lgc = true;
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("ru"));
-      break;
-    case PP_PRIVATEFONTCHARSET_SHIFTJIS:
-      // Japanese
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("ja"));
-      break;
-    case PP_PRIVATEFONTCHARSET_TURKISH:
-      is_lgc = true;
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("tr"));
-      break;
-    case PP_PRIVATEFONTCHARSET_VIETNAMESE:
-      is_lgc = true;
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("vi"));
-      break;
-    case PP_PRIVATEFONTCHARSET_ARABIC:
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("ar"));
-      break;
-    case PP_PRIVATEFONTCHARSET_HEBREW:
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("he"));
-      break;
-    case PP_PRIVATEFONTCHARSET_THAI:
-      FcLangSetAdd(langset, reinterpret_cast<const FcChar8*>("th"));
       break;
       // default:
       // Don't add any languages in that case that we don't recognise the
@@ -140,13 +126,13 @@ int MatchFontFaceWithFallback(const std::string& face,
   std::string generic_font_name;
   if (is_lgc) {
     switch (fallback_family) {
-      case PP_BROWSERFONT_TRUSTED_FAMILY_SERIF:
+      case blink::WebFontDescription::kGenericFamilySerif:
         generic_font_name = "Times New Roman";
         break;
-      case PP_BROWSERFONT_TRUSTED_FAMILY_SANSSERIF:
+      case blink::WebFontDescription::kGenericFamilySansSerif:
         generic_font_name = "Arial";
         break;
-      case PP_BROWSERFONT_TRUSTED_FAMILY_MONOSPACE:
+      case blink::WebFontDescription::kGenericFamilyMonospace:
         generic_font_name = "Courier New";
         break;
     }

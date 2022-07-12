@@ -61,8 +61,7 @@ class BlinkFontMapper {
     font_loader->MatchFontWithFallback(
         desc.family.Utf8(),
         desc.weight >= blink::WebFontDescription::kWeightBold, desc.italic,
-        charset, blink::WebFontDescription::kGenericFamilyStandard,
-        font_file.get());
+        charset, desc.generic_family, font_file.get());
     if (!font_file->IsValid())
       return nullptr;
 

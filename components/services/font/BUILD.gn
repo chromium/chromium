@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
-import("//ppapi/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//testing/test.gni")
 
 source_set("lib") {
@@ -20,29 +20,22 @@ source_set("lib") {
     "//components/services/font/public/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
-    "//ppapi/buildflags:buildflags",
+    "//pdf:buildflags",
     "//third_party/fontconfig",
     "//ui/gfx",
   ]
 
   public_deps = [ "//skia" ]
 
-  if ((is_linux || is_chromeos) && enable_plugins) {
-    deps += [ ":ppapi_fontconfig_matching" ]
-  }
-}
-
-if ((is_linux || is_chromeos) && enable_plugins) {
-  source_set("ppapi_fontconfig_matching") {
-    sources = [
-      "ppapi_fontconfig_matching.cc",
-      "ppapi_fontconfig_matching.h",
+  if (enable_pdf && (is_linux || is_chromeos)) {
+    sources += [
+      "pdf_fontconfig_matching.cc",
+      "pdf_fontconfig_matching.h",
     ]
 
-    deps = [
-      "//base:base",
-      "//ppapi/buildflags:buildflags",
-      "//ppapi/c",
+    deps += [
+      "//third_party/blink/public:blink_headers",
+      "//third_party/pdfium:pdfium_public_headers",
     ]
   }
 }
@@ -59,15 +52,15 @@ test("font_service_unittests") {
     "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
-    "//ppapi/buildflags:buildflags",
+    "//pdf:buildflags",
     "//skia",
     "//testing/gtest",
   ]
 
-  if (enable_plugins) {
+  if (enable_pdf) {
     deps += [
-      "//ppapi/c",
       "//third_party:freetype_harfbuzz",
+      "//third_party/pdfium:pdfium_public_headers",
     ]
   }
 }

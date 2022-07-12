@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_FONT_PPAPI_FONTCONFIG_MATCHING_H_
-#define COMPONENTS_SERVICES_FONT_PPAPI_FONTCONFIG_MATCHING_H_
+#ifndef COMPONENTS_SERVICES_FONT_PDF_FONTCONFIG_MATCHING_H_
+#define COMPONENTS_SERVICES_FONT_PDF_FONTCONFIG_MATCHING_H_
 
 #include <stdint.h>
 #include "build/build_config.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "pdf/buildflags.h"
 
 #include <string>
 
-#if !BUILDFLAG(ENABLE_PLUGINS)
-#error "Plugins should be enabled when including " ## __FILE__
+#if !BUILDFLAG(ENABLE_PDF)
+#error "Requires enable_pdf = true"
 #endif
 
 namespace font_service {
@@ -25,4 +25,4 @@ int MatchFontFaceWithFallback(const std::string& face,
 
 }  // namespace font_service
 
-#endif  // COMPONENTS_SERVICES_FONT_PPAPI_FONTCONFIG_MATCHING_H_
+#endif  // COMPONENTS_SERVICES_FONT_PDF_FONTCONFIG_MATCHING_H_

@@ -12,15 +12,16 @@
 #include "components/services/font/font_service_app.h"
 #include "components/services/font/public/cpp/font_loader.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
-#include "ppapi/buildflags/buildflags.h"
+#include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PDF)
 #include <ft2build.h>
+
 #include <freetype/freetype.h>
-#include "ppapi/c/private/pp_private_font_charset.h"  // nogncheck
-#endif
+#include "third_party/pdfium/public/fpdf_sysfontinfo.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace font_service {
 namespace {
@@ -31,7 +32,7 @@ bool IsInTestFontDirectory(const base::FilePath& path) {
   return kTestFontsDir.IsParent(path);
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PDF)
 std::string GetPostscriptNameFromFile(base::File& font_file) {
   int64_t file_size = font_file.GetLength();
   if (!file_size)
@@ -53,7 +54,7 @@ std::string GetPostscriptNameFromFile(base::File& font_file) {
   FT_Done_FreeType(library);
   return font_family_name;
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 mojo::PendingRemote<mojom::FontService> ConnectToBackgroundFontService() {
   mojo::PendingRemote<mojom::FontService> remote;
@@ -236,17 +237,17 @@ TEST_F(FontLoaderTest, RenderStyleForStrike) {
   }
 }
 
-TEST_F(FontLoaderTest, PPAPIFallback) {
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PDF)
+TEST_F(FontLoaderTest, PdfFallback) {
   std::tuple<std::string, uint32_t, std::string> family_charset_expectations[] =
       {
-          {"", PP_PRIVATEFONTCHARSET_SHIFTJIS, "DejaVuSans"},
-          {"", PP_PRIVATEFONTCHARSET_THAI, "Garuda"},
-          {"", PP_PRIVATEFONTCHARSET_GB2312, "DejaVuSans"},
-          {"", PP_PRIVATEFONTCHARSET_GREEK, "DejaVuSans"},
-          {"Arial", PP_PRIVATEFONTCHARSET_DEFAULT, "Arimo-Regular"},
-          {"Times New Roman", PP_PRIVATEFONTCHARSET_DEFAULT, "Tinos-Regular"},
-          {"Courier New", PP_PRIVATEFONTCHARSET_DEFAULT, "Cousine-Regular"},
+          {"", FXFONT_SHIFTJIS_CHARSET, "DejaVuSans"},
+          {"", FXFONT_THAI_CHARSET, "Garuda"},
+          {"", FXFONT_GB2312_CHARSET, "DejaVuSans"},
+          {"", FXFONT_GREEK_CHARSET, "DejaVuSans"},
+          {"Arial", FXFONT_DEFAULT_CHARSET, "Arimo-Regular"},
+          {"Times New Roman", FXFONT_DEFAULT_CHARSET, "Tinos-Regular"},
+          {"Courier New", FXFONT_DEFAULT_CHARSET, "Cousine-Regular"},
       };
   for (auto& family_charset_expectation : family_charset_expectations) {
     base::File result_file;
@@ -257,8 +258,8 @@ TEST_F(FontLoaderTest, PPAPIFallback) {
     EXPECT_EQ(GetPostscriptNameFromFile(result_file),
               std::get<2>(family_charset_expectation));
   }
-#endif
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 TEST_F(FontLoaderTest, LocalMatching) {
   // The following fonts are ensured to be available by the test harnesses
