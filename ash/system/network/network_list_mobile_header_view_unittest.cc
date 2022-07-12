@@ -171,6 +171,16 @@ TEST_F(NetworkListMobileHeaderViewTest, CellularInhibitState) {
   IconButton* add_esim_button = GetAddEsimButton();
   ASSERT_NE(nullptr, add_esim_button);
 
+  // Tooltip is not initially set.
+  EXPECT_EQ(u"", add_esim_button->GetTooltipText());
+
+  // Tooltip is not updated when eSIM button is not visible, this is
+  // because there would not be a valid tooltip when there isnt a valid
+  // cellular device.
+  SetAddESimButtonState(/*enabled=*/true, /*visible*/ false);
+  EXPECT_EQ(u"", add_esim_button->GetTooltipText());
+
+  SetAddESimButtonState(/*enabled=*/true, /*visible*/ true);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL),
             add_esim_button->GetTooltipText());
 

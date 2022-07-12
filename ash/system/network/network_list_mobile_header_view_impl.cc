@@ -80,7 +80,8 @@ void NetworkListMobileHeaderViewImpl::AddExtraButtons() {
       base::BindRepeating(
           &NetworkListMobileHeaderViewImpl::AddESimButtonPressed,
           weak_factory_.GetWeakPtr()),
-      IconButton::Type::kSmall, &icon, GetAddESimTooltipMessageId());
+      IconButton::Type::kSmall, &icon, /*is_togglable=*/false,
+      /*has_border=*/false);
   add_esim_button.get()->SetID(kAddESimButtonId);
   add_esim_button_ = add_esim_button.get();
   container()->AddViewAt(TriView::Container::END, add_esim_button.release(),
@@ -103,6 +104,13 @@ void NetworkListMobileHeaderViewImpl::SetAddESimButtonState(bool enabled,
 
   add_esim_button_->SetVisible(visible);
   add_esim_button_->SetEnabled(enabled);
+
+  // We do not bother updating the tooltip when the "add eSIM" button is
+  // not visible to avoid the case where no Cellular device is available
+  // since we do not have a tooltip for this situation.
+  if (!visible)
+    return;
+
   add_esim_button_->SetTooltipText(
       l10n_util::GetStringUTF16(GetAddESimTooltipMessageId()));
 }
