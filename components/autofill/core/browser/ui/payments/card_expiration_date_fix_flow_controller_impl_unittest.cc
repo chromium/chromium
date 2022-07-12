@@ -42,6 +42,8 @@ class CardExpirationDateFixFlowControllerImplGenericTest {
             weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void OnDialogClosed() { controller_->OnDialogClosed(); }
+
  protected:
   std::unique_ptr<TestCardExpirationDateFixFlowView>
       test_card_expiration_date_fix_flow_view_;
@@ -110,6 +112,24 @@ TEST_F(CardExpirationDateFixFlowControllerImplTest, LogDismissed) {
       AutofillMetrics::ExpirationDateFixFlowPromptEvent::
           EXPIRATION_DATE_FIX_FLOW_PROMPT_DISMISSED,
       1);
+}
+
+TEST_F(CardExpirationDateFixFlowControllerImplTest, LogIgnored) {
+  base::HistogramTester histogram_tester;
+  ShowPrompt();
+  ShowPrompt();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ExpirationDateFixFlowPrompt.Events",
+      AutofillMetrics::ExpirationDateFixFlowPromptEvent::
+          EXPIRATION_DATE_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
+      1);
+  OnDialogClosed();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ExpirationDateFixFlowPrompt.Events",
+      AutofillMetrics::ExpirationDateFixFlowPromptEvent::
+          EXPIRATION_DATE_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
+      2);
 }
 
 TEST_F(CardExpirationDateFixFlowControllerImplTest, CardIdentifierString) {

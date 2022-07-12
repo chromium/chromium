@@ -30,6 +30,10 @@ void CardNameFixFlowViewAndroid::OnUserAccept(
       base::android::ConvertJavaStringToUTF16(env, name));
 }
 
+void CardNameFixFlowViewAndroid::OnUserDismiss(JNIEnv* env) {
+  controller_->OnDismissed();
+}
+
 void CardNameFixFlowViewAndroid::PromptDismissed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {

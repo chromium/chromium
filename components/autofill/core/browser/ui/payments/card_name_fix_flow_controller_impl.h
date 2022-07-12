@@ -25,6 +25,9 @@ class CardNameFixFlowControllerImpl : public CardNameFixFlowController {
 
   ~CardNameFixFlowControllerImpl() override;
 
+  // Show the cardholder name fix flow view. If another view is triggered
+  // when the current view has not been dismissed by user yet, the current
+  // view will be destroyed.
   void Show(CardNameFixFlowView* card_name_fix_flow_view,
             const std::u16string& inferred_cardholder_name,
             base::OnceCallback<void(const std::u16string&)> name_callback);
@@ -57,6 +60,10 @@ class CardNameFixFlowControllerImpl : public CardNameFixFlowController {
 
   // Whether the user explicitly accepted or dismissed this prompt.
   bool had_user_interaction_ = false;
+
+  // Destroy |card_name_fix_flow_view_| if it is valid. |controller_gone|
+  // is true if |this| controller is being destroyed.
+  void MaybeDestroyCardNameFixFlowView(bool controller_gone);
 };
 
 }  // namespace autofill
