@@ -98,9 +98,11 @@ class WebViewCrxSmokeTests(
 
     cls._device_components_dir = ('/data/data/%s/app_webview/components' %
                                   webview_package_name)
-    logcat_output_dir = (
-        os.path.dirname(cls._typ_runner.args.write_full_results_to or '') or
-        os.getcwd())
+
+    if cls.child.artifact_output_dir:
+      logcat_output_dir = os.path.dirname(cls.child.artifact_output_dir)
+    else:
+      logcat_output_dir = os.getcwd()
 
     # Set up a logcat monitor
     cls._logcat_monitor = logcat_monitor.LogcatMonitor(
