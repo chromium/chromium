@@ -164,6 +164,7 @@ if (!is_chromeos_ash) {
     "languages_page/add_languages_dialog.ts",
     "languages_page/languages_page.ts",
     "languages_page/languages_subpage.ts",
+    "languages_page/spell_check_page.ts",
     "system_page/system_page.ts",
   ]
 }

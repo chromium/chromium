@@ -108,8 +108,8 @@
         </template>
       </div>
     </template>
-
-    <template is="dom-if" if="[[showAdvancedSettings_(pageVisibility.advancedSettings)]]">
+    <template is="dom-if"
+        if="[[showAdvancedSettings_(pageVisibility.advancedSettings)]]">
       <settings-idle-load id="advancedPageTemplate">
         <template>
           <div id="advancedPage" hidden$="[[!showAdvancedPage_(
@@ -117,6 +117,11 @@
               advancedToggleExpanded)]]">
             <template is="dom-if" if="[[showPage_(pageVisibility.languages)]]"
                 restamp>
+<if expr="not chromeos_ash">
+              <settings-languages languages="{{languages}}" prefs="{{prefs}}"
+                  language-helper="{{languageHelper}}">
+              </settings-languages>
+</if>
               <settings-section page-title="$i18n{languagesPageTitle}"
                   section="languages">
 <if expr="chromeos_ash">
@@ -126,11 +131,26 @@
                 </cr-link-row>
 </if>
 <if expr="not chromeos_ash">
-                <settings-languages-page prefs="{{prefs}}">
+                <settings-languages-page prefs="{{prefs}}"
+                    languages="{{languages}}"
+                    language-helper="{{languageHelper}}">
                 </settings-languages-page>
 </if>
               </settings-section>
             </template>
+<if expr="not chromeos_ash">
+            <template is="dom-if" if="[[showPage_(pageVisibility.spellCheck)]]"
+                restamp>
+              <settings-section page-title="$i18n{spellCheckTitle}"
+                  section="spellCheck" nest-under-section="languages"
+                  id="spellCheckSettingsSection">
+                <settings-spell-check-page prefs="{{prefs}}"
+                    languages="{{languages}}"
+                    language-helper="{{languageHelper}}">
+                </settings-spell-check-page>
+              </settings-section>
+            </template>
+</if>
             <template is="dom-if" if="[[showPage_(pageVisibility.downloads)]]"
                 restamp>
               <settings-section page-title="$i18n{downloadsPageTitle}"

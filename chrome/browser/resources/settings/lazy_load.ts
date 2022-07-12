@@ -53,6 +53,7 @@ import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
 // <if expr="not chromeos_ash">
 import './languages_page/languages_page.js';
+import './languages_page/spell_check_page.js';
 // </if>
 import './reset_page/reset_page.js';
 // <if expr="not chromeos_ash">
@@ -130,6 +131,7 @@ export {SettingsLanguagesPageElement} from './languages_page/languages_page.js';
 export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_page/languages_settings_metrics_proxy.js';
 export {kMenuCloseDelay, SettingsLanguagesSubpageElement} from './languages_page/languages_subpage.js';
 export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.js';
+export {SettingsSpellCheckPageElement} from './languages_page/spell_check_page.js';
 // </if>
 // <if expr="not chromeos_ash and not chromeos_lacros">
 export {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';

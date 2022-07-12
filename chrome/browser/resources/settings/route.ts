@@ -173,8 +173,9 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     r.ADVANCED = new Route('/advanced');
 
     r.LANGUAGES = r.ADVANCED.createSection('/languages', 'languages');
+    r.SPELL_CHECK = r.LANGUAGES.createSection('/spellCheck', 'spellCheck');
     // <if expr="not chromeos_ash and not is_macosx">
-    r.EDIT_DICTIONARY = r.LANGUAGES.createChild('/editDictionary');
+    r.EDIT_DICTIONARY = r.SPELL_CHECK.createChild('/editDictionary');
     // </if>
 
     if (visibility.downloads !== false) {

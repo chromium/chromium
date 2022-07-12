@@ -34,7 +34,7 @@ preprocessed_files = [
 if (!is_chromeos_ash) {
   preprocessed_files += [
     "test_languages_browser_proxy.ts",
-    "languages_page_tests.ts",
+    "spell_check_page_tests.ts",
     "languages_page_metrics_test_browser.ts",
   ]
 }

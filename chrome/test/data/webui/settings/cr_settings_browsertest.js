@@ -95,20 +95,20 @@ TEST_F('CrSettingsBasicPageTest', 'PrivacyGuidePromo', function() {
 });
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
-var CrSettingsLanguagesPageTest = class extends CrSettingsBrowserTest {
+var CrSettingsSpellCheckPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/languages_page_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/spell_check_page_tests.js';
   }
 };
 
-TEST_F('CrSettingsLanguagesPageTest', 'Spellcheck', function() {
-  mocha.grep(languages_page_tests.TestNames.Spellcheck).run();
+TEST_F('CrSettingsSpellCheckPageTest', 'Spellcheck', function() {
+  mocha.grep(spell_check_page_tests.TestNames.Spellcheck).run();
 });
 
 GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-TEST_F('CrSettingsLanguagesPageTest', 'SpellcheckOfficialBuild', function() {
-  mocha.grep(languages_page_tests.TestNames.SpellcheckOfficialBuild).run();
+TEST_F('CrSettingsSpellCheckPageTest', 'SpellcheckOfficialBuild', function() {
+  mocha.grep(spell_check_page_tests.TestNames.SpellcheckOfficialBuild).run();
 });
 GEN('#endif');
 

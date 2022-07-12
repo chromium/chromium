@@ -84,6 +84,7 @@ export type SettingsRoutes = {
   SITE_SETTINGS_VR: Route,
   SITE_SETTINGS_WINDOW_PLACEMENT: Route,
   SITE_SETTINGS_ZOOM_LEVELS: Route,
+  SPELL_CHECK: Route,
   SYNC: Route,
   SYNC_ADVANCED: Route,
   SYSTEM: Route,

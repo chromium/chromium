@@ -28,7 +28,10 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
 // <if expr="not chromeos_ash and not chromeos_lacros">
 import '../default_browser_page/default_browser_page.js';
+// </if>
 
+// <if expr="not chromeos_ash">
+import '../languages_page/languages.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -45,6 +48,10 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';
 import {MainPageMixin, MainPageMixinInterface} from '../settings_page/main_page_mixin.js';
+
+// <if expr="not chromeos_ash">
+import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+// </if>
 
 import {getTemplate} from './basic_page.html.js';
 
@@ -94,6 +101,19 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         type: Object,
         notify: true,
       },
+
+      // <if expr="not chromeos_ash">
+      /**
+       * Read-only reference to the languages model provided by the
+       * 'settings-languages' instance.
+       */
+       languages: {
+        type: Object,
+        notify: true,
+      },
+
+      languageHelper: Object,
+      // </if>
 
       /**
        * Dictionary defining page visibility.
@@ -188,6 +208,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     ];
   }
 
+  // <if expr="not chromeos_ash">
+  languages?: LanguagesModel;
+  languageHelper: LanguageHelper;
+  // </if>
   pageVisibility: PageVisibility;
   inSearchMode: boolean;
   advancedToggleExpanded: boolean;
