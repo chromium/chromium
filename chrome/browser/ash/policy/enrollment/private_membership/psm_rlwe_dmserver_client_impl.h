@@ -47,8 +47,8 @@ class PsmRlweDmserverClientImpl : public PsmRlweDmserverClient {
       PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
       PsmRlweIdProvider* psm_rlwe_id_provider);
 
-  // Timeout for running PSM protocol.
-  static constexpr base::TimeDelta kPsmTimeout = base::Seconds(15);
+  // Timeout for running PSM protocol (combined timeout for both requests).
+  static constexpr base::TimeDelta kPsmTimeout = base::Seconds(30);
 
   // Disallow copy constructor and assignment operator.
   PsmRlweDmserverClientImpl(const PsmRlweDmserverClientImpl&) = delete;
