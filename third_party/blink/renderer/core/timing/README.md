@@ -33,3 +33,16 @@ folder. While the objects exposing performance measurements via JS are concentra
 are located in other folders. For instance, the [Resource-Timing](https://w3c.github.io/resource-timing/) specification
 measures timing on fetches, and that timing needs to occur at the specific locations in code where the fetching occurs and then
 plumbed all the way to this folder.
+
+# First Input Timing
+
+The [PerformanceEventTiming](https://w3c.github.io/event-timing/) interface
+provides timing information about the latency of the first discrete user
+interaction, specifically one of `key down`, `mouse down`, `click`, a
+`pointer down` followed by a `pointer up`. (Pointer down may be the start of
+scrolling, which is not tracked.) This is a subset of the EventTiming API, and
+provides key metrics to help measure and optimize the first impression on
+responsiveness of web users.
+[FirstInputStateMachine](First_input_state_machine.md) visualizes the state
+machine logic of how the first input event timing entry got dispatched from a
+pipeline of performance event entries.

@@ -513,6 +513,8 @@ void WindowPerformance::ReportEventTimings(
     };
 
     // First Input
+    //
+    // See also ./First_input_state_machine.md to understand the logics below.
     if (!first_input_timing_) {
       if (entry->name() == event_type_names::kPointerdown) {
         first_pointer_down_event_timing_ =
