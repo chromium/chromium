@@ -807,3 +807,11 @@ crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-coo
 crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-lax-subresource-context-downgrade.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/service-worker/network-get-request-body-blob.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/service-worker/network-extrainfo-subresource.js [ Slow ]
+
+crbug.com/1302664 [ Mac Debug ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/transform-interpolation-skew.html [ Slow ]
+
+crbug.com/1301971 [ Mac12 Debug ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/transform-interpolation-verify-reftests.html [ Slow ]
+crbug.com/1301971 [ Linux Debug ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/transform-interpolation-verify-reftests.html [ Slow ]
+
+crbug.com/1300811 [ Mac Debug ] animations/interpolation/webkit-column-width-interpolation.html [ Slow ]
+crbug.com/1300811 [ Linux Debug ] animations/interpolation/webkit-column-width-interpolation.html [ Slow ]
