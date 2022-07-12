@@ -28,8 +28,8 @@ per-file *web_contents*=file://content/browser/web_contents/OWNERS
 # Aggregation service related files.
 per-file *aggregation_service*=file://content/browser/aggregation_service/OWNERS
 
-# For Attribution Reporting API simulator.
-per-file attribution_simulator*=file://content/browser/attribution_reporting/OWNERS
+# For Attribution Reporting API.
+per-file attribution_*=file://content/browser/attribution_reporting/OWNERS
 
 # Anyone can add rules to include new test files.
 per-file BUILD.gn=*

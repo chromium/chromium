@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
@@ -42,8 +43,8 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "content/public/browser/attribution_reporting.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/test/attribution_config.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,6 +65,7 @@ namespace content {
 
 class AttributionObserver;
 class AttributionTrigger;
+struct AttributionRateLimitConfig;
 
 enum class RateLimitResult : int;
 
@@ -206,7 +208,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   int GetMaxSourcesPerOrigin() const override;
   int GetMaxReportsPerDestination(
       AttributionReport::ReportType report_type) const override;
-  RateLimitConfig GetRateLimits() const override;
+  AttributionRateLimitConfig GetRateLimits() const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
@@ -235,9 +237,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_aggregatable_budget_per_source(int64_t max);
 
-  RateLimitConfig& rate_limits();
-
-  void set_rate_limits(RateLimitConfig c);
+  void set_rate_limits(AttributionRateLimitConfig c);
 
   void set_delete_expired_sources_frequency(base::TimeDelta frequency);
 
@@ -252,7 +252,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   // Note that these rates are *not* used to produce a randomized response; that
   // is controlled deterministically by `set_randomized_response()`.
-  void set_randomized_response_rates(AttributionRandomizedResponseRates rates);
+  void set_randomized_response_rates(double navigation, double event);
 
   void set_randomized_response(RandomizedResponse randomized_response);
 
@@ -265,38 +265,25 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   void DetachFromSequence();
 
  private:
-  int max_attributions_per_source_ = INT_MAX;
-  int max_sources_per_origin_ = INT_MAX;
-  int max_event_level_reports_per_destination_ = INT_MAX;
-  int max_aggregatable_reports_per_destination_ = INT_MAX;
-  int max_destinations_per_source_site_reporting_origin_ = INT_MAX;
-  int64_t aggregatable_budget_per_source_ = std::numeric_limits<int64_t>::max();
+  AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  RateLimitConfig rate_limits_ = {
-      .time_window = base::TimeDelta::Max(),
-      .max_source_registration_reporting_origins =
-          std::numeric_limits<int64_t>::max(),
-      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
-      .max_attributions = std::numeric_limits<int64_t>::max(),
-  };
+  base::TimeDelta delete_expired_sources_frequency_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::TimeDelta delete_expired_rate_limits_frequency_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::TimeDelta delete_expired_sources_frequency_;
-  base::TimeDelta delete_expired_rate_limits_frequency_;
+  base::TimeDelta report_delay_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::TimeDelta report_delay_;
-
-  absl::optional<OfflineReportDelayConfig> offline_report_delay_config_;
+  absl::optional<OfflineReportDelayConfig> offline_report_delay_config_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If true, `ShuffleReports()` reverses the reports to allow testing the
   // proper call from `AttributionStorage::GetAttributionReports()`.
-  bool reverse_reports_on_shuffle_ = false;
+  bool reverse_reports_on_shuffle_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
-  AttributionRandomizedResponseRates randomized_response_rates_;
-  RandomizedResponse randomized_response_ = absl::nullopt;
-
-  absl::optional<uint64_t> navigation_trigger_data_cardinality_;
-  absl::optional<uint64_t> event_trigger_data_cardinality_;
-  absl::optional<uint64_t> source_event_id_cardinality_;
+  RandomizedResponse randomized_response_
+      GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

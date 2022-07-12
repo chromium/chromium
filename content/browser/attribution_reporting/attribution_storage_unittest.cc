@@ -2110,10 +2110,7 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
 
 TEST_F(AttributionStorageTest,
        GetAttributionReports_SetsRandomizedTriggerRate) {
-  delegate()->set_randomized_response_rates({
-      .navigation = .2,
-      .event = .4,
-  });
+  delegate()->set_randomized_response_rates(/*navigation=*/.2, /*event=*/.4);
 
   const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
   const auto origin2 = url::Origin::Create(GURL("https://r2.test"));

@@ -5,10 +5,13 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_reporting.h"
@@ -26,12 +29,6 @@ class CommonSourceInfo;
 class CONTENT_EXPORT AttributionStorageDelegateImpl
     : public AttributionStorageDelegate {
  public:
-  static std::unique_ptr<AttributionStorageDelegate> CreateForTesting(
-      AttributionNoiseMode noise_mode,
-      AttributionDelayMode delay_mode,
-      std::unique_ptr<AttributionRandomGenerator> rng,
-      AttributionRandomizedResponseRates randomized_response_rates);
-
   explicit AttributionStorageDelegateImpl(
       AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault,
       AttributionDelayMode delay_mode = AttributionDelayMode::kDefault);
@@ -54,7 +51,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   int GetMaxSourcesPerOrigin() const override;
   int GetMaxReportsPerDestination(AttributionReport::ReportType) const override;
   int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
-  RateLimitConfig GetRateLimits() const override;
+  AttributionRateLimitConfig GetRateLimits() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
   base::GUID NewReportID() const override;
@@ -90,17 +87,18 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       const CommonSourceInfo& source,
       int random_stars_and_bars_sequence_index) const;
 
- private:
+ protected:
   AttributionStorageDelegateImpl(
       AttributionNoiseMode noise_mode,
       AttributionDelayMode delay_mode,
-      std::unique_ptr<AttributionRandomGenerator> rng,
-      AttributionRandomizedResponseRates randomized_response_rates);
+      std::unique_ptr<AttributionRandomGenerator> rng);
 
-  const AttributionNoiseMode noise_mode_;
-  const AttributionDelayMode delay_mode_;
-  const std::unique_ptr<AttributionRandomGenerator> rng_;
-  const AttributionRandomizedResponseRates randomized_response_rates_;
+  virtual uint64_t TriggerDataCardinality(AttributionSourceType) const;
+
+  const AttributionNoiseMode noise_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const AttributionDelayMode delay_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const std::unique_ptr<AttributionRandomGenerator> rng_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

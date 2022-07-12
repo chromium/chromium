@@ -436,6 +436,7 @@ source_set("browser") {
     "attribution_reporting/attribution_report_scheduler.h",
     "attribution_reporting/attribution_report_sender.h",
     "attribution_reporting/attribution_reporting.cc",
+    "attribution_reporting/attribution_reporting_constants.h",
     "attribution_reporting/attribution_source_type.cc",
     "attribution_reporting/attribution_source_type.h",
     "attribution_reporting/attribution_storage.cc",

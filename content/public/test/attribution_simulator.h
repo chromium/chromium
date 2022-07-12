@@ -8,6 +8,7 @@
 #include <iosfwd>
 
 #include "content/public/browser/attribution_reporting.h"
+#include "content/public/test/attribution_config.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,8 +35,7 @@ struct AttributionSimulationOptions {
   // Only used if `noise_mode` is `AttributionNoiseMode::kDefault`.
   absl::optional<absl::uint128> noise_seed;
 
-  AttributionRandomizedResponseRates randomized_response_rates =
-      AttributionRandomizedResponseRates::kDefault;
+  AttributionConfig config = AttributionConfig::kDefault;
 
   AttributionDelayMode delay_mode = AttributionDelayMode::kDefault;
 

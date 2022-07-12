@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/attribution_reporting.h"
+#include "content/public/test/attribution_config.h"
 #include "content/public/test/attribution_simulator.h"
 #include "content/public/test/attribution_simulator_environment.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -308,18 +309,18 @@ int main(int argc, char* argv[]) {
     noise_seed = value;
   }
 
-  auto randomized_response_rates =
-      content::AttributionRandomizedResponseRates::kDefault;
+  auto config = content::AttributionConfig::kDefault;
 
   if (!ParseRandomizedResponseRateSwitch(
           command_line, kSwitchRandomizedResponseRateNavigation,
-          &randomized_response_rates.navigation)) {
+          &config.event_level_limit
+               .navigation_source_randomized_response_rate)) {
     return 1;
   }
 
-  if (!ParseRandomizedResponseRateSwitch(command_line,
-                                         kSwitchRandomizedResponseRateEvent,
-                                         &randomized_response_rates.event)) {
+  if (!ParseRandomizedResponseRateSwitch(
+          command_line, kSwitchRandomizedResponseRateEvent,
+          &config.event_level_limit.event_source_randomized_response_rate)) {
     return 1;
   }
 
@@ -368,7 +369,7 @@ int main(int argc, char* argv[]) {
   content::AttributionSimulationOptions options({
       .noise_mode = noise_mode,
       .noise_seed = noise_seed,
-      .randomized_response_rates = randomized_response_rates,
+      .config = config,
       .delay_mode = delay_mode,
       .remove_report_ids = command_line.HasSwitch(kSwitchRemoveReportIds),
       .report_time_format = report_time_format,

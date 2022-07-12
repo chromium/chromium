@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
+#include "content/public/browser/attribution_reporting.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -119,7 +120,9 @@ std::vector<base::GUID> DefaultExternalReportIDs(size_t size) {
   return std::vector<base::GUID>(size, DefaultExternalReportID());
 }
 
-ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
+ConfigurableStorageDelegate::ConfigurableStorageDelegate() {
+  DCHECK(config_.Validate());
+}
 
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
@@ -143,12 +146,17 @@ base::Time ConfigurableStorageDelegate::GetAggregatableReportTime(
 int ConfigurableStorageDelegate::GetMaxAttributionsPerSource(
     AttributionSourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return max_attributions_per_source_;
+  switch (source_type) {
+    case AttributionSourceType::kNavigation:
+      return config_.event_level_limit.max_attributions_per_navigation_source;
+    case AttributionSourceType::kEvent:
+      return config_.event_level_limit.max_attributions_per_event_source;
+  }
 }
 
 int ConfigurableStorageDelegate::GetMaxSourcesPerOrigin() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return max_sources_per_origin_;
+  return config_.max_sources_per_origin;
 }
 
 int ConfigurableStorageDelegate::GetMaxReportsPerDestination(
@@ -156,22 +164,21 @@ int ConfigurableStorageDelegate::GetMaxReportsPerDestination(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (report_type) {
     case AttributionReport::ReportType::kEventLevel:
-      return max_event_level_reports_per_destination_;
+      return config_.event_level_limit.max_reports_per_destination;
     case AttributionReport::ReportType::kAggregatableAttribution:
-      return max_aggregatable_reports_per_destination_;
+      return config_.aggregate_limit.max_reports_per_destination;
   }
 }
 
 int ConfigurableStorageDelegate::
     GetMaxDestinationsPerSourceSiteReportingOrigin() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return max_destinations_per_source_site_reporting_origin_;
+  return config_.max_destinations_per_source_site_reporting_origin;
 }
 
-AttributionStorageDelegate::RateLimitConfig
-ConfigurableStorageDelegate::GetRateLimits() const {
+AttributionRateLimitConfig ConfigurableStorageDelegate::GetRateLimits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return rate_limits_;
+  return config_.rate_limit;
 }
 
 base::TimeDelta ConfigurableStorageDelegate::GetDeleteExpiredSourcesFrequency()
@@ -209,9 +216,10 @@ double ConfigurableStorageDelegate::GetRandomizedResponseRate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
     case AttributionSourceType::kNavigation:
-      return randomized_response_rates_.navigation;
+      return config_.event_level_limit
+          .navigation_source_randomized_response_rate;
     case AttributionSourceType::kEvent:
-      return randomized_response_rates_.event;
+      return config_.event_level_limit.event_source_randomized_response_rate;
   }
 }
 
@@ -224,7 +232,7 @@ ConfigurableStorageDelegate::GetRandomizedResponse(
 
 int64_t ConfigurableStorageDelegate::GetAggregatableBudgetPerSource() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return aggregatable_budget_per_source_;
+  return config_.aggregate_limit.aggregatable_budget_per_source;
 }
 
 uint64_t ConfigurableStorageDelegate::SanitizeTriggerData(
@@ -233,35 +241,32 @@ uint64_t ConfigurableStorageDelegate::SanitizeTriggerData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
     case AttributionSourceType::kNavigation:
-      if (!navigation_trigger_data_cardinality_)
-        return trigger_data;
-
-      return trigger_data % *navigation_trigger_data_cardinality_;
+      return trigger_data % config_.event_level_limit
+                                .navigation_source_trigger_data_cardinality;
     case AttributionSourceType::kEvent:
-      if (!event_trigger_data_cardinality_)
-        return trigger_data;
-
-      return trigger_data % *event_trigger_data_cardinality_;
+      return trigger_data %
+             config_.event_level_limit.event_source_trigger_data_cardinality;
   }
 }
 
 uint64_t ConfigurableStorageDelegate::SanitizeSourceEventId(
     uint64_t source_event_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!source_event_id_cardinality_)
+  if (!config_.source_event_id_cardinality)
     return source_event_id;
 
-  return source_event_id % *source_event_id_cardinality_;
+  return source_event_id % *config_.source_event_id_cardinality;
 }
 
 void ConfigurableStorageDelegate::set_max_attributions_per_source(int max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  max_attributions_per_source_ = max;
+  config_.event_level_limit.max_attributions_per_navigation_source = max;
+  config_.event_level_limit.max_attributions_per_event_source = max;
 }
 
 void ConfigurableStorageDelegate::set_max_sources_per_origin(int max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  max_sources_per_origin_ = max;
+  config_.max_sources_per_origin = max;
 }
 
 void ConfigurableStorageDelegate::set_max_reports_per_destination(
@@ -270,10 +275,10 @@ void ConfigurableStorageDelegate::set_max_reports_per_destination(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (report_type) {
     case AttributionReport::ReportType::kEventLevel:
-      max_event_level_reports_per_destination_ = max;
+      config_.event_level_limit.max_reports_per_destination = max;
       break;
     case AttributionReport::ReportType::kAggregatableAttribution:
-      max_aggregatable_reports_per_destination_ = max;
+      config_.aggregate_limit.max_reports_per_destination = max;
       break;
   }
 }
@@ -281,24 +286,20 @@ void ConfigurableStorageDelegate::set_max_reports_per_destination(
 void ConfigurableStorageDelegate::
     set_max_destinations_per_source_site_reporting_origin(int max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  max_destinations_per_source_site_reporting_origin_ = max;
+  config_.max_destinations_per_source_site_reporting_origin = max;
 }
 
 void ConfigurableStorageDelegate::set_aggregatable_budget_per_source(
     int64_t max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  aggregatable_budget_per_source_ = max;
+  config_.aggregate_limit.aggregatable_budget_per_source = max;
 }
 
-AttributionStorageDelegate::RateLimitConfig&
-ConfigurableStorageDelegate::rate_limits() {
+void ConfigurableStorageDelegate::set_rate_limits(
+    AttributionRateLimitConfig c) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return rate_limits_;
-}
-
-void ConfigurableStorageDelegate::set_rate_limits(RateLimitConfig c) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  rate_limits_ = c;
+  DCHECK(c.Validate());
+  config_.rate_limit = c;
 }
 
 void ConfigurableStorageDelegate::set_delete_expired_sources_frequency(
@@ -331,9 +332,12 @@ void ConfigurableStorageDelegate::set_reverse_reports_on_shuffle(bool reverse) {
 }
 
 void ConfigurableStorageDelegate::set_randomized_response_rates(
-    AttributionRandomizedResponseRates rates) {
+    double navigation,
+    double event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  randomized_response_rates_ = rates;
+  config_.event_level_limit.navigation_source_randomized_response_rate =
+      navigation;
+  config_.event_level_limit.event_source_randomized_response_rate = event;
 }
 
 void ConfigurableStorageDelegate::set_randomized_response(
@@ -349,8 +353,9 @@ void ConfigurableStorageDelegate::set_trigger_data_cardinality(
   DCHECK_GT(navigation, 0u);
   DCHECK_GT(event, 0u);
 
-  navigation_trigger_data_cardinality_ = navigation;
-  event_trigger_data_cardinality_ = event;
+  config_.event_level_limit.navigation_source_trigger_data_cardinality =
+      navigation;
+  config_.event_level_limit.event_source_trigger_data_cardinality = event;
 }
 
 void ConfigurableStorageDelegate::set_source_event_id_cardinality(
@@ -358,7 +363,7 @@ void ConfigurableStorageDelegate::set_source_event_id_cardinality(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(cardinality, 0u);
 
-  source_event_id_cardinality_ = cardinality;
+  config_.source_event_id_cardinality = cardinality;
 }
 
 MockAttributionManager::MockAttributionManager() = default;

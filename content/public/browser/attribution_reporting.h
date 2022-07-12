@@ -5,6 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ATTRIBUTION_REPORTING_H_
 #define CONTENT_PUBLIC_BROWSER_ATTRIBUTION_REPORTING_H_
 
+#include <stdint.h>
+
+#include <limits>
+
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -27,19 +32,30 @@ enum class AttributionDelayMode {
   kNone,
 };
 
-// Controls randomized response rates for the API: when a source is registered,
-// these rates are used to determine whether any subsequent attributions for the
-// source are handled truthfully, or whether the source is immediately
-// attributed with zero or more fake reports and real attributions are dropped.
-struct CONTENT_EXPORT AttributionRandomizedResponseRates {
-  // The default rates used by the API, deliberately unspecified here.
-  static const AttributionRandomizedResponseRates kDefault;
+// Controls rate limits for the API.
+struct CONTENT_EXPORT AttributionRateLimitConfig {
+  // The default rates used by th API.
+  static const AttributionRateLimitConfig kDefault;
 
-  // The rate for navigation sources. Must be in the range [0, 1].
-  double navigation = 0;
+  // Returns true if this config is valid.
+  [[nodiscard]] bool Validate() const;
 
-  // The rate for event sources. Must be in the range [0, 1].
-  double event = 0;
+  // Controls the rate-limiting time window for attribution.
+  base::TimeDelta time_window = base::TimeDelta::Max();
+
+  // Maximum number of distinct reporting origins that can register sources
+  // for a given <source site, destination site> in `time_window`.
+  int64_t max_source_registration_reporting_origins =
+      std::numeric_limits<int64_t>::max();
+
+  // Maximum number of distinct reporting origins that can create attributions
+  // for a given <source site, destination site> in `time_window`.
+  int64_t max_attribution_reporting_origins =
+      std::numeric_limits<int64_t>::max();
+
+  // Maximum number of attributions for a given <source site, destination
+  // site, reporting origin> in `time_window`.
+  int64_t max_attributions = std::numeric_limits<int64_t>::max();
 };
 
 }  // namespace content
