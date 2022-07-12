@@ -113,6 +113,14 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
                               .Build())
           .Build();
 
+  {
+    PermissionsUpdater updater(profile());
+    updater.InitializePermissions(extension.get());
+    // Grant the active permissions, as if the extension had just been
+    // installed.
+    updater.GrantActivePermissions(extension.get());
+  }
+
   APIPermissionSet default_apis;
   default_apis.insert(APIPermissionID::kManagement);
 
@@ -122,13 +130,15 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
                                     ManifestPermissionSet(),
                                     std::move(default_hosts), URLPatternSet());
 
-  // Make sure it loaded properly.
-  ASSERT_EQ(default_permissions,
-            extension->permissions_data()->active_permissions());
-
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_.get());
   std::unique_ptr<const PermissionSet> active_permissions;
   std::unique_ptr<const PermissionSet> granted_permissions;
+
+  // Make sure it loaded properly.
+  ASSERT_EQ(default_permissions,
+            extension->permissions_data()->active_permissions());
+  EXPECT_EQ(default_permissions,
+            *prefs->GetGrantedPermissions(extension->id()));
 
   // Add a few permissions.
   APIPermissionSet apis;

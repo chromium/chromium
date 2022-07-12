@@ -679,17 +679,15 @@ void PermissionsUpdater::AddPermissionsImpl(
   bool update_active_prefs = (permissions_store_mask & kActivePermissions) != 0;
   SetPermissions(&extension, std::move(new_active), update_active_prefs);
 
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+
   if ((permissions_store_mask & kGrantedPermissions) != 0) {
-    // TODO(devlin): Could we only grant |permissions|, rather than all those
-    // in the active permissions? In theory, all other active permissions have
-    // already been granted.
-    GrantActivePermissions(&extension);
+    prefs->AddGrantedPermissions(extension.id(), prefs_permissions_to_add);
   }
 
   if ((permissions_store_mask & kRuntimeGrantedPermissions) != 0) {
-    ExtensionPrefs::Get(browser_context_)
-        ->AddRuntimeGrantedPermissions(extension.id(),
-                                       prefs_permissions_to_add);
+    prefs->AddRuntimeGrantedPermissions(extension.id(),
+                                        prefs_permissions_to_add);
   }
 
   NetworkPermissionsUpdateHelper::UpdatePermissions(
