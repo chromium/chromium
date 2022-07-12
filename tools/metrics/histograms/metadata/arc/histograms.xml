@@ -1736,7 +1736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.Jankiness" units="%"
-    expires_after="2022-11-06">
+    expires_after="2023-01-08">
   <owner>camurcu@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
