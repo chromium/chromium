@@ -23,7 +23,7 @@
           <com.google.android.material.tabs.TabItem
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="@string/menu_history" />
+              android:text="@string/history_clusters_list_tab_label" />
           <com.google.android.material.tabs.TabItem
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"

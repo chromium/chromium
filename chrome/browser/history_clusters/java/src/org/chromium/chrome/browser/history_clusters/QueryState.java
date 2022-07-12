@@ -14,23 +14,29 @@ import androidx.annotation.NonNull;
  */
 public class QueryState {
     private final String mQuery;
+    private final String mSearchEmptyString;
     private final boolean mIsSearching;
 
-    public static QueryState forQuery(@NonNull String query) {
-        return new QueryState(query, true);
+    public static QueryState forQuery(@NonNull String query, @NonNull String searchEmptyString) {
+        return new QueryState(query, searchEmptyString, true);
     }
 
     public static QueryState forQueryless() {
-        return new QueryState("", false);
+        return new QueryState("", null, false);
     }
 
-    private QueryState(String query, boolean isSearching) {
+    private QueryState(String query, String searchEmptyString, boolean isSearching) {
         mQuery = query;
+        mSearchEmptyString = searchEmptyString;
         mIsSearching = isSearching;
     }
 
     String getQuery() {
         return mQuery;
+    }
+
+    String getSearchEmptyString() {
+        return mSearchEmptyString;
     }
 
     boolean isSearching() {

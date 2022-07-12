@@ -162,9 +162,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mRecyclerView.addOnScrollListener(mMediator);
 
         mToolbar = (HistoryClustersToolbar) mSelectableListLayout.initializeToolbar(
-                R.layout.history_clusters_toolbar, mSelectionDelegate,
-                R.string.history_clusters_journeys_tab_label, R.id.normal_menu_group,
-                R.id.selection_mode_menu_group, this, true);
+                R.layout.history_clusters_toolbar, mSelectionDelegate, R.string.menu_history,
+                R.id.normal_menu_group, R.id.selection_mode_menu_group, this, true);
         mToolbar.initializeSearchView(
                 mMediator, R.string.history_clusters_search_your_journeys, R.id.search_menu_id);
         mSelectableListLayout.configureWideDisplayStyle();
@@ -209,7 +208,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.search_menu_id) {
-            mMediator.setQueryState(QueryState.forQuery(""));
+            mMediator.setQueryState(QueryState.forQuery("", mDelegate.getSearchEmptyString()));
             return true;
         } else if (menuItem.getItemId() == R.id.close_menu_id && mDelegate.isSeparateActivity()) {
             mActivity.finish();

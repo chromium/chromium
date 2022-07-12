@@ -272,7 +272,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             mModelList.add(clusterItem);
             if (isQueryLess) {
                 clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                        (v) -> setQueryState(QueryState.forQuery(cluster.getRawLabel())));
+                        (v)
+                                -> setQueryState(QueryState.forQuery(
+                                        cluster.getRawLabel(), mDelegate.getSearchEmptyString())));
                 clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, null);
                 clusterModel.set(HistoryClustersItemProperties.LABEL, null);
                 continue;

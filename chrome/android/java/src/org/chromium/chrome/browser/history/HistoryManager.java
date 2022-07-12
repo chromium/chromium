@@ -223,6 +223,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 public void removeMarkedItems() {
                     mHistoryProvider.removeItems();
                 }
+
+                @Override
+                public String getSearchEmptyString() {
+                    return HistoryManager.this.getSearchEmptyString();
+                }
             };
 
             mHistoryClustersCoordinator =
@@ -272,7 +277,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             mContentView = mHistoryClustersCoordinator.getActivityContentView();
             QueryState queryState = TextUtils.isEmpty(historyClustersQuery)
                     ? QueryState.forQueryless()
-                    : QueryState.forQuery(historyClustersQuery);
+                    : QueryState.forQuery(historyClustersQuery, getSearchEmptyString());
             mHistoryClustersCoordinator.setQueryState(queryState);
         } else {
             mContentView = mSelectableListLayout;
@@ -367,13 +372,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         } else if (item.getItemId() == R.id.search_menu_id) {
             mContentManager.removeHeader();
             mToolbar.showSearchView();
-            String dse = getDefaultSearchEngine();
-            String searchEmptyString = "";
-            if (dse == null) {
-                searchEmptyString = mActivity.getString(R.string.history_manager_no_results_no_dse);
-            } else {
-                searchEmptyString = mActivity.getString(R.string.history_manager_no_results, dse);
-            }
+            String searchEmptyString = getSearchEmptyString();
             mSelectableListLayout.onStartSearch(searchEmptyString);
             recordUserAction("Search");
             mIsSearching = true;
@@ -394,12 +393,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mShouldShowPrivacyDisclaimerSupplier.set(shouldShowInfoHeader);
     }
 
-    private String getDefaultSearchEngine() {
+    private String getSearchEmptyString() {
         String defaultSearchEngineName = null;
         TemplateUrl dseTemplateUrl =
                 TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
         if (dseTemplateUrl != null) defaultSearchEngineName = dseTemplateUrl.getShortName();
-        return defaultSearchEngineName;
+        return defaultSearchEngineName == null
+                ? mActivity.getString(R.string.history_manager_no_results_no_dse)
+                : mActivity.getString(R.string.history_manager_no_results, defaultSearchEngineName);
     }
 
     /**

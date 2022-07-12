@@ -79,4 +79,9 @@ public interface HistoryClustersDelegate {
     default void markVisitForRemoval(ClusterVisit clusterVisit) {}
 
     default void removeMarkedItems() {}
+
+    /** Returns the user-facing string that should be displayed when a search has no matches. */
+    default String getSearchEmptyString() {
+        return "";
+    }
 }

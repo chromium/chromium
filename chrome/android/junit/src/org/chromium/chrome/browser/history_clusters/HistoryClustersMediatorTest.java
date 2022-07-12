@@ -248,7 +248,7 @@ public class HistoryClustersMediatorTest {
         // In production code, calling setQueryState() will end up calling startQuery via
         // onSearchTextChanged. In mediator tests we don't have view binders set up so we need to
         // call both.
-        mMediator.setQueryState(QueryState.forQuery("query"));
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
         mMediator.startQuery("query");
         assertEquals(mModelList.size(), 0);
 
@@ -368,7 +368,7 @@ public class HistoryClustersMediatorTest {
 
     @Test
     public void testSetQueryState() {
-        mMediator.setQueryState(QueryState.forQuery("pandas"));
+        mMediator.setQueryState(QueryState.forQuery("pandas", "empty string"));
         assertEquals(mToolbarModel.get(HistoryClustersToolbarProperties.QUERY_STATE).getQuery(),
                 "pandas");
     }
@@ -520,7 +520,7 @@ public class HistoryClustersMediatorTest {
     public void testDeleteItems() {
         Promise<HistoryClustersResult> promise = new Promise();
         doReturn(promise).when(mBridge).queryClusters("query");
-        mMediator.setQueryState(QueryState.forQuery("query"));
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
         mMediator.startQuery("query");
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 

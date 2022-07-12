@@ -355,7 +355,7 @@ public class HistoryClustersCoordinatorTest {
     @Test
     public void testSetQueryState() {
         mHistoryClustersCoordinator.inflateActivityView();
-        mHistoryClustersCoordinator.setQueryState(QueryState.forQuery("dogs"));
+        mHistoryClustersCoordinator.setQueryState(QueryState.forQuery("dogs", ""));
         fulfillPromise(mPromise, mClusterResult);
 
         RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
@@ -370,7 +370,7 @@ public class HistoryClustersCoordinatorTest {
     @Test
     public void testDestroy() {
         mHistoryClustersCoordinator.inflateActivityView();
-        mHistoryClustersCoordinator.setQueryState(QueryState.forQuery("dogs"));
+        mHistoryClustersCoordinator.setQueryState(QueryState.forQuery("dogs", ""));
         mHistoryClustersCoordinator.destroy();
 
         // Fulfilling the promise post-destroy shouldn't crash or do anything else for that matter.
