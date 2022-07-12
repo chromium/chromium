@@ -116,6 +116,10 @@ class ChromeAuthenticatorRequestDelegate
         base::span<const uint8_t> experiments,
         AuthenticatorRequestDialogModel::ExperimentServerLinkSheet,
         AuthenticatorRequestDialogModel::ExperimentServerLinkTitle) = 0;
+
+    virtual void AccountSelectorShown(
+        const std::vector<device::AuthenticatorGetAssertionResponse>&
+            responses) {}
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

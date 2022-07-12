@@ -784,7 +784,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
 
   // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
-  model.OnAccountPreselected({1, 2, 3, 4});
+  model.OnAccountPreselected(cred_1.cred_id);
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(preselect_num_called, 1);
   EXPECT_EQ(request_num_called, 1);
@@ -843,3 +843,60 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
   model.RemoveObserver(&mock_observer);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+class AuthenticatorRequestDialogModelPreselectCredentialTest
+    : public AuthenticatorRequestDialogModelTest {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnNewDiscoverableCredentialsUi};
+};
+
+TEST_F(AuthenticatorRequestDialogModelPreselectCredentialTest,
+       PreSelectWithEmptyAllowList) {
+  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  int preselect_num_called = 0;
+  model.SetAccountPreselectedCallback(base::BindLambdaForTesting(
+      [&preselect_num_called](std::vector<uint8_t> credential_id) {
+        EXPECT_EQ(credential_id, std::vector<uint8_t>({0}));
+        ++preselect_num_called;
+      }));
+  int request_num_called = 0;
+  model.SetRequestCallback(base::BindLambdaForTesting(
+      [&request_num_called](const std::string& authenticator_id) {
+        EXPECT_EQ(authenticator_id, "internal-authenticator");
+        ++request_num_called;
+      }));
+
+  model.saved_authenticators().AddAuthenticator(
+      AuthenticatorReference(/*device_id=*/"usb-authenticator",
+                             AuthenticatorTransport::kUsbHumanInterfaceDevice));
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"internal-authenticator",
+      AuthenticatorTransport::kInternal));
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.available_transports = kAllTransports;
+  transports_info.has_empty_allow_list = true;
+  transports_info.has_platform_authenticator_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
+  constexpr char kRpId[] = "example.com";
+  device::DiscoverableCredentialMetadata cred_1(
+      kRpId, {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
+  device::DiscoverableCredentialMetadata cred_2(
+      kRpId, {1}, device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
+  transports_info.recognized_platform_authenticator_credentials = {cred_1,
+                                                                   cred_2};
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false,
+                  /*prefer_native_api=*/false);
+  EXPECT_EQ(model.current_step(), Step::kPreSelectAccount);
+  EXPECT_EQ(request_num_called, 0);
+
+  // After preselecting an account, the request should be dispatched to the
+  // platform authenticator.
+  model.OnAccountPreselected(cred_1.cred_id);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(preselect_num_called, 1);
+  EXPECT_EQ(request_num_called, 1);
+}

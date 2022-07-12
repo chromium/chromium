@@ -50,6 +50,11 @@ extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthPasskeysUI;
 
+// Reshuffle WebAuthn request UI to put account selection for discoverable
+// credentials on platform authenticators first, where applicable.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthnNewDiscoverableCredentialsUi;
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

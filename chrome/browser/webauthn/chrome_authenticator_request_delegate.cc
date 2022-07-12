@@ -795,6 +795,12 @@ void ChromeAuthenticatorRequestDelegate::SelectAccount(
     return;
   }
 
+  if (g_observer) {
+    g_observer->AccountSelectorShown(responses);
+    std::move(callback).Run(std::move(responses.at(0)));
+    return;
+  }
+
   dialog_model_->SelectAccount(std::move(responses), std::move(callback));
 }
 

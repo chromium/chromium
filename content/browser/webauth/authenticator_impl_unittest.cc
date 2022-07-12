@@ -61,6 +61,7 @@
 #include "device/fido/cable/v2_discovery.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/v2_test_util.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
@@ -937,8 +938,8 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
 
 // Parses its arguments as JSON and expects that all the keys in the first are
 // also in the second, and with the same value.
-void CheckJSONIsSubsetOfJSON(base::StringPiece subset_str,
-                             base::StringPiece test_str) {
+static void CheckJSONIsSubsetOfJSON(base::StringPiece subset_str,
+                                    base::StringPiece test_str) {
   std::unique_ptr<base::Value> subset(
       base::JSONReader::ReadDeprecated(subset_str));
   ASSERT_TRUE(subset);
@@ -2021,7 +2022,7 @@ class TestAuthenticatorRequestDelegate
       base::RepeatingClosure bluetooth_adapter_power_on_callback) override {
     ASSERT_TRUE(action_callbacks_registered_callback_)
         << "RegisterActionCallbacks called twice.";
-    cancel_callback_.emplace(std::move(cancel_callback));
+    cancel_callback_ = std::move(cancel_callback);
     std::move(action_callbacks_registered_callback_).Run();
     if (started_over_callback_) {
       action_callbacks_registered_callback_ = std::move(started_over_callback_);
@@ -2066,7 +2067,7 @@ class TestAuthenticatorRequestDelegate
     // which shows a specific error when no transports are available and lets
     // the user cancel the request.
     if (transport_info.available_transports.empty()) {
-      std::move(*cancel_callback_).Run();
+      std::move(cancel_callback_).Run();
     }
   }
 
@@ -2081,7 +2082,7 @@ class TestAuthenticatorRequestDelegate
   }
 
   base::OnceClosure action_callbacks_registered_callback_;
-  absl::optional<base::OnceClosure> cancel_callback_;
+  base::OnceClosure cancel_callback_;
   const AttestationConsent attestation_consent_;
   base::OnceClosure started_over_callback_;
   base::OnceClosure start_over_callback_;
@@ -6803,15 +6804,40 @@ TEST_F(BlockingDelegateAuthenticatorImplTest, PostCancelMessage) {
 class ResidentKeyTestAuthenticatorRequestDelegate
     : public AuthenticatorRequestClientDelegate {
  public:
-  ResidentKeyTestAuthenticatorRequestDelegate(
-      std::string expected_accounts,
-      std::vector<uint8_t> selected_user_id,
-      absl::optional<InterestingFailureReason>* failure_reason,
-      bool* is_conditional)
-      : expected_accounts_(expected_accounts),
-        selected_user_id_(selected_user_id),
-        failure_reason_(failure_reason),
-        is_conditional_(is_conditional) {}
+  struct Config {
+    // A string representation of the accounts expected to be passed to
+    // `SelectAccount()`.
+    std::string expected_accounts;
+
+    // The user ID of the account that should be selected by `SelectAccount()`.
+    std::vector<uint8_t> selected_user_id;
+
+    // Indicates whether `SetConditional(true)` is expected to be called.
+    bool expect_conditional = false;
+
+    // If set, indicates that `DoesBlockRequestOnFailure()` is expected to be
+    // called with this value.
+    absl::optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
+        expected_failure_reason;
+
+    // If set, indicates that the `AccountPreselectCallback` should be invoked
+    // with this credential ID at the beginning of the request.
+    // `preselected_authenticator_id` contains the authenticator ID to which the
+    // request should be dispatched in this case.
+    absl::optional<std::vector<uint8_t>> preselected_credential_id;
+    absl::optional<std::string> preselected_authenticator_id;
+  };
+
+  explicit ResidentKeyTestAuthenticatorRequestDelegate(Config config)
+      : config_(std::move(config)) {}
+
+  ~ResidentKeyTestAuthenticatorRequestDelegate() override {
+    DCHECK(!config_.expect_conditional || expect_conditional_satisfied_)
+        << "SetConditionalRequest() expected but not called";
+    DCHECK(!config_.expected_failure_reason ||
+           expected_failure_reason_satisfied_)
+        << "DoesRequestBlockOnFailure() expected but not called";
+  }
 
   ResidentKeyTestAuthenticatorRequestDelegate(
       const ResidentKeyTestAuthenticatorRequestDelegate&) = delete;
@@ -6828,6 +6854,16 @@ class ResidentKeyTestAuthenticatorRequestDelegate
   }
 
   void FinishCollectToken() override {}
+
+  void RegisterActionCallbacks(
+      base::OnceClosure cancel_callback,
+      base::RepeatingClosure start_over_callback,
+      AccountPreselectedCallback account_preselected_callback,
+      device::FidoRequestHandlerBase::RequestCallback request_callback,
+      base::RepeatingClosure bluetooth_adapter_power_on_callback) override {
+    account_preselected_callback_ = account_preselected_callback;
+    request_callback_ = request_callback;
+  }
 
   void SelectAccount(
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
@@ -6849,12 +6885,12 @@ class ResidentKeyTestAuthenticatorRequestDelegate
                  user.name.value_or("") + ":" + user.display_name.value_or("");
         });
 
-    EXPECT_EQ(expected_accounts_, base::JoinString(string_reps, "/"));
+    EXPECT_EQ(config_.expected_accounts, base::JoinString(string_reps, "/"));
 
     const auto selected = std::find_if(
         responses.begin(), responses.end(),
         [this](const device::AuthenticatorGetAssertionResponse& response) {
-          return response.user_entity->id == selected_user_id_;
+          return response.user_entity->id == config_.selected_user_id;
         });
     ASSERT_TRUE(selected != responses.end());
 
@@ -6863,20 +6899,56 @@ class ResidentKeyTestAuthenticatorRequestDelegate
   }
 
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
-    *failure_reason_ = reason;
+    if (config_.expected_failure_reason) {
+      EXPECT_EQ(*config_.expected_failure_reason, reason);
+      expected_failure_reason_satisfied_ = true;
+    }
     return AuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
         reason);
   }
 
   void SetConditionalRequest(bool is_conditional) override {
-    *is_conditional_ = is_conditional;
+    EXPECT_EQ(config_.expect_conditional, is_conditional);
+    EXPECT_TRUE(!expect_conditional_satisfied_);
+    expect_conditional_satisfied_ = true;
+  }
+
+  bool EmbedderControlsAuthenticatorDispatch(
+      const device::FidoAuthenticator& authenticator) override {
+    // Don't instantly dispatch platform authenticator requests if the test is
+    // exercising platform credential preselection.
+    // `OnTransportAvailabilityEnumerated()` will run the `request_callback_` in
+    // this case to mimic behavior of the real UI.
+    return authenticator.AuthenticatorTransport() ==
+               device::FidoTransportProtocol::kInternal &&
+           config_.preselected_credential_id;
+  }
+
+  void OnTransportAvailabilityEnumerated(
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo info) override {
+    if (config_.preselected_credential_id) {
+      DCHECK(config_.preselected_authenticator_id);
+      EXPECT_EQ(info.has_platform_authenticator_credential,
+                device::FidoRequestHandlerBase::RecognizedCredential::
+                    kHasRecognizedCredential);
+      EXPECT_TRUE(std::any_of(
+          info.recognized_platform_authenticator_credentials.begin(),
+          info.recognized_platform_authenticator_credentials.end(),
+          [&](const device::DiscoverableCredentialMetadata& credential) {
+            return credential.cred_id == *config_.preselected_credential_id;
+          }));
+      std::move(account_preselected_callback_)
+          .Run(*config_.preselected_credential_id);
+      request_callback_.Run(*config_.preselected_authenticator_id);
+    }
   }
 
  private:
-  const std::string expected_accounts_;
-  const std::vector<uint8_t> selected_user_id_;
-  const raw_ptr<absl::optional<InterestingFailureReason>> failure_reason_;
-  const raw_ptr<bool> is_conditional_;
+  const Config config_;
+  bool expect_conditional_satisfied_ = false;
+  bool expected_failure_reason_satisfied_ = false;
+  device::FidoRequestHandlerBase::RequestCallback request_callback_;
+  AccountPreselectedCallback account_preselected_callback_;
 };
 
 class ResidentKeyTestAuthenticatorContentBrowserClient
@@ -6894,20 +6966,16 @@ class ResidentKeyTestAuthenticatorContentBrowserClient
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<ResidentKeyTestAuthenticatorRequestDelegate>(
-        expected_accounts, selected_user_id, &failure_reason, &is_conditional);
+        delegate_config);
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
 
-  std::string expected_accounts;
-  std::vector<uint8_t> selected_user_id;
-  bool is_conditional = false;
-  absl::optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
-      failure_reason;
+  ResidentKeyTestAuthenticatorRequestDelegate::Config delegate_config;
 };
 
 class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
- public:
+ protected:
   ResidentKeyAuthenticatorImplTest() = default;
 
   ResidentKeyAuthenticatorImplTest(const ResidentKeyAuthenticatorImplTest&) =
@@ -6933,9 +7001,6 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
     UVAuthenticatorImplTest::TearDown();
   }
 
- protected:
-  ResidentKeyTestAuthenticatorContentBrowserClient test_client_;
-
   static PublicKeyCredentialCreationOptionsPtr make_credential_options(
       device::ResidentKeyRequirement resident_key =
           device::ResidentKeyRequirement::kRequired) {
@@ -6953,20 +7018,10 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
     return options;
   }
 
+  ResidentKeyTestAuthenticatorContentBrowserClient test_client_;
+
  private:
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
-};
-
-class ResidentKeyAuthenticatorImplWithFlagsTest
-    : public ResidentKeyAuthenticatorImplTest {
- public:
-  ResidentKeyAuthenticatorImplWithFlagsTest() {
-    scoped_feature_list_.InitWithFeatures({features::kWebAuthCable},
-                                          /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkRequired) {
@@ -7101,12 +7156,11 @@ TEST_F(ResidentKeyAuthenticatorImplTest, StorageFull) {
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
       /*user_id=*/{{1, 1, 1, 1}}, "test@example.com", "Test User"));
 
+  test_client_.delegate_config.expected_failure_reason =
+      AuthenticatorRequestClientDelegate::InterestingFailureReason::
+          kStorageFull;
   EXPECT_EQ(AuthenticatorMakeCredential(make_credential_options()).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
-  ASSERT_TRUE(test_client_.failure_reason.has_value());
-  EXPECT_EQ(AuthenticatorRequestClientDelegate::InterestingFailureReason::
-                kStorageFull,
-            test_client_.failure_reason);
 }
 
 TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleNoPII) {
@@ -7117,7 +7171,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleNoPII) {
   // |SelectAccount| should not be called when there's only a single response
   // with no identifying user info because the UI is bad in that case: we can
   // only display the single choice of "Unknown user".
-  test_client_.expected_accounts = "<invalid>";
+  test_client_.delegate_config.expected_accounts = "<invalid>";
   GetAssertionResult result =
       AuthenticatorGetAssertion(get_credential_options());
 
@@ -7141,10 +7195,10 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionUserSelected) {
 
     // |SelectAccount| should not be called when userSelected is set.
     if (internal_account_chooser) {
-      test_client_.expected_accounts = "<invalid>";
+      test_client_.delegate_config.expected_accounts = "<invalid>";
     } else {
-      test_client_.expected_accounts = "01020304:Test:User";
-      test_client_.selected_user_id = {1, 2, 3, 4};
+      test_client_.delegate_config.expected_accounts = "01020304:Test:User";
+      test_client_.delegate_config.selected_user_id = {1, 2, 3, 4};
     }
     GetAssertionResult result =
         AuthenticatorGetAssertion(get_credential_options());
@@ -7160,8 +7214,8 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleWithPII) {
       /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, "Test User"));
 
   // |SelectAccount| should be called when PII is available.
-  test_client_.expected_accounts = "01020304::Test User";
-  test_client_.selected_user_id = {1, 2, 3, 4};
+  test_client_.delegate_config.expected_accounts = "01020304::Test User";
+  test_client_.delegate_config.selected_user_id = {1, 2, 3, 4};
   GetAssertionResult result =
       AuthenticatorGetAssertion(get_credential_options());
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
@@ -7176,10 +7230,10 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionMulti) {
       /*credential_id=*/{{4, 3, 2, 2}}, kTestRelyingPartyId,
       /*user_id=*/{{5, 6, 7, 8}}, "test2@example.com", "Test User 2"));
 
-  test_client_.expected_accounts =
+  test_client_.delegate_config.expected_accounts =
       "01020304:test@example.com:Test User/"
       "05060708:test2@example.com:Test User 2";
-  test_client_.selected_user_id = {1, 2, 3, 4};
+  test_client_.delegate_config.selected_user_id = {1, 2, 3, 4};
 
   GetAssertionResult result =
       AuthenticatorGetAssertion(get_credential_options());
@@ -7202,7 +7256,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionUVDiscouraged) {
 
   // |SelectAccount| should not be called when there's only a single response
   // without identifying information.
-  test_client_.expected_accounts = "<invalid>";
+  test_client_.delegate_config.expected_accounts = "<invalid>";
   PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
   options->user_verification =
       device::UserVerificationRequirement::kDiscouraged;
@@ -7746,7 +7800,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ProtectedNonResidentCreds) {
       ->second.protection = device::CredProtect::kUVRequired;
 
   // |SelectAccount| should not be called when there's only a single response.
-  test_client_.expected_accounts = "<invalid>";
+  test_client_.delegate_config.expected_accounts = "<invalid>";
 
   PublicKeyCredentialRequestOptionsPtr options = get_credential_options();
   options->allow_credentials = GetTestCredentials(5);
@@ -7772,7 +7826,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WithAppIDExtension) {
 
   // |SelectAccount| should not be called when there's only a single response
   // without identifying information.
-  test_client_.expected_accounts = "<invalid>";
+  test_client_.delegate_config.expected_accounts = "<invalid>";
 
   PublicKeyCredentialRequestOptionsPtr options = get_credential_options();
   options->appid = kTestOrigin1;
@@ -7987,8 +8041,9 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
     auto prf_value = blink::mojom::PRFValues::New();
     prf_value->first = salt1;
     prf_value->second = salt2;
-    test_client_.expected_accounts = "01020304:name:displayName";
-    test_client_.selected_user_id = {1, 2, 3, 4};
+    test_client_.delegate_config.expected_accounts =
+        "01020304:name:displayName";
+    test_client_.delegate_config.selected_user_id = {1, 2, 3, 4};
     std::vector<blink::mojom::PRFValuesPtr> inputs;
     inputs.emplace_back(std::move(prf_value));
     auto result = assertion(std::move(inputs), /*allowlist_size=*/0);
@@ -8025,14 +8080,55 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
       /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
 
-  // |SelectAccount| should not be called when there's only a single response
-  // without identifying information.
-  test_client_.expected_accounts = "<invalid>";
+  // |SelectAccount| should not be called for conditional UI requests.
+  test_client_.delegate_config.expected_accounts = "<invalid>";
+  test_client_.delegate_config.expect_conditional = true;
   PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
   options->is_conditional = true;
   GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-  EXPECT_TRUE(test_client_.is_conditional);
+}
+
+// Tests that the AuthenticatorRequestDelegate can choose a known platform
+// authentictor credential as "preselected", which causes the request to be
+// specialized to the chosen credential ID and post-request account selection UI
+// to be skipped.
+TEST_F(ResidentKeyAuthenticatorImplTest, PreselectDiscoverableCredential) {
+  device::VirtualCtap2Device::Config config;
+  config.resident_key_support = true;
+  config.internal_uv_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->SetTransport(
+      device::FidoTransportProtocol::kInternal);
+  virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+  constexpr char kAuthenticatorId[] = "internal-authenticator";
+  virtual_device_factory_->mutable_state()->device_id_override =
+      kAuthenticatorId;
+  std::vector<uint8_t> kFirstCredentialId{{1, 2, 3, 4}};
+  std::vector<uint8_t> kSecondCredentialId{{10, 20, 30, 40}};
+  std::vector<uint8_t> kFirstUserId{{2, 3, 4, 5}};
+  std::vector<uint8_t> kSecondUserId{{20, 30, 40, 50}};
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
+      kFirstCredentialId, kTestRelyingPartyId, kFirstUserId, absl::nullopt,
+      absl::nullopt));
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
+      kSecondCredentialId, kTestRelyingPartyId, kSecondUserId, absl::nullopt,
+      absl::nullopt));
+
+  // |SelectAccount| should not be called if an account was chosen from
+  // pre-select UI.
+  test_client_.delegate_config.expected_accounts = "<invalid>";
+
+  for (const auto& id : {kFirstCredentialId, kSecondCredentialId}) {
+    test_client_.delegate_config.preselected_credential_id = id;
+    test_client_.delegate_config.preselected_authenticator_id =
+        kAuthenticatorId;
+    PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
+    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    EXPECT_EQ(result.response->info->raw_id, id);
+  }
 }
 
 class InternalAuthenticatorImplTest : public AuthenticatorTestBase {
@@ -8322,10 +8418,7 @@ class AuthenticatorCableV2Test
         virtual_device_(new VirtualFidoDevice::State, DeviceConfig()),
         browser_client_(
             base::BindRepeating(&AuthenticatorCableV2Test::MaybeContactPhones,
-                                base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeatures({features::kWebAuthCable},
-                                          /*disabled_features=*/{});
-  }
+                                base::Unretained(this))) {}
 
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
@@ -8506,8 +8599,6 @@ class AuthenticatorCableV2Test
         VirtualCtap2Device::Config::IncludeCredential::ALWAYS;
     return ret;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(AuthenticatorCableV2Test, QRBasedWithNoPairing) {

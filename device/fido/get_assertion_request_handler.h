@@ -172,6 +172,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   std::map<FidoAuthenticator*, std::unique_ptr<AuthTokenRequester>>
       auth_token_requester_map_;
 
+  // preselected_credential_ is set when the UI invokes `PreselectAccount()`. It
+  // contains the ID of a platform authenticator credential chosen by the user
+  // during a resident key request prior to dispatching to that platform
+  // authenticator.
+  absl::optional<std::vector<uint8_t>> preselected_credential_;
+
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<GetAssertionRequestHandler> weak_factory_{this};
 };
