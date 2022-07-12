@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -16,12 +19,72 @@
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_view.h"
 #include "chrome/browser/user_notes/user_note_service_factory.h"
 #include "components/user_notes/browser/user_note_manager.h"
+#include "components/user_notes/browser/user_note_service.h"
+#include "components/user_notes/interfaces/user_note_metadata_snapshot.h"
+#include "components/user_notes/interfaces/user_note_storage.h"
 #include "components/user_notes/model/user_note_model_test_utils.h"
 #include "components/user_notes/user_notes_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+
+// Mock the note storage to prevent side effects.
+class MockUserNoteStorage : public user_notes::UserNoteStorage {
+ public:
+  void GetNoteMetadataForUrls(
+      const std::vector<GURL>& urls,
+      base::OnceCallback<void(user_notes::UserNoteMetadataSnapshot)> callback)
+      override {
+    std::move(callback).Run(user_notes::UserNoteMetadataSnapshot());
+  }
+
+  void GetNotesById(const std::vector<base::UnguessableToken>& ids,
+                    base::OnceCallback<void(
+                        std::vector<std::unique_ptr<user_notes::UserNote>>)>
+                        callback) override {
+    std::move(callback).Run(
+        std::vector<std::unique_ptr<user_notes::UserNote>>());
+  }
+
+  // No-op.
+  void UpdateNote(const user_notes::UserNote* model,
+                  std::string note_body_text,
+                  bool is_creation = false) override {}
+
+  // No-op.
+  void DeleteNote(const base::UnguessableToken& guid) override {}
+
+  // No-op.
+  void DeleteAllForUrl(const GURL& url) override {}
+
+  // No-op.
+  void DeleteAllForOrigin(const url::Origin& origin) override {}
+
+  // No-op.
+  void DeleteAllNotes() override {}
+
+  // No-op.
+  void AddObserver(Observer* observer) override {}
+
+  // No-op.
+  void RemoveObserver(Observer* observer) override {}
+};
+
+// Mock the note service to prevent side effects.
+class MockUserNoteService : public user_notes::UserNoteService {
+ public:
+  MockUserNoteService()
+      : UserNoteService(/*delegate=*/nullptr,
+                        std::make_unique<MockUserNoteStorage>()) {}
+
+  // No-op.
+  void OnFrameNavigated(content::RenderFrameHost* rfh) override {}
+};
+
+}  // namespace
 
 class UserNoteUICoordinatorTest : public TestWithBrowserView {
  public:
@@ -31,14 +94,15 @@ class UserNoteUICoordinatorTest : public TestWithBrowserView {
 
     TestWithBrowserView::SetUp();
 
-    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
-
-    browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-
+    user_notes::UserNoteServiceFactory::SetServiceForTesting(
+        std::make_unique<MockUserNoteService>());
+    service_ = user_notes::UserNoteServiceFactory::GetForContext(
+        browser_view()->GetProfile());
     user_note_ui_coordinator_ =
         UserNoteUICoordinator::GetOrCreateForBrowser(browser_view()->browser());
-    service_ = user_notes::UserNoteServiceFactory::GetForContext(
-        browser_view()->GetActiveWebContents()->GetBrowserContext());
+
+    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+    browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
     content::WebContents* active_contents =
         browser_view()->GetActiveWebContents();

@@ -49,6 +49,10 @@ class UserNoteMetadataSnapshot {
   UserNoteMetadataSnapshot& operator=(const UserNoteMetadataSnapshot&) = delete;
   ~UserNoteMetadataSnapshot();
 
+  // Returns false if there's at least one entry in the snapshot, true
+  // otherwise.
+  bool IsEmpty();
+
   // Adds a metadata entry to this class, based on the URL the note is attached
   // to and its ID.
   void AddEntry(const GURL& url,

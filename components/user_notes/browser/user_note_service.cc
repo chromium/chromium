@@ -43,6 +43,13 @@ bool UserNoteService::IsNoteInProgress(const base::UnguessableToken& id) const {
 }
 
 void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
+  // TODO(crbug.com/1313967): On browser startup, this method will be called
+  // once for each tab that's being restored, potentially slowing down the
+  // startup process and delaying browser responsiveness. This method should
+  // probably be disabled during browser startup and re-enabled after all tabs
+  // have been restored, so that note fetching for all restored tabs can be
+  // batched into a single operation.
+
   DCHECK(IsUserNotesEnabled());
 
   // For now, Notes are only supported in the main frame.
@@ -59,7 +66,12 @@ void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
   }
 
   DCHECK(UserNoteManager::GetForPage(rfh->GetPage()));
-  NOTIMPLEMENTED();
+
+  std::vector<content::RenderFrameHost*> frames = {rfh};
+  std::vector<GURL> urls = {rfh->GetLastCommittedURL()};
+  storage_->GetNoteMetadataForUrls(
+      urls, base::BindOnce(&UserNoteService::OnNoteMetadataFetchedForNavigation,
+                           weak_ptr_factory_.GetWeakPtr(), frames, rfh));
 }
 
 void UserNoteService::OnNoteInstanceAddedToPage(
@@ -243,6 +255,29 @@ void UserNoteService::OnNotesChanged() {
   storage_->GetNoteMetadataForUrls(
       urls, base::BindOnce(&UserNoteService::OnNoteMetadataFetched,
                            weak_ptr_factory_.GetWeakPtr(), all_frames));
+}
+
+void UserNoteService::OnNoteMetadataFetchedForNavigation(
+    const std::vector<content::RenderFrameHost*>& all_frames,
+    const content::RenderFrameHost* navigated_frame,
+    UserNoteMetadataSnapshot metadata_snapshot) {
+  if (metadata_snapshot.IsEmpty()) {
+    // No notes to show.
+    return;
+  }
+
+  // TODO(crbug.com/1313967): For now, automatically activate User Notes UI when
+  // the user navigates to a page with notes. Before launch though, this should
+  // be changed to a popup / notification that the user must interact with to
+  // launch the notes UI.
+  DCHECK(all_frames.size() == 1u);
+  if (delegate_->IsFrameInActiveTab(all_frames[0])) {
+    UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(all_frames[0]);
+    DCHECK(ui);
+    ui->Show();
+  }
+
+  OnNoteMetadataFetched(all_frames, std::move(metadata_snapshot));
 }
 
 void UserNoteService::OnNoteMetadataFetched(

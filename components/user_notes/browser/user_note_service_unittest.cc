@@ -4,6 +4,7 @@
 
 #include "components/user_notes/browser/user_note_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -136,6 +137,12 @@ class MockUserNoteService : public UserNoteService {
   const IdList& changes_applied() { return changes_applied_; }
 
   MOCK_METHOD(void,
+              OnNoteMetadataFetchedForNavigation,
+              (const std::vector<content::RenderFrameHost*>& all_frames,
+               const content::RenderFrameHost* navigated_frame,
+               UserNoteMetadataSnapshot metadata_snapshot),
+              (override));
+  MOCK_METHOD(void,
               OnNoteMetadataFetched,
               (const std::vector<content::RenderFrameHost*>& all_frames,
                UserNoteMetadataSnapshot metadata_snapshot),
@@ -160,6 +167,14 @@ class MockUserNoteService : public UserNoteService {
 
   void MockOnFrameChangesApplied(base::UnguessableToken change_id) {
     changes_applied_.emplace_back(change_id);
+  }
+
+  void CallBaseClassOnNoteMetadataFetchedForNavigation(
+      const std::vector<content::RenderFrameHost*>& all_frames,
+      const content::RenderFrameHost* navigated_frame,
+      UserNoteMetadataSnapshot metadata_snapshot) {
+    UserNoteService::OnNoteMetadataFetchedForNavigation(
+        all_frames, navigated_frame, std::move(metadata_snapshot));
   }
 
   void CallBaseClassOnNoteMetadataFetched(
@@ -469,6 +484,7 @@ TEST_F(UserNoteServiceTest, OnNotesChanged) {
   EXPECT_CALL(*storage_, GetNotesById).Times(0);
 
   // Configure service mock.
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation).Times(0);
   EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(1);
   EXPECT_CALL(*mock_service_, OnNoteModelsFetched).Times(0);
   EXPECT_CALL(*mock_service_, OnFrameChangesApplied).Times(0);
@@ -484,6 +500,235 @@ TEST_F(UserNoteServiceTest, OnNotesChanged) {
         fetched_urls[i],
         web_contents_list_[i]->GetPrimaryMainFrame()->GetLastCommittedURL());
   }
+}
+
+// Tests that the service correctly fetches note metadata for the navigated
+// frame when a navigation occurs.
+TEST_F(UserNoteServiceTest, OnFrameNavigated) {
+  // Initial setup.
+  UserNoteManager* manager = ConfigureNewManager();
+  AddNewInstanceToManager(manager, note_ids_[0]);
+
+  // Verify initial setup.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_TRUE(DoesManagerExistForId(note_ids_[0], manager));
+
+  // Configure service delegate mock.
+  EXPECT_CALL(*service_delegate_, GetAllFramesForUserNotes).Times(0);
+  EXPECT_CALL(*service_delegate_, GetUICoordinatorForFrame(_)).Times(0);
+  EXPECT_CALL(*service_delegate_, IsFrameInActiveTab(_)).Times(0);
+
+  // Configure storage mock.
+  EXPECT_CALL(*storage_, GetNoteMetadataForUrls)
+      .Times(1)
+      .WillOnce(Invoke(storage_.get(),
+                       &MockUserNoteStorage::MockGetNoteMetadataForUrls));
+  EXPECT_CALL(*storage_, GetNotesById).Times(0);
+
+  // Configure service mock.
+  std::vector<content::RenderFrameHost*> all_frames_result;
+  const content::RenderFrameHost* navigated_frame_result;
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation)
+      .Times(1)
+      .WillOnce([&](const std::vector<content::RenderFrameHost*>& all_frames,
+                    const content::RenderFrameHost* navigated_frame,
+                    UserNoteMetadataSnapshot metadata_snapshot) {
+        all_frames_result.assign(all_frames.begin(), all_frames.end());
+        navigated_frame_result = navigated_frame;
+      });
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(0);
+  EXPECT_CALL(*mock_service_, OnNoteModelsFetched).Times(0);
+  EXPECT_CALL(*mock_service_, OnFrameChangesApplied).Times(0);
+
+  // Pretend there was a navigation.
+  content::RenderFrameHost* frame =
+      web_contents_list_[0]->GetPrimaryMainFrame();
+  note_service_->OnFrameNavigated(frame);
+
+  // Mocks ensure callbacks are invoked synchronously, so expectations can be
+  // immediately verified.
+  ASSERT_EQ(all_frames_result.size(), 1u);
+  EXPECT_EQ(all_frames_result[0], frame);
+  EXPECT_EQ(navigated_frame_result, frame);
+
+  const std::vector<GURL>& requested_urls = storage_->requested_metadata_urls();
+  ASSERT_EQ(requested_urls.size(), 1u);
+  EXPECT_EQ(requested_urls[0], frame->GetLastCommittedURL());
+}
+
+// After a navigation to a document that has user notes in the foreground, the
+// service should request the notes UI to show itself.
+// TODO(crbug.com/1313967): This test will need to be changed when notes UI is
+// no longer automatically shown on navigation.
+TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationSomeNotes) {
+  // Initial setup.
+  UserNoteManager* manager = ConfigureNewManager();
+  AddNewInstanceToManager(manager, note_ids_[0]);
+
+  // Verify initial setup.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_TRUE(DoesManagerExistForId(note_ids_[0], manager));
+
+  // Configure UI mock.
+  auto mock_ui = std::make_unique<MockUserNotesUI>();
+  EXPECT_CALL(*mock_ui, Invalidate).Times(0);
+  EXPECT_CALL(*mock_ui, FocusNote).Times(0);
+  EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
+  EXPECT_CALL(*mock_ui, Show).Times(1);
+
+  // Configure service delegate mock.
+  EXPECT_CALL(*service_delegate_, GetAllFramesForUserNotes).Times(0);
+  EXPECT_CALL(*service_delegate_, GetUICoordinatorForFrame(_))
+      .Times(1)
+      .WillOnce(Invoke([&mock_ui](const content::RenderFrameHost* frame) {
+        return mock_ui.get();
+      }));
+  EXPECT_CALL(*service_delegate_, IsFrameInActiveTab(_))
+      .Times(1)
+      .WillOnce(
+          Invoke([](const content::RenderFrameHost* frame) { return true; }));
+
+  // Configure storage mock.
+  EXPECT_CALL(*storage_, GetNoteMetadataForUrls).Times(0);
+  EXPECT_CALL(*storage_, GetNotesById).Times(0);
+
+  // Configure service mock.
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation)
+      .Times(1)
+      .WillOnce(Invoke(mock_service_.get(),
+                       &MockUserNoteService::
+                           CallBaseClassOnNoteMetadataFetchedForNavigation));
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(1);
+  EXPECT_CALL(*mock_service_, OnNoteModelsFetched).Times(0);
+  EXPECT_CALL(*mock_service_, OnFrameChangesApplied).Times(0);
+
+  // Create a non-empty metadata snapshot.
+  UserNoteMetadataSnapshot snapshot;
+  GURL url =
+      web_contents_list_[0]->GetPrimaryMainFrame()->GetLastCommittedURL();
+  snapshot.AddEntry(
+      url, note_ids_[0],
+      std::make_unique<UserNoteMetadata>(base::Time::Now(), base::Time::Now(),
+                                         /*min_note_version=*/1));
+
+  // Simulate the service receiving the metadata snapshot after a navigation.
+  note_service_->OnNoteMetadataFetchedForNavigation(
+      GetAllFramesInUse(), GetAllFramesInUse()[0], std::move(snapshot));
+}
+
+// After a navigation to a document that has user notes, but isn't in the
+// foreground, the service should not request the notes UI to show itself.
+// TODO(crbug.com/1313967): This test will need to be changed when notes UI is
+// no longer automatically shown on navigation.
+TEST_F(UserNoteServiceTest,
+       OnNoteMetadataFetchedForNavigationSomeNotesBackground) {
+  // Initial setup.
+  UserNoteManager* manager = ConfigureNewManager();
+  AddNewInstanceToManager(manager, note_ids_[0]);
+
+  // Verify initial setup.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_TRUE(DoesManagerExistForId(note_ids_[0], manager));
+
+  // Configure UI mock.
+  auto mock_ui = std::make_unique<MockUserNotesUI>();
+  EXPECT_CALL(*mock_ui, Invalidate).Times(0);
+  EXPECT_CALL(*mock_ui, FocusNote).Times(0);
+  EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
+  EXPECT_CALL(*mock_ui, Show).Times(0);
+
+  // Configure service delegate mock.
+  EXPECT_CALL(*service_delegate_, GetAllFramesForUserNotes).Times(0);
+  EXPECT_CALL(*service_delegate_, GetUICoordinatorForFrame(_)).Times(0);
+  EXPECT_CALL(*service_delegate_, IsFrameInActiveTab(_))
+      .Times(1)
+      .WillOnce(
+          Invoke([](const content::RenderFrameHost* frame) { return false; }));
+
+  // Configure storage mock.
+  EXPECT_CALL(*storage_, GetNoteMetadataForUrls).Times(0);
+  EXPECT_CALL(*storage_, GetNotesById).Times(0);
+
+  // Configure service mock.
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation)
+      .Times(1)
+      .WillOnce(Invoke(mock_service_.get(),
+                       &MockUserNoteService::
+                           CallBaseClassOnNoteMetadataFetchedForNavigation));
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(1);
+  EXPECT_CALL(*mock_service_, OnNoteModelsFetched).Times(0);
+  EXPECT_CALL(*mock_service_, OnFrameChangesApplied).Times(0);
+
+  // Create a non-empty metadata snapshot.
+  UserNoteMetadataSnapshot snapshot;
+  GURL url =
+      web_contents_list_[0]->GetPrimaryMainFrame()->GetLastCommittedURL();
+  snapshot.AddEntry(
+      url, note_ids_[0],
+      std::make_unique<UserNoteMetadata>(base::Time::Now(), base::Time::Now(),
+                                         /*min_note_version=*/1));
+
+  // Simulate the service receiving the metadata snapshot after a navigation.
+  note_service_->OnNoteMetadataFetchedForNavigation(
+      GetAllFramesInUse(), GetAllFramesInUse()[0], std::move(snapshot));
+}
+
+// After a navigation to a document that doesn't have user notes, the service
+// should not request the notes UI to show itself.
+// TODO(crbug.com/1313967): This test will need to be changed when notes UI is
+// no longer automatically shown on navigation.
+TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationNoNotes) {
+  // Initial setup.
+  UserNoteManager* manager = ConfigureNewManager();
+  AddNewInstanceToManager(manager, note_ids_[0]);
+
+  // Verify initial setup.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_TRUE(DoesManagerExistForId(note_ids_[0], manager));
+
+  // Configure UI mock.
+  auto mock_ui = std::make_unique<MockUserNotesUI>();
+  EXPECT_CALL(*mock_ui, Invalidate).Times(0);
+  EXPECT_CALL(*mock_ui, FocusNote).Times(0);
+  EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
+  EXPECT_CALL(*mock_ui, Show).Times(0);
+
+  // Configure service delegate mock.
+  EXPECT_CALL(*service_delegate_, GetAllFramesForUserNotes).Times(0);
+  EXPECT_CALL(*service_delegate_, GetUICoordinatorForFrame(_)).Times(0);
+  EXPECT_CALL(*service_delegate_, IsFrameInActiveTab(_)).Times(0);
+
+  // Configure storage mock.
+  EXPECT_CALL(*storage_, GetNoteMetadataForUrls).Times(0);
+  EXPECT_CALL(*storage_, GetNotesById).Times(0);
+
+  // Configure service mock.
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation)
+      .Times(1)
+      .WillOnce(Invoke(mock_service_.get(),
+                       &MockUserNoteService::
+                           CallBaseClassOnNoteMetadataFetchedForNavigation));
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(0);
+  EXPECT_CALL(*mock_service_, OnNoteModelsFetched).Times(0);
+  EXPECT_CALL(*mock_service_, OnFrameChangesApplied).Times(0);
+
+  // Create a non-empty metadata snapshot.
+  UserNoteMetadataSnapshot snapshot;
+  GURL url =
+      web_contents_list_[0]->GetPrimaryMainFrame()->GetLastCommittedURL();
+  snapshot.AddEntry(
+      url, note_ids_[0],
+      std::make_unique<UserNoteMetadata>(base::Time::Now(), base::Time::Now(),
+                                         /*min_note_version=*/1));
+
+  // Simulate the service receiving the empty metadata snapshot after a
+  // navigation.
+  note_service_->OnNoteMetadataFetchedForNavigation(
+      GetAllFramesInUse(), GetAllFramesInUse()[0], UserNoteMetadataSnapshot());
 }
 
 // Tests that the service requests the right models from the storage after
@@ -523,6 +768,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetched) {
       .WillOnce(Invoke(storage_.get(), &MockUserNoteStorage::MockGetNotesById));
 
   // Configure service mock.
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation).Times(0);
   EXPECT_CALL(*mock_service_, OnNoteMetadataFetched)
       .Times(1)
       .WillOnce(
@@ -629,6 +875,7 @@ TEST_F(UserNoteServiceTest, OnNoteModelsFetched) {
   EXPECT_CALL(*storage_, GetNotesById).Times(0);
 
   // Configure service mock.
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation).Times(0);
   EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(0);
   EXPECT_CALL(*mock_service_, OnNoteModelsFetched)
       .Times(1)
@@ -805,6 +1052,7 @@ TEST_F(UserNoteServiceTest, OnFrameChangesApplied) {
   EXPECT_CALL(*storage_, GetNotesById).Times(0);
 
   // Configure service mock.
+  EXPECT_CALL(*mock_service_, OnNoteMetadataFetchedForNavigation).Times(0);
   EXPECT_CALL(*mock_service_, OnNoteMetadataFetched).Times(0);
   EXPECT_CALL(*mock_service_, OnNoteModelsFetched).Times(0);
   EXPECT_CALL(*mock_service_, OnFrameChangesApplied)

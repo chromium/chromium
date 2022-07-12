@@ -127,12 +127,23 @@ class UserNoteService : public KeyedService,
   friend class UserNoteInstanceTest;
   friend class UserNoteUtilsTest;
   friend class ::UserNoteUICoordinatorTest;
+  FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest,
+                           OnNoteMetadataFetchedForNavigationSomeNotes);
+  FRIEND_TEST_ALL_PREFIXES(
+      UserNoteServiceTest,
+      OnNoteMetadataFetchedForNavigationSomeNotesBackground);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest,
+                           OnNoteMetadataFetchedForNavigationNoNotes);
   FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnNoteMetadataFetched);
   FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnNoteModelsFetched);
   FRIEND_TEST_ALL_PREFIXES(UserNoteServiceTest, OnFrameChangesApplied);
 
   // Private helpers used when processing note storage changes. Marked virtual
   // for tests to override.
+  virtual void OnNoteMetadataFetchedForNavigation(
+      const std::vector<content::RenderFrameHost*>& all_frames,
+      const content::RenderFrameHost* navigated_frame,
+      UserNoteMetadataSnapshot metadata_snapshot);
   virtual void OnNoteMetadataFetched(
       const std::vector<content::RenderFrameHost*>& all_frames,
       UserNoteMetadataSnapshot metadata_snapshot);

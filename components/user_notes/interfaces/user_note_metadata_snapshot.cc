@@ -15,6 +15,10 @@ UserNoteMetadataSnapshot::UserNoteMetadataSnapshot(
 
 UserNoteMetadataSnapshot::~UserNoteMetadataSnapshot() = default;
 
+bool UserNoteMetadataSnapshot::IsEmpty() {
+  return url_map_.size() == 0;
+}
+
 void UserNoteMetadataSnapshot::AddEntry(
     const GURL& url,
     const base::UnguessableToken& id,
