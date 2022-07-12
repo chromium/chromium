@@ -2103,7 +2103,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R105-14943.0.0",
+        "cros_img": "hana-release/R105-14961.0.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2214,7 +2214,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
         ],
         "cros_board": "hana",
-        "cros_img": "hana-release/R105-14943.0.0",
+        "cros_img": "hana-release/R105-14961.0.0",
         "name": "ozone_unittests HANA_RELEASE_DEV",
         "swarming": {},
         "test": "ozone_unittests",
@@ -2305,7 +2305,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
         ],
         "cros_board": "hana",
-        "cros_img": "hana-release/R105-14943.0.0",
+        "cros_img": "hana-release/R105-14961.0.0",
         "name": "viz_unittests HANA_RELEASE_DEV",
         "swarming": {},
         "test": "viz_unittests",
