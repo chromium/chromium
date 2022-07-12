@@ -162,8 +162,6 @@ void LanguageDetectionController::OnTextRetrieved(
     base::UmaHistogramEnumeration(
         "IOS.Translate.PageLoad.LanguageDetectionMethod",
         LanguageDetectionMethod::kTFLiteModelUsed);
-    // TODO(crbug/1309448): Remove logging
-    NSLog(@"LanguageDetectionController: Using TFLite language detection.");
     base::ElapsedTimer timer;
     language = language_detection_model_->DeterminePageLanguage(
         http_content_language, html_lang,
@@ -175,8 +173,6 @@ void LanguageDetectionController::OnTextRetrieved(
     detection_model_version = language_detection_model_->GetModelVersion();
   } else {
     if (IsTFLiteLanguageDetectionEnabled()) {
-      // TODO(crbug/1309448): Remove logging
-      NSLog(@"LanguageDetectionController: TFLite language model unavailable.");
       base::UmaHistogramEnumeration(
           "IOS.Translate.PageLoad.LanguageDetectionMethod",
           LanguageDetectionMethod::kTFLiteModelUnavailable);
@@ -184,8 +180,6 @@ void LanguageDetectionController::OnTextRetrieved(
       base::UmaHistogramEnumeration(
           "IOS.Translate.PageLoad.LanguageDetectionMethod",
           LanguageDetectionMethod::kTFLiteModelDisabled);
-      // TODO(crbug/1309448): Remove logging
-      NSLog(@"LanguageDetectionController: TFLite language model disabled.");
     }
     language = DeterminePageLanguage(
         http_content_language, html_lang,
