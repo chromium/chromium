@@ -507,7 +507,7 @@ void DisplayOverlayController::OnApplyMenuState() {
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
-  if (display_mode_ == DisplayMode::kView ||
+  if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
       event->type() != ui::ET_MOUSE_PRESSED) {
     return;
   }
@@ -516,7 +516,7 @@ void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
-  if (display_mode_ == DisplayMode::kView ||
+  if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
       event->type() != ui::ET_TOUCH_PRESSED) {
     return;
   }
