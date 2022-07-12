@@ -7,7 +7,8 @@
 
 #include <string>
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 struct Result;
 
@@ -31,6 +32,7 @@ float RelevanceCoefficient(const std::u16string& query,
 // Returns whether |r1| score is higher than |r2|'s.
 bool CompareResults(const Result& r1, const Result& r2);
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_UTILS_H_

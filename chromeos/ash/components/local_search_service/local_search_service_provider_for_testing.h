@@ -8,7 +8,8 @@
 #include "chromeos/ash/components/local_search_service/local_search_service.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_provider.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 // An implementation that runs LocalSearchService in-process for testing
 // purpose.
@@ -25,6 +26,7 @@ class LocalSearchServiceProviderForTesting : public LocalSearchServiceProvider {
   std::unique_ptr<LocalSearchService> service_;
 };
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_LOCAL_SEARCH_SERVICE_PROVIDER_FOR_TESTING_H_

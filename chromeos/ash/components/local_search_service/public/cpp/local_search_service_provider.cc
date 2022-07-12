@@ -6,7 +6,8 @@
 
 #include "chromeos/ash/components/local_search_service/local_search_service.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 namespace {
 
@@ -22,4 +23,5 @@ LocalSearchServiceProvider* LocalSearchServiceProvider::Get() {
   return g_provider;
 }
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos

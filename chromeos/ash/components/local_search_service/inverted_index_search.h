@@ -16,7 +16,8 @@
 #include "chromeos/ash/components/local_search_service/index.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 class InvertedIndex;
 
@@ -72,6 +73,7 @@ class InvertedIndexSearch : public Index {
   base::WeakPtrFactory<InvertedIndexSearch> weak_ptr_factory_{this};
 };
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_INVERTED_INDEX_SEARCH_H_

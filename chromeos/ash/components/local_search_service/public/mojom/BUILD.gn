@@ -23,36 +23,36 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "ash.local_search_service.mojom.IndexId"
-          cpp = "::ash::local_search_service::IndexId"
+          mojom = "chromeos.local_search_service.mojom.IndexId"
+          cpp = "::chromeos::local_search_service::IndexId"
         },
         {
-          mojom = "ash.local_search_service.mojom.Content"
-          cpp = "::ash::local_search_service::Content"
+          mojom = "chromeos.local_search_service.mojom.Content"
+          cpp = "::chromeos::local_search_service::Content"
         },
         {
-          mojom = "ash.local_search_service.mojom.Data"
-          cpp = "::ash::local_search_service::Data"
+          mojom = "chromeos.local_search_service.mojom.Data"
+          cpp = "::chromeos::local_search_service::Data"
         },
         {
-          mojom = "ash.local_search_service.mojom.SearchParams"
-          cpp = "::ash::local_search_service::SearchParams"
+          mojom = "chromeos.local_search_service.mojom.SearchParams"
+          cpp = "::chromeos::local_search_service::SearchParams"
         },
         {
-          mojom = "ash.local_search_service.mojom.Position"
-          cpp = "::ash::local_search_service::Position"
+          mojom = "chromeos.local_search_service.mojom.Position"
+          cpp = "::chromeos::local_search_service::Position"
         },
         {
-          mojom = "ash.local_search_service.mojom.Result"
-          cpp = "::ash::local_search_service::Result"
+          mojom = "chromeos.local_search_service.mojom.Result"
+          cpp = "::chromeos::local_search_service::Result"
         },
         {
-          mojom = "ash.local_search_service.mojom.ResponseStatus"
-          cpp = "::ash::local_search_service::ResponseStatus"
+          mojom = "chromeos.local_search_service.mojom.ResponseStatus"
+          cpp = "::chromeos::local_search_service::ResponseStatus"
         },
         {
-          mojom = "ash.local_search_service.mojom.Backend"
-          cpp = "::ash::local_search_service::Backend"
+          mojom = "chromeos.local_search_service.mojom.Backend"
+          cpp = "::chromeos::local_search_service::Backend"
         },
       ]
       traits_headers = [ "//chromeos/ash/components/local_search_service/public/mojom/types_mojom_traits.h" ]

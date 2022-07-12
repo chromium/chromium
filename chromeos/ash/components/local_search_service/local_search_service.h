@@ -12,7 +12,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 class LocalSearchService : public mojom::LocalSearchService {
  public:
@@ -33,6 +34,7 @@ class LocalSearchService : public mojom::LocalSearchService {
   std::map<IndexId, std::unique_ptr<Index>> indices_;
 };
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_LOCAL_SEARCH_SERVICE_H_

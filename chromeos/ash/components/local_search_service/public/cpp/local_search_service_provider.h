@@ -8,7 +8,8 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 // LocalSearchServiceProvider creates an instance of LocalSearchService
 // and runs in LSS service process or in process (depending on the
@@ -31,6 +32,7 @@ class LocalSearchServiceProvider {
       mojo::PendingReceiver<mojom::LocalSearchService> receiver) = 0;
 };
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_CPP_LOCAL_SEARCH_SERVICE_PROVIDER_H_

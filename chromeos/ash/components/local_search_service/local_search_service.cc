@@ -6,7 +6,8 @@
 #include "chromeos/ash/components/local_search_service/inverted_index_search.h"
 #include "chromeos/ash/components/local_search_service/linear_map_search.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 LocalSearchService::LocalSearchService(
     mojo::PendingReceiver<mojom::LocalSearchService> receiver)
@@ -50,4 +51,5 @@ void LocalSearchService::BindIndex(
   std::move(callback).Run(absl::nullopt);
 }
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos

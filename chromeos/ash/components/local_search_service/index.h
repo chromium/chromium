@@ -14,7 +14,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 class Index : public mojom::Index {
  public:
@@ -71,6 +72,7 @@ class Index : public mojom::Index {
   mojo::ReceiverSet<mojom::Index> receivers_;
 };
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_INDEX_H_

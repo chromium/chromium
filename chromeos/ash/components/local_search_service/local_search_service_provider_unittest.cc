@@ -9,7 +9,8 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 class LocalSearchServiceProviderTest : public testing::Test {
  public:
@@ -62,4 +63,5 @@ TEST_F(LocalSearchServiceProviderTest, SetUpAndRun) {
   EXPECT_EQ(num_items, 0u);
 }
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos

@@ -44,7 +44,8 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
  public:
   PersonalizationAppManagerImpl(
       content::BrowserContext* context,
-      local_search_service::LocalSearchServiceProxy& local_search_service_proxy)
+      ::chromeos::local_search_service::LocalSearchServiceProxy&
+          local_search_service_proxy)
       : context_(context) {
     if (ash::features::IsPersonalizationHubEnabled()) {
       // Only create the search handler if personalization hub feature is
@@ -110,7 +111,8 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
 // static
 std::unique_ptr<PersonalizationAppManager> PersonalizationAppManager::Create(
     content::BrowserContext* context,
-    local_search_service::LocalSearchServiceProxy& local_search_service_proxy) {
+    ::chromeos::local_search_service::LocalSearchServiceProxy&
+        local_search_service_proxy) {
   return std::make_unique<PersonalizationAppManagerImpl>(
       context, local_search_service_proxy);
 }

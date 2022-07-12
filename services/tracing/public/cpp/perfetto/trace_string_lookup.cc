@@ -54,7 +54,7 @@ constexpr ProcessType kProcessTypes[] = {
      ChromeProcessDescriptor::PROCESS_SERVICE_PRINTING},
     {"Service: quarantine.mojom.Quarantine",
      ChromeProcessDescriptor::PROCESS_SERVICE_QUARANTINE},
-    {"Service: ash.local_search_service.mojom.LocalSearchService",
+    {"Service: chromeos.local_search_service.mojom.LocalSearchService",
      ChromeProcessDescriptor::PROCESS_SERVICE_CROS_LOCALSEARCH},
     {"Service: chromeos.assistant.mojom.AssistantAudioDecoderFactory",
      ChromeProcessDescriptor::PROCESS_SERVICE_CROS_ASSISTANT_AUDIO_DECODER},

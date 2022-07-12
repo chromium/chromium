@@ -10,7 +10,8 @@
 #include <utility>
 #include <vector>
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 namespace {
 
@@ -89,4 +90,5 @@ float TfIdfScore(size_t num_docs,
   return tf * idf;
 }
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos

@@ -7,7 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 namespace {
 
@@ -119,4 +120,5 @@ void Index::ClearIndexCallbackWithTime(ClearIndexCallback callback,
   std::move(callback).Run();
 }
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos

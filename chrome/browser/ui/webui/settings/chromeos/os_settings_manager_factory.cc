@@ -25,8 +25,6 @@
 namespace chromeos {
 namespace settings {
 
-namespace local_search_service = ::ash::local_search_service;
-
 // static
 OsSettingsManager* OsSettingsManagerFactory::GetForProfile(Profile* profile) {
   return static_cast<OsSettingsManager*>(

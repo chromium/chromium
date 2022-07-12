@@ -9,7 +9,8 @@
 
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 // Given a list of tokens, returns a list of tokens where each token has a
 // unique content.
@@ -40,6 +41,7 @@ bool IsStopword(const std::u16string& word, const std::string& locale);
 std::u16string Normalizer(const std::u16string& word,
                           bool remove_hyphen = true);
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_CONTENT_EXTRACTION_UTILS_H_

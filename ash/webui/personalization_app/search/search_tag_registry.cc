@@ -56,9 +56,9 @@ std::vector<int> GetMessageIds(const SearchConcept& search_concept) {
   return message_ids;
 }
 
-std::vector<local_search_service::Content> SearchConceptToContentVector(
-    const SearchConcept& search_concept) {
-  std::vector<local_search_service::Content> content_vector;
+std::vector<::chromeos::local_search_service::Content>
+SearchConceptToContentVector(const SearchConcept& search_concept) {
+  std::vector<::chromeos::local_search_service::Content> content_vector;
 
   for (auto message_id : GetMessageIds(search_concept)) {
     content_vector.emplace_back(base::NumberToString(message_id),
@@ -265,7 +265,8 @@ SearchTagRegistry::SearchConceptUpdates GetDarkModePrefChangedUpdates(
 }  // namespace
 
 SearchTagRegistry::SearchTagRegistry(
-    local_search_service::LocalSearchServiceProxy& local_search_service_proxy,
+    ::chromeos::local_search_service::LocalSearchServiceProxy&
+        local_search_service_proxy,
     PrefService* pref_service,
     std::unique_ptr<EnterprisePolicyDelegate> enterprise_policy_delegate)
     : pref_service_(pref_service),
@@ -274,8 +275,8 @@ SearchTagRegistry::SearchTagRegistry(
   DCHECK(enterprise_policy_delegate_);
 
   local_search_service_proxy.GetIndex(
-      local_search_service::IndexId::kPersonalization,
-      local_search_service::Backend::kLinearMap,
+      ::chromeos::local_search_service::IndexId::kPersonalization,
+      ::chromeos::local_search_service::Backend::kLinearMap,
       index_remote_.BindNewPipeAndPassReceiver());
   DCHECK(index_remote_.is_bound());
 
@@ -309,7 +310,7 @@ SearchTagRegistry::~SearchTagRegistry() = default;
 
 void SearchTagRegistry::UpdateSearchConcepts(
     const SearchConceptUpdates& search_concept_updates) {
-  std::vector<local_search_service::Data> data_vec;
+  std::vector<::chromeos::local_search_service::Data> data_vec;
 
   for (auto& [search_concept, add] : search_concept_updates) {
     std::string concept_id = SearchConceptToId(*search_concept);
@@ -325,8 +326,8 @@ void SearchTagRegistry::UpdateSearchConcepts(
 
     if (found && !add) {
       // Removing a search concept that was present.
-      data_vec.emplace_back(concept_id,
-                            std::vector<local_search_service::Content>());
+      data_vec.emplace_back(
+          concept_id, std::vector<::ash::local_search_service::Content>());
       result_id_to_search_concept_.erase(it);
     }
   }

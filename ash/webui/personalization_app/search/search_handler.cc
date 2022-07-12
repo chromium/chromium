@@ -40,7 +40,8 @@ bool CompareSearchResults(const mojom::SearchResultPtr& a,
 }  // namespace
 
 SearchHandler::SearchHandler(
-    local_search_service::LocalSearchServiceProxy& local_search_service_proxy,
+    ::chromeos::local_search_service::LocalSearchServiceProxy&
+        local_search_service_proxy,
     PrefService* pref_service,
     std::unique_ptr<EnterprisePolicyDelegate> enterprise_policy_delegate)
     : search_tag_registry_(std::make_unique<SearchTagRegistry>(
@@ -91,10 +92,11 @@ void SearchHandler::OnRegistryUpdated() {
 void SearchHandler::OnLocalSearchDone(
     SearchCallback callback,
     uint32_t max_num_results,
-    local_search_service::ResponseStatus response_status,
-    const absl::optional<std::vector<local_search_service::Result>>&
+    ::chromeos::local_search_service::ResponseStatus response_status,
+    const absl::optional<std::vector<::chromeos::local_search_service::Result>>&
         local_search_service_results) {
-  if (response_status != local_search_service::ResponseStatus::kSuccess) {
+  if (response_status !=
+      ::chromeos::local_search_service::ResponseStatus::kSuccess) {
     LOG(ERROR) << "Cannot search; LocalSearchService returned "
                << static_cast<int>(response_status)
                << ". Returning empty results array.";

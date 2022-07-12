@@ -8,7 +8,8 @@
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 namespace {
 
@@ -57,4 +58,5 @@ KeyedService* LocalSearchServiceProxyFactory::BuildServiceInstanceFor(
   return new LocalSearchServiceProxy();
 }
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos

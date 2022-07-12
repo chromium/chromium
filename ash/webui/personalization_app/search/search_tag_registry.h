@@ -21,14 +21,16 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+// TODO(https://crbug.com/1164001): move forward declaration to ash.
+namespace chromeos {
+namespace local_search_service {
+class LocalSearchServiceProxy;
+}  // namespace local_search_service
+}  // namespace chromeos
+
 class PrefService;
 
 namespace ash {
-
-namespace local_search_service {
-class LocalSearchServiceProxy;
-}
-
 namespace personalization_app {
 
 class SearchTagRegistry : public EnterprisePolicyDelegate::Observer {
@@ -42,7 +44,8 @@ class SearchTagRegistry : public EnterprisePolicyDelegate::Observer {
   using SearchConceptUpdates = std::map<const SearchConcept*, bool>;
 
   SearchTagRegistry(
-      local_search_service::LocalSearchServiceProxy& local_search_service_proxy,
+      ::chromeos::local_search_service::LocalSearchServiceProxy&
+          local_search_service_proxy,
       PrefService* pref_service,
       std::unique_ptr<EnterprisePolicyDelegate> enterprise_policy_delegate);
 
@@ -75,7 +78,7 @@ class SearchTagRegistry : public EnterprisePolicyDelegate::Observer {
       bool is_enterprise_managed) override;
 
   base::ObserverList<Observer> observer_list_;
-  mojo::Remote<local_search_service::mojom::Index> index_remote_;
+  mojo::Remote<::chromeos::local_search_service::mojom::Index> index_remote_;
   std::map<std::string, const SearchConcept*> result_id_to_search_concept_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<EnterprisePolicyDelegate> enterprise_policy_delegate_;

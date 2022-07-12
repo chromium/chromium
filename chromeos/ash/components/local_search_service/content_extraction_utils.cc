@@ -19,11 +19,11 @@
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 namespace {
-
-using ::chromeos::string_matching::TokenizedString;
+using chromeos::string_matching::TokenizedString;
 
 std::unique_ptr<icu::Transliterator> CreateDiacriticRemover() {
   UErrorCode status = U_ZERO_ERROR;
@@ -182,5 +182,5 @@ std::u16string Normalizer(const std::u16string& word, bool remove_hyphen) {
 
   return base::i18n::UnicodeStringToString16(source);
 }
-
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos

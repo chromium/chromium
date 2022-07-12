@@ -353,9 +353,9 @@ auto RunTtsService(
 }
 
 auto RunLocalSearchService(
-    mojo::PendingReceiver<ash::local_search_service::mojom::LocalSearchService>
-        receiver) {
-  return std::make_unique<ash::local_search_service::LocalSearchService>(
+    mojo::PendingReceiver<
+        chromeos::local_search_service::mojom::LocalSearchService> receiver) {
+  return std::make_unique<chromeos::local_search_service::LocalSearchService>(
       std::move(receiver));
 }
 

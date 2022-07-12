@@ -14,7 +14,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 class SearchMetricsReporterTest : public testing::Test {
  public:
@@ -133,4 +134,5 @@ TEST_F(SearchMetricsReporterTest, IgnoreDailyEventClockChanged) {
                                        0);
 }
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos

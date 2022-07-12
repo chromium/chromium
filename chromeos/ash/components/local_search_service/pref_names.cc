@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/local_search_service/pref_names.h"
 
-namespace ash::local_search_service::prefs {
+namespace chromeos {
+namespace local_search_service {
+namespace prefs {
 
 // TODO(thanhdng): clean this up after LSS is sandboxed.
 const char kLocalSearchServiceSyncMetricsDailySample[] =
@@ -25,4 +27,6 @@ const char kLocalSearchServiceMetricsHelpAppLauncherCount[] =
 const char kLocalSearchServiceMetricsPersonalizationCount[] =
     "local_search_service.metrics.personalization_count";
 
-}  // namespace ash::local_search_service::prefs
+}  // namespace prefs
+}  // namespace local_search_service
+}  // namespace chromeos

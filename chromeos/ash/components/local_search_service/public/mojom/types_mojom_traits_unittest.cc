@@ -9,7 +9,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::local_search_service {
+namespace chromeos {
+namespace local_search_service {
 
 TEST(LocalSearchMojomTraitsTest, ContentTraits) {
   Content input("id", u"content", 0.3);
@@ -103,4 +104,5 @@ TEST(LocalSearchMojomTraitsTest, ResultTraits) {
   EXPECT_EQ(input.positions[1].length, output.positions[1].length);
 }
 
-}  // namespace ash::local_search_service
+}  // namespace local_search_service
+}  // namespace chromeos
