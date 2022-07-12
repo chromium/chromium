@@ -596,6 +596,11 @@ public class TabSwitcherLayout extends Layout {
         mPerfListenerForTesting = perfListener;
     }
 
+    @VisibleForTesting
+    public TabSwitcher getTabSwitcherForTesting() {
+        return mTabSwitcher;
+    }
+
     private void reportAnimationPerf(boolean isShrinking) {
         int frameRendered = mFrameCount - mStartFrame;
         long elapsedMs = SystemClock.elapsedRealtime() - mStartTime;

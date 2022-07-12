@@ -40,6 +40,19 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 /** StartSurfaceDelegate. */
 public class StartSurfaceDelegate {
     /**
+     * Create the {@link StartSurfaceHomeLayout}.
+     * @param context The current Android's context.
+     * @param updateHost The parent {@link LayoutUpdateHost}.
+     * @param renderHost The parent {@link LayoutRenderHost}.
+     * @param startSurface The {@link StartSurface} the layout should own.
+     * @return The {@link StartSurfaceHomeLayout}.
+     */
+    public static Layout createStartSurfaceHomeLayout(Context context, LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost, StartSurface startSurface) {
+        return new StartSurfaceHomeLayout(context, updateHost, renderHost, startSurface);
+    }
+
+    /**
      * Create the {@link TabSwitcherAndStartSurfaceLayout}.
      * @param context The current Android's context.
      * @param updateHost The parent {@link LayoutUpdateHost}.

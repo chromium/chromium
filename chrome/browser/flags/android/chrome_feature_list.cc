@@ -304,6 +304,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTrustedWebActivityQualityEnforcementWarning,
     &kShowExtendedPreloadingSetting,
     &kStartSurfaceAndroid,
+    &kStartSurfaceRefactor,
     &kUmaBackgroundSessions,
     &kUpdateHistoryEntryPointsInIncognito,
     &kUpdateNotificationScheduleServiceImmediateShowOption,
@@ -870,6 +871,9 @@ const base::Feature kFeedPositionAndroid{"FeedPositionAndroid",
 
 const base::Feature kSearchResumptionModuleAndroid{
     "SearchResumptionModuleAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kStartSurfaceRefactor{"StartSurfaceRefactor",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.
 const base::Feature kUmaBackgroundSessions{"UMABackgroundSessions",

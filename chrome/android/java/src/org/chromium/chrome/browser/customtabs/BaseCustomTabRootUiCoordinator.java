@@ -135,7 +135,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 profileSupplier, bookmarkBridgeSupplier, tabBookmarkerSupplier,
                 contextualSearchManagerSupplier, tabModelSelectorSupplier,
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(), () -> null,
+                new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(), () -> null,
                 browserControlsManager, windowAndroid, new DummyJankTracker(),
                 activityLifecycleDispatcher, layoutManagerSupplier, menuOrKeyboardActionController,
                 activityThemeColorSupplier, modalDialogManagerSupplier, appMenuBlocker,

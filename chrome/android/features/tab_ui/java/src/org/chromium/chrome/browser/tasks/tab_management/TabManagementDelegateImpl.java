@@ -13,10 +13,14 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.SysUtils;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
+import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -42,6 +46,14 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * Impl class that will resolve components for tab management.
  */
 public class TabManagementDelegateImpl implements TabManagementDelegate {
+    @Override
+    public Layout createTabSwitcherLayout(Context context, LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost, TabSwitcher tabSwitcher, JankTracker jankTracker,
+            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
+        return new TabSwitcherLayout(context, updateHost, renderHost, tabSwitcher, jankTracker,
+                tabSwitcherScrimAnchor, scrimCoordinator);
+    }
+
     @Override
     public TabSwitcher createGridTabSwitcher(@NonNull Activity activity,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
