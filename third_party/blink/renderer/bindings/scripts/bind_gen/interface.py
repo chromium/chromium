@@ -6754,6 +6754,46 @@ def make_cross_component_init(
 
 
 # ----------------------------------------------------------------------------
+# IsExposed
+# ----------------------------------------------------------------------------
+
+
+def make_is_exposed(cg_context, function_name):
+    assert isinstance(cg_context, CodeGenContext)
+    assert function_name == "IsExposed"
+    class_like = cg_context.class_like
+
+    is_exposed_decl = CxxFuncDeclNode(name=function_name,
+                                      arg_decls=["ExecutionContext*"],
+                                      return_type="bool",
+                                      static=True)
+    is_exposed_decl.accumulate(
+        CodeGenAccumulator.require_class_decls(["ExecutionContext"]))
+
+    is_exposed_def = CxxFuncDefNode(
+        name=function_name,
+        arg_decls=["ExecutionContext* execution_context"],
+        return_type="bool",
+        class_name=cg_context.class_name)
+    is_exposed_def.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/core/execution_context/execution_context.h"
+        ]))
+    is_exposed_def.body.add_template_vars(
+        {"execution_context": "execution_context"})
+    bind_installer_local_vars(is_exposed_def.body, cg_context)
+    # If [Exposed] exists at all, then this exposure condition should be valid.
+    # Otherwise, it is not an exposed interface at all.
+    if class_like.exposure.global_names_and_features:
+        is_exposed_def.body.append(
+            FormatNode("return {};",
+                       expr_from_exposure(class_like.exposure).to_text()))
+    else:
+        is_exposed_def.body.append(TextNode("return false;"))
+    return (is_exposed_decl, is_exposed_def)
+
+
+# ----------------------------------------------------------------------------
 # WrapperTypeInfo
 # ----------------------------------------------------------------------------
 
@@ -7479,6 +7519,10 @@ def generate_class_like(class_like):
          has_context_dependent_props=bool(
              install_context_dependent_props_decl))
 
+    # Exposure
+    (is_exposed_decl,
+     is_exposed_def) = make_is_exposed(cg_context, "IsExposed")
+
     # Cross-component trampolines
     if is_cross_components:
         (cross_component_init_decl, cross_component_init_def,
@@ -7609,6 +7653,15 @@ def generate_class_like(class_like):
             constants_def,
             EmptyNode(),
         ])
+
+    api_class_def.public_section.extend([
+        is_exposed_decl,
+        EmptyNode(),
+    ])
+    api_source_blink_ns.body.extend([
+        is_exposed_def,
+        EmptyNode(),
+    ])
 
     api_class_def.public_section.append(get_wrapper_type_info_def)
     api_class_def.public_section.append(EmptyNode())

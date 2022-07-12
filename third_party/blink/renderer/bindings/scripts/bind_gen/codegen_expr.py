@@ -270,8 +270,19 @@ def expr_from_exposure(exposure,
                 or matched_global_count > 0)
     else:
         for entry in exposure.global_names_and_features:
-            pred_term = _Expr("${{execution_context}}->{}()".format(
-                GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST[entry.global_name]))
+            try:
+                execution_context_check = GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST[
+                    entry.global_name]
+            except KeyError:
+                # We don't currently have a general way of checking the exposure
+                # of [TargetOfExposed] exposure. If this is actually a global,
+                # add it to GLOBAL_NAME_TO_EXECUTION_CONTEXT_CHECK.
+                return _Expr(
+                    "(NOTREACHED() << \"{} exposure test is not supported at runtime\", false)"
+                    .format(entry.global_name))
+
+            pred_term = _Expr(
+                "${{execution_context}}->{}()".format(execution_context_check))
             if not entry.feature:
                 uncond_exposed_terms.append(pred_term)
             else:
@@ -314,6 +325,8 @@ def expr_from_exposure(exposure,
             top_level_terms.append(expr_or(cond_exposed_terms))
         if feature_enabled_terms:
             top_level_terms.append(expr_and(feature_enabled_terms))
+        if context_enabled_terms:
+            top_level_terms.append(expr_or(context_enabled_terms))
         return expr_and(top_level_terms)
 
     all_enabled_terms = [_Expr("${feature_selector}.IsAll()")]
