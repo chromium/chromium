@@ -1691,6 +1691,11 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
         insertionAgent);
   }
+
+  if (NewTabPageTabHelper::FromWebState(webState)) {
+    NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
+        self.viewController);
+  }
 }
 
 // Uninstalls delegates for `webState`.
@@ -1723,6 +1728,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   if (CaptivePortalTabHelper::FromWebState(webState)) {
     CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
         nil);
+  }
+
+  if (NewTabPageTabHelper::FromWebState(webState)) {
+    NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
   }
 }
 
