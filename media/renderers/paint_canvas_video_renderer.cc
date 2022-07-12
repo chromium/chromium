@@ -792,11 +792,13 @@ class VideoTextureBacking : public cc::TextureBacking {
       sk_sp<SkImage> sk_image,
       const gpu::Mailbox& mailbox,
       bool wraps_video_frame_texture,
-      scoped_refptr<viz::RasterContextProvider> raster_context_provider)
+      scoped_refptr<viz::RasterContextProvider> raster_context_provider,
+      std::unique_ptr<ScopedSharedImageAccess> access)
       : sk_image_(std::move(sk_image)),
         sk_image_info_(sk_image_->imageInfo()),
         mailbox_(mailbox),
-        wraps_video_frame_texture_(wraps_video_frame_texture) {
+        wraps_video_frame_texture_(wraps_video_frame_texture),
+        access_(std::move(access)) {
     DCHECK(sk_image_->isTextureBacked());
     raster_context_provider_ = std::move(raster_context_provider);
   }
@@ -832,12 +834,21 @@ class VideoTextureBacking : public cc::TextureBacking {
   }
 
   // Used only for recycling this TextureBacking - where we need to keep the
-  // texture/mailbox alive, but replace the SkImage.
-  void ReplaceAcceleratedSkImage(sk_sp<SkImage> sk_image) {
+  // texture/mailbox alive, but replace the SkImage. |access| is the access to
+  // the SharedImage backing this SkImage.
+  void ReplaceAcceleratedSkImage(
+      sk_sp<SkImage> sk_image,
+      std::unique_ptr<ScopedSharedImageAccess> access) {
     DCHECK(sk_image->isTextureBacked());
     sk_image_ = sk_image;
     sk_image_info_ = sk_image->imageInfo();
+
+    // The client should have called clear_access() before invoking this method.
+    DCHECK(!access_);
+    access_ = std::move(access);
   }
+
+  void clear_access() { access_.reset(); }
 
   sk_sp<SkImage> GetSkImageViaReadback() override {
     sk_sp<SkData> image_pixels =
@@ -865,7 +876,6 @@ class VideoTextureBacking : public cc::TextureBacking {
         DLOG(ERROR) << "Failed to getGLTextureInfo for VideoTextureBacking.";
         return false;
       }
-      ScopedSharedImageAccess scoped_access(ri, texture_info.fID, mailbox_);
       return sk_image_->readPixels(dst_info, dst_pixels, dst_row_bytes, src_x,
                                    src_y);
     }
@@ -894,6 +904,8 @@ class VideoTextureBacking : public cc::TextureBacking {
   // Whether |mailbox_| directly points to a texture of the VideoFrame
   // (if true), or to an allocated shared image (if false).
   const bool wraps_video_frame_texture_;
+
+  std::unique_ptr<ScopedSharedImageAccess> access_;
 };
 
 PaintCanvasVideoRenderer::PaintCanvasVideoRenderer()
@@ -961,14 +973,6 @@ void PaintCanvasVideoRenderer::Paint(
   DCHECK(cache_);
   cc::PaintImage image = cache_->paint_image;
   DCHECK(image);
-
-  absl::optional<ScopedSharedImageAccess> source_access;
-  if (video_frame->HasTextures() && cache_->source_texture) {
-    DCHECK(cache_->texture_backing);
-    source_access.emplace(raster_context_provider->RasterInterface(),
-                          cache_->source_texture,
-                          cache_->texture_backing->GetMailbox());
-  }
 
   cc::PaintFlags video_flags;
   video_flags.setAlpha(flags.getAlpha());
@@ -1067,7 +1071,6 @@ void PaintCanvasVideoRenderer::Paint(
   canvas->flush();
 
   if (video_frame->HasTextures()) {
-    source_access.reset();
     // Synchronize |video_frame| with the read operations in UpdateLastImage(),
     // which are triggered by canvas->flush().
     SynchronizeVideoFrameRead(std::move(video_frame),
@@ -1859,6 +1862,12 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         // We can reuse the shared image from the previous cache.
         cache_->frame_id = video_frame->unique_id();
         mailbox = cache_->texture_backing->GetMailbox();
+
+        // NOTE: It is necessary to let go of read access to the cached copy
+        // here because the below copy operation takes readwrite access to that
+        // cached copy, and requesting RW access while already holding R access
+        // on a single service-side texture causes a DCHECK to fire.
+        cache_->texture_backing->clear_access();
       } else {
         cache_.emplace(video_frame->unique_id());
         auto* sii = raster_context_provider->SharedImageInterface();
@@ -1915,10 +1924,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     if (!supports_oop_raster) {
       cache_->source_texture = ri->CreateAndConsumeForGpuRaster(mailbox);
 
-      // TODO(nazabris): Handle scoped access correctly. This follows the
-      // current pattern but is most likely bugged. Access should last for
-      // the lifetime of the SkImage.
-      ScopedSharedImageAccess access(ri, cache_->source_texture, mailbox);
+      auto access = std::make_unique<ScopedSharedImageAccess>(
+          ri, cache_->source_texture, mailbox);
       auto source_image = WrapGLTexture(
           wraps_video_frame_texture
               ? video_frame->mailbox_holder(0).texture_target
@@ -1933,10 +1940,10 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       if (!cache_->texture_backing) {
         cache_->texture_backing = sk_make_sp<VideoTextureBacking>(
             std::move(source_image), mailbox, wraps_video_frame_texture,
-            raster_context_provider);
+            raster_context_provider, std::move(access));
       } else {
         cache_->texture_backing->ReplaceAcceleratedSkImage(
-            std::move(source_image));
+            std::move(source_image), std::move(access));
       }
     } else if (!cache_->texture_backing) {
       SkImageInfo sk_image_info =
