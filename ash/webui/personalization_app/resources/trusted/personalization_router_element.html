@@ -15,7 +15,10 @@
     position: sticky;
     top: 0;
     width: 100%;
-    z-index: 1;
+    /* z-index for breadcrumb should be higher than other elements 
+    (such as preview-image-border) so that it won't be overlapped 
+    during scrolling in hub subpages */
+    z-index: 3;
   }
   personalization-breadcrumb {
     grid-area: breadcrumb;
