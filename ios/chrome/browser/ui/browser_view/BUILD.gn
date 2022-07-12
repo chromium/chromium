@@ -11,8 +11,6 @@ source_set("browser_view") {
     "browser_view_controller+private.h",
     "browser_view_controller.h",
     "browser_view_controller.mm",
-    "browser_view_controller_helper.h",
-    "browser_view_controller_helper.mm",
     "common_tab_helper_delegate.h",
     "key_commands_provider.h",
     "key_commands_provider.mm",
@@ -231,7 +229,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_coordinator_unittest.mm",
-    "browser_view_controller_helper_unittest.mm",
     "browser_view_controller_unittest.mm",
     "key_commands_provider_unittest.mm",
   ]

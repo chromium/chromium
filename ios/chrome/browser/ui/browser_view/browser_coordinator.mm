@@ -54,7 +54,6 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -525,14 +524,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 - (void)createViewController {
   DCHECK(self.browserContainerCoordinator.viewController);
 
-  BrowserViewControllerHelper* browserViewControllerHelper =
-      [[BrowserViewControllerHelper alloc] init];
-
   _viewController = [[BrowserViewController alloc]
                      initWithBrowser:self.browser
       browserContainerViewController:self.browserContainerCoordinator
                                          .viewController
-         browserViewControllerHelper:browserViewControllerHelper
                           dispatcher:self.dispatcher
                  keyCommandsProvider:_keyCommandsProvider
                         dependencies:_viewControllerDependencies];

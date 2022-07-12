@@ -14,6 +14,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
@@ -21,6 +22,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -47,7 +49,6 @@
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -133,6 +134,7 @@
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
@@ -165,6 +167,17 @@ enum HeaderBehaviour {
 // Snackbar category for browser view controller.
 NSString* const kBrowserViewControllerSnackbarCategory =
     @"BrowserViewControllerSnackbarCategory";
+
+bookmarks::BookmarkModel* GetBookmarkModelForWebState(
+    web::WebState* web_state) {
+  if (!web_state)
+    return nullptr;
+  web::BrowserState* browser_state = web_state->GetBrowserState();
+  if (!browser_state)
+    return nullptr;
+  return ios::BookmarkModelFactory::GetForBrowserState(
+      ChromeBrowserState::FromBrowserState(browser_state));
+}
 
 }  // namespace
 
@@ -245,10 +258,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      WebStateListObserving> {
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
-
-  // Helper for the bvc.
-  // TODO(crbug.com/1329102): Remove this property.
-  BrowserViewControllerHelper* _browserViewControllerHelper;
 
   // Controller for edge swipe gestures for page and tab navigation.
   SideSwipeController* _sideSwipeController;
@@ -472,8 +481,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (instancetype)initWithBrowser:(Browser*)browser
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
-       browserViewControllerHelper:
-           (BrowserViewControllerHelper*)browserViewControllerHelper
                         dispatcher:(CommandDispatcher*)dispatcher
                keyCommandsProvider:(KeyCommandsProvider*)keyCommandsProvider
                       dependencies:
@@ -483,7 +490,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     DCHECK(browser);
 
     _browserContainerViewController = browserContainerViewController;
-    _browserViewControllerHelper = browserViewControllerHelper;
     _commandDispatcher = dispatcher;
     _keyCommandsProvider = keyCommandsProvider;
     // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
@@ -1229,7 +1235,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.secondaryToolbarCoordinator stop];
     self.secondaryToolbarCoordinator = nil;
     _toolbarUIState = nil;
-    _browserViewControllerHelper = nil;
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
       [self.tabStripCoordinator stop];
       self.tabStripCoordinator = nil;
@@ -2085,7 +2090,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)updateToolbar {
   // If the BVC has been partially torn down for low memory, wait for the
   // view rebuild to handle toolbar updates.
-  if (!(_browserViewControllerHelper && self.browserState))
+  if (!self.browserState)
     return;
 
   web::WebState* webState = self.currentWebState;
@@ -2095,10 +2100,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
   BOOL isPrerendered =
       (_prerenderService && _prerenderService->IsLoadingPrerender());
-  // TODO(crbug.com/1329102): Change -isToolbarLoading method to a free
-  // function.
-  if (isPrerendered &&
-      ![_browserViewControllerHelper isToolbarLoading:self.currentWebState])
+
+  // Please note, this notion of isLoading is slightly different from WebState's
+  // IsLoading().
+  BOOL isToolbarLoading =
+      self.currentWebState && self.currentWebState->IsLoading() &&
+      !self.currentWebState->GetLastCommittedURL().SchemeIs(kChromeUIScheme);
+
+  if (isPrerendered && isToolbarLoading)
     [self.primaryToolbarCoordinator showPrerenderingAnimation];
 
   [self.dispatcher showFindUIIfActive];
@@ -3264,10 +3273,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)bookmarkCurrentPage {
   GURL URL = self.currentWebState->GetLastCommittedURL();
-  // TODO(crbug.com/1329102): Change -isWebStateBookmarkedByUser method to a
-  // free function.
-  BOOL alreadyBookmarked = [_browserViewControllerHelper
-      isWebStateBookmarkedByUser:self.currentWebState];
+
+  bookmarks::BookmarkModel* bookmarkModel =
+      GetBookmarkModelForWebState(self.currentWebState);
+  BOOL alreadyBookmarked =
+      bookmarkModel && bookmarkModel->GetMostRecentlyAddedUserNodeForURL(
+                           self.currentWebState->GetLastCommittedURL());
 
   if (alreadyBookmarked) {
     [_bookmarkInteractionController presentBookmarkEditorForURL:URL];

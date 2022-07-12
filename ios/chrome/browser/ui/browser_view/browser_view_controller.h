@@ -28,7 +28,6 @@
 class Browser;
 @class BookmarkInteractionController;
 @class BrowserContainerViewController;
-@class BrowserViewControllerHelper;
 @class BubblePresenter;
 @class CommandDispatcher;
 @protocol CRWResponderInputView;
@@ -103,8 +102,6 @@ typedef struct {
 - (instancetype)initWithBrowser:(Browser*)browser
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
-       browserViewControllerHelper:
-           (BrowserViewControllerHelper*)browserViewControllerHelper
                         dispatcher:(CommandDispatcher*)dispatcher
                keyCommandsProvider:(KeyCommandsProvider*)keyCommandsProvider
                       dependencies:

@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
@@ -194,7 +193,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         std::make_unique<FakeClipboardRecentContent>());
 
     container_ = [[BrowserContainerViewController alloc] init];
-    bvc_helper_ = [[BrowserViewControllerHelper alloc] init];
     key_commands_provider_ =
         [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
 
@@ -253,7 +251,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
-                              browserViewControllerHelper:bvc_helper_
                                                dispatcher:dispatcher
                                       keyCommandsProvider:key_commands_provider_
                                              dependencies:dependencies];
@@ -284,7 +281,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<PrerenderService> fake_prerender_service_;
-  BrowserViewControllerHelper* bvc_helper_;
   KeyCommandsProvider* key_commands_provider_;
   PKAddPassesViewController* passKitViewController_;
   OCMockObject* dependencyFactory_;
