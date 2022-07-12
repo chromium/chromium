@@ -113,9 +113,6 @@ class WaylandWindowManager {
   gfx::AcceleratedWidget AllocateAcceleratedWidget();
 
  private:
-  WaylandWindow* pointer_focused_window_ = nullptr;
-  WaylandWindow* keyboard_focused_window_ = nullptr;
-
   const raw_ptr<WaylandConnection> connection_;
 
   base::ObserverList<WaylandWindowObserver> observers_;

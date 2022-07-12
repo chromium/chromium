@@ -565,7 +565,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   EXPECT_EQ(widget_at_screen_point, gfx::kNullAcceleratedWidget);
 
   // Set a focus to the main window. Now, that focused window must be returned.
-  SetPointerFocusedWindow(window_.get());
+  window_->SetPointerFocus(true);
   widget_at_screen_point =
       platform_screen_->GetAcceleratedWidgetAtScreenPoint(gfx::Point(10, 10));
   EXPECT_EQ(widget_at_screen_point, window_->GetWidget());
@@ -590,8 +590,8 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
 
   // Imagine the mouse enters a menu window, which is located on top of the main
   // window, and gathers focus.
-  SetPointerFocusedWindow(menu_window.get());
-
+  window_->SetPointerFocus(false);
+  menu_window->SetPointerFocus(true);
   widget_at_screen_point = platform_screen_->GetAcceleratedWidgetAtScreenPoint(
       gfx::Point(menu_window->GetBoundsInPixels().x() + 1,
                  menu_window->GetBoundsInPixels().y() + 1));
@@ -599,14 +599,15 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
 
   // Whenever a mouse pointer leaves the menu window, the accelerated widget
   // of that focused window must be returned.
-  SetPointerFocusedWindow(window_.get());
+  window_->SetPointerFocus(true);
+  menu_window->SetPointerFocus(false);
   widget_at_screen_point =
       platform_screen_->GetAcceleratedWidgetAtScreenPoint(gfx::Point(0, 0));
   EXPECT_EQ(widget_at_screen_point, window_->GetWidget());
 
   // Reset the focus to avoid crash on dtor as long as there is no real pointer
   // object.
-  SetPointerFocusedWindow(nullptr);
+  window_->SetPointerFocus(false);
 
   // Part 2: test that the window is found when display's scale changes.
   // Update scale.
@@ -619,7 +620,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   // Translate the point to dip.
   auto point_in_screen =
       gfx::ScaleToRoundedPoint(menu_bounds_px.origin(), 1.f / 2);
-  SetPointerFocusedWindow(menu_window.get());
+  menu_window->SetPointerFocus(true);
   widget_at_screen_point =
       platform_screen_->GetAcceleratedWidgetAtScreenPoint(point_in_screen);
   EXPECT_EQ(widget_at_screen_point, menu_window->GetWidget());
@@ -631,7 +632,7 @@ TEST_P(WaylandScreenTest, GetLocalProcessWidgetAtPoint) {
             gfx::kNullAcceleratedWidget);
 
   // Set a focus to the main window. Now, that focused window must be returned.
-  SetPointerFocusedWindow(window_.get());
+  window_->SetPointerFocus(true);
   EXPECT_EQ(platform_screen_->GetLocalProcessWidgetAtPoint(point, {}),
             window_->GetWidget());
 
@@ -641,6 +642,10 @@ TEST_P(WaylandScreenTest, GetLocalProcessWidgetAtPoint) {
   EXPECT_EQ(
       platform_screen_->GetLocalProcessWidgetAtPoint(point, {w - 1, w, w + 1}),
       gfx::kNullAcceleratedWidget);
+
+  // Reset the focus to avoid crash on dtor as long as there is no real pointer
+  // object.
+  window_->SetPointerFocus(false);
 }
 
 TEST_P(WaylandScreenTest, GetDisplayMatching) {
