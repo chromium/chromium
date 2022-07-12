@@ -45,6 +45,7 @@ class Callback {
 
   static std::string GetUid() { return uid_; }
   static void ResetUid() { uid_ = ""; }
+  static void ResetTaskRunner() { task_runner_ = nullptr; }
 
  private:
   static TaskRunner* task_runner_;
@@ -87,6 +88,7 @@ class EcheUidProviderTest : public testing::Test {
   void TearDown() override {
     uid_provider_.reset();
     Callback::ResetUid();
+    Callback::ResetTaskRunner();
   }
   void ResetPrefString(const std::string& path, const std::string& value) {
     pref_service_.SetString(path, value);
@@ -154,14 +156,12 @@ TEST_F(EcheUidProviderTest, BindPendingReceiverCanGetUid) {
 
 TEST_F(EcheUidProviderTest, GetBinaryWhenSeedSizeCorrect) {
   GetUid();
-  ResetUidProvider();
 
   EXPECT_NE(DecodeStringWithSeed(kSeedSizeInByte), absl::nullopt);
 }
 
 TEST_F(EcheUidProviderTest, GetNulloptWhenSeedSizeIncorrect) {
   GetUid();
-  ResetUidProvider();
 
   EXPECT_EQ(DecodeStringWithSeed(kSeedSizeInByte - 1), absl::nullopt);
 }
