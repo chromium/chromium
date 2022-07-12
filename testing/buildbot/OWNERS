@@ -15,6 +15,9 @@ machenbach@chromium.org
 rmhasan@google.com
 per-file chromium.android.*=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 
+# For Android related reviews
+per-file chromium.android.*=zhiyuans@google.com
+
 # For Lacros version skew tests related reviews
 per-file chromium.chromiumos.json=svenzheng@chromium.org
 per-file chromium.fyi.json=svenzheng@chromium.org
