@@ -72,7 +72,6 @@ class SuggestionChipAnimator : public ElementAnimator {
         layer()->GetAnimator(), CreateAnimateInAnimation(), observer,
         base::BindRepeating<void(const std::string&, int)>(
             base::UmaHistogramPercentage, kAssistantSuggestionChipHistogram));
-    ElementAnimator::view()->SetVisible(true);
   }
 
   void AnimateOut(ui::CallbackLayerAnimationObserver* observer) override {
@@ -80,7 +79,6 @@ class SuggestionChipAnimator : public ElementAnimator {
         layer()->GetAnimator(), CreateAnimateOutAnimation(), observer,
         base::BindRepeating<void(const std::string&, int)>(
             base::UmaHistogramPercentage, kAssistantSuggestionChipHistogram));
-    ElementAnimator::view()->SetVisible(false);
   }
 
   void FadeOut(ui::CallbackLayerAnimationObserver* observer) override {

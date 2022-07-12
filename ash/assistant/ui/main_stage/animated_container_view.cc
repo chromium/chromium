@@ -125,8 +125,11 @@ void AnimatedContainerView::RemoveAllViews() {
   // their views immediately and we want to ensure that any animation observers
   // will be notified of an abort, not an animation completion.  Otherwise there
   // is potential to enter into a bad state (see crbug/952996).
-  for (const auto& animator : animators_)
+  for (const auto& animator : animators_) {
     animator->AbortAnimation();
+    // TODO(b/237704325): Fix ChromeVox focusing on removed chip views
+    animator->view()->SetVisible(false);
+  }
 
   animators_.clear();
 
