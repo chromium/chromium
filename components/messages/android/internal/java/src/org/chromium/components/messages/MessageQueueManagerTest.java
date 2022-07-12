@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Build;
-import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
@@ -37,8 +36,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
-import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -77,10 +76,9 @@ public class MessageQueueManagerTest {
 
     private static class ActiveMockWebContents extends MockWebContents {
         @Override
-        public ViewAndroidDelegate getViewAndroidDelegate() {
-            ViewGroup view = Mockito.mock(ViewGroup.class);
-            when(view.getVisibility()).thenReturn(ViewGroup.VISIBLE);
-            return ViewAndroidDelegate.createBasicDelegate(view);
+        public RenderFrameHost getFocusedFrame() {
+            RenderFrameHost host = Mockito.mock(RenderFrameHost.class);
+            return host;
         }
     }
 

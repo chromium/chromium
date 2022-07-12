@@ -4,17 +4,13 @@
 
 package org.chromium.components.messages;
 
-import android.view.View;
-
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.url.GURL;
@@ -84,18 +80,10 @@ class ScopeChangeController {
             super(scopeKey.webContents);
             mDelegate = delegate;
             mScopeKey = scopeKey;
-            int changeType = ChangeType.INACTIVE;
             WebContents webContents = scopeKey.webContents;
-            if (webContents != null && webContents.getViewAndroidDelegate() != null
-                    && webContents.getVisibility() == Visibility.VISIBLE) {
-                ViewAndroidDelegate viewAndroidDelegate = webContents.getViewAndroidDelegate();
-                if (viewAndroidDelegate.getContainerView() != null
-                        && viewAndroidDelegate.getContainerView().getVisibility() == View.VISIBLE) {
-                    changeType = ChangeType.ACTIVE;
-                } else {
-                    changeType = ChangeType.INACTIVE;
-                }
-            }
+            int changeType = webContents != null && webContents.getFocusedFrame() != null
+                    ? ChangeType.ACTIVE
+                    : ChangeType.INACTIVE;
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, scopeKey, changeType));
         }
