@@ -426,16 +426,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Sanity check: The profile database should *not* get cleared on signout.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// On Lacros, signout is not supported with Mirror account consistency.
-// TODO(https://crbug.com/1260291): Enable this test once signout is supported.
-#define MAYBE_DoesNotClearProfileDBOnSignout \
-  DISABLED_DoesNotClearProfileDBOnSignout
-#else
-#define MAYBE_DoesNotClearProfileDBOnSignout DoesNotClearProfileDBOnSignout
-#endif
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
-                       MAYBE_DoesNotClearProfileDBOnSignout) {
+                       DoesNotClearProfileDBOnSignout) {
   AddTestPasswordToFakeServer();
 
   // Sign in and enable Sync.
@@ -588,10 +580,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 
-// On Lacros, signout is not supported with Mirror account consistency.
-// TODO(https://crbug.com/1260291): Enable this part of the test once signout is
-// supported.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Clear the primary account to put Sync into transport mode again.
   // Note: Clearing the primary account without also signing out isn't exposed
   // to the user, so this shouldn't happen. Still best to cover it here.
@@ -609,7 +597,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // cleared when Sync gets disabled.
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
-#endif
 }
 
 // Regression test for crbug.com/1076378.
