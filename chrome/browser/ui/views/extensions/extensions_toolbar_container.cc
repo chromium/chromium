@@ -538,7 +538,7 @@ void ExtensionsToolbarContainer::OnToolbarPinnedActionsChanged() {
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void ExtensionsToolbarContainer::UserPermissionsSettingsChanged(
+void ExtensionsToolbarContainer::OnUserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
   UpdateControlsVisibility();
 }

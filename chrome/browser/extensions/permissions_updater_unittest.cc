@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
@@ -14,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -24,17 +24,16 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extension_test_util::LoadManifest;
@@ -63,65 +62,7 @@ scoped_refptr<const Extension> CreateExtensionWithOptionalPermissions(
       .Build();
 }
 
-// A helper class that listens for NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED.
-class PermissionsUpdaterListener : public content::NotificationObserver {
- public:
-  PermissionsUpdaterListener()
-      : received_notification_(false), waiting_(false) {
-    registrar_.Add(this,
-                   extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-                   content::NotificationService::AllSources());
-  }
-
-  void Reset() {
-    received_notification_ = false;
-    waiting_ = false;
-    extension_.reset();
-    permissions_ = NULL;
-  }
-
-  void Wait() {
-    if (received_notification_)
-      return;
-
-    waiting_ = true;
-    base::RunLoop run_loop;
-    run_loop.Run();
-  }
-
-  bool received_notification() const { return received_notification_; }
-  const Extension* extension() const { return extension_.get(); }
-  const PermissionSet* permissions() const { return permissions_.get(); }
-  UpdatedExtensionPermissionsInfo::Reason reason() const { return reason_; }
-
- private:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    received_notification_ = true;
-    UpdatedExtensionPermissionsInfo* info =
-        content::Details<UpdatedExtensionPermissionsInfo>(details).ptr();
-
-    extension_ = info->extension.get();
-    permissions_ = info->permissions.Clone();
-    reason_ = info->reason;
-
-    if (waiting_) {
-      waiting_ = false;
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
-    }
-  }
-
-  bool received_notification_;
-  bool waiting_;
-  content::NotificationRegistrar registrar_;
-  scoped_refptr<const Extension> extension_;
-  std::unique_ptr<const PermissionSet> permissions_;
-  UpdatedExtensionPermissionsInfo::Reason reason_;
-};
-
-class PermissionsUpdaterTest : public ExtensionServiceTestBase {
-};
+class PermissionsUpdaterTest : public ExtensionServiceTestBase {};
 
 void AddPattern(URLPatternSet* extent, const std::string& pattern) {
   int schemes = URLPattern::SCHEME_ALL;
@@ -199,17 +140,17 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
     PermissionSet delta(apis.Clone(), ManifestPermissionSet(), hosts.Clone(),
                         URLPatternSet());
 
-    PermissionsUpdaterListener listener;
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
     PermissionsUpdater(profile_.get())
         .GrantOptionalPermissions(*extension, delta, base::DoNothing());
-
-    listener.Wait();
-
-    // Verify that the permission notification was sent correctly.
-    ASSERT_TRUE(listener.received_notification());
-    ASSERT_EQ(extension.get(), listener.extension());
-    ASSERT_EQ(UpdatedExtensionPermissionsInfo::ADDED, listener.reason());
-    ASSERT_EQ(delta, *listener.permissions());
+    waiter.WaitForExtensionPermissionsUpdate(base::BindOnce(
+        [](scoped_refptr<const Extension> extension, PermissionSet* delta,
+           const UpdatedExtensionPermissionsInfo& info) {
+          ASSERT_EQ(extension.get(), info.extension);
+          ASSERT_EQ(UpdatedExtensionPermissionsInfo::ADDED, info.reason);
+          ASSERT_EQ(*delta, info.permissions);
+        },
+        extension, &delta));
 
     // Make sure the extension's active permissions reflect the change.
     active_permissions = PermissionSet::CreateUnion(default_permissions, delta);
@@ -233,18 +174,19 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
     PermissionSet delta(apis.Clone(), ManifestPermissionSet(), hosts.Clone(),
                         URLPatternSet());
 
-    PermissionsUpdaterListener listener;
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
     PermissionsUpdater(profile_.get())
         .RevokeOptionalPermissions(*extension, delta,
                                    PermissionsUpdater::REMOVE_SOFT,
                                    base::DoNothing());
-    listener.Wait();
-
-    // Verify that the notification was correct.
-    ASSERT_TRUE(listener.received_notification());
-    ASSERT_EQ(extension.get(), listener.extension());
-    ASSERT_EQ(UpdatedExtensionPermissionsInfo::REMOVED, listener.reason());
-    ASSERT_EQ(delta, *listener.permissions());
+    waiter.WaitForExtensionPermissionsUpdate(base::BindOnce(
+        [](scoped_refptr<const Extension> extension, PermissionSet* delta,
+           const UpdatedExtensionPermissionsInfo& info) {
+          ASSERT_EQ(extension.get(), info.extension);
+          ASSERT_EQ(UpdatedExtensionPermissionsInfo::REMOVED, info.reason);
+          ASSERT_EQ(*delta, info.permissions);
+        },
+        extension, &delta));
 
     // Make sure the extension's active permissions reflect the change.
     active_permissions =

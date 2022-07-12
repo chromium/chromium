@@ -17,9 +17,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/extension.h"
@@ -32,16 +31,17 @@ class ImageSkia;
 
 namespace extensions {
 class ExtensionRegistry;
-}
+struct UpdatedExtensionPermissionsInfo;
+}  // namespace extensions
 
 // Model for list of Background Applications associated with a Profile (i.e.
 // extensions with kBackgroundPermission set, or hosted apps with a
 // BackgroundContents).
 class BackgroundApplicationListModel
-    : public content::NotificationObserver,
-      public extensions::ExtensionRegistryObserver,
+    : public extensions::ExtensionRegistryObserver,
       public BackgroundContentsServiceObserver,
-      public extensions::ProcessManagerObserver {
+      public extensions::ProcessManagerObserver,
+      public extensions::PermissionsManager::Observer {
  public:
   // Observer is informed of changes to the model.  Users of the
   // BackgroundApplicationListModel should anticipate that associated data,
@@ -117,9 +117,7 @@ class BackgroundApplicationListModel
     return extensions_.end();
   }
 
-  size_t size() const {
-    return extensions_.size();
-  }
+  size_t size() const { return extensions_.size(); }
 
   // Returns true if all startup notifications have already been issued.
   bool startup_done() const { return startup_done_; }
@@ -144,11 +142,6 @@ class BackgroundApplicationListModel
   // Returns the Application associated with |extension| or NULL.
   Application* FindApplication(const extensions::Extension* extension);
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // extensions::ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
@@ -161,18 +154,16 @@ class BackgroundApplicationListModel
   void OnBackgroundContentsServiceChanged() override;
   void OnBackgroundContentsServiceDestroying() override;
 
+  // extensions::PermissionsManager::Observer:
+  void OnExtensionPermissionsUpdated(
+      const extensions::UpdatedExtensionPermissionsInfo& info) override;
+
   // Intended to be called when extension system is ready.
   void OnExtensionSystemReady();
 
   // Notifies observers that some of the data associated with this background
   // application, e.g. the Icon, has changed.
   void SendApplicationDataChangedNotifications();
-
-  // Invoked by Observe for NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED.
-  void OnExtensionPermissionsUpdated(
-      const extensions::Extension* extension,
-      extensions::UpdatedExtensionPermissionsInfo::Reason reason,
-      const extensions::PermissionSet& permissions);
 
   // Refresh the list of background applications and generate notifications.
   void Update();
@@ -187,7 +178,6 @@ class BackgroundApplicationListModel
   extensions::ExtensionList extensions_;
   base::ObserverList<Observer, true>::Unchecked observers_;
   const raw_ptr<Profile> profile_;
-  content::NotificationRegistrar registrar_;
   bool startup_done_ = false;
 
   // Listens to extension load, unload notifications.
@@ -202,6 +192,10 @@ class BackgroundApplicationListModel
   base::ScopedObservation<extensions::ProcessManager,
                           extensions::ProcessManagerObserver>
       process_manager_observation_{this};
+
+  base::ScopedObservation<extensions::PermissionsManager,
+                          extensions::PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
   base::WeakPtrFactory<BackgroundApplicationListModel> weak_ptr_factory_{this};
 };

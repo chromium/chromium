@@ -12,7 +12,6 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
@@ -61,19 +60,11 @@ class UserHostRestrictionsBrowserTest
   void WithholdExtensionPermissions(const Extension& extension) {
     // Withhold extension host permissions. Wait for the notification to be
     // fired to ensure all renderers and services have been properly updated.
-    auto is_update_for_extension =
-        [&extension](const content::NotificationSource& source,
-                     const content::NotificationDetails& details) {
-          UpdatedExtensionPermissionsInfo* info =
-              content::Details<UpdatedExtensionPermissionsInfo>(details).ptr();
-          return info->extension->id() == extension.id();
-        };
-    content::WindowedNotificationObserver permissions_observer(
-        NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-        base::BindLambdaForTesting(is_update_for_extension));
+    extensions::PermissionsManagerWaiter waiter(
+        extensions::PermissionsManager::Get(profile()));
     ScriptingPermissionsModifier(profile(), &extension)
         .SetWithholdHostPermissions(true);
-    permissions_observer.Wait();
+    waiter.WaitForExtensionPermissionsUpdate();
   }
 
   // Adds `url` as a new user-permitted site and waits for the change to take
@@ -83,8 +74,8 @@ class UserHostRestrictionsBrowserTest
         PermissionsManager::Get(profile());
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->AddUserPermittedSite(url::Origin::Create(url));
-    waiter.WaitForPermissionsChange();
-  };
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -274,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->AddUserRestrictedSite(
         url::Origin::Create(restricted_url));
-    waiter.WaitForPermissionsChange();
+    waiter.WaitForUserPermissionsSettingsChange();
   }
 
   EXPECT_EQ("fetch1 - cat\n", try_fetch_url(allowed_url));
@@ -389,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->RemoveUserPermittedSite(
         url::Origin::Create(allowed_url));
-    waiter.WaitForPermissionsChange();
+    waiter.WaitForUserPermissionsSettingsChange();
   }
 
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld,

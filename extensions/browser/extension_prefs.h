@@ -58,6 +58,7 @@ namespace extensions {
 class AppSorting;
 class EarlyExtensionPrefsObserver;
 class ExtensionPrefsObserver;
+class PermissionSet;
 class URLPatternSet;
 
 // Class for managing global and per-extension preferences.

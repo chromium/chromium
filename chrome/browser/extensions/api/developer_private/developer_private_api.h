@@ -23,8 +23,6 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -72,7 +70,6 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                                     public ExtensionAllowlist::Observer,
                                     public ExtensionManagement::Observer,
                                     public WarningService::Observer,
-                                    public content::NotificationObserver,
                                     public PermissionsManager::Observer {
  public:
   explicit DeveloperPrivateEventRouter(Profile* profile);
@@ -142,14 +139,11 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   void ExtensionWarningsChanged(
       const ExtensionIdSet& affected_extensions) override;
 
-  // content::NotificationObserver:
-  void Observe(int notification_type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // PermissionsManager::Observer:
-  void UserPermissionsSettingsChanged(
+  void OnUserPermissionsSettingsChanged(
       const PermissionsManager::UserPermissionsSettings& settings) override;
+  void OnExtensionPermissionsUpdated(
+      const UpdatedExtensionPermissionsInfo& info) override;
 
   // Handles a profile preference change.
   void OnProfilePrefChanged();
@@ -198,8 +192,6 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  content::NotificationRegistrar notification_registrar_;
-
   base::WeakPtrFactory<DeveloperPrivateEventRouter> weak_factory_{this};
 };
 
@@ -210,7 +202,7 @@ class DeveloperPrivateAPI : public BrowserContextKeyedAPI,
   using UnpackedRetryId = std::string;
 
   static BrowserContextKeyedAPIFactory<DeveloperPrivateAPI>*
-      GetFactoryInstance();
+  GetFactoryInstance();
 
   static std::unique_ptr<api::developer_private::ProfileInfo> CreateProfileInfo(
       Profile* profile);
@@ -641,7 +633,6 @@ class DeveloperPrivateChoosePathFunction
 class DeveloperPrivatePackDirectoryFunction
     : public DeveloperPrivateAPIFunction,
       public PackExtensionJob::Client {
-
  public:
   DECLARE_EXTENSION_FUNCTION("developerPrivate.packDirectory",
                              DEVELOPERPRIVATE_PACKDIRECTORY)

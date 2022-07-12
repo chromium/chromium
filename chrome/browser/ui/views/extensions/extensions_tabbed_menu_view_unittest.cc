@@ -20,9 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/url_formatter/url_formatter.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
@@ -289,11 +287,10 @@ void ExtensionsTabbedMenuViewUnitTest::ClickContextMenuButton(
 void ExtensionsTabbedMenuViewUnitTest::SelectSiteAccessInCombobox(
     SiteAccessMenuItemView* site_access_item,
     int index) {
-  content::WindowedNotificationObserver permissions_observer(
-      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::NotificationService::AllSources());
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(profile()));
   site_access_item->site_access_combobox_for_testing()->SetSelectedRow(index);
-  permissions_observer.Wait();
+  waiter.WaitForExtensionPermissionsUpdate();
   LayoutMenuIfNecessary();
 }
 
@@ -307,7 +304,7 @@ void ExtensionsTabbedMenuViewUnitTest::SelectSiteSetting(int index) {
                                gfx::PointF(), ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
   site_setting->NotifyClick(release_event);
-  manager_waiter.WaitForPermissionsChange();
+  manager_waiter.WaitForUserPermissionsSettingsChange();
   LayoutMenuIfNecessary();
 }
 
@@ -852,12 +849,11 @@ TEST_F(
 
   // Change extension's site access to run "on site" using the context menu.
   {
-    content::WindowedNotificationObserver permissions_observer(
-        extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-        content::NotificationService::AllSources());
+    extensions::PermissionsManagerWaiter waiter(
+        extensions::PermissionsManager::Get(profile()));
     menu.ExecuteCommand(
         extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE, 0);
-    permissions_observer.Wait();
+    waiter.WaitForExtensionPermissionsUpdate();
     LayoutMenuIfNecessary();
   }
 
@@ -871,12 +867,11 @@ TEST_F(
 
   // Change extension's site access to run "on click" using the context menu.
   {
-    content::WindowedNotificationObserver permissions_observer(
-        extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-        content::NotificationService::AllSources());
+    extensions::PermissionsManagerWaiter waiter(
+        extensions::PermissionsManager::Get(profile()));
     menu.ExecuteCommand(
         extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_CLICK, 0);
-    permissions_observer.Wait();
+    waiter.WaitForExtensionPermissionsUpdate();
     LayoutMenuIfNecessary();
   }
 
@@ -915,11 +910,10 @@ TEST_F(
             kOnClickComboboxIndex);
 
   // Run extensions action by clicking on it.
-  content::WindowedNotificationObserver permissions_observer(
-      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::NotificationService::AllSources());
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(profile()));
   ClickPrimaryActionButton(GetOnlyRequestsAccessMenuItem());
-  permissions_observer.Wait();
+  waiter.WaitForExtensionPermissionsUpdate();
   LayoutMenuIfNecessary();
 
   // Verify extension is in the "has access" section with "on click" access.
@@ -1095,13 +1089,12 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // in one of the extensions to be able to test both site access sections.
   const GURL url("http://www.a.com");
   web_contents_tester()->NavigateAndCommit(url);
-  content::WindowedNotificationObserver permissions_observer(
-      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::NotificationService::AllSources());
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(profile()));
   extensions::SitePermissionsHelper(profile()).UpdateSiteAccess(
       *extensionA, browser()->tab_strip_model()->GetActiveWebContents(),
       /*new_access=*/extensions::SitePermissionsHelper::SiteAccess::kOnClick);
-  permissions_observer.Wait();
+  waiter.WaitForExtensionPermissionsUpdate();
   WaitForAnimation();
   ShowSiteAccessTabInMenu();
 

@@ -12,11 +12,10 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "components/crx_file/id_util.h"
-#include "content/public/browser/notification_service.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_utils.h"
@@ -122,12 +121,11 @@ void ExtensionsToolbarUnitTest::DisableExtension(
 
 void ExtensionsToolbarUnitTest::WithholdHostPermissions(
     const extensions::Extension* extension) {
-  content::WindowedNotificationObserver permissions_observer(
-      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::NotificationService::AllSources());
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(profile()));
   extensions::ScriptingPermissionsModifier(profile(), extension)
       .RemoveAllGrantedHostPermissions();
-  permissions_observer.Wait();
+  waiter.WaitForExtensionPermissionsUpdate();
 }
 
 void ExtensionsToolbarUnitTest::ClickButton(views::Button* button) const {

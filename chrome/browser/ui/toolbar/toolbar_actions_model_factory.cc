@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/permissions_manager.h"
 
 // static
 ToolbarActionsModel* ToolbarActionsModelFactory::GetForProfile(
@@ -36,6 +37,7 @@ ToolbarActionsModelFactory::ToolbarActionsModelFactory()
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
   DependsOn(extensions::ExtensionManagementFactory::GetInstance());
+  DependsOn(extensions::PermissionsManager::GetFactory());
 }
 
 ToolbarActionsModelFactory::~ToolbarActionsModelFactory() {}

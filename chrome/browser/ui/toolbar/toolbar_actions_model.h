@@ -16,12 +16,11 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 
 class Browser;
@@ -44,7 +43,7 @@ class ExtensionMessageBubbleController;
 class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
                             public extensions::ExtensionRegistryObserver,
                             public extensions::ExtensionManagement::Observer,
-                            public content::NotificationObserver,
+                            public extensions::PermissionsManager::Observer,
                             public KeyedService {
  public:
   using ActionId = std::string;
@@ -156,10 +155,12 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // extensions::ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
 
-  // content::NotificationObserver:
-  void Observe(int notification_type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // extensions::PermissionsManager::Observer:
+  void OnExtensionPermissionsUpdated(
+      const extensions::UpdatedExtensionPermissionsInfo& info) override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // To be called after the extension service is ready; gets loaded extensions
   // from the ExtensionRegistry, their saved order from the pref service, and
@@ -246,8 +247,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
                           extensions::ExtensionManagement::Observer>
       extension_management_observation_{this};
 
-  // Registrar for receiving permission-related notifications.
-  content::NotificationRegistrar notification_registrar_;
+  base::ScopedObservation<extensions::PermissionsManager,
+                          extensions::PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
   base::WeakPtrFactory<ToolbarActionsModel> weak_ptr_factory_{this};
 };

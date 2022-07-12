@@ -37,7 +37,6 @@ class DictionaryValue;
 
 namespace extensions {
 class HashedExtensionId;
-class PermissionSet;
 class PermissionsData;
 class PermissionsParser;
 
@@ -510,29 +509,6 @@ struct ExtensionInfo {
   ExtensionId extension_id;
   base::FilePath extension_path;
   mojom::ManifestLocation extension_location;
-};
-
-// The details sent for EXTENSION_PERMISSIONS_UPDATED notifications.
-struct UpdatedExtensionPermissionsInfo {
-  enum Reason {
-    ADDED,    // The permissions were added to the extension.
-    REMOVED,  // The permissions were removed from the extension.
-    POLICY,   // The policy that affects permissions was updated.
-  };
-
-  Reason reason;
-
-  // The extension who's permissions have changed.
-  raw_ptr<const Extension> extension;
-
-  // The permissions that have changed. For Reason::ADDED, this would contain
-  // only the permissions that have added, and for Reason::REMOVED, this would
-  // only contain the removed permissions.
-  const PermissionSet& permissions;
-
-  UpdatedExtensionPermissionsInfo(const Extension* extension,
-                                  const PermissionSet& permissions,
-                                  Reason reason);
 };
 
 }  // namespace extensions

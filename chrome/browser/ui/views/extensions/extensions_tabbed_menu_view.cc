@@ -445,7 +445,7 @@ void ExtensionsTabbedMenuView::Populate() {
   ConsistencyCheck();
 }
 
-void ExtensionsTabbedMenuView::UserPermissionsSettingsChanged(
+void ExtensionsTabbedMenuView::OnUserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
   UpdateSiteAccessMenuItems(toolbar_model_->action_ids());
   UpdateSiteAccessTab();

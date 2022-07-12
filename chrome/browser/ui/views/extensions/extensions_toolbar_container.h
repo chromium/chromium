@@ -242,7 +242,7 @@ class ExtensionsToolbarContainer
   void OnToolbarPinnedActionsChanged() override;
 
   // PermissionsManager::Observer:
-  void UserPermissionsSettingsChanged(
+  void OnUserPermissionsSettingsChanged(
       const extensions::PermissionsManager::UserPermissionsSettings& settings)
       override;
 

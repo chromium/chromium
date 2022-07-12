@@ -912,13 +912,13 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsUserHostRestrictionsBrowserTest,
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->AddUserRestrictedSite(
         url::Origin::Create(policy_allowed_resource));
-    waiter.WaitForPermissionsChange();
+    waiter.WaitForUserPermissionsSettingsChange();
   }
   {
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->AddUserPermittedSite(
         url::Origin::Create(policy_restricted_resource));
-    waiter.WaitForPermissionsChange();
+    waiter.WaitForUserPermissionsSettingsChange();
   }
 
   {

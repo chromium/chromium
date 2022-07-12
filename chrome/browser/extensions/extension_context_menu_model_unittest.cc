@@ -38,14 +38,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_management_policy.h"
@@ -319,9 +317,7 @@ const Extension* ExtensionContextMenuModelTest::AddExtensionWithHostPermission(
     ManifestLocation location,
     const std::string& host_permission) {
   DictionaryBuilder manifest;
-  manifest.Set("name", name)
-      .Set("version", "1")
-      .Set("manifest_version", 2);
+  manifest.Set("name", name).Set("version", "1").Set("manifest_version", 2);
   if (action_key)
     manifest.Set(action_key, DictionaryBuilder().Build());
   if (!host_permission.empty())
@@ -912,7 +908,7 @@ TEST_F(ExtensionContextMenuModelTest,
     auto* manager = extensions::PermissionsManager::Get(profile());
     extensions::PermissionsManagerWaiter manager_waiter(manager);
     manager->AddUserPermittedSite(url::Origin::Create(url));
-    manager_waiter.WaitForPermissionsChange();
+    manager_waiter.WaitForUserPermissionsSettingsChange();
 
     // Verify "grant all extensions" item is visible and disabled, and the
     // "learn more" item is in the context menu.
@@ -935,7 +931,7 @@ TEST_F(ExtensionContextMenuModelTest,
     auto* manager = extensions::PermissionsManager::Get(profile());
     extensions::PermissionsManagerWaiter manager_waiter(manager);
     manager->AddUserRestrictedSite(url::Origin::Create(url));
-    manager_waiter.WaitForPermissionsChange();
+    manager_waiter.WaitForUserPermissionsSettingsChange();
 
     // Verify "block all extensions" item is visible and disabled, and the
     // "learn more" item is in the context menu.
@@ -1095,11 +1091,10 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
   // Change extension to run "on click". Since we are revoking permissions, we
   // need to automatically accept the reload page bubble.
   action_runner->accept_bubble_for_testing(true);
-  content::WindowedNotificationObserver permissions_observer(
-      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::NotificationService::AllSources());
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(profile()));
   menu.ExecuteCommand(kOnClick, 0);
-  permissions_observer.Wait();
+  waiter.WaitForExtensionPermissionsUpdate();
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
@@ -1497,11 +1492,10 @@ TEST_F(ExtensionContextMenuModelTest,
   // need to automatically accept the reload page bubble.
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->accept_bubble_for_testing(true);
-  content::WindowedNotificationObserver permissions_observer(
-      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::NotificationService::AllSources());
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(profile()));
   menu.ExecuteCommand(kOnClick, 0);
-  permissions_observer.Wait();
+  waiter.WaitForExtensionPermissionsUpdate();
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnAllSites));
@@ -1631,11 +1625,10 @@ TEST_F(ExtensionContextMenuModelTest,
     menu.ExecuteCommand(kOnClick, 0);
     ExtensionActionRunner::GetForWebContents(web_contents)
         ->accept_bubble_for_testing(true);
-    content::WindowedNotificationObserver permissions_observer(
-        extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-        content::NotificationService::AllSources());
+    extensions::PermissionsManagerWaiter waiter(
+        extensions::PermissionsManager::Get(profile()));
     menu.ExecuteCommand(kOnClick, 0);
-    permissions_observer.Wait();
+    waiter.WaitForExtensionPermissionsUpdate();
   }
 
   {
@@ -1688,11 +1681,10 @@ TEST_F(ExtensionContextMenuModelTest,
   // page bubble.
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->accept_bubble_for_testing(true);
-  content::WindowedNotificationObserver permissions_observer(
-      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::NotificationService::AllSources());
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(profile()));
   menu.ExecuteCommand(kOnClick, 0);
-  permissions_observer.Wait();
+  waiter.WaitForExtensionPermissionsUpdate();
 
   // This, sadly, removes access for the extension on b.com as well. :( This
   // is because we revoke all host permissions when transitioning from "don't

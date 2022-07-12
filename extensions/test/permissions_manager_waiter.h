@@ -20,17 +20,27 @@ class PermissionsManagerWaiter : public PermissionsManager::Observer {
   ~PermissionsManagerWaiter();
 
   // Waits until permissions change.
-  void WaitForPermissionsChange();
+  void WaitForUserPermissionsSettingsChange();
+  void WaitForExtensionPermissionsUpdate();
+  // `callback` is called after waiting for an update.
+  void WaitForExtensionPermissionsUpdate(
+      base::OnceCallback<void(const UpdatedExtensionPermissionsInfo&)>
+          callback);
 
  private:
   // PermissionsManager::Observer:
-  void UserPermissionsSettingsChanged(
+  void OnUserPermissionsSettingsChanged(
       const PermissionsManager::UserPermissionsSettings& settings) override;
+  void OnExtensionPermissionsUpdated(
+      const UpdatedExtensionPermissionsInfo& info) override;
 
-  base::RunLoop run_loop_;
+  base::RunLoop user_permissions_settings_changed_run_loop_;
+  base::RunLoop extension_permissions_update_run_loop_;
   base::ScopedObservation<extensions::PermissionsManager,
                           extensions::PermissionsManager::Observer>
       manager_observation_{this};
+  base::OnceCallback<void(const UpdatedExtensionPermissionsInfo&)>
+      extension_permissions_update_callback_;
 };
 
 }  // namespace extensions

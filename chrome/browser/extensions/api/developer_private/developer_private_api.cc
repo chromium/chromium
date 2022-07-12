@@ -415,9 +415,6 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
       prefs::kExtensionsUIDeveloperMode,
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));
-  notification_registrar_.Add(
-      this, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::Source<Profile>(profile_.get()));
 }
 
 DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() {
@@ -570,7 +567,7 @@ void DeveloperPrivateEventRouter::ExtensionWarningsChanged(
     BroadcastItemStateChanged(developer::EVENT_TYPE_WARNINGS_CHANGED, id);
 }
 
-void DeveloperPrivateEventRouter::UserPermissionsSettingsChanged(
+void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
     const PermissionsManager::UserPermissionsSettings& settings) {
   developer::UserSiteSettings user_site_settings =
       ConvertToUserSiteSettings(settings);
@@ -583,16 +580,10 @@ void DeveloperPrivateEventRouter::UserPermissionsSettingsChanged(
   event_router_->BroadcastEvent(std::move(event));
 }
 
-void DeveloperPrivateEventRouter::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED, type);
-
-  UpdatedExtensionPermissionsInfo* info =
-      content::Details<UpdatedExtensionPermissionsInfo>(details).ptr();
+void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
+    const UpdatedExtensionPermissionsInfo& info) {
   BroadcastItemStateChanged(developer::EVENT_TYPE_PERMISSIONS_CHANGED,
-                            info->extension->id());
+                            info.extension->id());
 }
 
 void DeveloperPrivateEventRouter::OnProfilePrefChanged() {

@@ -25,9 +25,6 @@
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/event_router.h"
@@ -36,7 +33,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/network_permissions_updater.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/cors_util.h"
@@ -160,8 +156,8 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
   NetworkPermissionsUpdateHelper* helper = new NetworkPermissionsUpdateHelper(
       browser_context,
       base::BindOnce(&PermissionsUpdater::NotifyPermissionsUpdated,
-                     browser_context, event_type, extension,
-                     changed.Clone(), std::move(completion_callback)));
+                     browser_context, event_type, extension, changed.Clone(),
+                     std::move(completion_callback)));
 
   // After an asynchronous call below, the helper will call
   // NotifyPermissionsUpdated if the profile is still valid.
@@ -570,7 +566,8 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
     scoped_refptr<const Extension> extension,
     std::unique_ptr<const PermissionSet> changed,
     base::OnceClosure completion_callback) {
-  if (changed->IsEmpty() && event_type != POLICY) {
+  if ((changed->IsEmpty() && event_type != POLICY) ||
+      browser_context->ShutdownStarted()) {
     std::move(completion_callback).Run();
     return;
   }
@@ -596,10 +593,8 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
   // Notify other APIs or interested parties.
   UpdatedExtensionPermissionsInfo info =
       UpdatedExtensionPermissionsInfo(extension.get(), *changed, reason);
-  content::NotificationService::current()->Notify(
-      NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::Source<Profile>(profile),
-      content::Details<UpdatedExtensionPermissionsInfo>(&info));
+  PermissionsManager::Get(browser_context)
+      ->NotifyExtensionPermissionsUpdated(info);
 
   // Send the new permissions to the renderers.
   for (RenderProcessHost::iterator host_iterator(

@@ -142,6 +142,12 @@ KeyedService* PermissionsManagerFactory::BuildServiceInstanceFor(
 
 }  // namespace
 
+UpdatedExtensionPermissionsInfo::UpdatedExtensionPermissionsInfo(
+    const Extension* extension,
+    const PermissionSet& permissions,
+    Reason reason)
+    : reason(reason), extension(extension), permissions(permissions) {}
+
 // Implementation of UserPermissionsSettings.
 PermissionsManager::UserPermissionsSettings::UserPermissionsSettings() =
     default;
@@ -574,6 +580,13 @@ PermissionsManager::GetEffectivePermissionsToGrant(
       std::move(new_explicit_hosts), std::move(new_scriptable_hosts));
 }
 
+void PermissionsManager::NotifyExtensionPermissionsUpdated(
+    const UpdatedExtensionPermissionsInfo& info) {
+  for (Observer& observer : observers_) {
+    observer.OnExtensionPermissionsUpdated(info);
+  }
+}
+
 void PermissionsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -676,7 +689,7 @@ bool PermissionsManager::RemoveRestrictedSiteAndUpdatePrefs(
 
 void PermissionsManager::NotifyObserversOfChange() {
   for (auto& observer : observers_)
-    observer.UserPermissionsSettingsChanged(GetUserPermissionsSettings());
+    observer.OnUserPermissionsSettingsChanged(GetUserPermissionsSettings());
 }
 
 }  // namespace extensions

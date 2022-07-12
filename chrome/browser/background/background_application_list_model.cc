@@ -18,20 +18,17 @@
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/crx_file/id_util.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/image_loader.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_resource.h"
@@ -158,9 +155,6 @@ BackgroundApplicationListModel::~BackgroundApplicationListModel() = default;
 BackgroundApplicationListModel::BackgroundApplicationListModel(Profile* profile)
     : profile_(profile) {
   DCHECK(profile_);
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-                 content::Source<Profile>(profile));
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE,
       base::BindOnce(&BackgroundApplicationListModel::OnExtensionSystemReady,
@@ -300,17 +294,6 @@ bool BackgroundApplicationListModel::HasPersistentBackgroundApps() const {
   return false;
 }
 
-void BackgroundApplicationListModel::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(type, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED);
-  OnExtensionPermissionsUpdated(
-      content::Details<UpdatedExtensionPermissionsInfo>(details)->extension,
-      content::Details<UpdatedExtensionPermissionsInfo>(details)->reason,
-      content::Details<UpdatedExtensionPermissionsInfo>(details)->permissions);
-}
-
 void BackgroundApplicationListModel::SendApplicationDataChangedNotifications() {
   for (auto& observer : observers_)
     observer.OnApplicationDataChanged();
@@ -357,6 +340,9 @@ void BackgroundApplicationListModel::OnExtensionSystemReady() {
         extensions::ProcessManager::Get(profile_));
   }
 
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(profile_));
+
   startup_done_ = true;
 }
 
@@ -365,6 +351,7 @@ void BackgroundApplicationListModel::OnShutdown(ExtensionRegistry* registry) {
   DCHECK(extension_registry_observation_.IsObservingSource(registry));
   extension_registry_observation_.Reset();
   process_manager_observation_.Reset();
+  permissions_manager_observation_.Reset();
 }
 
 void BackgroundApplicationListModel::OnBackgroundContentsServiceChanged() {
@@ -376,20 +363,19 @@ void BackgroundApplicationListModel::OnBackgroundContentsServiceDestroying() {
 }
 
 void BackgroundApplicationListModel::OnExtensionPermissionsUpdated(
-    const Extension* extension,
-    UpdatedExtensionPermissionsInfo::Reason reason,
-    const PermissionSet& permissions) {
-  if (permissions.HasAPIPermission(APIPermissionID::kBackground) ||
+    const extensions::UpdatedExtensionPermissionsInfo& info) {
+  if (info.permissions.HasAPIPermission(APIPermissionID::kBackground) ||
       (base::FeatureList::IsEnabled(features::kOnConnectNative) &&
-       permissions.HasAPIPermission(APIPermissionID::kTransientBackground))) {
-    switch (reason) {
+       info.permissions.HasAPIPermission(
+           APIPermissionID::kTransientBackground))) {
+    switch (info.reason) {
       case UpdatedExtensionPermissionsInfo::ADDED:
       case UpdatedExtensionPermissionsInfo::REMOVED:
         Update();
-        if (IsBackgroundApp(*extension, profile_)) {
-          AssociateApplicationData(extension);
+        if (IsBackgroundApp(*info.extension, profile_)) {
+          AssociateApplicationData(info.extension);
         } else {
-          DissociateApplicationData(extension);
+          DissociateApplicationData(info.extension);
         }
         break;
       default:

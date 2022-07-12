@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -34,13 +33,11 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_set.h"
@@ -69,10 +66,6 @@ ToolbarActionsModel::ToolbarActionsModel(
       extensions::pref_names::kPinnedExtensions,
       base::BindRepeating(&ToolbarActionsModel::UpdatePinnedActionIds,
                           base::Unretained(this)));
-
-  notification_registrar_.Add(
-      this, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::Source<Profile>(profile_.get()));
 }
 
 ToolbarActionsModel::~ToolbarActionsModel() {}
@@ -136,19 +129,16 @@ void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
   UpdatePinnedActionIds();
 }
 
-void ToolbarActionsModel::Observe(int type,
-                                  const content::NotificationSource& source,
-                                  const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED, type);
-
-  const extensions::ExtensionId& extension_id =
-      content::Details<extensions::UpdatedExtensionPermissionsInfo>(details)
-          ->extension->id();
-
-  if (HasAction(extension_id)) {
+void ToolbarActionsModel::OnExtensionPermissionsUpdated(
+    const extensions::UpdatedExtensionPermissionsInfo& info) {
+  if (HasAction(info.extension->id())) {
     for (Observer& observer : observers_)
-      observer.OnToolbarActionUpdated(extension_id);
+      observer.OnToolbarActionUpdated(info.extension->id());
   }
+}
+
+void ToolbarActionsModel::Shutdown() {
+  permissions_manager_observation_.Reset();
 }
 
 void ToolbarActionsModel::RemovePref(const ActionId& action_id) {
@@ -172,6 +162,8 @@ void ToolbarActionsModel::OnReady() {
   // taken from prefs.
   extension_registry_observation_.Observe(extension_registry_.get());
   extension_action_observation_.Observe(extension_action_api_.get());
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(profile_));
 
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
