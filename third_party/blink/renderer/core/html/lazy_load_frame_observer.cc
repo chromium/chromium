@@ -11,11 +11,13 @@
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -30,6 +32,41 @@
 namespace blink {
 
 namespace {
+
+// Determine if the |bounding_client_rect| for a frame indicates that the frame
+// is probably hidden according to some experimental heuristics. Since hidden
+// frames are often used for analytics or communication, and lazily loading them
+// could break their functionality, so these heuristics are used to recognize
+// likely hidden frames and immediately load them so that they can function
+// properly.
+bool IsFrameProbablyHidden(const PhysicalRect& bounding_client_rect,
+                           const Element& element) {
+  // Tiny frames that are 4x4 or smaller are likely not intended to be seen by
+  // the user. Note that this condition includes frames marked as
+  // "display:none", since those frames would have dimensions of 0x0.
+  if (bounding_client_rect.Width() <= 4.0f ||
+      bounding_client_rect.Height() <= 4.0f)
+    return true;
+
+  // Frames that are positioned completely off the page above or to the left are
+  // likely never intended to be visible to the user.
+  if (bounding_client_rect.Right() < 0.0f ||
+      bounding_client_rect.Bottom() < 0.0f)
+    return true;
+
+  const ComputedStyle* style = element.GetComputedStyle();
+  if (style) {
+    switch (style->Visibility()) {
+      case EVisibility::kHidden:
+      case EVisibility::kCollapse:
+        return true;
+      case EVisibility::kVisible:
+        break;
+    }
+  }
+
+  return false;
+}
 
 int GetLazyFrameLoadingViewportDistanceThresholdPx(const Document& document) {
   const Settings* settings = document.GetSettings();
@@ -110,12 +147,21 @@ void LazyLoadFrameObserver::LoadIfHiddenOrNearViewport(
   if (entries.back()->isIntersecting()) {
     RecordInitialDeferralAction(
         FrameInitialDeferralAction::kLoadedNearOrInViewport);
-  } else {
-    RecordInitialDeferralAction(FrameInitialDeferralAction::kDeferred);
+    LoadImmediately();
     return;
   }
 
-  LoadImmediately();
+  LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
+      element_->FastGetAttribute(html_names::kLoadingAttr));
+  if (loading_attr != LoadingAttributeValue::kLazy &&
+      IsFrameProbablyHidden(entries.back()->GetGeometry().TargetRect(),
+                            *element_)) {
+    RecordInitialDeferralAction(FrameInitialDeferralAction::kLoadedHidden);
+    LoadImmediately();
+    return;
+  }
+
+  RecordInitialDeferralAction(FrameInitialDeferralAction::kDeferred);
 }
 
 void LazyLoadFrameObserver::LoadImmediately() {
@@ -175,6 +221,16 @@ void LazyLoadFrameObserver::RecordMetricsOnVisibilityChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(!entries.IsEmpty());
   DCHECK_EQ(element_, entries.back()->target());
+
+  LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
+      element_->FastGetAttribute(html_names::kLoadingAttr));
+  if (loading_attr != LoadingAttributeValue::kLazy &&
+      IsFrameProbablyHidden(entries.back()->GetGeometry().TargetRect(),
+                            *element_)) {
+    visibility_metrics_observer_->disconnect();
+    visibility_metrics_observer_.Clear();
+    return;
+  }
 
   if (!has_above_the_fold_been_set_) {
     is_initially_above_the_fold_ = entries.back()->isIntersecting();

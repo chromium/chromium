@@ -8,6 +8,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/test/scoped_feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1040,6 +1041,203 @@ INSTANTIATE_TEST_SUITE_P(
                           WebEffectiveConnectionType::kType2G,
                           WebEffectiveConnectionType::kType3G,
                           WebEffectiveConnectionType::kType4G)));
+
+class LazyEmbedsTest : public LazyLoadFramesParamsTest {
+ public:
+  LazyEmbedsTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kAutomaticLazyFrameLoadingToEmbeds,
+             {{"timeout", "3000"}}},
+            {features::kAutomaticLazyFrameLoadingToEmbedUrls,
+             {{"allowed_websites",
+               "https://crossorigin.com|/display_none.html,"
+               "https://crossorigin.com|/visibility_hidden.html,"
+               "https://crossorigin.com|/tiny.html,"
+               "https://crossorigin.com|/tiny_width.html,"
+               "https://crossorigin.com/|tiny_height.html,"
+               "https://crossorigin.com|/off_screen_left.html,"
+               "https://crossorigin.com|/off_screen_top.html"}}},
+        },
+        {/* disabled_features */});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(LazyEmbedsTest, HiddenAndTinyFrames) {
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  SimRequest display_none_frame_resource(
+      "https://crossorigin.com/display_none.html", "text/html");
+  SimRequest visibility_hidden_frame_resource(
+      "https://crossorigin.com/visibility_hidden.html", "text/html");
+  SimRequest tiny_frame_resource("https://crossorigin.com/tiny.html",
+                                 "text/html");
+  SimRequest tiny_width_frame_resource(
+      "https://crossorigin.com/tiny_width.html", "text/html");
+  SimRequest tiny_height_frame_resource(
+      "https://crossorigin.com/tiny_height.html", "text/html");
+  SimRequest off_screen_left_frame_resource(
+      "https://crossorigin.com/off_screen_left.html", "text/html");
+  SimRequest off_screen_top_frame_resource(
+      "https://crossorigin.com/off_screen_top.html", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <head><style>
+          /* Chrome by default sets borders for iframes, so explicitly specify
+           * no borders, padding, or margins here so that the dimensions of the
+           * tiny frames aren't artificially inflated past the dimensions that
+           * the lazy loading logic considers "tiny". */
+          iframe { border-style: none; padding: 0px; margin: 0px; }
+        </style></head>
+
+        <body onload='console.log("main body onload");'>
+        <div style='height: %dpx'></div>
+        <iframe src='https://crossorigin.com/display_none.html'
+             style='display: none;'
+             onload='console.log("display none element onload");'></iframe>
+        <iframe src='https://crossorigin.com/visibility_hidden.html'
+             style='visibility:hidden;width:100px;height:100px;'
+             onload='console.log("visibility hidden element onload");'></iframe>
+        <iframe src='https://crossorigin.com/tiny.html'
+             style='width: 4px; height: 4px;'
+             onload='console.log("tiny element onload");'></iframe>
+        <iframe src='https://crossorigin.com/tiny_width.html'
+             style='width: 0px; height: 50px;'
+             onload='console.log("tiny width element onload");'></iframe>
+        <iframe src='https://crossorigin.com/tiny_height.html'
+             style='width: 50px; height: 0px;'
+             onload='console.log("tiny height element onload");'></iframe>
+        <iframe src='https://crossorigin.com/off_screen_left.html'
+             style='position:relative;right:9000px;width:50px;height:50px;'
+             onload='console.log("off screen left element onload");'></iframe>
+        <iframe src='https://crossorigin.com/off_screen_top.html'
+             style='position:relative;bottom:9000px;width:50px;height:50px;'
+             onload='console.log("off screen top element onload");'></iframe>
+        </body>
+      )HTML",
+      kViewportHeight + GetLoadingDistanceThreshold() + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  display_none_frame_resource.Complete("");
+  visibility_hidden_frame_resource.Complete("");
+  tiny_frame_resource.Complete("");
+  tiny_width_frame_resource.Complete("");
+  tiny_height_frame_resource.Complete("");
+  off_screen_left_frame_resource.Complete("");
+  off_screen_top_frame_resource.Complete("");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("display none element onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("visibility hidden element onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("tiny element onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("tiny width element onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("tiny height element onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("off screen left element onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("off screen top element onload"));
+
+  ExpectVisibleLoadTimeHistogramSamplesIfApplicable(0, 0);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadEligibleFrames.BelowTheFold", 0);
+
+  // Scroll down to where the hidden frames are.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, kViewportHeight + GetLoadingDistanceThreshold()),
+      mojom::blink::ScrollType::kProgrammatic);
+
+  // All of the frames on the page are hidden or tiny, so no visible load time
+  // samples should have been recorded for them.
+  ExpectVisibleLoadTimeHistogramSamplesIfApplicable(0, 0);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadEligibleFrames.BelowTheFold", 0);
+
+  ExpectInitialDeferralActionHistogramSamplesIfApplicable(
+      LazyLoadFrameObserver::FrameInitialDeferralAction::kLoadedHidden, 7);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.LazyLoad.CrossOriginFrames.LoadStartedAfterBeingDeferred", 0);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.LazyLoad.CrossOriginFrames.VisibleAfterBeingDeferred", 0);
+}
+
+TEST_P(LazyEmbedsTest, LoadHiddenFrameFarFromViewportWithLoadingAttributeLazy) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest tiny_frame_resource("https://crossorigin.com/tiny.html",
+                                 "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <head><style>
+          /* Chrome by default sets borders for iframes, so explicitly specify
+           * no borders, padding, or margins here so that the dimensions of the
+           * tiny frames aren't artificially inflated past the dimensions that
+           * the lazy loading logic considers "tiny". */
+          iframe { border-style: none; padding: 0px; margin: 0px; }
+        </style></head>
+        <body onload='console.log("main body onload");'>
+        <div style='height: %dpx'></div>
+        <iframe src='https://crossorigin.com/tiny.html'
+             loading='lazy'
+             style='width: 4px; height: 4px;'
+             onload='console.log("tiny element onload");'></iframe>
+        </body>
+      )HTML",
+      kViewportHeight + GetLoadingDistanceThreshold() + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // The body's load event should have already fired.
+  // Child frame loading will not be triggered.
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_FALSE(ConsoleMessages().Contains("tiny element onload"));
+
+  ExpectVisibleLoadTimeHistogramSamplesIfApplicable(0, 0);
+  ExpectInitialDeferralActionHistogramSamplesIfApplicable(
+      LazyLoadFrameObserver::FrameInitialDeferralAction::kDeferred, 1);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.LazyLoad.CrossOriginFrames.LoadStartedAfterBeingDeferred", 0);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.LazyLoad.CrossOriginFrames.VisibleAfterBeingDeferred", 0);
+
+  // Scroll down to where the hidden frames are.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, kViewportHeight + GetLoadingDistanceThreshold()),
+      mojom::blink::ScrollType::kProgrammatic);
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  tiny_frame_resource.Complete("");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(ConsoleMessages().Contains("tiny element onload"));
+  ExpectInitialDeferralActionHistogramSamplesIfApplicable(
+      LazyLoadFrameObserver::FrameInitialDeferralAction::kDeferred, 1);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.LazyLoad.CrossOriginFrames.LoadStartedAfterBeingDeferred", 1);
+  histogram_tester()->ExpectTotalCount(
+      "Blink.LazyLoad.CrossOriginFrames.VisibleAfterBeingDeferred", 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    LazyEmbeds,
+    LazyEmbedsTest,
+    ::testing::Combine(
+        ::testing::Values(LazyFrameLoadingFeatureStatus::kEnabled),
+        ::testing::Values(LazyFrameVisibleLoadTimeFeatureStatus::kEnabled),
+        ::testing::Values(WebEffectiveConnectionType::kType4G)));
 
 class LazyLoadFramesTest : public SimTest {
  public:
