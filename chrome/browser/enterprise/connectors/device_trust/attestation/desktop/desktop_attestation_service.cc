@@ -29,7 +29,7 @@ namespace {
 constexpr VAType kVAType = VAType::DEFAULT_VA;
 
 // Size of nonce for challenge response.
-const size_t kChallengResponseNonceBytesSize = 32;
+const size_t kChallengeResponseNonceBytesSize = 32;
 
 // Verifies that the `signed_challenge_data` comes from Verified Access.
 bool ChallengeComesFromVerifiedAccess(
@@ -55,8 +55,8 @@ absl::optional<std::string> CreateChallengeResponseString(
   *response_pb.mutable_challenge() = signed_challenge_data;
 
   crypto::RandBytes(base::WriteInto(response_pb.mutable_nonce(),
-                                    kChallengResponseNonceBytesSize + 1),
-                    kChallengResponseNonceBytesSize);
+                                    kChallengeResponseNonceBytesSize + 1),
+                    kChallengeResponseNonceBytesSize);
 
   std::string key;
   if (!CryptoUtility::EncryptWithSeed(
