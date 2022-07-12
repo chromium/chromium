@@ -669,6 +669,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
       false;  // Fail ConditionalizeRequest.
   bool mark_single_keyed_cache_entry_unusable_ =
       false;  // Set single_keyed_cache_entry_unusable.
+  // This is initialised in Start().
+  bool use_single_keyed_cache_ = false;
 
   scoped_refptr<IOBuffer> read_buf_;
 

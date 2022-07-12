@@ -101,12 +101,3 @@ LOAD_FLAG(RESTRICTED_PREFETCH, 1 << 15)
 // is considered privileged, and therefore this flag must only be set from a
 // trusted process.
 LOAD_FLAG(CAN_USE_RESTRICTED_PREFETCH, 1 << 16)
-
-// True if the request should attempt to use the single-keyed cache to satisfy
-// the request. The single-keyed cache will only be used if the "unusable" flag
-// on the cache entry is not true. Otherwise it will fall back to the
-// partitioned cache. This flag also enables checksumming of the response to set
-// the "unusable" flag if necessary.
-//
-// Cannot be used together with BYPASS_CACHE, ONLY_FROM_CACHE, or DISABLE_CACHE.
-LOAD_FLAG(USE_SINGLE_KEYED_CACHE, 1 << 17)

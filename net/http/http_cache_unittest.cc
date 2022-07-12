@@ -13520,9 +13520,8 @@ class HttpCacheSingleKeyedCacheTest : public HttpCacheTest {
       const NetworkIsolationKey& network_isolation_key,
       const std::string& checksum) {
     MockTransaction transaction(trans_info);
-    transaction.load_flags |= LOAD_USE_SINGLE_KEYED_CACHE;
-
     AddMockTransaction(&transaction);
+
     MockHttpRequest request(transaction);
     request.network_isolation_key = network_isolation_key;
     request.checksum = checksum;

@@ -779,8 +779,6 @@ URLLoader::URLLoader(
         cache_not_used_reason =
             CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders;
       } else {
-        request_load_flags |= net::LOAD_USE_SINGLE_KEYED_CACHE;
-
         url_request_->set_expected_response_checksum(checksum.value());
       }
       base::UmaHistogramEnumeration("Network.CacheTransparency.CacheNotUsed",

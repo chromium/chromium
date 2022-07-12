@@ -1038,12 +1038,12 @@ int HttpCache::Transaction::DoGetBackendComplete(int result) {
   mode_ = NONE;
 
   if (!ShouldPassThrough()) {
-    // The flag LOAD_USE_SINGLE_KEYED_CACHE will have been changed to false if
-    // the entry was marked unusable and the transaction was restarted in
-    //  DoCacheReadResponseComplete(), so it will no longer match the value in
-    //  `request_`. So we pass it through explicitly.
-    cache_key_ = cache_->GenerateCacheKeyForRequest(
-        request_, effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
+    // The flag `use_single_keyed_cache_` will have been changed back to false
+    // if the entry was marked unusable and the transaction was restarted in
+    // DoCacheReadResponseComplete(), even though `request_` will still have a
+    // checksum. So it needs to be passed explicitly.
+    cache_key_ =
+        cache_->GenerateCacheKeyForRequest(request_, use_single_keyed_cache_);
 
     // Requested cache access mode.
     if (effective_load_flags_ & LOAD_ONLY_FROM_CACHE) {
@@ -1575,9 +1575,9 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
 
     // We've read the single keyed entry and it turned out to be unusable. Let's
     // retry reading from the split cache.
-    if (effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE) {
+    if (use_single_keyed_cache_) {
       DCHECK(!network_trans_);
-      effective_load_flags_ &= ~LOAD_USE_SINGLE_KEYED_CACHE;
+      use_single_keyed_cache_ = false;
       DoneWithEntryForRestartWithCache();
       TransitionToState(STATE_GET_BACKEND);
       return OK;
@@ -1926,7 +1926,7 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
 
   // The single-keyed cache only accepts responses with code 200 or 304.
   // Anything else is considered unusable.
-  if ((effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE) &&
+  if (use_single_keyed_cache_ &&
       !(new_response->headers->response_code() == 200 ||
         new_response->headers->response_code() == 304)) {
     // Either the new response will be written back to the cache, in which case
@@ -2046,7 +2046,7 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
     }
     TransitionToState(STATE_UPDATE_CACHED_RESPONSE_COMPLETE);
   } else {
-    if (effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE) {
+    if (use_single_keyed_cache_) {
       DCHECK_EQ(method_, "GET");
       ChecksumHeaders();
     }
@@ -2137,7 +2137,7 @@ int HttpCache::Transaction::DoOverwriteCachedResponse() {
 
   SetResponse(*new_response_);
 
-  if (effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE) {
+  if (use_single_keyed_cache_) {
     DCHECK_EQ(method_, "GET");
     ChecksumHeaders();
   }
@@ -2513,7 +2513,7 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
 }
 
 int HttpCache::Transaction::DoMarkSingleKeyedCacheEntryUnusable() {
-  DCHECK(effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
+  DCHECK(use_single_keyed_cache_);
   response_.single_keyed_cache_entry_unusable = true;
   TransitionToState(STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE_COMPLETE);
   return WriteResponseInfoToEntry(response_, /*truncated=*/false);
@@ -2548,6 +2548,9 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
 
   effective_load_flags_ = request_->load_flags;
   method_ = request_->method;
+
+  if (!request_->checksum.empty())
+    use_single_keyed_cache_ = true;
 
   if (cache_->mode() == DISABLE)
     effective_load_flags_ |= LOAD_DISABLE_CACHE;
@@ -3933,7 +3936,7 @@ void HttpCache::Transaction::UpdateSecurityHeadersBeforeForwarding() {
 }
 
 void HttpCache::Transaction::ChecksumHeaders() {
-  DCHECK(effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
+  DCHECK(use_single_keyed_cache_);
   DCHECK(!checksum_);
   checksum_ = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
   // For efficiency and concision, we list known headers matching a wildcard
@@ -3993,7 +3996,7 @@ bool HttpCache::Transaction::FinishAndCheckChecksum() {
   if (!checksum_)
     return true;
 
-  DCHECK(effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
+  DCHECK(use_single_keyed_cache_);
   return ResponseChecksumMatches(std::move(checksum_));
 }
 
