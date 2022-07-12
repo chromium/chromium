@@ -19,8 +19,9 @@ class ResourceLoadingBrowserTest : public ContentBrowserTest  {
 const char kResourceLoadingNonMobilePage[] =
     "/resource_loading/resource_loading_non_mobile.html";
 
+// crbug.com/1339969
 IN_PROC_BROWSER_TEST_F(ResourceLoadingBrowserTest,
-  ResourceLoadingAvoidDoubleDownloads) {
+                       DISABLED_ResourceLoadingAvoidDoubleDownloads) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kResourceLoadingNonMobilePage);
   EXPECT_TRUE(NavigateToURL(shell(), url));
