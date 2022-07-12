@@ -901,6 +901,12 @@ bool PasswordSyncBridge::SyncMetadataCacheContainsSupportedFields(
     sync_pb::EntitySpecifics parsed_specifics;
     parsed_specifics.ParseFromString(serialized_specifics);
 
+    // Skip entities without a `password` field to avoid failing the
+    // precondition in the `TrimRemoteSpecificsForCaching` function below.
+    if (!parsed_specifics.has_password()) {
+      continue;
+    }
+
     // If `parsed_specifics` contain any supported fields, they would be cleared
     // by the trimming function.
     if (parsed_specifics.ByteSizeLong() !=
