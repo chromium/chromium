@@ -9393,6 +9393,46 @@
                         "VerifyDidCommitParams"
                     ],
                     "disable_features": []
+                },
+                {
+                    "name": "EnabledWithoutShouldReplace",
+                    "params": {
+                        "gesture": "true",
+                        "http_status_code": "true",
+                        "intended_as_new_entry": "true",
+                        "is_overriding_user_agent": "true",
+                        "method": "true",
+                        "origin": "true",
+                        "post_id": "true",
+                        "should_replace_current_entry": "false",
+                        "should_update_history": "true",
+                        "url": "true",
+                        "url_is_unreachable": "true"
+                    },
+                    "enable_features": [
+                        "VerifyDidCommitParams"
+                    ],
+                    "disable_features": []
+                },
+                {
+                    "name": "EnabledWithoutShouldReplaceAndURLIsUnreachable",
+                    "params": {
+                        "gesture": "true",
+                        "http_status_code": "true",
+                        "intended_as_new_entry": "true",
+                        "is_overriding_user_agent": "true",
+                        "method": "true",
+                        "origin": "true",
+                        "post_id": "true",
+                        "should_replace_current_entry": "false",
+                        "should_update_history": "true",
+                        "url": "true",
+                        "url_is_unreachable": "false"
+                    },
+                    "enable_features": [
+                        "VerifyDidCommitParams"
+                    ],
+                    "disable_features": []
                 }
             ]
         }
