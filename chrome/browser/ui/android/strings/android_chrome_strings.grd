@@ -1581,7 +1581,7 @@ Your Google account may have other forms of browsing history like searches and a
         Other languages
       </message>
       <message name="IDS_LANGUAGES_CONTENT_TITLE" desc="Title of Language settings section to add or remove preferred content languages. Content languages are selected by the user and tell Chrome what language the user prefers webpage content in.  [CHAR_LIMIT=32]">
-        Content languages
+        Preferred languages
       </message>
       <message name="IDS_LANGUAGES_CONTENT_DESCRIPTION" desc="Description of Content language on the Language settings screen. Appears above a list of one or more languages that the user selects to tell Chrome which languages they prefer webpage content in.">
         To show content in your preferred languages, the sites you visit can see your preferences
