@@ -88,6 +88,12 @@
         width: 100%;
       }
 
+      @media (forced-colors: active) {
+        :host(:not([iron-icon])) #maskedImage {
+          background-color: ButtonText;
+        }
+      }
+
       #icon {
         align-items: center;
         border-radius: 4px;
