@@ -573,16 +573,8 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
 // Directory domain join screen. Verifies the domain join screen is displayed.
 // Submits Active Directory different incorrect credentials. Verifies that the
 // correct error is displayed.
-// TODO(crbug.com/1318903): Re-enable this test on linux-chromeos-dbg.
-#if !defined(NDEBUG)
-#define MAYBE_TestActiveDirectoryEnrollment_UIErrors \
-  DISABLED_TestActiveDirectoryEnrollment_UIErrors
-#else
-#define MAYBE_TestActiveDirectoryEnrollment_UIErrors \
-  TestActiveDirectoryEnrollment_UIErrors
-#endif
 IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
-                       MAYBE_TestActiveDirectoryEnrollment_UIErrors) {
+                       TestActiveDirectoryEnrollment_UIErrors) {
   ShowEnrollmentScreen();
   enrollment_helper_.SetupActiveDirectoryJoin(
       enrollment_screen(), kAdUserDomain, std::string(), kDMToken);
@@ -648,10 +640,8 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
 
 // Check that configuration for the streamline Active Directory domain join
 // propagates correctly to the Domain Join UI.
-//
-// TODO(crbug.com/1316567): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
-                       DISABLED_TestActiveDirectoryEnrollment_Streamline) {
+                       TestActiveDirectoryEnrollment_Streamline) {
   ShowEnrollmentScreen();
   std::string binary_config;
   EXPECT_TRUE(base::Base64Decode(kAdDomainJoinEncryptedConfig, &binary_config));
