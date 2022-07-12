@@ -104,10 +104,13 @@ absl::optional<uint64_t> GetPreferredDeviceId(
       case chromeos::AudioDeviceType::kHeadphone:
       case chromeos::AudioDeviceType::kInternalMic:
       case chromeos::AudioDeviceType::kFrontMic:
+      case chromeos::AudioDeviceType::kRearMic:
+      case chromeos::AudioDeviceType::kKeyboardMic:
         result = GetHighestPriorityDevice(result, &device);
         break;
       default:
-        // ignore other devices
+        // Ignore other devices. Note that we ignore bluetooth devices due to
+        // battery consumption concerns.
         break;
     }
   }
