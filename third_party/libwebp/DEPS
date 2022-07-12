@@ -1,0 +1,9 @@
+include_rules = [
+  '+../dec',
+  '+../dsp',
+  '+../enc',
+  '+../utils',
+  '+../webp',
+  '+src',
+  '+fuzzing',
+]
