@@ -12,36 +12,41 @@
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../css/wallpaper.css.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {DisplayableImage, ImageTile} from '../../common/constants.js';
-import {isNonEmptyArray} from '../../common/utils.js';
-import {ImagesGrid} from '../../untrusted/images_grid.js';
-import {IFrameApi} from '../iframe_api.js';
+import {ImageTile} from '../../common/constants.js';
+import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isNonEmptyArray, isSelectionEvent} from '../../common/utils.js';
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isWallpaperImage} from '../utils.js';
 
+import {selectWallpaper} from './wallpaper_controller.js';
 import {getTemplate} from './wallpaper_images_element.html.js';
+import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+
+(BigInt.prototype as any).toJSON = function() {
+  return this.toString();
+};
 
 /**
  * If |current| is set and is an online wallpaper (include daily refresh
  * wallpaper), return the assetId of that image. Otherwise returns null.
  */
-function getAssetId(current: CurrentWallpaper|null): bigint|undefined {
+function getAssetId(current: CurrentWallpaper|null): bigint|null {
   if (current == null) {
-    return undefined;
+    return null;
   }
   if (current.type !== WallpaperType.kOnline &&
       current.type !== WallpaperType.kDaily) {
-    return undefined;
+    return null;
   }
   try {
     return BigInt(current.key);
   } catch (e) {
     console.warn('Required a BigInt value here', e);
-    return undefined;
+    return null;
   }
 }
 
@@ -90,10 +95,6 @@ export function getDarkLightImageTiles(
   return [...tileMap.values()];
 }
 
-export interface WallpaperImages {
-  $: {imagesGrid: ImagesGrid};
-}
-
 export class WallpaperImages extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-images';
@@ -105,16 +106,6 @@ export class WallpaperImages extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      /**
-       * Hidden state of this element. Used to notify iframe of visibility
-       * changes.
-       */
-      hidden: {
-        type: Boolean,
-        reflectToAttribute: true,
-        observer: 'onHiddenChanged_',
-      },
-
       /**
        * Whether dark mode is the active preferred color scheme.
        */
@@ -139,58 +130,46 @@ export class WallpaperImages extends WithPersonalizationStore {
        */
       imagesLoading_: Object,
 
-      currentSelected_: {
-        type: Object,
-        observer: 'onCurrentSelectedChanged_',
+      selectedAssetId_: {
+        type: BigInt,
+        value: null,
       },
 
       /**
        * The pending selected image.
        */
-      pendingSelected_: {
-        type: Object,
-        observer: 'onPendingSelectedChanged_',
+      pendingSelectedAssetId_: {
+        type: BigInt,
+        value: null,
       },
 
       hasError_: {
         type: Boolean,
-        // Call computed functions with their dependencies as arguments so that
-        // polymer knows when to re-run the computation.
         computed:
             'computeHasError_(images_, imagesLoading_, collections_, collectionsLoading_, collectionId)',
+        observer: 'onHasErrorChanged_',
       },
 
-      /**
-       * In order to prevent re-sending images every time a collection loads in
-       * the background, calculate this intermediate boolean. That way
-       * |onImagesUpdated_| will re-run whenever this value flips from false to
-       * true, rather than each time a new collection is changed in the
-       * background.
-       */
-      hasImages_: {
-        type: Boolean,
-        computed: 'computeHasImages_(images_, imagesLoading_, collectionId)',
+
+      tiles_: {
+        type: Array,
+        computed:
+            'computeTiles_(images_, imagesLoading_, collectionId, isDarkModeActive)',
       },
+
     };
   }
 
-  override hidden: boolean;
   collectionId: string;
   isDarkModeActive: boolean;
   private collections_: WallpaperCollection[]|null;
   private collectionsLoading_: boolean;
   private images_: Record<string, WallpaperImage[]|null>;
   private imagesLoading_: Record<string, boolean>;
-  private currentSelected_: CurrentWallpaper|null;
-  private pendingSelected_: DisplayableImage|null;
+  private selectedAssetId_: bigint|null;
+  private pendingSelectedAssetId_: bigint|null;
   private hasError_: boolean;
-  private hasImages_: boolean;
-
-  static get observers() {
-    return [
-      'onImagesUpdated_(hasImages_, hasError_, collectionId, isDarkModeActive)',
-    ];
-  }
+  private tiles_: ImageTile[];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -202,34 +181,15 @@ export class WallpaperImages extends WithPersonalizationStore {
         'collections_', state => state.wallpaper.backdrop.collections);
     this.watch<WallpaperImages['collectionsLoading_']>(
         'collectionsLoading_', state => state.wallpaper.loading.collections);
-    this.watch<WallpaperImages['currentSelected_']>(
-        'currentSelected_', state => state.wallpaper.currentSelected);
-    this.watch<WallpaperImages['pendingSelected_']>(
-        'pendingSelected_', state => state.wallpaper.pendingSelected);
+    this.watch<WallpaperImages['selectedAssetId_']>(
+        'selectedAssetId_',
+        state => getAssetId(state.wallpaper.currentSelected));
+    this.watch<WallpaperImages['pendingSelectedAssetId_']>(
+        'pendingSelectedAssetId_',
+        state => isWallpaperImage(state.wallpaper.pendingSelected) ?
+            state.wallpaper.pendingSelected.assetId :
+            null);
     this.updateFromStore();
-  }
-
-  /**
-   * Notify iframe that this element visibility has changed.
-   */
-  private onHiddenChanged_(hidden: boolean) {
-    if (!hidden) {
-      this.shadowRoot!.getElementById('main')!.focus();
-    }
-    IFrameApi.getInstance().sendVisible(this.$.imagesGrid, !hidden);
-  }
-
-  private onCurrentSelectedChanged_(selected: CurrentWallpaper|null) {
-    const assetId = getAssetId(selected);
-    IFrameApi.getInstance().sendCurrentWallpaperAssetId(
-        this.$.imagesGrid, assetId);
-  }
-
-  private onPendingSelectedChanged_(pendingSelected: DisplayableImage|null) {
-    IFrameApi.getInstance().sendPendingWallpaperAssetId(
-        this.$.imagesGrid,
-        isWallpaperImage(pendingSelected) ? pendingSelected.assetId :
-                                            undefined);
   }
 
   /**
@@ -259,44 +219,39 @@ export class WallpaperImages extends WithPersonalizationStore {
         !isNonEmptyArray(images[collectionId]);
   }
 
-  private computeHasImages_(
-      images: Record<string, WallpaperImage>,
-      imagesLoading: Record<string, boolean>, collectionId: string): boolean {
-    return !!images && !!imagesLoading &&
-        // Specifically check === false again here.
-        imagesLoading[collectionId] === false &&
-        isNonEmptyArray(images[collectionId]);
+  /** Kick the user back to wallpaper collections page if failed to load. */
+  private onHasErrorChanged_(hasError: boolean) {
+    if (hasError) {
+      console.warn('An error occurred while loading collections or images');
+      // Navigate back to main page and refresh.
+      PersonalizationRouter.reloadAtWallpaper();
+    }
   }
 
   /**
    * Send images if loading is ready and we have some images. Punt back to
    * main page if there is an error viewing this collection.
    */
-  private onImagesUpdated_(
-      hasImages: boolean, hasError: boolean, collectionId: string,
-      isDarkModeActive: boolean) {
-    if (hasError) {
-      console.warn('An error occurred while loading collections or images');
-      // Navigate back to main page and refresh.
-      PersonalizationRouter.reloadAtWallpaper();
-      return;
+  private computeTiles_(
+      images: Record<string, WallpaperImage[]>,
+      imagesLoading: Record<string, boolean>, collectionId: string,
+      isDarkModeActive: boolean): ImageTile[]|number[] {
+    const hasImages = !!images && !!imagesLoading && collectionId &&
+        imagesLoading[collectionId] === false &&
+        isNonEmptyArray(images[collectionId]);
+
+    if (!hasImages) {
+      return getLoadingPlaceholders(() => 1);
     }
 
-    if (hasImages && collectionId) {
-      const imageArr = this.images_[collectionId];
-      const isDarkLightModeEnabled =
-          loadTimeData.getBoolean('isDarkLightModeEnabled');
-      if (isDarkLightModeEnabled) {
-        IFrameApi.getInstance().sendImageTiles(
-            this.$.imagesGrid,
-            getDarkLightImageTiles(isDarkModeActive, imageArr!));
-      } else {
-        IFrameApi.getInstance().sendImageTiles(
-            this.$.imagesGrid, getRegularImageTiles(imageArr!));
-      }
+    const imageArr = images[collectionId]!;
+
+    if (loadTimeData.getBoolean('isDarkLightModeEnabled')) {
+      return getDarkLightImageTiles(isDarkModeActive, imageArr);
+    } else {
+      return getRegularImageTiles(imageArr);
     }
   }
-
 
   private getMainAriaLabel_(
       collectionId: string, collections: WallpaperCollection[]) {
@@ -312,6 +267,67 @@ export class WallpaperImages extends WithPersonalizationStore {
     }
 
     return collection.name;
+  }
+
+  private isLoadingTile_(tile: number|ImageTile): tile is number {
+    return typeof tile === 'number';
+  }
+
+  private isImageTile_(tile: number|ImageTile): tile is ImageTile {
+    return tile.hasOwnProperty('preview') &&
+        Array.isArray((tile as any).preview);
+  }
+
+  private getLoadingPlaceholderAnimationDelay_(index: number): string {
+    return getLoadingPlaceholderAnimationDelay(index);
+  }
+
+  private getAriaSelected_(
+      tile: ImageTile, selectedAssetId: bigint|null,
+      pendingSelectedAssetId: bigint|null): string {
+    // Make sure that both are bigint (not undefined) and equal.
+    return (typeof selectedAssetId === 'bigint' && !!tile &&
+                tile.assetId === selectedAssetId && !pendingSelectedAssetId ||
+            typeof pendingSelectedAssetId === 'bigint' && !!tile &&
+                tile.assetId === pendingSelectedAssetId)
+        .toString();
+  }
+
+  private getClassForImg_(index: number, tile: ImageTile): string {
+    if (tile.preview.length < 2) {
+      return '';
+    }
+    switch (index) {
+      case 0:
+        return 'left';
+      case 1:
+        return 'right';
+      default:
+        return '';
+    }
+  }
+
+  private onImageSelected_(e: Event) {
+    if (!isSelectionEvent(e)) {
+      return;
+    }
+    const imgElement = e.currentTarget as HTMLImageElement;
+    const assetId = imgElement.dataset['assetId'];
+    assert(assetId, 'assetId not found');
+    const images = this.images_[this.collectionId]!;
+    assert(isNonEmptyArray(images));
+    const selectedImage =
+        images.find(choice => choice.assetId.toString() === assetId);
+    assert(selectedImage);
+    selectWallpaper(selectedImage, getWallpaperProvider(), this.getStore());
+  }
+
+  private getAriaLabel_(tile: ImageTile): string {
+    return tile.attribution!.join(' ');
+  }
+
+  private getAriaIndex_(i: number): number {
+    return i + 1;
   }
 }
 

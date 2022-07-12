@@ -46,17 +46,6 @@ export function selectLocalCollection() {
 }
 
 /**
- * Select an image. Sent from untrusted to trusted.
- */
-export function selectImage(assetId: bigint) {
-  const event: constants.SelectImageEvent = {
-    type: constants.EventType.SELECT_IMAGE,
-    assetId
-  };
-  onMessageReceived(event);
-}
-
-/**
  * Called from untrusted code to validate that a received event is of an
  * expected type and contains the expected data.
  */
@@ -79,14 +68,6 @@ export function validateReceivedData(event: constants.Events): boolean {
       return Array.isArray(event.images) &&
           event.images.every(
               image => isDefaultImage(image) || isFilePath(image));
-    case constants.EventType.SEND_IMAGE_TILES: {
-      // Images array may be empty.
-      return Array.isArray(event.tiles);
-    }
-    case constants.EventType.SEND_CURRENT_WALLPAPER_ASSET_ID:
-    case constants.EventType.SEND_PENDING_WALLPAPER_ASSET_ID: {
-      return event.assetId === null || typeof event.assetId === 'bigint';
-    }
     case constants.EventType.SEND_VISIBLE: {
       return typeof event.visible === 'boolean';
     }

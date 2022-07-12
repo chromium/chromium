@@ -69,7 +69,7 @@ export class TestWallpaperProvider extends
     this.images_ = [
       {
         assetId: BigInt(0),
-        attribution: ['Image 0'],
+        attribution: ['Image 0 dark'],
         url: {url: 'https://images.googleusercontent.com/0'},
         unitId: BigInt(1),
         type: OnlineImageType.kDark,
@@ -79,11 +79,11 @@ export class TestWallpaperProvider extends
         attribution: ['Image 2'],
         url: {url: 'https://images.googleusercontent.com/2'},
         unitId: BigInt(2),
-        type: OnlineImageType.kDark,
+        type: OnlineImageType.kUnknown,
       },
       {
         assetId: BigInt(1),
-        attribution: ['Image 1'],
+        attribution: ['Image 0 light'],
         url: {url: 'https://images.googleusercontent.com/1'},
         unitId: BigInt(1),
         type: OnlineImageType.kLight,
@@ -98,7 +98,7 @@ export class TestWallpaperProvider extends
     };
 
     this.currentWallpaper = {
-      attribution: ['Image 0'],
+      attribution: ['Image 0 light'],
       layout: WallpaperLayout.kCenter,
       key: '1',
       type: WallpaperType.kOnline,

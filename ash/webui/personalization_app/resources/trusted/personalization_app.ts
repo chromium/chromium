@@ -48,7 +48,6 @@ import {PersonalizationStore} from './personalization_store.js';
 export {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, kMaximumLocalImagePreviews} from '../common/constants.js';
 export {getCountText, getNumberOfGridItemsPerRow} from '../common/utils.js';
 export {CollectionsGrid} from '../untrusted/collections_grid.js';
-export {ImagesGrid} from '../untrusted/images_grid.js';
 export {AlbumList} from './ambient/album_list_element.js';
 export {AlbumsSubpage} from './ambient/albums_subpage_element.js';
 export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAnimationThemeAction, setAnimationThemeAction, SetGooglePhotosAlbumsPreviewsAction, setGooglePhotosAlbumsPreviewsAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';

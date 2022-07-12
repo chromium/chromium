@@ -30,13 +30,8 @@ export enum EventType {
   SELECT_GOOGLE_PHOTOS_COLLECTION = 'select_google_photos_collection',
   SELECT_LOCAL_COLLECTION = 'select_local_collection',
   SEND_IMAGE_COUNTS = 'send_image_counts',
-  SEND_IMAGE_TILES = 'send_image_tiles',
   SEND_LOCAL_IMAGE_DATA = 'send_local_image_data',
   SEND_LOCAL_IMAGES = 'send_local_images',
-  SEND_CURRENT_WALLPAPER_ASSET_ID = 'send_current_wallpaper_asset_id',
-  SEND_PENDING_WALLPAPER_ASSET_ID = 'send_pending_wallpaper_asset_id',
-  SELECT_IMAGE = 'select_image',
-  SELECT_LOCAL_IMAGE = 'select_local_image',
   SEND_VISIBLE = 'send_visible',
 }
 
@@ -78,11 +73,6 @@ export type ImageTile = {
   unitId?: bigint, preview: Url[],
 };
 
-export type SendImageTilesEvent = {
-  type: EventType.SEND_IMAGE_TILES,
-  tiles: ImageTile[],
-};
-
 export type SendLocalImagesEvent = {
   type: EventType.SEND_LOCAL_IMAGES,
   images: Array<FilePath|DefaultImageSymbol>,
@@ -96,21 +86,6 @@ export type SendLocalImageDataEvent = {
   data: Record<string|DefaultImageSymbol, string>,
 };
 
-export type SendCurrentWallpaperAssetIdEvent = {
-  type: EventType.SEND_CURRENT_WALLPAPER_ASSET_ID,
-  assetId?: bigint,
-};
-
-export type SendPendingWallpaperAssetIdEvent = {
-  type: EventType.SEND_PENDING_WALLPAPER_ASSET_ID,
-  assetId?: bigint,
-};
-
-export type SelectImageEvent = {
-  type: EventType.SELECT_IMAGE,
-  assetId: bigint,
-};
-
 /**
  * Notify an iframe if its visible state changes.
  */
@@ -119,9 +94,7 @@ export type SendVisibleEvent = {
   visible: boolean,
 };
 
-export type Events =
-    SendCollectionsEvent|SendGooglePhotosEnabledEvent|SelectCollectionEvent|
-    SelectGooglePhotosCollectionEvent|SelectLocalCollectionEvent|
-    SendImageCountsEvent|SendImageTilesEvent|SendLocalImagesEvent|
-    SendLocalImageDataEvent|SendCurrentWallpaperAssetIdEvent|
-    SendPendingWallpaperAssetIdEvent|SelectImageEvent|SendVisibleEvent;
+export type Events = SendCollectionsEvent|SendGooglePhotosEnabledEvent|
+    SelectCollectionEvent|SelectGooglePhotosCollectionEvent|
+    SelectLocalCollectionEvent|SendImageCountsEvent|SendLocalImagesEvent|
+    SendLocalImageDataEvent|SendVisibleEvent;

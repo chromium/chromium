@@ -7,9 +7,6 @@ import {IFrameApi} from '../iframe_api.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {selectWallpaper} from './wallpaper_controller.js';
-import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-
 /**
  * @fileoverview message handler that receives data from untrusted.
  */
@@ -31,17 +28,6 @@ export function onMessageReceived(data: Events) {
       break;
     case EventType.SELECT_LOCAL_COLLECTION:
       PersonalizationRouter.instance().goToRoute(Paths.LOCAL_COLLECTION);
-      break;
-    case EventType.SELECT_IMAGE:
-      const collectionId = PersonalizationRouter.instance().collectionId;
-      if (!collectionId) {
-        console.warn('collectionId is not available when selecting image.');
-        return;
-      }
-      const images = store.data.wallpaper.backdrop.images[collectionId];
-      const selectedImage =
-          IFrameApi.getInstance().validateReceivedSelection(data, images);
-      selectWallpaper(selectedImage, getWallpaperProvider(), store);
       break;
   }
 }

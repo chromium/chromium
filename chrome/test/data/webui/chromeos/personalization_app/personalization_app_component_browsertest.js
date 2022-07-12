@@ -10,6 +10,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "ash/public/cpp/style/dark_light_mode_controller.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -20,6 +21,14 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
 
   get featureList() {
     return {enabled: ['ash::features::kWallpaperGooglePhotosIntegration']};
+  }
+
+  get testGenPreamble() {
+    // Force light mode in test to reduce randomness.
+    return () => {
+      GEN('ash::DarkLightModeController::Get()');
+      GEN('->SetDarkModeEnabledForTest(false);');
+    };
   }
 };
 
