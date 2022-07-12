@@ -847,8 +847,16 @@ class BrowserActionInteractiveFencedFrameTest
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
+// TODO(crbug.com/1342975): Test is flaky on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_BrowserActionPopupWithFencedFrame \
+  DISABLED_BrowserActionPopupWithFencedFrame
+#else
+#define MAYBE_BrowserActionPopupWithFencedFrame \
+  BrowserActionPopupWithFencedFrame
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
-                       BrowserActionPopupWithFencedFrame) {
+                       MAYBE_BrowserActionPopupWithFencedFrame) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.ServeFilesFromSourceDirectory("chrome/test/data");
