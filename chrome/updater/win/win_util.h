@@ -180,6 +180,9 @@ HRESULT IsUserAdmin(bool& is_user_admin);
 // non-elevated administrator.
 HRESULT IsUserNonElevatedAdmin(bool& is_user_non_elevated_admin);
 
+// Sets `is_com_caller_admin` to `true` if the COM caller is an admin.
+HRESULT IsCOMCallerAdmin(bool& is_com_caller_admin);
+
 // Sets `is_uac_on` to true if the UAC is enabled.
 HRESULT IsUACOn(bool& is_uac_on);
 

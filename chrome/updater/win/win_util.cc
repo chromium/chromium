@@ -41,6 +41,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -547,6 +548,41 @@ HRESULT IsUserNonElevatedAdmin(bool& is_user_non_elevated_admin) {
       is_user_non_elevated_admin = true;
     }
   }
+  return S_OK;
+}
+
+HRESULT IsCOMCallerAdmin(bool& is_com_caller_admin) {
+  ScopedKernelHANDLE token;
+
+  {
+    HRESULT hr = ::CoImpersonateClient();
+    if (hr == RPC_E_CALL_COMPLETE) {
+      // RPC_E_CALL_COMPLETE indicates that the caller is in-proc.
+      is_com_caller_admin = ::IsUserAnAdmin();
+      return S_OK;
+    }
+
+    if (FAILED(hr)) {
+      return hr;
+    }
+
+    base::ScopedClosureRunner co_revert_to_self(
+        base::BindOnce([]() { ::CoRevertToSelf(); }));
+
+    if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_ALL_ACCESS, TRUE,
+                           ScopedKernelHANDLE::Receiver(token).get())) {
+      hr = HRESULTFromLastError();
+      LOG(ERROR) << __func__ << ": ::OpenThreadToken failed: " << std::hex
+                 << hr;
+      return hr;
+    }
+  }
+
+  if (HRESULT hr = IsTokenAdmin(token.get(), is_com_caller_admin); FAILED(hr)) {
+    LOG(ERROR) << __func__ << ": IsTokenAdmin failed: " << std::hex << hr;
+    return hr;
+  }
+
   return S_OK;
 }
 

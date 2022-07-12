@@ -487,6 +487,7 @@ if (is_win || is_mac || is_linux) {
     if (is_win) {
       sources += [
         "//chrome/updater/util_win.cc",
+        "//chrome/updater/win/scoped_handle.h",
         "//chrome/updater/win/user_info.cc",
         "//chrome/updater/win/user_info.h",
         "//chrome/updater/win/win_constants.cc",

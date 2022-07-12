@@ -32,8 +32,23 @@
 namespace updater {
 
 namespace {
+
 // Maximum string length for COM strings.
 constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
+
+HRESULT IsCOMCallerAllowed() {
+  if (GetUpdaterScope() == UpdaterScope::kUser)
+    return S_OK;
+
+  bool is_com_caller_admin = false;
+  if (HRESULT hr = IsCOMCallerAdmin(is_com_caller_admin); FAILED(hr)) {
+    LOG(ERROR) << __func__ << ": IsCOMCallerAdmin failed: " << std::hex << hr;
+    return hr;
+  }
+
+  return is_com_caller_admin ? S_OK : E_ACCESSDENIED;
+}
+
 }  // namespace
 
 STDMETHODIMP UpdateStateImpl::get_state(LONG* state) {
@@ -106,6 +121,10 @@ STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
   DCHECK(message);
   *message = base::win::ScopedBstr(message_).Release();
   return S_OK;
+}
+
+HRESULT UpdaterImpl::RuntimeClassInitialize() {
+  return IsCOMCallerAllowed();
 }
 
 HRESULT UpdaterImpl::GetVersion(BSTR* version) {
@@ -590,6 +609,10 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
           install_settings_str, IUpdaterObserverPtr(observer)));
 
   return S_OK;
+}
+
+HRESULT UpdaterInternalImpl::RuntimeClassInitialize() {
+  return IsCOMCallerAllowed();
 }
 
 // See the comment for the UpdaterImpl::Update.

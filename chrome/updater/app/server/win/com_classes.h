@@ -87,6 +87,10 @@ class UpdaterImpl
   UpdaterImpl(const UpdaterImpl&) = delete;
   UpdaterImpl& operator=(const UpdaterImpl&) = delete;
 
+  // Returns S_OK if user, or for system, only if the COM caller is Admin.
+  // Otherwise, fails creation of this COM class.
+  HRESULT RuntimeClassInitialize();
+
   // Overrides for IUpdater.
   IFACEMETHODIMP GetVersion(BSTR* version) override;
   IFACEMETHODIMP CheckForUpdate(const wchar_t* app_id) override;
@@ -135,6 +139,10 @@ class UpdaterInternalImpl
   UpdaterInternalImpl() = default;
   UpdaterInternalImpl(const UpdaterInternalImpl&) = delete;
   UpdaterInternalImpl& operator=(const UpdaterInternalImpl&) = delete;
+
+  // Returns S_OK if user, or for system, only if the COM caller is Admin.
+  // Otherwise, fails creation of this COM class.
+  HRESULT RuntimeClassInitialize();
 
   // Overrides for IUpdaterInternal.
   IFACEMETHODIMP Run(IUpdaterInternalCallback* callback) override;

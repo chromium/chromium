@@ -262,4 +262,10 @@ TEST(WinUtil, CompareOSVersions_OldMajorWithHigherMinor) {
   }
 }
 
+TEST(WinUtil, IsCOMCallerAdmin) {
+  bool is_com_caller_admin = false;
+  EXPECT_HRESULT_SUCCEEDED(IsCOMCallerAdmin(is_com_caller_admin));
+  EXPECT_EQ(is_com_caller_admin, ::IsUserAnAdmin());
+}
+
 }  // namespace updater

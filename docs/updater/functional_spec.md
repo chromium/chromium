@@ -306,6 +306,16 @@ It is not possible to MITM the updater even if the network (including TLS) is
 compromised. The integrity of the client-server communication is guaranteed
 by the [Client Update Protocol (CUP)](cup.md).
 
+##### COM Security
+
+The legacy COM classes in updater_legacy_idl.template allow non-admin callers
+because the interfaces only expose functionality that non-admin callers need.
+
+The new COM classes in updater_internal_idl.template and updater_idl.template
+require the callers to be admin. This is because the corresponding interfaces
+allow for unrestricted functionality, such as installing any app that the
+updater supports. For non-admins, COM creation will fail with E_ACCESSDENIED.
+
 #### Retries
 The updater does not retry an update check that transacted with the backend,
 even if the response was erroneous (misformatted or unparsable), until the
