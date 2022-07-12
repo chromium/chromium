@@ -3021,13 +3021,21 @@ class FrameFocusedObserver::FrameTreeNodeObserverImpl
   explicit FrameTreeNodeObserverImpl(FrameTreeNode* owner) : owner_(owner) {
     owner->AddObserver(this);
   }
-  ~FrameTreeNodeObserverImpl() override { owner_->RemoveObserver(this); }
+  ~FrameTreeNodeObserverImpl() override {
+    if (owner_)
+      owner_->RemoveObserver(this);
+  }
 
   void Run() { run_loop_.Run(); }
 
   void OnFrameTreeNodeFocused(FrameTreeNode* node) override {
     if (node == owner_)
       run_loop_.Quit();
+  }
+
+  void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override {
+    if (node == owner_)
+      owner_ = nullptr;
   }
 
  private:

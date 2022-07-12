@@ -9,6 +9,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -21,6 +22,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/data_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -922,6 +924,87 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusLostOnDeletedNode) {
                      "var iframe = document.getElementById('iframe');"
                      "var inner_doc = iframe.contentWindow.document;"
                      "inner_doc.getElementById('2').focus();");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       FocusLostOnDeletedNodeInInnerWebContents) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  GURL url(
+      "data:text/html,"
+      "<button id='1'>1</button>"
+      "<iframe></iframe>");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EnableAccessibilityForWebContents(shell()->web_contents());
+  // Make sure we have an initial accessibility tree before continuing the test
+  // setup, otherwise the wait for button 3 below seems to flake on linux.
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "1");
+
+  RenderFrameHostImplWrapper child(ChildFrameAt(shell()->web_contents(), 0));
+  EXPECT_TRUE(child);
+
+  GURL inner_url(
+      "data:text/html,"
+      "<button id='2'>2</button>"
+      "<iframe id='iframe' srcdoc=\""
+      "<button id='3'>3</button>"
+      "\"></iframe>");
+  auto* inner_contents =
+      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(child.get()));
+  EnableAccessibilityForWebContents(inner_contents);
+
+  EXPECT_TRUE(NavigateToURL(inner_contents, inner_url));
+
+  RenderFrameHostImplWrapper inner_iframe(ChildFrameAt(inner_contents, 0));
+  EXPECT_TRUE(inner_iframe);
+
+  // We need to explicitly focus the inner web contents, it can't do so on its
+  // own.
+  inner_contents->FocusOwningWebContents(inner_iframe->GetRenderWidgetHost());
+
+  FrameFocusedObserver focus_observer(inner_iframe.get());
+  EXPECT_TRUE(ExecJs(inner_iframe.get(),
+                     "window.focus();"
+                     "document.getElementById('3').focus();"));
+  focus_observer.Wait();
+
+  // We now have an inner WebContents which has an iframe with a button, and
+  // that button has focus.
+  EXPECT_EQ(shell()->web_contents()->GetFocusedFrame(), inner_iframe.get());
+  // WaitForAccessibilityTreeToContainNodeWithName seems to flake when waiting
+  // for button 3, so we poll instead.
+  BrowserAccessibility* node_button_3 = FindNode(ax::mojom::Role::kButton, "3");
+  while (!node_button_3) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+
+    node_button_3 = FindNode(ax::mojom::Role::kButton, "3");
+  }
+  while (GetFocusedAccessibilityNodeInfo(shell()->web_contents()).id !=
+         node_button_3->GetId()) {
+    WaitForAccessibilityFocusChange();
+  }
+
+  // Now delete the iframe with the focused button.
+  EXPECT_TRUE(
+      ExecJs(inner_contents, "document.querySelector('iframe').remove();"));
+  EXPECT_TRUE(inner_iframe.WaitUntilRenderFrameDeleted());
+  ASSERT_FALSE(FindNode(ax::mojom::Role::kButton, "3"));
+
+  // No frame has focus now.
+  EXPECT_EQ(shell()->web_contents()->GetFocusedFrame(), nullptr);
+
+  // If nothing is focused, accessibility treats the top document as having
+  // focus.
+  auto root_document_id =
+      FindNode(ax::mojom::Role::kRootWebArea, "")->GetData().id;
+  while (GetFocusedAccessibilityNodeInfo(shell()->web_contents()).id !=
+         root_document_id) {
+    WaitForAccessibilityFocusChange();
+  }
 }
 
 // Action::kScrollToMakeVisible does not seem reliable on Android and we are

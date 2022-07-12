@@ -7869,25 +7869,6 @@ void WebContentsImpl::DidCallFocus() {
   fullscreen_block.RunAndReset();
 }
 
-RenderFrameHostImpl*
-WebContentsImpl::GetFocusedFrameIncludingInnerFrameTrees() {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::GetFocusedFrameIncludingInnerFrameTrees");
-  auto* focused_frame = GetFocusedFrame();
-  if (focused_frame) {
-    return focused_frame;
-  }
-
-  // If there is no focused frame in the primary frame tree, we need to return
-  // null. If an inner frame tree has focus, but doesn't have a focused frame,
-  // treat its main frame as having focus.
-  if (GetFocusedFrameTree() != &primary_frame_tree_) {
-    return GetFocusedFrameTree()->root()->current_frame_host();
-  }
-
-  return nullptr;
-}
-
 void WebContentsImpl::OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnAdvanceFocus",
                         "render_frame_host", source_rfh);

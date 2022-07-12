@@ -10034,11 +10034,14 @@ ui::AXTreeID RenderFrameHostImpl::GetFocusedAXTreeID() {
   if (!is_main_frame())
     return ui::AXTreeIDUnknown();
 
-  auto* focused_frame = static_cast<RenderFrameHostImpl*>(
-      delegate_->GetFocusedFrameIncludingInnerFrameTrees());
+  RenderFrameHostImpl* focused_frame = delegate_->GetFocusedFrame();
   if (focused_frame)
     return focused_frame->GetAXTreeID();
 
+  // It's possible for there to be no focused RenderFrameHost (e.g. the frame
+  // that had focus was destroyed). Note however, that this doesn't mean that
+  // keyboard events are ignored; they'd be sent by default to the root
+  // RenderWidgetHost.
   return ui::AXTreeIDUnknown();
 }
 
