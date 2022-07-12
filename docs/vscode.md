@@ -102,7 +102,7 @@ Next, we will install some useful extensions. Jump to the extensions window
 You will most likely use the following extensions every day:
 
 ```bash
-$ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.python bbenoist.togglehs peterj.proto Google.vscode-mojom npclaudiu.vscode-gn stkb.rewrap ms-vscode-remote.remote-ssh eamodio.gitlens" | xargs -n 1 code --install-extension --force
+$ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.python bbenoist.togglehs peterj.proto Google.vscode-mojom msedge-dev.gnls stkb.rewrap ms-vscode-remote.remote-ssh eamodio.gitlens" | xargs -n 1 code --install-extension --force
 ```
 
 *   [**C/C++**](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) -
@@ -130,8 +130,8 @@ $ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.pytho
     Syntax highlighting and a
     [language server](https://microsoft.github.io/language-server-protocol/)
     for .mojom files.
-*   [**GN**](https://marketplace.visualstudio.com/items?itemName=npclaudiu.vscode-gn) -
-    Syntax highlighting for .gn files.
+*   [**GN**](https://marketplace.visualstudio.com/items?itemName=msedge-dev.gnls) -
+    Code IntelliSense for the GN build system.
 *   [**Rewrap**](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) -
     Wrap lines at 80 characters with `Alt+Q`.
 *   [**Remote**](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) -
