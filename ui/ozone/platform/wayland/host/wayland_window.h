@@ -108,13 +108,12 @@ class WaylandWindow : public PlatformWindow,
   bool CommitOverlays(uint32_t frame_id,
                       std::vector<wl::WaylandOverlayConfig>& overlays);
 
-  // Set whether this window has pointer focus and should dispatch mouse events.
-  void SetPointerFocus(bool focus);
-  bool has_pointer_focus() const { return has_pointer_focus_; }
+  // Called when the focus changed on this window.
+  void OnPointerFocusChanged(bool focused);
 
-  // Set whether this window has keyboard focus and should dispatch key events.
-  void set_keyboard_focus(bool focus) { has_keyboard_focus_ = focus; }
-  bool has_keyboard_focus() const { return has_keyboard_focus_; }
+  // Returns the focus status of this window.
+  bool HasPointerFocus() const;
+  bool HasKeyboardFocus() const;
 
   // The methods set or return whether this window has touch focus and should
   // dispatch touch events.
@@ -332,6 +331,12 @@ class WaylandWindow : public PlatformWindow,
     apply_pending_state_on_update_visual_size_for_testing_ = apply;
   }
 
+#if DCHECK_IS_ON()
+  void disable_null_target_dcheck_for_testing() {
+    disable_null_target_dcheck_for_test_ = true;
+  }
+#endif
+
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
@@ -380,6 +385,7 @@ class WaylandWindow : public PlatformWindow,
  private:
   friend class WaylandBufferManagerViewportTest;
   friend class BlockableWaylandToplevelWindow;
+  friend class WaylandWindowManager;
 
   FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetWindowScale);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSubmitOverlayPriority);
@@ -456,8 +462,6 @@ class WaylandWindow : public PlatformWindow,
   // areas outside the geometry are used to draw client-side window decorations.
   absl::optional<gfx::Insets> frame_insets_px_;
 
-  bool has_pointer_focus_ = false;
-  bool has_keyboard_focus_ = false;
   bool has_touch_focus_ = false;
   // The UI scale may be forced through the command line, which means that it
   // replaces the default value that is equal to the natural device scale.
@@ -519,6 +523,10 @@ class WaylandWindow : public PlatformWindow,
   WmDragHandler::DragFinishedCallback drag_finished_callback_;
 
   base::OnceClosure drag_loop_quit_closure_;
+
+#if DCHECK_IS_ON()
+  bool disable_null_target_dcheck_for_test_ = false;
+#endif
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
