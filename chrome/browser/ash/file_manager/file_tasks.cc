@@ -134,13 +134,13 @@ void RecordChangesInDefaultPdfApp(const std::string& new_default_app_id,
 }
 
 // Returns True if the `app_id` belongs to Files app either extension or SWA.
-inline bool isFilesAppId(const std::string& app_id) {
+inline bool IsFilesAppId(const std::string& app_id) {
   return app_id == kFileManagerAppId || app_id == kFileManagerSwaAppId;
 }
 
 // The SWA actionId is prefixed with chrome://file-manager/?ACTION_ID, just the
 // sub-string compatible with the extension/legacy e.g.: "view-pdf".
-std::string parseFilesAppActionId(const std::string& action_id) {
+std::string ParseFilesAppActionId(const std::string& action_id) {
   if (base::StartsWith(action_id, kChromeUIFileManagerURL)) {
     std::string result(action_id);
     base::ReplaceFirstSubstringAfterOffset(
@@ -155,28 +155,28 @@ std::string parseFilesAppActionId(const std::string& action_id) {
 // Returns true if the `task` is the office handling task.
 bool IsHandleOfficeTask(const FullTaskDescriptor& task) {
   const std::string action_id =
-      parseFilesAppActionId(task.task_descriptor.action_id);
-  return isFilesAppId(task.task_descriptor.app_id) &&
+      ParseFilesAppActionId(task.task_descriptor.action_id);
+  return IsFilesAppId(task.task_descriptor.app_id) &&
          action_id == kActionIdHandleOffice;
 }
 
 // Returns true if the `task` is a Web Drive Office task.
 bool IsWebDriveOfficeTask(const FullTaskDescriptor& task) {
   const std::string action_id =
-      parseFilesAppActionId(task.task_descriptor.action_id);
+      ParseFilesAppActionId(task.task_descriptor.action_id);
   bool is_web_drive_office_action_id =
       action_id == kActionIdWebDriveOfficeWord ||
       action_id == kActionIdWebDriveOfficeExcel ||
       action_id == kActionIdWebDriveOfficePowerPoint;
-  return isFilesAppId(task.task_descriptor.app_id) &&
+  return IsFilesAppId(task.task_descriptor.app_id) &&
          is_web_drive_office_action_id;
 }
 
 // Returns true if the `task` is the "upload to Drive" workflow.
 bool IsUploadOfficeToDriveTask(const FullTaskDescriptor& task) {
   const std::string action_id =
-      parseFilesAppActionId(task.task_descriptor.action_id);
-  return isFilesAppId(task.task_descriptor.app_id) &&
+      ParseFilesAppActionId(task.task_descriptor.action_id);
+  return IsFilesAppId(task.task_descriptor.app_id) &&
          action_id == kActionIdUploadOfficeToDrive;
 }
 
@@ -193,7 +193,7 @@ bool ContainsGoogleDocument(const std::vector<extensions::EntryInfo>& entries) {
 void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
   std::vector<FullTaskDescriptor> filtered;
   for (FullTaskDescriptor& task : *tasks) {
-    if (isFilesAppId(task.task_descriptor.app_id))
+    if (IsFilesAppId(task.task_descriptor.app_id))
       filtered.push_back(task);
   }
   tasks->swap(filtered);
@@ -205,9 +205,9 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
   std::vector<FullTaskDescriptor> filtered;
   for (FullTaskDescriptor& task : *tasks) {
     const auto& action = task.task_descriptor.action_id;
-    if (!isFilesAppId(task.task_descriptor.app_id)) {
+    if (!IsFilesAppId(task.task_descriptor.app_id)) {
       filtered.push_back(task);
-    } else if (actions.find(parseFilesAppActionId(action)) == actions.end()) {
+    } else if (actions.find(ParseFilesAppActionId(action)) == actions.end()) {
       filtered.push_back(task);
     }
   }
@@ -668,7 +668,7 @@ void PostProcessFoundTasks(
 // is used to handle certain action IDs of the file manager.
 bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
                                const std::string& action_id) {
-  return isFilesAppId(extension_id) &&
+  return IsFilesAppId(extension_id) &&
          (action_id == "view-pdf" || action_id == "view-in-browser" ||
           action_id == "open-hosted-generic" ||
           action_id == "open-hosted-gdoc" ||
@@ -900,7 +900,7 @@ bool ExecuteFileTask(Profile* profile,
   // files to be directly opened with the browser. In a multiprofile session
   // this will always open on the current desktop, regardless of which profile
   // owns the files, so return TASK_RESULT_OPENED.
-  const std::string parsed_action_id(parseFilesAppActionId(task.action_id));
+  const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
   if (ShouldBeOpenedWithBrowser(task.app_id, parsed_action_id)) {
     const bool result =
         OpenFilesWithBrowser(profile, file_urls, parsed_action_id);
@@ -912,7 +912,7 @@ bool ExecuteFileTask(Profile* profile,
   }
 
   // When the FilesSWA is enabled: Open Files SWA if the task is for Files app.
-  if (ash::features::IsFileManagerSwaEnabled() && isFilesAppId(task.app_id)) {
+  if (ash::features::IsFileManagerSwaEnabled() && IsFilesAppId(task.app_id)) {
     std::u16string title;
     const GURL destination_entry =
         file_urls.size() ? file_urls[0].ToGURL() : GURL();
@@ -1104,7 +1104,7 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // Unless it's HTML which should open in the browser (crbug.com/1121396).
   for (FullTaskDescriptor& task : *tasks) {
     if (IsFallbackFileHandler(task) &&
-        parseFilesAppActionId(task.task_descriptor.action_id) !=
+        ParseFilesAppActionId(task.task_descriptor.action_id) !=
             "view-in-browser") {
       const extensions::EntryInfo entry = entries[0];
       const base::FilePath& file_path = entry.path;
