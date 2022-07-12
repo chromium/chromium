@@ -40,7 +40,7 @@ void AddFileToPseudoDir(base::StringPiece data,
   ASSERT_EQ(status, ZX_OK);
 
   auto vmo_file = std::make_unique<vfs::VmoFile>(
-      std::move(contents_vmo), 0, data.size(),
+      std::move(contents_vmo), data.size(),
       vfs::VmoFile::WriteOption::READ_ONLY, vfs::VmoFile::Sharing::CLONE_COW);
   status = dir->AddEntry(path.value(), std::move(vmo_file));
   ASSERT_EQ(status, ZX_OK);
