@@ -233,20 +233,43 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
   if (event_type == ET_MOUSEWHEEL) {
     // TODO(fxbug.dev/92938): Maybe also support ctrl+wheel event here.
 
-    // Fuchsia reports wheel rotated ticks, multiple |kWheelDelta| for pixel
-    // offset.
-    const int offset_x = sample.has_scroll_h()
-                             ? static_cast<int>(sample.scroll_h()) * kWheelDelta
-                             : 0;
-    const int offset_y = sample.has_scroll_v()
-                             ? static_cast<int>(sample.scroll_v()) * kWheelDelta
-                             : 0;
+    const int tick_x_120ths =
+        sample.has_scroll_h()
+            ? static_cast<int>(sample.scroll_h()) * kWheelDelta
+            : 0;
+    const int tick_y_120ths =
+        sample.has_scroll_v()
+            ? static_cast<int>(sample.scroll_v()) * kWheelDelta
+            : 0;
 
-    // TODO(fxbug.dev/85388): If mouse wheel has by detent(tick) scroll offset,
-    // we can fill them into |tick_120ths|.
+    // Fuchsia reports suggested scroll pixel in physical, but for old version,
+    // Fuchsia reports wheel rotated ticks need to multiple |kWheelDelta| for
+    // pixel offset.
+    const float offset_x =
+        sample.has_scroll_h_physical_pixel()
+            ? static_cast<float>(sample.scroll_h_physical_pixel())
+            : static_cast<float>(tick_x_120ths);
+    const float offset_y =
+        sample.has_scroll_v_physical_pixel()
+            ? static_cast<float>(sample.scroll_v_physical_pixel())
+            : static_cast<float>(tick_y_120ths);
+
+    if (sample.has_is_precision_scroll() && sample.is_precision_scroll()) {
+      // For precision scroll device, mostly are touchpads for now, need to use
+      // ScrollEvent instead of MouseWheelEvent to prevent animation
+      // interpolation in smooth scrolling.
+      // Because we only support touchpad as precision scroll device now,
+      // finger_count is 2. Maybe need to use different number when we support
+      // precision wheel mouse.
+      return std::make_unique<ScrollEvent>(
+          ui::ET_SCROLL, location, root_location, timestamp,
+          pressed_buttons_flags, offset_x, offset_y, offset_x, offset_y,
+          /*finger_count=*/2);
+    }
     return std::make_unique<MouseWheelEvent>(
-        gfx::Vector2d(offset_x, offset_y), location, root_location, timestamp,
-        pressed_buttons_flags, changed_buttons_flags);
+        gfx::Vector2d(static_cast<int>(offset_x), static_cast<int>(offset_y)),
+        location, root_location, timestamp, pressed_buttons_flags,
+        changed_buttons_flags, gfx::Vector2d(tick_x_120ths, tick_y_120ths));
   }
   return std::make_unique<MouseEvent>(event_type, location, root_location,
                                       timestamp, pressed_buttons_flags,

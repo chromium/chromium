@@ -100,7 +100,9 @@ MouseEventBuilder& MouseEventBuilder::AddSample(
     uint32_t id,
     std::array<float, 2> position,
     std::vector<uint8_t> pressed_buttons,
-    std::array<int64_t, 2> scroll) {
+    std::array<int64_t, 2> scroll,
+    std::array<int64_t, 2> scroll_in_physical_pixel,
+    bool is_precision_scroll) {
   sample_ = absl::make_optional<fup::MousePointerSample>();
   sample_->set_device_id(id);
   if (!pressed_buttons.empty()) {
@@ -113,6 +115,13 @@ MouseEventBuilder& MouseEventBuilder::AddSample(
   if (scroll[1] != 0) {
     sample_->set_scroll_v(scroll[1]);
   }
+  if (scroll_in_physical_pixel[0] != 0) {
+    sample_->set_scroll_h_physical_pixel(scroll_in_physical_pixel[0]);
+  }
+  if (scroll_in_physical_pixel[1] != 0) {
+    sample_->set_scroll_v_physical_pixel(scroll_in_physical_pixel[1]);
+  }
+  sample_->set_is_precision_scroll(is_precision_scroll);
   return *this;
 }
 

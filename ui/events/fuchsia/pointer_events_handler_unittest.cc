@@ -38,6 +38,11 @@ constexpr fup::TouchInteractionId kIxnOne = {.device_id = 1u,
                                              .interaction_id = 2u};
 constexpr uint32_t kMouseDeviceId = 123;
 
+constexpr std::array<int64_t, 2> kNoScrollDelta = {0, 0};
+constexpr std::array<int64_t, 2> kNoScrollInPhysicalPixelDelta = {0, 0};
+const bool kNotPrecisionScroll = false;
+const bool kPrecisionScroll = true;
+
 // Fixture to exercise the implementation for fuchsia.ui.pointer.TouchSource and
 // fuchsia.ui.pointer.MouseSource.
 class PointerEventsHandlerTest : public ::testing::Test {
@@ -90,7 +95,8 @@ TEST_F(PointerEventsHandlerTest, Watch_EventCallbacksAreIndependent) {
       MouseEventBuilder()
           .AddTime(1111789u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 0})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, kNoScrollDelta,
+                     kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
           .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
           .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(mouse_events));
@@ -139,7 +145,9 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
       MouseEventBuilder()
           .AddTime(1111789u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0 /*button id*/}, {0, 0})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0 /*button id*/},
+                     kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                     kNotPrecisionScroll)
           .AddMouseDeviceInfo(kMouseDeviceId,
                               {2 /*first button id*/, 0 /*second button id*/,
                                1 /*third button id*/})
@@ -154,11 +162,12 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
 
   // Keep Fuchsia button press -> Chrome ET_MOUSE_DRAGGED and
   // EF_RIGHT_MOUSE_BUTTON
-  events =
-      MouseEventBuilder()
-          .AddTime(1111789u)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0 /*button id*/}, {0, 0})
-          .BuildAsVector();
+  events = MouseEventBuilder()
+               .AddTime(1111789u)
+               .AddSample(kMouseDeviceId, {10.f, 10.f}, {0 /*button id*/},
+                          kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                          kNotPrecisionScroll)
+               .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
   RunLoopUntilIdle();
 
@@ -170,7 +179,8 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
   // Release Fuchsia button -> Chrome ET_MOUSE_RELEASED
   events = MouseEventBuilder()
                .AddTime(1111789u)
-               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {0, 0})
+               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, kNoScrollDelta,
+                          kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
                .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
   RunLoopUntilIdle();
@@ -183,7 +193,8 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
   // Release Fuchsia button -> Chrome ET_MOUSE_MOVED
   events = MouseEventBuilder()
                .AddTime(1111789u)
-               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {0, 0})
+               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, kNoScrollDelta,
+                          kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
                .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
   RunLoopUntilIdle();
@@ -207,7 +218,8 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagsAreSynthesized) {
       MouseEventBuilder()
           .AddTime(1111789u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 0})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, kNoScrollDelta,
+                     kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
           .AddMouseDeviceInfo(kMouseDeviceId, {2, 0, 1})
           .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
@@ -222,7 +234,8 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagsAreSynthesized) {
   // EF_LEFT_MOUSE_BUTTON
   events = MouseEventBuilder()
                .AddTime(1111789u)
-               .AddSample(kMouseDeviceId, {10.f, 10.f}, {2}, {0, 0})
+               .AddSample(kMouseDeviceId, {10.f, 10.f}, {2}, kNoScrollDelta,
+                          kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
                .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
   RunLoopUntilIdle();
@@ -249,7 +262,8 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagCombo) {
       MouseEventBuilder()
           .AddTime(1111789u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0, 1}, {0, 0})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0, 1}, kNoScrollDelta,
+                     kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
           .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
           .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
@@ -276,38 +290,50 @@ TEST_F(PointerEventsHandlerTest, MouseMultiButtonDrag) {
   events.push_back(MouseEventBuilder()
                        .AddTime(1111789u)
                        .AddViewParameters(kRect, kRect, kIdentity)
-                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {0, 1}, {0, 0})
+                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {0, 1},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
                        .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
                        .Build());
   // drag with left, right button pressing.
   events.push_back(MouseEventBuilder()
                        .AddTime(1111790u)
                        .AddViewParameters(kRect, kRect, kIdentity)
-                       .AddSample(kMouseDeviceId, {11.f, 10.f}, {0, 1}, {0, 0})
+                       .AddSample(kMouseDeviceId, {11.f, 10.f}, {0, 1},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
                        .Build());
   // right button up.
   events.push_back(MouseEventBuilder()
                        .AddTime(1111791u)
                        .AddViewParameters(kRect, kRect, kIdentity)
-                       .AddSample(kMouseDeviceId, {11.f, 10.f}, {0}, {0, 0})
+                       .AddSample(kMouseDeviceId, {11.f, 10.f}, {0},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
                        .Build());
   // drag with left button pressing.
   events.push_back(MouseEventBuilder()
                        .AddTime(1111792u)
                        .AddViewParameters(kRect, kRect, kIdentity)
-                       .AddSample(kMouseDeviceId, {11.f, 11.f}, {0}, {0, 0})
+                       .AddSample(kMouseDeviceId, {11.f, 11.f}, {0},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
                        .Build());
   // left button up.
   events.push_back(MouseEventBuilder()
                        .AddTime(11117913u)
                        .AddViewParameters(kRect, kRect, kIdentity)
-                       .AddSample(kMouseDeviceId, {11.f, 11.f}, {}, {0, 0})
+                       .AddSample(kMouseDeviceId, {11.f, 11.f}, {},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
                        .Build());
   // mouse move.
   events.push_back(MouseEventBuilder()
                        .AddTime(1111794u)
                        .AddViewParameters(kRect, kRect, kIdentity)
-                       .AddSample(kMouseDeviceId, {12.f, 11.f}, {}, {0, 0})
+                       .AddSample(kMouseDeviceId, {12.f, 11.f}, {},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
                        .Build());
 
   mouse_source_->ScheduleCallback(std::move(events));
@@ -346,7 +372,8 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
       MouseEventBuilder()
           .AddTime(1111789u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {0, 1})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {0, 1},
+                     kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
           .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
           .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
@@ -363,7 +390,8 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
   events = MouseEventBuilder()
                .AddTime(1111789u)
                .AddViewParameters(kRect, kRect, kIdentity)
-               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {1, 0})
+               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {1, 0},
+                          kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
                .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
                .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
@@ -374,6 +402,100 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
   EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->x_offset(), 120);
   EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->y_offset(), 0);
+  mouse_events.clear();
+}
+
+TEST_F(PointerEventsHandlerTest, MouseWheelEventDeltaInPhysicalPixel) {
+  std::vector<MouseWheelEvent> mouse_events;
+  pointer_handler_->StartWatching(
+      base::BindLambdaForTesting([&mouse_events](Event* event) {
+        ASSERT_EQ(event->type(), ET_MOUSEWHEEL);
+        mouse_events.push_back(*event->AsMouseWheelEvent());
+      }));
+  RunLoopUntilIdle();  // Server gets watch call.
+
+  // receive a vertical scroll
+  std::vector<fup::MouseEvent> events =
+      MouseEventBuilder()
+          .AddTime(1111789u)
+          .AddViewParameters(kRect, kRect, kIdentity)
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {0, 1}, {0, 100},
+                     kNotPrecisionScroll)
+          .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
+          .BuildAsVector();
+  mouse_source_->ScheduleCallback(std::move(events));
+  RunLoopUntilIdle();
+
+  ASSERT_EQ(mouse_events.size(), 1u);
+  EXPECT_EQ(mouse_events[0].type(), ET_MOUSEWHEEL);
+  EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
+  EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->x_offset(), 0);
+  EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->y_offset(), 100);
+  mouse_events.clear();
+
+  // receive a horizontal scroll
+  events = MouseEventBuilder()
+               .AddTime(1111789u)
+               .AddViewParameters(kRect, kRect, kIdentity)
+               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {1, 0}, {100, 0},
+                          kNotPrecisionScroll)
+               .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
+               .BuildAsVector();
+  mouse_source_->ScheduleCallback(std::move(events));
+  RunLoopUntilIdle();
+
+  ASSERT_EQ(mouse_events.size(), 1u);
+  EXPECT_EQ(mouse_events[0].type(), ET_MOUSEWHEEL);
+  EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
+  EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->x_offset(), 100);
+  EXPECT_EQ(mouse_events[0].AsMouseWheelEvent()->y_offset(), 0);
+  mouse_events.clear();
+}
+
+TEST_F(PointerEventsHandlerTest, ScrollEventDeltaInPhysicalPixel) {
+  std::vector<ScrollEvent> mouse_events;
+  pointer_handler_->StartWatching(
+      base::BindLambdaForTesting([&mouse_events](Event* event) {
+        ASSERT_EQ(event->type(), ET_SCROLL);
+        mouse_events.push_back(*event->AsScrollEvent());
+      }));
+  RunLoopUntilIdle();  // Server gets watch call.
+
+  // receive a vertical scroll
+  std::vector<fup::MouseEvent> events =
+      MouseEventBuilder()
+          .AddTime(1111789u)
+          .AddViewParameters(kRect, kRect, kIdentity)
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {0, 1}, {0, 100},
+                     kPrecisionScroll)
+          .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
+          .BuildAsVector();
+  mouse_source_->ScheduleCallback(std::move(events));
+  RunLoopUntilIdle();
+
+  ASSERT_EQ(mouse_events.size(), 1u);
+  EXPECT_EQ(mouse_events[0].type(), ET_SCROLL);
+  EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
+  EXPECT_EQ(mouse_events[0].AsScrollEvent()->x_offset(), 0);
+  EXPECT_EQ(mouse_events[0].AsScrollEvent()->y_offset(), 100);
+  mouse_events.clear();
+
+  // receive a horizontal scroll
+  events = MouseEventBuilder()
+               .AddTime(1111789u)
+               .AddViewParameters(kRect, kRect, kIdentity)
+               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {1, 0}, {100, 0},
+                          kPrecisionScroll)
+               .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
+               .BuildAsVector();
+  mouse_source_->ScheduleCallback(std::move(events));
+  RunLoopUntilIdle();
+
+  ASSERT_EQ(mouse_events.size(), 1u);
+  EXPECT_EQ(mouse_events[0].type(), ET_SCROLL);
+  EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
+  EXPECT_EQ(mouse_events[0].AsScrollEvent()->x_offset(), 100);
+  EXPECT_EQ(mouse_events[0].AsScrollEvent()->y_offset(), 0);
   mouse_events.clear();
 }
 
@@ -399,7 +521,8 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonPressed) {
       MouseEventBuilder()
           .AddTime(1111000u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 0})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, kNoScrollDelta,
+                     kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
           .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
           .BuildAsVector();
 
@@ -407,7 +530,9 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonPressed) {
   events.push_back(MouseEventBuilder()
                        .AddTime(1111789u)
                        .AddViewParameters(kRect, kRect, kIdentity)
-                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 1})
+                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 1},
+                                  kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
                        .Build());
   mouse_source_->ScheduleCallback(std::move(events));
 
@@ -446,7 +571,8 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonDownBundled) {
       MouseEventBuilder()
           .AddTime(1111000u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 1})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 1},
+                     kNoScrollInPhysicalPixelDelta, kNotPrecisionScroll)
           .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
           .BuildAsVector();
 
