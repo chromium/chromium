@@ -149,6 +149,49 @@ constexpr char kExpectedAdvancedCapabilities[] = R"json([
 ])json";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+constexpr char kExpectedPageOutputQuality[] = R"json([
+  {
+    "display_name": "Page output quality",
+    "id": "page_output_quality",
+    "select_cap": {
+      "option": [ {
+        "display_name": "Normal",
+        "value": "ns0000:Normal"
+      }, {
+        "display_name": "Draft",
+        "value": "ns0000:Draft",
+        "is_default": true
+      }, {
+        "display_name": "Custom Settings",
+        "value": "ns0000:AdvancedSetting"
+      } ]
+    },
+    "type": "SELECT"
+  }
+])json";
+
+constexpr char kExpectedPageOutputQualityNullDefault[] = R"json([
+  {
+    "display_name": "Page output quality",
+    "id": "page_output_quality",
+    "select_cap": {
+      "option": [ {
+        "display_name": "Normal",
+        "value": "ns0000:Normal"
+      }, {
+        "display_name": "Draft",
+        "value": "ns0000:Draft"
+      }, {
+        "display_name": "Custom Settings",
+        "value": "ns0000:AdvancedSetting"
+      } ]
+    },
+    "type": "SELECT"
+  }
+])json";
+#endif  // BUILDFLAG(IS_WIN)
+
 const printing::PrinterSemanticCapsAndDefaults::Paper kPaperA3{
     /*display_name=*/"A3", /*vendor_id=*/"67",
     /*size_um=*/gfx::Size(7016, 9921)};
@@ -189,6 +232,23 @@ const printing::AdvancedCapability kAdvancedCapability2(
 const printing::AdvancedCapabilities kAdvancedCapabilities{
     kAdvancedCapability1, kAdvancedCapability2};
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+const printing::PageOutputQuality
+    kPageOutputQuality(/*qualities=*/
+                       {
+                           printing::PageOutputQualityAttribute(
+                               /*display_name=*/"Normal",
+                               /*name=*/"ns0000:Normal"),
+                           printing::PageOutputQualityAttribute(
+                               /*display_name=*/"Draft",
+                               /*name=*/"ns0000:Draft"),
+                           printing::PageOutputQualityAttribute(
+                               /*display_name=*/"Custom Settings",
+                               /*name=*/"ns0000:AdvancedSetting"),
+                       },
+                       /*default_quality=*/"ns0000:Draft");
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr bool kCollateCapable = true;
 constexpr bool kCollateDefault = true;
@@ -341,5 +401,35 @@ TEST(CloudPrintCddConversionTest, PinAndAdvancedCapabilities) {
                         *printer_dict, "vendor_capability");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+TEST(CloudPrintCddConversionTest, PageOutputQualityWithDefaultQuality) {
+  printing::PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  input.page_output_quality = kPageOutputQuality;
+  const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
+  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+
+  ASSERT_TRUE(printer_dict);
+  ASSERT_EQ(9u, printer_dict->size());
+  base::ExpectDictValue(base::test::ParseJson(kExpectedPageOutputQuality),
+                        *printer_dict, "vendor_capability");
+}
+
+TEST(CloudPrintCddConversionTest, PageOutputQualityNullDefaultQuality) {
+  printing::PrinterSemanticCapsAndDefaults input =
+      GenerateSamplePrinterSemanticCapsAndDefaults();
+  input.page_output_quality = kPageOutputQuality;
+  input.page_output_quality->default_quality = absl::nullopt;
+  const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
+  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+
+  ASSERT_TRUE(printer_dict);
+  ASSERT_EQ(9u, printer_dict->size());
+  base::ExpectDictValue(
+      base::test::ParseJson(kExpectedPageOutputQualityNullDefault),
+      *printer_dict, "vendor_capability");
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace cloud_print

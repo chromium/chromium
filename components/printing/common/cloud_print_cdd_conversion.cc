@@ -27,6 +27,11 @@ namespace cloud_print {
 
 namespace {
 
+#if BUILDFLAG(IS_WIN)
+constexpr char kIdPageOutputQuality[] = "page_output_quality";
+constexpr char kDisplayNamePageOutputQuality[] = "Page output quality";
+#endif  // BUILDFLAG(IS_WIN)
+
 printer::DuplexType ToCloudDuplexType(printing::mojom::DuplexMode mode) {
   switch (mode) {
     case printing::mojom::DuplexMode::kSimplex:
@@ -167,6 +172,22 @@ printer::VendorCapabilities GetVendorCapabilities(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+printer::SelectVendorCapability GetPageOutputQualityCapabilities(
+    const printing::PrinterSemanticCapsAndDefaults& semantic_info) {
+  printer::SelectVendorCapability page_output_quality_capabilities;
+  const absl::optional<printing::PageOutputQuality>& page_output_quality =
+      semantic_info.page_output_quality;
+  for (const auto& attribute : page_output_quality->qualities) {
+    page_output_quality_capabilities.AddDefaultOption(
+        printer::SelectVendorCapabilityOption(attribute.name,
+                                              attribute.display_name),
+        attribute.name == page_output_quality->default_quality);
+  }
+  return page_output_quality_capabilities;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 base::Value PrinterSemanticCapsAndDefaultsToCdd(
@@ -243,6 +264,16 @@ base::Value PrinterSemanticCapsAndDefaultsToCdd(
     vendor_capabilities.SaveTo(&description);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+  if (semantic_info.page_output_quality) {
+    printer::VendorCapabilities vendor_capabilities;
+    vendor_capabilities.AddOption(printer::VendorCapability(
+        kIdPageOutputQuality, kDisplayNamePageOutputQuality,
+        GetPageOutputQualityCapabilities(semantic_info)));
+    vendor_capabilities.SaveTo(&description);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   return std::move(description).ToValue();
 }
