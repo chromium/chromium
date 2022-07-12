@@ -254,10 +254,14 @@ class WaylandWindowTest : public WaylandTest {
   }
 
   void VerifyCanDispatchMouseEvents(
-      const std::vector<WaylandWindow*>& dispatching_windows,
+      WaylandWindow* dispatching_window,
       const std::vector<WaylandWindow*>& non_dispatching_windows) {
-    for (auto* window : dispatching_windows)
-      EXPECT_TRUE(window->CanDispatchEvent(&test_mouse_event_));
+    auto* pointer_focused_window =
+        connection_->wayland_window_manager()->GetCurrentPointerFocusedWindow();
+
+    DCHECK(pointer_focused_window);
+    Event::DispatcherApi(&test_mouse_event_).set_target(pointer_focused_window);
+    EXPECT_TRUE(dispatching_window->CanDispatchEvent(&test_mouse_event_));
     for (auto* window : non_dispatching_windows)
       EXPECT_FALSE(window->CanDispatchEvent(&test_mouse_event_));
   }
@@ -265,23 +269,49 @@ class WaylandWindowTest : public WaylandTest {
   void VerifyCanDispatchTouchEvents(
       const std::vector<WaylandWindow*>& dispatching_windows,
       const std::vector<WaylandWindow*>& non_dispatching_windows) {
+    DCHECK(dispatching_windows.size() < 2);
+    auto* touch_focused_window =
+        connection_->wayland_window_manager()->GetCurrentTouchFocusedWindow();
+    // There must be focused window to dispatch.
+    if (dispatching_windows.size() == 0)
+      EXPECT_FALSE(touch_focused_window);
+
     PointerDetails pointer_details(EventPointerType::kTouch, 1);
     TouchEvent test_touch_event(ET_TOUCH_PRESSED, {1, 1}, base::TimeTicks(),
                                 pointer_details);
+    if (touch_focused_window)
+      Event::DispatcherApi(&test_touch_event).set_target(touch_focused_window);
     for (auto* window : dispatching_windows)
       EXPECT_TRUE(window->CanDispatchEvent(&test_touch_event));
-    for (auto* window : non_dispatching_windows)
+    for (auto* window : non_dispatching_windows) {
+      // Make sure that the CanDispatcEvent works on release build.
+      window->disable_null_target_dcheck_for_testing();
       EXPECT_FALSE(window->CanDispatchEvent(&test_touch_event));
+    }
   }
 
   void VerifyCanDispatchKeyEvents(
       const std::vector<WaylandWindow*>& dispatching_windows,
       const std::vector<WaylandWindow*>& non_dispatching_windows) {
+    DCHECK(dispatching_windows.size() < 2);
+    auto* keyboard_focused_window = connection_->wayland_window_manager()
+                                        ->GetCurrentKeyboardFocusedWindow();
+
+    // There must be focused window to dispatch.
+    if (dispatching_windows.size() == 0)
+      EXPECT_FALSE(keyboard_focused_window);
+
     KeyEvent test_key_event(ET_KEY_PRESSED, VKEY_0, 0);
+    if (keyboard_focused_window)
+      Event::DispatcherApi(&test_key_event).set_target(keyboard_focused_window);
+
     for (auto* window : dispatching_windows)
       EXPECT_TRUE(window->CanDispatchEvent(&test_key_event));
-    for (auto* window : non_dispatching_windows)
+    for (auto* window : non_dispatching_windows) {
+      // Make sure that the CanDispatcEvent works on release build.
+      window->disable_null_target_dcheck_for_testing();
       EXPECT_FALSE(window->CanDispatchEvent(&test_key_event));
+    }
   }
 
   wl::TestXdgPopup* GetTestXdgPopupByWindow(WaylandWindow* window) {
@@ -1197,23 +1227,15 @@ TEST_P(WaylandWindowTest, UpdateWindowRegion) {
   EXPECT_EQ(mock_surface->input_region(), restored_bounds);
 }
 
-TEST_P(WaylandWindowTest, CanDispatchMouseEventDefault) {
-  EXPECT_FALSE(window_->CanDispatchEvent(&test_mouse_event_));
-}
-
 TEST_P(WaylandWindowTest, CanDispatchMouseEventFocus) {
-  // SetPointerFocus(true) requires a WaylandPointer.
+  // SetPointerFocusedWindow requires a WaylandPointer.
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
   ASSERT_TRUE(connection_->seat()->pointer());
-  window_->SetPointerFocus(true);
+  SetPointerFocusedWindow(window_.get());
+  Event::DispatcherApi(&test_mouse_event_).set_target(window_.get());
   EXPECT_TRUE(window_->CanDispatchEvent(&test_mouse_event_));
-}
-
-TEST_P(WaylandWindowTest, CanDispatchMouseEventUnfocus) {
-  EXPECT_FALSE(window_->has_pointer_focus());
-  EXPECT_FALSE(window_->CanDispatchEvent(&test_mouse_event_));
 }
 
 TEST_P(WaylandWindowTest, SetCursorUsesZcrCursorShapesForCommonTypes) {
@@ -1362,7 +1384,7 @@ TEST_P(WaylandWindowTest, CanCreateMenuWindow) {
       WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
   Sync();
   ASSERT_TRUE(connection_->seat()->pointer() && connection_->seat()->touch());
-  window_->SetPointerFocus(true);
+  SetPointerFocusedWindow(window_.get());
 
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
       PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
@@ -1371,7 +1393,7 @@ TEST_P(WaylandWindowTest, CanCreateMenuWindow) {
 
   Sync();
 
-  window_->SetPointerFocus(false);
+  SetPointerFocusedWindow(window_.get());
   window_->set_touch_focus(false);
 
   // Given that there is no parent passed and we don't have any focused windows,
@@ -1432,10 +1454,10 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
   ASSERT_TRUE(connection_->seat()->pointer());
-  window_->SetPointerFocus(true);
+  SetPointerFocusedWindow(window_.get());
 
   // Make sure the events are handled by the window that has the pointer focus.
-  VerifyCanDispatchMouseEvents({window_.get()}, {menu_window.get()});
+  VerifyCanDispatchMouseEvents(window_.get(), {menu_window.get()});
 
   // The |window_| that has the pointer focus must receive the event.
   EXPECT_CALL(menu_window_delegate, DispatchEvent(_)).Times(0);
@@ -1457,7 +1479,7 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
 
   // It's still the |window_| that can dispatch the events, but it will reroute
   // the event to correct window and fix the location.
-  VerifyCanDispatchMouseEvents({window_.get()}, {menu_window.get()});
+  VerifyCanDispatchMouseEvents(window_.get(), {menu_window.get()});
 
   // The |window_| that has the pointer focus must receive the event.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
@@ -1503,12 +1525,11 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
 
   Sync();
 
-  window_->SetPointerFocus(false);
-  nested_menu_window->SetPointerFocus(true);
+  SetPointerFocusedWindow(nested_menu_window.get());
 
   // The event is processed by the window that has the pointer focus, but
   // dispatched by the window that has the capture.
-  VerifyCanDispatchMouseEvents({nested_menu_window.get()},
+  VerifyCanDispatchMouseEvents(nested_menu_window.get(),
                                {window_.get(), menu_window.get()});
   EXPECT_TRUE(menu_window->HasCapture());
 
@@ -1556,10 +1577,10 @@ TEST_P(WaylandWindowTest,
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
   ASSERT_TRUE(connection_->seat()->pointer());
-  window_->SetPointerFocus(true);
+  SetPointerFocusedWindow(window_.get());
 
   // Make sure the events are handled by the window that has the pointer focus.
-  VerifyCanDispatchMouseEvents({window_.get()},
+  VerifyCanDispatchMouseEvents(window_.get(),
                                {menu_window.get(), toplevel_window2.get()});
 
   menu_window->SetCapture();
@@ -1583,10 +1604,9 @@ TEST_P(WaylandWindowTest,
 
   // Now, pretend that the second toplevel window gets the pointer focus - the
   // event grabber must be disragerder now.
-  window_->SetPointerFocus(false);
-  toplevel_window2->SetPointerFocus(true);
+  SetPointerFocusedWindow(toplevel_window2.get());
 
-  VerifyCanDispatchMouseEvents({toplevel_window2.get()},
+  VerifyCanDispatchMouseEvents(toplevel_window2.get(),
                                {menu_window.get(), window_.get()});
 
   // The |toplevel_window2| that has capture and must receive the event.
@@ -1621,7 +1641,7 @@ TEST_P(WaylandWindowTest, DispatchesKeyboardEventToToplevelWindow) {
                             WL_SEAT_CAPABILITY_KEYBOARD);
   Sync();
   ASSERT_TRUE(connection_->seat()->keyboard());
-  menu_window->set_keyboard_focus(true);
+  SetKeyboardFocusedWindow(menu_window.get());
 
   // Even though the menu window has the keyboard focus, the keyboard events are
   // dispatched by the root parent wayland window in the end.
@@ -1703,7 +1723,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
   Sync();
 
   // Only |window_| can dispatch MouseEvents.
-  VerifyCanDispatchMouseEvents({window_.get()},
+  VerifyCanDispatchMouseEvents(window_.get(),
                                {menu_window.get(), nested_menu_window.get()});
   VerifyCanDispatchTouchEvents(
       {}, {window_.get(), menu_window.get(), nested_menu_window.get()});
@@ -1718,7 +1738,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
   Sync();
 
   // Only |window_| can dispatch MouseEvents and KeyEvents.
-  VerifyCanDispatchMouseEvents({window_.get()},
+  VerifyCanDispatchMouseEvents(window_.get(),
                                {menu_window.get(), nested_menu_window.get()});
   VerifyCanDispatchTouchEvents(
       {}, {window_.get(), menu_window.get(), nested_menu_window.get()});
@@ -1733,7 +1753,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
   Sync();
 
   // Only |window_| can dispatch MouseEvents and KeyEvents.
-  VerifyCanDispatchMouseEvents({window_.get()},
+  VerifyCanDispatchMouseEvents(window_.get(),
                                {menu_window.get(), nested_menu_window.get()});
   VerifyCanDispatchTouchEvents({window_.get()},
                                {menu_window.get(), nested_menu_window.get()});
@@ -1757,7 +1777,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
   Sync();
 
   // Only |menu_window| can dispatch MouseEvents.
-  VerifyCanDispatchMouseEvents({menu_window.get()},
+  VerifyCanDispatchMouseEvents(menu_window.get(),
                                {window_.get(), nested_menu_window.get()});
   VerifyCanDispatchTouchEvents(
       {}, {window_.get(), menu_window.get(), nested_menu_window.get()});
@@ -1776,7 +1796,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
   Sync();
 
   // Only |nested_menu_window| can dispatch MouseEvents.
-  VerifyCanDispatchMouseEvents({nested_menu_window.get()},
+  VerifyCanDispatchMouseEvents(nested_menu_window.get(),
                                {window_.get(), menu_window.get()});
   VerifyCanDispatchTouchEvents(
       {}, {window_.get(), menu_window.get(), nested_menu_window.get()});
@@ -1895,7 +1915,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
     Sync();
 
     // Creating a wayland_popup on |window_|.
-    window_->SetPointerFocus(true);
+    SetPointerFocusedWindow(window_.get());
     gfx::Rect wayland_popup_bounds(15, 15, 10, 10);
     auto wayland_popup = CreateWaylandWindowWithParams(
         type, window_->GetWidget(), wayland_popup_bounds, &delegate_);
@@ -1927,7 +1947,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
               wayland_popup->GetBoundsInPixels());
 
     wayland_popup->Hide();
-    window_->SetPointerFocus(false);
+    SetPointerFocusedWindow(nullptr);
 
     wl_surface_send_leave(surface->resource(), output2->resource());
     Sync();
@@ -2492,7 +2512,6 @@ TEST_P(WaylandWindowTest, WaylandPopupSimpleParent) {
             gfx::Rect(wayland_popup_bounds.size()));
 
   wayland_popup->Hide();
-  window_->SetPointerFocus(false);
 }
 
 TEST_P(WaylandWindowTest, WaylandPopupNestedParent) {
@@ -2505,7 +2524,7 @@ TEST_P(WaylandWindowTest, WaylandPopupNestedParent) {
   EXPECT_TRUE(menu_window);
 
   VerifyAndClearExpectations();
-  menu_window->SetPointerFocus(true);
+  SetPointerFocusedWindow(menu_window.get());
 
   std::vector<PlatformWindowType> window_types{PlatformWindowType::kMenu,
                                                PlatformWindowType::kTooltip};
@@ -2534,7 +2553,7 @@ TEST_P(WaylandWindowTest, WaylandPopupNestedParent) {
     EXPECT_EQ(mock_surface_nested->opaque_region(),
               gfx::Rect(nested_wayland_popup_bounds.size()));
 
-    menu_window->SetPointerFocus(false);
+    SetPointerFocusedWindow(nullptr);
     nested_wayland_popup->Hide();
   }
 }
@@ -3090,7 +3109,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
   ASSERT_TRUE(connection_->seat()->pointer());
-  window_->SetPointerFocus(true);
+  SetPointerFocusedWindow(window_.get());
 
   // Emulate a root menu creation with no serial available and ensure
   // ozone/wayland does not attempt to grab it.
@@ -3605,6 +3624,49 @@ TEST_P(WaylandWindowTest, DISABLED_BlockingTouchDownUp_NoCrash) {
                    0 /* id */);
   wl_touch_send_frame(server_.seat()->touch()->resource());
   Sync();
+}
+
+// Make sure that changing focus during dispatch will not re-dispatch the event
+// to the newly focused window. (crbug.com/1339082);
+TEST_P(WaylandWindowTest, ChangeFocusDuringDispatch) {
+  MockPlatformWindowDelegate other_delegate;
+  gfx::AcceleratedWidget other_widget = gfx::kNullAcceleratedWidget;
+  EXPECT_CALL(other_delegate, OnAcceleratedWidgetAvailable(_))
+      .WillOnce(SaveArg<0>(&other_widget));
+
+  PlatformWindowInitProperties properties;
+  properties.bounds = gfx::Rect(0, 0, 10, 10);
+  properties.type = PlatformWindowType::kWindow;
+  auto other_window = WaylandWindow::Create(&other_delegate, connection_.get(),
+                                            std::move(properties));
+  ASSERT_NE(other_widget, gfx::kNullAcceleratedWidget);
+
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_POINTER);
+  Sync();
+
+  wl::MockSurface* other_surface = server_.GetObject<wl::MockSurface>(
+      other_window->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(other_surface);
+  auto* pointer = server_.seat()->pointer();
+
+  wl_pointer_send_enter(pointer->resource(), 1, surface_->resource(), 0, 0);
+  wl_pointer_send_button(pointer->resource(), 2, 1004, BTN_LEFT,
+                         WL_POINTER_BUTTON_STATE_PRESSED);
+  int count = 0;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+    count++;
+    if (event->type() == ui::ET_MOUSE_PRESSED) {
+      wl_pointer_send_leave(pointer->resource(), 3, surface_->resource());
+      wl_pointer_send_enter(pointer->resource(), 3, other_surface->resource(),
+                            0, 0);
+      Sync();
+    }
+  });
+  EXPECT_CALL(other_delegate, DispatchEvent(_)).Times(1);
+
+  Sync();
+  EXPECT_EQ(count, 3);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

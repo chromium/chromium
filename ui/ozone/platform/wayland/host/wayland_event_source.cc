@@ -209,6 +209,12 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
                  timestamp);
   event.set_source_device_id(device_id);
 
+  auto* focus = window_manager_->GetCurrentKeyboardFocusedWindow();
+  if (!focus)
+    return POST_DISPATCH_STOP_PROPAGATION;
+
+  Event::DispatcherApi(&event).set_target(focus);
+
   Event::Properties properties;
 #if BUILDFLAG(USE_GTK)
   // GTK uses XKB keycodes.
