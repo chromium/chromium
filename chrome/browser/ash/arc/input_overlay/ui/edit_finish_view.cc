@@ -126,7 +126,7 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
   SetSize(gfx::Size(width, kViewHeight));
   SetPosition(
       gfx::Point(std::max(0, parent_size.width() - width - kSideMargin),
-                 std::max(0, (parent_size.height() - kViewHeight) / 2)));
+                 std::max(0, parent_size.height() / 3 - kViewHeight / 2)));
 }
 
 int EditFinishView::CalculateWidth() {
