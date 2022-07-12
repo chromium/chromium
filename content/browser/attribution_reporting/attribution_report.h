@@ -90,6 +90,8 @@ class CONTENT_EXPORT AttributionReport {
     // Returns the sum of the contributions (values) across all buckets.
     base::CheckedNumeric<int64_t> BudgetRequired() const;
 
+    // When updating the string, update the goldens and version history too, see
+    // //content/test/data/attribution_reporting/aggregatable_report_goldens/README.md
     static constexpr char kVersion[] = "0.1";
 
     // Enum string identifying this API for use in reports.
