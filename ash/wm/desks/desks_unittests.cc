@@ -199,6 +199,15 @@ void ClickOnView(const views::View* view,
   event_generator->ClickLeftButton();
 }
 
+void DoubleClickOnView(const views::View* view,
+                       ui::test::EventGenerator* event_generator) {
+  DCHECK(view);
+
+  const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(view_center);
+  event_generator->DoubleClickLeftButton();
+}
+
 void WaitForMilliseconds(int milliseconds) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -1110,6 +1119,8 @@ TEST_F(DesksTest, WindowActivation) {
 
 TEST_F(DesksTest, ActivateDeskFromOverview) {
   auto* controller = DesksController::Get();
+  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* event_generator = GetEventGenerator();
 
   // Create three desks other than the default initial desk.
   NewDesk();
@@ -1123,60 +1134,71 @@ TEST_F(DesksTest, ActivateDeskFromOverview) {
   wm::ActivateWindow(win1.get());
   EXPECT_EQ(win1.get(), window_util::GetActiveWindow());
 
-  // Enter overview mode, and expect the desk bar is shown with exactly four
-  // desks mini views, and there are exactly two windows in the overview mode
-  // grid.
-  auto* overview_controller = Shell::Get()->overview_controller();
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  const auto* overview_grid =
-      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  const auto* desks_bar_view = overview_grid->desks_bar_view();
-  ASSERT_TRUE(desks_bar_view);
-  ASSERT_EQ(4u, desks_bar_view->mini_views().size());
-  EXPECT_EQ(2u, overview_grid->window_list().size());
+  // Test that left-click on desk mini view activates the specified desk.
+  {
+    // Enter overview mode, and expect the desk bar is shown with exactly four
+    // desks mini views, and there are exactly two windows in the overview mode
+    // grid.
+    EnterOverview();
+    EXPECT_TRUE(overview_controller->InOverviewSession());
+    const auto* overview_grid =
+        GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+    const auto* desks_bar_view = overview_grid->desks_bar_view();
+    ASSERT_TRUE(desks_bar_view);
+    ASSERT_EQ(4u, desks_bar_view->mini_views().size());
+    EXPECT_EQ(2u, overview_grid->window_list().size());
 
-  // Activate desk_4 (last one on the right) by clicking on its mini view.
-  const Desk* desk_4 = controller->desks()[3].get();
-  EXPECT_FALSE(desk_4->is_active());
-  auto* mini_view = desks_bar_view->mini_views().back();
-  EXPECT_EQ(desk_4, mini_view->desk());
-  EXPECT_FALSE(mini_view->close_desk_button()->GetVisible());
-  const gfx::Point mini_view_center =
-      mini_view->GetBoundsInScreen().CenterPoint();
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(mini_view_center);
-  DeskSwitchAnimationWaiter waiter;
-  event_generator->ClickLeftButton();
-  waiter.Wait();
+    // Activate desk_4 (last one on the right) by clicking on its mini view.
+    const Desk* desk_4 = controller->desks()[3].get();
+    EXPECT_EQ(0, controller->GetActiveDeskIndex());
+    auto* mini_view = desks_bar_view->mini_views().back();
+    EXPECT_EQ(desk_4, mini_view->desk());
+    EXPECT_FALSE(mini_view->close_desk_button()->GetVisible());
+    DeskSwitchAnimationWaiter waiter;
+    ClickOnView(mini_view, event_generator);
+    waiter.Wait();
 
-  // Expect that desk_4 is now active, and overview mode exited.
-  EXPECT_TRUE(desk_4->is_active());
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-  // Exiting overview mode should not restore focus to a window on a
-  // now-inactive desk. Run a loop since the overview session is destroyed async
-  // and until that happens, focus will be on the dummy
-  // "OverviewModeFocusedWidget".
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(nullptr, window_util::GetActiveWindow());
+    // Expect that desk_4 is now active, and overview mode exited.
+    EXPECT_EQ(3, controller->GetActiveDeskIndex());
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+    // Exiting overview mode should not restore focus to a window on a
+    // now-inactive desk. Run a loop since the overview session is destroyed
+    // async and until that happens, focus will be on the dummy
+    // "OverviewModeFocusedWidget".
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(nullptr, window_util::GetActiveWindow());
 
-  // Create one window in desk_4 and enter overview mode. Expect the grid is
-  // showing exactly one window.
-  auto win2 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
-  wm::ActivateWindow(win2.get());
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  EXPECT_EQ(1u, overview_grid->window_list().size());
+    // Create one window in desk_4 and enter overview mode. Expect the grid is
+    // showing exactly one window.
+    auto win2 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+    wm::ActivateWindow(win2.get());
+    EnterOverview();
+    EXPECT_TRUE(overview_controller->InOverviewSession());
+    overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+    EXPECT_EQ(1u, overview_grid->window_list().size());
 
-  // When exiting overview mode without changing desks, the focus should be
-  // restored to the same window.
-  ExitOverview();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
-  // Run a loop since the overview session is destroyed async and until that
-  // happens, focus will be on the dummy "OverviewModeFocusedWidget".
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(win2.get(), window_util::GetActiveWindow());
+    // When exiting overview mode without changing desks, the focus should be
+    // restored to the same window.
+    ExitOverview();
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+    // Run a loop since the overview session is destroyed async and until that
+    // happens, focus will be on the dummy "OverviewModeFocusedWidget".
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(win2.get(), window_util::GetActiveWindow());
+  }
+
+  // Test double click on desk mini view does not crash.
+  {
+    EnterOverview();
+    const auto* overview_grid =
+        GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+    DeskSwitchAnimationWaiter waiter;
+    DoubleClickOnView(overview_grid->desks_bar_view()->mini_views().front(),
+                      event_generator);
+    waiter.Wait();
+    EXPECT_EQ(0, controller->GetActiveDeskIndex());
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+  }
 }
 
 // This test makes sure we have coverage for that desk switch animation when run
@@ -6362,21 +6384,34 @@ TEST_F(PersistentDesksBarTest, OverviewMode) {
 
 // Tests the desk activation changes after clicking the desk button in the bar.
 TEST_F(PersistentDesksBarTest, DeskActivation) {
-  NewDesk();
   auto* desks_controller = DesksController::Get();
+  auto* event_generator = GetEventGenerator();
+
+  NewDesk();
   EXPECT_EQ(2u, desks_controller->desks().size());
   EXPECT_TRUE(GetBarWidget());
-  EXPECT_EQ(desks_controller->desks()[0].get(),
-            desks_controller->active_desk());
+  EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   // Should activate `Desk 2` after clicking the corresponding desk button.
-  DeskSwitchAnimationWaiter waiter;
-  ClickOnView(DesksTestApi::GetPersistentDesksBarDeskButtons()[1],
-              GetEventGenerator());
-  waiter.Wait();
-  EXPECT_TRUE(GetBarWidget());
-  EXPECT_EQ(desks_controller->desks()[1].get(),
-            desks_controller->active_desk());
+  {
+    DeskSwitchAnimationWaiter waiter;
+    ClickOnView(DesksTestApi::GetPersistentDesksBarDeskButtons()[1],
+                event_generator);
+    waiter.Wait();
+    EXPECT_TRUE(GetBarWidget());
+    EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+  }
+
+  // Should activate `Desk 1` after double-clicking the corresponding desk
+  // button without crash.
+  {
+    DeskSwitchAnimationWaiter waiter;
+    DoubleClickOnView(DesksTestApi::GetPersistentDesksBarDeskButtons()[0],
+                      event_generator);
+    waiter.Wait();
+    EXPECT_TRUE(GetBarWidget());
+    EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
+  }
 }
 
 TEST_F(PersistentDesksBarTest, LeavingOrEnteringTabletModeWithOverviewModeOn) {

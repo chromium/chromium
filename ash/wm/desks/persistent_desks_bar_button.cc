@@ -43,8 +43,12 @@ const char* PersistentDesksBarDeskButton::GetClassName() const {
 }
 
 void PersistentDesksBarDeskButton::OnButtonPressed() {
-  DesksController::Get()->ActivateDesk(desk_,
-                                       DesksSwitchSource::kPersistentDesksBar);
+  // If there is an ongoing desk activation, do nothing.
+  DesksController* desks_controller = DesksController::Get();
+  if (!desks_controller->AreDesksBeingModified()) {
+    desks_controller->ActivateDesk(desk_,
+                                   DesksSwitchSource::kPersistentDesksBar);
+  }
 }
 
 void PersistentDesksBarDeskButton::OnThemeChanged() {

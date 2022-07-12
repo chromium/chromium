@@ -566,8 +566,10 @@ void DeskMiniView::OnContextMenuClosed() {
 }
 
 void DeskMiniView::OnDeskPreviewPressed() {
-  DesksController::Get()->ActivateDesk(desk_,
-                                       DesksSwitchSource::kMiniViewButton);
+  // If there is an ongoing desk activation, do nothing.
+  DesksController* desks_controller = DesksController::Get();
+  if (!desks_controller->AreDesksBeingModified())
+    desks_controller->ActivateDesk(desk_, DesksSwitchSource::kMiniViewButton);
 }
 
 void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
