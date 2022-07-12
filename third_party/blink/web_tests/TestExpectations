@@ -6147,7 +6147,6 @@ crbug.com/1228959 [ Linux ] virtual/scroll-unification/fast/scroll-snap/snaps-af
 crbug.com/1196027 http/tests/inspector-protocol/network/request-interception.js [ Failure Pass ]
 crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-frame-id.js [ Failure Pass Timeout ]
 crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-patterns.js [ Failure Pass Timeout ]
-crbug.com/1228246 http/tests/inspector-protocol/network/request-response-interception-disable-between.js [ Failure Pass Timeout ]
 
 # linux_layout_tests_layout_ng_disabled needs its own baselines.
 crbug.com/1231699 [ Linux ] fast/borders/border-inner-bleed.html [ Failure Pass ]
