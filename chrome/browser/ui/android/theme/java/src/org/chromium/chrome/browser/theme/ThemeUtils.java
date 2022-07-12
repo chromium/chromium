@@ -38,7 +38,7 @@ public class ThemeUtils {
     private static final String FULL_DYNAMIC_COLORS_PARAM = "dynamic_color_full";
     public static final BooleanCachedFieldTrialParameter ENABLE_FULL_DYNAMIC_COLORS =
             new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.DYNAMIC_COLOR_ANDROID, FULL_DYNAMIC_COLORS_PARAM, false);
+                    ChromeFeatureList.DYNAMIC_COLOR_ANDROID, FULL_DYNAMIC_COLORS_PARAM, true);
 
     /**
      * The background color to use for a given {@link Tab}. This will either be the color specified
