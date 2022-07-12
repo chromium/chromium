@@ -151,6 +151,8 @@ def deploy(args):
         'typescript/bin/tsc',
         '--outDir',
         js_out_dir,
+        '--noEmit',
+        'false',
         # Makes compilation faster
         '--incremental',
         # For better debugging experience on DUT.
