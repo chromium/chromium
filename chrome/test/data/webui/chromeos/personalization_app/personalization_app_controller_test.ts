@@ -774,7 +774,7 @@ suite('does not respond to re-selecting the current wallpaper', () => {
       return image.assetId.toString();
     }
     if (isFilePath(image)) {
-      return image.path.substr(image.path.lastIndexOf('/') + 1);
+      return image.path;
     }
     assertNotReached('unknown wallpaper type');
   }

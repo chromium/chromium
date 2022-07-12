@@ -43,8 +43,7 @@ export function isImageAMatchForKey(
     return key === kDefaultImageSymbol;
   }
   if (isFilePath(image)) {
-    // TODO(b/229420564): Update key extraction for local images.
-    return key === image.path.substr(image.path.lastIndexOf('/') + 1);
+    return key === image.path;
   }
   assert(isGooglePhotosPhoto(image));
   // NOTE: Old clients may not support |dedupKey| when setting Google Photos

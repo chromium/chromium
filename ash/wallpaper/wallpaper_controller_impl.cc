@@ -1023,7 +1023,8 @@ void WallpaperControllerImpl::SetCustomWallpaper(const AccountId& account_id,
                                                  const std::string& file_name,
                                                  WallpaperLayout layout,
                                                  const gfx::ImageSkia& image,
-                                                 bool preview_mode) {
+                                                 bool preview_mode,
+                                                 const std::string& file_path) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (!CanSetUserWallpaper(account_id))
     return;
@@ -1034,19 +1035,19 @@ void WallpaperControllerImpl::SetCustomWallpaper(const AccountId& account_id,
     confirm_preview_wallpaper_callback_ =
         base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
                        weak_factory_.GetWeakPtr(), account_id, file_name,
-                       WallpaperType::kCustomized, layout,
+                       file_path, WallpaperType::kCustomized, layout,
                        /*show_wallpaper=*/false, image);
     reload_preview_wallpaper_callback_ = base::BindRepeating(
         &WallpaperControllerImpl::ShowWallpaperImage,
         weak_factory_.GetWeakPtr(), image,
         WallpaperInfo{/*in_location=*/std::string(), layout,
-                      WallpaperType::kCustomized, base::Time::Now()},
+                      WallpaperType::kCustomized, base::Time::Now(), file_path},
         /*preview_mode=*/true, /*always_on_top=*/false);
     // Show the preview wallpaper.
     reload_preview_wallpaper_callback_.Run();
   } else {
     SaveAndSetWallpaperWithCompletion(
-        account_id, file_name, WallpaperType::kCustomized, layout,
+        account_id, file_name, file_path, WallpaperType::kCustomized, layout,
         /*show_wallpaper=*/is_active_user, image,
         base::BindOnce(
             &WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo,
@@ -1300,8 +1301,8 @@ void WallpaperControllerImpl::SetPolicyWallpaper(const AccountId& account_id,
   const bool show_wallpaper = IsActiveUser(account_id);
   image_util::DecodeImageCallback callback = base::BindOnce(
       &WallpaperControllerImpl::SaveAndSetWallpaper, weak_factory_.GetWeakPtr(),
-      account_id, kPolicyWallpaperFile, WallpaperType::kPolicy,
-      WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
+      account_id, kPolicyWallpaperFile, /*file_path=*/"",
+      WallpaperType::kPolicy, WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
 
   if (bypass_decode_for_testing_) {
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
@@ -1337,8 +1338,9 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
   bool allowed_to_show_wallpaper = IsActiveUser(account_id);
 
   if (allowed_to_set_wallpaper) {
-    SaveAndSetWallpaper(account_id, file_name, WallpaperType::kCustomized,
-                        layout, allowed_to_show_wallpaper, image);
+    SaveAndSetWallpaper(account_id, file_name, /*file_path=*/"",
+                        WallpaperType::kCustomized, layout,
+                        allowed_to_show_wallpaper, image);
   }
   return allowed_to_set_wallpaper && allowed_to_show_wallpaper;
 }
@@ -2498,17 +2500,20 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
 
 void WallpaperControllerImpl::SaveAndSetWallpaper(const AccountId& account_id,
                                                   const std::string& file_name,
+                                                  const std::string& file_path,
                                                   WallpaperType type,
                                                   WallpaperLayout layout,
                                                   bool show_wallpaper,
                                                   const gfx::ImageSkia& image) {
-  SaveAndSetWallpaperWithCompletion(account_id, file_name, type, layout,
-                                    show_wallpaper, image, base::DoNothing());
+  SaveAndSetWallpaperWithCompletion(account_id, file_name, file_path, type,
+                                    layout, show_wallpaper, image,
+                                    base::DoNothing());
 }
 
 void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletion(
     const AccountId& account_id,
     const std::string& file_name,
+    const std::string& file_path,
     WallpaperType type,
     WallpaperLayout layout,
     bool show_wallpaper,
@@ -2519,14 +2524,15 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletion(
         account_id,
         base::BindOnce(
             &WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId,
-            weak_factory_.GetWeakPtr(), account_id, file_name, type, layout,
-            show_wallpaper, image, std::move(image_saved_callback)));
+            weak_factory_.GetWeakPtr(), account_id, file_name, file_path, type,
+            layout, show_wallpaper, image, std::move(image_saved_callback)));
   }
 }
 
 void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
     const AccountId& account_id,
     const std::string& file_name,
+    const std::string& file_path,
     WallpaperType type,
     WallpaperLayout layout,
     bool show_wallpaper,
@@ -2545,7 +2551,8 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
       base::FilePath(wallpaper_files_id).Append(file_name).value();
   // User's custom wallpaper path is determined by relative path and the
   // appropriate wallpaper resolution.
-  WallpaperInfo info = {relative_path, layout, type, base::Time::Now()};
+  WallpaperInfo info = {relative_path, layout, type, base::Time::Now(),
+                        file_path};
   if (!SetUserWallpaperInfo(account_id, info)) {
     LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
                   "except in tests.";
@@ -2599,7 +2606,7 @@ void WallpaperControllerImpl::OnCustomWallpaperDecoded(
   std::move(callback).Run(success);
   if (success) {
     SetCustomWallpaper(account_id, path.BaseName().value(), layout, image,
-                       preview_mode);
+                       preview_mode, path.value());
   }
 }
 
@@ -3196,10 +3203,11 @@ void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
   }
   base::FilePath path_in_prefs = base::FilePath(info.location);
   std::string file_name = path_in_prefs.BaseName().value();
+  std::string file_path = info.user_file_path;
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
                      weak_factory_.GetWeakPtr(), account_id, file_name,
-                     WallpaperType::kCustomized, info.layout,
+                     file_path, WallpaperType::kCustomized, info.layout,
                      /*show_wallpaper=*/true),
       drivefs_path);
 }

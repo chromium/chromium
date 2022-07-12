@@ -77,6 +77,9 @@ base::Value CreateWallpaperInfoDict(WallpaperInfo info) {
       base::NumberToString(info.date.ToInternalValue()));
   wallpaper_info_dict.SetStringKey(
       WallpaperPrefManager::kNewWallpaperLocationNodeName, info.location);
+  wallpaper_info_dict.SetStringKey(
+      WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
+      info.user_file_path);
   wallpaper_info_dict.SetIntKey(
       WallpaperPrefManager::kNewWallpaperLayoutNodeName, info.layout);
   wallpaper_info_dict.SetIntKey(WallpaperPrefManager::kNewWallpaperTypeNodeName,

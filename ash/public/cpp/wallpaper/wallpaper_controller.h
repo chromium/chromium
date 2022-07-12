@@ -86,7 +86,8 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                                   const std::string& file_name,
                                   WallpaperLayout layout,
                                   const gfx::ImageSkia& image,
-                                  bool preview_mode) = 0;
+                                  bool preview_mode,
+                                  const std::string& file_path) = 0;
 
   // Sets the wallpaper at |params.asset_id|, |params.url| and
   // |params.collection_id| as the active wallpaper for the user at

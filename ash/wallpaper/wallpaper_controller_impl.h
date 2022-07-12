@@ -239,7 +239,8 @@ class ASH_EXPORT WallpaperControllerImpl
                           const std::string& file_name,
                           WallpaperLayout layout,
                           const gfx::ImageSkia& image,
-                          bool preview_mode) override;
+                          bool preview_mode,
+                          const std::string& file_path = "") override;
   void SetOnlineWallpaper(const OnlineWallpaperParams& params,
                           SetWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const OnlineWallpaperParams& params,
@@ -546,6 +547,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // updates the cache.
   void SaveAndSetWallpaper(const AccountId& account_id,
                            const std::string& file_name,
+                           const std::string& file_path,
                            WallpaperType type,
                            WallpaperLayout layout,
                            bool show_wallpaper,
@@ -555,6 +557,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void SaveAndSetWallpaperWithCompletion(
       const AccountId& account_id,
       const std::string& file_name,
+      const std::string& file_path,
       WallpaperType type,
       WallpaperLayout layout,
       bool show_wallpaper,
@@ -564,6 +567,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void SaveAndSetWallpaperWithCompletionFilesId(
       const AccountId& account_id,
       const std::string& file_name,
+      const std::string& file_path,
       WallpaperType type,
       WallpaperLayout layout,
       bool show_wallpaper,

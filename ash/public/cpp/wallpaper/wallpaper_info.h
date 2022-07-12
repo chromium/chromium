@@ -28,7 +28,8 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperInfo(const std::string& in_location,
                 WallpaperLayout in_layout,
                 WallpaperType in_type,
-                const base::Time& in_date);
+                const base::Time& in_date,
+                const std::string& in_user_file_path = "");
 
   WallpaperInfo(const WallpaperInfo& other);
   WallpaperInfo& operator=(const WallpaperInfo& other);
@@ -46,6 +47,11 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   // (corresponding to user wallpaper_files_id), online wallpaper URL, or
   // Google Photos id.
   std::string location;
+  // user_file_path is the full path of the wallpaper file and is used as
+  // the new CurrentWallpaper key. This field is required as the old key which
+  // was set to the filename part made the UI mistakenly highlight multiple
+  // files with the same name as the currently set wallpaper (b/229420564).
+  std::string user_file_path;
   WallpaperLayout layout;
   WallpaperType type;
   base::Time date;

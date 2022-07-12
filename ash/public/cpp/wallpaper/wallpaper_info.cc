@@ -46,8 +46,13 @@ WallpaperInfo::WallpaperInfo(
 WallpaperInfo::WallpaperInfo(const std::string& in_location,
                              WallpaperLayout in_layout,
                              WallpaperType in_type,
-                             const base::Time& in_date)
-    : location(in_location), layout(in_layout), type(in_type), date(in_date) {}
+                             const base::Time& in_date,
+                             const std::string& in_user_file_path)
+    : location(in_location),
+      user_file_path(in_user_file_path),
+      layout(in_layout),
+      type(in_type),
+      date(in_date) {}
 
 WallpaperInfo::WallpaperInfo(const WallpaperInfo& other) = default;
 WallpaperInfo& WallpaperInfo::operator=(const WallpaperInfo& other) = default;
@@ -71,6 +76,9 @@ bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
       return location == other.location && layout == other.layout &&
              collection_id == other.collection_id;
     case WallpaperType::kCustomized:
+      return type == other.type && layout == other.layout &&
+             location == other.location &&
+             user_file_path == other.user_file_path;
     case WallpaperType::kDefault:
     case WallpaperType::kPolicy:
     case WallpaperType::kThirdParty:
@@ -91,6 +99,7 @@ WallpaperInfo::~WallpaperInfo() = default;
 std::ostream& operator<<(std::ostream& os, const WallpaperInfo& info) {
   os << "WallpaperInfo:" << std::endl;
   os << "  location: " << info.location << std::endl;
+  os << "  user_file_path: " << info.user_file_path << std::endl;
   os << "  layout: " << info.layout << std::endl;
   os << "  type: " << static_cast<int>(info.type) << std::endl;
   os << "  date: " << info.date << std::endl;
