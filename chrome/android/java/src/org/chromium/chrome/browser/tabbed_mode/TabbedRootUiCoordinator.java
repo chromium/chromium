@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
@@ -208,6 +209,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
+     * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
@@ -256,6 +258,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
+            @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
@@ -289,15 +292,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, tabBookmarkerSupplier,
                 contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
-                intentMetadataOneshotSupplier, layoutStateProviderOneshotSupplier,
-                startSurfaceParentTabSupplier, browserControlsManager, windowAndroid, jankTracker,
-                activityLifecycleDispatcher, layoutManagerSupplier, menuOrKeyboardActionController,
-                activityThemeColorSupplier, modalDialogManagerSupplier, appMenuBlocker,
-                supportsAppMenuSupplier, supportsFindInPage, tabCreatorManagerSupplier,
-                fullscreenManager, compositorViewHolderSupplier, tabContentManagerSupplier,
-                snackbarManagerSupplier, activityType, isInOverviewModeSupplier,
-                isWarmOnResumeSupplier, appMenuDelegate, statusBarColorProvider,
-                intentRequestTracker, tabReparentingControllerSupplier,
+                tabSwitcherSupplier, intentMetadataOneshotSupplier,
+                layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier,
+                browserControlsManager, windowAndroid, jankTracker, activityLifecycleDispatcher,
+                layoutManagerSupplier, menuOrKeyboardActionController, activityThemeColorSupplier,
+                modalDialogManagerSupplier, appMenuBlocker, supportsAppMenuSupplier,
+                supportsFindInPage, tabCreatorManagerSupplier, fullscreenManager,
+                compositorViewHolderSupplier, tabContentManagerSupplier, snackbarManagerSupplier,
+                activityType, isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
+                statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
                 ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors, backPressManager,
                 unblockDrawForOverviewPageRunnable);
         mControlContainerHeightResource = controlContainerHeightResource;

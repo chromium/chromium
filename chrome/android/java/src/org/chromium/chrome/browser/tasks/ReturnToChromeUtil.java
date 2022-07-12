@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -904,6 +905,18 @@ public final class ReturnToChromeUtil {
     public static boolean getFeedArticlesVisibility() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
+    }
+
+    /**
+     * Returns true if START_SURFACE_REFACTOR is enabled but Start surface is disabled.
+     * Currently we only support the refactor code when Start surface is disabled. We may remove
+     * #isStartSurfaceEnabled check in this method after we support the refactor when Start surface
+     * is enabled.
+     */
+    public static boolean isTabSwitcherOnlyRefactorEnabled(Context context) {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_REFACTOR)
+                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(context)
+                && !isStartSurfaceEnabled(context);
     }
 
     @VisibleForTesting

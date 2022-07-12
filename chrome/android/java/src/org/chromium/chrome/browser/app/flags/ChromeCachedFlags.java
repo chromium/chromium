@@ -105,6 +105,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
                 add(ChromeFeatureList.READ_LATER);
                 add(ChromeFeatureList.START_SURFACE_ANDROID);
+                add(ChromeFeatureList.START_SURFACE_REFACTOR);
                 add(ChromeFeatureList.STORE_HOURS);
                 add(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT);
                 add(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID);
