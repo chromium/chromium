@@ -4,6 +4,8 @@
 
 #include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 
+#include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/string_matching/sequence_matcher.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
@@ -13,13 +15,61 @@ namespace chromeos {
 namespace string_matching {
 
 namespace {
+
+// Default parameters.
+constexpr bool kUseWeightedRatio = false;
+constexpr bool kUseEditDistance = false;
 constexpr double kPartialMatchPenaltyRate = 0.9;
+
+double CalculateRelevance(std::u16string query, std::u16string text) {
+  FuzzyTokenizedStringMatch match;
+  return match.Relevance(TokenizedString(query), TokenizedString(text),
+                         kUseWeightedRatio, kUseEditDistance,
+                         kPartialMatchPenaltyRate);
+}
+
+std::string FormatRelevanceResult(std::u16string text,
+                                  std::u16string query,
+                                  double relevance) {
+  // Display text before query. Series of tests will tend to use the same
+  // text repeatedly while varying the query, so displaying the text first is
+  // more visually useful.
+  return base::StringPrintf("text: %s, query: %s, relevance: %f",
+                            base::UTF16ToUTF8(text).data(),
+                            base::UTF16ToUTF8(query).data(), relevance);
+}
 
 }  // namespace
 
 class FuzzyTokenizedStringMatchTest : public testing::Test {};
 
-// TODO(crbug.com/1018613): update the tests once params are consolidated.
+/**********************************************************************
+ * Benchmarking tests                                                 *
+ **********************************************************************/
+// The tests in this section perform benchmarking on the quality of
+// relevance scores. See the README for details.
+// TODO(crbug.com/1336160): Expand benchmarking tests.
+
+TEST_F(FuzzyTokenizedStringMatchTest, Benchmark_Chrome) {
+  std::vector<std::u16string> texts = {u"Chrome", u"Google Chrome"};
+  std::vector<std::u16string> queries = {u"c",    u"ch",    u"chr",
+                                         u"chro", u"chrom", u"chrome"};
+
+  for (auto text : texts) {
+    for (auto query : queries) {
+      double relevance = CalculateRelevance(query, text);
+      VLOG(1) << FormatRelevanceResult(text, query, relevance);
+    }
+  }
+}
+
+/**********************************************************************
+ * Per-method tests                                                   *
+ **********************************************************************/
+// The tests in this section check the functionality of individual class
+// methods (as opposed to the score benchmarking performed above).
+
+// TODO(crbug.com/1336160): update the tests once params are consolidated.
 TEST_F(FuzzyTokenizedStringMatchTest, PartialRatioTest) {
   FuzzyTokenizedStringMatch match;
   EXPECT_NEAR(match.PartialRatio(u"abcde", u"ababcXXXbcdeY",
