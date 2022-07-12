@@ -99,12 +99,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   CreateWebSocketHandshakeThrottleProvider() override;
   blink::WebString DefaultLocale() override;
   void SuddenTerminationChanged(bool enabled) override;
-  blink::WebString DatabaseCreateOriginIdentifier(
-      const blink::WebSecurityOrigin& origin) override;
   viz::FrameSinkId GenerateFrameSinkId() override;
   bool IsLockedToSite() const override;
-  blink::WebString FileSystemCreateOriginIdentifier(
-      const blink::WebSecurityOrigin& origin) override;
   bool IsThreadedAnimationEnabled() override;
   bool IsGpuCompositingDisabled() const override;
 #if BUILDFLAG(IS_ANDROID)

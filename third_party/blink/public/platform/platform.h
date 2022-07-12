@@ -227,22 +227,6 @@ class BLINK_PLATFORM_EXPORT Platform {
     return nullptr;
   }
 
-  // Database (WebSQL) ---------------------------------------------------
-
-  // Return a filename-friendly identifier for an origin.
-  virtual WebString DatabaseCreateOriginIdentifier(
-      const WebSecurityOrigin& origin) {
-    return WebString();
-  }
-
-  // FileSystem ----------------------------------------------------------
-
-  // Return a filename-friendly identifier for an origin.
-  virtual WebString FileSystemCreateOriginIdentifier(
-      const WebSecurityOrigin& origin) {
-    return WebString();
-  }
-
   // IDN conversion ------------------------------------------------------
 
   virtual WebString ConvertIDNToUnicode(const WebString& host) { return host; }

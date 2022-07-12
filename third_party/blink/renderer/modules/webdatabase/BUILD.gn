@@ -77,6 +77,7 @@ blink_modules_sources("webdatabase") {
 
   deps = [
     "//sql",
+    "//storage/common",
     "//third_party/sqlite",
   ]
 }

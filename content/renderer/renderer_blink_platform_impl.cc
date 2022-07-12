@@ -52,7 +52,6 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"
-#include "content/renderer/storage_util.h"
 #include "content/renderer/v8_value_converter_impl.h"
 #include "content/renderer/variations_render_thread_observer.h"
 #include "content/renderer/webgraphicscontext3d_provider_impl.h"
@@ -401,20 +400,6 @@ void RendererBlinkPlatformImpl::SuddenTerminationChanged(bool enabled) {
 }
 
 //------------------------------------------------------------------------------
-
-WebString RendererBlinkPlatformImpl::FileSystemCreateOriginIdentifier(
-    const blink::WebSecurityOrigin& origin) {
-  return WebString::FromUTF8(
-      storage::GetIdentifierFromOrigin(WebSecurityOriginToGURL(origin)));
-}
-
-//------------------------------------------------------------------------------
-
-WebString RendererBlinkPlatformImpl::DatabaseCreateOriginIdentifier(
-    const blink::WebSecurityOrigin& origin) {
-  return WebString::FromUTF8(
-      storage::GetIdentifierFromOrigin(WebSecurityOriginToGURL(origin)));
-}
 
 viz::FrameSinkId RendererBlinkPlatformImpl::GenerateFrameSinkId() {
   return viz::FrameSinkId(RenderThread::Get()->GetClientId(),

@@ -33,8 +33,7 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
+#include "storage/common/database/database_identifier.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_entry.h"
@@ -71,8 +70,8 @@ DOMFileSystem* DOMFileSystem::CreateIsolatedFileSystem(
     return nullptr;
 
   StringBuilder filesystem_name;
-  filesystem_name.Append(Platform::Current()->FileSystemCreateOriginIdentifier(
-      WebSecurityOrigin(context->GetSecurityOrigin())));
+  filesystem_name.Append(String::FromUTF8(storage::GetIdentifierFromOrigin(
+      context->GetSecurityOrigin()->ToUrlOrigin())));
   filesystem_name.Append(":Isolated_");
   filesystem_name.Append(filesystem_id);
 

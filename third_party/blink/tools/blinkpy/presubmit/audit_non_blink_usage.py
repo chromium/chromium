@@ -1630,6 +1630,15 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/modules/filesystem/dom_file_system.cc',
+            'third_party/blink/renderer/modules/webdatabase/database_tracker.cc',
+        ],
+        'allowed': [
+            'storage::GetIdentifierFromOrigin',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/frame/local_frame_view.cc'],
         'allowed': [
             'base::LapTimer',

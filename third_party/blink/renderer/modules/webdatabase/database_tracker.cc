@@ -33,9 +33,8 @@
 #include <memory>
 
 #include "base/location.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -78,8 +77,8 @@ bool DatabaseTracker::CanEstablishDatabase(DatabaseContext* database_context,
 String DatabaseTracker::FullPathForDatabase(const SecurityOrigin* origin,
                                             const String& name,
                                             bool) {
-  return String(Platform::Current()->DatabaseCreateOriginIdentifier(
-             WebSecurityOrigin(origin))) +
+  return String::FromUTF8(
+             storage::GetIdentifierFromOrigin(origin->ToUrlOrigin())) +
          "/" + name + "#";
 }
 

@@ -146,8 +146,6 @@ target(link_target_type, "renderer") {
     "skia_benchmarking_extension.h",
     "stats_collection_controller.cc",
     "stats_collection_controller.h",
-    "storage_util.cc",
-    "storage_util.h",
     "top_level_blame_context.cc",
     "top_level_blame_context.h",
     "v8_value_converter_impl.cc",
