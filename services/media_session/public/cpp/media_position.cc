@@ -44,7 +44,7 @@ base::TimeDelta MediaPosition::GetPosition() const {
 }
 
 base::TimeDelta MediaPosition::GetPositionAtTime(base::TimeTicks time) const {
-  DCHECK(time >= last_updated_time_);
+  DCHECK_GE(time, last_updated_time_);
 
   base::TimeDelta elapsed_time = playback_rate_ * (time - last_updated_time_);
   base::TimeDelta updated_position = position_ + elapsed_time;
