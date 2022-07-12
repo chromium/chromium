@@ -32,7 +32,6 @@ import org.robolectric.shadows.ShadowLocationManager;
 import org.robolectric.shadows.ShadowLog; // remove me ?
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 
 import java.util.Arrays;
@@ -43,7 +42,6 @@ import java.util.Collection;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
-@DisabledTest(message = "crbug.com/1343392")
 public class LocationProviderTest {
     static {
         // Setting robolectric.offline which tells Robolectric to look for runtime dependency
