@@ -365,6 +365,147 @@ grit("resources") {
 }
 ```
 
+### **build_webui**
+
+<!-- TODO(crbug.com/1340376): Elevate build_webui() to the top of this document
+      after it has been deployed to a few places. -->
+
+See the [go/build-webui-pipeline](http://go/build-webui-pipeline) design doc for
+more info (internal only).
+
+The flow diagram below shows a high level view of how a typical modern user-facing
+WebUI is being built.
+
+![WebUI build pipeline flow diagram](images/webui_build_pipeline.png)
+
+```
+This umbrella rule captures the most common WebUI build pipeline configuration
+and aims to hide the complexity of having to define all previously described
+rules directly. Using build_webui() is the recommended approach for most modern
+user-facing WebUIs that use WebComponents+TypeScript+Mojo.
+
+The parameters passed to build_webui() are forwarded as needed to the other GN
+rules described earlier.
+
+Under the cover, build_webui() defines the following targets
+
+preprocess_if_expr("preprocess")
+html_to_wrapper("html_wrapper_files")
+css_to_wrapper("css_wrapper_files")
+copy("copy_mojo")
+ts_library("build_ts")
+optimize_webui("build")
+generate_grd("build_grd")
+grit("resources")
+
+Some targets are only conditionally defined based on build_webui() input
+parameters.
+
+Only the ":build_ts" and ":resources" targets are public and can be referred to
+from other parts of the build.
+```
+
+#### **Arguments**
+```
+
+List of files params:
+static_files: List of HTML/CSS files that don't need any processing and will be
+              included in the build verbatim. Don't confuse with |css_files|
+              below. Required parameter.
+
+web_component_files:  List of TS files that hold Web Component definitions with
+                      equivalent HTML template files. These can be either native
+                      or Polymer Web Components. Optional parameter.
+
+non_web_component_files:  List of TS files that are not Web Components, or
+                          Web Component files that don't have a corresponding
+                          HTML template (rare case). Optional parameter.
+
+icons_html_files: List of HTML files that hold Polymer iron-iconset-svg
+                  instances. Optional parameter.
+
+css_files: List of CSS files that hold Polymer style modules, or CSS variable
+           definitions. These are passed css_to_wrapper(). Optional parameter.
+
+mojo_files: List of Mojo JS generated files. These will be copied to a temporary
+            location so that they can be passed to ts_library() along with other
+            files. Optional parameter.
+
+mojo_files_deps: List of Mojo targets that generate |mojo_files|. Must be
+                 defined if |mojo_files| is defined.
+
+TypeScript (ts_library()) related params:
+ts_composite: See |composite| in ts_library(). Defaults to false, optional.
+ts_definitions: See |definitions| in ts_library(). Optional parameter.
+ts_deps: See |deps| in ts_library(). Optional parameter.
+ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
+
+optimize_webui() related params:
+optimize: Specifies whether optimize_webui() will be used, defaults to false.
+          All other |optimize_*| parameters below must be specified if
+          |optimize| is true.
+optimize_webui_excludes: See |excludes| in optimize_webui().
+optimize_webui_host: See |host| in optimize_webui().
+optimize_webui_in_files: See |in_files| in optimize_webui().
+optimize_webui_out_files: See |out_files| in optimize_webui().
+
+Other params:
+grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
+html_to_wrapper_template: See |template| in html_to_wrapper().
+extra_grdp_deps: List of external generate_grd() targets that generate .grdp
+                 files. These will be included in the final generated
+                 resources.grd file. Optional parameter.
+extra_grdp_files: Output .grdp files of external generate_grd() targets. Must be
+                  defined if |extra_grdp_deps| is defined.
+```
+
+#### **Example**
+```
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "dummy-webui"
+
+  static_files = [
+    "index.html",
+    "index.css",
+  ]
+
+  # Files holding a CustomElement element definition AND have an equivalent
+  # .html template file.
+  web_component_files = [
+    "app.ts",
+    "bar_view.ts",
+    "foo_view.ts",
+  ]
+
+  # Files not holding a CustomElement element definition, or the CustomElement
+  # does not have a corresponding HTML template.
+  non_web_component_files = [
+    "app_proxy.ts",
+    "bar_proxy.ts",
+    "foo_proxy.ts",
+  ]
+
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared_style.css",
+    "shared_vars.css",
+  ]
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+}
+
+```
+
 ## Example build configurations
 
 ### **Simple UI with no web components**
