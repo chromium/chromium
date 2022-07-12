@@ -171,6 +171,14 @@ static CompositingReasons CompositingReasonsForViewportScrollEffect(
   if (!layout_object.IsBox())
     return CompositingReason::kNone;
 
+  // The viewport scroll effect should never apply to objects inside an
+  // embedded frame tree.
+  if (!layout_object.GetFrame()->Tree().Top().IsOutermostMainFrame())
+    return CompositingReason::kNone;
+
+  DCHECK_EQ(layout_object.GetFrame()->IsMainFrame(),
+            layout_object.GetFrame()->IsOutermostMainFrame());
+
   // Objects inside an iframe that's the root scroller should get the same
   // "pushed by top controls" behavior as for the main frame.
   auto& controller =
@@ -189,7 +197,7 @@ static CompositingReasons CompositingReasonsForViewportScrollEffect(
   // turn ensures that a TransformNode is created (for fixed elements) in cc.
   if (RuntimeEnabledFeatures::FixedElementsDontOverscrollEnabled())
     reasons |= CompositingReason::kFixedToViewport;
-  
+
   if (layout_object.StyleRef().IsFixedToBottom())
     reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
 
