@@ -91,24 +91,20 @@ requestWillBeSent[
         wallTime : <number>
     }
 ]
-webBundleMetadataReceived[
-    [0] : {
-        requestId : <string>
-        urls : [
-            [0] : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
-            [1] : uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae
-        ]
-    }
-]
-webBundleInnerResponse[
-    [0] : {
-        bundleRequestId : <string>
-        innerRequestId : <string>
-        innerRequestURL : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
-    }
-]
-webBundleMetadataReceived[0].urls: uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720,uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae
-webBundleInnerResponse[0].innerRequestURL: uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
+webBundleMetadataReceived{
+    requestId : <string>
+    urls : [
+        [0] : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
+        [1] : uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae
+    ]
+}
+webBundleInnerResponse{
+    bundleRequestId : <string>
+    innerRequestId : <string>
+    innerRequestURL : uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
+}
+webBundleMetadataReceived.urls: uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720,uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae
+webBundleInnerResponse.innerRequestURL: uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720
 bundle request ID from webBundleMetadataReceived matches ID from requestWillBeSent
 inner request ID from webBundleInnerResponse matches ID from requestWillBeSent
 inner request ID from webBundleInnerResponse matches ID from webBundleMetadataReceived
