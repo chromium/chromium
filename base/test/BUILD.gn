@@ -43,6 +43,7 @@ static_library("test_support") {
     "../task/sequence_manager/test/test_task_time_observer.h",
     "../timer/mock_timer.cc",
     "../timer/mock_timer.h",
+    "allow_check_is_test_to_be_called.h",
     "bind.cc",
     "bind.h",
     "copy_only_int.cc",

@@ -343,6 +343,28 @@ these:
     so as early as possible can help with debugging, though our styleguide now
     recommends using a reference instead of a pointer when it cannot be null.
 
+## Test-only code paths in production code
+
+Try to avoid test-only code paths in production code. Such code paths make
+production code behave differently in tests. This makes both tests and
+production code hard to reason about. Consider dependency injection, fake
+classes, etc to avoid such code paths.
+
+However, if a test-only path in production code cannot be avoided, instrument
+that code path with `CHECK_IS_TEST();` to assert that the code is only run in
+tests.
+
+```c++
+// `profile_manager` may not be available in tests.
+if (!profile_manager) {
+  CHECK_IS_TEST();
+  return std::string();
+}
+```
+
+`CHECK_IS_TEST();` will crash outside of tests. This asserts that the test-only
+code path is not accidentally or maliciously taken in production.
+
 ## Miscellany
 
   * Use UTF-8 file encodings and LF line endings.

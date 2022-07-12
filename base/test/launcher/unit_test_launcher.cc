@@ -26,6 +26,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/allow_check_is_test_to_be_called.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
@@ -151,6 +152,8 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
                             size_t retry_limit,
                             bool use_job_objects,
                             OnceClosure gtest_init) {
+  base::test::AllowCheckIsTestToBeCalled();
+
 #if BUILDFLAG(IS_ANDROID)
   // We can't easily fork on Android, just run the test suite directly.
   return std::move(run_test_suite).Run();
