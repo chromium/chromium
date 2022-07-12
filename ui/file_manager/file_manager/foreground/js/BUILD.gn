@@ -1199,6 +1199,8 @@ js_library("scan_controller") {
     ":file_selection",
     ":spinner_controller",
     "ui:list_container",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
 
