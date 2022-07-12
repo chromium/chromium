@@ -68,6 +68,11 @@ export interface PaymentsManagerProxy {
    * Unenrolls the card from virtual cards.
    */
   removeVirtualCard(cardId: string): void;
+
+  /**
+   * A null response means that there is no platform authenticator.
+   */
+  isUserVerifyingPlatformAuthenticatorAvailable(): Promise<boolean|null>;
 }
 
 /**
@@ -121,6 +126,15 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   removeVirtualCard(serverId: string) {
     chrome.autofillPrivate.removeVirtualCard(serverId);
+  }
+
+  isUserVerifyingPlatformAuthenticatorAvailable() {
+    if (!window.PublicKeyCredential) {
+      return Promise.resolve(null);
+    }
+
+    return window.PublicKeyCredential
+        .isUserVerifyingPlatformAuthenticatorAvailable();
   }
 
   static getInstance(): PaymentsManagerProxy {

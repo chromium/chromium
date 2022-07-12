@@ -96,14 +96,8 @@ suite('PaymentsSection', function() {
 
   // Fakes the existence of a platform authenticator.
   function addFakePlatformAuthenticator() {
-    if (!window.PublicKeyCredential) {
-      (window.PublicKeyCredential as PublicKeyCredential) = {} as
-          PublicKeyCredential;
-    }
-    window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable =
-        function() {
-      return Promise.resolve(true);
-    };
+    (PaymentsManagerImpl.getInstance() as TestPaymentsManager)
+        .setIsUserVerifyingPlatformAuthenticatorAvailable(true);
   }
 
 

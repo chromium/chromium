@@ -187,12 +187,14 @@ export class SettingsPaymentsSectionElement extends
 
     // Update |userIsFidoVerifiable_| based on the availability of a platform
     // authenticator.
-    if (window.PublicKeyCredential) {
-      window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-          .then(r => {
-            this.userIsFidoVerifiable_ = this.userIsFidoVerifiable_ && r;
-          });
-    }
+    this.paymentsManager_.isUserVerifyingPlatformAuthenticatorAvailable().then(
+        r => {
+          if (r === null) {
+            return;
+          }
+
+          this.userIsFidoVerifiable_ = this.userIsFidoVerifiable_ && r;
+        });
 
     const setPersonalDataListener: PersonalDataChangedListener =
         (_addressList, cardList) => {

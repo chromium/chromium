@@ -479,6 +479,7 @@ export class PaymentsManagerExpectations {
  */
 export class TestPaymentsManager implements PaymentsManagerProxy {
   private actual_: PaymentsManagerExpectations;
+  private isUserVerifyingPlatformAuthenticatorAvailable_: boolean|null = null;
 
   data: {
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
@@ -544,6 +545,14 @@ export class TestPaymentsManager implements PaymentsManagerProxy {
   }
 
   removeVirtualCard(_cardId: string) {}
+
+  setIsUserVerifyingPlatformAuthenticatorAvailable(available: boolean|null) {
+    this.isUserVerifyingPlatformAuthenticatorAvailable_ = available;
+  }
+
+  isUserVerifyingPlatformAuthenticatorAvailable() {
+    return Promise.resolve(this.isUserVerifyingPlatformAuthenticatorAvailable_);
+  }
 
   /**
    * Verifies expectations.
