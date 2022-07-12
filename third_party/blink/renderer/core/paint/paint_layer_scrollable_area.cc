@@ -1387,9 +1387,15 @@ static inline const LayoutObject& ScrollbarStyleSource(
       return *doc_element->GetLayoutObject();
 
     if (Settings* settings = doc.GetSettings()) {
+      LocalFrame* frame = layout_box.GetFrame();
+      DCHECK(frame);
+      DCHECK(frame->GetPage());
+
+      VisualViewport& viewport = frame->GetPage()->GetVisualViewport();
       if (!settings->GetAllowCustomScrollbarInMainFrame() &&
-          layout_box.GetFrame() && layout_box.GetFrame()->IsMainFrame())
+          frame->IsMainFrame() && viewport.IsActiveViewport()) {
         return layout_box;
+      }
     }
 
     // Try the <body> element as a scrollbar source, but only if the body
