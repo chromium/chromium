@@ -7167,8 +7167,8 @@ crbug.com/1342518 [ Win ] external/wpt/webmessaging/event.data.sub.htm [ Failure
 # Sheriff 2022-07-08
 crbug.com/1180274 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
 crbug.com/1180274 virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
-crbug.com/1180274 virtual/first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
-crbug.com/1180274 virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
+crbug.com/1180274 virtual/first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
+crbug.com/1180274 virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 
 # Sheriff 2022-07-11
 crbug.com/1343262 [ Win11 ] compositing/overlap-blending/reflection-opacity-huge.html [ Failure ]
