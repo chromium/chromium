@@ -8,7 +8,7 @@ Follow the steps below to dispatch alerts via the [DevTools Issues](https://deve
 
 The three enums below should have consistent naming, and are all required to implement a new deprecation.
 
-### (1a) [WebFeature](/third_party/blink/public/mojom/web_feature/web_feature.mojom)
+### (1a) [WebFeature](/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom)
 
 This should be named `kFeatureName` and placed at the bottom of the file.
 If you have an existing `WebFeature` that can be used instead.
