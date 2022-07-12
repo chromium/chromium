@@ -413,11 +413,8 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
       bounds_dip.set_origin({x, y});
     }
   } else if (is_normal) {
-    gfx::Size size_in_dip = restored_size_dip().IsEmpty()
-                                ? GetBoundsInDIP().size()
-                                : restored_size_dip();
-    bounds_dip.set_origin(gfx::Point(x, y));
-    bounds_dip.set_size(size_in_dip);
+    bounds_dip = !restored_size_dip().IsEmpty() ? gfx::Rect(restored_size_dip())
+                                                : GetBoundsInDIP();
   }
 
   set_pending_bounds_dip(AdjustBoundsToConstraintsDIP(bounds_dip));
