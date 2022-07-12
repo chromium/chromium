@@ -515,6 +515,8 @@ public class Fido2ApiTestHelper {
         credential.mUserName = "avery.a.jones@example.com";
         credential.mUserDisplayName = "Avery A. Jones";
         credential.mCredentialId = new byte[] {8, 7, 6};
+        credential.mIsDiscoverable = true;
+        credential.mIsPayment = false;
         return credential;
     }
 }
