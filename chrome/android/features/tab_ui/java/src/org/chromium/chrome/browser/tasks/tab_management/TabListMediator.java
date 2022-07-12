@@ -529,8 +529,6 @@ class TabListMediator {
 
     private View.AccessibilityDelegate mAccessibilityDelegate;
 
-    private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
-
     /**
      * Interface for implementing a {@link Runnable} that takes a tabId for a generic action.
      */
@@ -587,24 +585,14 @@ class TabListMediator {
             public void didSelectTab(Tab tab, int type, int lastId) {
                 mNextTabId = Tab.INVALID_TAB_ID;
                 if (tab.getId() == lastId) return;
-
                 int oldIndex = mModel.indexFromId(lastId);
-                mLastSelectedTabListModelIndex = oldIndex;
                 if (oldIndex != TabModel.INVALID_TAB_INDEX) {
                     mModel.get(oldIndex).model.set(TabProperties.IS_SELECTED, false);
-                    if (mActionsOnAllRelatedTabs && mThumbnailProvider != null && mVisible) {
-                        mModel.get(oldIndex).model.set(TabProperties.THUMBNAIL_FETCHER,
-                                new ThumbnailFetcher(mThumbnailProvider, lastId, true, false));
-                    }
                 }
-
                 int newIndex = mModel.indexFromId(tab.getId());
                 if (newIndex == TabModel.INVALID_TAB_INDEX) return;
+
                 mModel.get(newIndex).model.set(TabProperties.IS_SELECTED, true);
-                if (mThumbnailProvider != null && mVisible) {
-                    mModel.get(newIndex).model.set(TabProperties.THUMBNAIL_FETCHER,
-                            new ThumbnailFetcher(mThumbnailProvider, tab.getId(), true, false));
-                }
             }
 
             @Override
@@ -1078,8 +1066,7 @@ class TabListMediator {
     }
 
     private int getIndexOfTab(Tab tab, boolean onlyShowRelatedTabs) {
-        int index = TabList.INVALID_TAB_INDEX;
-        if (tab == null) return index;
+        int index;
         if (onlyShowRelatedTabs) {
             if (mModel.size() == 0) return TabList.INVALID_TAB_INDEX;
             List<Tab> related = getRelatedTabsForId(mModel.get(0).model.get(TabProperties.TAB_ID));
@@ -1191,8 +1178,6 @@ class TabListMediator {
             return true;
         }
         mModel.set(new ArrayList<>());
-        mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
-
         if (tabsList == null) {
             return true;
         }
@@ -1286,15 +1271,12 @@ class TabListMediator {
 
         updateFaviconForTab(pseudoTab, null);
         boolean forceUpdate = isSelected && !quickMode;
-        boolean forceUpdateLastSelected =
-                mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
-
         if (mThumbnailProvider != null && mVisible
                 && (mModel.get(index).model.get(TabProperties.THUMBNAIL_FETCHER) == null
-                        || forceUpdate || isUpdatingId || forceUpdateLastSelected)) {
-            ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),
-                    forceUpdate || forceUpdateLastSelected,
-                    forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
+                        || forceUpdate || isUpdatingId)) {
+            ThumbnailFetcher callback =
+                    new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(), forceUpdate,
+                            forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
             mModel.get(index).model.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
     }
