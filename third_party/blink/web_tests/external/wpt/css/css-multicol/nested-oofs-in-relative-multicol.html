@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<link rel="match" href="reference/oof-in-nested-multicol-ref.html">
+<link rel="match" href="reference/nested-oofs-in-relative-multicol-ref.html">
 <link rel="help" href="https://www.w3.org/TR/css-multicol-1/#propdef-column-count">
 <link rel="author" title="Koji Ishii" href="mailto:kojii@chromium.org">
 <style>
@@ -12,11 +12,6 @@
   overflow: hidden;
   background: yellow;
 }
-.nested {
-  height: 400px;
-  column-count: 2;
-  background: purple;
-}
 .cb {
   position: absolute;
   top: 0;
@@ -25,20 +20,19 @@
   height: 400px;
   background: red;
 }
-img {
+.img {
   position: absolute;
   top: 0;
   left: 0;
+  width: 400px;
   height: 400px;
   background: green;
 }
 </style>
 <body>
   <div class="outer">
-    <div class="nested">
-      <div class="cb">
-        <img src="data:image/gif;base64,R0lGODlhAQABAGAAACH5BAEKAP8ALAAAAAABAAEAAAgEAP8FBAA7">
-      </div>
+    <div class="cb">
+      <div class="img"></div>
     </div>
   </div>
 </body>
