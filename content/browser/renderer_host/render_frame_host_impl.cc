@@ -1018,10 +1018,10 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
     case features::SubframeShutdownDelayType::kMemoryBased: {
       // See subframe-reuse design doc for more detail on these values.
       // docs.google.com/document/d/1x_h4Gg4ForILEj8A4rMBX6d84uHWyQ9RSXmGVqMlBTk
-      static constexpr uint64_t kHighMemoryThreshold = 8'000'000'000;
-      static constexpr uint64_t kMaxMemoryThreshold = 16'000'000'000;
+      static constexpr int64_t kHighMemoryThreshold = 8000000000;
+      static constexpr int64_t kMaxMemoryThreshold = 16000000000;
 
-      const uint64_t available_memory =
+      const int64_t available_memory =
           base::SysInfo::AmountOfAvailablePhysicalMemory();
       if (available_memory <= kHighMemoryThreshold)
         return kShortDelay;
@@ -1030,7 +1030,7 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
 
       // Scale delay linearly based on where |available_memory| lies between
       // |kHighMemoryThreshold| and |kMaxMemoryThreshold|.
-      const uint64_t available_memory_factor =
+      const int64_t available_memory_factor =
           (available_memory - kHighMemoryThreshold) /
           (kMaxMemoryThreshold - kHighMemoryThreshold);
       return kShortDelay + (kLongDelay - kShortDelay) * available_memory_factor;

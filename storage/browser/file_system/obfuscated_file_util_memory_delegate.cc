@@ -10,7 +10,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/files/file_util.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
@@ -27,14 +26,14 @@ namespace {
 // crash possibility.
 // Note that quota assignment is the same for on-disk filesystem and the
 // assigned quota is not guaranteed to be allocatable later.
-bool IsMemoryAvailable(size_t required_memory) {
+bool IsMemoryAvailable(int64_t required_memory) {
 #if BUILDFLAG(IS_FUCHSIA)
   // This function is not implemented on FUCHSIA, yet. (crbug.com/986608)
   return true;
 #else
-  uint64_t max_allocatable =
+  int64_t max_allocatable =
       std::min(base::SysInfo::AmountOfAvailablePhysicalMemory(),
-               static_cast<uint64_t>(partition_alloc::MaxDirectMapped()));
+               static_cast<int64_t>(partition_alloc::MaxDirectMapped()));
 
   return max_allocatable >= required_memory;
 #endif
@@ -336,13 +335,12 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::Truncate(
     return base::File::FILE_ERROR_NOT_FOUND;
 
   // Fail if enough memory is not available.
-  if (!base::IsValueInRangeForNumericType<size_t>(length) ||
-      (static_cast<size_t>(length) > dp->entry->file_content.capacity() &&
-       !IsMemoryAvailable(static_cast<size_t>(length)))) {
+  if (static_cast<size_t>(length) > dp->entry->file_content.capacity() &&
+      !IsMemoryAvailable(length)) {
     return base::File::FILE_ERROR_NO_SPACE;
   }
 
-  dp->entry->file_content.resize(static_cast<size_t>(length));
+  dp->entry->file_content.resize(length);
   return base::File::FILE_OK;
 }
 
@@ -622,7 +620,7 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyInForeignFile(
   }
 
   // Fail if enough memory is not available.
-  if (!IsMemoryAvailable(static_cast<size_t>(source_info.size)))
+  if (!IsMemoryAvailable(source_info.size))
     return base::File::FILE_ERROR_NO_SPACE;
 
   // Create file.

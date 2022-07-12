@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info_internal.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -79,7 +78,7 @@ base::LazyInstance<base::internal::LazySysInfoValue<int, NumberOfProcessors>>::
     Leaky g_lazy_number_of_processors = LAZY_INSTANCE_INITIALIZER;
 #endif  // !BUILDFLAG(IS_OPENBSD)
 
-uint64_t AmountOfVirtualMemory() {
+int64_t AmountOfVirtualMemory() {
   struct rlimit limit;
   int result = getrlimit(RLIMIT_DATA, &limit);
   if (result != 0) {
@@ -90,7 +89,7 @@ uint64_t AmountOfVirtualMemory() {
 }
 
 base::LazyInstance<
-    base::internal::LazySysInfoValue<uint64_t, AmountOfVirtualMemory>>::Leaky
+    base::internal::LazySysInfoValue<int64_t, AmountOfVirtualMemory>>::Leaky
     g_lazy_virtual_memory = LAZY_INSTANCE_INITIALIZER;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -128,14 +127,13 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
     *available_bytes =
         zero_size_means_unlimited
             ? std::numeric_limits<int64_t>::max()
-            : base::checked_cast<int64_t>(stats.f_bavail * stats.f_frsize);
+            : static_cast<int64_t>(stats.f_bavail) * stats.f_frsize;
   }
 
   if (total_bytes) {
-    *total_bytes =
-        zero_size_means_unlimited
-            ? std::numeric_limits<int64_t>::max()
-            : base::checked_cast<int64_t>(stats.f_blocks * stats.f_frsize);
+    *total_bytes = zero_size_means_unlimited
+                       ? std::numeric_limits<int64_t>::max()
+                       : static_cast<int64_t>(stats.f_blocks) * stats.f_frsize;
   }
   return true;
 }
@@ -151,7 +149,7 @@ int SysInfo::NumberOfProcessors() {
 #endif  // !BUILDFLAG(IS_OPENBSD)
 
 // static
-uint64_t SysInfo::AmountOfVirtualMemory() {
+int64_t SysInfo::AmountOfVirtualMemory() {
   return g_lazy_virtual_memory.Get().value();
 }
 
@@ -247,7 +245,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
 
 // static
 size_t SysInfo::VMAllocationGranularity() {
-  return checked_cast<size_t>(getpagesize());
+  return getpagesize();
 }
 
 }  // namespace base

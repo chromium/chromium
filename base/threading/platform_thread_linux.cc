@@ -164,10 +164,8 @@ void SetThreadCgroup(PlatformThreadId thread_id,
                      const FilePath& cgroup_directory) {
   FilePath tasks_filepath = cgroup_directory.Append(FILE_PATH_LITERAL("tasks"));
   std::string tid = NumberToString(thread_id);
-  // TODO(crbug.com/1333521): Remove cast.
-  const int size = static_cast<int>(tid.size());
-  int bytes_written = WriteFile(tasks_filepath, tid.data(), size);
-  if (bytes_written != size) {
+  int bytes_written = WriteFile(tasks_filepath, tid.c_str(), tid.size());
+  if (bytes_written != static_cast<int>(tid.size())) {
     DVLOG(1) << "Failed to add " << tid << " to " << tasks_filepath.value();
   }
 }
@@ -414,7 +412,7 @@ void PlatformThread::SetThreadType(ProcessId process_id,
 #endif
 
   const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(thread_id), nice_setting)) {
+  if (setpriority(PRIO_PROCESS, thread_id, nice_setting)) {
     DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
               << nice_setting;
   }

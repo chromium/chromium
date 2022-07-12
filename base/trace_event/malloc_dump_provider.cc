@@ -16,7 +16,6 @@
 #include "base/format_macros.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/traced_value.h"
@@ -185,7 +184,7 @@ void ReportAppleAllocStats(size_t* total_virtual_size,
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)) || \
     (!BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !BUILDFLAG(IS_WIN) &&    \
-     !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA))
+     !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_FUCHSIA))
 void ReportMallinfoStats(ProcessMemoryDump* pmd,
                          size_t* total_virtual_size,
                          size_t* resident_size,
@@ -204,19 +203,17 @@ void ReportMallinfoStats(ProcessMemoryDump* pmd,
   // In case of Android's jemalloc |arena| is 0 and the outer pages size is
   // reported by |hblkhd|. In case of dlmalloc the total is given by
   // |arena| + |hblkhd|. For more details see link: http://goo.gl/fMR8lF.
-  *total_virtual_size += checked_cast<size_t>(info.arena + info.hblkhd);
-  size_t total_allocated_size = checked_cast<size_t>(info.uordblks);
-  *resident_size += total_allocated_size;
+  *total_virtual_size += info.arena + info.hblkhd;
+  *resident_size += info.uordblks;
 
   // Total allocated space is given by |uordblks|.
-  *allocated_objects_size += total_allocated_size;
+  *allocated_objects_size += info.uordblks;
 
   if (pmd) {
     MemoryAllocatorDump* sys_alloc_dump =
         pmd->CreateAllocatorDump("malloc/sys_malloc");
     sys_alloc_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                              MemoryAllocatorDump::kUnitsBytes,
-                              total_allocated_size);
+                              MemoryAllocatorDump::kUnitsBytes, info.uordblks);
   }
 }
 #endif

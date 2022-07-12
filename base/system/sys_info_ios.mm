@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -116,7 +115,7 @@ std::string SysInfo::GetIOSBuildNumber() {
 }
 
 // static
-uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
+int64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
   base::mac::ScopedMachSendRight host(mach_host_self());
@@ -127,17 +126,17 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
     return 0;
   }
   DCHECK_EQ(HOST_BASIC_INFO_COUNT, count);
-  return hostinfo.max_mem;
+  return static_cast<int64_t>(hostinfo.max_mem);
 }
 
 // static
-uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+int64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   SystemMemoryInfoKB info;
   if (!GetSystemMemoryInfo(&info))
     return 0;
   // We should add inactive file-backed memory also but there is no such
   // information from iOS unfortunately.
-  return checked_cast<uint64_t>(info.free + info.speculative) * 1024;
+  return static_cast<int64_t>(info.free + info.speculative) * 1024;
 }
 
 // static

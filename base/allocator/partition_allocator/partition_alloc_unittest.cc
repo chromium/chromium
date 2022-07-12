@@ -97,7 +97,7 @@ bool IsLargeMemoryDevice() {
   //
   // Set to 4GiB, since we have 2GiB Android devices where tests flakily fail
   // (e.g. Nexus 5X, crbug.com/1191195).
-  return base::SysInfo::AmountOfPhysicalMemory() >= 4000ULL * 1024 * 1024;
+  return base::SysInfo::AmountOfPhysicalMemory() >= 4000LL * 1024 * 1024;
 }
 
 bool SetAddressSpaceLimit() {

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -58,10 +57,10 @@ TEST_F(SysInfoTest, NumProcs) {
 
 TEST_F(SysInfoTest, AmountOfMem) {
   // We aren't actually testing that it's correct, just that it's sane.
-  EXPECT_GT(SysInfo::AmountOfPhysicalMemory(), 0u);
+  EXPECT_GT(SysInfo::AmountOfPhysicalMemory(), 0);
   EXPECT_GT(SysInfo::AmountOfPhysicalMemoryMB(), 0);
   // The maxmimal amount of virtual memory can be zero which means unlimited.
-  EXPECT_GE(SysInfo::AmountOfVirtualMemory(), 0u);
+  EXPECT_GE(SysInfo::AmountOfVirtualMemory(), 0);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -79,7 +78,7 @@ TEST_F(SysInfoTest, MAYBE_AmountOfAvailablePhysicalMemory) {
   if (info.available != 0) {
     // If there is MemAvailable from kernel.
     EXPECT_LT(info.available, info.total);
-    const uint64_t amount = SysInfo::AmountOfAvailablePhysicalMemory(info);
+    const int64_t amount = SysInfo::AmountOfAvailablePhysicalMemory(info);
     // We aren't actually testing that it's correct, just that it's sane.
     // Available memory is |free - reserved + reclaimable (inactive, non-free)|.
     // On some android platforms, reserved is a substantial portion.
@@ -89,17 +88,17 @@ TEST_F(SysInfoTest, MAYBE_AmountOfAvailablePhysicalMemory) {
 #else
         info.free;
 #endif  // BUILDFLAG(IS_ANDROID)
-    EXPECT_GT(amount, checked_cast<uint64_t>(available) * 1024);
-    EXPECT_LT(amount / 1024, checked_cast<uint64_t>(info.available));
+    EXPECT_GT(amount, static_cast<int64_t>(available) * 1024);
+    EXPECT_LT(amount / 1024, info.available);
     // Simulate as if there is no MemAvailable.
     info.available = 0;
   }
 
   // There is no MemAvailable. Check the fallback logic.
-  const uint64_t amount = SysInfo::AmountOfAvailablePhysicalMemory(info);
+  const int64_t amount = SysInfo::AmountOfAvailablePhysicalMemory(info);
   // We aren't actually testing that it's correct, just that it's sane.
-  EXPECT_GT(amount, checked_cast<uint64_t>(info.free) * 1024);
-  EXPECT_LT(amount / 1024, checked_cast<uint64_t>(info.total));
+  EXPECT_GT(amount, static_cast<int64_t>(info.free) * 1024);
+  EXPECT_LT(amount / 1024, info.total);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)

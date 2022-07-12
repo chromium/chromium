@@ -158,7 +158,7 @@ void Time::Explode(bool is_local, Exploded* exploded) const {
   exploded->hour = timestruct.tm_hour;
   exploded->minute = timestruct.tm_min;
   exploded->second = timestruct.tm_sec;
-  exploded->millisecond = static_cast<int>(millisecond);
+  exploded->millisecond = millisecond;
 }
 
 // static

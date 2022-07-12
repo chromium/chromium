@@ -373,7 +373,7 @@ class DeviceStatusCollector : public StatusCollector,
   struct MemoryUsage {
     // Amount of free RAM (measures raw memory used by processes, not internal
     // memory waiting to be reclaimed by GC).
-    uint64_t bytes_of_ram_free;
+    int64_t bytes_of_ram_free;
 
     // Sampling timestamp.
     base::Time timestamp;

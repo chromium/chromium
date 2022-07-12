@@ -35,7 +35,7 @@ namespace borealis {
 
 namespace {
 
-constexpr uint64_t kGibi = 1024ull * 1024 * 1024;
+constexpr int64_t kGibi = 1024 * 1024 * 1024;
 
 // Used to make it difficult to tell what someone's token is based on their
 // prefs.

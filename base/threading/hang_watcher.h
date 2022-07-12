@@ -625,7 +625,7 @@ class BASE_EXPORT HangWatchState {
   WatchHangsInScope* GetCurrentWatchHangsInScope();
 #endif
 
-  PlatformThreadId GetThreadID() const;
+  uint64_t GetThreadID() const;
 
   // Retrieve the current hang watch deadline directly. For testing only.
   HangWatchDeadline* GetHangWatchDeadlineForTesting();
@@ -652,8 +652,9 @@ class BASE_EXPORT HangWatchState {
   HangWatchDeadline deadline_;
 
   // A unique ID of the thread under watch. Used for logging in crash reports
-  // only.
-  PlatformThreadId thread_id_;
+  // only. Unsigned type is used as it provides a correct behavior for all
+  // platforms for positive thread ids. Any valid thread id should be positive.
+  uint64_t thread_id_;
 
   // Number of active HangWatchScopeEnables on this thread.
   int nesting_level_ = 0;

@@ -420,7 +420,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
     // Devices almost always report less physical memory than what they actually
     // have, so anything above 3GiB will catch 4GiB and above.
-    if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 3500)
+    if (base::SysInfo::AmountOfPhysicalMemory() <= int64_t{3500} * 1024 * 1024)
       largest_cached_size_ =
           ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;
 #endif  // BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_64_BITS)

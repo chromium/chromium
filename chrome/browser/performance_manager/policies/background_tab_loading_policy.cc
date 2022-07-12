@@ -486,8 +486,11 @@ void BackgroundTabLoadingPolicy::LoadNextTab() {
 size_t BackgroundTabLoadingPolicy::GetFreePhysicalMemoryMib() const {
   if (free_memory_mb_for_testing_ != 0)
     return free_memory_mb_for_testing_;
-  constexpr uint64_t kMibibytesInBytes = 1 << 20;
-  return base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
+  constexpr int64_t kMibibytesInBytes = 1 << 20;
+  int64_t free_mem =
+      base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
+  DCHECK_GE(free_mem, 0);
+  return free_mem;
 }
 
 void BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(

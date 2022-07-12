@@ -76,9 +76,9 @@ bool MemBackendImpl::Init() {
   if (max_size_)
     return true;
 
-  uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
+  int64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
 
-  if (total_memory == 0) {
+  if (total_memory <= 0) {
     max_size_ = kDefaultInMemoryCacheSize;
     return true;
   }
@@ -86,7 +86,7 @@ bool MemBackendImpl::Init() {
   // We want to use up to 2% of the computer's memory, with a limit of 50 MB,
   // reached on system with more than 2.5 GB of RAM.
   total_memory = total_memory * 2 / 100;
-  if (total_memory > static_cast<uint64_t>(kDefaultInMemoryCacheSize) * 5)
+  if (total_memory > kDefaultInMemoryCacheSize * 5)
     max_size_ = kDefaultInMemoryCacheSize * 5;
   else
     max_size_ = static_cast<int32_t>(total_memory);

@@ -543,13 +543,13 @@ ResultCode SetJobMemoryLimit(Sandbox sandbox_type, TargetPolicy* policy) {
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
   if (sandbox_type == Sandbox::kGpu || sandbox_type == Sandbox::kRenderer) {
-    constexpr uint64_t GB = 1024 * 1024 * 1024;
+    int64_t GB = 1024 * 1024 * 1024;
     // Allow the GPU/RENDERER process's sandbox to access more physical memory
     // if it's available on the system.
     //
     // Renderer processes are allowed to access 16 GB; the GPU process, up
     // to 64 GB.
-    uint64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    int64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
     if (sandbox_type == Sandbox::kGpu && physical_memory > 64 * GB) {
       memory_limit = 64 * GB;
     } else if (sandbox_type == Sandbox::kGpu && physical_memory > 32 * GB) {

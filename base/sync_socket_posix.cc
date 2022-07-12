@@ -23,7 +23,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
@@ -175,7 +174,8 @@ size_t SyncSocket::Peek() {
     // If there is an error in ioctl, signal that the channel would block.
     return 0;
   }
-  return checked_cast<size_t>(number_chars);
+  DCHECK_GE(number_chars, 0);
+  return number_chars;
 }
 
 bool SyncSocket::IsValid() const {

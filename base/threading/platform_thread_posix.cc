@@ -220,7 +220,7 @@ PlatformThreadId PlatformThread::CurrentId() {
       (g_is_main_thread &&
        !g_main_thread_tid_cache_valid.load(std::memory_order_relaxed))) {
     // Update the cached tid.
-    g_thread_id = static_cast<pid_t>(syscall(__NR_gettid));
+    g_thread_id = syscall(__NR_gettid);
     // If this is the main thread, we can mark the tid_cache as valid.
     // Otherwise, stop the current thread from always entering this slow path.
     if (g_thread_id == getpid()) {

@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -25,7 +24,7 @@
 
 namespace {
 
-uint64_t AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field) {
+int64_t AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field) {
   MEMORYSTATUSEX memory_info;
   memory_info.dwLength = sizeof(memory_info);
   if (!GlobalMemoryStatusEx(&memory_info)) {
@@ -33,7 +32,8 @@ uint64_t AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field) {
     return 0;
   }
 
-  return memory_info.*memory_field;
+  int64_t rv = static_cast<int64_t>(memory_info.*memory_field);
+  return rv < 0 ? std::numeric_limits<int64_t>::max() : rv;
 }
 
 bool GetDiskSpaceInfo(const base::FilePath& path,
@@ -68,20 +68,20 @@ int SysInfo::NumberOfProcessors() {
 }
 
 // static
-uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
+int64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   return AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys);
 }
 
 // static
-uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+int64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   SystemMemoryInfoKB info;
   if (!GetSystemMemoryInfo(&info))
     return 0;
-  return checked_cast<uint64_t>(info.avail_phys) * 1024;
+  return static_cast<int64_t>(info.avail_phys) * 1024;
 }
 
 // static
-uint64_t SysInfo::AmountOfVirtualMemory() {
+int64_t SysInfo::AmountOfVirtualMemory() {
   return AmountOfMemory(&MEMORYSTATUSEX::ullTotalVirtual);
 }
 

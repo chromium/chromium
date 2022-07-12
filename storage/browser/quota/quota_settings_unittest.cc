@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,8 +22,8 @@ using ::testing::_;
 
 namespace {
 
-constexpr uint64_t kLowPhysicalMemory = 1024 * 1024;
-constexpr uint64_t kHighPhysicalMemory = 65536 * kLowPhysicalMemory;
+constexpr int64_t kLowPhysicalMemory = 1024 * 1024;
+constexpr int64_t kHighPhysicalMemory = 65536 * kLowPhysicalMemory;
 
 }  // namespace
 
@@ -34,7 +33,7 @@ class MockQuotaDeviceInfoHelper : public QuotaDeviceInfoHelper {
  public:
   MockQuotaDeviceInfoHelper() = default;
   MOCK_CONST_METHOD1(AmountOfTotalDiskSpace, int64_t(const base::FilePath&));
-  MOCK_CONST_METHOD0(AmountOfPhysicalMemory, uint64_t());
+  MOCK_CONST_METHOD0(AmountOfPhysicalMemory, int64_t());
 };
 
 class QuotaSettingsTest : public testing::Test {
@@ -72,25 +71,23 @@ class QuotaSettingsIncognitoTest : public QuotaSettingsTest {
 
  protected:
   void SetUpDeviceInfoHelper(const int expected_calls,
-                             const uint64_t physical_memory_amount) {
+                             const int64_t physical_memory_amount) {
     ON_CALL(device_info_helper_, AmountOfPhysicalMemory())
         .WillByDefault(::testing::Return(physical_memory_amount));
     EXPECT_CALL(device_info_helper_, AmountOfPhysicalMemory())
         .Times(expected_calls);
   }
 
-  void GetAndTestSettings(const uint64_t physical_memory_amount) {
+  void GetAndTestSettings(const int64_t physical_memory_amount) {
     absl::optional<QuotaSettings> settings =
         GetSettings(true, &device_info_helper_);
     ASSERT_TRUE(settings.has_value());
-    const uint64_t pool_size =
-        base::checked_cast<uint64_t>(settings->pool_size);
     EXPECT_LE(
         physical_memory_amount * GetIncognitoQuotaRatioLowerBound_ForTesting(),
-        pool_size);
+        settings->pool_size);
     EXPECT_GE(
         physical_memory_amount * GetIncognitoQuotaRatioUpperBound_ForTesting(),
-        pool_size);
+        settings->pool_size);
   }
 
  private:
