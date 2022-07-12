@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
@@ -17,6 +18,7 @@
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +53,7 @@ constexpr int kDelay = 2;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
+using ::testing::SizeIs;
 
 struct MockInsecureCredentialsManagerObserver
     : InsecureCredentialsManager::Observer {
@@ -1088,6 +1091,27 @@ TEST_F(InsecureCredentialsManagerTest, UnMuteReusedPasswordNoOp) {
                   .back()
                   .password_issues.at(InsecureType::kReused)
                   .is_muted.value());
+}
+
+TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialEntriesWithFlag) {
+  PasswordForm password_form =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+
+  store().AddLogin(password_form);
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
+
+  // Turn on the field trial parameter to force password leaks everywhere.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      password_manager::features::kPasswordChangeInSettings,
+      {{password_manager::features::
+            kPasswordChangeInSettingsWithForcedWarningForEverySite,
+        "true"}});
+
+  // The credential is now returned as insecure.
+  EXPECT_THAT(provider().GetInsecureCredentialEntries(), SizeIs(1u));
 }
 
 // Test verifies that editing Compromised Credential via provider change the

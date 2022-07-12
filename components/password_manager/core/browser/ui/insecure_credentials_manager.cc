@@ -351,11 +351,25 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
   DCHECK(presenter_);
   std::vector<CredentialUIEntry> credentials =
       presenter_->GetSavedCredentials();
-  // Erase entries which aren't leaked and finished.
-  base::EraseIf(credentials, [](const auto& credential) {
-    return !credential.password_issues.contains(InsecureType::kLeaked) &&
-           !credential.password_issues.contains(InsecureType::kPhished);
-  });
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          password_manager::features::kPasswordChangeInSettings,
+          password_manager::features::
+              kPasswordChangeInSettingsWithForcedWarningForEverySite,
+          /*default_value=*/false)) {
+    // If a flag is set to return every credential as compromised, ensure that
+    // all credentials contain a "leak" password issue.
+    for (auto& credential : credentials) {
+      if (!credential.IsLeaked() && credential.IsPhished()) {
+        credential.password_issues[InsecureType::kLeaked] =
+            InsecurityMetadata();
+      }
+    }
+  } else {
+    // Otherwise erase entries which aren't leaked and phished.
+    base::EraseIf(credentials, [](const auto& credential) {
+      return !credential.IsLeaked() && !credential.IsPhished();
+    });
+  }
 
   return credentials;
 }
