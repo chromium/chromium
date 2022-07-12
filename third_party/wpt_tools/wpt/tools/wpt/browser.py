@@ -1472,7 +1472,13 @@ class Safari(Browser):
             if {"download", "dmg", "zip"} & class_names:
                 downloads.append(candidate)
 
-        stp_link_text = re.compile(r"^\s*Safari\s+Technology\s+Preview\s+(?:[0-9]+\s+)?for\s+macOS")
+        """
+        When converting to string with text_content, it converts <br> to no space.
+        For example:
+        Input: Safari Technology Preview<br>for macOS&nbsp;Ventura
+        Output: Safari Technology Previewfor macOS Ventura
+        """
+        stp_link_text = re.compile(r"^\s*Safari\s+Technology\s+Preview\s*(?:[0-9]+\s+)?for\s+macOS")
         requirement = re.compile(
             r"Requires\s+macOS\s+([0-9\.]+)\s+(?:or\s+later|beta)."
         )
