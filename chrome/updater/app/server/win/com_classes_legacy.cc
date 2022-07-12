@@ -36,6 +36,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/app_command_runner.h"
+#include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
@@ -490,17 +491,18 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
     return hr;
   }
 
-  HANDLE duplicate_proc_handle = NULL;
-  if (!::DuplicateHandle(::GetCurrentProcess(), process.Handle(),
-                         caller_proc_handle.Get(), &duplicate_proc_handle,
-                         PROCESS_QUERY_INFORMATION | SYNCHRONIZE, FALSE, 0)) {
+  ScopedKernelHANDLE duplicate_proc_handle;
+  if (!::DuplicateHandle(
+          ::GetCurrentProcess(), process.Handle(), caller_proc_handle.Get(),
+          ScopedKernelHANDLE::Receiver(duplicate_proc_handle).get(),
+          PROCESS_QUERY_INFORMATION | SYNCHRONIZE, FALSE, 0)) {
     HRESULT hr = HRESULTFromLastError();
     VLOG(1) << "Failed to duplicate the handle " << hr;
     return hr;
   }
 
   // The caller must close this handle.
-  *proc_handle = reinterpret_cast<ULONG_PTR>(duplicate_proc_handle);
+  *proc_handle = reinterpret_cast<ULONG_PTR>(duplicate_proc_handle.release());
   return S_OK;
 }
 
