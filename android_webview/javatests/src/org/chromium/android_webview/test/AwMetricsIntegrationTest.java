@@ -377,7 +377,6 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST})
     public void testMetadata_appPackageName() throws Throwable {
         final String appPackageName = ContextUtils.getApplicationContext().getPackageName();
 

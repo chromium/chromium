@@ -60,10 +60,6 @@ const char kFinchSeedMinUpdatePeriod[] = "finch-seed-min-update-period";
 const char kWebViewEnableModernCookieSameSite[] =
     "webview-enable-modern-cookie-same-site";
 
-// Disables downloading/updating Apps Package Names Allowlist.
-const char kWebViewDisableAppsPackageNamesAllowlistComponent[] =
-    "webview-disable-apps-package-names-allowlist-component";
-
 // Disables throttling querying apps package names allowlist components in
 // WebView clients.
 const char kWebViewDisablePackageAllowlistThrottling[] =

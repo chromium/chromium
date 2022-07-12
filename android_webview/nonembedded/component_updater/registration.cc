@@ -46,16 +46,8 @@ void RegisterComponentsForUpdate(
     base::RepeatingCallback<bool(
         const component_updater::ComponentRegistration&)> register_callback,
     base::OnceClosure on_finished) {
-  // TODO(crbug.com/1174022): remove command line flag once launched.
-  bool package_names_allowlist_enabled =
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewDisableAppsPackageNamesAllowlistComponent);
-  int num_webview_components = package_names_allowlist_enabled
-                                   ? kNumWebViewComponents
-                                   : kNumWebViewComponents - 1;
-
   base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(num_webview_components, std::move(on_finished));
+      base::BarrierClosure(kNumWebViewComponents, std::move(on_finished));
 
   RegisterComponentInstallerPolicyShim(
       std::make_unique<
@@ -86,10 +78,8 @@ void RegisterComponentsForUpdate(
           })),
       register_callback, barrier_closure);
 
-  if (package_names_allowlist_enabled) {
-    RegisterWebViewAppsPackageNamesAllowlistComponent(register_callback,
-                                                      barrier_closure);
-  }
+  RegisterWebViewAppsPackageNamesAllowlistComponent(register_callback,
+                                                    barrier_closure);
 }
 
 }  // namespace android_webview

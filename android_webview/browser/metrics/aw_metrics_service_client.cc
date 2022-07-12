@@ -109,12 +109,6 @@ int AwMetricsServiceClient::GetSampleRatePerMille() const {
 }
 
 std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
-  if (!base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
-    // Revert to the default implementation.
-    return ::metrics::AndroidMetricsServiceClient::
-        GetAppPackageNameIfLoggable();
-  }
   AndroidMetricsServiceClient::InstallerPackageType installer_type =
       GetInstallerPackageType();
   // Always record the app package name of system apps even if it's not in the
@@ -128,13 +122,6 @@ std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
 }
 
 bool AwMetricsServiceClient::ShouldRecordPackageName() {
-  if (!base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
-    // Revert to the default implementation of using a random sample to decide
-    // whether to record the app package name or not.
-    return ::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName();
-  }
-
   base::UmaHistogramEnumeration(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
       package_name_record_status_);

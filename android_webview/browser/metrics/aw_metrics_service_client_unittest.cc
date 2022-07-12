@@ -99,9 +99,6 @@ class AwMetricsServiceClientTest : public testing::Test {
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_CacheNotSet) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
   AwMetricsServiceClient* client = GetClient();
   EXPECT_FALSE(client->ShouldRecordPackageName());
@@ -118,9 +115,6 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_CacheNotSet) {
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
   AwMetricsServiceClient* client = GetClient();
   TestingPrefServiceSimple* prefs = GetPrefs();
@@ -149,9 +143,6 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
 TEST_F(AwMetricsServiceClientTest,
        TestShouldRecordPackageName_TestShouldNotRecordPackageName) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
   AwMetricsServiceClient* client = GetClient();
   AppPackageNameLoggingRule expected_record(
@@ -176,9 +167,6 @@ TEST_F(AwMetricsServiceClientTest,
 TEST_F(AwMetricsServiceClientTest,
        TestShouldRecordPackageName_TestShouldRecordPackageName) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
   auto one_day_from_now = base::Time::Now() + base::Days(1);
 
@@ -205,9 +193,6 @@ TEST_F(AwMetricsServiceClientTest,
 TEST_F(AwMetricsServiceClientTest,
        TestShouldRecordPackageName_TestFailureAfterValidResult) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
   auto one_day_from_now = base::Time::Now() + base::Days(1);
 
@@ -235,9 +220,6 @@ TEST_F(AwMetricsServiceClientTest,
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_FailedResult) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
   AwMetricsServiceClient* client = GetClient();
   client->SetAppPackageNameLoggingRule(
@@ -256,9 +238,6 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_FailedResult) {
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
 
   AwMetricsServiceClient* client = GetClient();
   TestingPrefServiceSimple* prefs = GetPrefs();
@@ -280,10 +259,6 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
 }
 
 TEST_F(AwMetricsServiceClientTest, TestGetAppPackageNameIfLoggable) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
-
   class TestClient : public AwMetricsServiceClient {
    public:
     TestClient()

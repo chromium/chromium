@@ -27,9 +27,7 @@ window.webview_smoke_test_harness = test_harness;
 _COMPONENT_NAME_TO_DATA = {
   'WebViewAppsPackageNamesAllowlist': ComponentData(
       component_id = 'aemllinfpjdgcldgaelcgakpjmaekbai',
-      browser_args = [
-          '--enable-features=WebViewAppsPackageNamesAllowlist',
-          '--vmodule=*_allowlist_component_*=2'])
+      browser_args = ['--vmodule=*_allowlist_component_*=2'])
 }
 _LOGCAT_FILTERS = [
     'chromium:v',

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
-#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
@@ -37,6 +36,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
+
+const base::TimeDelta kWebViewAppsMinAllowlistThrottleTimeDelta =
+    base::Hours(1);
+const base::TimeDelta kWebViewAppsMaxAllowlistThrottleTimeDelta = base::Days(2);
 
 namespace {
 
@@ -145,14 +148,13 @@ bool ShouldThrottleAppPackageNamesAllowlistComponent(
     return false;
   }
   base::TimeDelta throttle_time_delta(
-      features::kWebViewAppsMinAllowlistThrottleTimeDelta.Get());
+      kWebViewAppsMinAllowlistThrottleTimeDelta);
   if (cached_record.has_value()) {
     base::Time expiry_date = cached_record.value().GetExpiryDate();
     bool in_the_allowlist = !expiry_date.is_min();
     bool is_allowlist_expired = expiry_date <= base::Time::Now();
     if (!in_the_allowlist || !is_allowlist_expired) {
-      throttle_time_delta =
-          features::kWebViewAppsMaxAllowlistThrottleTimeDelta.Get();
+      throttle_time_delta = kWebViewAppsMaxAllowlistThrottleTimeDelta;
     }
   }
   return base::Time::Now() - last_update <= throttle_time_delta;
@@ -267,11 +269,6 @@ void LoadPackageNamesAllowlistComponent(
     component_updater::ComponentLoaderPolicyVector& policies,
     AwMetricsServiceClient* metrics_service_client) {
   DCHECK(metrics_service_client);
-
-  if (!base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
-    return;
-  }
 
   absl::optional<AppPackageNameLoggingRule> cached_record =
       metrics_service_client->GetCachedAppPackageNameLoggingRule();

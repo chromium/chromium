@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
-#include "android_webview/common/aw_features.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -22,7 +21,6 @@
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -354,10 +352,6 @@ void TestThrottling(base::Time time,
 
 void TestThrottlingAllowlist(absl::optional<AppPackageNameLoggingRule> rule,
                              bool expect_throttling) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewAppsPackageNamesAllowlist);
-
   TestingPrefServiceSimple prefs;
   AwMetricsServiceClient::RegisterMetricsPrefs(prefs.registry());
   AwMetricsServiceClient client(
@@ -369,23 +363,20 @@ void TestThrottlingAllowlist(absl::optional<AppPackageNameLoggingRule> rule,
   TestThrottling(base::Time(), &client, /*expect_throttling=*/false);
 
   // last_update record > max_throttle_time : should never throttle.
-  TestThrottling(base::Time::Now() -
-                     features::kWebViewAppsMaxAllowlistThrottleTimeDelta.Get() -
+  TestThrottling(base::Time::Now() - kWebViewAppsMaxAllowlistThrottleTimeDelta -
                      base::Days(1),
                  &client,
                  /*expect_throttling=*/false);
 
   // min_throttle_time < last_update record < max_throttle_time : maybe
   // throttle.
-  TestThrottling(base::Time::Now() -
-                     features::kWebViewAppsMaxAllowlistThrottleTimeDelta.Get() +
-                     features::kWebViewAppsMinAllowlistThrottleTimeDelta.Get(),
+  TestThrottling(base::Time::Now() - kWebViewAppsMaxAllowlistThrottleTimeDelta +
+                     kWebViewAppsMinAllowlistThrottleTimeDelta,
                  &client,
                  /*expect_throttling=*/expect_throttling);
 
   // last_update record < min_throttle_time : should always throttle.
-  TestThrottling(base::Time::Now() -
-                     features::kWebViewAppsMinAllowlistThrottleTimeDelta.Get() +
+  TestThrottling(base::Time::Now() - kWebViewAppsMinAllowlistThrottleTimeDelta +
                      base::Minutes(30),
                  &client,
                  /*expect_throttling=*/true);

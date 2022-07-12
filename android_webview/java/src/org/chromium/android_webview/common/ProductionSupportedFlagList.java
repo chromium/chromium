@@ -199,13 +199,6 @@ public final class ProductionSupportedFlagList {
                             + "accessory."),
             Flag.baseFeature(
                     NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST,
-                    "Enables using a server-defined allowlist of apps whose name can be recorded "
-                            + "in UMA logs. The allowlist is downloaded and fetched via component "
-                            + "updater services in WebView."),
-            Flag.commandLine(AwSwitches.WEBVIEW_DISABLE_APPS_PACKAGE_NAMES_ALLOWLIST_COMPONENT,
-                    "Disable downloading the apps package names allowlist component by the "
-                            + "component updater."),
             Flag.commandLine(AwSwitches.WEBVIEW_DISABLE_PACKAGE_ALLOWLIST_THROTTLING,
                     "Disables throttling querying apps package names allowlist components in"
                             + "WebView clients."),
