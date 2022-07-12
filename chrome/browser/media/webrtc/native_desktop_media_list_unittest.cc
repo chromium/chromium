@@ -31,6 +31,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -282,12 +283,11 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   }
 
 #if defined(USE_AURA)
-  std::unique_ptr<views::Widget> CreateDesktopWidget() {
-    std::unique_ptr<views::Widget> widget(new views::Widget);
+  views::UniqueWidgetPtr CreateDesktopWidget() {
+    views::UniqueWidgetPtr widget(std::make_unique<views::Widget>());
     views::Widget::InitParams params;
     params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
     params.accept_events = false;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.native_widget = new views::DesktopNativeWidgetAura(widget.get());
     params.bounds = gfx::Rect(0, 0, 20, 20);
     widget->Init(std::move(params));
@@ -472,7 +472,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   raw_ptr<FakeWindowCapturer> window_capturer_;
 
   webrtc::DesktopCapturer::SourceList window_list_;
-  std::vector<std::unique_ptr<views::Widget>> desktop_widgets_;
+  std::vector<views::UniqueWidgetPtr> desktop_widgets_;
   std::map<DesktopMediaID::Id, DesktopMediaID::Id> native_aura_id_map_;
   std::unique_ptr<NativeDesktopMediaList> model_;
 
