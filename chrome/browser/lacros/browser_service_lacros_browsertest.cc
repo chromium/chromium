@@ -324,15 +324,6 @@ class BrowserServiceLacrosWindowlessBrowserTest
     }
     DisableWelcomePages({profile});
 
-    // Lacros only supports syncing profiles for now.
-    // TODO(crbug.com/1260291): Revisit this once non-syncing profiles are
-    // allowed.
-    ProfileAttributesStorage* attributes_storage =
-        &profile_manager->GetProfileAttributesStorage();
-    attributes_storage->GetProfileAttributesWithPath(profile->GetPath())
-        ->SetAuthInfo("gaia_id", u"email",
-                      /*is_consented_primary_account=*/true);
-
     // Don't delete Profile too early.
     ScopedProfileKeepAlive profile_keep_alive(
         profile, ProfileKeepAliveOrigin::kBrowserWindow);
@@ -417,18 +408,6 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
     ASSERT_TRUE(profile2);
   }
   DisableWelcomePages({profile1, profile2});
-
-  // Lacros only supports syncing profiles for now.
-  // TODO(crbug.com/1260291): Revisit this once non-syncing profiles are
-  // allowed.
-  ProfileAttributesStorage* attributes_storage =
-      &profile_manager->GetProfileAttributesStorage();
-  attributes_storage->GetProfileAttributesWithPath(profile1->GetPath())
-      ->SetAuthInfo("gaia_id_1", u"email_1",
-                    /*is_consented_primary_account=*/true);
-  attributes_storage->GetProfileAttributesWithPath(profile2->GetPath())
-      ->SetAuthInfo("gaia_id_2", u"email_2",
-                    /*is_consented_primary_account=*/true);
 
   // Don't delete Profiles too early.
   ScopedProfileKeepAlive profile1_keep_alive(
