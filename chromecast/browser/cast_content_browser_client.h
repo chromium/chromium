@@ -268,12 +268,6 @@ class CastContentBrowserClient
   bool ShouldAllowInsecurePrivateNetworkRequests(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
-  // New Mojo bindings should be added to
-  // cast_content_browser_client_receiver_bindings.cc, so that they go through
-  // security review.
-  void BindHostReceiverForRenderer(
-      content::RenderProcessHost* render_process_host,
-      mojo::GenericPendingReceiver receiver) override;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const network::ResourceRequest& request,

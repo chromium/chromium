@@ -135,10 +135,6 @@
 #include "extensions/common/constants.h"                            // nogncheck
 #endif
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-#include "chromecast/browser/webview/webview_controller.h"
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/service/video_geometry_setter_service.h"
@@ -869,13 +865,6 @@ CastContentBrowserClient::CreateThrottlesForNavigation(
         std::make_unique<GeneralAudienceBrowsingNavigationThrottle>(
             handle, general_audience_browsing_service_.get()));
   }
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-  auto webview_throttle = WebviewController::MaybeGetNavigationThrottle(handle);
-  if (webview_throttle) {
-    throttles.push_back(std::move(webview_throttle));
-  }
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
 
   return throttles;
 }

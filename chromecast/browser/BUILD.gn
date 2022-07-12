@@ -493,52 +493,6 @@ cast_source_set("browser_base") {
     sources += [ "webui/cast_webui_default.cc" ]
   }
 
-  if ((is_linux || is_chromeos) && use_ozone) {
-    sources += [
-      "webview/cast_app_controller.cc",
-      "webview/cast_app_controller.h",
-      "webview/cast_app_rpc_instance.cc",
-      "webview/cast_app_rpc_instance.h",
-      "webview/cast_content_window_embedded.cc",
-      "webview/cast_content_window_embedded.h",
-      "webview/cast_window_embedder.cc",
-      "webview/cast_window_embedder.h",
-      "webview/js_channel_service.cc",
-      "webview/js_channel_service.h",
-      "webview/platform_views_grpc_service.cc",
-      "webview/platform_views_grpc_service.h",
-      "webview/platform_views_rpc_instance.cc",
-      "webview/platform_views_rpc_instance.h",
-      "webview/web_content_controller.cc",
-      "webview/web_content_controller.h",
-      "webview/webview_browser_context.cc",
-      "webview/webview_browser_context.h",
-      "webview/webview_controller.cc",
-      "webview/webview_controller.h",
-      "webview/webview_input_method_observer.cc",
-      "webview/webview_input_method_observer.h",
-      "webview/webview_navigation_throttle.cc",
-      "webview/webview_navigation_throttle.h",
-      "webview/webview_rpc_instance.cc",
-      "webview/webview_rpc_instance.h",
-      "webview/webview_window_manager.cc",
-      "webview/webview_window_manager.h",
-    ]
-    deps += [
-      ":base_types",
-      ":web_contents_provider",
-      "//chromecast/browser/webview/proto",
-      "//chromecast/ui:back_gesture_router",
-      "//components/exo",
-      "//components/exo/wayland",
-      "//content/public/browser",
-      "//services/viz/privileged/mojom/compositing",
-      "//third_party/grpc:grpc++",
-      "//ui/base/dragdrop/mojom",
-      "//ui/display/manager",
-    ]
-  }
-
   configs += [ "//media/audio:platform_config" ]
 
   if (chromecast_branding != "public") {
@@ -601,8 +555,6 @@ cast_source_set("base_types") {
   ]
 
   sources = [ "web_types.cc" ]
-
-  public_deps = [ "//chromecast/browser/webview/proto" ]
 }
 
 # Lightweight target for Cast interfaces that wrap //content/public/browser.
@@ -706,7 +658,6 @@ cast_source_set("browsertests") {
     "renderer_prelauncher_test.cc",
     "test/cast_features_browsertest.cc",
     "test/cast_navigation_browsertest.cc",
-    "webview/webview_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -792,10 +743,6 @@ cast_source_set("unittests") {
       "//ui/events:test_support",
     ]
   }
-
-  if ((is_linux || is_chromeos) && use_ozone) {
-    deps += [ "//chromecast/browser/webview:unittests" ]
-  }
 }
 
 if (is_android) {
@@ -828,10 +775,4 @@ cast_source_set("simple_browser") {
     "//chromecast/base:default_create_sys_info",
     "//chromecast/common:cors_exempt_headers",
   ]
-}
-
-cast_source_set("web_contents_provider") {
-  sources = [ "webview/web_contents_provider.h" ]
-
-  deps = [ "//content/public/browser" ]
 }

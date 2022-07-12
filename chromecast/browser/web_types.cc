@@ -23,20 +23,4 @@ std::ostream& operator<<(std::ostream& os, PageState state) {
 #undef CASE
 }
 
-webview::AsyncPageEvent_State ToGrpcPageState(PageState state) {
-#define CASE(state)      \
-  case PageState::state: \
-    return webview::AsyncPageEvent_State_##state;
-
-  switch (state) {
-    CASE(IDLE);
-    CASE(LOADING);
-    CASE(LOADED);
-    CASE(CLOSED);
-    CASE(DESTROYED);
-    CASE(ERROR);
-  }
-#undef CASE
-}
-
 }  // namespace chromecast

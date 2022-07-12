@@ -45,10 +45,7 @@ group("all") {
     ]
   }
   if (is_linux) {
-    deps += [
-      "//chromecast/browser/webview/client:wayland_webview_client",
-      "//chromecast/tracing",
-    ]
+    deps += [ "//chromecast/tracing" ]
   }
   if (chromecast_branding != "public") {
     deps += [ "//chromecast/internal:all" ]
@@ -133,7 +130,6 @@ cast_test_group("cast_tests") {
   if (is_linux) {
     tests += [
       "//chromecast/crash:cast_crash_unittests",
-      "//components/exo:exo_unittests",
       "//sandbox/linux:sandbox_linux_unittests",
     ]
 
