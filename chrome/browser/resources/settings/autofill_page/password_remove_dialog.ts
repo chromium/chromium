@@ -121,7 +121,7 @@ export class PasswordRemoveDialogElement extends
       assert(this.removeFromDeviceChecked_);
     }
     PasswordManagerImpl.getInstance().removeSavedPassword(
-        this.duplicatedPassword.getAnyId(), fromStores);
+        this.duplicatedPassword.id, fromStores);
 
     this.$.dialog.close();
     this.dispatchEvent(

@@ -7,33 +7,16 @@
  * are duplicated across stores as a single item in the UI.
  */
 
-import {MultiStoreIdHandler} from './multi_store_id_handler.js';
-
 /**
- * A version of chrome.passwordsPrivate.PasswordUiEntry used for deduplicating
- * entries from the device and the account.
+ * A version of chrome.passwordsPrivate.PasswordUiEntry which contains a
+ * password and some helper methods.
  */
-export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
-  private contents_: MultiStorePasswordUiEntryContents;
+export class MultiStorePasswordUiEntry {
+  private contents_: chrome.passwordsPrivate.PasswordUiEntry;
   private password_: string = '';
 
   constructor(entry: chrome.passwordsPrivate.PasswordUiEntry) {
-    super();
-
-    this.contents_ = MultiStorePasswordUiEntry.getContents_(entry);
-
-    switch (entry.storedIn) {
-      case chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT:
-        this.setId(entry.id, /* fromAccountStore= */ true);
-        break;
-      case chrome.passwordsPrivate.PasswordStoreSet.DEVICE:
-        this.setId(entry.id, /* fromAccountStore= */ false);
-        break;
-      case chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT:
-        this.setId(entry.id, /* fromAccountStore= */ false);
-        this.setId(entry.id, /* fromAccountStore= */ true);
-        break;
-    }
+    this.contents_ = entry;
   }
 
   get urls(): chrome.passwordsPrivate.UrlCollection {
@@ -57,26 +40,30 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
   }
 
   get note(): string {
-    return this.contents_.note;
+    return this.contents_.passwordNote;
+  }
+
+  get id(): number {
+    return this.contents_.id;
+  }
+
+  get storedIn(): chrome.passwordsPrivate.PasswordStoreSet {
+    return this.contents_.storedIn;
   }
 
   /**
-   * Extract all the information except for the id and fromPasswordStore.
+   * @return Whether the credential is stored on the account.
    */
-  private static getContents_(entry: chrome.passwordsPrivate.PasswordUiEntry):
-      MultiStorePasswordUiEntryContents {
-    return {
-      urls: entry.urls,
-      username: entry.username,
-      federationText: entry.federationText,
-      note: entry.passwordNote,
-    };
+  isPresentInAccount(): boolean {
+    return this.contents_.storedIn !==
+        chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+  }
+
+  /**
+   * @return Whether the credential is stored on the device.
+   */
+  isPresentOnDevice(): boolean {
+    return this.contents_.storedIn !==
+        chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
   }
 }
-
-type MultiStorePasswordUiEntryContents = {
-  urls: chrome.passwordsPrivate.UrlCollection,
-  username: string,
-  note: string,
-  federationText?: string,
-};

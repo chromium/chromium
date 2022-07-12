@@ -345,7 +345,7 @@ suite('PasswordsDeviceSection', function() {
     // Only the 2nd entry should be moved
     const movedIds = await passwordManager.whenCalled('movePasswordsToAccount');
     assertEquals(1, movedIds.length);
-    assertEquals(deviceEntry2.deviceId, movedIds[0]);
+    assertEquals(deviceEntry2.id, movedIds[0]);
     // The dialog should be closed.
     assertFalse(moveMultipleDialog.$.dialog.open);
   });

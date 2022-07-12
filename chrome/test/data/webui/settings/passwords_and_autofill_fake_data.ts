@@ -76,6 +76,7 @@ export type MultyStorePasswordEntryParams = {
  * Creates a multi-store password item with the same mock data as
  * createPasswordEntry(), so can be used for verifying deduplication result.
  * At least one of |params.accountId| and |params.deviceId| must be set.
+ * TODO(vsemeniuk): Clear this method when MultiStorePasswordUiEntry is removed.
  */
 export function createMultiStorePasswordEntry(
     params: MultyStorePasswordEntryParams): MultiStorePasswordUiEntry {

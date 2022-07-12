@@ -37,7 +37,7 @@ export const PasswordRemovalMixin = dedupingMixin(
           }
 
           PasswordManagerImpl.getInstance().removeSavedPassword(
-              password.getAnyId(),
+              password.id,
               password.isPresentInAccount() ?
                   chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT :
                   chrome.passwordsPrivate.PasswordStoreSet.DEVICE);

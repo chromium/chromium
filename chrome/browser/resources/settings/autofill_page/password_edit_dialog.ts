@@ -32,6 +32,7 @@ import {getTemplate} from './password_edit_dialog.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 
+// TODO(derinel@google.com): Use a single id instead of CredentialIds.
 export type SavedPasswordEditedEvent =
     CustomEvent<chrome.passwordsPrivate.CredentialIds>;
 
@@ -507,15 +508,6 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   }
 
   private changePassword_() {
-    const idsToChange = [];
-    const accountId = this.existingEntry!.accountId;
-    const deviceId = this.existingEntry!.deviceId;
-    if (accountId !== null) {
-      idsToChange.push(accountId);
-    }
-    if (deviceId !== null) {
-      idsToChange.push(deviceId);
-    }
     const params: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
       username: this.username_,
       password: this.password_,
@@ -525,7 +517,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     }
 
     PasswordManagerImpl.getInstance()
-        .changeSavedPassword(idsToChange, params)
+        .changeSavedPassword([this.existingEntry!.id], params)
         .then(newIds => {
           if (this.isPasswordViewPageEnabled_) {
             this.dispatchChangePasswordEvent_(newIds);
@@ -692,8 +684,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
           entry.username === this.username_;
     })!;
     this.requestPlaintextPassword(
-            existingEntry.getAnyId(),
-            chrome.passwordsPrivate.PlaintextReason.EDIT)
+            existingEntry.id, chrome.passwordsPrivate.PlaintextReason.EDIT)
         .then(password => {
           existingEntry.password = password;
           this.switchToEditMode_(existingEntry);

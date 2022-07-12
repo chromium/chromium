@@ -259,7 +259,7 @@ suite('PasswordEditDialog', function() {
     const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [accountEntry.accountId!], passwordManager);
+        editDialog, [accountEntry.id], passwordManager);
   });
 
   test('changesPasswordForDeviceId', function() {
@@ -268,17 +268,16 @@ suite('PasswordEditDialog', function() {
     const editDialog = elementFactory.createPasswordEditDialog(deviceEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [deviceEntry.deviceId!], passwordManager);
+        editDialog, [deviceEntry.id], passwordManager);
   });
 
   test('changesPasswordForBothId', function() {
     const multiEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 41, deviceId: 42});
+        {url: 'goo.gl', username: 'bart', accountId: 41, deviceId: 41});
     const editDialog = elementFactory.createPasswordEditDialog(multiEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [multiEntry.accountId!, multiEntry.deviceId!],
-        passwordManager);
+        editDialog, [multiEntry.id], passwordManager);
   });
 
   test('changeUsernameFailsWhenReused', function() {
@@ -286,7 +285,7 @@ suite('PasswordEditDialog', function() {
       createMultiStorePasswordEntry(
           {url: 'goo.gl', username: 'bart', accountId: 0}),
       createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'mark', accountId: 0})
+          {url: 'goo.gl', username: 'mark', accountId: 1})
     ];
     const editDialog = elementFactory.createPasswordEditDialog(
         accountPasswords[0]!, accountPasswords);
@@ -300,7 +299,7 @@ suite('PasswordEditDialog', function() {
     assertFalse(editDialog.$.actionButton.disabled);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [accountPasswords[0]!.accountId!], passwordManager);
+        editDialog, [accountPasswords[0]!.id], passwordManager);
   });
 
   test('changesUsernameWhenReusedForDifferentStore', async function() {
@@ -308,7 +307,7 @@ suite('PasswordEditDialog', function() {
       createMultiStorePasswordEntry(
           {url: 'goo.gl', username: 'bart', accountId: 0}),
       createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'mark', deviceId: 0})
+          {url: 'goo.gl', username: 'mark', deviceId: 1})
     ];
     const editDialog =
         elementFactory.createPasswordEditDialog(passwords[0], passwords);
@@ -618,7 +617,7 @@ suite('PasswordEditDialog', function() {
         addDialog.$.viewExistingPasswordLink.click();
         const {id, reason} =
             await passwordManager.whenCalled('requestPlaintextPassword');
-        assertEquals(existingEntry.getAnyId(), id);
+        assertEquals(existingEntry.id, id);
         assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
         await flushTasks();
 
@@ -807,7 +806,7 @@ suite('PasswordEditDialog', function() {
         addDialog.$.viewExistingPasswordLink.click();
         const {id, reason} =
             await passwordManager.whenCalled('requestPlaintextPassword');
-        assertEquals(existingEntry.getAnyId(), id);
+        assertEquals(existingEntry.id, id);
         assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
         await flushTasks();
 

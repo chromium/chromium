@@ -109,15 +109,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
       return;
     }
     const params = new URLSearchParams();
-    if (this.entry.deviceId !== null) {
-      params.set(
-          PasswordViewPageUrlParams.DEVICE_ID, this.entry.deviceId.toString());
-    }
-    if (this.entry.accountId !== null) {
-      params.set(
-          PasswordViewPageUrlParams.ACCOUNT_ID,
-          this.entry.accountId.toString());
-    }
+    params.set(PasswordViewPageUrlParams.ID, this.entry.id.toString());
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.CREDENTIAL_ROW_CLICKED);
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);

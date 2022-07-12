@@ -21,7 +21,7 @@ suite('MultiStorePasswordUiEntry', function() {
         new MultiStorePasswordUiEntry(multiStoreEntry);
     assertTrue(multiStoreDeviceEntry.isPresentOnDevice());
     assertTrue(multiStoreDeviceEntry.isPresentInAccount());
-    assertEquals(multiStoreDeviceEntry.getAnyId(), 0);
+    assertEquals(multiStoreDeviceEntry.id, 0);
   });
 
   test('verifyInAccount', function() {
@@ -35,7 +35,7 @@ suite('MultiStorePasswordUiEntry', function() {
     const multiStoreDeviceEntry = new MultiStorePasswordUiEntry(accountEntry);
     assertFalse(multiStoreDeviceEntry.isPresentOnDevice());
     assertTrue(multiStoreDeviceEntry.isPresentInAccount());
-    assertEquals(multiStoreDeviceEntry.getAnyId(), 0);
+    assertEquals(multiStoreDeviceEntry.id, 0);
   });
 
   test('verifyInProfile', function() {
@@ -49,6 +49,6 @@ suite('MultiStorePasswordUiEntry', function() {
     const multiStoreDeviceEntry = new MultiStorePasswordUiEntry(deviceEntry);
     assertTrue(multiStoreDeviceEntry.isPresentOnDevice());
     assertFalse(multiStoreDeviceEntry.isPresentInAccount());
-    assertEquals(multiStoreDeviceEntry.getAnyId(), 0);
+    assertEquals(multiStoreDeviceEntry.id, 0);
   });
 });

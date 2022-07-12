@@ -244,7 +244,7 @@ export class PasswordsListHandlerElement extends
   private onMenuEditPasswordTap_() {
     if (this.isPasswordEditable_()) {
       this.requestPlaintextPassword(
-              this.activePassword_!.entry.getAnyId(),
+              this.activePassword_!.entry.id,
               chrome.passwordsPrivate.PlaintextReason.EDIT)
           .then(password => {
             this.set('activePassword_.entry.password', password);
@@ -290,7 +290,7 @@ export class PasswordsListHandlerElement extends
     // Copy to clipboard occurs inside C++ and we don't expect getting
     // result back to javascript.
     this.requestPlaintextPassword(
-            this.activePassword_!.entry.getAnyId(),
+            this.activePassword_!.entry.id,
             chrome.passwordsPrivate.PlaintextReason.COPY)
         .then((_: string) => {
           this.activePassword_ = null;

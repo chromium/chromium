@@ -68,8 +68,7 @@ export const ShowPasswordMixin = dedupingMixin(
           }
 
           this.requestPlaintextPassword(
-                  this.entry.getAnyId(),
-                  chrome.passwordsPrivate.PlaintextReason.VIEW)
+                  this.entry.id, chrome.passwordsPrivate.PlaintextReason.VIEW)
               .then(password => {
                 this.set('entry.password', password);
               }, () => {});

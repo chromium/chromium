@@ -75,7 +75,7 @@ export class PasswordMoveToAccountDialogElement extends PolymerElement {
   private onMoveButtonClick_() {
     assert(this.passwordToMove.isPresentOnDevice());
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
-        [this.passwordToMove.deviceId!]);
+        [this.passwordToMove.id!]);
     this.$.dialog.close();
   }
 

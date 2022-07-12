@@ -225,7 +225,6 @@ non_web_component_files = [
   "appearance_page/fonts_browser_proxy.ts",
   "autofill_page/autofill_manager_proxy.ts",
   "autofill_page/merge_passwords_store_copies_mixin.ts",
-  "autofill_page/multi_store_id_handler.ts",
   "autofill_page/multi_store_password_ui_entry.ts",
   "autofill_page/password_check_mixin.ts",
   "autofill_page/password_manager_proxy.ts",

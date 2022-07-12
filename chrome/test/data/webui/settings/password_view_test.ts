@@ -96,7 +96,7 @@ suite('PasswordViewTest', function() {
                 passwordManager.data.passwords = passwordList;
                 const page = document.createElement('password-view');
                 document.body.appendChild(page);
-                const params = new URLSearchParams({deviceId: ID.toString()});
+                const params = new URLSearchParams({id: String(ID)});
                 Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
                 await flushTasks();
@@ -112,15 +112,14 @@ suite('PasswordViewTest', function() {
                 }
               }));
 
-  [{accountId: null, deviceId: 2, username: USERNAME},
-   {accountId: 1, deviceId: null, username: USERNAME},
-   {accountId: 3, deviceId: 3, username: USERNAME2},
-   {accountId: 4, deviceId: null, username: USERNAME2},
+  [{id: 1, inDevice: false, isAccount: true, username: USERNAME},
+   {id: 2, inDevice: true, isAccount: false, username: USERNAME},
+   {id: 3, inDevice: true, isAccount: true, username: USERNAME2},
+   {id: 4, inDevice: false, isAccount: true, username: USERNAME2},
   ]
       .forEach(
           item => test(
-              `IDs match to correct credentials for deviceId: ${
-                  item.deviceId}, accountId: ${item.accountId}`,
+              `IDs match to correct credentials for id: ${item.id}`,
               async function() {
                 const passwordList = [
                   // entry in the account store
@@ -157,18 +156,16 @@ suite('PasswordViewTest', function() {
                 const page = document.createElement('password-view');
                 document.body.appendChild(page);
                 const params = new URLSearchParams();
-                if (item.deviceId !== null) {
-                  params.set('deviceId', item.deviceId.toString());
-                }
-                if (item.accountId !== null) {
-                  params.set('accountId', item.accountId.toString());
-                }
+                params.set('id', String(item.id));
                 Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
                 await flushTasks();
                 assertVisibilityOfPageElements(page, /*visibility=*/ true);
-                assertEquals(item.accountId, page.credential!.accountId);
-                assertEquals(item.deviceId, page.credential!.deviceId);
+                assertEquals(item.id, page.credential!.id);
+                assertEquals(
+                    item.inDevice, page.credential!.isPresentOnDevice());
+                assertEquals(
+                    item.isAccount, page.credential!.isPresentInAccount());
                 assertEquals(item.username, page.credential!.username);
                 assertEquals(SITE, page.credential!.urls.shown);
               }));
@@ -182,7 +179,7 @@ suite('PasswordViewTest', function() {
     passwordManager.data.passwords = passwordList;
     const page = document.createElement('password-view');
     document.body.appendChild(page);
-    const params = new URLSearchParams({deviceId: ID.toString()});
+    const params = new URLSearchParams({id: String(ID)});
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
     await flushTasks();
@@ -199,7 +196,7 @@ suite('PasswordViewTest', function() {
     passwordManager.data.passwords = passwordList;
     const page = document.createElement('password-view');
     document.body.appendChild(page);
-    const params = new URLSearchParams({deviceId: 'invalid'});
+    const params = new URLSearchParams({id: 'invalid'});
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
     await flushTasks();
@@ -220,7 +217,7 @@ suite('PasswordViewTest', function() {
     passwordManager.data.passwords = passwordList;
     const page = document.createElement('password-view');
     document.body.appendChild(page);
-    const params = new URLSearchParams({deviceId: ID.toString()});
+    const params = new URLSearchParams({id: String(ID)});
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
     await flushTasks();
@@ -235,7 +232,7 @@ suite('PasswordViewTest', function() {
     passwordManager.data.passwords = passwordList;
     const page = document.createElement('password-view');
     document.body.appendChild(page);
-    const params = new URLSearchParams({deviceId: ID.toString()});
+    const params = new URLSearchParams({id: String(ID)});
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
     await flushTasks();
@@ -288,7 +285,7 @@ suite('PasswordViewTest', function() {
         passwordManager.data.passwords = [passwordEntry];
         const page = document.createElement('password-view');
         document.body.appendChild(page);
-        const params = new URLSearchParams({deviceId: ID.toString()});
+        const params = new URLSearchParams({id: String(ID)});
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
         await flushTasks();
         assertTrue(!!page.credential);
@@ -304,7 +301,7 @@ suite('PasswordViewTest', function() {
         assertTrue(!!page.credential);
         assertEquals(SITE, page.credential.urls.shown);
         assertEquals(USERNAME, page.credential.username);
-        assertEquals(ID, page.credential.deviceId);
+        assertEquals(ID, page.credential.id);
       });
 
   test(
@@ -318,7 +315,7 @@ suite('PasswordViewTest', function() {
         passwordManager.data.passwords = passwordList;
         const page = document.createElement('password-view');
         document.body.appendChild(page);
-        const params = new URLSearchParams({deviceId: ID.toString()});
+        const params = new URLSearchParams({id: String(ID)});
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
         await flushTasks();
@@ -343,7 +340,7 @@ suite('PasswordViewTest', function() {
         passwordManager.data.passwords = [entry];
         const page = document.createElement('password-view');
         document.body.appendChild(page);
-        const params = new URLSearchParams({deviceId: ID.toString()});
+        const params = new URLSearchParams({id: String(ID)});
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
         await flushTasks();
@@ -379,8 +376,7 @@ suite('PasswordViewTest', function() {
         assertEquals(NEW_USERNAME, page.credential!.username);
 
         const urlParams = Router.getInstance().getQueryParameters();
-        assertEquals(urlParams.get('deviceId'), NEW_ID.toString());
-        assertEquals(urlParams.get('accountId'), null);
+        assertEquals(urlParams.get('id'), String(NEW_ID));
         assertEquals(
             routes.PASSWORD_VIEW, Router.getInstance().getCurrentRoute());
       });
@@ -396,7 +392,7 @@ suite('PasswordViewTest', function() {
         passwordManager.data.passwords = [entry];
         const page = document.createElement('password-view');
         document.body.appendChild(page);
-        const params = new URLSearchParams({deviceId: ID.toString()});
+        const params = new URLSearchParams({id: String(ID)});
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
         await flushTasks();
@@ -433,8 +429,7 @@ suite('PasswordViewTest', function() {
         const page = document.createElement('password-view');
         document.body.appendChild(page);
         const params = new URLSearchParams({
-          deviceId: '0',
-          accountId: '0',
+          id: '0',
         });
         Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
         await flushTasks();
@@ -476,7 +471,7 @@ suite('PasswordViewTest', function() {
     passwordManager.data.passwords = passwordList;
     const page = document.createElement('password-view');
     document.body.appendChild(page);
-    const params = new URLSearchParams({deviceId: ID.toString()});
+    const params = new URLSearchParams({id: String(ID)});
     Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
     await flushTasks();
 

@@ -63,8 +63,7 @@ export enum PasswordRemovalUrlParams {
 }
 
 export enum PasswordViewPageUrlParams {
-  ACCOUNT_ID = 'accountId',
-  DEVICE_ID = 'deviceId',
+  ID = 'id',
 }
 
 export function recordPasswordViewInteraction(
@@ -105,7 +104,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   static get properties() {
     return {
-      accountId_: Number,
+      id_: Number,
 
       activeDialogAnchorStack_: {
         type: Array,
@@ -122,8 +121,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
         value: null,
         notify: true,
       },
-
-      deviceId_: Number,
 
       isPasswordNotesEnabled_: {
         type: Boolean,
@@ -161,17 +158,14 @@ export class PasswordViewElement extends PasswordViewElementBase {
   }
 
   static get observers() {
-    return [
-      'savedPasswordsChanged_(savedPasswords.splices, accountId_, deviceId_)'
-    ];
+    return ['savedPasswordsChanged_(savedPasswords.splices, id_)'];
   }
 
   /**
-   * Valid values for accountId_ and deviceId_ are null or number. They are set
-   * to undefined for early return in the observer.
+   * Valid value for id is null or number, undefined is set for early return in
+   * the observer.
    */
-  private accountId_: number|null|undefined;
-  private deviceId_: number|null|undefined;
+  private id_: number|null|undefined;
   private activeDialogAnchorStack_: HTMLElement[];
   private toastText_: string;
   credential: MultiStorePasswordUiEntry|null;
@@ -203,8 +197,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   override currentRouteChanged(route: Route): void {
     if (route !== routes.PASSWORD_VIEW) {
-      this.accountId_ = undefined;
-      this.deviceId_ = undefined;
+      this.id_ = undefined;
       this.recentlyEdited_ = false;
       this.password_ = '';
       this.credential = null;
@@ -219,10 +212,8 @@ export class PasswordViewElement extends PasswordViewElementBase {
       }
       return Number(input);
     };
-    this.accountId_ = convertToNullOrNumber(
-        queryParameters.get(PasswordViewPageUrlParams.ACCOUNT_ID));
-    this.deviceId_ = convertToNullOrNumber(
-        queryParameters.get(PasswordViewPageUrlParams.DEVICE_ID));
+    this.id_ = convertToNullOrNumber(
+        queryParameters.get(PasswordViewPageUrlParams.ID));
   }
 
   override onPasswordRemoveDialogPasswordsRemoved(
@@ -283,8 +274,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_COPY_BUTTON_CLICKED);
     this.requestPlaintextPassword(
-            this.credential!.getAnyId(),
-            chrome.passwordsPrivate.PlaintextReason.COPY)
+            this.credential!.id, chrome.passwordsPrivate.PlaintextReason.COPY)
         .then(() => {
           this.toastText_ = this.i18n('passwordCopiedToClipboard');
           this.showToast_();
@@ -321,8 +311,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_EDIT_BUTTON_CLICKED);
     this.requestPlaintextPassword(
-            this.credential!.getAnyId(),
-            chrome.passwordsPrivate.PlaintextReason.EDIT)
+            this.credential!.id, chrome.passwordsPrivate.PlaintextReason.EDIT)
         .then(password => {
           this.credential!.password = password;
           this.showEditDialog_ = true;
@@ -340,13 +329,10 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
     if (event.detail.accountId !== undefined) {
       newParams.set(
-          PasswordViewPageUrlParams.ACCOUNT_ID,
-          event.detail.accountId.toString());
-    }
-    if (event.detail.deviceId !== undefined) {
+          PasswordViewPageUrlParams.ID, event.detail.accountId.toString());
+    } else if (event.detail.deviceId !== undefined) {
       newParams.set(
-          PasswordViewPageUrlParams.DEVICE_ID,
-          event.detail.deviceId.toString());
+          PasswordViewPageUrlParams.ID, event.detail.deviceId.toString());
     }
     Router.getInstance().updateRouteParams(newParams);
   }
@@ -396,8 +382,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_SHOW_BUTTON_CLICKED);
     this.requestPlaintextPassword(
-            this.credential!.getAnyId(),
-            chrome.passwordsPrivate.PlaintextReason.VIEW)
+            this.credential!.id, chrome.passwordsPrivate.PlaintextReason.VIEW)
         .then(password => {
           this.password_ = password;
           this.isPasswordVisible_ = true;
@@ -425,13 +410,11 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.isPasswordVisible_ = false;
     // When an observed property changes, the observer will be called. Make sure
     // that all properties are set.
-    if (!this.savedPasswords.length || this.accountId_ === undefined ||
-        this.deviceId_ === undefined) {
+    if (!this.savedPasswords.length || this.id_ === undefined) {
       return;
     }
     const item = this.savedPasswords.find((item: MultiStorePasswordUiEntry) => {
-      return item.accountId === this.accountId_ &&
-          item.deviceId === this.deviceId_;
+      return item.id === this.id_;
     });
 
     if (!item) {
