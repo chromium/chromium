@@ -295,10 +295,6 @@ const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
     "Enable the Fullscreen API for web content (iOS 16.0+).";
 
-const char kEnableNewDownloadAPIName[] = "Enable new download API";
-const char kEnableNewDownloadAPIDescription[] =
-    "Enable new download API (restricted to iOS 15.0+).";
-
 const char kEnableUnicornAccountSupportName[] =
     "Enable Unicorn account support";
 const char kEnableUnicornAccountSupportDescription[] =

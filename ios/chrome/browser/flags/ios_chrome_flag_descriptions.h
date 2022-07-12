@@ -268,10 +268,6 @@ extern const char kEnableFREUIModuleIOSDescription[];
 extern const char kEnableFullscreenAPIName[];
 extern const char kEnableFullscreenAPIDescription[];
 
-// Title and description for the flag to enable the new download API.
-extern const char kEnableNewDownloadAPIName[];
-extern const char kEnableNewDownloadAPIDescription[];
-
 // Title and description for the flag to enable shorted password auto-fill
 // instructions and button.
 extern const char kEnableShortenedPasswordAutoFillInstructionName[];

@@ -332,10 +332,8 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
       requestURL.SchemeIs(url::kBlobScheme);
 
   _shouldPerformDownload = NO;
-  if (web::features::IsNewDownloadAPIEnabled()) {
-    if (@available(iOS 15, *)) {
-      _shouldPerformDownload = action.shouldPerformDownload;
-    }
+  if (@available(iOS 15, *)) {
+    _shouldPerformDownload = action.shouldPerformDownload;
   }
 
   __weak CRWWKNavigationHandler* weakSelf = self;
@@ -444,11 +442,9 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
     return;
   }
 
-  if (web::features::IsNewDownloadAPIEnabled()) {
-    if (@available(iOS 15, *)) {
-      handler(WKNavigationResponsePolicyDownload);
-      return;
-    }
+  if (@available(iOS 15, *)) {
+    handler(WKNavigationResponsePolicyDownload);
+    return;
   }
 
   if (web::UrlHasWebScheme(responseURL)) {
@@ -1380,7 +1376,6 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   }
 
   if (_shouldPerformDownload) {
-    DCHECK(web::features::IsNewDownloadAPIEnabled());
     return NO;
   }
 

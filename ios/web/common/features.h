@@ -52,9 +52,6 @@ extern const base::Feature kDisableNonHTMLScreenshotOnIOS15;
 // Feature flag that enable Shared Highlighting color change in iOS.
 extern const base::Feature kIOSSharedHighlightingColorChange;
 
-// Enable the new download API if available.
-extern const base::Feature kEnableNewDownloadAPI;
-
 // Feature flag that enables native session restoration with a synthesized
 // interaction state.
 extern const base::Feature kSynthesizedRestoreSession;
@@ -84,9 +81,6 @@ bool UseWebViewNativeContextMenuWeb();
 
 // When true, screenshots of non-HTML (e.g. PDF) pages should be taken.
 bool ShouldTakeScreenshotOnNonHTMLContent();
-
-// When true, the new download API should be used.
-bool IsNewDownloadAPIEnabled();
 
 // When true, user control for camera and/or microphone access should be
 // enabled.

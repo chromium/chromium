@@ -555,7 +555,6 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
     // Mock those necessary interactions.
     if (@available(iOS 15, *)) {
       if (*out_policy == WKNavigationResponsePolicyDownload) {
-        DCHECK(web::features::IsNewDownloadAPIEnabled());
         id mock_download = [OCMockObject mockForClass:[WKDownload class]];
 
         __block bool delegate_set = false;
@@ -611,9 +610,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
   // a different policy). This method returns the expected policy for the test.
   [[nodiscard]] static WKNavigationResponsePolicy ExpectedPolicyForDownload() {
     if (@available(iOS 15, *)) {
-      if (web::features::IsNewDownloadAPIEnabled()) {
-        return WKNavigationResponsePolicyDownload;
-      }
+      return WKNavigationResponsePolicyDownload;
     }
     return WKNavigationResponsePolicyCancel;
   }

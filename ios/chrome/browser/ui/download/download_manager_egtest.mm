@@ -307,9 +307,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if (@available(iOS 15.0, *)) {
-    config.features_enabled.push_back(web::features::kEnableNewDownloadAPI);
-  }
   return config;
 }
 
