@@ -133,9 +133,8 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     return autofill_state_ != WebAutofillState::kNotFilled;
   }
   bool HighlightAutofilled() const {
-    return autofill_state_ == WebAutofillState::kPreviewed ||
-           (autofill_state_ == WebAutofillState::kAutofilled &&
-            !PreventHighlightingOfAutofilledFields());
+    return autofill_state_ == WebAutofillState::kAutofilled &&
+           !PreventHighlightingOfAutofilledFields();
   }
   void SetAutofillState(WebAutofillState = WebAutofillState::kAutofilled);
   void SetPreventHighlightingOfAutofilledFields(bool prevent_highlighting);

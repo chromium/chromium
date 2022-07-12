@@ -258,7 +258,9 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
       style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   extra_params.text_field.background_color = background_color.Rgb();
   extra_params.text_field.auto_complete_active =
-      DynamicTo<HTMLFormControlElement>(element)->HighlightAutofilled();
+      DynamicTo<HTMLFormControlElement>(element)->HighlightAutofilled() ||
+      DynamicTo<HTMLFormControlElement>(element)->GetAutofillState() ==
+          WebAutofillState::kPreviewed;
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       paint_info.context.Canvas(), WebThemeEngine::kPartTextField,
