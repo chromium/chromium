@@ -36,6 +36,7 @@
 namespace blink {
 
 class ExceptionState;
+class V8SelectionMode;
 
 enum TextFieldSelectionDirection {
   kSelectionHasNoDirection,
@@ -91,7 +92,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   virtual void setRangeText(const String& replacement,
                             unsigned start,
                             unsigned end,
-                            const String& selection_mode,
+                            const V8SelectionMode& selection_mode,
                             ExceptionState&);
   // Web-exposed setSelectionRange() function. This schedule to dispatch
   // 'select' event.

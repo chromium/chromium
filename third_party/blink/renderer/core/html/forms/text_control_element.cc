@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_selection_mode.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -303,14 +304,15 @@ void TextControlElement::EnqueueChangeEvent() {
 
 void TextControlElement::setRangeText(const String& replacement,
                                       ExceptionState& exception_state) {
-  setRangeText(replacement, selectionStart(), selectionEnd(), "preserve",
+  setRangeText(replacement, selectionStart(), selectionEnd(),
+               V8SelectionMode(V8SelectionMode::Enum::kPreserve),
                exception_state);
 }
 
 void TextControlElement::setRangeText(const String& replacement,
                                       unsigned start,
                                       unsigned end,
-                                      const String& selection_mode,
+                                      const V8SelectionMode& selection_mode,
                                       ExceptionState& exception_state) {
   if (start > end) {
     exception_state.ThrowDOMException(
@@ -340,26 +342,31 @@ void TextControlElement::setRangeText(const String& replacement,
   SetValue(text.ToString(), TextFieldEventBehavior::kDispatchNoEvent,
            TextControlSetValueSelection::kDoNotSet);
 
-  if (selection_mode == "select") {
-    new_selection_start = start;
-    new_selection_end = start + replacement_length;
-  } else if (selection_mode == "start") {
-    new_selection_start = new_selection_end = start;
-  } else if (selection_mode == "end") {
-    new_selection_start = new_selection_end = start + replacement_length;
-  } else {
-    DCHECK_EQ(selection_mode, "preserve");
-    int delta = replacement_length - (end - start);
-
-    if (new_selection_start > end)
-      new_selection_start += delta;
-    else if (new_selection_start > start)
+  switch (selection_mode.AsEnum()) {
+    case V8SelectionMode::Enum::kSelect:
       new_selection_start = start;
-
-    if (new_selection_end > end)
-      new_selection_end += delta;
-    else if (new_selection_end > start)
       new_selection_end = start + replacement_length;
+      break;
+    case V8SelectionMode::Enum::kStart:
+      new_selection_start = new_selection_end = start;
+      break;
+    case V8SelectionMode::Enum::kEnd:
+      new_selection_start = new_selection_end = start + replacement_length;
+      break;
+    case V8SelectionMode::Enum::kPreserve: {
+      int delta = replacement_length - (end - start);
+
+      if (new_selection_start > end)
+        new_selection_start += delta;
+      else if (new_selection_start > start)
+        new_selection_start = start;
+
+      if (new_selection_end > end)
+        new_selection_end += delta;
+      else if (new_selection_end > start)
+        new_selection_end = start + replacement_length;
+      break;
+    }
   }
 
   setSelectionRangeForBinding(new_selection_start, new_selection_end);

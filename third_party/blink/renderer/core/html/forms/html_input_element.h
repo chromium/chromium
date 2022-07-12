@@ -318,7 +318,7 @@ class CORE_EXPORT HTMLInputElement
   void setRangeText(const String& replacement,
                     unsigned start,
                     unsigned end,
-                    const String& selection_mode,
+                    const V8SelectionMode& selection_mode,
                     ExceptionState&) final;
 
   HTMLImageLoader* ImageLoader() const { return image_loader_.Get(); }
