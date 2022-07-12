@@ -39,3 +39,6 @@ Update Instructions:
   * Follow the update instructions to get a build from the CI builder.
 * Updating this file:
   * The overall Version field should correspond to the Platform API version.
+* Updating other things:
+  * Use "git log third_party/android_sdk/README.chromium" to find previous
+    update commits and see what sorts of changes to make.
