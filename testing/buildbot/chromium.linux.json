@@ -696,8 +696,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_linux_unittests",
-        "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "merge": {
@@ -1602,8 +1602,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_linux_unittests",
-        "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "merge": {
@@ -3089,8 +3089,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_linux_unittests",
-        "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "isolate_profile_data": true,
@@ -5503,8 +5503,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_linux_unittests",
-        "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "args": [
@@ -7111,8 +7111,8 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sandbox_linux_unittests",
-        "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
+        "test": "sandbox_unittests",
+        "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
       },
       {
         "merge": {

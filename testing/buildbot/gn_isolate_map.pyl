@@ -1608,10 +1608,6 @@
     "label": "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
     "type": "console_test_launcher",
   },
-  "sandbox_linux_unittests": {
-    "label": "//sandbox/linux:sandbox_linux_unittests",
-    "type": "console_test_launcher",
-  },
   "sandbox_unittests": {
     "label": "//sandbox:sandbox_unittests",
     "type": "console_test_launcher",
