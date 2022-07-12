@@ -3992,8 +3992,8 @@ void CrostiniManager::UnregisterAllContainers() {
                                 ->TerminalProviderRegistry();
   for (const auto& pair : terminal_provider_ids_) {
     terminal_registry->Unregister(pair.second);
-    terminal_provider_ids_.erase(pair.first);
   }
+  terminal_provider_ids_.clear();
 }
 
 }  // namespace crostini
