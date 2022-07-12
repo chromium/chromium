@@ -236,6 +236,8 @@ source_set("metrics") {
   sources = [
     "feed_metrics_recorder.h",
     "feed_metrics_recorder.mm",
+    "feed_session_recorder.h",
+    "feed_session_recorder.mm",
   ]
   deps = [
     ":ntp",
@@ -250,6 +252,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "feed_session_recorder_unittest.mm",
     "new_tab_page_coordinator_unittest.mm",
     "notification_promo_whats_new_unittest.mm",
     "ntp_tile_saver_unittest.mm",
@@ -257,6 +260,7 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     ":feature_flags",
+    ":metrics",
     ":ntp",
     ":ntp_internal",
     "//base",

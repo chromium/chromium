@@ -14,6 +14,7 @@
 #import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_session_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -308,7 +309,8 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 }  // namespace
 
 @interface FeedMetricsRecorder ()
-
+// Helper for recording session time metrics.
+@property(nonatomic, strong) FeedSessionRecorder* sessionRecorder;
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedEngagedSimple.
 @property(nonatomic, assign) BOOL engagedSimpleReportedDiscover;
@@ -327,6 +329,15 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 @end
 
 @implementation FeedMetricsRecorder
+
+#pragma mark - Properties
+
+- (FeedSessionRecorder*)sessionRecorder {
+  if (!_sessionRecorder) {
+    _sessionRecorder = [[FeedSessionRecorder alloc] init];
+  }
+  return _sessionRecorder;
+}
 
 #pragma mark - Public
 
@@ -893,6 +904,8 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   if (scrollDistance > kMinScrollThreshold || interacted) {
     [self recordEngaged];
   }
+
+  [self.sessionRecorder recordUserInteractionOrScrolling];
 }
 
 // Records any direct interaction with the Feed, this doesn't include scrolling.
