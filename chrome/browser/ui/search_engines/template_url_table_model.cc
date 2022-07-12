@@ -48,9 +48,8 @@ void TemplateURLTableModel::Reload() {
       default_entries.push_back(template_url);
     } else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
       extension_entries.push_back(template_url);
-    } else if (OmniboxFieldTrial::IsActiveSearchEnginesEnabled() &&
-               (template_url->is_active() ==
-                TemplateURLData::ActiveStatus::kTrue)) {
+    } else if (template_url->is_active() ==
+               TemplateURLData::ActiveStatus::kTrue) {
       active_entries.push_back(template_url);
     } else {
       other_entries.push_back(template_url);

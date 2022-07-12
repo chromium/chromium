@@ -1830,12 +1830,6 @@ const char kOmitCorsClientCertDescription[] =
     "credential mode disallows. Without this flag enabled, Chrome will always "
     "try sending client certificates regardless of the credential mode.";
 
-const char kOmniboxActiveSearchEnginesName[] =
-    "Active Search Engines section on settings page";
-const char kOmniboxActiveSearchEnginesDescription[] =
-    "Enables a 'Your Search Engines' section on "
-    "chrome://settings/searchEngines.";
-
 const char kOmniboxAdaptiveSuggestionsCountName[] =
     "Adaptive Omnibox Suggestions count";
 const char kOmniboxAdaptiveSuggestionsCountDescription[] =

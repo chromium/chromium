@@ -636,10 +636,6 @@ bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
   return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
 }
 
-bool OmniboxFieldTrial::IsActiveSearchEnginesEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kActiveSearchEngines);
-}
-
 bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kSiteSearchStarterPack);
 }

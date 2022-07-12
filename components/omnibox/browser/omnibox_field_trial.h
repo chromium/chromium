@@ -371,10 +371,6 @@ std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
 // suggestions.
 bool ShouldDisableCGIParamMatching();
 
-// If true, enables a third category on the manage search engines page for
-// active search engines.
-bool IsActiveSearchEnginesEnabled();
-
 // If true, enables a "starter pack" of @history, @bookmarks, and @settings
 // scopes for Site Search.
 bool IsSiteSearchStarterPackEnabled();

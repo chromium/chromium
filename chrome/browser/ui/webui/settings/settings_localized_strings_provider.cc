@@ -2028,9 +2028,8 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_EXTENSIONS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean(
-      "isActiveSearchEnginesFlagEnabled",
-      base::FeatureList::IsEnabled(omnibox::kActiveSearchEngines));
+  // TODO(crbug.com/1340259): Remove this and cleanup front-end code.
+  html_source->AddBoolean("isActiveSearchEnginesFlagEnabled", true);
 }
 
 void AddSiteSettingsStrings(content::WebUIDataSource* html_source,

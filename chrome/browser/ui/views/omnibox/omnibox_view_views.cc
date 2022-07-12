@@ -1816,10 +1816,8 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
 
   menu_contents->AddSeparator(ui::NORMAL_SEPARATOR);
 
-  menu_contents->AddItemWithStringId(
-      IDC_EDIT_SEARCH_ENGINES, OmniboxFieldTrial::IsActiveSearchEnginesEnabled()
-                                   ? IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH
-                                   : IDS_MANAGE_SEARCH_ENGINES);
+  menu_contents->AddItemWithStringId(IDC_EDIT_SEARCH_ENGINES,
+                                     IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH);
 
   const PrefService::Preference* show_full_urls_pref =
       location_bar_view_->profile()->GetPrefs()->FindPreference(
