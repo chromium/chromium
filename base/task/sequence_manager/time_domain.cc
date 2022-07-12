@@ -21,9 +21,9 @@ void TimeDomain::OnAssignedToSequenceManager(
   sequence_manager_ = sequence_manager;
 }
 
-Value TimeDomain::AsValue() const {
-  Value state(Value::Type::DICTIONARY);
-  state.SetStringKey("name", GetName());
+Value::Dict TimeDomain::AsValue() const {
+  Value::Dict state;
+  state.Set("name", GetName());
   return state;
 }
 

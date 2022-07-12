@@ -22,8 +22,8 @@ WorkQueue::WorkQueue(TaskQueueImpl* task_queue,
                      QueueType queue_type)
     : task_queue_(task_queue), name_(name), queue_type_(queue_type) {}
 
-Value WorkQueue::AsValue(TimeTicks now) const {
-  Value state(Value::Type::LIST);
+Value::List WorkQueue::AsValue(TimeTicks now) const {
+  Value::List state;
   for (const Task& task : tasks_)
     state.Append(TaskQueueImpl::TaskAsValue(task, now));
   return state;

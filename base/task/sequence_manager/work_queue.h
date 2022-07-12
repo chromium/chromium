@@ -48,7 +48,7 @@ class BASE_EXPORT WorkQueue {
   // Assigns the current set index.
   void AssignSetIndex(size_t work_queue_set_index);
 
-  Value AsValue(TimeTicks now) const;
+  Value::List AsValue(TimeTicks now) const;
 
   // Returns true if the |tasks_| is empty. This method ignores any fences.
   bool Empty() const { return tasks_.empty(); }

@@ -131,16 +131,15 @@ absl::optional<WakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
   return wake_up;
 }
 
-Value WakeUpQueue::AsValue(TimeTicks now) const {
-  Value state(Value::Type::DICTIONARY);
-  state.SetStringKey("name", GetName());
+Value::Dict WakeUpQueue::AsValue(TimeTicks now) const {
+  Value::Dict state;
+  state.Set("name", GetName());
   // TODO(crbug.com/1334256): Make base::Value able to store an int64_t and
   // remove this cast.
-  state.SetIntKey("registered_delay_count",
-                  checked_cast<int>(wake_up_queue_.size()));
+  state.Set("registered_delay_count", checked_cast<int>(wake_up_queue_.size()));
   if (!wake_up_queue_.empty()) {
     TimeDelta delay = wake_up_queue_.top().wake_up.time - now;
-    state.SetDoubleKey("next_delay_ms", delay.InMillisecondsF());
+    state.Set("next_delay_ms", delay.InMillisecondsF());
   }
   return state;
 }

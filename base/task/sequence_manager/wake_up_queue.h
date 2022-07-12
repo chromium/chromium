@@ -41,7 +41,7 @@ class BASE_EXPORT WakeUpQueue {
   absl::optional<WakeUp> GetNextDelayedWakeUp() const;
 
   // Debug info.
-  Value AsValue(TimeTicks now) const;
+  Value::Dict AsValue(TimeTicks now) const;
 
   bool has_pending_high_resolution_tasks() const {
     return pending_high_res_wake_up_count_;

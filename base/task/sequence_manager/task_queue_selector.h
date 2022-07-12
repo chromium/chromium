@@ -66,7 +66,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
       SelectTaskOption option = SelectTaskOption::kDefault);
 
   // Serialize the selector state for tracing/debugging.
-  Value AsValue() const;
+  Value::Dict AsValue() const;
 
   class BASE_EXPORT Observer {
    public:

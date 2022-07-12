@@ -1029,42 +1029,41 @@ SequenceManagerImpl::AsValueWithSelectorResultForTracing(
     internal::WorkQueue* selected_work_queue,
     bool force_verbose) const {
   return std::make_unique<TracedBaseValue>(
-      AsValueWithSelectorResult(selected_work_queue, force_verbose));
+      Value(AsValueWithSelectorResult(selected_work_queue, force_verbose)));
 }
 
-Value SequenceManagerImpl::AsValueWithSelectorResult(
+Value::Dict SequenceManagerImpl::AsValueWithSelectorResult(
     internal::WorkQueue* selected_work_queue,
     bool force_verbose) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TimeTicks now = NowTicks();
-  Value state(Value::Type::DICTIONARY);
-  Value active_queues(Value::Type::LIST);
+  Value::Dict state;
+  Value::List active_queues;
   for (auto* const queue : main_thread_only().active_queues)
     active_queues.Append(queue->AsValue(now, force_verbose));
-  state.SetKey("active_queues", std::move(active_queues));
-  Value shutdown_queues(Value::Type::LIST);
+  state.Set("active_queues", std::move(active_queues));
+  Value::List shutdown_queues;
   for (const auto& pair : main_thread_only().queues_to_gracefully_shutdown)
     shutdown_queues.Append(pair.first->AsValue(now, force_verbose));
-  state.SetKey("queues_to_gracefully_shutdown", std::move(shutdown_queues));
-  Value queues_to_delete(Value::Type::LIST);
+  state.Set("queues_to_gracefully_shutdown", std::move(shutdown_queues));
+  Value::List queues_to_delete;
   for (const auto& pair : main_thread_only().queues_to_delete)
     queues_to_delete.Append(pair.first->AsValue(now, force_verbose));
-  state.SetKey("queues_to_delete", std::move(queues_to_delete));
-  state.SetKey("selector", main_thread_only().selector.AsValue());
+  state.Set("queues_to_delete", std::move(queues_to_delete));
+  state.Set("selector", main_thread_only().selector.AsValue());
   if (selected_work_queue) {
-    state.SetStringKey("selected_queue",
-                       selected_work_queue->task_queue()->GetName());
-    state.SetStringKey("work_queue_name", selected_work_queue->name());
+    state.Set("selected_queue", selected_work_queue->task_queue()->GetName());
+    state.Set("work_queue_name", selected_work_queue->name());
   }
-  state.SetStringKey("native_work_priority",
-                     TaskQueue::PriorityToString(
-                         *main_thread_only().pending_native_work.begin()));
-  state.SetKey("time_domain", main_thread_only().time_domain
-                                  ? main_thread_only().time_domain->AsValue()
-                                  : Value());
-  state.SetKey("wake_up_queue", main_thread_only().wake_up_queue->AsValue(now));
-  state.SetKey("non_waking_wake_up_queue",
-               main_thread_only().non_waking_wake_up_queue->AsValue(now));
+  state.Set("native_work_priority",
+            TaskQueue::PriorityToString(
+                *main_thread_only().pending_native_work.begin()));
+  state.Set("time_domain", main_thread_only().time_domain
+                               ? main_thread_only().time_domain->AsValue()
+                               : Value::Dict());
+  state.Set("wake_up_queue", main_thread_only().wake_up_queue->AsValue(now));
+  state.Set("non_waking_wake_up_queue",
+            main_thread_only().non_waking_wake_up_queue->AsValue(now));
   return state;
 }
 
@@ -1196,7 +1195,8 @@ scoped_refptr<TaskQueue> SequenceManagerImpl::CreateTaskQueue(
 }
 
 std::string SequenceManagerImpl::DescribeAllPendingTasks() const {
-  Value value = AsValueWithSelectorResult(nullptr, /* force_verbose */ true);
+  Value::Dict value =
+      AsValueWithSelectorResult(nullptr, /* force_verbose */ true);
   std::string result;
   JSONWriter::Write(value, &result);
   return result;
