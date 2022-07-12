@@ -605,33 +605,6 @@ config("compiler") {
     cflags_cc += [ "-Wno-trigraphs" ]
   }
 
-  # Before C++17, an `alignas(N)` type would be N-aligned on the stack,
-  # but heap allocation would just return something aligned to whatever the
-  # default allocator happens to return. Starting with C++17, operator new
-  # called on aligned types with N > __STDCPP_DEFAULT_NEW_ALIGNMENT__ will
-  # call a special overload that hands in the desired alignment, and that will
-  # honor the alignas even for memory on the heap.
-  # However, that requires that operator new overload to exist. At least on
-  # macOS and iOS, they are in libc++abi, and system libc++abi has them as of
-  # "macOS 10.12, iOS 10.0" (https://reviews.llvm.org/D112921#3128089).
-  # However, we do statically link libc++abi, so maybe just explicitly passing
-  # -faligned-allocation is enough to make things work.
-  # For now, explicitly disable this feature though to keep the C++14 aligned
-  # allocation behavior (and do that on all platforms so that we have
-  # consistent behavior across platforms), to make the change more incremental.
-  if (!is_nacl || is_nacl_saigo) {
-    if (is_win) {
-      cflags_cc += [ "/Zc:alignedNew-" ]
-    } else {
-      cflags_cc += [ "-fno-aligned-new" ]
-    }
-  }
-
-  if (is_mac) {
-    # The system libc++ on Mac doesn't have aligned allocation in C++17.
-    defines += [ "_LIBCPP_HAS_NO_ALIGNED_ALLOCATION" ]
-  }
-
   # Add flags for link-time optimization. These flags enable
   # optimizations/transformations that require whole-program visibility at link
   # time, so they need to be applied to all translation units, and we may end up
