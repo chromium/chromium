@@ -445,6 +445,15 @@ body.check-select #list-container li[selected] [file-type-icon],
   -webkit-mask-image: url(../images/volumes/linux_files.svg);
 }
 
+[file-type-icon='bruschetta'] {
+  -webkit-mask-image: url(../images/volumes/linux_files.svg);
+}
+
+.tree-row > .file-row > [root-type-icon='bruschetta'],
+.tree-row > .file-row > [volume-type-icon='bruschetta'] {
+  -webkit-mask-image: url(../images/volumes/linux_files.svg);
+}
+
 [file-type-icon='android_files'] {
   -webkit-mask-image: url(../images/volumes/android.svg);
 }
