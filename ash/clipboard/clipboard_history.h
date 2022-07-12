@@ -5,13 +5,15 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_H_
 
+#include <deque>
 #include <list>
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_item.h"
-#include "base/component_export.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/token.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
@@ -83,20 +85,29 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // the list.
   void MaybeCommitData(ui::ClipboardData data);
 
-  // If `metrics_only` is true, pausing will not prevent modifications to
-  // clipboard history, but it will prevent updates to the metrics tracked on
-  // clipboard operations.
-  void Pause(bool metrics_only);
-  void Resume(bool metrics_only);
+  // When `Pause()` is called, clipboard accesses will modify clipboard history
+  // according to `pause_behavior` until `Resume()` is called with that pause's
+  // `pause_id`. If `Pause()` is called while another pause is active, the
+  // newest pause's behavior will be respected. When the newest pause ends, the
+  // next newest pause's behavior will be restored.
+  const base::Token& Pause(ClipboardHistoryUtil::PauseBehavior pause_behavior);
+  void Resume(const base::Token& pause_id);
+  struct PauseInfo {
+    base::Token pause_id;
+    ClipboardHistoryUtil::PauseBehavior pause_behavior;
+  };
 
   // Keeps track of consecutive clipboard operations and records metrics.
   void OnClipboardOperation(bool copy);
 
-  // The count of pauses.
-  size_t num_pause_ = 0;
-
-  // The count of metrics recording pauses.
-  size_t num_metrics_pause_ = 0;
+  // Active clipboard history pauses, stored in LIFO order so that the newest
+  // pause dictates behavior. Rather than a stack, we use a deque where the
+  // newest pause is added to and removed from the front. Not using a stack
+  // allows us to find and remove the correct pause in cases where pauses are
+  // not destroyed in LIFO order, and adding to the front of the deque rather
+  // than the back allows us to iterate forward when searching for the correct
+  // pause, simplifying removal logic.
+  std::deque<PauseInfo> pauses_;
 
   // The number of consecutive copies, reset after a paste.
   int consecutive_copies_ = 0;

@@ -76,6 +76,17 @@ enum class ClipboardHistoryDisplayFormat {
   kMaxValue = 3,
 };
 
+// Modes for specifying a clipboard history pause's semantics.
+enum PauseBehavior {
+  // Clipboard history should be truly paused, i.e., any data change or read
+  // should be ignored.
+  kDefault = 0,
+
+  // The operation guarded by this pause is a paste-based reorder, which is
+  // allowed to change the clipboard history list.
+  kAllowReorderOnPaste = 1,
+};
+
 // Returns the main format of the specified clipboard `data`.
 // NOTE: One `ui::ClipboardData` instance may contain multiple formats.
 ASH_EXPORT absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(

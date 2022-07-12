@@ -5,25 +5,26 @@
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 
 #include "ash/clipboard/clipboard_history.h"
+#include "ash/clipboard/clipboard_history_util.h"
 
 namespace ash {
+
+using PauseBehavior = ClipboardHistoryUtil::PauseBehavior;
 
 ScopedClipboardHistoryPauseImpl::ScopedClipboardHistoryPauseImpl(
     ClipboardHistory* clipboard_history)
     : ScopedClipboardHistoryPauseImpl(clipboard_history,
-                                      /*metrics_only=*/false) {}
+                                      PauseBehavior::kDefault) {}
 
 ScopedClipboardHistoryPauseImpl::ScopedClipboardHistoryPauseImpl(
     ClipboardHistory* clipboard_history,
-    bool metrics_only)
-    : clipboard_history_(clipboard_history->GetWeakPtr()),
-      metrics_only_(metrics_only) {
-  clipboard_history_->Pause(metrics_only_);
-}
+    PauseBehavior pause_behavior)
+    : pause_id_(clipboard_history->Pause(pause_behavior)),
+      clipboard_history_(clipboard_history->GetWeakPtr()) {}
 
 ScopedClipboardHistoryPauseImpl::~ScopedClipboardHistoryPauseImpl() {
   if (clipboard_history_)
-    clipboard_history_->Resume(metrics_only_);
+    clipboard_history_->Resume(pause_id_);
 }
 
 }  // namespace ash

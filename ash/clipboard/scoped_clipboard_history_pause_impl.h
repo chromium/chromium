@@ -6,23 +6,23 @@
 #define ASH_CLIPBOARD_SCOPED_CLIPBOARD_HISTORY_PAUSE_IMPL_H_
 
 #include "ash/ash_export.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/public/cpp/scoped_clipboard_history_pause.h"
 #include "base/memory/weak_ptr.h"
+#include "base/token.h"
 
 namespace ash {
 class ClipboardHistory;
 
-// Prevents clipboard history from being recorded within its lifetime. If
-// anything is copied within its lifetime, history will not be recorded.
+// Controls modifications to clipboard history within its lifetime. If clipboard
+// data is read or modified within its lifetime, the individual pause's behavior
+// dictates whether clipboard history and corresponding metrics will be updated.
 class ASH_EXPORT ScopedClipboardHistoryPauseImpl
     : public ScopedClipboardHistoryPause {
  public:
   explicit ScopedClipboardHistoryPauseImpl(ClipboardHistory* clipboard_history);
-  // If `metrics_only` is true, this pause will not prevent modifications to
-  // clipboard history, but it will prevent updates to the metrics tracked on
-  // clipboard operations.
   ScopedClipboardHistoryPauseImpl(ClipboardHistory* clipboard_history,
-                                  bool metrics_only);
+                                  ClipboardHistoryUtil::PauseBehavior behavior);
   ScopedClipboardHistoryPauseImpl(const ScopedClipboardHistoryPauseImpl&) =
       delete;
   ScopedClipboardHistoryPauseImpl& operator=(
@@ -30,8 +30,8 @@ class ASH_EXPORT ScopedClipboardHistoryPauseImpl
   ~ScopedClipboardHistoryPauseImpl() override;
 
  private:
+  const base::Token& pause_id_;
   base::WeakPtr<ClipboardHistory> const clipboard_history_;
-  const bool metrics_only_;
 };
 
 }  // namespace ash
