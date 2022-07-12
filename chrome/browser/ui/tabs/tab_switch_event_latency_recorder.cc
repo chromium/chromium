@@ -4,49 +4,48 @@
 
 #include "chrome/browser/ui/tabs/tab_switch_event_latency_recorder.h"
 
-#include "base/check.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 
-TabSwitchEventLatencyRecorder::TabSwitchEventLatencyRecorder() {}
+TabSwitchEventLatencyRecorder::TabSwitchEventLatencyRecorder() = default;
 
 void TabSwitchEventLatencyRecorder::BeginLatencyTiming(
-    const base::TimeTicks event_timestamp,
-    EventType event_type) {
-  input_event_timestamp_ = event_timestamp;
-  event_type_ = event_type;
+    TabStripUserGestureDetails details) {
+  details_ = details;
 }
 
 void TabSwitchEventLatencyRecorder::OnWillChangeActiveTab(
     const base::TimeTicks change_time) {
-  if (!event_type_.has_value() || *event_type_ == EventType::kOther)
+  if (!details_.has_value())
     return;
 
-  DCHECK(!input_event_timestamp_.is_null());
-  const auto delta = change_time - input_event_timestamp_;
-  switch (event_type_.value()) {
-    case EventType::kKeyboard:
+  const auto delta = change_time - details_->time_stamp;
+  switch (details_.value().type) {
+    case TabStripUserGestureDetails::GestureType::kKeyboard:
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.InputEventToSelectionTime.Keyboard", delta,
           base::Microseconds(100), base::Milliseconds(50), 50);
       break;
-    case EventType::kMouse:
+    case TabStripUserGestureDetails::GestureType::kMouse:
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.InputEventToSelectionTime.Mouse", delta,
           base::Microseconds(100), base::Milliseconds(50), 50);
       break;
-    case EventType::kTouch:
+    case TabStripUserGestureDetails::GestureType::kTouch:
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.InputEventToSelectionTime.Touch", delta,
           base::Microseconds(100), base::Milliseconds(50), 50);
       break;
-    case EventType::kWheel:
+    case TabStripUserGestureDetails::GestureType::kWheel:
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Browser.Tabs.InputEventToSelectionTime.Wheel", delta,
           base::Microseconds(100), base::Milliseconds(50), 50);
       break;
-    case EventType::kOther:
+    case TabStripUserGestureDetails::GestureType::kTabMenu:
+    case TabStripUserGestureDetails::GestureType::kOther:
+    case TabStripUserGestureDetails::GestureType::kNone:
       break;
   }
-  event_type_ = absl::nullopt;
-  input_event_timestamp_ = base::TimeTicks();
+
+  details_ = absl::nullopt;
 }

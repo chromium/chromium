@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Store the timestamps related to switching tabs, and generate UMA metrics to
@@ -14,8 +15,6 @@
 // tab strip begins processing the tab switch.
 class TabSwitchEventLatencyRecorder {
  public:
-  enum class EventType { kMouse, kKeyboard, kTouch, kWheel, kOther };
-
   TabSwitchEventLatencyRecorder();
   TabSwitchEventLatencyRecorder(const TabSwitchEventLatencyRecorder&) = delete;
   TabSwitchEventLatencyRecorder& operator=(
@@ -24,21 +23,19 @@ class TabSwitchEventLatencyRecorder {
   // Starts timing the tab switch input event latency. If this is called again
   // without a following OnWillChangeActiveTab, this will overwrite the
   // previously recorded value.
-  void BeginLatencyTiming(const base::TimeTicks event_timestamp,
-                          EventType event_type);
+  void BeginLatencyTiming(TabStripUserGestureDetails details);
 
   // Finishes the latency tracking started by BeginLatencyTiming and record the
   // result to UMA. If this is called without a preceding BeginLatencyTiming,
   // this do nothing.
   void OnWillChangeActiveTab(const base::TimeTicks change_time);
 
-  base::TimeTicks input_event_timestamp() const {
-    return input_event_timestamp_;
+  absl::optional<TabStripUserGestureDetails> details() const {
+    return details_;
   }
 
  private:
-  base::TimeTicks input_event_timestamp_ = base::TimeTicks();
-  absl::optional<EventType> event_type_ = absl::nullopt;
+  absl::optional<TabStripUserGestureDetails> details_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_SWITCH_EVENT_LATENCY_RECORDER_H_

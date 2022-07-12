@@ -589,26 +589,7 @@ void TabStripModel::ActivateTabAt(int index,
 
   scrubbing_metrics_.IncrementPressCount(user_gesture);
 
-  TabSwitchEventLatencyRecorder::EventType event_type;
-  switch (user_gesture.type) {
-    case TabStripUserGestureDetails::GestureType::kMouse:
-      event_type = TabSwitchEventLatencyRecorder::EventType::kMouse;
-      break;
-    case TabStripUserGestureDetails::GestureType::kKeyboard:
-      event_type = TabSwitchEventLatencyRecorder::EventType::kKeyboard;
-      break;
-    case TabStripUserGestureDetails::GestureType::kTouch:
-      event_type = TabSwitchEventLatencyRecorder::EventType::kTouch;
-      break;
-    case TabStripUserGestureDetails::GestureType::kWheel:
-      event_type = TabSwitchEventLatencyRecorder::EventType::kWheel;
-      break;
-    default:
-      event_type = TabSwitchEventLatencyRecorder::EventType::kOther;
-      break;
-  }
-  tab_switch_event_latency_recorder_.BeginLatencyTiming(user_gesture.time_stamp,
-                                                        event_type);
+  tab_switch_event_latency_recorder_.BeginLatencyTiming(user_gesture);
   ui::ListSelectionModel new_model = selection_model_;
   new_model.SetSelectedIndex(index);
   SetSelection(
@@ -2037,12 +2018,10 @@ TabStripSelectionChange TabStripModel::SetSelection(
       // thing in this block so that the start time is saved before any changes
       // that might affect compositing.
       if (selection.new_contents) {
-        auto input_event_timestamp =
-            tab_switch_event_latency_recorder_.input_event_timestamp();
+        auto details = tab_switch_event_latency_recorder_.details();
         // input_event_timestamp may be null in some cases, e.g. in tests.
         selection.new_contents->SetTabSwitchStartTime(
-            !input_event_timestamp.is_null() ? input_event_timestamp
-                                             : base::TimeTicks::Now(),
+            details.has_value() ? details->time_stamp : base::TimeTicks::Now(),
             resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
                 selection.new_contents));
       }
