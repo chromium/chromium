@@ -1428,6 +1428,9 @@ deps = {
   'src/third_party/libwebm/source':
     Var('chromium_git') + '/webm/libwebm.git' + '@' + 'e4fbea0c9751ae8aa86629b197a28d8276a2b0da',
 
+  'src/third_party/libwebp':
+    Var('chromium_git') + '/webm/libwebp.git' + '@' +  '20ef03ee351d4ff03fc5ff3ec4804a879d1b9d5c',
+
   'src/third_party/libyuv':
     Var('chromium_git') + '/libyuv/libyuv.git' + '@' + '6900494d90ae095d44405cd4cc3f346971fa69c9',
 
