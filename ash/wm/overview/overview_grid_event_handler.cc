@@ -82,6 +82,14 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
+  // TODO(crbug.com/1341128): Enable context menu via long-press in library page
+  // `SavedDeskLibraryView` will take over gesture event if it's active. When
+  // it's `ET_GESTURE_TAP`, here it does not set event to handled, and thus
+  // `HandleClickOrTap()` would be executed from
+  // `SavedDeskLibraryView::OnLocatedEvent()`.
+  if (grid_->IsShowingDesksTemplatesGrid())
+    return;
+
   switch (event->type()) {
     case ui::ET_GESTURE_TAP: {
       HandleClickOrTap(event);

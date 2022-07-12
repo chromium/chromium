@@ -20,6 +20,8 @@
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_event_handler.h"
 #include "ash/wm/overview/rounded_label.h"
 #include "base/notreached.h"
 #include "ui/aura/window.h"
@@ -116,7 +118,8 @@ std::unique_ptr<views::Label> MakeGridLabel(int label_string_id) {
 // children.
 class SavedDeskLibraryWindowTargeter : public aura::WindowTargeter {
  public:
-  SavedDeskLibraryWindowTargeter(SavedDeskLibraryView* owner) : owner_(owner) {}
+  explicit SavedDeskLibraryWindowTargeter(SavedDeskLibraryView* owner)
+      : owner_(owner) {}
   SavedDeskLibraryWindowTargeter(const SavedDeskLibraryWindowTargeter&) =
       delete;
   SavedDeskLibraryWindowTargeter& operator=(
@@ -125,19 +128,30 @@ class SavedDeskLibraryWindowTargeter : public aura::WindowTargeter {
   // aura::WindowTargeter:
   bool SubtreeShouldBeExploredForEvent(aura::Window* window,
                                        const ui::LocatedEvent& event) override {
-    // Process the event it is for scrolling.
-    if (event.IsMouseWheelEvent())
-      return true;
-
-    // Check if the located event intersects with the library's children.
     // Convert to screen coordinate.
     gfx::Point screen_location;
+    gfx::Rect screen_bounds = owner_->GetBoundsInScreen();
     if (event.target()) {
       screen_location = event.target()->GetScreenLocation(event);
     } else {
       screen_location = event.root_location();
       wm::ConvertPointToScreen(window->GetRootWindow(), &screen_location);
     }
+
+    // Do not process if it's not on the library view.
+    if (!screen_bounds.Contains(screen_location))
+      return false;
+
+    // Process the event if it is for scrolling.
+    if (event.IsMouseWheelEvent() || event.IsScrollEvent() ||
+        event.IsScrollGestureEvent()) {
+      return true;
+    }
+
+    // Process the event if it is touch.
+    if (event.IsTouchEvent())
+      return true;
+
     // Process the event if it intersects with grid items.
     if (owner_->IntersectsWithUi(screen_location))
       return true;
@@ -409,6 +423,10 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
+  const gfx::Point screen_location =
+      event->target() ? event->target()->GetScreenLocation(*event)
+                      : event->root_location();
+
   switch (event->type()) {
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_ENTERED:
@@ -416,15 +434,33 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
     case ui::ET_MOUSE_EXITED:
     case ui::ET_GESTURE_LONG_PRESS:
     case ui::ET_GESTURE_LONG_TAP: {
-      const gfx::Point screen_location =
-          event->target() ? event->target()->GetScreenLocation(*event)
-                          : event->root_location();
       for (auto* grid_view : grid_views()) {
         for (SavedDeskItemView* grid_item : grid_view->grid_items())
           grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);
       }
       break;
     }
+    case ui::ET_GESTURE_TAP:
+      // When it's a tap outside grid items and the feedback button, it should
+      // either commit the name change or exit the overview mode. Currently
+      // those are handled in `OverviewGrid` for both saved desk library view
+      // and desk bar view. `OverviewGridEventHandler::HandleClickOrTap()` is
+      // explicitly invoked here because `ScrollBar::OnGestureEvent()` would eat
+      // tap event. With this, it would lose the gesture-triggered context menu
+      // in saved desk library view. Please see crbug.com/1339100.
+      // TODO(crbug.com/1341128): Investigate if we can enable the context menu
+      // via long-press in library page.
+      if (!IntersectsWithUi(screen_location)) {
+        Shell::Get()
+            ->overview_controller()
+            ->overview_session()
+            ->GetGridWithRootWindow(widget_window->GetRootWindow())
+            ->grid_event_handler()
+            ->HandleClickOrTap(event);
+        event->StopPropagation();
+        event->SetHandled();
+      }
+      break;
     default:
       break;
   }
