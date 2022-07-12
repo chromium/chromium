@@ -359,7 +359,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual float ClampPageScaleFactorToLimits(float scale) const {
     return scale;
   }
-  virtual void MainFrameScrollOffsetChanged(LocalFrame& main_frame) const = 0;
+  virtual void OutermostMainFrameScrollOffsetChanged() const = 0;
   virtual void ResizeAfterLayout() const {}
   virtual void MainFrameLayoutUpdated() const {}
 

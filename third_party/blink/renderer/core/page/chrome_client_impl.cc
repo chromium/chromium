@@ -584,10 +584,8 @@ void ChromeClientImpl::PageScaleFactorChanged() const {
   web_view_->PageScaleFactorChanged();
 }
 
-void ChromeClientImpl::MainFrameScrollOffsetChanged(
-    LocalFrame& main_frame) const {
-  DCHECK(main_frame.IsMainFrame());
-  web_view_->MainFrameScrollOffsetChanged();
+void ChromeClientImpl::OutermostMainFrameScrollOffsetChanged() const {
+  web_view_->OutermostMainFrameScrollOffsetChanged();
 }
 
 float ChromeClientImpl::ClampPageScaleFactorToLimits(float scale) const {

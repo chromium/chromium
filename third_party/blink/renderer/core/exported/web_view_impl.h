@@ -392,7 +392,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidCommitCompositorFrameForLocalMainFrame();
   void DidChangeContentsSize();
   void PageScaleFactorChanged();
-  void MainFrameScrollOffsetChanged();
+  void OutermostMainFrameScrollOffsetChanged();
   void TextAutosizerPageInfoChanged(
       const mojom::blink::TextAutosizerPageInfo& page_info);
 

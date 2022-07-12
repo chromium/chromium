@@ -3832,9 +3832,11 @@ void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size) {
 
 void LocalFrameView::DidChangeScrollOffset() {
   GetFrame().Client()->DidChangeScrollOffset();
-  if (GetFrame().IsMainFrame()) {
-    GetFrame().GetPage()->GetChromeClient().MainFrameScrollOffsetChanged(
-        GetFrame());
+  if (GetFrame().IsOutermostMainFrame()) {
+    GetFrame()
+        .GetPage()
+        ->GetChromeClient()
+        .OutermostMainFrameScrollOffsetChanged();
   }
 }
 

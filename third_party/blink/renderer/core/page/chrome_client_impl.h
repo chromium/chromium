@@ -160,7 +160,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) override;
   void PageScaleFactorChanged() const override;
   float ClampPageScaleFactorToLimits(float scale) const override;
-  void MainFrameScrollOffsetChanged(LocalFrame& main_frame) const override;
+  void OutermostMainFrameScrollOffsetChanged() const override;
   void ResizeAfterLayout() const override;
   void MainFrameLayoutUpdated() const override;
   void ShowMouseOverURL(const HitTestResult&) override;

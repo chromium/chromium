@@ -437,7 +437,8 @@ TransformationMatrix DevToolsEmulator::ResetViewport() {
   return ComputeRootLayerTransform();
 }
 
-TransformationMatrix DevToolsEmulator::MainFrameScrollOrScaleChanged() {
+TransformationMatrix
+DevToolsEmulator::OutermostMainFrameScrollOrScaleChanged() {
   // Viewport override has to take current page scale and scroll offset into
   // account. Update the transform if override is active.
   DCHECK(viewport_override_);

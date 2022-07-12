@@ -240,7 +240,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   int GetLayerTreeId(LocalFrame& frame) override { return 0; }
   void SetCursorForPlugin(const ui::Cursor&, LocalFrame*) override {}
   void InstallSupplements(LocalFrame&) override {}
-  void MainFrameScrollOffsetChanged(LocalFrame& main_frame) const override {}
+  void OutermostMainFrameScrollOffsetChanged() const override {}
 
  private:
   const display::ScreenInfos empty_screen_infos_{display::ScreenInfo()};

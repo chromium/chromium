@@ -64,10 +64,11 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool HasViewportOverride() const { return !!viewport_override_; }
 
-  // Notify the DevToolsEmulator about a scroll or scale change of the main
-  // frame. Returns an updated emulation transform for a viewport override, and
-  // should only be called when HasViewportOverride() is true.
-  TransformationMatrix MainFrameScrollOrScaleChanged();
+  // Notify the DevToolsEmulator about a scroll or scale change of the
+  // outermost main frame. Returns an updated emulation transform for a
+  // viewport override, and should only be called when HasViewportOverride() is
+  // true.
+  TransformationMatrix OutermostMainFrameScrollOrScaleChanged();
 
   // Returns the scale used to convert incoming input events while emulating
   // device metics.
