@@ -28,6 +28,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -55,6 +56,7 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
@@ -207,17 +209,12 @@ invalidation::FCMNetworkHandler* GetFCMNetworkHandler(
   return it != profile_to_fcm_network_handler_map->end() ? it->second : nullptr;
 }
 
-instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
-    Profile* profile,
-    std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
-        profile_to_instance_id_driver_map) {
-  if (!profile_to_instance_id_driver_map->count(profile)) {
-    (*profile_to_instance_id_driver_map)[profile] =
-        std::make_unique<FakeSyncInstanceIDDriver>(
-            /*gcm_driver=*/gcm::GCMProfileServiceFactory::GetForProfile(profile)
-                ->driver());
-  }
-  return (*profile_to_instance_id_driver_map)[profile].get();
+std::unique_ptr<KeyedService> CreateInstanceIDProfileService(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  return instance_id::InstanceIDProfileService::CreateForTests(
+      std::make_unique<FakeSyncInstanceIDDriver>(
+          gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver()));
 }
 
 }  // namespace
@@ -1017,27 +1014,32 @@ void SyncTest::OnWillCreateBrowserContextServices(
       ->SetTestingFactory(
           context,
           base::BindRepeating(&SyncTest::CreateProfileInvalidationProvider,
-                              &profile_to_fcm_network_handler_map_,
-                              &profile_to_instance_id_driver_map_));
+                              &profile_to_fcm_network_handler_map_));
   SyncInvalidationsServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&SyncTest::CreateSyncInvalidationsService,
                                    base::Unretained(this)));
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&FakeSyncGCMDriver::Build));
+
+  // Used by SharingService, real InstanceIDProfileService returns a real
+  // InstanceIDDriver. This factory prevents network requests when obtaining FCM
+  // registration tokens from real InstanceID.
+  instance_id::InstanceIDProfileServiceFactory::GetInstance()
+      ->SetTestingFactory(context,
+                          base::BindRepeating(&CreateInstanceIDProfileService));
 }
 
 // static
 std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
     std::map<const Profile*, invalidation::FCMNetworkHandler*>*
         profile_to_fcm_network_handler_map,
-    std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
-        profile_to_instance_id_driver_map,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   gcm::GCMProfileService* gcm_profile_service =
       gcm::GCMProfileServiceFactory::GetForProfile(profile);
   instance_id::InstanceIDDriver* instance_id_driver =
-      GetOrCreateInstanceIDDriver(profile, profile_to_instance_id_driver_map);
+      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+          ->driver();
 
   auto profile_identity_provider =
       std::make_unique<invalidation::ProfileIdentityProvider>(
@@ -1076,7 +1078,8 @@ std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
   gcm::GCMDriver* gcm_driver =
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
   instance_id::InstanceIDDriver* instance_id_driver =
-      GetOrCreateInstanceIDDriver(profile, &profile_to_instance_id_driver_map_);
+      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+          ->driver();
   auto service = std::make_unique<syncer::SyncInvalidationsServiceImpl>(
       gcm_driver, instance_id_driver);
 

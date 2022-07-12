@@ -76,10 +76,6 @@ class FCMHandler;
 class SyncServiceImpl;
 }  // namespace syncer
 
-namespace instance_id {
-class InstanceIDDriver;
-}  // namespace instance_id
-
 namespace switches {
 
 inline constexpr char kPasswordFileForTest[] = "password-file-for-test";
@@ -352,8 +348,6 @@ class SyncTest : public PlatformBrowserTest {
   static std::unique_ptr<KeyedService> CreateProfileInvalidationProvider(
       std::map<const Profile*, invalidation::FCMNetworkHandler*>*
           profile_to_fcm_network_handler_map,
-      std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>*
-          profile_to_instance_id_driver_map,
       content::BrowserContext* context);
 
   std::unique_ptr<KeyedService> CreateSyncInvalidationsService(
@@ -477,9 +471,6 @@ class SyncTest : public PlatformBrowserTest {
   // profiles within the FakeServerInvalidationSender.
   std::map<const Profile*, invalidation::FCMNetworkHandler*>
       profile_to_fcm_network_handler_map_;
-
-  std::map<const Profile*, std::unique_ptr<instance_id::InstanceIDDriver>>
-      profile_to_instance_id_driver_map_;
 
   std::map<const Profile*, syncer::FCMHandler*> profile_to_fcm_handler_map_;
 
