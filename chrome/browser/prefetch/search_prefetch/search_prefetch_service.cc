@@ -257,6 +257,32 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
     return;
   const GURL& opened_url = log->final_destination_url;
 
+  auto& match = log->result.match_at(log->selected_index);
+  if (match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED) {
+    bool has_search_suggest = false;
+    bool has_history_search = false;
+    for (auto& duplicate_match : match.duplicate_matches) {
+      if (duplicate_match.type == AutocompleteMatchType::SEARCH_SUGGEST ||
+          AutocompleteMatch::IsSpecializedSearchType(duplicate_match.type)) {
+        has_search_suggest = true;
+      }
+      if (duplicate_match.type == AutocompleteMatchType::SEARCH_HISTORY) {
+        has_history_search = true;
+      }
+    }
+
+    base::UmaHistogramBoolean(
+        "Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.Suggest",
+        has_search_suggest);
+    base::UmaHistogramBoolean(
+        "Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.History",
+        has_history_search);
+    base::UmaHistogramBoolean(
+        "Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested."
+        "HistoryOrSuggest",
+        has_history_search || has_search_suggest);
+  }
+
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   DCHECK(template_url_service);

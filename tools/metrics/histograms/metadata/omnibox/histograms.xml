@@ -1445,6 +1445,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.History"
+    units="boolean" expires_after="2022-10-30">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records whether a &quot;search what you type&quot; omnibox navigation was
+    also a search history type. Recorded when the user navigates to a search via
+    typing the full query into the omnibox.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.HistoryOrSuggest"
+    units="boolean" expires_after="2022-10-30">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records whether a &quot;search what you type&quot; omnibox navigation was
+    also a search suggest type or a search history type. Recorded when the user
+    navigates to a search via typing the full query into the omnibox.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.Suggest"
+    units="boolean" expires_after="2022-10-30">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records whether a &quot;search what you type&quot; omnibox navigation was
+    also a search suggest type. Recorded when the user navigates to a search via
+    typing the full query into the omnibox.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPrefetch.StartTime.NavigationPrefetch"
     units="ms" expires_after="2022-10-30">
   <owner>ryansturm@chromium.org</owner>
