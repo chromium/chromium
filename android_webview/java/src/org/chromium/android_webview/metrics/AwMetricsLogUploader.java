@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
@@ -111,8 +112,8 @@ public class AwMetricsLogUploader implements Consumer<byte[]> {
         Intent intent = new Intent();
         intent.setClassName(
                 AwBrowserProcess.getWebViewPackageName(), ServiceNames.METRICS_UPLOAD_SERVICE);
-        return ContextUtils.getApplicationContext().bindService(
-                intent, connection, Context.BIND_AUTO_CREATE);
+        return ServiceHelper.bindService(
+                ContextUtils.getApplicationContext(), intent, connection, Context.BIND_AUTO_CREATE);
     }
 
     /**

@@ -47,6 +47,7 @@ import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.services.IDeveloperUiService;
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -551,7 +552,7 @@ public class FlagsFragment extends DevUiBaseFragment {
         public void start() {
             Intent intent = new Intent();
             intent.setClassName(mContext.getPackageName(), ServiceNames.DEVELOPER_UI_SERVICE);
-            if (!mContext.bindService(intent, this, Context.BIND_AUTO_CREATE)) {
+            if (!ServiceHelper.bindService(mContext, intent, this, Context.BIND_AUTO_CREATE)) {
                 Log.e(TAG, "Failed to bind to Developer UI service");
             }
         }

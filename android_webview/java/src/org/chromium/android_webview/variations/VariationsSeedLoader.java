@@ -21,6 +21,7 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.services.IVariationsSeedServer;
 import org.chromium.android_webview.common.services.IVariationsSeedServerCallback;
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
@@ -252,7 +253,7 @@ public class VariationsSeedLoader {
 
         public void start() {
             try {
-                if (!ContextUtils.getApplicationContext().bindService(
+                if (!ServiceHelper.bindService(ContextUtils.getApplicationContext(),
                             getServerIntent(), this, Context.BIND_AUTO_CREATE)) {
                     Log.e(TAG, "Failed to bind to WebView service");
                 }

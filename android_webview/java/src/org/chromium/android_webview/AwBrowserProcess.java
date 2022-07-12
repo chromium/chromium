@@ -23,6 +23,7 @@ import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.services.ICrashReceiverService;
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
@@ -374,7 +375,8 @@ public final class AwBrowserProcess {
                     @Override
                     public void onServiceDisconnected(ComponentName className) {}
                 };
-                if (!appContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+                if (!ServiceHelper.bindService(
+                            appContext, intent, connection, Context.BIND_AUTO_CREATE)) {
                     Log.w(TAG, "Could not bind to Minidump-copying Service " + intent);
                 }
             } catch (RuntimeException e) {
@@ -486,7 +488,7 @@ public final class AwBrowserProcess {
             @Override
             public void onServiceDisconnected(ComponentName className) {}
         };
-        if (!appContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+        if (!ServiceHelper.bindService(appContext, intent, connection, Context.BIND_AUTO_CREATE)) {
             Log.d(TAG, "Could not bind to MetricsBridgeService " + intent);
         }
     }
