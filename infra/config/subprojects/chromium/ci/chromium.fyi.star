@@ -1056,7 +1056,7 @@ ci.builder(
 # Sync specs with android-pie-arm64-rel-compilator
 # in chromium/try/tryserver.chromium.android.star
 ci.builder(
-    name = "Build Perf Android",
+    name = "build-perf-android",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
@@ -1076,7 +1076,7 @@ ci.builder(
 # Sync specs with linux-rel-compilator
 # in chromium/try/tryserver.chromium.linux.star
 ci.builder(
-    name = "Build Perf Linux",
+    name = "build-perf-linux",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
