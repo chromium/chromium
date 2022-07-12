@@ -219,6 +219,42 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
   wait_for_selection.Run();
 }
 
+TEST_F(SegmentSelectorTest, RunSelectionOnDemandCallbackInvokedOnFailure) {
+  Config config = CreateTestConfig();
+  config.on_demand_execution = true;
+  SetUpWithConfig(config);
+  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+      .WillRepeatedly(Return(true));
+
+  auto result_provider = std::make_unique<MockResultProvider>();
+  EXPECT_CALL(*result_provider, GetSegmentResult(_))
+      .Times(1)
+      .WillRepeatedly(Invoke(
+          [](std::unique_ptr<SegmentResultProvider::GetResultOptions> options) {
+            EXPECT_TRUE(options->ignore_db_scores);
+            auto result =
+                std::make_unique<SegmentResultProvider::SegmentResult>(
+                    SegmentResultProvider::ResultState::
+                        kDefaultModelExecutionFailed);
+            std::move(options->callback).Run(std::move(result));
+          }));
+  segment_selector_->set_segment_result_provider_for_testing(
+      std::move(result_provider));
+
+  clock_.Advance(base::Days(1));
+  base::RunLoop wait_for_selection;
+  segment_selector_->GetSelectedSegmentOnDemand(
+      /*input_context=*/nullptr,
+      base::BindOnce(
+          [](base::OnceClosure quit, const SegmentSelectionResult& result) {
+            EXPECT_FALSE(result.is_ready);
+            EXPECT_FALSE(result.segment.has_value());
+            std::move(quit).Run();
+          },
+          wait_for_selection.QuitClosure()));
+  wait_for_selection.Run();
+}
+
 TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
   Config config = CreateTestConfig();
   config.unknown_selection_ttl = base::TimeDelta();
