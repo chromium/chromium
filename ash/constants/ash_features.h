@@ -607,6 +607,8 @@ extern const base::Feature kUseAuthsessionAuthentication;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUseBluetoothSystemInAsh;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kUseLoginShelfWidget;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUseMessagesStagingUrl;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUseSearchClickForRightClick;
@@ -841,6 +843,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTouchscreenInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrafficCountersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrilinearFilteringEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUploadOfficeToCloudEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseLoginShelfWidgetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseStorkSmdsServerAddressEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperFastRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperFullScreenPreviewEnabled();

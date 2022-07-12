@@ -1518,6 +1518,11 @@ const base::Feature kUseAuthsessionAuthentication{
 const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, the login shelf view is placed in its own widget instead of
+// sharing the shelf widget with other components.
+const base::Feature kUseLoginShelfWidget{"UseLoginShelfWidget",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 const base::Feature kUseMessagesStagingUrl{"UseMessagesStagingUrl",
@@ -2365,6 +2370,10 @@ bool IsTrilinearFilteringEnabled() {
 
 bool IsUploadOfficeToCloudEnabled() {
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
+}
+
+bool IsUseLoginShelfWidgetEnabled() {
+  return base::FeatureList::IsEnabled(kUseLoginShelfWidget);
 }
 
 bool IsUseStorkSmdsServerAddressEnabled() {
