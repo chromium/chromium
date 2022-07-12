@@ -191,6 +191,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the state of a badge when it was tapped. {MobileInfobarType}
   </summary>
+  <token key="MobileInfobarType" variants="MobileInfobarType"/>
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Dismiss.{MobileInfobarType}"
@@ -200,6 +201,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the reason why an infobar banner was dismissed. {MobileInfobarType}
   </summary>
+  <token key="MobileInfobarType" variants="MobileInfobarType"/>
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.Event.{MobileInfobarType}"
@@ -207,6 +209,7 @@ chromium-metrics-reviews@google.com.
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records infobar banner events. {MobileInfobarType}</summary>
+  <token key="MobileInfobarType" variants="MobileInfobarType"/>
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
@@ -259,6 +262,7 @@ chromium-metrics-reviews@google.com.
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records generic infobar modal events. {MobileInfobarType}</summary>
+  <token key="MobileInfobarType" variants="MobileInfobarType"/>
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.OverflowRow.Tapped"
