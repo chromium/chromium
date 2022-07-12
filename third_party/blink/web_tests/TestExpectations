@@ -3475,6 +3475,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Timeout Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-038.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-039.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-042.html [ Failure ]

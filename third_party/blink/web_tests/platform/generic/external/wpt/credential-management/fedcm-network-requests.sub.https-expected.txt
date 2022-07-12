@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+FAIL Successfully obtaining token should resolve the promise. promise_test: Unhandled rejection with value: object "NetworkError: Error retrieving a token."
+FAIL When there's a pending request, a second `get` call should be rejected.  promise_test: Unhandled rejection with value: object "NetworkError: Error retrieving a token."
+PASS Reject when provider list is empty
+PASS Reject when configURL is missing
+PASS Reject when configURL is invalid
+PASS Reject when clientId is empty
+FAIL nonce is not required in FederatedIdentityProvider. promise_test: Unhandled rejection with value: object "NetworkError: Error retrieving a token."
+PASS Reject when clientId is missing
+PASS Test the abort signal
+FAIL Get after abort should work promise_test: Unhandled rejection with value: object "NetworkError: Error retrieving a token."
+PASS Provider configURL should honor Content-Security-Policy.
+FAIL Test that COEP policy do not apply to FedCM requests promise_test: Unhandled rejection with value: object "NetworkError: Error retrieving a token."
+PASS Test that the promise is rejected if the manifest is not in the manifest list
+Harness: the test ran to completion.
+

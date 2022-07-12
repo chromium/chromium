@@ -1,5 +1,9 @@
-{
+def main(request, response):
+  host = request.headers.get(b"Host").decode("utf-8")
+  return """
+{{
   "provider_urls": [
-    "https://web-platform.test:8444/credential-management/support/fedcm.json"
+    "https://{0}/credential-management/support/fedcm.json"
   ]
-}
+}}
+""".format(host)
