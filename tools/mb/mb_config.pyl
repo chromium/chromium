@@ -314,11 +314,9 @@
 
     'chromium.fyi': {
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot',
-      # Keep in sync with android-pie-arm64-rel, but with reclient.
+      # TODO(b/234807316): Remove after renaming the builders.
       'Build Perf Android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
-      # Keep in sync with linux-rel, but with reclient.
       'Build Perf Linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      # Keep in sync with win10_chromium_x64_rel_ng, but with reclient.
       'Build Perf Windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'CFI Linux CF (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient',
       'Comparison Android (reclient)': {
@@ -388,6 +386,12 @@
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage_reclient',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage_reclient',
       'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
+      # Keep in sync with android-pie-arm64-rel, but with reclient.
+      'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
+      # Keep in sync with linux-rel, but with reclient.
+      'build-perf-linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
+      # Keep in sync with win10_chromium_x64_rel_ng, but with reclient.
+      'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'chromeos-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_use_fake_dbus_clients',
       # TODO(crbug.com/1235218): remove after the migration.
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
