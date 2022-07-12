@@ -33,6 +33,9 @@
   // Delegate object for many tab helpers.
   __weak id<CommonTabHelperDelegate> _delegate;
 
+  // Delegate object for Snapshot Generator.
+  __weak id<SnapshotGeneratorDelegate> _snapshotGeneratorDelegate;
+
   // Other tab helper dependencies.
   PrerenderService* _prerenderService;
   __weak SideSwipeController* _sideSwipeController;
@@ -44,6 +47,8 @@
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                             delegate:(id<CommonTabHelperDelegate>)delegate
+           snapshotGeneratorDelegate:
+               (id<SnapshotGeneratorDelegate>)snapshotGeneratorDelegate
                         dependencies:(TabLifecycleDependencies)dependencies {
   if (self = [super init]) {
     _prerenderService = dependencies.prerenderService;
@@ -56,6 +61,7 @@
     // Set the delegate before any of the dependency observers, because they
     // will do delegate installation on creation.
     _delegate = delegate;
+    _snapshotGeneratorDelegate = snapshotGeneratorDelegate;
 
     _dependencyInstallerBridge =
         std::make_unique<WebStateDependencyInstallerBridge>(self, webStateList);
@@ -79,7 +85,8 @@
   // Only realized webstates should have dependencies installed.
   DCHECK(webState->IsRealized());
 
-  SnapshotTabHelper::FromWebState(webState)->SetDelegate(_delegate);
+  SnapshotTabHelper::FromWebState(webState)->SetDelegate(
+      _snapshotGeneratorDelegate);
 
   if (PasswordTabHelper* passwordTabHelper =
           PasswordTabHelper::FromWebState(webState)) {

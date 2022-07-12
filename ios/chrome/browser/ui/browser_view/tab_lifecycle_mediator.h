@@ -13,6 +13,7 @@
 class PrerenderService;
 @class SadTabCoordinator;
 @class SideSwipeController;
+@protocol SnapshotGeneratorDelegate;
 class WebStateList;
 @protocol NetExportTabHelperDelegate;
 
@@ -38,6 +39,8 @@ typedef struct {
 // into or removed from the web state list.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                             delegate:(id<CommonTabHelperDelegate>)delegate
+           snapshotGeneratorDelegate:
+               (id<SnapshotGeneratorDelegate>)snapshotGeneratorDelegate
                         dependencies:(TabLifecycleDependencies)dependencies;
 
 // Disconnects all delegates set by the mediator on any web states in its

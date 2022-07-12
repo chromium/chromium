@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -129,12 +131,14 @@
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
@@ -144,6 +148,7 @@
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
@@ -177,6 +182,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
                                   PreloadControllerDelegate,
                                   RepostFormTabHelperDelegate,
                                   SigninPresenter,
+                                  SnapshotGeneratorDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
                                   WebStateListObserving>
@@ -615,6 +621,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   _sideSwipeController =
       [[SideSwipeController alloc] initWithBrowser:self.browser];
+  [_sideSwipeController setSnapshotDelegate:self];
   _sideSwipeController.toolbarInteractionHandler = _toolbarCoordinatorAdaptor;
   _sideSwipeController.primaryToolbarSnapshotProvider =
       _primaryToolbarCoordinator;
@@ -1015,9 +1022,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   dependencies.tabHelperDelegate = self;
 
   self.tabLifecycleMediator = [[TabLifecycleMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()
-                  delegate:browserViewController
-              dependencies:dependencies];
+           initWithWebStateList:self.browser->GetWebStateList()
+                       delegate:browserViewController
+      snapshotGeneratorDelegate:self
+                   dependencies:dependencies];
 
   self.viewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
@@ -1948,6 +1956,152 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
               showSignin:command
       baseViewController:self.viewController];
+}
+
+#pragma mark - SnapshotGeneratorDelegate methods
+// TODO(crbug.com/1272491): Refactor snapshot generation into (probably) a
+// mediator with a narrowly-defined API to get UI-layer information from the
+// BVC.
+
+- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+    canTakeSnapshotForWebState:(web::WebState*)webState {
+  DCHECK(webState);
+  PagePlaceholderTabHelper* pagePlaceholderTabHelper =
+      PagePlaceholderTabHelper::FromWebState(webState);
+  return !pagePlaceholderTabHelper->displaying_placeholder() &&
+         !pagePlaceholderTabHelper->will_add_placeholder_for_next_navigation();
+}
+
+- (UIEdgeInsets)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+    snapshotEdgeInsetsForWebState:(web::WebState*)webState {
+  DCHECK(webState);
+
+  UIEdgeInsets maxViewportInsets =
+      _fullscreenController->GetMaxViewportInsets();
+
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  if (NTPHelper && NTPHelper->IsActive()) {
+    BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.viewController);
+    // If the NTP is active, then it's used as the base view for snapshotting.
+    // When the tab strip is visible, or for the incognito NTP, the NTP is laid
+    // out between the toolbars, so it should not be inset while snapshotting.
+    if (canShowTabStrip || self.browser->GetBrowserState()->IsOffTheRecord()) {
+      return UIEdgeInsetsZero;
+    }
+
+    // For the regular NTP without tab strip, it sits above the bottom toolbar
+    // but, since it is displayed as full-screen at the top, it requires maximum
+    // viewport insets.
+    maxViewportInsets.bottom = 0;
+    return maxViewportInsets;
+  } else {
+    // If the NTP is inactive, the WebState's view is used as the base view for
+    // snapshotting.  If fullscreen is implemented by resizing the scroll view,
+    // then the WebState view is already laid out within the visible viewport
+    // and doesn't need to be inset.  If fullscreen uses the content inset, then
+    // the WebState view is laid out fullscreen and should be inset by the
+    // viewport insets.
+    return _fullscreenController->ResizesScrollView() ? UIEdgeInsetsZero
+                                                      : maxViewportInsets;
+  }
+}
+
+- (NSArray<UIView*>*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+           snapshotOverlaysForWebState:(web::WebState*)webState {
+  DCHECK(webState);
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  DCHECK_NE(webStateList->GetIndexOfWebState(webState),
+            WebStateList::kInvalidIndex);
+  BOOL isWebUsageEnabled =
+      self.browser->GetBrowserState() && self.started &&
+      WebUsageEnablerBrowserAgent::FromBrowser(self.browser)
+          ->IsWebUsageEnabled();
+
+  if (!isWebUsageEnabled || webState != webStateList->GetActiveWebState())
+    return @[];
+
+  NSMutableArray<UIView*>* overlays = [NSMutableArray array];
+
+  UIView* downloadManagerView = _downloadManagerCoordinator.viewController.view;
+  if (downloadManagerView) {
+    [overlays addObject:downloadManagerView];
+  }
+
+  UIView* sadTabView = self.sadTabCoordinator.viewController.view;
+  if (sadTabView) {
+    [overlays addObject:sadTabView];
+  }
+
+  BrowserContainerViewController* browserContainerViewController =
+      self.browserContainerCoordinator.viewController;
+  // The overlay container view controller is presenting something if it has
+  // a `presentedViewController` AND that view controller's
+  // `presentingViewController` is the overlay container. Otherwise, some other
+  // view controller higher up in the hierarchy is doing the presenting. E.g.
+  // for the overflow menu, the BVC (and eventually the tab grid view
+  // controller) are presenting the overflow menu, but because those view
+  // controllers are also above tthe `overlayContainerViewController` in the
+  // view hierarchy, the overflow menu view controller is also the
+  // `overlayContainerViewController`'s presentedViewController.
+  UIViewController* overlayContainerViewController =
+      browserContainerViewController.webContentsOverlayContainerViewController;
+  UIViewController* presentedOverlayViewController =
+      overlayContainerViewController.presentedViewController;
+  if (presentedOverlayViewController &&
+      presentedOverlayViewController.presentingViewController ==
+          overlayContainerViewController) {
+    [overlays addObject:presentedOverlayViewController.view];
+  }
+
+  UIView* screenTimeView =
+      browserContainerViewController.screenTimeViewController.view;
+  if (screenTimeView) {
+    [overlays addObject:screenTimeView];
+  }
+
+  UIView* childOverlayView =
+      overlayContainerViewController.childViewControllers.firstObject.view;
+  if (childOverlayView) {
+    DCHECK_EQ(1U, overlayContainerViewController.childViewControllers.count);
+    [overlays addObject:childOverlayView];
+  }
+
+  return overlays;
+}
+
+- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+    willUpdateSnapshotForWebState:(web::WebState*)webState {
+  DCHECK(webState);
+
+  if (self.isNTPActiveForCurrentWebState) {
+    [_ntpCoordinator willUpdateSnapshot];
+  }
+  OverscrollActionsTabHelper::FromWebState(webState)->Clear();
+}
+
+- (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
+         baseViewForWebState:(web::WebState*)webState {
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  if (NTPHelper && NTPHelper->IsActive())
+    return _ntpCoordinator.viewController.view;
+  return webState->GetView();
+}
+
+- (UIViewTintAdjustmentMode)snapshotGenerator:
+                                (SnapshotGenerator*)snapshotGenerator
+         defaultTintAdjustmentModeForWebState:(web::WebState*)webState {
+  return UIViewTintAdjustmentModeAutomatic;
+}
+
+- (BOOL)isNTPActiveForCurrentWebState {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (currentWebState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(currentWebState);
+    return (NTPHelper && NTPHelper->IsActive());
+  }
+  return NO;
 }
 
 @end

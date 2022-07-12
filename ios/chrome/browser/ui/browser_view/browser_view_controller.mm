@@ -492,7 +492,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // coordinator from BVC
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
     _sideSwipeController = dependencies.sideSwipeController;
-    [_sideSwipeController setSnapshotDelegate:self];
     [_sideSwipeController setSwipeDelegate:self];
     _bookmarkInteractionController = dependencies.bookmarkInteractionController;
     self.bubblePresenter = dependencies.bubblePresenter;
@@ -2743,22 +2742,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return AreCGFloatsEqual(scrollOffset.y, -contentInset.top);
 }
 
-#pragma mark - SnapshotGeneratorDelegate methods
-// TODO(crbug.com/1272491): Refactor snapshot generation into (probably) a
-// mediator with a narrowly-defined API to get UI-layer information from the
-// BVC.
+#pragma mark - Helpers
 
-- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    canTakeSnapshotForWebState:(web::WebState*)webState {
-  DCHECK(webState);
-  PagePlaceholderTabHelper* pagePlaceholderTabHelper =
-      PagePlaceholderTabHelper::FromWebState(webState);
-  return !pagePlaceholderTabHelper->displaying_placeholder() &&
-         !pagePlaceholderTabHelper->will_add_placeholder_for_next_navigation();
-}
-
-- (UIEdgeInsets)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    snapshotEdgeInsetsForWebState:(web::WebState*)webState {
+- (UIEdgeInsets)snapshotEdgeInsetsForWebState:(web::WebState*)webState {
   DCHECK(webState);
 
   UIEdgeInsets maxViewportInsets =
@@ -2788,100 +2774,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return self.fullscreenController->ResizesScrollView() ? UIEdgeInsetsZero
                                                           : maxViewportInsets;
   }
-}
-
-// TODO(crbug.com/1272491): Remove most of these responsibilites from the BVC.
-- (NSArray<UIView*>*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-           snapshotOverlaysForWebState:(web::WebState*)webState {
-  DCHECK(webState);
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  DCHECK_NE(webStateList->GetIndexOfWebState(webState),
-            WebStateList::kInvalidIndex);
-  if (!self.webUsageEnabled || webState != webStateList->GetActiveWebState())
-    return @[];
-
-  NSMutableArray<UIView*>* overlays = [NSMutableArray array];
-
-  // TODO(crbug.com/1331229): Remove all use of the download manager coordinator
-  // from BVC
-  UIView* downloadManagerView = _downloadManagerCoordinator.viewController.view;
-  if (downloadManagerView) {
-    [overlays addObject:downloadManagerView];
-  }
-
-  UIView* sadTabView = self.sadTabViewController.view;
-  if (sadTabView) {
-    [overlays addObject:sadTabView];
-  }
-
-  // The overlay container view controller is presenting something if it has
-  // a `presentedViewController` AND that view controller's
-  // `presentingViewController` is the overlay container. Otherwise, some other
-  // view controller higher up in the hierarchy is doing the presenting. E.g.
-  // for the overflow menu, the BVC (and eventually the tab grid view
-  // controller) are presenting the overflow menu, but because those view
-  // controllers are also above tthe `overlayContainerViewController` in the
-  // view hierarchy, the overflow menu view controller is also the
-  // `overlayContainerViewController`'s presentedViewController.
-  UIViewController* overlayContainerViewController =
-      self.browserContainerViewController
-          .webContentsOverlayContainerViewController;
-  UIViewController* presentedOverlayViewController =
-      overlayContainerViewController.presentedViewController;
-  if (presentedOverlayViewController &&
-      presentedOverlayViewController.presentingViewController ==
-          overlayContainerViewController) {
-    [overlays addObject:presentedOverlayViewController.view];
-  }
-
-  UIView* screenTimeView =
-      self.browserContainerViewController.screenTimeViewController.view;
-  if (screenTimeView) {
-    [overlays addObject:screenTimeView];
-  }
-
-  UIView* childOverlayView =
-      overlayContainerViewController.childViewControllers.firstObject.view;
-  if (childOverlayView) {
-    DCHECK_EQ(1U, overlayContainerViewController.childViewControllers.count);
-    [overlays addObject:childOverlayView];
-  }
-
-  return overlays;
-}
-
-- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-    willUpdateSnapshotForWebState:(web::WebState*)webState {
-  DCHECK(webState);
-  if (self.isNTPActiveForCurrentWebState) {
-    [self.ntpCoordinator willUpdateSnapshot];
-  }
-  OverscrollActionsTabHelper::FromWebState(webState)->Clear();
-}
-
-- (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
-         baseViewForWebState:(web::WebState*)webState {
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
-  if (NTPHelper && NTPHelper->IsActive())
-    return self.ntpCoordinator.viewController.view;
-  return webState->GetView();
-}
-
-- (UIViewTintAdjustmentMode)snapshotGenerator:
-                                (SnapshotGenerator*)snapshotGenerator
-         defaultTintAdjustmentModeForWebState:(web::WebState*)webState {
-  return UIViewTintAdjustmentModeAutomatic;
-}
-
-#pragma mark - SnapshotGeneratorDelegate helpers
-
-// Provides a view that encompasses currently displayed infobar(s) or nil
-// if no infobar is presented.
-- (UIView*)infoBarOverlayViewForWebState:(web::WebState*)webState {
-  if (!webState || self.currentWebState != webState)
-    return nil;
-
-  return self.infobarBannerOverlayContainerViewController.view;
 }
 
 #pragma mark - PasswordControllerDelegate methods
@@ -2977,8 +2869,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/904992): Do not repurpose SnapshotGeneratorDelegate.
   SwipeView* swipeView = [[SwipeView alloc]
       initWithFrame:self.contentArea.frame
-          topMargin:[self snapshotGenerator:nil
-                        snapshotEdgeInsetsForWebState:webStateBeingActivated]
+          topMargin:[self snapshotEdgeInsetsForWebState:webStateBeingActivated]
                         .top];
 
   [swipeView setTopToolbarImage:[self.primaryToolbarCoordinator
