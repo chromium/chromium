@@ -562,8 +562,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    // TODO(https://crbug.com/1342387): Enable for tablets.
-    @DisableIf.Device(type = UiDisableIf.TABLET)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
@@ -571,6 +569,10 @@ public class TabGridDialogTest {
     public void testSelectionEditorPosition() {
         // clang-format on;
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        // Position in portrait mode.
+        ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_PORTRAIT);
+
         View parentView = cta.getCompositorViewHolderForTesting();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
@@ -966,7 +968,6 @@ public class TabGridDialogTest {
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", START_SURFACE_BASE_PARAMS + "/single"})
     @DisableIf.
     Build(sdk_is_greater_than = VERSION_CODES.M, message = "crbug.com/1119899, crbug.com/1131545")
-    // TODO(https://crbug.com/1342387): Enable for tablets.
     @DisableIf.Device(type = UiDisableIf.TABLET)
     public void testUndoClosureInDialog_WithStartSurface() throws Exception {
         // Create a tab group with 2 tabs.
@@ -1260,13 +1261,16 @@ public class TabGridDialogTest {
         View parentView = cta.findViewById(TabUiTestHelper.getTabSwitcherParentId(cta));
         Rect parentRect = new Rect();
         parentView.getGlobalVisibleRect(parentRect);
-
-        onView(isDialog ? withId(contentViewId) : withId(contentViewId)).check((v, e) -> {
+        int[] parentLoc = new int[2];
+        parentView.getLocationOnScreen(parentLoc);
+        onView(withId(contentViewId)).check((v, e) -> {
             int[] location = new int[2];
             v.getLocationOnScreen(location);
+            int relLoc0 = location[0] - parentLoc[0];
+            int relLoc1 = location[1] - parentLoc[1];
             // Check the position.
-            assertEquals(sideMargin, location[0]);
-            assertEquals(topMargin + parentRect.top, location[1]);
+            assertEquals(sideMargin, relLoc0);
+            assertEquals(topMargin, relLoc1);
             // Check the size.
             assertEquals(parentView.getHeight() - 2 * topMargin, v.getHeight());
             assertEquals(parentView.getWidth() - 2 * sideMargin, v.getWidth());
