@@ -745,6 +745,7 @@ class CORE_EXPORT LocalFrameView final
   // features::kLocalFrameRootPrePostFCPMetrics is enabled, creating it if
   // necessary.
   LocalFrameUkmAggregator& EnsureUkmAggregator();
+  void ResetUkmAggregatorForTesting();
 
   // Report the First Contentful Paint signal to the LocalFrameView.
   // This causes Deferred Commits to be restarted and tells the UKM

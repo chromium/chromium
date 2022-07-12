@@ -4703,13 +4703,17 @@ void LocalFrameView::DidChangeMobileFriendliness(
 
 LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {
   DCHECK(frame_->IsLocalRoot() || !ukm_aggregator_);
-  LocalFrameView* local_root_frame_view = frame_->LocalFrameRoot().View();
-  if (!local_root_frame_view->ukm_aggregator_) {
-    ukm_aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
-        local_root_frame_view->frame_->GetDocument()->UkmSourceID(),
-        local_root_frame_view->frame_->GetDocument()->UkmRecorder());
+  LocalFrameView* local_root = frame_->LocalFrameRoot().View();
+  if (!local_root->ukm_aggregator_) {
+    local_root->ukm_aggregator_ = base::MakeRefCounted<LocalFrameUkmAggregator>(
+        local_root->frame_->GetDocument()->UkmSourceID(),
+        local_root->frame_->GetDocument()->UkmRecorder());
   }
-  return *local_root_frame_view->ukm_aggregator_;
+  return *local_root->ukm_aggregator_;
+}
+
+void LocalFrameView::ResetUkmAggregatorForTesting() {
+  ukm_aggregator_.reset();
 }
 
 void LocalFrameView::OnFirstContentfulPaint() {

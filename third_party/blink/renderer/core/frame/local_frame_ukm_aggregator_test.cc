@@ -653,6 +653,26 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
   }
 };
 
+TEST_F(LocalFrameUkmAggregatorSimTest, EnsureUkmAggregator) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/frame.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete("<iframe id=frame src='frame.html'></iframe>");
+  frame_resource.Complete("");
+
+  auto* root_view = GetDocument().View();
+  root_view->ResetUkmAggregatorForTesting();
+  auto* subframe_view =
+      To<HTMLFrameOwnerElement>(GetDocument().getElementById("frame"))
+          ->contentDocument()
+          ->View();
+  auto& aggregator_from_subframe = subframe_view->EnsureUkmAggregator();
+  auto& aggregator_from_root = root_view->EnsureUkmAggregator();
+  EXPECT_EQ(&aggregator_from_root, &aggregator_from_subframe);
+  EXPECT_EQ(&aggregator_from_root, &subframe_view->EnsureUkmAggregator());
+  EXPECT_EQ(&aggregator_from_root, &root_view->EnsureUkmAggregator());
+}
+
 TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
   std::unique_ptr<base::StatisticsRecorder> statistics_recorder =
       base::StatisticsRecorder::CreateTemporaryForTesting();
