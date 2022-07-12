@@ -7,13 +7,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
+
+namespace network {
+class DataElement;
+}  // namespace network
 
 namespace content {
 
@@ -103,17 +106,32 @@ class Beacon : public blink::mojom::PendingBeacon {
 
   // Deletes this beacon from its containing PendingBeaconHost.
   void Deactivate() override;
-  void SetData(const std::string& data) override;
+
+  // Sets request data for the pending beacon.
+  void SetRequestData(scoped_refptr<network::ResourceRequestBody> request_body,
+                      const std::string& content_type) override;
+
   // Sends the beacon immediately, and deletes it from its containing
   // PendingBeaconHost.
   void SendNow() override;
 
-  // Returns the beacon's url to send request with.
-  // * If `method_` is GET, the url is constructed from `url_` and
-  //   a query string data=`beacon_data_`, where the latter will be encoded by
-  //   application/x-www-form-urlencoded serializer.
-  // * If `method_` is POST, the url is from `url_`.
-  const GURL GenerateRequestURL() const;
+  // Creates a request based on the beacon's url and data.
+  // * If `method_` is GET, the request url is constructed from `url_`.
+  // * If `method_` is POST, the request url is from `url_`, and the request
+  //   content is from `request_body_` and `content_type_`.
+  const std::unique_ptr<network::ResourceRequest> GenerateResourceRequest()
+      const;
+
+  const std::string& content_type() const {
+    DCHECK(method_ != blink::mojom::BeaconMethod::kGet ||
+           content_type_.empty());
+    return content_type_;
+  }
+  const std::vector<network::DataElement>& request_elements() const {
+    DCHECK(method_ != blink::mojom::BeaconMethod::kGet ||
+           request_elements_.empty());
+    return request_elements_;
+  }
 
  private:
   mojo::Receiver<blink::mojom::PendingBeacon> receiver_;
@@ -125,10 +143,12 @@ class Beacon : public blink::mojom::PendingBeacon {
   [[maybe_unused]] const blink::mojom::BeaconMethod method_;
   [[maybe_unused]] const base::TimeDelta timeout_;
 
-  // A string containing the bytes for the data of the beacon. This will be
-  // either used as the body of the beacon request for POST beacons, or
-  // appended to the URL for GET beacons.
-  std::string beacon_data_;
+  // The request content type for POST beacon. If `method_` is GET, this field
+  // should not be used.
+  std::string content_type_;
+  // The beacon data represented as data elements. If `method_` is GET, this
+  // field should not be used.
+  std::vector<network::DataElement> request_elements_;
 };
 
 }  // namespace content

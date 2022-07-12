@@ -4,13 +4,11 @@
 
 #include "content/browser/renderer_host/pending_beacon_service.h"
 #include "base/bind.h"
-#include "base/time/time.h"
 #include "content/browser/renderer_host/pending_beacon_host.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 
 constexpr net::NetworkTrafficAnnotationTag kPendingBeaconNetworkTag =
     net::DefineNetworkTrafficAnnotation("pending_beacon_api",
@@ -56,11 +54,18 @@ void PendingBeaconService::SendBeacons(
     const std::vector<std::unique_ptr<Beacon>>& beacons,
     network::SharedURLLoaderFactory* shared_url_loader_factory) {
   for (const auto& beacon : beacons) {
-    auto resource_request = std::make_unique<network::ResourceRequest>();
-    resource_request->url = beacon->GenerateRequestURL();
+    auto resource_request = beacon->GenerateResourceRequest();
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
         network::SimpleURLLoader::Create(std::move(resource_request),
                                          kPendingBeaconNetworkTag);
+    for (const auto& element : beacon->request_elements()) {
+      if (element.type() == network::mojom::DataElementDataView::Tag::kBytes) {
+        simple_url_loader->AttachStringForUpload(
+            std::string(
+                element.As<network::DataElementBytes>().AsStringPiece()),
+            beacon->content_type());
+      }
+    }
     network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
 
     // Send out the |beacon|.

@@ -5,18 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PENDING_BEACON_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PENDING_BEACON_H_
 
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 
 namespace blink {
 
+class BeaconData;
 class BeaconOptions;
 
 // Implementation of the Pending Beacon API.
@@ -54,6 +52,8 @@ class CORE_EXPORT PendingBeacon : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  void SetDataInternal(const BeaconData& beacon_data);
+
   HeapMojoRemote<mojom::blink::PendingBeacon> remote_;
   const String url_;
   const String method_;

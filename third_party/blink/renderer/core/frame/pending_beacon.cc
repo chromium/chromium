@@ -6,14 +6,15 @@
 
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_beacon_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_formdata_readablestream_urlsearchparams_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/html/forms/form_data.h"
-#include "third_party/blink/renderer/core/url/url_search_params.h"
+#include "third_party/blink/renderer/core/loader/beacon_data.h"
+#include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -108,23 +109,39 @@ void PendingBeacon::Trace(Visitor* visitor) const {
 
 void PendingBeacon::setData(
     const V8UnionReadableStreamOrXMLHttpRequestBodyInit* data) {
+  if (method_ == http_names::kGET) {
+    // TODO(crbug.com/1293679): Throw errors.
+    return;
+  }
+  using ContentType =
+      V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType;
   switch (data->GetContentType()) {
-    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
-        kUSVString: {
-      auto string_data = data->GetAsUSVString();
-      remote_->SetData(string_data);
+    case ContentType::kUSVString: {
+      SetDataInternal(BeaconString(data->GetAsUSVString()));
       return;
     }
-    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
-        kArrayBuffer:
-    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
-        kArrayBufferView:
-    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::kFormData:
-    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
-        kURLSearchParams:
-    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::kBlob:
-    case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::
-        kReadableStream: {
+    case ContentType::kArrayBuffer: {
+      SetDataInternal(BeaconDOMArrayBuffer(data->GetAsArrayBuffer()));
+      return;
+    }
+    case ContentType::kArrayBufferView: {
+      SetDataInternal(
+          BeaconDOMArrayBufferView(data->GetAsArrayBufferView().Get()));
+      return;
+    }
+    case ContentType::kFormData: {
+      SetDataInternal(BeaconFormData(data->GetAsFormData()));
+      return;
+    }
+    case ContentType::kURLSearchParams: {
+      SetDataInternal(BeaconURLSearchParams(data->GetAsURLSearchParams()));
+      return;
+    }
+    case ContentType::kBlob:
+      // TODO(crbug.com/1293679): Decide whether to support blob/file.
+    case ContentType::kReadableStream: {
+      // TODO(crbug.com/1293679): Throw errors.
+      break;
     }
   }
   NOTIMPLEMENTED();
@@ -139,6 +156,19 @@ void PendingBeacon::sendNow() {
     remote_->SendNow();
     is_pending_ = false;
   }
+}
+
+void PendingBeacon::SetDataInternal(const BeaconData& data) {
+  ResourceRequest request;
+
+  data.Serialize(request);
+  // `WrappedResourceRequest` only works for POST request.
+  request.SetHttpMethod(http_names::kPOST);
+  scoped_refptr<network::ResourceRequestBody> request_body =
+      GetRequestBodyForWebURLRequest(WrappedResourceRequest(request));
+  AtomicString content_type = request.HttpContentType();
+  remote_->SetRequestData(std::move(request_body),
+                          content_type.IsNull() ? "" : content_type);
 }
 
 }  // namespace blink

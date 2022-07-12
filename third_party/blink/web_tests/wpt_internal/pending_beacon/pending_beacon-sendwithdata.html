@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+<meta charset="utf-8">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -7,26 +8,41 @@
 </head>
 <body>
 <script>
-    promise_test(async t => {
-      const uuid = token();
-      // Random string to test url encoding in beacon.
-      const data = "s1=#&s2=AB ab 12 áəb&s3=\uD800\uDFFF&s4=\0\\\r\n";
+  // Test empty data.
+  beaconSendDataTest("POST", BeaconDataType.String, "",
+                     /*expectEmpty=*/true, "Empty data is not sent.");
+  beaconSendDataTest("POST", BeaconDataType.ArrayBuffer, "",
+                     /*expectEmpty=*/true, "Empty data is not sent.");
+  beaconSendDataTest("POST", BeaconDataType.FormData, "",
+                     /*expectEmpty=*/false, "Empty form payload is sent.");
+  beaconSendDataTest("POST", BeaconDataType.URLSearchParams, "testkey=",
+                     /*expectEmpty=*/false, "Empty query is sent.");
 
-      const base_url = `${location.protocol}//${location.host}`;
-      const beacon_endpoint = `${base_url}/wpt_internal/pending_beacon/resources/set_beacon_data.py?uuid=${uuid}`;
-      let beacon = new PendingBeacon(beacon_endpoint, {method: "GET"});
+  // Test small payload.
+  beaconSendDataTest("POST", BeaconDataType.String, generateSequentialData(0, 1024),
+                     /*expectEmpty=*/false, "Encoded and sent in POST request.");
+  beaconSendDataTest("POST", BeaconDataType.ArrayBuffer, generateSequentialData(0, 1024),
+                     /*expectEmpty=*/false, "Encoded and sent in POST request.");
+  // Skip CRLF chracters which will be normalzied by FormData.
+  beaconSendDataTest("POST", BeaconDataType.FormData, generateSequentialData(0, 1024, "\n\r"),
+                     /*expectEmpty=*/false, "Encoded and sent in POST request.");
+  // Skip reserved URI characters.
+  beaconSendDataTest("POST", BeaconDataType.URLSearchParams,
+                     "testkey="+generateSequentialData(0, 1024, ";,/?:@&=+$"),
+                     /*expectEmpty=*/false, "Encoded and sent in POST request.");
 
-      beacon.setData(data);
-      beacon.sendNow();
-      // Wait for the beacon to have sent.
-      await wait(1000);
+  // TODO(crbug.com/1293679): Test large payload.
 
-      let beacon_data = await getBeaconData(uuid);
-      // PendingBeacon uses application/x-www-form-urlencoded serializer, which encodes space as '+'
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
-      let expected_data = encodeURIComponent(data).replace(/%20/g, "+");
-      assert_equals(beacon_data, expected_data);
-    }, "Verify that beacon data is encoded and sent in GET request.");
+  // Test GET request.
+  beaconSendDataTest("GET", BeaconDataType.String, generateSequentialData(0, 1024),
+                     /*expectEmpty=*/true, "setData() doesn't work for GET request.");
+  beaconSendDataTest("GET", BeaconDataType.ArrayBuffer, generateSequentialData(0, 1024),
+                     /*expectEmpty=*/true, "setData() doesn't work for GET request.");
+  beaconSendDataTest("GET", BeaconDataType.FormData, generateSequentialData(0, 1024, "\n\r"),
+                     /*expectEmpty=*/true, "setData() doesn't work for GET request.");
+  beaconSendDataTest("GET", BeaconDataType.URLSearchParams,
+                     "testkey="+generateSequentialData(0, 1024, ";,/?:@&=+$"),
+                     /*expectEmpty=*/true, "setData() doesn't work for GET request.");
 </script>
 </body>
 </html>

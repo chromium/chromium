@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "url/mojom/url.mojom";
 
 // The HTTP methods that pending beacons can use.
@@ -41,8 +42,12 @@ interface PendingBeacon {
   // further calls can be made.
   Deactivate();
 
-  // Sets data for the pending beacon.
-  SetData(string data);
+  // Sets request data for the pending beacon.
+  // It is only allowed when the receiving pending beacon's `BeaconMethod` is
+  // kPost.
+  // `content_type` must be empty string or a safelisted one.
+  SetRequestData(network.mojom.URLRequestBody request_body,
+                 string content_type);
 
   // Sends the pending beacon immediately.
   // Calling this will close the message pipe for the interface as well, so no

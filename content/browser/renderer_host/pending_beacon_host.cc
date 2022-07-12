@@ -4,8 +4,12 @@
 
 #include "content/browser/renderer_host/pending_beacon_host.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
-#include "net/base/url_util.h"
+#include "content/public/browser/render_frame_host.h"
+#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/data_element.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content {
@@ -17,7 +21,10 @@ PendingBeaconHost::PendingBeaconHost(
     : DocumentUserData<PendingBeaconHost>(rfh),
       receiver_(this),
       shared_url_factory_(std::move(shared_url_factory)),
-      service_(service) {}
+      service_(service) {
+  DCHECK(shared_url_factory_);
+  DCHECK(service_);
+}
 
 void PendingBeaconHost::CreateBeacon(
     mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver,
@@ -76,23 +83,54 @@ Beacon::Beacon(const GURL& url,
       beacon_host_(beacon_host),
       url_(url),
       method_(method),
-      timeout_(timeout) {}
+      timeout_(timeout) {
+  DCHECK(beacon_host_);
+}
 
 Beacon::~Beacon() = default;
 
-void Beacon::SetData(const std::string& data) {
-  beacon_data_ = data;
+void Beacon::SetRequestData(
+    scoped_refptr<network::ResourceRequestBody> request_body,
+    const std::string& content_type) {
+  if (method_ != blink::mojom::BeaconMethod::kPost) {
+    mojo::ReportBadMessage("Unexpected BeaconMethod from renderer");
+    return;
+  }
+  if (!content_type.empty() &&
+      !network::cors::IsCorsSafelistedContentType(content_type)) {
+    mojo::ReportBadMessage("Unexpected Content-Type from renderer");
+    return;
+  }
+
+  content_type_ = content_type;
+
+  // Move all DataElement into `request_elements_`.
+  if (!request_body->elements_mutable()) {
+    return;
+  }
+  request_elements_ = std::move(*request_body->elements_mutable());
 }
 
 void Beacon::SendNow() {
   beacon_host_->SendBeacon(this);
 }
 
-const GURL Beacon::GenerateRequestURL() const {
+const std::unique_ptr<network::ResourceRequest>
+Beacon::GenerateResourceRequest() const {
+  auto request = std::make_unique<network::ResourceRequest>();
   if (method_ == blink::mojom::BeaconMethod::kGet) {
-    return net::AppendQueryParameter(url_, "data", beacon_data_);
+    request->method = net::HttpRequestHeaders::kGetMethod;
+    request->url = url_;
+  } else {
+    request->method = net::HttpRequestHeaders::kPostMethod;
+    request->url = url_;
+    request->keepalive = true;
+    if (!content_type_.empty()) {
+      request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                 content_type_);
+    }
   }
-  return url_;
-}
+  return request;
+};
 
 }  // namespace content

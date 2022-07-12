@@ -11,8 +11,12 @@ def main(request, response):
         response.status = 400
         return 'Must provide a UUID to store beacon data'
     uuid = request.GET.first(b'uuid')
-    # We want raw text input for 'data' from url instead of byte-encoded one.
-    data = re.search(r'data=(.+)$', request.url_parts.query).groups()[0]
+    if b'multipart/form-data' in request.headers.get(b'Content-Type', b''):
+        data = request.POST.first(b'payload')
+    elif request.body:
+        data = request.body
+    else:
+        data = '<NO-DATA>'
 
     with request.server.stash.lock:
         request.server.stash.put(key=uuid, value=data, path='beacondata')
