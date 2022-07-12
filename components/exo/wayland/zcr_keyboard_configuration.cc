@@ -74,6 +74,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
         is_physical
             ? ZCR_KEYBOARD_DEVICE_CONFIGURATION_V1_KEYBOARD_TYPE_PHYSICAL
             : ZCR_KEYBOARD_DEVICE_CONFIGURATION_V1_KEYBOARD_TYPE_VIRTUAL);
+    wl_client_flush(client());
   }
 
   // Overridden from ImeControllerImpl::Observer:
@@ -82,6 +83,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {
     zcr_keyboard_device_configuration_v1_send_layout_change(
         resource_, layout_name.c_str());
+    wl_client_flush(client());
   }
 
   // Overridden from ui::InputDeviceEventObserver:
@@ -127,7 +129,10 @@ class WaylandKeyboardDeviceConfigurationDelegate
     zcr_keyboard_device_configuration_v1_send_supported_key_bits(resource_,
                                                                  &wl_key_bits);
     wl_array_release(&wl_key_bits);
+    wl_client_flush(client());
   }
+
+  wl_client* client() const { return wl_resource_get_client(resource_); }
 
   wl_resource* resource_;
   Keyboard* keyboard_;
