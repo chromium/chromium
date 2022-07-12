@@ -30,6 +30,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/gtest_util.h"
+#include "net/test/revocation_builder.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
@@ -63,6 +64,31 @@ std::unique_ptr<test_server::HttpResponse> FailRequestAndFailTest(
   return response;
 }
 
+std::unique_ptr<test_server::HttpResponse> ServeResponse(
+    HttpStatusCode status_code,
+    const std::string& content_type,
+    const std::string& content,
+    const test_server::HttpRequest& request) {
+  auto http_response = std::make_unique<test_server::BasicHttpResponse>();
+
+  http_response->set_code(status_code);
+  http_response->set_content_type(content_type);
+  http_response->set_content(content);
+  return http_response;
+}
+
+std::string MakeRandomHexString(size_t num_bytes) {
+  std::vector<char> rand_bytes;
+  rand_bytes.resize(num_bytes);
+
+  base::RandBytes(rand_bytes.data(), rand_bytes.size());
+  return base::HexEncode(rand_bytes.data(), rand_bytes.size());
+}
+
+static std::string MakeRandomPath(base::StringPiece suffix) {
+  return "/" + MakeRandomHexString(12) + std::string(suffix);
+}
+
 int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
                          scoped_refptr<X509Certificate> cert,
                          const std::string& hostname,
@@ -91,10 +117,14 @@ class MockSystemTrustStore : public SystemTrustStore {
   bool UsesSystemTrustStore() const override { return false; }
 
   bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
-    return false;
+    return mock_is_known_root_;
   }
 
   void AddTrustStore(TrustStore* store) { trust_store_.AddTrustStore(store); }
+
+  void SetMockIsKnownRoot(bool is_known_root) {
+    mock_is_known_root_ = is_known_root;
+  }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   int64_t chrome_root_store_version() override { return 0; }
@@ -102,6 +132,7 @@ class MockSystemTrustStore : public SystemTrustStore {
 
  private:
   TrustStoreCollection trust_store_;
+  bool mock_is_known_root_ = false;
 };
 
 class BlockingTrustStore : public TrustStore {
@@ -164,6 +195,18 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   void CreateChain(std::unique_ptr<CertBuilder>* out_leaf,
+                   std::unique_ptr<CertBuilder>* out_root) {
+    CertBuilder::CreateSimpleChain(out_leaf, out_root);
+    ASSERT_TRUE(*out_leaf && *out_root);
+    // This test uses MOCK_TIME, so need to set the cert validity dates based
+    // on whatever the mock time happens to start at.
+    base::Time not_before = base::Time::Now() - base::Days(1);
+    base::Time not_after = base::Time::Now() + base::Days(10);
+    (*out_leaf)->SetValidity(not_before, not_after);
+    (*out_root)->SetValidity(not_before, not_after);
+  }
+
+  void CreateChain(std::unique_ptr<CertBuilder>* out_leaf,
                    std::unique_ptr<CertBuilder>* out_intermediate,
                    std::unique_ptr<CertBuilder>* out_root) {
     CertBuilder::CreateSimpleChain(out_leaf, out_intermediate, out_root);
@@ -177,8 +220,29 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     (*out_root)->SetValidity(not_before, not_after);
   }
 
+  // Creates a CRL issued and signed by |crl_issuer|, marking |revoked_serials|
+  // as revoked, and registers it to be served by the test server.
+  // Returns the full URL to retrieve the CRL from the test server.
+  GURL CreateAndServeCrl(EmbeddedTestServer* test_server,
+                         CertBuilder* crl_issuer,
+                         const std::vector<uint64_t>& revoked_serials,
+                         DigestAlgorithm digest = DigestAlgorithm::Sha256) {
+    std::string crl = BuildCrl(crl_issuer->GetSubject(), crl_issuer->GetKey(),
+                               revoked_serials, digest);
+    std::string crl_path = MakeRandomPath(".crl");
+    test_server->RegisterRequestHandler(
+        base::BindRepeating(&test_server::HandlePrefixedRequest, crl_path,
+                            base::BindRepeating(ServeResponse, HTTP_OK,
+                                                "application/pkix-crl", crl)));
+    return test_server->GetURL(crl_path);
+  }
+
   void AddTrustStore(TrustStore* store) {
     mock_system_trust_store_->AddTrustStore(store);
+  }
+
+  void SetMockIsKnownRoot(bool is_known_root) {
+    mock_system_trust_store_->SetMockIsKnownRoot(is_known_root);
   }
 
  private:
@@ -211,6 +275,56 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
 
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());
+}
+
+TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
+  std::unique_ptr<CertBuilder> leaf, root;
+  CreateChain(&leaf, &root);
+  ASSERT_TRUE(leaf && root);
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(test_server.InitializeAndListen());
+
+  // CRL that marks leaf as revoked.
+  leaf->SetCrlDistributionPointUrl(
+      CreateAndServeCrl(&test_server, root.get(), {leaf->GetSerialNumber()}));
+
+  test_server.StartAcceptingConnections();
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  NetLogSource verify_net_log_source;
+
+  {
+    CertVerifyResult verify_result;
+    TestCompletionCallback verify_callback;
+    Verify(chain.get(), "www.example.com",
+           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
+           /*additional_trust_anchors=*/{root->GetX509Certificate()},
+           &verify_result, &verify_net_log_source, verify_callback.callback());
+
+    int error = verify_callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+  }
+
+  {
+    // Pretend the root is a known root.
+    SetMockIsKnownRoot(true);
+    CertVerifyResult verify_result;
+    TestCompletionCallback verify_callback;
+    Verify(chain.get(), "www.example.com",
+           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
+           /*additional_trust_anchors=*/{root->GetX509Certificate()},
+           &verify_result, &verify_net_log_source, verify_callback.callback());
+
+    int error = verify_callback.WaitForResult();
+    // CRLs are not checked for chains issued by known roots, so verification
+    // should be successful.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+  }
 }
 
 // Tests that if the verification deadline is exceeded during revocation

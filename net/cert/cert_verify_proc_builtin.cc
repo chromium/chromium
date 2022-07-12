@@ -124,6 +124,7 @@ RevocationPolicy NoRevocationChecking() {
   RevocationPolicy policy;
   policy.check_revocation = false;
   policy.networking_allowed = false;
+  policy.crl_allowed = false;
   policy.allow_missing_info = true;
   policy.allow_unable_to_check = true;
   return policy;
@@ -329,6 +330,7 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       RevocationPolicy policy;
       policy.check_revocation = true;
       policy.networking_allowed = true;
+      policy.crl_allowed = true;
       policy.allow_missing_info = false;
       policy.allow_unable_to_check = false;
       return policy;
@@ -342,6 +344,9 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       RevocationPolicy policy;
       policy.check_revocation = true;
       policy.networking_allowed = true;
+      // EV is only enabled for certain publicly trusted roots, so it is not
+      // necessary to check IsKnownRoot here, |crl_allowed| is always false.
+      policy.crl_allowed = false;
       policy.allow_missing_info = false;
       policy.allow_unable_to_check = false;
       return policy;
@@ -352,6 +357,11 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
       RevocationPolicy policy;
       policy.check_revocation = true;
       policy.networking_allowed = true;
+      // Publicly trusted certs are required to have OCSP by the Baseline
+      // Requirements and CRLs can be quite large, so disable the fallback to
+      // CRLs for chains to known roots.
+      policy.crl_allowed =
+          !certs.empty() && !trust_store_->IsKnownRoot(certs.back().get());
       policy.allow_missing_info = true;
       policy.allow_unable_to_check = true;
       return policy;

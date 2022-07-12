@@ -154,7 +154,8 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
 
   // Check CRLs.
   ParsedExtension crl_dp_extension;
-  if (cert->GetExtension(der::Input(kCrlDistributionPointsOid),
+  if (policy.crl_allowed &&
+      cert->GetExtension(der::Input(kCrlDistributionPointsOid),
                          &crl_dp_extension)) {
     std::vector<ParsedDistributionPoint> distribution_points;
     if (ParseCrlDistributionPoints(crl_dp_extension.value,

@@ -73,6 +73,10 @@ struct NET_EXPORT_PRIVATE RevocationPolicy {
   // networking is not permitted in the course of revocation checking.
   bool networking_allowed : 1;
 
+  // If |crl_allowed| is true then CRLs will be checked as a fallback when an
+  // OCSP URL is not present or OCSP results are indeterminate.
+  bool crl_allowed : 1;
+
   // If set to true, considers certificates lacking URLs for OCSP/CRL to be
   // unrevoked. Otherwise will fail for certificates lacking revocation
   // mechanisms.
