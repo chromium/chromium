@@ -1090,12 +1090,9 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateShouldBeSignInForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
-  //
-  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
-  // relying_party argument of HasSharingPermission but web contents has not
-  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+              HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                   url::Origin::Create(GURL(kIdpTestOrigin)),
                                    kAccountId))
       .WillOnce(Return(true));
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -1107,12 +1104,10 @@ TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateSuccessfulSignUpGrantsSharingPermission) {
   EXPECT_CALL(*mock_sharing_permission_delegate_, HasSharingPermission(_, _, _))
       .WillOnce(Return(false));
-  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
-  // relying_party argument of HasSharingPermission but web contents has not
-  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              GrantSharingPermission(
-                  _, url::Origin::Create(GURL(kIdpTestOrigin)), kAccountId))
+              GrantSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                     url::Origin::Create(GURL(kIdpTestOrigin)),
+                                     kAccountId))
       .Times(1);
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
@@ -1144,12 +1139,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
   AccountList displayed_accounts;
 
   // Pretend the sharing permission has been granted for this account.
-  //
-  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
-  // relying_party argument of HasSharingPermission but web contents has not
-  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+              HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                   url::Origin::Create(GURL(kIdpTestOrigin)),
                                    kAccountId))
       .WillOnce(Return(true));
 
@@ -1221,12 +1213,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
   AccountList displayed_accounts;
 
   // Pretend the sharing permission has been granted for this account.
-  //
-  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
-  // relying_party argument of HasSharingPermission but web contents has not
-  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+              HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                   url::Origin::Create(GURL(kIdpTestOrigin)),
                                    kAccountId))
       .WillOnce(Return(true));
 
@@ -1667,12 +1656,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
 TEST_F(BasicFederatedAuthRequestImplTest,
        DisclosureTextNotShownForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
-  //
-  // TODO(crbug.com/1334361): Ideally we would use the kRpTestOrigin for the
-  // relying_party argument of HasSharingPermission but web contents has not
-  // navigated to that URL so origin() is null in tests.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
-              HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
+              HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
+                                   url::Origin::Create(GURL(kIdpTestOrigin)),
                                    kAccountId))
       .WillOnce(Return(true));
 
