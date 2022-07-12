@@ -437,7 +437,13 @@ void BrowserAccessibilityManager::EnsureParentConnectionIfNotRootManager() {
   } else if (connected_to_parent_tree_node_) {
     // This manager was previously connected to a parent manager but now became
     // the new root manager.
-    CHECK(IsRootTree());
+    SANITIZER_CHECK(IsRootTree())
+        << "Disconnected from parent manager, root url =: "
+        << delegate_->AccessibilityRenderFrameHost()
+               ->GetParentOrOuterDocumentOrEmbedder()
+               ->GetLastCommittedURL()
+        << "\ncurrent url = "
+        << delegate_->AccessibilityRenderFrameHost()->GetLastCommittedURL();
     connected_to_parent_tree_node_ = false;
   }
 }
