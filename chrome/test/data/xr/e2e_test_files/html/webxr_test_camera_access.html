@@ -25,11 +25,16 @@ Tests that AR camera access returns non-empty GLTexture.
       let ranAtLeastOnce = false;
       let pixels = null;
 
+      // Override canvas and context from webxr_boilerplate.js, we want to play
+      // with WebGL2 here (at least one test case requires it).
+      webglCanvas = document.getElementById('webgl-canvas');
+      webglCanvas.addEventListener('webglcontextcreationerror', function(e) {
+        console.log(e.statusMessage || 'Unknown error');
+      }, false);
+      gl = webglCanvas.getContext('webgl2', {xrCompatible: true});
+      assert_not_equals(gl, null, "We need a WebGL2 context!")
+
       function stepStartStoringCameraTexture(numCalls) {
-        const webglCanvas = document.getElementById('webgl-canvas');
-        const gl = webglCanvas.getContext('webgl', {
-                xrCompatible: true
-            });
         const sessionInfo = sessionInfos[sessionTypes.AR];
         const referenceSpace = sessionInfo.currentRefSpace;
         const glBinding = new XRWebGLBinding(sessionInfo.currentSession, gl);
@@ -66,10 +71,6 @@ Tests that AR camera access returns non-empty GLTexture.
       }
 
       function stepStartStoreAndDeleteCameraTexture() {
-        const webglCanvas = document.getElementById('webgl-canvas');
-        const gl = webglCanvas.getContext('webgl', {
-                xrCompatible: true
-            });
         const sessionInfo = sessionInfos[sessionTypes.AR];
         const referenceSpace = sessionInfo.currentRefSpace;
         const glBinding = new XRWebGLBinding(sessionInfo.currentSession, gl);
@@ -85,6 +86,8 @@ Tests that AR camera access returns non-empty GLTexture.
                 ranAtLeastOnce = true;
                 cameraImageTexture = glBinding.getCameraImage(view.camera);
                 gl.deleteTexture(cameraImageTexture);
+                const error = gl.getError();
+                assert_equals(error, gl.INVALID_OPERATION);
               }
             }
           }
@@ -98,10 +101,6 @@ Tests that AR camera access returns non-empty GLTexture.
       }
 
       function stepConfirmCameraTextureIsNotNull() {
-        const webglCanvas = document.getElementById('webgl-canvas');
-        const gl = webglCanvas.getContext('webgl', {
-                xrCompatible: true
-            });
         const sessionInfo = sessionInfos[sessionTypes.AR];
         const referenceSpace = sessionInfo.currentRefSpace;
         const glBinding = new XRWebGLBinding(sessionInfo.currentSession, gl);
@@ -140,10 +139,6 @@ Tests that AR camera access returns non-empty GLTexture.
       }
 
       function stepCheckCameraTextureLifetimeLimitedToOneFrame() {
-        const webglCanvas = document.getElementById('webgl-canvas');
-        const gl = webglCanvas.getContext('webgl', {
-          xrCompatible: true
-        });
         const sessionInfo = sessionInfos[sessionTypes.AR];
         const referenceSpace = sessionInfo.currentRefSpace;
         const glBinding = new XRWebGLBinding(sessionInfo.currentSession, gl);
@@ -151,7 +146,6 @@ Tests that AR camera access returns non-empty GLTexture.
         const fb = gl.createFramebuffer();
         const attachmentPoint = gl.COLOR_ATTACHMENT0;
         const level = 0;
-
 
         // Assign pixels array non-zero values.
         pixels = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4);
@@ -172,7 +166,7 @@ Tests that AR camera access returns non-empty GLTexture.
              && numPosesFound < MAX_NUM_FRAMES_WITH_POSES) {
 
               const view = pose.views.find(v => v.camera != null);
-              if (view == undefined) return;
+              if (!view) return;
 
               cameraImageTexture = glBinding.getCameraImage(view.camera);
 
@@ -236,6 +230,83 @@ Tests that AR camera access returns non-empty GLTexture.
         }
 
         return false;
+      }
+
+      function stepCheckOpaqueTextures() {
+        const ext = gl.getExtension('WEBGL_compressed_texture_etc');
+
+        const sessionInfo = sessionInfos[sessionTypes.AR];
+        const referenceSpace = sessionInfo.currentRefSpace;
+        const glBinding = new XRWebGLBinding(sessionInfo.currentSession, gl);
+
+        const assert_invalid_operation = (cb, message) => {
+          cb();
+          const error = gl.getError();
+          assert_equals(error, gl.INVALID_OPERATION, message);
+        }
+
+        onARFrameCallback = (session, frame) => {
+          const pose = frame.getViewerPose(referenceSpace);
+          if (pose) {
+            numPosesFound++;
+
+            gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            for (let view of pose.views) {
+              if (view.camera) {
+                ranAtLeastOnce = true;
+                cameraImageTexture = glBinding.getCameraImage(view.camera);
+                assert_not_equals(cameraImageTexture, null, "Camera texture must be present");
+
+                // gl.deleteTexture():
+                assert_invalid_operation(
+                  () => gl.deleteTexture(cameraImageTexture),
+                  "deleteTexture()");
+
+                // gl.texImage2D():
+                assert_invalid_operation(
+                  () => {
+                    gl.bindTexture(gl.TEXTURE_2D, cameraImageTexture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, view.camera.width,
+                                  view.camera.height, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                                  (new Uint32Array(view.camera.width * view.camera.height)).fill(0));
+                  }, "texImage2D()");
+
+                // gl.compressedTexImage2D():
+                assert_invalid_operation(
+                  () => {
+                    gl.bindTexture(gl.TEXTURE_2D, cameraImageTexture);
+                    gl.compressedTexImage2D(gl.TEXTURE_2D, 0, ext.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
+                                            view.camera.width, view.camera.height, 0,
+                                            (new Uint32Array(view.camera.width * view.camera.height)).fill(0));
+                  }, "compressedTexImage2D()");
+
+                // gl.copyTexImage2D():
+                assert_invalid_operation(
+                  () => {
+                    gl.bindTexture(gl.TEXTURE_2D, cameraImageTexture);
+                    gl.copyTexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 0, 0,
+                                      view.camera.width, view.camera.height, 0);
+                  }, "copyTexImage2D()");
+
+                // gl.texStorage2D():
+                assert_invalid_operation(
+                  () => {
+                    gl.bindTexture(gl.TEXTURE_2D, cameraImageTexture);
+                    gl.texStorage2D(gl.TEXTURE_2D, 0, gl.RGBA, view.camera.width, view.camera.height);
+                  }, "texStorage2D()");
+              }
+            }
+          }
+
+          if (numPosesFound > MIN_NUM_FRAMES_WITH_POSES) {
+            onARFrameCallback = null;
+            assert_true(ranAtLeastOnce);
+            done();
+          }
+        };
       }
     </script>
   </body>

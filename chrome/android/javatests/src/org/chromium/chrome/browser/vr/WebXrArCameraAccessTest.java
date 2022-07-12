@@ -140,4 +140,24 @@ public class WebXrArCameraAccessTest {
         mWebXrArTestFramework.waitOnJavaScriptStep();
         mWebXrArTestFramework.endTest();
     }
+
+    /**
+     * Test whether opaque texture enforcements work fine.
+     */
+    @Test
+    @MediumTest
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+            "enable-features=WebXRIncubations,LogJsConsoleMessages"})
+    @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
+    public void
+    testOpaqueTextures() {
+        mWebXrArTestFramework.loadFileAndAwaitInitialization(
+                "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
+        mWebXrArTestFramework.runJavaScriptOrFail(
+                "stepCheckOpaqueTextures()", POLL_TIMEOUT_SHORT_MS);
+        mWebXrArTestFramework.waitOnJavaScriptStep();
+        mWebXrArTestFramework.endTest();
+    }
 }
