@@ -1660,6 +1660,10 @@ TEST(MTECheckedPtrImpl, AdvancedPointerShiftedAppropriately) {
   uint64_t* unwrapped_ptr = new uint64_t[6];
   CountingRawPtr<uint64_t> ptr = unwrapped_ptr;
 
+  // This is a non-fixture test, so we need to unset all
+  // counters manually.
+  RawPtrCountingImpl::ClearCounters();
+
   // This is unwrapped, but still useful for ensuring that the
   // shift is sized in `uint64_t`s.
   auto original_addr = reinterpret_cast<uintptr_t>(ptr.get());
