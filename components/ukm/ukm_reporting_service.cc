@@ -135,6 +135,8 @@ void UkmReportingService::LogSuccessLogSize(size_t log_size) {
 
 void UkmReportingService::LogSuccessMetadata(const std::string& staged_log) {
   // Recover the report from the compressed staged log.
+  // Note: We don't use metrics::DecodeLogDataToProto() since we to use
+  // |uncompressed_log_data| later in the function.
   std::string uncompressed_log_data;
   bool uncompress_successful =
       compression::GzipUncompress(staged_log, &uncompressed_log_data);

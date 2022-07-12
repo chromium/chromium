@@ -45,7 +45,6 @@
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
-#include "third_party/zlib/google/compression_utils.h"
 
 namespace ukm {
 
@@ -336,11 +335,9 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   unsent_log_store->StageNextLog();
   const std::string& compressed_log_data = unsent_log_store->staged_log();
 
-  std::string uncompressed_log_data;
-  // TODO(crbug/1086910): Use the utilities in log_decoder.h instead.
-  compression::GzipUncompress(compressed_log_data, &uncompressed_log_data);
   Report filtered_report;
-  filtered_report.ParseFromString(uncompressed_log_data);
+  ASSERT_TRUE(
+      metrics::DecodeLogDataToProto(compressed_log_data, &filtered_report));
 
   // Only proto_source_1 with non-extension URL is kept.
   EXPECT_EQ(1, filtered_report.sources_size());
@@ -421,11 +418,9 @@ TEST_F(UkmServiceTest, PurgeAppDataFromUnsentLogStore) {
   unsent_log_store->StageNextLog();
   const std::string& compressed_log_data = unsent_log_store->staged_log();
 
-  std::string uncompressed_log_data;
-  // TODO(crbug/1086910): Use the utilities in log_decoder.h instead.
-  compression::GzipUncompress(compressed_log_data, &uncompressed_log_data);
   Report filtered_report;
-  filtered_report.ParseFromString(uncompressed_log_data);
+  ASSERT_TRUE(
+      metrics::DecodeLogDataToProto(compressed_log_data, &filtered_report));
 
   // Only proto_source_1 with non-app URL is kept.
   EXPECT_EQ(1, filtered_report.sources_size());
