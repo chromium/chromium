@@ -7,7 +7,4 @@ specific_include_rules = {
   ".*_unittest\.cc": [
     "+content/services/auction_worklet",
   ],
-  "ad_auction_result_metrics.cc": [
-    "+components/crash/core/common/crash_key.h",
-  ],
 }

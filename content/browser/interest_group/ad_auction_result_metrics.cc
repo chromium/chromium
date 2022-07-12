@@ -5,12 +5,10 @@
 #include "content/browser/interest_group/ad_auction_result_metrics.h"
 
 #include "base/check_op.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/time/time.h"
-#include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
@@ -23,11 +21,6 @@ AdAuctionResultMetrics::AdAuctionResultMetrics(content::Page& page)
     : PageUserData<AdAuctionResultMetrics>(page) {}
 
 AdAuctionResultMetrics::~AdAuctionResultMetrics() {
-  static crash_reporter::CrashKeyString<1024> trace_key(
-      "ad-auction-result-metrics-dtor-trace");
-  crash_reporter::SetCrashKeyStringToStackTrace(&trace_key,
-                                                base::debug::StackTrace());
-
   if (num_completed_auctions_ <= 0)
     return;
   // Check that every non-skipped auction should complete (but skip the check if
