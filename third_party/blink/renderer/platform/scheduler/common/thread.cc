@@ -104,7 +104,8 @@ void Thread::CreateAndSetCompositorThread() {
         // Chrome OS moves tasks between control groups on thread priority
         // changes. This is not possible inside the sandbox, so ask the
         // browser to do it.
-        Platform::Current()->SetCompositingThreadType(compositor_thread_id);
+        Platform::Current()->SetThreadType(compositor_thread_id,
+                                           base::ThreadType::kCompositing);
       }));
 #endif
 

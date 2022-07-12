@@ -128,12 +128,6 @@ TestingPlatformSupport::GetBrowserInterfaceBroker() {
   return interface_broker_.get();
 }
 
-cc::TaskGraphRunner* TestingPlatformSupport::GetTaskGraphRunner() {
-  // We want to ensure that if the underlying platform has a TaskGraphRunner
-  // that we continue to return its instance.
-  return old_platform_ ? old_platform_->GetTaskGraphRunner() : nullptr;
-}
-
 void TestingPlatformSupport::RunUntilIdle() {
   base::RunLoop().RunUntilIdle();
 }

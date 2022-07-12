@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_CATEGORIZED_WORKER_POOL_H_
-#define CONTENT_RENDERER_CATEGORIZED_WORKER_POOL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_CATEGORIZED_WORKER_POOL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_CATEGORIZED_WORKER_POOL_H_
 
 #include <memory>
 
@@ -16,13 +16,9 @@
 #include "cc/raster/task_category.h"
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/task_graph_work_queue.h"
-#include "content/common/content_export.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
-
-namespace content {
+namespace blink {
 
 // A pool of threads used to run categorized work. The work can be scheduled on
 // the threads using different interfaces.
@@ -32,10 +28,14 @@ namespace content {
 //    schedule a graph of tasks with their dependencies.
 // 3. CreateSequencedTaskRunner() creates a sequenced task runner that might run
 //    in parallel with other instances of sequenced task runners.
-class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
-                                             public cc::TaskGraphRunner {
+class PLATFORM_EXPORT CategorizedWorkerPool : public base::TaskRunner,
+                                              public cc::TaskGraphRunner {
  public:
   CategorizedWorkerPool();
+  ~CategorizedWorkerPool() override;
+
+  // Get or create the singleton worker pool.
+  static CategorizedWorkerPool* GetOrCreate();
 
   // Overridden from base::TaskRunner:
   bool PostDelayedTask(const base::Location& from_here,
@@ -70,15 +70,6 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
 
   // Create a new sequenced task graph runner.
   scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunner();
-
-  // Runs the callback on the specified task-runner once the background worker
-  // thread is initialized.
-  void SetBackgroundingCallback(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::OnceCallback<void(base::PlatformThreadId)> callback);
-
- protected:
-  ~CategorizedWorkerPool() override;
 
  private:
   class CategorizedWorkerPoolSequencedTaskRunner;
@@ -156,11 +147,8 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
   base::ConditionVariable has_namespaces_with_finished_running_tasks_cv_;
   // Set during shutdown. Tells Run() to return when no more tasks are pending.
   bool shutdown_ GUARDED_BY(lock_);
-
-  base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
-  scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_CATEGORIZED_WORKER_POOL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_CATEGORIZED_WORKER_POOL_H_

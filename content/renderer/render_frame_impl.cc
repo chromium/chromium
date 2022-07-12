@@ -3199,11 +3199,13 @@ blink::WebMediaPlayer* RenderFrameImpl::CreateMediaPlayer(
     WebMediaPlayerEncryptedMediaClient* encrypted_client,
     WebContentDecryptionModule* initial_cdm,
     const blink::WebString& sink_id,
-    const cc::LayerTreeSettings& settings) {
+    const cc::LayerTreeSettings& settings,
+    scoped_refptr<base::TaskRunner> compositor_worker_task_runner) {
   return media_factory_.CreateMediaPlayer(
       source, client, inspector_context, encrypted_client, initial_cdm, sink_id,
       GetLocalRootWebFrameWidget()->GetFrameSinkId(), settings,
-      agent_scheduling_group_.agent_group_scheduler().CompositorTaskRunner());
+      agent_scheduling_group_.agent_group_scheduler().CompositorTaskRunner(),
+      std::move(compositor_worker_task_runner));
 }
 
 std::unique_ptr<blink::WebContentSettingsClient>

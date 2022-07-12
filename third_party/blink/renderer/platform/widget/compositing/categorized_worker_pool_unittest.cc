@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/categorized_worker_pool.h"
+#include "third_party/blink/renderer/platform/widget/compositing/categorized_worker_pool.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/sequenced_task_runner_test_template.h"
+#include "base/test/task_environment.h"
 #include "base/test/task_runner_test_template.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "cc/test/task_graph_runner_test_template.h"
+#include "third_party/blink/public/platform/platform.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 // Number of threads spawned in tests.
@@ -32,6 +34,7 @@ class CategorizedWorkerPoolTestDelegate {
   ~CategorizedWorkerPoolTestDelegate() { categorized_worker_pool_->Shutdown(); }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_ =
       base::MakeRefCounted<CategorizedWorkerPool>();
 };
@@ -53,6 +56,7 @@ class CategorizedWorkerPoolSequencedTestDelegate {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_ =
       base::MakeRefCounted<CategorizedWorkerPool>();
 };
@@ -75,21 +79,26 @@ class CategorizedWorkerPoolTaskGraphRunnerTestDelegate {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_ =
       base::MakeRefCounted<CategorizedWorkerPool>();
 };
 
 class CategorizedWorkerPoolTest : public testing::Test {
  protected:
-  CategorizedWorkerPoolTest() { categorized_worker_pool_->Start(kNumThreads); }
+  CategorizedWorkerPoolTest() = default;
+  ~CategorizedWorkerPoolTest() override = default;
 
-  ~CategorizedWorkerPoolTest() override {
+  void SetUp() override { categorized_worker_pool_->Start(kNumThreads); }
+
+  void TearDown() override {
     cc::Task::Vector completed_tasks;
     categorized_worker_pool_->CollectCompletedTasks(namespace_token_,
                                                     &completed_tasks);
     categorized_worker_pool_->Shutdown();
   }
 
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_ =
       base::MakeRefCounted<CategorizedWorkerPool>();
   const cc::NamespaceToken namespace_token_ =
@@ -165,7 +174,7 @@ TEST_F(CategorizedWorkerPoolTest,
   categorized_worker_pool_->WaitForTasksToFinishRunning(namespace_token_);
 }
 
-}  // namespace content
+}  // namespace blink
 
 // Test suite instantiation needs to be in the same namespace as test suite
 // definition.
@@ -174,12 +183,12 @@ namespace base {
 
 INSTANTIATE_TYPED_TEST_SUITE_P(CategorizedWorkerPool,
                                TaskRunnerTest,
-                               content::CategorizedWorkerPoolTestDelegate);
+                               blink::CategorizedWorkerPoolTestDelegate);
 
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPool,
     SequencedTaskRunnerTest,
-    content::CategorizedWorkerPoolSequencedTestDelegate);
+    blink::CategorizedWorkerPoolSequencedTestDelegate);
 
 }  // namespace base
 
@@ -189,28 +198,28 @@ namespace cc {
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPool_1_Threads,
     TaskGraphRunnerTest,
-    content::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<1>);
+    blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<1>);
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPool_2_Threads,
     TaskGraphRunnerTest,
-    content::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<2>);
+    blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<2>);
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPool_3_Threads,
     TaskGraphRunnerTest,
-    content::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<3>);
+    blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<3>);
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPool_4_Threads,
     TaskGraphRunnerTest,
-    content::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<4>);
+    blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<4>);
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPool_5_Threads,
     TaskGraphRunnerTest,
-    content::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<5>);
+    blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<5>);
 
 // Single threaded tests.
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPool,
     SingleThreadTaskGraphRunnerTest,
-    content::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<1>);
+    blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<1>);
 
 }  // namespace cc

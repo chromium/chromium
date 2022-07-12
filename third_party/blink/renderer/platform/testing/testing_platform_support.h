@@ -69,7 +69,6 @@ class TestingPlatformSupport : public Platform {
   std::string GetDataResourceString(int resource_id) override;
   ThreadSafeBrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
   bool IsThreadedAnimationEnabled() override;
-  cc::TaskGraphRunner* GetTaskGraphRunner() override;
 
   virtual void RunUntilIdle();
   void SetThreadedAnimationEnabled(bool enabled);

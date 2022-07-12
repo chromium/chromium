@@ -3107,7 +3107,7 @@ StoragePartitionImpl* RenderProcessHostImpl::GetStoragePartition() {
 
 static void AppendCompositorCommandLineFlags(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(
-      switches::kNumRasterThreads,
+      blink::switches::kNumRasterThreads,
       base::NumberToString(NumberOfRendererRasterThreads()));
 
   int msaa_sample_count = GpuRasterizationMSAASampleCount();

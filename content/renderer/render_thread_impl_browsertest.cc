@@ -48,6 +48,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/test/web_mock_thread_scheduler.h"
@@ -178,7 +179,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
 
     cmd->AppendSwitchASCII(switches::kLang, "en-US");
 
-    cmd->AppendSwitchASCII(switches::kNumRasterThreads, "1");
+    cmd->AppendSwitchASCII(blink::switches::kNumRasterThreads, "1");
 
     // To avoid creating a GPU channel to query if
     // accelerated_video_decode is blocklisted on older Android system

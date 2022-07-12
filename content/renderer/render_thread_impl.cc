@@ -79,7 +79,6 @@
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/browser_exposed_renderer_interfaces.h"
-#include "content/renderer/categorized_worker_pool.h"
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/media/gpu/gpu_video_accelerator_factories_impl.h"
 #include "content/renderer/media/media_factory.h"
@@ -496,7 +495,6 @@ RenderThreadImpl::RenderThreadImpl(
               .ExposesInterfacesToBrowser()
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
-      categorized_worker_pool_(new CategorizedWorkerPool()),
       client_id_(client_id) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
   Init();
@@ -526,7 +524,6 @@ RenderThreadImpl::RenderThreadImpl(
               .ExposesInterfacesToBrowser()
               .Build()),
       main_thread_scheduler_(std::move(scheduler)),
-      categorized_worker_pool_(new CategorizedWorkerPool()),
       client_id_(GetClientIdFromCommandLine()) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
   Init();
@@ -659,29 +656,6 @@ void RenderThreadImpl::Init() {
                           base::Unretained(this)),
       base::BindRepeating(&RenderThreadImpl::OnSyncMemoryPressure,
                           base::Unretained(this)));
-
-  int num_raster_threads = 0;
-  std::string string_value =
-      command_line.GetSwitchValueASCII(switches::kNumRasterThreads);
-  bool parsed_num_raster_threads =
-      base::StringToInt(string_value, &num_raster_threads);
-  DCHECK(parsed_num_raster_threads) << string_value;
-  DCHECK_GT(num_raster_threads, 0);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  categorized_worker_pool_->SetBackgroundingCallback(
-      main_thread_scheduler_->DefaultTaskRunner(),
-      base::BindOnce(
-          [](base::WeakPtr<RenderThreadImpl> render_thread,
-             base::PlatformThreadId thread_id) {
-            if (!render_thread)
-              return;
-            render_thread->render_message_filter()->SetThreadType(
-                thread_id, base::ThreadType::kBackground);
-          },
-          weak_factory_.GetWeakPtr()));
-#endif
-  categorized_worker_pool_->Start(num_raster_threads);
 
   discardable_memory_allocator_ = CreateDiscardableMemoryAllocator();
 
@@ -1291,10 +1265,6 @@ RenderThreadImpl::GetWebMainThreadScheduler() {
   return main_thread_scheduler_.get();
 }
 
-cc::TaskGraphRunner* RenderThreadImpl::GetTaskGraphRunner() {
-  return categorized_worker_pool_->GetTaskGraphRunner();
-}
-
 bool RenderThreadImpl::IsThreadedAnimationEnabled() {
   return is_threaded_animation_enabled_;
 }
@@ -1613,10 +1583,6 @@ RenderThreadImpl::GetMediaThreadTaskRunner() {
     media_thread_->StartWithOptions(std::move(options));
   }
   return media_thread_->task_runner();
-}
-
-base::TaskRunner* RenderThreadImpl::GetWorkerTaskRunner() {
-  return categorized_worker_pool_.get();
 }
 
 scoped_refptr<viz::RasterContextProvider>

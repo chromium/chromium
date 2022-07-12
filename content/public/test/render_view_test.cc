@@ -230,13 +230,6 @@ class RendererBlinkPlatformImplTestOverrideImpl
   // Get rid of the dependency to the sandbox, which is not available in
   // RenderViewTest.
   blink::WebSandboxSupport* GetSandboxSupport() override { return nullptr; }
-
-  cc::TaskGraphRunner* GetTaskGraphRunner() override {
-    return &task_graph_runner_;
-  }
-
- private:
-  cc::TestTaskGraphRunner task_graph_runner_;
 };
 
 class RenderFrameWasShownWaiter : public RenderFrameObserver {

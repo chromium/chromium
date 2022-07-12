@@ -373,7 +373,8 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     viz::FrameSinkId parent_frame_sink_id,
     const cc::LayerTreeSettings& settings,
     scoped_refptr<base::SingleThreadTaskRunner>
-        main_thread_compositor_task_runner) {
+        main_thread_compositor_task_runner,
+    scoped_refptr<base::TaskRunner> compositor_worker_task_runner) {
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
   auto* delegate = GetWebMediaPlayerDelegate();
 
@@ -391,7 +392,8 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   if (source.IsMediaStream()) {
     return CreateWebMediaPlayerForMediaStream(
         client, inspector_context, sink_id, web_frame, parent_frame_sink_id,
-        settings, main_thread_compositor_task_runner);
+        settings, main_thread_compositor_task_runner,
+        std::move(compositor_worker_task_runner));
   }
 
   // If |source| was not a MediaStream, it must be a URL.
@@ -506,7 +508,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
                           base::Unretained(render_frame_),
                           delegate->has_played_media()),
       std::move(audio_renderer_sink), std::move(media_task_runner),
-      render_thread->GetWorkerTaskRunner(),
+      std::move(compositor_worker_task_runner),
       render_thread->compositor_task_runner(),
       std::move(video_frame_compositor_task_runner),
       base::BindRepeating(&v8::Isolate::AdjustAmountOfExternalAllocatedMemory,
@@ -758,7 +760,8 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
     viz::FrameSinkId parent_frame_sink_id,
     const cc::LayerTreeSettings& settings,
     scoped_refptr<base::SingleThreadTaskRunner>
-        main_thread_compositor_task_runner) {
+        main_thread_compositor_task_runner,
+    scoped_refptr<base::TaskRunner> compositor_worker_task_runner) {
   RenderThreadImpl* const render_thread = RenderThreadImpl::current();
 
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
@@ -785,8 +788,8 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
       render_thread->GetIOTaskRunner(),
       GetOrCreateVideoFrameCompositorTaskRunner(render_frame_),
       render_thread->GetMediaThreadTaskRunner(),
-      render_thread->GetWorkerTaskRunner(), render_thread->GetGpuFactories(),
-      sink_id,
+      std::move(compositor_worker_task_runner),
+      render_thread->GetGpuFactories(), sink_id,
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,
                      parent_frame_sink_id,
                      blink::WebSurfaceLayerBridge::ContainsVideo::kYes),

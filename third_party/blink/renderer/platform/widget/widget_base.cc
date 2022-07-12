@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
+#include "third_party/blink/renderer/platform/widget/compositing/categorized_worker_pool.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_settings.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view.h"
 #include "third_party/blink/renderer/platform/widget/compositing/render_frame_metadata_observer_impl.h"
@@ -196,13 +197,12 @@ void WidgetBase::InitializeCompositing(
     settings = &default_settings.value();
   }
   screen_infos_ = screen_infos;
-  Platform* platform = Platform::Current();
   layer_tree_view_->Initialize(
       *settings, main_thread_compositor_task_runner_,
       compositing_thread_scheduler
           ? compositing_thread_scheduler->CompositorTaskRunner()
           : nullptr,
-      platform->GetTaskGraphRunner());
+      CategorizedWorkerPool::GetOrCreate());
 
   FrameWidget* frame_widget = client_->FrameWidget();
 

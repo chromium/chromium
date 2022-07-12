@@ -111,7 +111,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool IsLcdTextEnabled() override;
   bool IsElasticOverscrollEnabled() override;
   bool IsScrollAnimatorEnabled() override;
-  cc::TaskGraphRunner* GetTaskGraphRunner() override;
   double AudioHardwareSampleRate() override;
   size_t AudioHardwareBufferSize() override;
   unsigned AudioHardwareOutputChannels() override;
@@ -173,7 +172,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   blink::WebString ConvertIDNToUnicode(const blink::WebString& host) override;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  void SetCompositingThreadType(base::PlatformThreadId thread_id) override;
+  void SetThreadType(base::PlatformThreadId thread_id,
+                     base::ThreadType) override;
 #endif
   blink::BlameContext* GetTopLevelBlameContext() override;
   std::unique_ptr<blink::WebDedicatedWorkerHostFactoryClient>

@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/categorized_worker_pool.h"
+#include "third_party/blink/renderer/platform/widget/compositing/categorized_worker_pool.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,8 +22,12 @@
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/raster/task_category.h"
+#include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
-namespace content {
+namespace blink {
 namespace {
 
 // Task categories running at normal thread priority.
@@ -73,6 +79,7 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
       DCHECK(background_task_runner_);
       background_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(backgrounding_callback_), tid()));
+      background_task_runner_.reset();
     }
   }
 
@@ -86,6 +93,11 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
   base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
 };
+
+scoped_refptr<CategorizedWorkerPool>& GetWorkerPool() {
+  DEFINE_STATIC_LOCAL(scoped_refptr<CategorizedWorkerPool>, worker_pool, ());
+  return worker_pool;
+}
 
 }  // namespace
 
@@ -184,6 +196,29 @@ CategorizedWorkerPool::CategorizedWorkerPool()
   has_task_for_background_priority_thread_cv_.declare_only_used_while_idle();
 }
 
+CategorizedWorkerPool* CategorizedWorkerPool::GetOrCreate() {
+  if (GetWorkerPool())
+    return GetWorkerPool().get();
+
+  scoped_refptr<CategorizedWorkerPool> categorized_worker_pool(
+      new CategorizedWorkerPool());
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  int num_raster_threads = 1;
+  if (command_line.HasSwitch(switches::kNumRasterThreads)) {
+    std::string string_value =
+        command_line.GetSwitchValueASCII(switches::kNumRasterThreads);
+    bool parsed_num_raster_threads =
+        base::StringToInt(string_value, &num_raster_threads);
+    CHECK(parsed_num_raster_threads) << string_value;
+    CHECK_GT(num_raster_threads, 0);
+  }
+
+  categorized_worker_pool->Start(num_raster_threads);
+  GetWorkerPool() = std::move(categorized_worker_pool);
+  return GetWorkerPool().get();
+}
+
 void CategorizedWorkerPool::Start(int num_normal_threads) {
   DCHECK(threads_.empty());
 
@@ -221,10 +256,15 @@ void CategorizedWorkerPool::Start(int num_normal_threads) {
       "CompositorTileWorkerBackground", thread_options, this,
       background_thread_prio_categories,
       &has_task_for_background_priority_thread_cv_);
-  if (backgrounding_callback_) {
-    thread->SetBackgroundingCallback(std::move(background_task_runner_),
-                                     std::move(backgrounding_callback_));
-  }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  thread->SetBackgroundingCallback(
+      Thread::MainThread()->GetTaskRunner(),
+      base::BindOnce([](base::PlatformThreadId thread_id) {
+        Platform::Current()->SetThreadType(thread_id,
+                                           base::ThreadType::kBackground);
+      }));
+#endif
+
   thread->StartAsync();
   threads_.push_back(std::move(thread));
 
@@ -326,15 +366,6 @@ void CategorizedWorkerPool::FlushForTesting() {
 scoped_refptr<base::SequencedTaskRunner>
 CategorizedWorkerPool::CreateSequencedTaskRunner() {
   return new CategorizedWorkerPoolSequencedTaskRunner(this);
-}
-
-void CategorizedWorkerPool::SetBackgroundingCallback(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::OnceCallback<void(base::PlatformThreadId)> callback) {
-  // The callback must be set before the threads have been created.
-  DCHECK(threads_.empty());
-  backgrounding_callback_ = std::move(callback);
-  background_task_runner_ = std::move(task_runner);
 }
 
 CategorizedWorkerPool::~CategorizedWorkerPool() = default;
@@ -514,4 +545,4 @@ void CategorizedWorkerPool::ClosureTask::RunOnWorkerThread() {
 
 CategorizedWorkerPool::ClosureTask::~ClosureTask() {}
 
-}  // namespace content
+}  // namespace blink

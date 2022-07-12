@@ -59,7 +59,6 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   blink::WebString DefaultLocale() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const override;
   bool IsThreadedAnimationEnabled() override;
-  cc::TaskGraphRunner* GetTaskGraphRunner() override;
 
   // May be called when |this| is registered as the active blink Platform
   // implementation. Overrides the result of IsThreadedAnimationEnabled() to
@@ -73,7 +72,6 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
 
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
   bool threaded_animation_ = true;
-  cc::TestTaskGraphRunner test_task_graph_runner_;
 
   base::WeakPtrFactory<TestBlinkWebUnitTestSupport> weak_factory_{this};
 };

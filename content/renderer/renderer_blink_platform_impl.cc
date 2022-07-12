@@ -262,11 +262,11 @@ RendererBlinkPlatformImpl::WrapURLLoaderFactory(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void RendererBlinkPlatformImpl::SetCompositingThreadType(
-    base::PlatformThreadId thread_id) {
+void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
+                                              base::ThreadType thread_type) {
   if (RenderThreadImpl* render_thread = RenderThreadImpl::current()) {
-    render_thread->render_message_filter()->SetThreadType(
-        thread_id, base::ThreadType::kCompositing);
+    render_thread->render_message_filter()->SetThreadType(thread_id,
+                                                          thread_type);
   }
 }
 #endif
@@ -452,11 +452,6 @@ bool RendererBlinkPlatformImpl::IsElasticOverscrollEnabled() {
 bool RendererBlinkPlatformImpl::IsScrollAnimatorEnabled() {
   RenderThreadImpl* thread = RenderThreadImpl::current();
   return thread ? thread->IsScrollAnimatorEnabled() : false;
-}
-
-cc::TaskGraphRunner* RendererBlinkPlatformImpl::GetTaskGraphRunner() {
-  RenderThreadImpl* thread = RenderThreadImpl::current();
-  return thread ? thread->GetTaskGraphRunner() : nullptr;
 }
 
 bool RendererBlinkPlatformImpl::IsThreadedAnimationEnabled() {

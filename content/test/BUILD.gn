@@ -2495,7 +2495,6 @@ test("content_unittests") {
     "../public/test/referrer_unittest.cc",
     "../public/test/test_utils_unittest.cc",
     "../renderer/accessibility/ax_image_stopwords_unittest.cc",
-    "../renderer/categorized_worker_pool_unittest.cc",
     "../renderer/content_security_policy_util_unittest.cc",
     "../renderer/media/batching_media_log_unittest.cc",
     "../renderer/media/inspector_media_event_handler_unittest.cc",

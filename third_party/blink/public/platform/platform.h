@@ -72,10 +72,6 @@ class BlameContext;
 }  // namespace trace_event
 }  // namespace base
 
-namespace cc {
-class TaskGraphRunner;
-}  // namespace cc
-
 namespace gfx {
 class ColorSpace;
 }
@@ -354,12 +350,11 @@ class BLINK_PLATFORM_EXPORT Platform {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // This is called after the compositor thread is created, so the embedder
-  // can initiate an IPC to change its thread type (on Linux we can't increase
-  // the nice value, so we need to ask the browser process). This function is
-  // only called from the main thread (where InitializeCompositor- Thread() is
-  // called).
-  virtual void SetCompositingThreadType(base::PlatformThreadId) {}
+  // This is called after the thread is created, so the embedder
+  // can initiate an IPC to change its thread type (on Linux we can't
+  // increase the nice value, so we need to ask the browser process). This
+  // function is only called from the main thread.
+  virtual void SetThreadType(base::PlatformThreadId, base::ThreadType) {}
 #endif
 
   // Returns a blame context for attributing top-level work which does not
@@ -564,9 +559,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   using EstablishGpuChannelCallback =
       base::OnceCallback<void(scoped_refptr<gpu::GpuChannelHost>)>;
   virtual void EstablishGpuChannel(EstablishGpuChannelCallback callback);
-
-  // The TaskGraphRunner. This must be non-null if compositing any widgets.
-  virtual cc::TaskGraphRunner* GetTaskGraphRunner() { return nullptr; }
 
   // Media stream ----------------------------------------------------
   virtual scoped_refptr<media::AudioCapturerSource> NewAudioCapturerSource(

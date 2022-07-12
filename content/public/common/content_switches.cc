@@ -571,9 +571,6 @@ const char kNoUnsandboxedZygote[] = "no-unsandboxed-zygote";
 // zygote to work.
 const char kNoZygote[] = "no-zygote";
 
-// Number of worker threads used to rasterize content.
-const char kNumRasterThreads[]              = "num-raster-threads";
-
 // Overrides the language detection result determined based on the page
 // contents.
 const char kOverrideLanguageDetection[] = "override-language-detection";
