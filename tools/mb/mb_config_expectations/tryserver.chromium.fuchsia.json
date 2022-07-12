@@ -21,16 +21,6 @@
       "use_goma": true
     }
   },
-  "fuchsia-clang-tidy-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_os": "fuchsia",
-      "use_goma": true
-    }
-  },
   "fuchsia-compile-x64-dbg": {
     "gn_args": {
       "is_component_build": true,

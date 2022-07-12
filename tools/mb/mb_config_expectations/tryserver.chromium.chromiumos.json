@@ -207,18 +207,6 @@
       "use_goma": true
     }
   },
-  "linux-chromeos-clang-tidy-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "ChromeOS",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_os": "chromeos",
-      "use_goma": true
-    }
-  },
   "linux-chromeos-compile-dbg": {
     "gn_args": {
       "ffmpeg_branding": "ChromeOS",
@@ -297,18 +285,6 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
-    }
-  },
-  "linux-lacros-clang-tidy-rel": {
-    "gn_args": {
-      "also_build_ash_chrome": true,
-      "chromeos_is_browser_only": true,
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_os": "chromeos",
       "use_goma": true
     }
   },

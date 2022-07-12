@@ -893,7 +893,6 @@
       'android-bfcache-rel': 'android_release_trybot',
       'android-binary-size': 'android_binary_size',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-clang-tidy-rel': 'android_release_trybot',
       # TODO(crbug/597596): Switch this back to debug_trybot when cronet's
       # shared library loading is fixed.
       'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon',
@@ -1001,14 +1000,12 @@
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks',
       'linux-cfm-rel': 'linux_cfm_release_trybot',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
-      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot',
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials',
       'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_trybot_js_cpp_code_coverage',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
       'linux-chromeos-rel-rts': 'chromeos_with_codecs_release_trybot_code_coverage', # should be kept in sync with linux-chromeos-rel
-      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot',
       'linux-lacros-rel-code-coverage': 'lacros_on_linux_release_trybot_coverage',
@@ -1041,7 +1038,6 @@
     'tryserver.chromium.fuchsia': {
       'fuchsia-arm64-cast': 'release_trybot_fuchsia_arm64_cast',
       'fuchsia-binary-size': 'release_fuchsia_arm64',
-      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia',
       'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only',
       'fuchsia-deterministic-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
@@ -1079,8 +1075,6 @@
       'linux-bfcache-rel': 'release_bot_blink',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification',
-      'linux-clang-tidy-dbg': 'debug_bot',
-      'linux-clang-tidy-rel': 'release_trybot',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
       'linux-example-builder': 'release_trybot',
       'linux-extended-tracing-rel': 'release_trybot_extended_tracing',
@@ -1154,7 +1148,6 @@
       'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot',
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest',
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting',
-      'ios-clang-tidy-rel': 'ios_device_release_compile_only',
       'ios-device': 'ios_device_release_compile_only',
       'ios-fieldtrial-fyi-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
@@ -1173,7 +1166,6 @@
       'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_no_lld_treat_warnings_as_errors',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_trybot',
       'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
-      'mac-clang-tidy-rel': 'release_trybot',
       'mac-fieldtrial-fyi-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'mac-osxbeta-rel': 'gpu_tests_release_trybot',
@@ -1231,6 +1223,18 @@
       'win-swangle-try-x86': 'angle_deqp_release_trybot_x86',
     },
 
+    'tryserver.chromium.tricium': {
+      'android-clang-tidy-rel': 'android_release_trybot',
+      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia',
+      'ios-clang-tidy-rel': 'ios_device_release_compile_only',
+      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot',
+      'linux-clang-tidy-dbg': 'debug_bot',
+      'linux-clang-tidy-rel': 'release_trybot',
+      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot',
+      'mac-clang-tidy-rel': 'release_trybot',
+      'win10-clang-tidy-rel': 'release_trybot',
+    },
+
     'tryserver.chromium.updater': {
        'mac-updater-try-builder-dbg': 'updater_debug_bot',
        'mac-updater-try-builder-rel': 'updater_release_trybot',
@@ -1253,7 +1257,6 @@
       'win-celab-try-rel': 'release_bot_minimal_symbols',
       'win-fieldtrial-fyi-rel': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot',
-      'win10-clang-tidy-rel': 'release_trybot',
       'win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials',
       'win10_chromium_x64_dbg_ng': 'gpu_tests_debug_bot',
       'win10_chromium_x64_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
