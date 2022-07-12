@@ -179,7 +179,7 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
   if (proto) {
     touch_injector->OnProtoDataAvailable(*proto);
   } else {
-    touch_injector->set_first_launch(true);
+    touch_injector->NotifyFirstTimeLaunch();
   }
 
   touch_injector->set_data_reading_finished(true);

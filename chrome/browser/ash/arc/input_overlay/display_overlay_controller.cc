@@ -150,8 +150,9 @@ void DisplayOverlayController::RemoveNudgeView() {
 }
 
 void DisplayOverlayController::OnNudgeDismissed() {
-  touch_injector_->set_first_launch(false);
   RemoveNudgeView();
+  DCHECK(touch_injector_);
+  touch_injector_->set_show_nudge(false);
 }
 
 gfx::Point DisplayOverlayController::CalculateNudgePosition(int nudge_width) {
@@ -319,6 +320,8 @@ void DisplayOverlayController::RemoveEducationalView() {
 
 void DisplayOverlayController::OnEducationalViewDismissed() {
   SetDisplayMode(DisplayMode::kView);
+  DCHECK(touch_injector_);
+  touch_injector_->set_first_launch(false);
 }
 
 views::Widget* DisplayOverlayController::GetOverlayWidget() {
@@ -385,7 +388,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       AddInputMappingView(overlay_widget);
       AddMenuEntryView(overlay_widget);
       ClearFocusOnMenuEntry();
-      if (touch_injector_->first_launch())
+      if (touch_injector_->show_nudge())
         AddNudgeView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kNone);

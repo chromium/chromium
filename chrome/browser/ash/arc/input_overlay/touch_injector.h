@@ -69,6 +69,9 @@ class TouchInjector : public ui::EventRewriter {
   bool first_launch() const { return first_launch_; }
   void set_first_launch(bool first_launch) { first_launch_ = first_launch; }
 
+  bool show_nudge() const { return show_nudge_; }
+  void set_show_nudge(bool show_nudge) { show_nudge_ = show_nudge; }
+
   bool data_reading_finished() const { return data_reading_finished_; }
   void set_data_reading_finished(bool finished) {
     data_reading_finished_ = finished;
@@ -123,6 +126,7 @@ class TouchInjector : public ui::EventRewriter {
   void OnProtoDataAvailable(AppDataProto& proto);
   // Save the input menu state when the menu is closed.
   void OnInputMenuViewRemoved();
+  void NotifyFirstTimeLaunch();
 
   // UMA stats.
   void RecordMenuStateOnLaunch();
@@ -231,6 +235,9 @@ class TouchInjector : public ui::EventRewriter {
   // The game app is launched for the first time when input overlay is enabled
   // if the value is true.
   bool first_launch_ = false;
+  // Check whether to show the nudge view. We only show the nudge view for the
+  // first time launch and before it is dismissed.
+  bool show_nudge_ = false;
   // Data reading is finished after launching if the value is true.
   bool data_reading_finished_ = false;
 

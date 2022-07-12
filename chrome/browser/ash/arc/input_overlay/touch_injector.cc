@@ -277,6 +277,11 @@ void TouchInjector::OnInputMenuViewRemoved() {
   }
 }
 
+void TouchInjector::NotifyFirstTimeLaunch() {
+  first_launch_ = true;
+  show_nudge_ = true;
+}
+
 void TouchInjector::CleanupTouchEvents() {
   if (is_mouse_locked_)
     FlipMouseLockFlag();
