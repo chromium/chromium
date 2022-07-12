@@ -138,6 +138,12 @@ void BucketManagerHost::DidGetBucket(
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!result.ok()) {
+    // Getting a bucket can fail if there is a database error.
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
   const auto& bucket = result.value();
   auto it = bucket_map_.find(bucket.name);
   if (it == bucket_map_.end()) {
