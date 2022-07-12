@@ -313,7 +313,7 @@
       "use_goma": true
     }
   },
-  "linux-fieldtrial-fyi-rel": {
+  "linux-fieldtrial-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,

@@ -233,7 +233,7 @@
       "use_goma": true
     }
   },
-  "ios-fieldtrial-fyi-rel": {
+  "ios-fieldtrial-rel": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
       "ios_set_attributes_for_xcode_project_generation": false,
@@ -484,7 +484,7 @@
       "use_goma": true
     }
   },
-  "mac-fieldtrial-fyi-rel": {
+  "mac-fieldtrial-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "enable_nacl": false,

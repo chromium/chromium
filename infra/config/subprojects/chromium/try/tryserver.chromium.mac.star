@@ -68,7 +68,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "mac-fieldtrial-fyi-rel",
+    name = "mac-fieldtrial-rel",
     os = os.MAC_DEFAULT,
     mirrors = ["ci/mac-fieldtrial-rel"],
 )
@@ -279,7 +279,7 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios-fieldtrial-fyi-rel",
+    name = "ios-fieldtrial-rel",
     builderless = True,
     mirrors = ["ci/ios-fieldtrial-rel"],
 )

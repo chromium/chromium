@@ -222,7 +222,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win-fieldtrial-fyi-rel",
+    name = "win-fieldtrial-rel",
     os = os.WINDOWS_DEFAULT,
     mirrors = ["ci/win-fieldtrial-rel"],
 )

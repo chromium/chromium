@@ -174,7 +174,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-fieldtrial-fyi-rel",
+    name = "linux-fieldtrial-rel",
 )
 
 try_.builder(

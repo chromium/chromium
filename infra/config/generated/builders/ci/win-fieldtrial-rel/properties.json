@@ -38,7 +38,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "win-fieldtrial-fyi-rel",
+          "builder": "win-fieldtrial-rel",
           "group": "tryserver.chromium.win"
         }
       ]
