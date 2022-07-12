@@ -191,9 +191,16 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   ScopedConfigure* scoped_configure_ = nullptr;
   base::circular_deque<std::unique_ptr<Config>> pending_configs_;
 
+  // Window resizing is an asynchronous operation. See
+  // https://crbug.com/1336706#c22 for a more detailed explanation.
+  // |origin_offset_| is typically (0,0). During an asynchronous resizing
+  // |origin_offset_| is set to a non-zero value such that it appears as though
+  // the ExoShellSurfaceHost has not moved even though ExoShellSurface has
+  // already been moved and resized to the new position.
   gfx::Vector2d origin_offset_;
   gfx::Vector2d pending_origin_offset_;
   gfx::Vector2d pending_origin_offset_accumulator_;
+
   int resize_component_ = HTCAPTION;  // HT constant (see ui/base/hit_test.h)
   int pending_resize_component_ = HTCAPTION;
   ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
