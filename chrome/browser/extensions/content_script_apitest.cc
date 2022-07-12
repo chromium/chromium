@@ -39,6 +39,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
@@ -2158,6 +2159,31 @@ IN_PROC_BROWSER_TEST_F(SubresourceWebBundlesContentScriptApiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ(uuid_html_url, listener.message());
+}
+
+class ContentScriptApiPrerenderingTest : public ContentScriptApiTest {
+ public:
+  ContentScriptApiPrerenderingTest()
+      : prerender_helper_(base::BindRepeating(
+            &ContentScriptApiPrerenderingTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~ContentScriptApiPrerenderingTest() override = default;
+
+ private:
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetWebContentsAt(0);
+  }
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ContentScriptApiTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest, Prerendering) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
 }
 
 }  // namespace extensions

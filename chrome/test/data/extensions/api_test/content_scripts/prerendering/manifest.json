@@ -1,0 +1,36 @@
+{
+  "name": "content_script_prerendering",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests content script in pre-rendered frames",
+  "background": {
+    "scripts": [
+      "test.js"
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "http://localhost/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*"
+      ],
+      "js": [
+        "top_frame_only.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://*/*"
+      ],
+      "js": [
+        "all_frames.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

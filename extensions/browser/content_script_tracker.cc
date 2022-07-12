@@ -518,8 +518,11 @@ void ContentScriptTracker::DidFinishNavigation(
   // processed by an earlier DidFinishNavigation.  Navigations that don't
   // commit/load won't inject content scripts.  Content script injections are
   // primarily driven by URL matching and therefore failed navigations may still
-  // end up injecting content scripts into the error page.)
-  if (!navigation->HasCommitted() || navigation->IsSameDocument()) {
+  // end up injecting content scripts into the error page. Pre-rendered pages
+  // already ran content scripts at the initial navigation and don't need to
+  // run them again on activation.)
+  if (!navigation->HasCommitted() || navigation->IsSameDocument() ||
+      navigation->IsPrerenderedPageActivation()) {
     return;
   }
 
