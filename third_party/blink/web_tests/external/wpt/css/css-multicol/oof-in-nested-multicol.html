@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<link rel="match" href="reference/oof-in-nested-multicol-ref.html">
+<link rel="help" href="https://www.w3.org/TR/css-multicol-1/#propdef-column-count">
+<link rel="author" title="Koji Ishii" href="mailto:kojii@chromium.org">
+<style>
+.outer {
+  position: relative;
+  margin-left: 100px;
+  width: 400px;
+  height: 400px;
+  column-count: 2;
+  overflow: hidden;
+  background: yellow;
+}
+.nested {
+  height: 400px;
+  column-count: 2;
+  background: purple;
+}
+.cb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400px;
+  height: 400px;
+  background: red;
+}
+img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 400px;
+  background: green;
+}
+</style>
+<body>
+  <div class="outer">
+    <div class="nested">
+      <div class="cb">
+        <img src="data:image/gif;base64,R0lGODlhAQABAGAAACH5BAEKAP8ALAAAAAABAAEAAAgEAP8FBAA7">
+      </div>
+    </div>
+  </div>
+</body>
