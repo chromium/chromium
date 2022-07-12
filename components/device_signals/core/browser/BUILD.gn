@@ -4,6 +4,8 @@
 
 static_library("browser") {
   public = [
+    "base_signals_collector.h",
+    "file_system_signals_collector.h",
     "metrics_utils.h",
     "signals_aggregator.h",
     "signals_aggregator_impl.h",
@@ -17,6 +19,8 @@ static_library("browser") {
   ]
 
   sources = [
+    "base_signals_collector.cc",
+    "file_system_signals_collector.cc",
     "metrics_utils.cc",
     "signals_aggregator_impl.cc",
     "signals_types.cc",
@@ -69,6 +73,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "file_system_signals_collector_unittest.cc",
     "signals_aggregator_impl_unittest.cc",
     "user_permission_service_impl_unittest.cc",
   ]

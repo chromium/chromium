@@ -163,6 +163,10 @@ const char kMissingSystemService[] = "MISSING_SYSTEM_SERVICE";
 // bundle/sub-response struct that was expected by a specific use-case.
 const char kMissingBundle[] = "MISSING_BUNDLE";
 
+// Returned when requesting the collection of a parameterized signal without
+// parameters.
+const char kMissingParameters[] = "MISSING_PARAMETERS";
+
 }  // namespace errors
 
 }  // namespace device_signals

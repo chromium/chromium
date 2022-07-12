@@ -56,6 +56,7 @@ extern const char kInvalidUser[];
 extern const char kUnsupported[];
 extern const char kMissingSystemService[];
 extern const char kMissingBundle[];
+extern const char kMissingParameters[];
 
 }  // namespace errors
 

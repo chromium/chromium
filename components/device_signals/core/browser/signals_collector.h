@@ -19,6 +19,10 @@ class SignalsCollector {
  public:
   virtual ~SignalsCollector() = default;
 
+  // Returns true if `signal_name` is part of the set of signals supported by
+  // this collector.
+  virtual bool IsSignalSupported(SignalName signal_name) = 0;
+
   // Returns the set of signal names that this collector can collect.
   virtual const std::unordered_set<SignalName> GetSupportedSignalNames() = 0;
 

@@ -22,6 +22,8 @@ const std::string ErrorToString(SignalCollectionError error) {
       return errors::kMissingBundle;
     case SignalCollectionError::kInvalidUser:
       return errors::kInvalidUser;
+    case SignalCollectionError::kMissingParameters:
+      return errors::kMissingParameters;
   }
 }
 
@@ -46,6 +48,15 @@ HotfixSignalResponse& HotfixSignalResponse::operator=(
 
 HotfixSignalResponse::~HotfixSignalResponse() = default;
 #endif  // BUILDFLAG(IS_WIN)
+
+FileSystemInfoResponse::FileSystemInfoResponse() = default;
+FileSystemInfoResponse::FileSystemInfoResponse(const FileSystemInfoResponse&) =
+    default;
+
+FileSystemInfoResponse& FileSystemInfoResponse::operator=(
+    const FileSystemInfoResponse&) = default;
+
+FileSystemInfoResponse::~FileSystemInfoResponse() = default;
 
 SignalsAggregationRequest::SignalsAggregationRequest() = default;
 SignalsAggregationRequest::SignalsAggregationRequest(

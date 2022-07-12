@@ -24636,6 +24636,7 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Missing System Service"/>
   <int value="4" label="Missing Bundle"/>
   <int value="5" label="Invalid User"/>
+  <int value="6" label="Missing Parameters"/>
 </enum>
 
 <enum name="DeviceSignalsSignalName">

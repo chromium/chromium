@@ -10,6 +10,7 @@
 
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/user_context.h"
+#include "components/device_signals/core/common/common_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -43,7 +44,8 @@ enum class SignalCollectionError {
   kMissingSystemService,
   kMissingBundle,
   kInvalidUser,
-  kMaxValue = kInvalidUser
+  kMissingParameters,
+  kMaxValue = kMissingParameters
 };
 
 const std::string ErrorToString(SignalCollectionError error);
@@ -55,7 +57,7 @@ const std::string ErrorToString(SignalCollectionError error);
 struct BaseSignalResponse {
   virtual ~BaseSignalResponse();
 
-  // If set, represents a collection error that occurred while getting the AV
+  // If set, represents a collection error that occurred while getting the
   // signal.
   absl::optional<SignalCollectionError> collection_error;
 };
@@ -84,6 +86,17 @@ struct HotfixSignalResponse : BaseSignalResponse {
 };
 #endif  // BUILDFLAG(IS_WIN)
 
+struct FileSystemInfoResponse : BaseSignalResponse {
+  FileSystemInfoResponse();
+
+  FileSystemInfoResponse(const FileSystemInfoResponse&);
+  FileSystemInfoResponse& operator=(const FileSystemInfoResponse&);
+
+  ~FileSystemInfoResponse() override;
+
+  std::vector<FileSystemItem> file_system_items;
+};
+
 // Request struct containing properties that will be used by the
 // SignalAggregator to validate signals access permissions while delegating
 // the collection to the right Collectors. Signals that require parameters (e.g.
@@ -101,6 +114,10 @@ struct SignalsAggregationRequest {
 
   // Names of the signals that need to be collected.
   std::unordered_set<SignalName> signal_names;
+
+  // Parameters required when requesting the collection of signals living on
+  // the device's file system.
+  std::vector<GetFileSystemInfoOptions> file_system_signal_parameters;
 
   bool operator==(const SignalsAggregationRequest& other) const;
 };
@@ -124,6 +141,7 @@ struct SignalsAggregationResponse {
   absl::optional<AntiVirusSignalResponse> av_signal_response;
   absl::optional<HotfixSignalResponse> hotfix_signal_response;
 #endif  // BUILDFLAG(IS_WIN)
+  absl::optional<FileSystemInfoResponse> file_system_info_response;
 };
 
 }  // namespace device_signals

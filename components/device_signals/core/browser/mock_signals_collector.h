@@ -17,6 +17,7 @@ class MockSignalsCollector : public SignalsCollector {
   MockSignalsCollector();
   ~MockSignalsCollector() override;
 
+  MOCK_METHOD(bool, IsSignalSupported, (SignalName), (override));
   MOCK_METHOD(const std::unordered_set<SignalName>,
               GetSupportedSignalNames,
               (),

@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_WIN_WIN_SIGNALS_COLLECTOR_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_WIN_WIN_SIGNALS_COLLECTOR_H_
 
-#include <map>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/device_signals/core/browser/signals_collector.h"
+#include "components/device_signals/core/browser/base_signals_collector.h"
 
 namespace device_signals {
 
@@ -20,7 +19,7 @@ class SystemSignalsServiceHost;
 
 // Collector in charge of collecting device signals that are either specific to
 // Windows, or require a specific Windows-only implementation.
-class WinSignalsCollector : public SignalsCollector {
+class WinSignalsCollector : public BaseSignalsCollector {
  public:
   explicit WinSignalsCollector(SystemSignalsServiceHost* system_service_host);
 
@@ -28,13 +27,6 @@ class WinSignalsCollector : public SignalsCollector {
 
   WinSignalsCollector(const WinSignalsCollector&) = delete;
   WinSignalsCollector& operator=(const WinSignalsCollector&) = delete;
-
-  // SignalsCollector:
-  const std::unordered_set<SignalName> GetSupportedSignalNames() override;
-  void GetSignal(SignalName signal_name,
-                 const SignalsAggregationRequest& request,
-                 SignalsAggregationResponse& response,
-                 base::OnceClosure done_closure) override;
 
  private:
   // Collection function for the Antivirus signal. `request` is ignored since AV
@@ -71,14 +63,6 @@ class WinSignalsCollector : public SignalsCollector {
 
   // Instance used to retrieve a pointer to a SystemSignalsService instance.
   base::raw_ptr<SystemSignalsServiceHost> system_service_host_;
-
-  // Map used to forward signal collection requests to the right function keyed
-  // from a given signal name.
-  std::map<const SignalName,
-           base::RepeatingCallback<void(const SignalsAggregationRequest&,
-                                        SignalsAggregationResponse&,
-                                        base::OnceClosure)>>
-      signals_collection_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<WinSignalsCollector> weak_factory_{this};

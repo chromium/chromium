@@ -97,8 +97,7 @@ void SignalsAggregatorImpl::OnUserPermissionChecked(
 
   SignalName signal_name = *request.signal_names.begin();
   for (const auto& collector : collectors_) {
-    const auto signals_set = collector->GetSupportedSignalNames();
-    if (signals_set.find(signal_name) == signals_set.end()) {
+    if (!collector->IsSignalSupported(signal_name)) {
       // Signal is not supported by current collector.
       continue;
     }

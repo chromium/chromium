@@ -68,6 +68,11 @@ class SignalsAggregatorImplTest : public testing::Test {
   std::unique_ptr<MockSignalsCollector> GetFakeCollector(
       SignalName signal_name) {
     auto mock_collector = std::make_unique<MockSignalsCollector>();
+    ON_CALL(*mock_collector.get(), IsSignalSupported(_))
+        .WillByDefault(Return(false));
+    ON_CALL(*mock_collector.get(), IsSignalSupported(signal_name))
+        .WillByDefault(Return(true));
+
     ON_CALL(*mock_collector.get(), GetSupportedSignalNames())
         .WillByDefault(Return(std::unordered_set<SignalName>({signal_name})));
 
@@ -128,7 +133,8 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Supported) {
   auto request = CreateRequest();
   request.signal_names.emplace(expected_signal_name);
 
-  EXPECT_CALL(*av_signal_collector_, GetSupportedSignalNames()).Times(1);
+  EXPECT_CALL(*av_signal_collector_, IsSignalSupported(expected_signal_name))
+      .Times(1);
   EXPECT_CALL(*av_signal_collector_,
               GetSignal(SignalName::kAntiVirus, request, _, _))
       .Times(1);

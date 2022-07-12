@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/values.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
@@ -18,43 +17,19 @@ namespace device_signals {
 
 WinSignalsCollector::WinSignalsCollector(
     SystemSignalsServiceHost* system_service_host)
-    : system_service_host_(system_service_host),
-      signals_collection_map_({
+    : BaseSignalsCollector({
           {SignalName::kAntiVirus,
            base::BindRepeating(&WinSignalsCollector::GetAntiVirusSignal,
                                base::Unretained(this))},
           {SignalName::kHotfixes,
            base::BindRepeating(&WinSignalsCollector::GetHotfixSignal,
                                base::Unretained(this))},
-      }) {
+      }),
+      system_service_host_(system_service_host) {
   DCHECK(system_service_host_);
 }
 
 WinSignalsCollector::~WinSignalsCollector() = default;
-
-const std::unordered_set<SignalName>
-WinSignalsCollector::GetSupportedSignalNames() {
-  std::unordered_set<SignalName> supported_signals;
-  for (const auto& collection_pair : signals_collection_map_) {
-    supported_signals.insert(collection_pair.first);
-  }
-
-  return supported_signals;
-}
-
-void WinSignalsCollector::GetSignal(SignalName signal_name,
-                                    const SignalsAggregationRequest& request,
-                                    SignalsAggregationResponse& response,
-                                    base::OnceClosure done_closure) {
-  const auto it = signals_collection_map_.find(signal_name);
-  if (it == signals_collection_map_.end()) {
-    response.top_level_error = SignalCollectionError::kUnsupported;
-    std::move(done_closure).Run();
-    return;
-  }
-
-  it->second.Run(request, response, std::move(done_closure));
-}
 
 void WinSignalsCollector::GetAntiVirusSignal(
     const SignalsAggregationRequest& request,
