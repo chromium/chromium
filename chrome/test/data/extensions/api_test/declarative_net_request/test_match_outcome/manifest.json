@@ -15,7 +15,8 @@
   "permissions": [
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
-    "tabs"
+    "tabs",
+    "*://allowed-redirect.example/*"
   ],
   "version": "1.0",
   "background": {

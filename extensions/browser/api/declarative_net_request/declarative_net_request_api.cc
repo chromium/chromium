@@ -26,6 +26,8 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/api/web_request/permission_helper.h"
+#include "extensions/browser/api/web_request/web_request_permissions.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -625,10 +627,20 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
         ArgumentList(dnr_api::TestMatchOutcome::Results::Create(result)));
   }
 
+  // Determine if the extension has permission to redirect the request.
+  auto web_request_resource_type =
+      declarative_net_request::GetWebRequestResourceType(params->request.type);
+  PermissionsData::PageAccess page_access =
+      WebRequestPermissions::CanExtensionAccessURL(
+          PermissionHelper::Get(browser_context()), extension_id(), url, tabId,
+          /*crosses_incognito=*/false,
+          WebRequestPermissions::HostPermissionsCheck::
+              REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
+          initiator, web_request_resource_type);
+
   // Check for "before request" matches (e.g. allow/block rules).
   declarative_net_request::CompositeMatcher::ActionInfo before_request_action =
-      matcher->GetBeforeRequestAction(
-          request_params, extensions::PermissionsData::PageAccess::kWithheld);
+      matcher->GetBeforeRequestAction(request_params, page_access);
   if (before_request_action.action) {
     dnr_api::MatchedRule match;
     match.rule_id = before_request_action.action->rule_id;

@@ -230,5 +230,35 @@ chrome.test.runTests([
         {matchedRules: [{ruleId: 1337, rulesetId: '_session'}]}, result);
 
     chrome.test.succeed();
+  },
+
+  async function testRedirectMatch() {
+    // Redirect rule with host permissions should apply.
+    let result = await testMatchOutcome({
+      url: 'https://allowed-redirect.example/ad.js',
+      initiator: 'https://allowed-redirect.example',
+      type: 'script'
+    });
+    chrome.test.assertEq(
+        {matchedRules: [{ruleId: 4, rulesetId: 'rules2'}]}, result);
+    result = await testMatchOutcome(
+        {url: 'https://allowed-redirect.example/ad.js', type: 'script'});
+    chrome.test.assertEq(
+        {matchedRules: [{ruleId: 4, rulesetId: 'rules2'}]}, result);
+
+    // No host permission for request URL.
+    result = await testMatchOutcome(
+        {url: 'https://not-allowed-redirect.example/ad1.js', type: 'script'});
+    chrome.test.assertEq({matchedRules: []}, result);
+
+    // No host permission for initiator URL.
+    result = await testMatchOutcome({
+      url: 'https://allowed-redirect.example/ad.js',
+      initiator: 'https://not-allowed-redirect.example',
+      type: 'script'
+    });
+    chrome.test.assertEq({matchedRules: []}, result);
+
+    chrome.test.succeed();
   }
 ]);

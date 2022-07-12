@@ -73,6 +73,10 @@ void ClearRendererCacheOnNavigation();
 // Helper to log the |kReadDynamicRulesJSONStatusHistogram| histogram.
 void LogReadDynamicRulesStatus(ReadJSONRulesResult::Status status);
 
+// Maps dnr_api::ResourceType to WebRequestResourceType.
+WebRequestResourceType GetWebRequestResourceType(
+    api::declarative_net_request::ResourceType resource_type);
+
 // Constructs an api::declarative_net_request::RequestDetails from a
 // WebRequestInfo.
 api::declarative_net_request::RequestDetails CreateRequestDetails(

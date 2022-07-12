@@ -226,6 +226,48 @@ dnr_api::ResourceType GetDNRResourceType(WebRequestResourceType resource_type) {
   return dnr_api::RESOURCE_TYPE_OTHER;
 }
 
+// Maps dnr_api::ResourceType to WebRequestResourceType.
+WebRequestResourceType GetWebRequestResourceType(
+    dnr_api::ResourceType resource_type) {
+  switch (resource_type) {
+    case dnr_api::RESOURCE_TYPE_OTHER:
+      return WebRequestResourceType::OTHER;
+    case dnr_api::RESOURCE_TYPE_MAIN_FRAME:
+      return WebRequestResourceType::MAIN_FRAME;
+    case dnr_api::RESOURCE_TYPE_CSP_REPORT:
+      return WebRequestResourceType::CSP_REPORT;
+    case dnr_api::RESOURCE_TYPE_SCRIPT:
+      return WebRequestResourceType::SCRIPT;
+    case dnr_api::RESOURCE_TYPE_IMAGE:
+      return WebRequestResourceType::IMAGE;
+    case dnr_api::RESOURCE_TYPE_STYLESHEET:
+      return WebRequestResourceType::STYLESHEET;
+    case dnr_api::RESOURCE_TYPE_OBJECT:
+      return WebRequestResourceType::OBJECT;
+    case dnr_api::RESOURCE_TYPE_XMLHTTPREQUEST:
+      return WebRequestResourceType::XHR;
+    case dnr_api::RESOURCE_TYPE_SUB_FRAME:
+      return WebRequestResourceType::SUB_FRAME;
+    case dnr_api::RESOURCE_TYPE_PING:
+      return WebRequestResourceType::PING;
+    case dnr_api::RESOURCE_TYPE_MEDIA:
+      return WebRequestResourceType::MEDIA;
+    case dnr_api::RESOURCE_TYPE_FONT:
+      return WebRequestResourceType::FONT;
+    case dnr_api::RESOURCE_TYPE_WEBSOCKET:
+      return WebRequestResourceType::WEB_SOCKET;
+    case dnr_api::RESOURCE_TYPE_WEBTRANSPORT:
+      return WebRequestResourceType::WEB_TRANSPORT;
+    case dnr_api::RESOURCE_TYPE_WEBBUNDLE:
+      return WebRequestResourceType::WEBBUNDLE;
+    case dnr_api::RESOURCE_TYPE_NONE:
+      NOTREACHED();
+      return WebRequestResourceType::OTHER;
+  }
+  NOTREACHED();
+  return WebRequestResourceType::OTHER;
+}
+
 dnr_api::RequestDetails CreateRequestDetails(const WebRequestInfo& request) {
   dnr_api::RequestDetails details;
   details.request_id = base::NumberToString(request.id);
