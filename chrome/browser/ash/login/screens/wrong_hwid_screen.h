@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_WRONG_HWID_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_WRONG_HWID_SCREEN_H_
 
-#include <string>
-
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
@@ -18,17 +17,13 @@ namespace ash {
 // malformed HWID to users.
 class WrongHWIDScreen : public BaseScreen {
  public:
-  WrongHWIDScreen(WrongHWIDScreenView* view,
+  WrongHWIDScreen(base::WeakPtr<WrongHWIDScreenView> view,
                   const base::RepeatingClosure& exit_callback);
 
   WrongHWIDScreen(const WrongHWIDScreen&) = delete;
   WrongHWIDScreen& operator=(const WrongHWIDScreen&) = delete;
 
   ~WrongHWIDScreen() override;
-
-  // This method is called, when view is being destroyed. Note, if Delegate
-  // is destroyed earlier then it has to call SetDelegate(NULL).
-  void OnViewDestroyed(WrongHWIDScreenView* view);
 
   void OnExit();
 
@@ -45,9 +40,9 @@ class WrongHWIDScreen : public BaseScreen {
   // BaseScreen implementation:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
-  WrongHWIDScreenView* view_;
+  base::WeakPtr<WrongHWIDScreenView> view_;
   base::RepeatingClosure exit_callback_;
 };
 

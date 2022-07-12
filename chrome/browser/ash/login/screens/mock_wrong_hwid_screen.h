@@ -13,7 +13,7 @@ namespace ash {
 
 class MockWrongHWIDScreen : public WrongHWIDScreen {
  public:
-  MockWrongHWIDScreen(WrongHWIDScreenView* view,
+  MockWrongHWIDScreen(base::WeakPtr<WrongHWIDScreenView> view,
                       const base::RepeatingClosure& exit_callback);
   ~MockWrongHWIDScreen() override;
 
@@ -28,16 +28,8 @@ class MockWrongHWIDScreenView : public WrongHWIDScreenView {
   MockWrongHWIDScreenView();
   ~MockWrongHWIDScreenView() override;
 
-  void Bind(WrongHWIDScreen* screen) override;
-  void Unbind() override;
-
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, MockBind, (WrongHWIDScreen*));
-  MOCK_METHOD(void, MockUnbind, ());
-
- private:
-  WrongHWIDScreen* screen_ = nullptr;
 };
 
 }  // namespace ash

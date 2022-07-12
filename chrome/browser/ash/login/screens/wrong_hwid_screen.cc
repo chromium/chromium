@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
-
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 
@@ -14,21 +14,16 @@ constexpr char kUserActionSkip[] = "skip-screen";
 
 }  // namespace
 
-WrongHWIDScreen::WrongHWIDScreen(WrongHWIDScreenView* view,
+WrongHWIDScreen::WrongHWIDScreen(base::WeakPtr<WrongHWIDScreenView> view,
                                  const base::RepeatingClosure& exit_callback)
     : BaseScreen(WrongHWIDScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_HARDWARE_ERROR),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->Bind(this);
 }
 
-WrongHWIDScreen::~WrongHWIDScreen() {
-  if (view_)
-    view_->Unbind();
-}
+WrongHWIDScreen::~WrongHWIDScreen() = default;
 
 void WrongHWIDScreen::OnExit() {
   if (is_hidden())
@@ -36,27 +31,21 @@ void WrongHWIDScreen::OnExit() {
   exit_callback_.Run();
 }
 
-void WrongHWIDScreen::OnViewDestroyed(WrongHWIDScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
-
 void WrongHWIDScreen::ShowImpl() {
   if (view_)
     view_->Show();
 }
 
-void WrongHWIDScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-}
+void WrongHWIDScreen::HideImpl() {}
 
-void WrongHWIDScreen::OnUserActionDeprecated(const std::string& action_id) {
+void WrongHWIDScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+
   if (action_id == kUserActionSkip) {
     OnExit();
-  } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    return;
   }
+  BaseScreen::OnUserAction(args);
 }
 
 }  // namespace ash

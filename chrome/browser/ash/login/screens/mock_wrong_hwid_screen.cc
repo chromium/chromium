@@ -7,11 +7,11 @@
 namespace ash {
 
 MockWrongHWIDScreen::MockWrongHWIDScreen(
-    WrongHWIDScreenView* view,
+    base::WeakPtr<WrongHWIDScreenView> view,
     const base::RepeatingClosure& exit_callback)
-    : WrongHWIDScreen(view, exit_callback) {}
+    : WrongHWIDScreen(std::move(view), exit_callback) {}
 
-MockWrongHWIDScreen::~MockWrongHWIDScreen() {}
+MockWrongHWIDScreen::~MockWrongHWIDScreen() = default;
 
 void MockWrongHWIDScreen::ExitScreen() {
   WrongHWIDScreen::OnExit();
@@ -19,19 +19,6 @@ void MockWrongHWIDScreen::ExitScreen() {
 
 MockWrongHWIDScreenView::MockWrongHWIDScreenView() = default;
 
-MockWrongHWIDScreenView::~MockWrongHWIDScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void MockWrongHWIDScreenView::Bind(WrongHWIDScreen* screen) {
-  screen_ = screen;
-  MockBind(screen_);
-}
-
-void MockWrongHWIDScreenView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
+MockWrongHWIDScreenView::~MockWrongHWIDScreenView() = default;
 
 }  // namespace ash

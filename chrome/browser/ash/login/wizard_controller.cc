@@ -645,7 +645,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnAppDownloadingScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<WrongHWIDScreen>(
-      oobe_ui->GetView<WrongHWIDScreenHandler>(),
+      oobe_ui->GetView<WrongHWIDScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnWrongHWIDScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<LacrosDataMigrationScreen>(

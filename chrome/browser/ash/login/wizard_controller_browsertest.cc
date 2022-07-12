@@ -596,10 +596,10 @@ class WizardControllerFlowTest : public WizardControllerTest {
                 base::Unretained(wizard_controller))));
 
     mock_wrong_hwid_screen_view_ = std::make_unique<MockWrongHWIDScreenView>();
-    ExpectBindUnbind(mock_wrong_hwid_screen_view_.get());
+
     mock_wrong_hwid_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockWrongHWIDScreen>(
-            mock_wrong_hwid_screen_view_.get(),
+            mock_wrong_hwid_screen_view_.get()->AsWeakPtr(),
             base::BindRepeating(&WizardController::OnWrongHWIDScreenExit,
                                 base::Unretained(wizard_controller))));
 
