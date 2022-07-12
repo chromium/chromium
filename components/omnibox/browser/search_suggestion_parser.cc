@@ -520,8 +520,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
     results->field_trial_triggered = field_trial_triggered.value_or(false);
 
     results->experiment_stats_v2s.clear();
-    const base::Value::List* experiment_stats_v2s_list =
-        extras.FindListKey("google:experimentstats")->GetIfList();
+    const base::Value* experiment_stats_v2s_value =
+        extras.FindListKey("google:experimentstats");
+    const base::Value::List* experiment_stats_v2s_list = nullptr;
+    if (experiment_stats_v2s_value) {
+      experiment_stats_v2s_list = experiment_stats_v2s_value->GetIfList();
+    }
     if (experiment_stats_v2s_list) {
       for (const auto& experiment_stats_v2_value : *experiment_stats_v2s_list) {
         const base::Value::Dict* experiment_stats_v2_dict =
