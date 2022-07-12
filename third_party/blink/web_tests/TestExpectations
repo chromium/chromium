@@ -7175,3 +7175,6 @@ crbug.com/1343262 [ Win11 ] compositing/overlap-blending/reflection-opacity-huge
 crbug.com/1343262 [ Win11 ] compositing/reflections/nested-reflection-opacity.html [ Failure ]
 crbug.com/1343262 [ Win11 ] fast/reflections/transparent-reflected-sublayers.html [ Failure ]
 crbug.com/1343270 [ Win11 ] media/controls/video-controls-with-cast-rendering.html [ Failure ]
+
+# Sheriff 2022-07-12
+crbug.com/1343674 [ Linux ] editing/deleting/460938.html [ Failure Pass ]
