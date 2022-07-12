@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.CastSwitches;
@@ -316,12 +317,12 @@ public class CastWebContentsActivity extends Activity {
 
     private boolean canUsePictureInPicture() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
+                && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+                && !BuildInfo.getInstance().isTV;
     }
 
     private boolean canAutoEnterPictureInPicture() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && canUsePictureInPicture();
     }
 
     public void finishForTesting() {
