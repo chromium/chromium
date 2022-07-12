@@ -186,7 +186,8 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT)
                 < MAX_SIGNIN_AND_SYNC_PROMO_SHOW_COUNT;
-        if (!mSyncService.isSyncRequested() && impressionLimitNotReached) {
+        if ((!mSyncService.isSyncRequested() || mSyncService.getChosenDataTypes().isEmpty())
+                && impressionLimitNotReached) {
             return SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE;
         }
         return SyncPromoState.NO_PROMO;
