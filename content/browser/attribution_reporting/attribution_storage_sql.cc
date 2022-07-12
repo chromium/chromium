@@ -2299,7 +2299,7 @@ bool AttributionStorageSql::
   static constexpr char kSelectSourcesSql[] =
       "SELECT destination_site FROM sources "
       DCHECK_SQL_INDEXED_BY("active_unattributed_sources_by_site_reporting_origin")
-      "WHERE source_site=? AND reporting_origin=? "
+      "WHERE source_site=? AND reporting_origin=? AND expiry_time>? "
       "AND event_level_active=1 AND num_attributions=0 AND "
       "aggregatable_active=1 AND aggregatable_budget_consumed=0";
   sql::Statement statement(
@@ -2307,6 +2307,7 @@ bool AttributionStorageSql::
   statement.BindString(0, source.common_info().ImpressionSite().Serialize());
   statement.BindString(1, SerializePotentiallyTrustworthyOrigin(
                               source.common_info().reporting_origin()));
+  statement.BindTime(2, source.common_info().impression_time());
 
   base::flat_set<std::string> destinations;
   while (statement.Step()) {

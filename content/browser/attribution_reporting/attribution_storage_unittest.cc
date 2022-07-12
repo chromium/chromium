@@ -1142,6 +1142,39 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest,
+       MaxAttributionDestinationsPerSource_CountsUnexpiredSources) {
+  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
+  delegate()->set_delete_expired_rate_limits_frequency(base::Milliseconds(10));
+
+  const base::TimeDelta expiry = base::Milliseconds(5);
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetConversionOrigin(url::Origin::Create(GURL("https://a.example/")))
+          .SetSourceType(AttributionSourceType::kNavigation)
+          .SetExpiry(expiry)
+          .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
+          .SetSourceType(AttributionSourceType::kEvent)
+          .Build());
+
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
+
+  task_environment_.FastForwardBy(expiry);
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
+          .SetSourceType(AttributionSourceType::kEvent)
+          .Build());
+
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
+}
+
+TEST_F(AttributionStorageTest,
        MultipleImpressionsPerConversion_MostRecentAttributesForSamePriority) {
   storage()->StoreSource(SourceBuilder().SetSourceEventId(3).Build());
 
