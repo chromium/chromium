@@ -25327,6 +25327,14 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="WebAssembly.Memory"/>
 </enum>
 
+<enum name="DevToolsManifestSection">
+  <int value="0" label="Other section selected"/>
+  <int value="1" label="Identity section selected"/>
+  <int value="2" label="Presentation section selected"/>
+  <int value="3" label="Protocol Handlers section selected"/>
+  <int value="4" label="Icons section selected"/>
+</enum>
+
 <enum name="DevToolsMutatingHttpActionVerb">
   <int value="0" label="GET"/>
   <int value="1" label="POST"/>
