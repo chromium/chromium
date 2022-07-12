@@ -149,7 +149,8 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
 void PasswordProtectionRequestContent::OnGetDomFeatures(
     mojom::PhishingDetectorResult result,
     const std::string& verdict) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  // TODO(https://crbug.com/1309124): Convert to DCHECK() once crash is fixed.
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (dom_features_collection_complete_)
     return;
 
@@ -193,7 +194,8 @@ void PasswordProtectionRequestContent::OnGetDomFeatures(
 }
 
 void PasswordProtectionRequestContent::OnGetDomFeatureTimeout() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  // TODO(https://crbug.com/1309124): Convert to DCHECK() once crash is fixed.
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (!dom_features_collection_complete_) {
     dom_features_collection_complete_ = true;
     if (IsVisualFeaturesEnabled()) {
@@ -266,6 +268,9 @@ void PasswordProtectionRequestContent::CollectVisualFeatures() {
 
 void PasswordProtectionRequestContent::OnScreenshotTaken(
     const SkBitmap& screenshot) {
+  // TODO(https://crbug.com/1309124): Convert to DCHECK() once crash is fixed.
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
   // Do the feature extraction on a worker thread, to avoid blocking the UI.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -279,7 +284,8 @@ void PasswordProtectionRequestContent::OnScreenshotTaken(
 
 void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
     std::unique_ptr<VisualFeatures> visual_features) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  // TODO(https://crbug.com/1309124): Convert to DCHECK() once crash is fixed.
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   request_proto_->mutable_visual_features()->Swap(visual_features.get());
 
