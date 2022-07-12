@@ -3421,7 +3421,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_x64',
+          'mac_12_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_13_main',
@@ -3439,9 +3439,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          # TODO(crbug/1331347):
-          # revert this back to mac_12_x86 once all MacOS has been upgraded to 12.4+ in the pool
-          'mac_beta_x64',
+          'mac_beta_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_beta',
