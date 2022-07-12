@@ -253,6 +253,11 @@ class ASH_EXPORT AppListPresenterImpl
   absl::optional<base::Time> last_open_time_;
   absl::optional<AppListShowSource> last_open_source_;
 
+  // Whether the presenter is currently changing app list view state to shown.
+  // TODO(https://crbug.com/1307871): Remove this when the linked crash gets
+  // diagnosed.
+  bool showing_app_list_ = false;
+
   base::WeakPtrFactory<AppListPresenterImpl> weak_ptr_factory_{this};
 };
 

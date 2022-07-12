@@ -172,6 +172,11 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
     return;
   }
 
+  // TODO(https://crbug.com/1307871): Remove this when the linked crash gets
+  // diagnosed - the crash is possible if app list gets dismissed while being
+  // shown. `showing_app_list_` in intended to catch this case.
+  showing_app_list_ = true;
+
   is_target_visibility_show_ = true;
   OnVisibilityWillChange(GetTargetVisibility(), display_id);
   RequestPresentationTime(display_id, event_time_stamp);
@@ -231,6 +236,7 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   event_filter_ =
       std::make_unique<AppListPresenterEventFilter>(controller_, this, view_);
   controller_->ViewShown(display_id);
+  showing_app_list_ = false;
 
   OnVisibilityChanged(GetTargetVisibility(), display_id);
 }
@@ -242,6 +248,10 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
   // If the app list target visibility is shown, there should be an existing
   // view.
   DCHECK(view_);
+
+  // TODO(https://crbug.com/1307871): Remove this when the linked crash gets
+  // diagnosed.
+  CHECK(!showing_app_list_);
 
   is_target_visibility_show_ = false;
   RequestPresentationTime(GetDisplayId(), event_time_stamp);
