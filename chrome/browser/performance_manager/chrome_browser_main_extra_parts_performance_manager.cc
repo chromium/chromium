@@ -21,6 +21,7 @@
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
+#include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
@@ -115,7 +116,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::
-              kUrgentDiscardingFromPerformanceManager)) {
+              kUrgentDiscardingFromPerformanceManager) ||
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable) ||
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable)) {
     graph->PassToGraph(std::make_unique<
                        performance_manager::policies::PageDiscardingHelper>());
   }
@@ -183,6 +188,16 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 
   g_browser_process->profile_manager()->AddObserver(this);
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable) ||
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable)) {
+    profile_discard_opt_out_list_helper_ = std::make_unique<
+        performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
+  }
+#endif
+
   page_load_metrics_observer_ =
       std::make_unique<performance_manager::PageLoadMetricsObserver>();
   page_live_state_data_helper_ =
@@ -228,6 +243,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
 
 #if !BUILDFLAG(IS_ANDROID)
   high_efficiency_mode_policy_helper_.reset();
+  profile_discard_opt_out_list_helper_.reset();
 #endif
 
   // Releasing `performance_manager_lifetime_` will tear down the registry and
@@ -240,6 +256,15 @@ void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileAdded(
   profile_observations_.AddObservation(profile);
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->NotifyBrowserContextAdded(profile);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable) ||
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable)) {
+    profile_discard_opt_out_list_helper_->OnProfileAdded(profile);
+  }
+#endif
 }
 
 void ChromeBrowserMainExtraPartsPerformanceManager::
@@ -252,4 +277,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileWillBeDestroyed(
   profile_observations_.RemoveObservation(profile);
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->NotifyBrowserContextRemoved(profile);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable) ||
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable)) {
+    profile_discard_opt_out_list_helper_->OnProfileWillBeRemoved(profile);
+  }
+#endif
 }

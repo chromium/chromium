@@ -18,6 +18,10 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace url_matcher {
+class URLMatcher;
+}  // namespace url_matcher
+
 namespace performance_manager {
 
 namespace mechanism {
@@ -63,6 +67,10 @@ class PageDiscardingHelper : public GraphOwned,
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
 
+  void SetNoDiscardPatternsForProfile(const std::string& browser_context_id,
+                                      const std::vector<std::string>& patterns);
+  void ClearNoDiscardPatternsForProfile(const std::string& browser_context_id);
+
   void SetMockDiscarderForTesting(
       std::unique_ptr<mechanism::PageDiscarder> discarder);
   bool CanUrgentlyDiscardForTesting(
@@ -103,6 +111,9 @@ class PageDiscardingHelper : public GraphOwned,
       const PageNode* page_node,
       bool consider_minimum_protection_time = true) const;
 
+  bool IsPageOptedOutOfDiscarding(const std::string& browser_context_id,
+                                  const GURL& url) const;
+
   // NodeDataDescriber implementation:
   base::Value DescribePageNodeData(const PageNode* node) const override;
 
@@ -125,6 +136,9 @@ class PageDiscardingHelper : public GraphOwned,
   // The mechanism used to do the actual discarding.
   std::unique_ptr<performance_manager::mechanism::PageDiscarder>
       page_discarder_;
+
+  std::map<std::string, std::unique_ptr<url_matcher::URLMatcher>>
+      profiles_no_discard_patterns_;
 
   raw_ptr<Graph> graph_ = nullptr;
 

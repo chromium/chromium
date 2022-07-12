@@ -23,6 +23,8 @@
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -287,6 +289,20 @@ void PageDiscardingHelper::OnIsAudibleChanged(const PageNode* page_node) {
     last_change_to_non_audible_time_[page_node] = base::TimeTicks::Now();
 }
 
+void PageDiscardingHelper::SetNoDiscardPatternsForProfile(
+    const std::string& browser_context_id,
+    const std::vector<std::string>& patterns) {
+  std::unique_ptr<url_matcher::URLMatcher>& entry =
+      profiles_no_discard_patterns_[browser_context_id];
+  entry = std::make_unique<url_matcher::URLMatcher>();
+  url_matcher::util::AddAllowFilters(entry.get(), patterns);
+}
+
+void PageDiscardingHelper::ClearNoDiscardPatternsForProfile(
+    const std::string& browser_context_id) {
+  profiles_no_discard_patterns_.erase(browser_context_id);
+}
+
 void PageDiscardingHelper::SetMockDiscarderForTesting(
     std::unique_ptr<mechanism::PageDiscarder> discarder) {
   page_discarder_ = std::move(discarder);
@@ -376,6 +392,11 @@ PageDiscardingHelper::CanUrgentlyDiscard(
   if (!main_frame->GetURL().is_valid() || main_frame->GetURL().is_empty())
     return CanUrgentlyDiscardResult::kProtected;
 
+  if (IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
+                                 main_frame->GetURL())) {
+    return CanUrgentlyDiscardResult::kProtected;
+  }
+
   const auto* live_state_data = GetPageNodeLiveStateData(page_node);
 
   // The live state data won't be available if none of these events ever
@@ -421,6 +442,25 @@ PageDiscardingHelper::CanUrgentlyDiscard(
   // strip.
 
   return CanUrgentlyDiscardResult::kEligible;
+}
+
+bool PageDiscardingHelper::IsPageOptedOutOfDiscarding(
+    const std::string& browser_context_id,
+    const GURL& url) const {
+  if (!base::FeatureList::IsEnabled(features::kHighEfficiencyModeAvailable) &&
+      !base::FeatureList::IsEnabled(features::kBatterySaverModeAvailable)) {
+    // This list takes effect regardless of which mode the user is operating
+    // under, but its launch is gated on these finch experiments for launch
+    // considerations.
+    return false;
+  }
+
+  auto it = profiles_no_discard_patterns_.find(browser_context_id);
+  // TODO(crbug.com/1308741): Change the CHECK to a DCHECK in Sept 2022, after
+  // verifying that there are no crash reports.
+  CHECK(it != profiles_no_discard_patterns_.end());
+
+  return !it->second->MatchURL(url).empty();
 }
 
 base::Value PageDiscardingHelper::DescribePageNodeData(

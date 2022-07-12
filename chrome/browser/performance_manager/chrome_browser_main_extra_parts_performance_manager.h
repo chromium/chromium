@@ -37,6 +37,10 @@ class ExtensionWatcher;
 namespace policies {
 class HighEfficiencyModePolicyHelper;
 }
+
+namespace user_tuning {
+class ProfileDiscardOptOutListHelper;
+}
 }  // namespace performance_manager
 
 // Handles the initialization of the performance manager and a few dependent
@@ -113,6 +117,9 @@ class ChromeBrowserMainExtraPartsPerformanceManager
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<performance_manager::policies::HighEfficiencyModePolicyHelper>
       high_efficiency_mode_policy_helper_;
+  std::unique_ptr<
+      performance_manager::user_tuning::ProfileDiscardOptOutListHelper>
+      profile_discard_opt_out_list_helper_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 

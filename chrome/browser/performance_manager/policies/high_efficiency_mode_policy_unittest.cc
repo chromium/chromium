@@ -23,6 +23,10 @@ class HighEfficiencyModeTest
 
     feature_list_.InitAndEnableFeature(
         performance_manager::features::kHighEfficiencyModeAvailable);
+    // This is usually called when the profile is created. Fake it here since it
+    // doesn't happen in tests.
+    PageDiscardingHelper::GetFromGraph(graph())->SetNoDiscardPatternsForProfile(
+        static_cast<PageNode*>(page_node())->GetBrowserContextID(), {});
 
     auto policy = std::make_unique<HighEfficiencyModePolicy>();
     policy_ = policy.get();
