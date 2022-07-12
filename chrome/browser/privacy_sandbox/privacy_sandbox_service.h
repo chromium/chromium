@@ -149,9 +149,8 @@ class PrivacySandboxService : public KeyedService,
   static void SetDialogDisabledForTests(bool disabled);
 
   // Disables the Privacy Sandbox completely if |enabled| is false. If |enabled|
-  // is true, context specific as well as restriction/confirmation checks
-  // will still be performed to determine if specific APIs are available in
-  // specific contexts.
+  // is true, context specific as well as restriction checks will still be
+  // performed to determine if specific APIs are available in specific contexts.
   void SetPrivacySandboxEnabled(bool enabled);
 
   // Used by the UI to check if the API is enabled. This is a UI function ONLY.
@@ -256,7 +255,6 @@ class PrivacySandboxService : public KeyedService,
                            PrivacySandboxNoDialogDisabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            PrivacySandboxNoDialogEnabled);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest, InitializeV2Pref);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest, PrivacySandboxRestricted);
 
   // Should be used only for tests when mocking the service.
@@ -312,10 +310,6 @@ class PrivacySandboxService : public KeyedService,
     // tools/metrics/histograms/enums.xml
     kMaxValue = kNoDialogRequiredDisabled,
   };
-
-  // Potentially enables the Privacy Sandbox V2 pref if required based on
-  // feature parameters and the profiles current state.
-  void InitializePrivacySandboxV2Pref();
 
   // Helper function to actually make the metrics call for
   // LogPrivacySandboxState.

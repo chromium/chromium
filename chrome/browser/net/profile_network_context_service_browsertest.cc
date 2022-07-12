@@ -919,8 +919,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextTrustTokensBrowsertest,
       PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
   auto privacy_sandbox_delegate = std::make_unique<
       privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
-  privacy_sandbox_delegate->SetupDefaultResponse(/*restricted=*/false,
-                                                 /*confirmed=*/true);
+  privacy_sandbox_delegate->SetUpDefaultResponse(/*restricted=*/false);
   privacy_sandbox_settings->SetDelegateForTesting(
       std::move(privacy_sandbox_delegate));
   privacy_sandbox_settings->SetPrivacySandboxEnabled(true);

@@ -12,9 +12,6 @@ namespace privacy_sandbox {
 
 // Enables the third release of the Privacy Sandbox settings.
 extern const base::Feature kPrivacySandboxSettings3;
-// Determines whether the user facing controls for Privacy Sandbox Settings 3
-// should be default on.
-extern const base::FeatureParam<bool> kPrivacySandboxSettings3DefaultOn;
 // When true, the user will be shown a consent to enable the Privacy Sandbox
 // release 3, if they accept the APIs will become active. Only one of this and
 // the below notice feature should be enabled at any one time.

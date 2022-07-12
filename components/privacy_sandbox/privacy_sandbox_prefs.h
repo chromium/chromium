@@ -22,11 +22,6 @@ extern const char kPrivacySandboxApisEnabled[];
 // enabled.
 extern const char kPrivacySandboxApisEnabledV2[];
 
-// Un-synced boolean pref. This is set to true when the one-time initialization
-// of the users kPrivacySandboxApisEnabledV2 has run. Some users may have the V2
-// pref enabled by default by the PrivacySandboxService.
-extern const char kPrivacySandboxApisEnabledV2Init[];
-
 // Synced boolean that indicates if a user has manually toggled the settings
 // associated with the PrivacySandboxSettings feature.
 // TODO(crbug.com/1292898): Deprecate this preference once all users have been

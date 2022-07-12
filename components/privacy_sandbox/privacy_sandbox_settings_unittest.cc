@@ -70,8 +70,7 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
   }
 
   virtual void InitializeDelegateBeforeStart() {
-    mock_delegate()->SetupDefaultResponse(/*restricted=*/false,
-                                          /*confirmed=*/true);
+    mock_delegate()->SetUpDefaultResponse(/*restricted=*/false);
   }
 
   virtual bool IsIncognitoProfile() { return false; }
@@ -906,9 +905,6 @@ class PrivacySandboxSettingsMockDelegateTest
 TEST_P(PrivacySandboxSettingsMockDelegateTest, IsPrivacySandboxRestricted) {
   // When the sandbox is otherwise enabled, the delegate returning true for
   // IsPrivacySandboxRestricted() should disable the sandbox.
-  ON_CALL(*mock_delegate(), IsPrivacySandboxConfirmed).WillByDefault([=]() {
-    return true;
-  });
   privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
   EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
       .Times(1)
@@ -925,32 +921,6 @@ TEST_P(PrivacySandboxSettingsMockDelegateTest, IsPrivacySandboxRestricted) {
   EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
       .Times(1)
       .WillOnce(testing::Return(false));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
-}
-
-TEST_P(PrivacySandboxSettingsMockDelegateTest, IsPrivacySandboxConfirmed) {
-  // When the sandbox is otherwise enabled, the delegate returning false for
-  // IsPrivacySandboxConfirmed() should disable the sandbox.
-  ON_CALL(*mock_delegate(), IsPrivacySandboxRestricted).WillByDefault([=]() {
-    return false;
-  });
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
-  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxConfirmed())
-      .Times(1)
-      .WillOnce(testing::Return(false));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
-
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
-  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxConfirmed())
-      .Times(1)
-      .WillOnce(testing::Return(true));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
-
-  // The delegate should not override a disabled sandbox.
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
-  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxConfirmed())
-      .Times(1)
-      .WillOnce(testing::Return(true));
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
 }
 

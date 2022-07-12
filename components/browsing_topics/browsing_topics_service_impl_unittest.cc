@@ -174,8 +174,7 @@ class BrowsingTopicsServiceImplTest
 
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
-    privacy_sandbox_delegate->SetupDefaultResponse(/*restricted=*/false,
-                                                   /*confirmed=*/true);
+    privacy_sandbox_delegate->SetUpDefaultResponse(/*restricted=*/false);
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettings>(
             std::move(privacy_sandbox_delegate),

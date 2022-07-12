@@ -351,12 +351,9 @@ bool PrivacySandboxSettings::IsSharedStorageAllowed(
 }
 
 bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
-  // If the delegate is restricting access, or indicates confirmation has not
-  // occurred, the Privacy Sandbox is disabled.
-  if (delegate_->IsPrivacySandboxRestricted() ||
-      !delegate_->IsPrivacySandboxConfirmed()) {
+  // If the delegate is restricting access the Privacy Sandbox is disabled.
+  if (delegate_->IsPrivacySandboxRestricted())
     return false;
-  }
 
   // For Measurement and Relevance APIs, we explicitly do not require the
   // underlying pref to be enabled if there is a local flag enabling the APIs to

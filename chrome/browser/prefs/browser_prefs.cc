@@ -773,6 +773,8 @@ const char kPrivacySandboxFlocDataAccessibleSince[] =
     "privacy_sandbox.floc_data_accessible_since";
 const char kStabilityCrashCount[] =
     "user_experience_metrics.stability.crash_count";
+const char kPrivacySandboxApisEnabledV2Init[] =
+    "privacy_sandbox.apis_enabled_v2_init";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1021,6 +1023,7 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 07/2022
   registry->RegisterBooleanPref(kPrivacySandboxFlocEnabled, true);
   registry->RegisterBooleanPref(kPrivacySandboxFlocDataAccessibleSince, false);
+  registry->RegisterBooleanPref(kPrivacySandboxApisEnabledV2Init, false);
 }
 
 }  // namespace
@@ -2003,6 +2006,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 07/2022
   profile_prefs->ClearPref(kPrivacySandboxFlocEnabled);
   profile_prefs->ClearPref(kPrivacySandboxFlocDataAccessibleSince);
+  profile_prefs->ClearPref(kPrivacySandboxApisEnabledV2Init);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

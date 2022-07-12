@@ -85,7 +85,7 @@ class TestInterestGroupManager : public content::InterestGroupManager {
 class MockPrivacySandboxSettings
     : public privacy_sandbox::PrivacySandboxSettings {
  public:
-  void SetupDefaultResponse() {
+  void SetUpDefaultResponse() {
     ON_CALL(*this, IsPrivacySandboxRestricted).WillByDefault([]() {
       return false;
     });
@@ -673,8 +673,7 @@ class PrivacySandboxServiceTest : public testing::Test {
   GetMockDelegate() {
     auto mock_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
-    mock_delegate->SetupDefaultResponse(/*restricted=*/false,
-                                        /*confirmed=*/true);
+    mock_delegate->SetUpDefaultResponse(/*restricted=*/false);
     return mock_delegate;
   }
 
@@ -1354,64 +1353,6 @@ TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(kTestTopic));
 }
 
-TEST_F(PrivacySandboxServiceTest, InitializeV2Pref) {
-  // Check that when the feature + parameters dictate, the V2 preference is
-  // turned on.
-  feature_list()->InitAndDisableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
-  privacy_sandbox_service()->InitializePrivacySandboxV2Pref();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-  prefs()->RemoveUserPref(prefs::kPrivacySandboxApisEnabledV2Init);
-
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
-  privacy_sandbox_service()->InitializePrivacySandboxV2Pref();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-  prefs()->RemoveUserPref(prefs::kPrivacySandboxApisEnabledV2Init);
-
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings3,
-      {{"setting-default-on", "true"}});
-  privacy_sandbox_service()->InitializePrivacySandboxV2Pref();
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-  prefs()->RemoveUserPref(prefs::kPrivacySandboxApisEnabledV2);
-  prefs()->RemoveUserPref(prefs::kPrivacySandboxApisEnabledV2Init);
-
-  // Blocking 3PC should prevent the pref from being enabled.
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  privacy_sandbox_service()->InitializePrivacySandboxV2Pref();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-  prefs()->RemoveUserPref(prefs::kPrivacySandboxApisEnabledV2Init);
-  prefs()->RemoveUserPref(prefs::kCookieControlsMode);
-
-  // Blocking all cookies should prevent the pref from being enabled.
-  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
-  privacy_sandbox_service()->InitializePrivacySandboxV2Pref();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-  prefs()->RemoveUserPref(prefs::kPrivacySandboxApisEnabledV2Init);
-  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
-
-  // Having a disabled Privacy Sandbox V1 control should prevent the pref from
-  // being enabled.
-  prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
-  privacy_sandbox_service()->InitializePrivacySandboxV2Pref();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-  prefs()->RemoveUserPref(prefs::kPrivacySandboxApisEnabledV2Init);
-  prefs()->RemoveUserPref(prefs::kPrivacySandboxApisEnabled);
-
-  // Otherwise the pref should be enabled, but only once.
-  privacy_sandbox_service()->InitializePrivacySandboxV2Pref();
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-  prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
-  privacy_sandbox_service()->InitializePrivacySandboxV2Pref();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
   // No prompt should be shown if the user is associated with a device local
@@ -1465,49 +1406,6 @@ TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
             privacy_sandbox_service()->GetRequiredPromptType());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-class PrivacySandboxPrefInitTest : public PrivacySandboxServiceTest {
-  void SetUp() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings3,
-        {{"setting-default-on", "true"}});
-    PrivacySandboxServiceTest::SetUp();
-  }
-};
-
-TEST_F(PrivacySandboxPrefInitTest, InitalizeV2PrefOnStartup) {
-  // Confirm that the V2 pref has been initialized as part of the service
-  // startup. Conditions for initialization were set in the test creation.
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-}
-
-class PrivacySandboxRestrictedTest : public PrivacySandboxServiceTest {
- public:
-  void SetUp() override {
-    prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
-    // A restriction should override a default on preference.
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings3,
-        {{"setting-default-on", "true"}});
-    PrivacySandboxServiceTest::SetUp();
-  }
-
-  std::unique_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
-  GetMockDelegate() override {
-    auto mock_delegate = std::make_unique<
-        privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
-    mock_delegate->SetupDefaultResponse(/*restricted=*/true,
-                                        /*confirmed=*/false);
-    return mock_delegate;
-  }
-};
-
-TEST_F(PrivacySandboxRestrictedTest, DisablePreferenceOnStartup) {
-  // Confirm that because it is restricted, the Privacy Sandbox, which will have
-  // been enabled in the test setup, has been disabled by the service during
-  // creation.
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
-}
 
 TEST_F(PrivacySandboxServiceTest, TestNoFakeTopics) {
   auto* service = privacy_sandbox_service();
@@ -2252,7 +2150,7 @@ class PrivacySandboxServiceDeathTest
 
 TEST_P(PrivacySandboxServiceDeathTest, GetRequiredPromptType) {
   const auto& test_case = kDialogTestCases[GetParam()];
-  privacy_sandbox_settings()->SetupDefaultResponse();
+  privacy_sandbox_settings()->SetUpDefaultResponse();
 
   testing::Message scope_message;
   scope_message << "consent_required:" << test_case.test_setup.consent_required

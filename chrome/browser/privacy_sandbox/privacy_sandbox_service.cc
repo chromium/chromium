@@ -119,11 +119,6 @@ PrivacySandboxService::PrivacySandboxService(
       base::BindRepeating(&PrivacySandboxService::OnPrivacySandboxV2PrefChanged,
                           base::Unretained(this)));
 
-  // When the user enters the Privacy Sandbox 3 experiment, the default value
-  // of their V2 pref must be set. This is a one time operation that is checked
-  // here to ensure it runs on profile startup.
-  InitializePrivacySandboxV2Pref();
-
   // If the Sandbox is currently restricted, disable the V2 preference. The user
   // must manually enable the sandbox if they stop being restricted.
   if (IsPrivacySandboxRestricted())
@@ -357,39 +352,6 @@ void PrivacySandboxService::SetFledgeJoiningAllowed(
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
         std::move(filter));
   }
-}
-
-void PrivacySandboxService::InitializePrivacySandboxV2Pref() {
-  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
-    return;
-
-  // The initialization process may turn a preference which is otherwise default
-  // off, on. The default setting for the user is provided by Finch and may
-  // change over time (e.g. location change). This init logic is however only
-  // ever performed once per profile, and so will not attempt to enable if the
-  // user changes location.
-  if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2Init))
-    return;
-
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2Init, true);
-
-  // This logic should run before the user has had an opporunity to interact
-  // with the Privacy Sandbox controls.
-  DCHECK(
-      !pref_service_->GetBoolean(prefs::kPrivacySandboxManuallyControlledV2));
-
-  // Users must have the V1 sandbox enabled, 3P cookies enabled, and the
-  // appropriate feature parameter for the V2 pref to be default enabled.
-  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
-    return;
-
-  if (AreThirdPartyCookiesBlocked(cookie_settings_))
-    return;
-
-  if (!privacy_sandbox::kPrivacySandboxSettings3DefaultOn.Get())
-    return;
-
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, true);
 }
 
 void PrivacySandboxService::RecordPrivacySandboxHistogram(
