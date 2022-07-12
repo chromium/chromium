@@ -57,13 +57,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuth2AccessTokenConsumer* consumer) override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
-  void UpdateAuthError(const CoreAccountId& account_id,
-                       const GoogleServiceAuthError& error) override;
-  void UpdateAuthErrorInternal(const CoreAccountId& account_id,
-                               const GoogleServiceAuthError& error,
-                               bool fire_auth_error_changed = true);
-  GoogleServiceAuthError GetAuthError(
-      const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
   void LoadCredentials(const CoreAccountId& primary_account_id,
                        bool is_syncing) override;
@@ -73,7 +66,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
       const override;
   void RevokeCredentials(const CoreAccountId& account_id) override;
   void RevokeAllCredentials() override;
-  const net::BackoffEntry* BackoffEntry() const override;
 
   // `account_manager::AccountManagerFacade::Observer` overrides.
   void OnAccountUpserted(const account_manager::Account& account) override;
@@ -83,17 +75,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateChromeOSTest,
-                           BackOffIsTriggerredForTransientErrors);
-  FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateChromeOSTest,
-                           BackOffIsResetOnNetworkChange);
-
-  // A utility class to keep track of |GoogleServiceAuthError|s for an account.
-  struct AccountErrorStatus {
-    // The last auth error seen.
-    GoogleServiceAuthError last_auth_error;
-  };
-
+  friend class TestProfileOAuth2TokenServiceDelegateChromeOS;
   // Callback handler for `account_manager::AccountManagerFacade::GetAccounts`.
   void OnGetAccounts(const std::vector<account_manager::Account>& accounts);
 
@@ -122,13 +104,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
 
   // A cache of AccountKeys.
   std::set<account_manager::AccountKey> account_keys_;
-
-  // A map from account id to the last seen error for that account.
-  std::map<CoreAccountId, AccountErrorStatus> errors_;
-
-  // Used to rate-limit token fetch requests so as to not overload the server.
-  net::BackoffEntry backoff_entry_;
-  GoogleServiceAuthError backoff_error_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool delete_signin_cookies_on_exit_;

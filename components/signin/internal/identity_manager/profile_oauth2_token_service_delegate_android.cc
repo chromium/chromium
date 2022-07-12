@@ -149,7 +149,8 @@ std::string AndroidAccessTokenFetcher::CombineScopes(
 ProfileOAuth2TokenServiceDelegateAndroid::
     ProfileOAuth2TokenServiceDelegateAndroid(
         AccountTrackerService* account_tracker_service)
-    : account_tracker_service_(account_tracker_service),
+    : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/false),
+      account_tracker_service_(account_tracker_service),
       fire_refresh_token_loaded_(RT_LOAD_NOT_START) {
   DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::ctor";
   DCHECK(account_tracker_service_);
@@ -191,35 +192,6 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
       signin::Java_ProfileOAuth2TokenServiceDelegate_hasOAuth2RefreshToken(
           env, java_ref_, j_account_name);
   return refresh_token_is_available == JNI_TRUE;
-}
-
-GoogleServiceAuthError ProfileOAuth2TokenServiceDelegateAndroid::GetAuthError(
-    const CoreAccountId& account_id) const {
-  auto it = errors_.find(account_id);
-  return (it == errors_.end()) ? GoogleServiceAuthError::AuthErrorNone()
-                               : it->second;
-}
-
-void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAuthError(
-    const CoreAccountId& account_id,
-    const GoogleServiceAuthError& error) {
-  DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::UpdateAuthError"
-           << " account=" << account_id << " error=" << error.ToString();
-
-  if (error.IsTransientError())
-    return;
-
-  auto it = errors_.find(account_id);
-  if (error.state() == GoogleServiceAuthError::NONE) {
-    if (it == errors_.end())
-      return;
-    errors_.erase(it);
-  } else {
-    if (it != errors_.end() && it->second == error)
-      return;
-    errors_[account_id] = error;
-  }
-  FireAuthErrorChanged(account_id, error);
 }
 
 std::vector<CoreAccountId>
@@ -320,7 +292,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
            << " prev_ids=" << prev_ids.size()
            << " curr_ids=" << curr_ids.size();
   // Clear any auth errors so that client can retry to get access tokens.
-  errors_.clear();
+  ClearAuthError(absl::nullopt);
 
   std::vector<CoreAccountId> refreshed_ids;
   std::vector<CoreAccountId> revoked_ids;

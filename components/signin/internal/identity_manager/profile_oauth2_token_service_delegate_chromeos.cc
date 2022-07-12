@@ -23,23 +23,6 @@ namespace signin {
 
 namespace {
 
-// Values used from |MutableProfileOAuth2TokenServiceDelegate|.
-const net::BackoffEntry::Policy kBackoffPolicy = {
-    0 /* int num_errors_to_ignore */,
-
-    1000 /* int initial_delay_ms */,
-
-    2.0 /* double multiply_factor */,
-
-    0.2 /* double jitter_factor */,
-
-    15 * 60 * 1000 /* int64_t maximum_backoff_ms */,
-
-    -1 /* int64_t entry_lifetime_ms */,
-
-    false /* bool always_use_initial_delay */,
-};
-
 // Maps crOS Account Manager |account_keys| to the account id representation
 // used by the OAuth token service chain. |account_keys| can safely contain Gaia
 // and non-Gaia accounts. Non-Gaia accounts will be filtered out.
@@ -147,12 +130,11 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
         bool delete_signin_cookies_on_exit,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
         bool is_regular_profile)
-    : signin_client_(signin_client),
+    : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true),
+      signin_client_(signin_client),
       account_tracker_service_(account_tracker_service),
       network_connection_tracker_(network_connection_tracker),
       account_manager_facade_(account_manager_facade),
-      backoff_entry_(&kBackoffPolicy),
-      backoff_error_(GoogleServiceAuthError::NONE),
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       delete_signin_cookies_on_exit_(delete_signin_cookies_on_exit),
 #endif
@@ -182,21 +164,21 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
   // Check if we need to reject the request.
   // We will reject the request if we are facing a persistent error for this
   // account.
-  auto it = errors_.find(account_id);
-  if (it != errors_.end() && it->second.last_auth_error.IsPersistentError()) {
+  GoogleServiceAuthError error = GetAuthError(account_id);
+  if (error.IsPersistentError()) {
     VLOG(1) << "Request for token has been rejected due to persistent error #"
-            << it->second.last_auth_error.state();
+            << error.state();
     // |ProfileOAuth2TokenService| will manage the lifetime of this pointer.
-    return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
-        consumer, it->second.last_auth_error);
+    return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(consumer,
+                                                                    error);
   }
   // Or when we need to backoff.
-  if (backoff_entry_.ShouldRejectRequest()) {
+  if (BackoffEntry()->ShouldRejectRequest()) {
     VLOG(1) << "Request for token has been rejected due to backoff rules from"
-            << " previous error #" << backoff_error_.state();
+            << " previous error #" << BackOffError().state();
     // |ProfileOAuth2TokenService| will manage the lifetime of this pointer.
     return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
-        consumer, backoff_error_);
+        consumer, BackOffError());
   }
 
   return account_manager_facade_->CreateAccessTokenFetcher(
@@ -222,56 +204,6 @@ bool ProfileOAuth2TokenServiceDelegateChromeOS::RefreshTokenIsAvailable(
   return base::Contains(GetOAuthAccountIdsFromAccountKeys(
                             account_keys_, account_tracker_service_),
                         account_id);
-}
-
-void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
-    const CoreAccountId& account_id,
-    const GoogleServiceAuthError& error) {
-  UpdateAuthErrorInternal(account_id, error, /*fire_auth_error_changed=*/true);
-}
-
-void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthErrorInternal(
-    const CoreAccountId& account_id,
-    const GoogleServiceAuthError& error,
-    bool fire_auth_error_changed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  backoff_entry_.InformOfRequest(!error.IsTransientError());
-  ValidateAccountId(account_id);
-  if (error.IsTransientError()) {
-    backoff_error_ = error;
-    return;
-  }
-
-  auto it = errors_.find(account_id);
-  if (it != errors_.end()) {
-    if (error == it->second.last_auth_error)
-      return;
-    // Update the existing error.
-    if (error.state() == GoogleServiceAuthError::NONE)
-      errors_.erase(it);
-    else
-      it->second.last_auth_error = error;
-    if (fire_auth_error_changed) {
-      FireAuthErrorChanged(account_id, error);
-    }
-  } else if (error.state() != GoogleServiceAuthError::NONE) {
-    // Add a new error.
-    errors_.emplace(account_id, AccountErrorStatus{error});
-    if (fire_auth_error_changed) {
-      FireAuthErrorChanged(account_id, error);
-    }
-  }
-}
-
-GoogleServiceAuthError ProfileOAuth2TokenServiceDelegateChromeOS::GetAuthError(
-    const CoreAccountId& account_id) const {
-  auto it = errors_.find(account_id);
-  if (it != errors_.end()) {
-    return it->second.last_auth_error;
-  }
-
-  return GoogleServiceAuthError::AuthErrorNone();
 }
 
 // Note: This method should use the same logic for filtering accounts as
@@ -458,8 +390,8 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::FinishAddingPendingAccount(
 
   // Don't call |FireAuthErrorChanged|, since we call it at the end of this
   // function.
-  UpdateAuthErrorInternal(account_id, error,
-                          /*fire_auth_error_changed=*/false);
+  UpdateAuthError(account_id, error,
+                  /*fire_auth_error_changed=*/false);
 
   ScopedBatchChange batch(this);
   FireRefreshTokenAvailable(account_id);
@@ -524,8 +456,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
           ->FindAccountInfoByGaiaId(account.key.id() /* gaia_id */)
           .account_id;
   DCHECK(!account_id.empty());
-  UpdateAuthErrorInternal(account_id, GoogleServiceAuthError::AuthErrorNone(),
-                          /*fire_auth_error_changed=*/false);
+  ClearAuthError(account_id);
 
   ScopedBatchChange batch(this);
 
@@ -560,14 +491,9 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentials() {
 #endif
 }
 
-const net::BackoffEntry*
-ProfileOAuth2TokenServiceDelegateChromeOS::BackoffEntry() const {
-  return &backoff_entry_;
-}
-
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnConnectionChanged(
     network::mojom::ConnectionType type) {
-  backoff_entry_.Reset();
+  ResetBackOffEntry();
 }
 
 }  // namespace signin

@@ -41,10 +41,6 @@ class ProfileOAuth2TokenServiceIOSDelegate
   void Shutdown() override;
 
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
-  GoogleServiceAuthError GetAuthError(
-      const CoreAccountId& account_id) const override;
-  void UpdateAuthError(const CoreAccountId& account_id,
-                       const GoogleServiceAuthError& error) override;
 
   void LoadCredentials(const CoreAccountId& primary_account_id,
                        bool is_syncing) override;
@@ -76,21 +72,13 @@ class ProfileOAuth2TokenServiceIOSDelegate
  private:
   friend class ProfileOAuth2TokenServiceIOSDelegateTest;
 
-  struct AccountStatus {
-    GoogleServiceAuthError last_auth_error;
-  };
-
-  // Maps the |account_id| of accounts known to ProfileOAuth2TokenService
-  // to information about the account.
-  typedef std::map<CoreAccountId, AccountStatus> AccountStatusMap;
-
   // Reloads accounts from the provider. Fires |OnRefreshTokenAvailable| for
   // each new account. Fires |OnRefreshTokenRevoked| for each account that was
   // removed.
   void ReloadCredentials(const CoreAccountId& primary_account_id);
 
   // Info about the existing accounts.
-  AccountStatusMap accounts_;
+  std::set<CoreAccountId> accounts_;
 
   // Calls to this class are expected to be made from the browser UI thread.
   // The purpose of this checker is to detect access to

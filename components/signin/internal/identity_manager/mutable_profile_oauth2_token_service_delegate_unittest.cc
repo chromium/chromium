@@ -264,8 +264,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account_id));
   EXPECT_EQ(GaiaConstants::kInvalidRefreshToken,
-            oauth2_service_delegate_->refresh_tokens_[primary_account_id]
-                .refresh_token);
+            oauth2_service_delegate_->refresh_tokens_[primary_account_id]);
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -406,13 +405,13 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // LoadCredentials() guarantees that the account given to it as argument
   // is in the refresh_token map.
   EXPECT_EQ(1U, oauth2_service_delegate_->refresh_tokens_.size());
-  EXPECT_EQ(
-      GaiaConstants::kInvalidRefreshToken,
-      oauth2_service_delegate_->refresh_tokens_[account_id].refresh_token);
+  EXPECT_EQ(GaiaConstants::kInvalidRefreshToken,
+            oauth2_service_delegate_->refresh_tokens_[account_id]);
   // Setup a DB with tokens that don't require upgrade and clear memory.
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   oauth2_service_delegate_->UpdateCredentials(account_id2, "refresh_token2");
   oauth2_service_delegate_->refresh_tokens_.clear();
+  oauth2_service_delegate_->ClearAuthError(absl::nullopt);
   EXPECT_EQ(2, end_batch_changes_);
   EXPECT_EQ(2, auth_error_changed_count_);
   ResetObserverCounts();
@@ -477,6 +476,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   oauth2_service_delegate_->UpdateCredentials(account_id2, "refresh_token2");
   oauth2_service_delegate_->refresh_tokens_.clear();
+  oauth2_service_delegate_->ClearAuthError(absl::nullopt);
   EXPECT_EQ(2, end_batch_changes_);
   EXPECT_EQ(2, auth_error_changed_count_);
   ResetObserverCounts();
@@ -862,11 +862,11 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RetryBackoff) {
   EXPECT_EQ(0, access_token_success_count_);
   EXPECT_EQ(1, access_token_failure_count_);
   // Expect a positive backoff time.
-  EXPECT_GT(oauth2_service_delegate_->backoff_entry_.GetTimeUntilRelease(),
+  EXPECT_GT(oauth2_service_delegate_->BackoffEntry()->GetTimeUntilRelease(),
             base::TimeDelta());
 
   // Pretend that backoff has expired and try again.
-  oauth2_service_delegate_->backoff_entry_.SetCustomReleaseTime(
+  oauth2_service_delegate_->backoff_entry_->SetCustomReleaseTime(
       base::TimeTicks());
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher2 =
       oauth2_service_delegate_->CreateAccessTokenFetcher(

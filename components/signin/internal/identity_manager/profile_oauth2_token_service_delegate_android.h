@@ -44,10 +44,7 @@ class ProfileOAuth2TokenServiceDelegateAndroid
 
   // ProfileOAuth2TokenServiceDelegate overrides:
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
-  GoogleServiceAuthError GetAuthError(
-      const CoreAccountId& account_id) const override;
-  void UpdateAuthError(const CoreAccountId& account_id,
-                       const GoogleServiceAuthError& error) override;
+
   std::vector<CoreAccountId> GetAccounts() const override;
 
   // Overridden from ProfileOAuth2TokenService to complete signout of all

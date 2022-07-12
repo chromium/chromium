@@ -55,16 +55,9 @@ class MutableProfileOAuth2TokenServiceDelegate
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuth2AccessTokenConsumer* consumer) override;
 
-  // Updates the internal cache of the result from the most-recently-completed
-  // auth request (used for reporting errors to the user).
-  void UpdateAuthError(const CoreAccountId& account_id,
-                       const GoogleServiceAuthError& error) override;
-
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
-  GoogleServiceAuthError GetAuthError(
-      const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
@@ -81,9 +74,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Overridden from NetworkConnectionTracker::NetworkConnectionObserver.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  // Overridden from ProfileOAuth2TokenServiceDelegate.
-  const net::BackoffEntry* BackoffEntry() const override;
-
   bool FixRequestErrorIfPossible() override;
 
   // Returns the account's refresh token used for testing purposes.
@@ -93,11 +83,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   friend class MutableProfileOAuth2TokenServiceDelegateTest;
 
   class RevokeServerRefreshToken;
-
-  struct AccountStatus {
-    std::string refresh_token;
-    GoogleServiceAuthError last_auth_error;
-  };
 
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            PersistenceDBUpgrade);
@@ -131,8 +116,6 @@ class MutableProfileOAuth2TokenServiceDelegate
                            LoadInvalidToken);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            GetAccounts);
-  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
-                           RetryBackoff);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            CanonicalizeAccountId);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -196,11 +179,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   void RevokeCredentialsImpl(const CoreAccountId& account_id,
                              bool revoke_on_server);
 
-  // Maps the |account_id| of accounts known to ProfileOAuth2TokenService
-  // to information about the account.
-  typedef std::map<CoreAccountId, AccountStatus> AccountStatusMap;
   // In memory refresh token store mapping account_id to refresh_token.
-  AccountStatusMap refresh_tokens_;
+  std::map<CoreAccountId, std::string> refresh_tokens_;
 
   // Handle to the request reading tokens from database.
   WebDataServiceBase::Handle web_data_service_request_;
@@ -214,11 +194,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Used to verify that certain methods are called only on the thread on which
   // this instance was created.
   THREAD_CHECKER(thread_checker_);
-
-  // Used to rate-limit network token requests so as to not overload the server.
-  net::BackoffEntry::Policy backoff_policy_;
-  net::BackoffEntry backoff_entry_;
-  GoogleServiceAuthError backoff_error_;
 
   raw_ptr<SigninClient> client_;
   raw_ptr<AccountTrackerService> account_tracker_service_;

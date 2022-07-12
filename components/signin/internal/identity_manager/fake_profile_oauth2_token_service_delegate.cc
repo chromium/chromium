@@ -13,34 +13,11 @@
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 
-namespace {
-// Values used from |MutableProfileOAuth2TokenServiceDelegate|.
-const net::BackoffEntry::Policy kBackoffPolicy = {
-    0 /* int num_errors_to_ignore */,
-
-    1000 /* int initial_delay_ms */,
-
-    2.0 /* double multiply_factor */,
-
-    0.2 /* double jitter_factor */,
-
-    15 * 60 * 1000 /* int64_t maximum_backoff_ms */,
-
-    -1 /* int64_t entry_lifetime_ms */,
-
-    false /* bool always_use_initial_delay */,
-};
-}  // namespace
-
-FakeProfileOAuth2TokenServiceDelegate::AccountInfo::AccountInfo(
-    const std::string& refresh_token)
-    : refresh_token(refresh_token), error(GoogleServiceAuthError::NONE) {}
-
 FakeProfileOAuth2TokenServiceDelegate::FakeProfileOAuth2TokenServiceDelegate()
-    : shared_factory_(
+    : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true),
+      shared_factory_(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)),
-      backoff_entry_(&kBackoffPolicy) {}
+              &test_url_loader_factory_)) {}
 
 FakeProfileOAuth2TokenServiceDelegate::
     ~FakeProfileOAuth2TokenServiceDelegate() = default;
@@ -54,7 +31,7 @@ FakeProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
   DCHECK(it != refresh_tokens_.end());
   return GaiaAccessTokenFetcher::
       CreateExchangeRefreshTokenForAccessTokenInstance(
-          consumer, url_loader_factory, it->second->refresh_token);
+          consumer, url_loader_factory, it->second);
 }
 
 bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable(
@@ -62,24 +39,12 @@ bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable(
   return !GetRefreshToken(account_id).empty();
 }
 
-GoogleServiceAuthError FakeProfileOAuth2TokenServiceDelegate::GetAuthError(
-    const CoreAccountId& account_id) const {
-  auto it = refresh_tokens_.find(account_id);
-  return (it == refresh_tokens_.end()) ? GoogleServiceAuthError::AuthErrorNone()
-                                       : it->second->error;
-}
-
 std::string FakeProfileOAuth2TokenServiceDelegate::GetRefreshToken(
     const CoreAccountId& account_id) const {
   auto it = refresh_tokens_.find(account_id);
   if (it != refresh_tokens_.end())
-    return it->second->refresh_token;
+    return it->second;
   return std::string();
-}
-
-const net::BackoffEntry* FakeProfileOAuth2TokenServiceDelegate::BackoffEntry()
-    const {
-  return &backoff_entry_;
 }
 
 std::vector<CoreAccountId> FakeProfileOAuth2TokenServiceDelegate::GetAccounts()
@@ -123,23 +88,27 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
   if (token.empty()) {
     base::Erase(account_ids_, account_id);
     refresh_tokens_.erase(account_id);
+    ClearAuthError(account_id);
     FireRefreshTokenRevoked(account_id);
   } else {
     // Look for the account ID in the list, and if it is not present append it.
     if (base::ranges::find(account_ids_, account_id) == account_ids_.end()) {
       account_ids_.push_back(account_id);
     }
-    refresh_tokens_[account_id] = std::make_unique<AccountInfo>(token);
+    refresh_tokens_[account_id] = token;
     // If the token is a special "invalid" value, then that means the token was
     // rejected by the client and is thus not valid. So set the appropriate
     // error in that case. This logic is essentially duplicated from
     // MutableProfileOAuth2TokenServiceDelegate.
-    if (token == GaiaConstants::kInvalidRefreshToken) {
-      refresh_tokens_[account_id]->error =
-          GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-              GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                  CREDENTIALS_REJECTED_BY_CLIENT);
-    }
+    GoogleServiceAuthError error =
+        token == GaiaConstants::kInvalidRefreshToken
+            ? GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                  GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                      CREDENTIALS_REJECTED_BY_CLIENT)
+            : GoogleServiceAuthError(GoogleServiceAuthError::NONE);
+    UpdateAuthError(account_id, error,
+                    /*fire_auth_error_changed=*/false);
+
     FireRefreshTokenAvailable(account_id);
   }
 }
@@ -154,8 +123,7 @@ void FakeProfileOAuth2TokenServiceDelegate::ExtractCredentials(
     const CoreAccountId& account_id) {
   auto it = refresh_tokens_.find(account_id);
   DCHECK(it != refresh_tokens_.end());
-  to_service->GetDelegate()->UpdateCredentials(account_id,
-                                               it->second->refresh_token);
+  to_service->GetDelegate()->UpdateCredentials(account_id, it->second);
   RevokeCredentials(account_id);
 }
 
@@ -166,25 +134,6 @@ FakeProfileOAuth2TokenServiceDelegate::GetURLLoaderFactory() const {
 
 bool FakeProfileOAuth2TokenServiceDelegate::FixRequestErrorIfPossible() {
   return fix_request_if_possible_;
-}
-
-void FakeProfileOAuth2TokenServiceDelegate::UpdateAuthError(
-    const CoreAccountId& account_id,
-    const GoogleServiceAuthError& error) {
-  backoff_entry_.InformOfRequest(!error.IsTransientError());
-  // Drop transient errors to match ProfileOAuth2TokenService's stated contract
-  // for GetAuthError() and to allow clients to test proper behavior in the case
-  // of transient errors.
-  if (error.IsTransientError())
-    return;
-
-  if (GetAuthError(account_id) == error)
-    return;
-
-  auto it = refresh_tokens_.find(account_id);
-  DCHECK(it != refresh_tokens_.end());
-  it->second->error = error;
-  FireAuthErrorChanged(account_id, error);
 }
 
 #if BUILDFLAG(IS_ANDROID)

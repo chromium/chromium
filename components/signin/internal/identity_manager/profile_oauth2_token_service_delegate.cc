@@ -9,6 +9,26 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+
+const net::BackoffEntry::Policy kBackoffPolicy = {
+    0 /* int num_errors_to_ignore */,
+
+    1000 /* int initial_delay_ms */,
+
+    2.0 /* double multiply_factor */,
+
+    0.2 /* double jitter_factor */,
+
+    15 * 60 * 1000 /* int64_t maximum_backoff_ms (15 minutes) */,
+
+    -1 /* int64_t entry_lifetime_ms */,
+
+    false /* bool always_use_initial_delay */,
+};
+
+}  // namespace
+
 ProfileOAuth2TokenServiceDelegate::ScopedBatchChange::ScopedBatchChange(
     ProfileOAuth2TokenServiceDelegate* delegate)
     : delegate_(delegate) {
@@ -20,8 +40,12 @@ ProfileOAuth2TokenServiceDelegate::ScopedBatchChange::~ScopedBatchChange() {
   delegate_->EndBatchChanges();
 }
 
-ProfileOAuth2TokenServiceDelegate::ProfileOAuth2TokenServiceDelegate()
-    : batch_change_depth_(0) {}
+ProfileOAuth2TokenServiceDelegate::ProfileOAuth2TokenServiceDelegate(
+    bool use_backoff)
+    : batch_change_depth_(0) {
+  if (use_backoff)
+    backoff_entry_ = std::make_unique<net::BackoffEntry>(&kBackoffPolicy);
+}
 
 ProfileOAuth2TokenServiceDelegate::~ProfileOAuth2TokenServiceDelegate() =
     default;
@@ -107,11 +131,6 @@ ProfileOAuth2TokenServiceDelegate::GetURLLoaderFactory() const {
   return nullptr;
 }
 
-GoogleServiceAuthError ProfileOAuth2TokenServiceDelegate::GetAuthError(
-    const CoreAccountId& account_id) const {
-  return GoogleServiceAuthError::AuthErrorNone();
-}
-
 std::vector<CoreAccountId> ProfileOAuth2TokenServiceDelegate::GetAccounts()
     const {
   return std::vector<CoreAccountId>();
@@ -119,7 +138,7 @@ std::vector<CoreAccountId> ProfileOAuth2TokenServiceDelegate::GetAccounts()
 
 const net::BackoffEntry* ProfileOAuth2TokenServiceDelegate::BackoffEntry()
     const {
-  return nullptr;
+  return backoff_entry_.get();
 }
 
 void ProfileOAuth2TokenServiceDelegate::LoadCredentials(
@@ -139,4 +158,79 @@ void ProfileOAuth2TokenServiceDelegate::ExtractCredentials(
 
 bool ProfileOAuth2TokenServiceDelegate::FixRequestErrorIfPossible() {
   return false;
+}
+
+GoogleServiceAuthError ProfileOAuth2TokenServiceDelegate::GetAuthError(
+    const CoreAccountId& account_id) const {
+  auto it = errors_.find(account_id);
+  return (it == errors_.end()) ? GoogleServiceAuthError::AuthErrorNone()
+                               : it->second;
+}
+
+void ProfileOAuth2TokenServiceDelegate::UpdateAuthError(
+    const CoreAccountId& account_id,
+    const GoogleServiceAuthError& error,
+    bool fire_auth_error_changed) {
+  DVLOG(1) << "ProfileOAuth2TokenServiceDelegate::UpdateAuthError"
+           << " account=" << account_id << " error=" << error.ToString();
+
+  if (!RefreshTokenIsAvailable(account_id)) {
+    DLOG(ERROR) << "Update auth error failed because account="
+                << account_id.ToString() << "has no refresh token";
+    DCHECK_EQ(GetAuthError(account_id),
+              GoogleServiceAuthError::AuthErrorNone());
+    return;
+  }
+
+  if (backoff_entry_) {
+    backoff_entry_->InformOfRequest(!error.IsTransientError());
+    backoff_error_ = error;
+  }
+  ValidateAccountId(account_id);
+
+  // Do not report connection errors as these are not actually auth errors.
+  // We also want to avoid masking a "real" auth error just because we
+  // subsequently get a transient network error.  We do keep it around though
+  // to report for future requests being denied for "backoff" reasons.
+  if (error.IsTransientError())
+    return;
+
+  auto it = errors_.find(account_id);
+  if (error.state() == GoogleServiceAuthError::NONE) {
+    if (it == errors_.end())
+      return;
+    errors_.erase(it);
+  } else {
+    if (it != errors_.end() && it->second == error)
+      return;
+    errors_[account_id] = error;
+  }
+
+  if (fire_auth_error_changed)
+    FireAuthErrorChanged(account_id, error);
+}
+
+void ProfileOAuth2TokenServiceDelegate::ClearAuthError(
+    const absl::optional<CoreAccountId>& account_id) {
+  if (!account_id.has_value()) {
+    errors_.clear();
+    return;
+  }
+
+  auto it = errors_.find(account_id.value());
+  if (it != errors_.end())
+    errors_.erase(it);
+}
+
+GoogleServiceAuthError ProfileOAuth2TokenServiceDelegate::BackOffError() const {
+  return backoff_error_;
+}
+
+void ProfileOAuth2TokenServiceDelegate::ResetBackOffEntry() {
+  if (!backoff_entry_) {
+    NOTREACHED() << "Should be called only if `use_backoff` was true in the "
+                    "constructor.";
+    return;
+  }
+  backoff_entry_->Reset();
 }

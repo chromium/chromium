@@ -18,7 +18,8 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::
         SigninClient* client,
         AccountTrackerService* account_tracker_service,
         crosapi::AccountManagerMojoService* account_manager_mojo_service,
-        bool is_regular_profile) {
+        bool is_regular_profile)
+    : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true) {
   if (!network::TestNetworkConnectionTracker::HasInstance()) {
     owned_tracker_ = network::TestNetworkConnectionTracker::CreateInstance();
   }
@@ -60,8 +61,9 @@ bool TestProfileOAuth2TokenServiceDelegateChromeOS::RefreshTokenIsAvailable(
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(
     const CoreAccountId& account_id,
-    const GoogleServiceAuthError& error) {
-  delegate_->UpdateAuthError(account_id, error);
+    const GoogleServiceAuthError& error,
+    bool fire_auth_error_changed) {
+  delegate_->UpdateAuthError(account_id, error, fire_auth_error_changed);
 }
 
 GoogleServiceAuthError
@@ -73,6 +75,20 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::GetAuthError(
 std::vector<CoreAccountId>
 TestProfileOAuth2TokenServiceDelegateChromeOS::GetAccounts() const {
   return delegate_->GetAccounts();
+}
+
+void TestProfileOAuth2TokenServiceDelegateChromeOS::ClearAuthError(
+    const absl::optional<CoreAccountId>& account_id) {
+  delegate_->ClearAuthError(account_id);
+}
+
+GoogleServiceAuthError
+TestProfileOAuth2TokenServiceDelegateChromeOS::BackOffError() const {
+  return delegate_->BackOffError();
+}
+
+void TestProfileOAuth2TokenServiceDelegateChromeOS::ResetBackOffEntry() {
+  delegate_->ResetBackOffEntry();
 }
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(

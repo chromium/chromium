@@ -249,9 +249,6 @@ class AccountTrackerServiceTest : public testing::Test {
 
   // Helpers to fake access token and user info fetching
   CoreAccountId AccountKeyToAccountId(AccountKey account_key) {
-    if (force_account_id_to_email_for_legacy_tests_)
-      return CoreAccountId(AccountKeyToEmail(account_key));
-
     return CoreAccountId::FromGaiaId(AccountKeyToGaiaId(account_key));
   }
 
@@ -357,10 +354,6 @@ class AccountTrackerServiceTest : public testing::Test {
     return signin_client_.GetTestURLLoaderFactory();
   }
 
-  bool* force_account_id_to_email_for_legacy_tests_pointer() {
-    return &force_account_id_to_email_for_legacy_tests_;
-  }
-
  protected:
   void ReturnFetchResults(const GURL& url,
                           net::HttpStatusCode response_code,
@@ -418,7 +411,6 @@ class AccountTrackerServiceTest : public testing::Test {
   raw_ptr<FakeAccountCapabilitiesFetcherFactory>
       fake_account_capabilities_fetcher_factory_ = nullptr;
   std::vector<TrackingEvent> account_tracker_events_;
-  bool force_account_id_to_email_for_legacy_tests_ = false;
 };
 
 void AccountTrackerServiceTest::ReturnFetchResults(
@@ -1204,41 +1196,6 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(AccountTrackerServiceTest, LegacyDottedAccountIds) {
-  // Force legacy of non-normalized email as account_id.
-  base::AutoReset<bool> force_account_id_to_email_for_legacy_test(
-      force_account_id_to_email_for_legacy_tests_pointer(), true);
-
-  // Start by creating a tracker and adding an account with a dotted account
-  // id because of an old bug in token service.  The token service would also
-  // add a correct non-dotted account id for the same account.
-  ResetAccountTracker();
-
-  SimulateTokenAvailable(kAccountKeyFooDotBar);
-  SimulateTokenAvailable(kAccountKeyFooBar);
-  ReturnAccountInfoFetchSuccess(kAccountKeyFooDotBar);
-  ReturnAccountInfoFetchSuccess(kAccountKeyFooBar);
-
-  EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
-  std::vector<AccountInfo> infos = account_tracker()->GetAccounts();
-  ASSERT_EQ(2u, infos.size());
-  EXPECT_EQ(AccountKeyToEmail(kAccountKeyFooDotBar), infos[0].email);
-  EXPECT_EQ(AccountKeyToEmail(kAccountKeyFooBar), infos[1].email);
-
-  // Remove the bad account now from the token service to simulate that it
-  // has been "fixed".
-  SimulateTokenRevoked(kAccountKeyFooDotBar);
-
-  // Instantiate a new tracker and validate that it has only one account, and
-  // it is the correct non dotted one.
-  ResetAccountTrackerNetworkDisabled();
-
-  EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
-  infos = account_tracker()->GetAccounts();
-  ASSERT_EQ(1u, infos.size());
-  EXPECT_EQ(AccountKeyToEmail(kAccountKeyFooBar), infos[0].email);
-}
-
 TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);

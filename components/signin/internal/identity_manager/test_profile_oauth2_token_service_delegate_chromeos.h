@@ -46,7 +46,8 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
       OAuth2AccessTokenConsumer* consumer) override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
   void UpdateAuthError(const CoreAccountId& account_id,
-                       const GoogleServiceAuthError& error) override;
+                       const GoogleServiceAuthError& error,
+                       bool fire_auth_error_changed) override;
   GoogleServiceAuthError GetAuthError(
       const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
@@ -59,6 +60,9 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   void RevokeCredentials(const CoreAccountId& account_id) override;
   void RevokeAllCredentials() override;
   const net::BackoffEntry* BackoffEntry() const override;
+  void ClearAuthError(const absl::optional<CoreAccountId>& account_id) override;
+  GoogleServiceAuthError BackOffError() const override;
+  void ResetBackOffEntry() override;
 
   // |ProfileOAuth2TokenServiceObserver| implementation.
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override;
