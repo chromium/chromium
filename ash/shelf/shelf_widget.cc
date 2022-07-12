@@ -654,6 +654,9 @@ SkColor ShelfWidget::DelegateView::GetShelfBackgroundColor() const {
 bool ShelfWidget::GetHitTestRects(aura::Window* target,
                                   gfx::Rect* hit_test_rect_mouse,
                                   gfx::Rect* hit_test_rect_touch) {
+  // TODO(https://crbug.com/1343114): refactor the code below after the login
+  // shelf widget is ready.
+
   // This should only get called when the login shelf is visible, i.e. not
   // during an active session. In an active session, hit test rects should be
   // calculated higher up in the class hierarchy by |EasyResizeWindowTargeter|.
@@ -711,6 +714,8 @@ void ShelfWidget::HideDragHandleNudge(
 }
 
 void ShelfWidget::SetLoginShelfButtonOpacity(float target_opacity) {
+  // TODO(https://crbug.com/1343114): remove this function after the login shelf
+  // widget is ready.
   if (login_shelf_view_->GetVisible())
     login_shelf_view_->SetButtonOpacity(target_opacity);
 }
@@ -732,6 +737,8 @@ ShelfWidget::~ShelfWidget() {
 void ShelfWidget::Initialize(aura::Window* shelf_container) {
   DCHECK(shelf_container);
 
+  // TODO(https://crbug.com/1343114): remove this line after the login shelf
+  // widget is ready.
   login_shelf_view_ =
       delegate_view_->AddLoginShelfView(std::make_unique<LoginShelfView>(
           RootWindowController::ForWindow(shelf_container)
@@ -866,7 +873,14 @@ void ShelfWidget::set_default_last_focusable_child(
       default_last_focusable_child);
 }
 
+LoginShelfView* ShelfWidget::GetLoginShelfView() {
+  return login_shelf_view_;
+}
+
 bool ShelfWidget::OnNativeWidgetActivationChanged(bool active) {
+  // TODO(https://crbug.com/1343114): remove this function after the login shelf
+  // widget is ready.
+
   if (!Widget::OnNativeWidgetActivationChanged(active))
     return false;
   if (active) {
@@ -1024,6 +1038,8 @@ void ShelfWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 }
 
 void ShelfWidget::HandleLocaleChange() {
+  // TODO(https://crbug.com/1343114): remove this function when the login shelf
+  // widget is ready.
   login_shelf_view_->HandleLocaleChange();
 }
 
@@ -1050,7 +1066,10 @@ void ShelfWidget::OnSessionStateChanged(session_manager::SessionState state) {
     aura::Window* const shelf_window = GetNativeWindow();
     if (show_hotseat && IsActive())
       wm::DeactivateWindow(shelf_window);
-    login_shelf_view()->SetVisible(!show_hotseat);
+
+    // TODO(https://crbug.com/1343114): remove this line when the login shelf
+    // widget is ready.
+    GetLoginShelfView()->SetVisible(!show_hotseat);
 
     ShowIfHidden();
 
@@ -1072,11 +1091,17 @@ void ShelfWidget::OnSessionStateChanged(session_manager::SessionState state) {
   // Update drag handle's color on session state changes since the color mode
   // might change on session state changes.
   delegate_view_->drag_handle()->UpdateColor();
+
+  // TODO(https://crbug.com/1343114): remove this line when the login shelf
+  // widget is ready.
   login_shelf_view_->UpdateAfterSessionChange();
 }
 
 void ShelfWidget::OnUserSessionAdded(const AccountId& account_id) {
   shelf_layout_manager_->SetDimmed(false);
+
+  // TODO(https://crbug.com/1343114): remove this line when the login shelf
+  // widget is ready.
   login_shelf_view_->UpdateAfterSessionChange();
 }
 

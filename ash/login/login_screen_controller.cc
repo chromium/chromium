@@ -308,7 +308,7 @@ void LoginScreenController::FocusLoginShelf(bool reverse) {
   // Tell the focus direction to the status area or the shelf so they can focus
   // the correct child view.
   if (Shell::GetPrimaryRootWindowController()->IsSystemTrayVisible() &&
-      (reverse || !shelf->shelf_widget()->login_shelf_view()->IsFocusable())) {
+      (reverse || !shelf->shelf_widget()->GetLoginShelfView()->IsFocusable())) {
     // Focus goes to system tray (status area) if one of the following is true:
     //  - system tray is visible and tab is in reverse order;
     //  - system tray is visible and there is no visible shelf buttons before.
@@ -316,7 +316,7 @@ void LoginScreenController::FocusLoginShelf(bool reverse) {
         ->status_area_widget_delegate()
         ->set_default_last_focusable_child(reverse);
     Shell::Get()->focus_cycler()->FocusWidget(shelf->GetStatusAreaWidget());
-  } else if (shelf->shelf_widget()->login_shelf_view()->IsFocusable()) {
+  } else if (shelf->shelf_widget()->GetLoginShelfView()->IsFocusable()) {
     // Otherwise focus goes to shelf buttons when there is any.
     shelf->shelf_widget()->set_default_last_focusable_child(reverse);
     Shell::Get()->focus_cycler()->FocusWidget(shelf->shelf_widget());
@@ -333,42 +333,42 @@ bool LoginScreenController::IsReadyForPassword() {
 void LoginScreenController::EnableAddUserButton(bool enable) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetAddUserButtonEnabled(enable);
 }
 
 void LoginScreenController::EnableShutdownButton(bool enable) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetShutdownButtonEnabled(enable);
 }
 
 void LoginScreenController::EnableShelfButtons(bool enable) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetButtonEnabled(enable);
 }
 
 void LoginScreenController::SetIsFirstSigninStep(bool is_first) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetIsFirstSigninStep(is_first);
 }
 
 void LoginScreenController::ShowParentAccessButton(bool show) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->ShowParentAccessButton(show);
 }
 
 void LoginScreenController::SetAllowLoginAsGuest(bool allow_guest) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetAllowLoginAsGuest(allow_guest);
 }
 
@@ -376,7 +376,7 @@ std::unique_ptr<ScopedGuestButtonBlocker>
 LoginScreenController::GetScopedGuestButtonBlocker() {
   return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->GetScopedGuestButtonBlocker();
 }
 
@@ -418,7 +418,7 @@ void LoginScreenController::SetKioskApps(
     const std::vector<KioskAppMenuEntry>& kiosk_apps) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetKioskApps(kiosk_apps);
 }
 
@@ -427,7 +427,7 @@ void LoginScreenController::ConfigureKioskCallbacks(
     const base::RepeatingClosure& on_show_menu) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->ConfigureKioskCallbacks(launch_app, on_show_menu);
 }
 

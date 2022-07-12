@@ -56,7 +56,7 @@ LoginShelfView* GetLoginShelfView() {
 
   return Shelf::ForWindow(Shell::GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view();
+      ->GetLoginShelfView();
 }
 
 bool IsLoginShelfViewButtonShown(int button_view_id) {

@@ -896,7 +896,7 @@ TEST_F(ShelfWidgetAfterLoginTest, InitialValues) {
   ShelfWidget* shelf_widget = GetShelfWidget();
   ASSERT_NE(nullptr, shelf_widget);
   ASSERT_NE(nullptr, shelf_widget->shelf_view_for_testing());
-  ASSERT_NE(nullptr, shelf_widget->login_shelf_view());
+  ASSERT_NE(nullptr, shelf_widget->GetLoginShelfView());
   ASSERT_NE(nullptr, shelf_widget->shelf_layout_manager());
 
   // Ensure settings are correct before login.
@@ -976,7 +976,7 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
               !primary_shelf_widget_->IsVisible());
     if (primary_shelf_visibility != kNone) {
       EXPECT_EQ(primary_shelf_visibility == kLoginShelf,
-                primary_shelf_widget_->login_shelf_view()->GetVisible());
+                primary_shelf_widget_->GetLoginShelfView()->GetVisible());
       EXPECT_EQ(primary_shelf_visibility == kShelf,
                 primary_shelf_widget_->shelf_view_for_testing()->GetVisible());
     }
@@ -984,7 +984,7 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
               !secondary_shelf_widget_->IsVisible());
     if (secondary_shelf_visibility != kNone) {
       EXPECT_EQ(secondary_shelf_visibility == kLoginShelf,
-                secondary_shelf_widget_->login_shelf_view()->GetVisible());
+                secondary_shelf_widget_->GetLoginShelfView()->GetVisible());
       EXPECT_EQ(
           secondary_shelf_visibility == kShelf,
           secondary_shelf_widget_->shelf_view_for_testing()->GetVisible());

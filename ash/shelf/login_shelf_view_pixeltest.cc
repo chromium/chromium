@@ -42,7 +42,7 @@ class LoginShelfViewPixelTest : public AshTestBase {
 // the focus.
 TEST_F(LoginShelfViewPixelTest, FocusOnShutdownButton) {
   views::View* shutdown_button =
-      GetPrimaryShelf()->shelf_widget()->login_shelf_view()->GetViewByID(
+      GetPrimaryShelf()->shelf_widget()->GetLoginShelfView()->GetViewByID(
           LoginShelfView::kShutdown);
   views::Widget* shutdown_button_widget = shutdown_button->GetWidget();
 

@@ -3320,7 +3320,7 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
   void SetUp() override {
     set_start_session(false);
     LoginTestBase::SetUp();
-    login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->login_shelf_view();
+    login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->GetLoginShelfView();
     // Set initial states.
     NotifySessionStateChanged(session_manager::SessionState::OOBE);
   }

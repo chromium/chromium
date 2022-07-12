@@ -537,14 +537,14 @@ class LockDebugView::DebugDataDispatcherTransformer
     menu_item.app_id = kDebugKioskAppId;
     menu_item.name = kDebugKioskAppName;
     kiosk_apps_.push_back(std::move(menu_item));
-    shelf_widget->login_shelf_view()->SetKioskApps(kiosk_apps_);
+    shelf_widget->GetLoginShelfView()->SetKioskApps(kiosk_apps_);
   }
 
   void RemoveKioskApp(ShelfWidget* shelf_widget) {
     if (kiosk_apps_.empty())
       return;
     kiosk_apps_.pop_back();
-    shelf_widget->login_shelf_view()->SetKioskApps(kiosk_apps_);
+    shelf_widget->GetLoginShelfView()->SetKioskApps(kiosk_apps_);
   }
 
   void AddSystemInfo(const std::string& os_version,

@@ -147,7 +147,7 @@ void LockScreen::Destroy() {
   Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())
           ->shelf_widget()
-          ->login_shelf_view());
+          ->GetLoginShelfView());
 
   delete instance_;
   instance_ = nullptr;

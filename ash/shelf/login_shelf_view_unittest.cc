@@ -88,7 +88,7 @@ class LoginShelfViewTest : public LoginTestBase,
     // Guest Button is visible while session hasn't started.
     set_start_session(false);
     LoginTestBase::SetUp();
-    login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->login_shelf_view();
+    login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->GetLoginShelfView();
     Shell::Get()->tray_action()->SetClient(
         tray_action_client_.CreateRemoteAndBind(),
         mojom::TrayActionState::kNotAvailable);

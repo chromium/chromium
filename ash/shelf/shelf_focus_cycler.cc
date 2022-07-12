@@ -43,9 +43,9 @@ void ShelfFocusCycler::FocusOut(bool reverse, SourceView source_view) {
       // * Otherwise (login/lock screen, OOBE), bring focus to the shelf only
       //   if we're going in reverse; if we're going forward, let the system
       //   tray focus observers focus the lock/login view.
-      if (shelf_->shelf_widget()->login_shelf_view()->GetVisible() &&
+      if (shelf_->shelf_widget()->GetLoginShelfView()->GetVisible() &&
           (!reverse ||
-           (!shelf_->shelf_widget()->login_shelf_view()->IsFocusable() &&
+           (!shelf_->shelf_widget()->GetLoginShelfView()->IsFocusable() &&
             reverse))) {
         // Login/lock screen or OOBE.
         Shell::Get()->system_tray_notifier()->NotifyFocusOut(reverse);
@@ -71,7 +71,7 @@ void ShelfFocusCycler::FocusNavigation(bool last_element) {
 }
 
 void ShelfFocusCycler::FocusShelf(bool last_element) {
-  if (shelf_->shelf_widget()->login_shelf_view()->GetVisible()) {
+  if (shelf_->shelf_widget()->GetLoginShelfView()->GetVisible()) {
     ShelfWidget* shelf_widget = shelf_->shelf_widget();
     shelf_widget->set_default_last_focusable_child(last_element);
     Shell::Get()->focus_cycler()->FocusWidget(shelf_widget);

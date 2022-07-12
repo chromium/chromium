@@ -98,7 +98,9 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   ApplicationDragAndDropHost* GetDragAndDropHostForAppList();
 
   // Fetch the LoginShelfView instance.
-  LoginShelfView* login_shelf_view() { return login_shelf_view_; }
+  // TODO(https://crbug.com/1343114): remove this method after the login shelf
+  // is moved to its own widget.
+  LoginShelfView* GetLoginShelfView();
 
   void set_default_last_focusable_child(bool default_last_focusable_child);
 
