@@ -485,6 +485,12 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
 
         mSearchProviderLogoView.showSearchProviderInitialView();
 
+        // If pull up Feed position is enabled and search provider is Google, we should show
+        // standard Google logo, which is already done in showSearchProviderInitialView() above.
+        // Since standard Google logo should be shown and doodle is not supported, we don't need to
+        // fetch logo image.
+        if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderIsGoogle) return;
+
         mLogoDelegate.getSearchProviderLogo(new LogoObserver() {
             @Override
             public void onLogoAvailable(Logo logo, boolean fromCache) {
