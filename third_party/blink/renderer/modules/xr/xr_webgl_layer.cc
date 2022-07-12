@@ -413,7 +413,10 @@ void XRWebGLLayer::OnFrameEnd() {
       // Always call submit, but notify if the contents were changed or not.
       session()->xr()->frameProvider()->SubmitWebGLLayer(this,
                                                          framebuffer_dirty);
-      if (camera_image_mailbox_holder_ && camera_image_texture_id_) {
+      if (camera_image_texture_id_) {
+        // We shouldn't ever have a camera texture if the holder wasn't present:
+        DCHECK(camera_image_mailbox_holder_);
+
         DVLOG(3) << __func__
                  << ": deleting camera image texture, camera_image_texture_id_="
                  << camera_image_texture_id_;

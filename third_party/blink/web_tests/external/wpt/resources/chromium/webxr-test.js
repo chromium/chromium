@@ -59,6 +59,12 @@ function composeGFXTransform(fakeTransformInit) {
   return {matrix: getMatrixFromTransform(fakeTransformInit)};
 }
 
+// Value equality for camera image init objects - they must contain `width` &
+// `height` properties and may contain `pixels` property.
+function isSameCameraImageInit(rhs, lhs) {
+  return lhs.width === rhs.width && lhs.height === rhs.height && lhs.pixels === rhs.pixels;
+}
+
 class ChromeXRTest {
   constructor() {
     this.mockVRService_ = new MockVRService();
@@ -327,6 +333,7 @@ class MockRuntime {
     'anchors': vrMojom.XRSessionFeature.ANCHORS,
     'depth-sensing': vrMojom.XRSessionFeature.DEPTH,
     'secondary-views': vrMojom.XRSessionFeature.SECONDARY_VIEWS,
+    'camera-access': vrMojom.XRSessionFeature.CAMERA_ACCESS,
   };
 
   static _sessionModeToMojoMap = {
@@ -436,17 +443,33 @@ class MockRuntime {
 
   // WebXR Test API
   setViews(primaryViews, secondaryViews) {
+    this.cameraImage_ = null;
     this.primaryViews_ = [];
     this.secondaryViews_ = [];
     let xOffset = 0;
     if (primaryViews) {
       this.primaryViews_ = [];
       xOffset = this._setViews(primaryViews, xOffset, this.primaryViews_);
+      const cameraImage = this._findCameraImage(primaryViews);
+
+      if (cameraImage) {
+        this.cameraImage_ = cameraImage;
+      }
     }
 
     if (secondaryViews) {
       this.secondaryViews_ = [];
       this._setViews(secondaryViews, xOffset, this.secondaryViews_);
+      const cameraImage = this._findCameraImage(secondaryViews);
+
+      if (cameraImage) {
+        if (!isSameCameraImageInit(this.cameraImage_, cameraImage)) {
+          throw new Error("If present, camera resolutions on each view must match each other!"
+                          + " Secondary views' camera doesn't match primary views.");
+        }
+
+        this.cameraImage_ = cameraImage;
+      }
     }
   }
 
@@ -702,6 +725,23 @@ class MockRuntime {
     return xOffset;
   }
 
+  _findCameraImage(views) {
+    const viewWithCamera = views.find(view => view.cameraImageInit);
+    if (viewWithCamera) {
+      //If we have one view with a camera resolution, all views should have the same camera resolution.
+      const allViewsHaveSameCamera = views.every(
+        view => isSameCameraImageInit(view.cameraImageInit, viewWithCamera.cameraImageInit));
+
+      if (!allViewsHaveSameCamera) {
+        throw new Error("If present, camera resolutions on each view must match each other!");
+      }
+
+      return viewWithCamera.cameraImageInit;
+    }
+
+    return null;
+  }
+
   _onStageParametersUpdated() {
     // Indicate for the frame loop that the stage parameters have been updated.
     this.stageParametersId_++;
@@ -896,7 +936,10 @@ class MockRuntime {
           },
           frameId: this.next_frame_id_,
           bufferHolder: null,
-          bufferSize: {},
+          cameraImageSize: this.cameraImage_ ? {
+            width: this.cameraImage_.width,
+            height: this.cameraImage_.height
+          } : null,
           renderingTimeRatio: 0,
           stageParameters: this.stageParameters_,
           stageParametersId: this.stageParametersId_,

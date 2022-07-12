@@ -1741,8 +1741,6 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
 
     camera_image_size_ = absl::nullopt;
     if (frame_data->camera_image_size.has_value()) {
-      DCHECK(frame_data->camera_image_buffer_holder.has_value());
-
       // Let's store the camera image size. The texture ID will be filled out on
       // the XRWebGLLayer by the session once the frame starts
       // (in XRSession::OnFrame()).
