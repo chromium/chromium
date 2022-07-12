@@ -1711,6 +1711,9 @@
     'screen_ai': {
       'filepath': 'screen_ai',
     },
+    'search_prefetch': {
+      'filepath': 'chrome/browser/prefetch/search_prefetch',
+    },
     'security': {
       'filepath': 'base/json/'\
                   '|base/memory/.*shared_memory'\
@@ -2800,6 +2803,7 @@
     'scanning': ['gavinwill+scanning-watch@chromium.org',
                  'zentaro+scanning-watch@chromium.org'],
     'screen_ai': ['rhalavati+watch@chromium.org'],
+    'search_prefetch': ['lingqi+watch@chromium.org'],
     'security': ['security-watchlist@chromium.org'],
     'select_to_speak': ['katie+watch@chromium.org',
                         'anastasi+watch@google.com'],
