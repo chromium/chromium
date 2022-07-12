@@ -37,6 +37,12 @@ inline bool HasOverflow(const PhysicalRect& rect, const PhysicalSize& size) {
 }  // namespace
 
 #if DCHECK_IS_ON()
+// Define this for the debugging purpose to DCHECK if uncomputed ink overflow is
+// happening. As DCHECK builds ship, enabling this for all DCHECK builds causes
+// more troubles than to help.
+//
+// #define DISALLOW_READING_UNSET
+
 unsigned NGInkOverflow::read_unset_as_none_ = 0;
 
 NGInkOverflow::~NGInkOverflow() {
@@ -140,7 +146,7 @@ PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
   switch (type) {
     case kNotSet:
     case kInvalidated:
-#if DCHECK_IS_ON()
+#if defined(DISALLOW_READING_UNSET)
       if (!read_unset_as_none_)
         NOTREACHED();
       [[fallthrough]];
@@ -166,9 +172,7 @@ PhysicalRect NGInkOverflow::Contents(Type type,
   switch (type) {
     case kNotSet:
     case kInvalidated:
-// TODO(crbug.com/1241714): Revert crrev/c/3110183 to re-enable this DCHECK on
-// CrOS.
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(DISALLOW_READING_UNSET)
       if (!read_unset_as_none_)
         NOTREACHED();
       [[fallthrough]];
@@ -196,7 +200,7 @@ PhysicalRect NGInkOverflow::SelfAndContents(Type type,
   switch (type) {
     case kNotSet:
     case kInvalidated:
-#if DCHECK_IS_ON()
+#if defined(DISALLOW_READING_UNSET)
       if (!read_unset_as_none_)
         NOTREACHED();
       [[fallthrough]];
