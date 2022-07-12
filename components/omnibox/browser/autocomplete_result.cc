@@ -346,12 +346,16 @@ void AutocompleteResult::SortAndCull(
 
   GroupAndDemoteMatchesInGroups();
 
-  // If we have a default match, run some sanity checks. Skip these checks if
-  // the default match has no |destination_url|. An example of this is the
-  // default match after the user has tabbed into keyword search mode, but has
-  // not typed a query yet.
+  // Run sanity checks on the default match to make sure all the suggestions
+  // are congruent with the user's input. Skip checks in these cases:
+  //  - If the default match has no |destination_url|. An example of this is the
+  //    default match after the user has tabbed into keyword search mode, but
+  //    has not typed a query yet.
+  //  - The user is using on-focus or on-clobber (ZeroSuggest) mode. In those
+  //    modes, there is no explicit user input so these checks don't make sense.
   auto* default_match = this->default_match();
-  if (default_match && default_match->destination_url.is_valid()) {
+  if (default_match && default_match->destination_url.is_valid() &&
+      input.focus_type() == OmniboxFocusType::DEFAULT) {
     const std::u16string debug_info =
         u"fill_into_edit=" + default_match->fill_into_edit + u", provider=" +
         ((default_match->provider != nullptr)

@@ -1115,6 +1115,33 @@ TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
   AssertResultMatches(current_result, result, std::size(result));
 }
 
+// Verify the fix to https://crbug.com/1340548.
+TEST_F(AutocompleteResultTest, SortAndCullAllowsNonMatchingZeroSuggestions) {
+  ACMatches matches;
+  const AutocompleteMatchTestData data[] = {
+      {"http://history-url/", AutocompleteMatchType::HISTORY_URL},
+      {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE},
+  };
+
+  PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
+
+  // On-focus suggestions (ZeroSuggest) is allowed to have the input scheme
+  // differ from the suggestions scheme (like if the clipboard provider has a
+  // URL with a different scheme).
+  AutocompleteInput input(u"https://secure-prefix",
+                          metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+
+  AutocompleteResult result;
+  result.AppendMatches(matches);
+
+  // It doesn't matter what the results are. We just verify that we DO NOT hit a
+  // DCHECK like we did before the bug was fixed.
+  result.SortAndCull(input, template_url_service_.get());
+  ASSERT_EQ(2U, result.size());
+}
+
 TEST_F(AutocompleteResultTest, DemoteOnDeviceSearchSuggestions) {
   // clang-format off
   TestData data[] = {
