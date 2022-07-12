@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
 #include "components/viz/service/viz_service_export.h"
@@ -67,6 +68,9 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   bool Initialize();
 
+  void HandleMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
   raw_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
   const bool enable_watchdog_;
   bool init_succeded_ = false;
@@ -79,6 +83,14 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
   // before it.
   std::unique_ptr<gpu::GpuWatchdogThread> watchdog_thread_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
+
+  // To start listening memory pressure signals from the platform, we create a
+  // new instance of MemoryPressureListener, passing a callback to a
+  // function that takes a MemoryPressureLevel parameter.To stop listening,
+  // simply delete the listener object. The implementation guarantees
+  // that the callback will always be called on the thread that created
+  // the listener.
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   base::WeakPtrFactory<CompositorGpuThread> weak_ptr_factory_;
 };
