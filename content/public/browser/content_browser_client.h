@@ -281,11 +281,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test);
 
-  // Allows the embedder to change the default behavior of
-  // BrowserThread::PostAfterStartupTask to better match whatever
-  // definition of "startup" the embedder has in mind. This may be
-  // called on any thread.
-  // Note: see related BrowserThread::PostAfterStartupTask.
+  // Queues `task` until after the startup phase (for whatever definition of
+  // "startup" the embedder has in mind). This may be called on any thread.
+  // Note: prefer to simply post a task with BEST_EFFORT priority. This will
+  // delay the task until higher priority tasks are finished, which includes
+  // critical startup tasks. The BrowserThread::PostBestEffortTask() helper can
+  // post a BEST_EFFORT task to an arbitrary task runner.
   virtual void PostAfterStartupTask(
       const base::Location& from_here,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
