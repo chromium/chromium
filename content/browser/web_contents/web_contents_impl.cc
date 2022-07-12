@@ -4049,7 +4049,16 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       base::WeakPtr<WebContentsImpl> weak_new_contents =
           new_contents_impl->weak_factory_.GetWeakPtr();
 
-      gfx::Rect initial_rect;  // Report an empty initial rect.
+      gfx::Rect initial_rect;
+      if (params.features->has_width)
+        initial_rect.set_width(params.features->width);
+      if (params.features->has_height)
+        initial_rect.set_height(params.features->height);
+      if (params.features->has_x)
+        initial_rect.set_x(params.features->x);
+      if (params.features->has_y)
+        initial_rect.set_y(params.features->y);
+
       delegate_->AddNewContents(this, std::move(new_contents),
                                 params.target_url, params.disposition,
                                 initial_rect, has_user_gesture, &was_blocked);

@@ -318,4 +318,17 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
       << " popup: " << popup_bounds.ToString();
 }
 
+// Opens two popups with custom position and size, but one has noopener. They
+// should both have the same position and size. http://crbug.com/1011688
+IN_PROC_BROWSER_TEST_P(PopupBrowserTest, NoopenerPositioning) {
+  Browser* noopener_popup = OpenPopup(
+      browser(),
+      "open('.', '', 'noopener=1,height=200,width=200,top=100,left=100')");
+  Browser* opener_popup = OpenPopup(
+      browser(),
+      "open('.', '', 'height=200,width=200,top=100,left=100')");
+  EXPECT_EQ(noopener_popup->window()->GetBounds(),
+            opener_popup->window()->GetBounds());
+}
+
 }  // namespace
