@@ -63,25 +63,29 @@ data_decoder::DataDecoder::ValueOrError ParseJsonLikeDataDecoder(
   return data_decoder::DataDecoder::ValueOrError::Value(ParseJson(json));
 }
 
-std::unique_ptr<base::Value> GetDictionaryFromCastMessage(
+absl::optional<base::Value::Dict> GetDictionaryFromCastMessage(
     const CastMessage& message) {
   if (!message.has_payload_utf8())
-    return nullptr;
+    return absl::nullopt;
 
-  return base::JSONReader::ReadDeprecated(message.payload_utf8());
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(message.payload_utf8());
+  if (!value || !value->is_dict())
+    return absl::nullopt;
+  return std::move(value->GetDict());
 }
 
 CastMessageType GetMessageType(const CastMessage& message) {
-  std::unique_ptr<base::Value> dict = GetDictionaryFromCastMessage(message);
+  absl::optional<base::Value::Dict> dict =
+      GetDictionaryFromCastMessage(message);
   if (!dict)
     return CastMessageType::kOther;
 
-  const base::Value* message_type =
-      dict->FindKeyOfType("type", base::Value::Type::STRING);
+  const std::string* message_type = dict->FindString("type");
   if (!message_type)
     return CastMessageType::kOther;
 
-  return CastMessageTypeFromString(message_type->GetString());
+  return CastMessageTypeFromString(*message_type);
 }
 
 MATCHER_P(HasMessageType, type, "") {
@@ -183,9 +187,9 @@ class CastMessageHandlerTest : public testing::Test {
       EXPECT_CALL(*transport_,
                   SendMessage_(HasMessageType(CastMessageType::kConnect), _))
           .WillOnce(WithArg<0>([&](const CastMessage& message) {
-            std::unique_ptr<base::Value> dict =
+            absl::optional<base::Value::Dict> dict =
                 GetDictionaryFromCastMessage(message);
-            EXPECT_EQ(connection_type, dict->FindIntKey("connType").value());
+            EXPECT_EQ(connection_type, dict->FindInt("connType").value());
           }));
       // Then we send the actual message.
       EXPECT_CALL(*transport_, SendMessage_(_, _));
@@ -286,13 +290,12 @@ TEST_F(CastMessageHandlerTest, RequestAppAvailability) {
       base::BindOnce(&CastMessageHandlerTest::OnAppAvailability,
                      base::Unretained(this)));
 
-  std::unique_ptr<base::Value> dict =
+  absl::optional<base::Value::Dict> dict =
       GetDictionaryFromCastMessage(last_request_);
   ASSERT_TRUE(dict);
-  const base::Value* request_id_value =
-      dict->FindKeyOfType("requestId", base::Value::Type::INTEGER);
+  const absl::optional<int> request_id_value = dict->FindInt("requestId");
   ASSERT_TRUE(request_id_value);
-  int request_id = request_id_value->GetInt();
+  int request_id = *request_id_value;
   EXPECT_GT(request_id, 0);
 
   CastMessage response;
@@ -401,16 +404,14 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kOk));
 
-  std::unique_ptr<base::Value> dict =
+  absl::optional<base::Value::Dict> dict =
       GetDictionaryFromCastMessage(last_request_);
   ASSERT_TRUE(dict);
-  const base::Value* request_id_value =
-      dict->FindKeyOfType("requestId", base::Value::Type::INTEGER);
+  const absl::optional<int> request_id_value = dict->FindInt("requestId");
   ASSERT_TRUE(request_id_value);
-  int request_id = request_id_value->GetInt();
+  int request_id = *request_id_value;
   EXPECT_GT(request_id, 0);
-  const base::Value* app_params =
-      dict->FindKeyOfType("appParams", base::Value::Type::DICTIONARY);
+  const base::Value* app_params = dict->Find("appParams");
   EXPECT_EQ(json.value(), *app_params);
 
   CastMessage response;
@@ -448,9 +449,9 @@ TEST_F(CastMessageHandlerTest, LaunchSessionTimedOut) {
 }
 
 TEST_F(CastMessageHandlerTest, LaunchSessionMessageExceedsSizeLimit) {
-  std::string invalid_URL(kMaxProtocolMessageSize, 'a');
-  base::Value json(base::Value::Type::DICTIONARY);
-  json.SetKey("key", base::Value(invalid_URL));
+  std::string invalid_url(kMaxProtocolMessageSize, 'a');
+  base::Value::Dict json;
+  json.Set("key", invalid_url);
   handler_.LaunchSession(
       channel_id_, kAppId1, base::Seconds(30), {"WEB"},
       absl::make_optional<base::Value>(std::move(json)),
@@ -461,10 +462,10 @@ TEST_F(CastMessageHandlerTest, LaunchSessionMessageExceedsSizeLimit) {
 }
 
 TEST_F(CastMessageHandlerTest, SendAppMessage) {
-  base::Value body(base::Value::Type::DICTIONARY);
-  body.SetKey("foo", base::Value("bar"));
-  CastMessage message =
-      CreateCastMessage("namespace", body, kSourceId, kDestinationId);
+  base::Value::Dict body;
+  body.Set("foo", "bar");
+  CastMessage message = CreateCastMessage(
+      "namespace", base::Value(std::move(body)), kSourceId, kDestinationId);
   {
     InSequence dummy;
     ExpectEnsureConnection();
@@ -490,10 +491,10 @@ TEST_F(CastMessageHandlerTest, SendMessageToPlatformReceiver) {
 
 TEST_F(CastMessageHandlerTest, SendAppMessageExceedsSizeLimit) {
   std::string invalid_msg(kMaxProtocolMessageSize, 'a');
-  base::Value body(base::Value::Type::DICTIONARY);
-  body.SetKey("foo", base::Value(invalid_msg));
-  CastMessage message =
-      CreateCastMessage("namespace", body, kSourceId, kDestinationId);
+  base::Value::Dict body;
+  body.Set("foo", invalid_msg);
+  CastMessage message = CreateCastMessage(
+      "namespace", base::Value(std::move(body)), kSourceId, kDestinationId);
 
   EXPECT_EQ(Result::kFailed, handler_.SendAppMessage(channel_id_, message));
 }

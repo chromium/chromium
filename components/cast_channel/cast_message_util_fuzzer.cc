@@ -20,7 +20,7 @@ namespace fuzz {
 namespace {
 
 base::Value MakeValue(const JunkValue& junk) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
   for (int i = 0; i < junk.field_size(); i++) {
     const auto& field = junk.field(i);
     base::Value field_value = field.has_int_value()
@@ -30,9 +30,9 @@ base::Value MakeValue(const JunkValue& junk) {
                                         : field.has_float_value()
                                               ? base::Value(field.float_value())
                                               : base::Value(field.bool_value());
-    result.SetKey(field.name(), std::move(field_value));
+    result.Set(field.name(), std::move(field_value));
   }
-  return result;
+  return base::Value(std::move(result));
 }
 
 template <typename Field, typename T = typename Field::value_type>
@@ -81,7 +81,7 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
       auto type = static_cast<V2MessageType>(input.type());
       if (IsMediaRequestMessageType(type)) {
         base::Value body = MakeValue(input.body());
-        body.SetKey("type", base::Value(*EnumToString(type)));
+        body.GetDict().Set("type", *EnumToString(type));
         CreateMediaRequest(body, input.request_id(), input.source_id(),
                            input.destination_id());
       }
@@ -90,10 +90,8 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
     case CastMessageUtilInputs::kCreateSetVolumeRequestInput: {
       const auto& input = input_union.create_set_volume_request_input();
       base::Value body = MakeValue(input.body());
-      body.SetKey(
-          "type",
-          base::Value(
-              EnumToString<V2MessageType, V2MessageType::kSetVolume>()));
+      body.GetDict().Set(
+          "type", EnumToString<V2MessageType, V2MessageType::kSetVolume>());
       CreateSetVolumeRequest(body, input.request_id(), input.source_id());
       break;
     }
@@ -136,7 +134,7 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
       const auto& input = input_union.get_request_id_from_response_input();
       base::Value payload = MakeValue(input.payload());
       if (input.has_request_id())
-        payload.SetKey("requestId", base::Value(input.request_id()));
+        payload.GetDict().Set("requestId", input.request_id());
       GetRequestIdFromResponse(payload);
       break;
     }
@@ -150,7 +148,7 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
       const auto& input = input_union.parse_message_type_from_payload_input();
       base::Value payload = MakeValue(input.payload());
       if (input.has_type())
-        payload.SetKey("type", base::Value(input.type()));
+        payload.GetDict().Set("type", input.type());
       ParseMessageTypeFromPayload(payload);
       break;
     }

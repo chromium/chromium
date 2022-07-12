@@ -152,9 +152,10 @@ void FillCommonCastMessageFields(CastMessage* message,
 }
 
 CastMessage CreateKeepAliveMessage(base::StringPiece keep_alive_type) {
-  base::Value type_dict(base::Value::Type::DICTIONARY);
-  type_dict.SetKey("type", base::Value(keep_alive_type));
-  return CreateCastMessage(kHeartbeatNamespace, type_dict, kPlatformSenderId,
+  base::Value::Dict type_dict;
+  type_dict.Set("type", keep_alive_type);
+  return CreateCastMessage(kHeartbeatNamespace,
+                           base::Value(std::move(type_dict)), kPlatformSenderId,
                            kPlatformReceiverId);
 }
 
@@ -267,8 +268,8 @@ bool IsCastReservedNamespace(base::StringPiece message_namespace) {
 }
 
 CastMessageType ParseMessageTypeFromPayload(const base::Value& payload) {
-  const Value* type_string = payload.FindKeyOfType("type", Value::Type::STRING);
-  return type_string ? CastMessageTypeFromString(type_string->GetString())
+  const std::string* type_string = payload.GetDict().FindString("type");
+  return type_string ? CastMessageTypeFromString(*type_string)
                      : CastMessageType::kOther;
 }
 
@@ -377,66 +378,61 @@ CastMessage CreateVirtualConnectionRequest(
     }
   }
 
-  Value dict(Value::Type::DICTIONARY);
-  dict.SetKey(
-      "type",
-      Value(EnumToString<CastMessageType, CastMessageType::kConnect>()));
-  dict.SetKey("userAgent", Value(user_agent));
-  dict.SetKey("connType", Value(connection_type));
-  dict.SetKey("origin", Value(Value::Type::DICTIONARY));
+  Value::Dict dict;
+  dict.Set("type", EnumToString<CastMessageType, CastMessageType::kConnect>());
+  dict.Set("userAgent", user_agent);
+  dict.Set("connType", connection_type);
+  dict.Set("origin", base::Value::Dict());
 
-  Value sender_info(Value::Type::DICTIONARY);
-  sender_info.SetKey("sdkType", Value(kVirtualConnectSdkType));
-  sender_info.SetKey("version", Value(browser_version));
-  sender_info.SetKey("browserVersion", Value(browser_version));
-  sender_info.SetKey("platform", Value(GetVirtualConnectPlatformValue()));
-  sender_info.SetKey("connectionType", Value(kVirtualConnectTypeLocal));
+  Value::Dict sender_info;
+  sender_info.Set("sdkType", kVirtualConnectSdkType);
+  sender_info.Set("version", browser_version);
+  sender_info.Set("browserVersion", browser_version);
+  sender_info.Set("platform", GetVirtualConnectPlatformValue());
+  sender_info.Set("connectionType", kVirtualConnectTypeLocal);
   if (!system_version.empty())
-    sender_info.SetKey("systemVersion", Value(system_version));
+    sender_info.Set("systemVersion", system_version);
 
-  dict.SetKey("senderInfo", std::move(sender_info));
+  dict.Set("senderInfo", std::move(sender_info));
 
-  return CreateCastMessage(kConnectionNamespace, dict, source_id,
-                           destination_id);
+  return CreateCastMessage(kConnectionNamespace, base::Value(std::move(dict)),
+                           source_id, destination_id);
 }
 
 CastMessage CreateVirtualConnectionClose(const std::string& source_id,
                                          const std::string& destination_id) {
-  Value dict(Value::Type::DICTIONARY);
-  dict.SetKey(
-      "type",
-      Value(
-          EnumToString<CastMessageType, CastMessageType::kCloseConnection>()));
-  dict.SetKey("reasonCode", Value(kVirtualConnectionClosedByPeer));
-  return CreateCastMessage(kConnectionNamespace, dict, source_id,
-                           destination_id);
+  Value::Dict dict;
+  dict.Set("type",
+           EnumToString<CastMessageType, CastMessageType::kCloseConnection>());
+  dict.Set("reasonCode", kVirtualConnectionClosedByPeer);
+  return CreateCastMessage(kConnectionNamespace, base::Value(std::move(dict)),
+                           source_id, destination_id);
 }
 
 CastMessage CreateGetAppAvailabilityRequest(const std::string& source_id,
                                             int request_id,
                                             const std::string& app_id) {
-  Value dict(Value::Type::DICTIONARY);
-  dict.SetKey("type",
-              Value(EnumToString<CastMessageType,
-                                 CastMessageType::kGetAppAvailability>()));
-  Value app_id_value(Value::Type::LIST);
-  app_id_value.Append(Value(app_id));
-  dict.SetKey("appId", std::move(app_id_value));
-  dict.SetKey("requestId", Value(request_id));
+  Value::Dict dict;
+  dict.Set(
+      "type",
+      EnumToString<CastMessageType, CastMessageType::kGetAppAvailability>());
+  Value::List app_id_value;
+  app_id_value.Append(app_id);
+  dict.Set("appId", std::move(app_id_value));
+  dict.Set("requestId", request_id);
 
-  return CreateCastMessage(kReceiverNamespace, dict, source_id,
-                           kPlatformReceiverId);
+  return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
+                           source_id, kPlatformReceiverId);
 }
 
 CastMessage CreateReceiverStatusRequest(const std::string& source_id,
                                         int request_id) {
-  Value dict(Value::Type::DICTIONARY);
-  dict.SetKey(
-      "type",
-      Value(EnumToString<CastMessageType, CastMessageType::kGetStatus>()));
-  dict.SetKey("requestId", Value(request_id));
-  return CreateCastMessage(kReceiverNamespace, dict, source_id,
-                           kPlatformReceiverId);
+  Value::Dict dict;
+  dict.Set("type",
+           EnumToString<CastMessageType, CastMessageType::kGetStatus>());
+  dict.Set("requestId", request_id);
+  return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
+                           source_id, kPlatformReceiverId);
 }
 
 BroadcastRequest::BroadcastRequest(const std::string& broadcast_namespace,
@@ -453,19 +449,18 @@ CastMessage CreateBroadcastRequest(const std::string& source_id,
                                    int request_id,
                                    const std::vector<std::string>& app_ids,
                                    const BroadcastRequest& request) {
-  Value dict(Value::Type::DICTIONARY);
-  dict.SetKey(
-      "type",
-      Value(EnumToString<CastMessageType, CastMessageType::kBroadcast>()));
-  std::vector<Value> app_ids_value;
+  Value::Dict dict;
+  dict.Set("type",
+           EnumToString<CastMessageType, CastMessageType::kBroadcast>());
+  base::Value::List app_ids_value;
   for (const std::string& app_id : app_ids)
-    app_ids_value.push_back(Value(app_id));
+    app_ids_value.Append(app_id);
 
-  dict.SetKey("appIds", Value(std::move(app_ids_value)));
-  dict.SetKey("namespace", Value(request.broadcast_namespace));
-  dict.SetKey("message", Value(request.message));
-  return CreateCastMessage(kBroadcastNamespace, dict, source_id,
-                           kPlatformReceiverId);
+  dict.Set("appIds", std::move(app_ids_value));
+  dict.Set("namespace", request.broadcast_namespace);
+  dict.Set("message", request.message);
+  return CreateCastMessage(kBroadcastNamespace, base::Value(std::move(dict)),
+                           source_id, kPlatformReceiverId);
 }
 
 CastMessage CreateLaunchRequest(
@@ -475,34 +470,31 @@ CastMessage CreateLaunchRequest(
     const std::string& locale,
     const std::vector<std::string>& supported_app_types,
     const absl::optional<base::Value>& app_params) {
-  Value dict(Value::Type::DICTIONARY);
-  dict.SetKey("type",
-              Value(EnumToString<CastMessageType, CastMessageType::kLaunch>()));
-  dict.SetKey("requestId", Value(request_id));
-  dict.SetKey("appId", Value(app_id));
-  dict.SetKey("language", Value(locale));
-  std::vector<Value> supported_app_types_value;
+  Value::Dict dict;
+  dict.Set("type", EnumToString<CastMessageType, CastMessageType::kLaunch>());
+  dict.Set("requestId", request_id);
+  dict.Set("appId", app_id);
+  dict.Set("language", locale);
+  base::Value::List supported_app_types_value;
   for (const std::string& type : supported_app_types)
-    supported_app_types_value.push_back(Value(type));
+    supported_app_types_value.Append(type);
 
-  dict.SetKey("supportedAppTypes", Value(supported_app_types_value));
-  if (app_params) {
-    dict.SetKey("appParams", app_params.value().Clone());
-  }
-  return CreateCastMessage(kReceiverNamespace, dict, source_id,
-                           kPlatformReceiverId);
+  dict.Set("supportedAppTypes", std::move(supported_app_types_value));
+  if (app_params)
+    dict.Set("appParams", app_params.value().Clone());
+  return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
+                           source_id, kPlatformReceiverId);
 }
 
 CastMessage CreateStopRequest(const std::string& source_id,
                               int request_id,
                               const std::string& session_id) {
-  Value dict(Value::Type::DICTIONARY);
-  dict.SetKey("type",
-              Value(EnumToString<CastMessageType, CastMessageType::kStop>()));
-  dict.SetKey("requestId", Value(request_id));
-  dict.SetKey("sessionId", Value(session_id));
-  return CreateCastMessage(kReceiverNamespace, dict, source_id,
-                           kPlatformReceiverId);
+  Value::Dict dict;
+  dict.Set("type", EnumToString<CastMessageType, CastMessageType::kStop>());
+  dict.Set("requestId", request_id);
+  dict.Set("sessionId", session_id);
+  return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
+                           source_id, kPlatformReceiverId);
 }
 
 CastMessage CreateCastMessage(const std::string& message_namespace,
@@ -535,22 +527,22 @@ CastMessage CreateMediaRequest(const base::Value& body,
                                const std::string& source_id,
                                const std::string& destination_id) {
   Value dict = body.Clone();
-  Value* type = dict.FindKeyOfType("type", Value::Type::STRING);
+  std::string* type = dict.GetDict().FindString("type");
   CHECK(type);
-  dict.SetKey("type", Value(GetRemappedMediaRequestType(type->GetString())));
-  dict.SetKey("requestId", Value(request_id));
+  dict.GetDict().Set("type", GetRemappedMediaRequestType(*type));
+  dict.GetDict().Set("requestId", request_id);
   return CreateCastMessage(kMediaNamespace, dict, source_id, destination_id);
 }
 
 CastMessage CreateSetVolumeRequest(const base::Value& body,
                                    int request_id,
                                    const std::string& source_id) {
-  DCHECK(body.FindKeyOfType("type", Value::Type::STRING) &&
-         body.FindKeyOfType("type", Value::Type::STRING)->GetString() ==
+  DCHECK(body.GetDict().FindString("type") &&
+         *body.GetDict().FindString("type") ==
              (EnumToString<V2MessageType, V2MessageType::kSetVolume>()));
   Value dict = body.Clone();
-  dict.RemoveKey("sessionId");
-  dict.SetKey("requestId", Value(request_id));
+  dict.GetDict().Remove("sessionId");
+  dict.GetDict().Set("requestId", request_id);
   return CreateCastMessage(kReceiverNamespace, dict, source_id,
                            kPlatformReceiverId);
 }
@@ -587,23 +579,23 @@ const char* ToString(GetAppAvailabilityResult result) {
 absl::optional<int> GetRequestIdFromResponse(const Value& payload) {
   DCHECK(payload.is_dict());
 
-  const Value* request_id_value =
-      payload.FindKeyOfType("requestId", Value::Type::INTEGER);
-  if (!request_id_value)
-    return absl::nullopt;
-  return request_id_value->GetInt();
+  return payload.GetDict().FindInt("requestId");
 }
 
 GetAppAvailabilityResult GetAppAvailabilityResultFromResponse(
     const Value& payload,
     const std::string& app_id) {
   DCHECK(payload.is_dict());
-  const Value* availability_value =
-      payload.FindPathOfType({"availability", app_id}, Value::Type::STRING);
-  if (!availability_value)
+
+  const Value::Dict* availability_dict =
+      payload.GetDict().FindDict("availability");
+  if (!availability_dict)
+    return GetAppAvailabilityResult::kUnknown;
+  const std::string* availability = availability_dict->FindString(app_id);
+  if (!availability)
     return GetAppAvailabilityResult::kUnknown;
 
-  return StringToEnum<GetAppAvailabilityResult>(availability_value->GetString())
+  return StringToEnum<GetAppAvailabilityResult>(*availability)
       .value_or(GetAppAvailabilityResult::kUnknown);
 }
 
@@ -622,14 +614,15 @@ LaunchSessionResponse GetLaunchSessionResponseError(std::string error_msg) {
 }
 
 LaunchSessionResponse GetLaunchSessionResponse(const base::Value& payload) {
-  const Value* type_value = payload.FindKeyOfType("type", Value::Type::STRING);
-  if (!type_value)
+  const std::string* type_string = payload.GetDict().FindString("type");
+  if (!type_string)
     return LaunchSessionResponse();
 
-  const auto type = CastMessageTypeFromString(type_value->GetString());
+  const auto type = CastMessageTypeFromString(*type_string);
   if (type != CastMessageType::kReceiverStatus &&
-      type != CastMessageType::kLaunchError)
+      type != CastMessageType::kLaunchError) {
     return LaunchSessionResponse();
+  }
 
   LaunchSessionResponse response;
   if (type == CastMessageType::kLaunchError) {
@@ -637,13 +630,12 @@ LaunchSessionResponse GetLaunchSessionResponse(const base::Value& payload) {
     return response;
   }
 
-  const Value* receiver_status =
-      payload.FindKeyOfType("status", Value::Type::DICTIONARY);
+  const Value::Dict* receiver_status = payload.GetDict().FindDict("status");
   if (!receiver_status)
     return LaunchSessionResponse();
 
   response.result = LaunchSessionResponse::Result::kOk;
-  response.receiver_status = receiver_status->Clone();
+  response.receiver_status = base::Value(receiver_status->Clone());
   return response;
 }
 
