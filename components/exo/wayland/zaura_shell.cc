@@ -768,6 +768,11 @@ void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
   if (activated)
     AddState(&states, XDG_TOPLEVEL_STATE_ACTIVATED);
 
+  if (state_type == chromeos::WindowStateType::kPrimarySnapped)
+    AddState(&states, XDG_TOPLEVEL_STATE_TILED_LEFT);
+  if (state_type == chromeos::WindowStateType::kSecondarySnapped)
+    AddState(&states, XDG_TOPLEVEL_STATE_TILED_RIGHT);
+
   zaura_toplevel_send_configure(aura_toplevel_resource_, bounds.x(), bounds.y(),
                                 bounds.width(), bounds.height(), &states);
   wl_array_release(&states);
