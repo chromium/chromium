@@ -69,11 +69,12 @@ def handle_get_reports(request: Request, headers: List[Header]) -> Response:
 
 def store_report(stash: Stash, report: str) -> None:
   """Stores the report in the stash. Report here is a JSON."""
-  reports = stash.take(REPORTS)
-  if not reports:
-    reports = []
-  reports.append(report)
-  stash.put(REPORTS, reports)
+  with stash.lock:
+    reports = stash.take(REPORTS)
+    if not reports:
+      reports = []
+    reports.append(report)
+    stash.put(REPORTS, reports)
   return None
 
 
