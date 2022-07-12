@@ -38,6 +38,8 @@ class PLATFORM_EXPORT CalculationExpressionNode
     return !operator==(other);
   }
 
+  bool HasAnchorQueries() const { return has_anchor_queries_; }
+
   virtual bool IsNumber() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
@@ -56,6 +58,9 @@ class PLATFORM_EXPORT CalculationExpressionNode
  protected:
   ResultType result_type_;
 #endif
+
+ protected:
+  bool has_anchor_queries_ = false;
 };
 
 class PLATFORM_EXPORT CalculationExpressionNumberNode final
@@ -138,13 +143,8 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
       Children&& children,
       CalculationOperator op);
 
-  CalculationExpressionOperationNode(Children&& children, CalculationOperator op)
-      : children_(std::move(children)), operator_(op) {
-#if DCHECK_IS_ON()
-    result_type_ = ResolvedResultType();
-    DCHECK_NE(result_type_, ResultType::kInvalid);
-#endif
-  }
+  CalculationExpressionOperationNode(Children&& children,
+                                     CalculationOperator op);
 
   const Children& GetChildren() const { return children_; }
   CalculationOperator GetOperator() const { return operator_; }
@@ -162,6 +162,8 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
 #endif
 
  private:
+  bool ComputeHasAnchorQueries() const;
+
   Children children_;
   CalculationOperator operator_;
 };
@@ -234,7 +236,9 @@ class PLATFORM_EXPORT CalculationExpressionAnchorQueryNode final
         anchor_name_(anchor_name),
         value_(value),
         side_percentage_(side_percentage),
-        fallback_(fallback) {}
+        fallback_(fallback) {
+    has_anchor_queries_ = true;
+  }
 
  private:
   AnchorQueryType type_;

@@ -181,6 +181,25 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
   }
 }
 
+bool CalculationExpressionOperationNode::ComputeHasAnchorQueries() const {
+  for (const auto& child : children_) {
+    if (child->HasAnchorQueries())
+      return true;
+  }
+  return false;
+}
+
+CalculationExpressionOperationNode::CalculationExpressionOperationNode(
+    Children&& children,
+    CalculationOperator op)
+    : children_(std::move(children)), operator_(op) {
+#if DCHECK_IS_ON()
+  result_type_ = ResolvedResultType();
+  DCHECK_NE(result_type_, ResultType::kInvalid);
+#endif
+  has_anchor_queries_ = ComputeHasAnchorQueries();
+}
+
 float CalculationExpressionOperationNode::Evaluate(
     float max_value,
     const Length::AnchorEvaluator* anchor_evaluator) const {

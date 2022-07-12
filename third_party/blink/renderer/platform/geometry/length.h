@@ -274,6 +274,7 @@ class PLATFORM_EXPORT Length {
   bool IsExtendToZoom() const { return GetType() == kExtendToZoom; }
   bool IsDeviceWidth() const { return GetType() == kDeviceWidth; }
   bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }
+  bool HasAnchorQueries() const;
 
   Length Blend(const Length& from, double progress, ValueRange range) const {
     DCHECK(IsSpecified());

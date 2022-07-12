@@ -205,6 +205,10 @@ absl::optional<LayoutUnit> Length::AnchorEvaluator::EvaluateAnchorSize(
   return absl::nullopt;
 }
 
+bool Length::HasAnchorQueries() const {
+  return IsCalculated() && GetCalculationValue().HasAnchorQueries();
+}
+
 String Length::ToString() const {
   StringBuilder builder;
   builder.Append("Length(");

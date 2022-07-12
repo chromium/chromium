@@ -133,6 +133,38 @@ void AdjustStyleForSvgElement(const SVGElement& element, ComputedStyle& style) {
   style.SetTextUnderlinePosition(kTextUnderlinePositionAuto);
 }
 
+// Adjust style for anchor() and anchor-size() queries.
+void AdjustAnchorQueryStyles(ComputedStyle& style) {
+  if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled())
+    return;
+
+  // anchor() and anchor-size() can only be used on absolutely positioned
+  // elements.
+  if (style.GetPosition() != EPosition::kAbsolute &&
+      style.GetPosition() != EPosition::kFixed) {
+    if (style.Left().HasAnchorQueries())
+      style.SetLeft(Length::Auto());
+    if (style.Right().HasAnchorQueries())
+      style.SetRight(Length::Auto());
+    if (style.Top().HasAnchorQueries())
+      style.SetTop(Length::Auto());
+    if (style.Bottom().HasAnchorQueries())
+      style.SetBottom(Length::Auto());
+    if (style.Width().HasAnchorQueries())
+      style.SetWidth(Length::Auto());
+    if (style.MinWidth().HasAnchorQueries())
+      style.SetMinWidth(Length::Auto());
+    if (style.MaxWidth().HasAnchorQueries())
+      style.SetMaxWidth(Length::Auto());
+    if (style.Height().HasAnchorQueries())
+      style.SetHeight(Length::Auto());
+    if (style.MinHeight().HasAnchorQueries())
+      style.SetMinHeight(Length::Auto());
+    if (style.MaxHeight().HasAnchorQueries())
+      style.SetMaxHeight(Length::Auto());
+  }
+}
+
 // Returns the `<display-outside>` for a `EDisplay` value.
 // https://drafts.csswg.org/css-display-3/#propdef-display
 EDisplay DisplayOutside(EDisplay display) {
@@ -1003,6 +1035,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       style.SetTextOverflow(text_control->ValueForTextOverflow());
     }
   }
+
+  AdjustAnchorQueryStyles(style);
 
   if (!HasFullNGFragmentationSupport()) {
     // When establishing a block fragmentation context for LayoutNG, we require
