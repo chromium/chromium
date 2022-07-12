@@ -1180,8 +1180,7 @@ std::string TemplateURLRef::HandleReplacements(
 
       case GOOGLE_PAGE_CLASSIFICATION:
         if (search_terms_args.page_classification !=
-                metrics::OmniboxEventProto::INVALID_SPEC &&
-            !base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
+            metrics::OmniboxEventProto::INVALID_SPEC) {
           HandleReplacement(
               "pgcl",
               base::NumberToString(search_terms_args.page_classification),
