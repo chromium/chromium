@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 
 import org.json.JSONArray;
@@ -929,12 +930,11 @@ public class CafMessageHandlerTest {
 
     @Test
     public void testOnAppMessageSent() {
-        Status mockResult = mock(Status.class);
-        doReturn(true).when(mockResult).isSuccess();
+        Status fakeResult = new Status(CommonStatusCodes.SUCCESS);
         doNothing()
                 .when(mMessageHandler)
                 .sendEnclosedMessageToClient(anyString(), anyString(), anyString(), anyInt());
-        mMessageHandler.onSendAppMessageResult(mockResult, CLIENT_ID1, SEQUENCE_NUMBER1);
+        mMessageHandler.onSendAppMessageResult(fakeResult, CLIENT_ID1, SEQUENCE_NUMBER1);
         verify(mMessageHandler)
                 .sendEnclosedMessageToClient(
                         eq(CLIENT_ID1), eq("app_message"), (String) isNull(), eq(SEQUENCE_NUMBER1));

@@ -279,17 +279,6 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetAccessToken() throws AuthException {
-        final Account account = AccountUtils.createAccountFromName("test@gmail.com");
-        final AccessTokenData originalToken =
-                mFacadeWithSystemDelegate.getAccessToken(account, TEST_TOKEN_SCOPE);
-
-        Assert.assertEquals("The same token should be returned.",
-                mFacadeWithSystemDelegate.getAccessToken(account, TEST_TOKEN_SCOPE).getToken(),
-                originalToken.getToken());
-    }
-
-    @Test
     public void testGetAndInvalidateAccessToken() throws AuthException {
         final Account account = addTestAccount("test@gmail.com");
         final AccessTokenData originalToken = mFacade.getAccessToken(account, TEST_TOKEN_SCOPE);
