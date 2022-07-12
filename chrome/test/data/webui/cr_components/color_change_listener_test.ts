@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {COLORS_CSS_SELECTOR, refreshColorCss} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('ColorChangeListenerTest', () => {
   setup(() => {
@@ -25,7 +25,9 @@ suite('ColorChangeListenerTest', () => {
     const secondHref = colorCssNode.getAttribute('href');
     assertTrue(!!secondHref);
     assertTrue(secondHref.startsWith('chrome://theme/colors.css'));
-    assertTrue(!!new URL(secondHref).search);
+    const params = new URLSearchParams(new URL(secondHref).search);
+    assertTrue(!!params.get('version'));
+    assertEquals('ui', params.get('sets'));
 
     assertNotEquals(initialHref, secondHref);
 
