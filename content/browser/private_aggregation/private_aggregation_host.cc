@@ -72,6 +72,12 @@ void PrivateAggregationHost::SendHistogramReport(
     std::vector<mojom::AggregatableReportHistogramContributionPtr>
         contribution_ptrs,
     mojom::AggregationServiceMode aggregation_mode) {
+  // TODO(alexmt): Consider updating or making a FeatureParam.
+  static constexpr char kFledgeReportingPath[] =
+      "/.well-known/private-aggregation/report-fledge";
+  static constexpr char kSharedStorageReportingPath[] =
+      "/.well-known/private-aggregation/report-shared-storage";
+
   const url::Origin& reporting_origin =
       receiver_set_.current_context().worklet_origin;
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
@@ -102,9 +108,20 @@ void PrivateAggregationHost::SendHistogramReport(
       /*api_version=*/kApiReportVersion,
       /*api_identifier=*/kApiIdentifier);
 
+  std::string reporting_path;
+  switch (receiver_set_.current_context().api_for_budgeting) {
+    case PrivateAggregationBudgetKey::Api::kFledge:
+      reporting_path = kFledgeReportingPath;
+      break;
+    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+      reporting_path = kSharedStorageReportingPath;
+      break;
+  }
+
   absl::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::Create(std::move(payload_contents),
-                                        std::move(shared_info));
+                                        std::move(shared_info),
+                                        std::move(reporting_path));
   if (!report_request.has_value()) {
     // TODO(crbug.com/1323324): Add histograms for monitoring failures here,
     // possibly broken out by failure reason.

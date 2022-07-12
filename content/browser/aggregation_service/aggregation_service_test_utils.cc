@@ -123,6 +123,12 @@ testing::AssertionResult ReportRequestsEqual(
   if (!payload_contents_equal)
     return payload_contents_equal;
 
+  if (expected.reporting_path() != actual.reporting_path()) {
+    return testing::AssertionFailure()
+           << "Expected reporting_path " << expected.reporting_path()
+           << ", actual: " << actual.reporting_path();
+  }
+
   return SharedInfoEqual(expected.shared_info(), actual.shared_info());
 }
 
@@ -222,7 +228,8 @@ AggregatableReportRequest CreateExampleRequest(
                  AggregatableReportSharedInfo::DebugMode::kDisabled,
                  /*additional_fields=*/base::Value::Dict(),
                  /*api_version=*/"",
-                 /*api_identifier=*/"example-api"))
+                 /*api_identifier=*/"example-api"),
+             /*reporting_path-*/ "example-path")
       .value();
 }
 
@@ -230,7 +237,7 @@ AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request) {
   return AggregatableReportRequest::CreateForTesting(
              request.processing_urls(), request.payload_contents(),
-             request.shared_info().Clone())
+             request.shared_info().Clone(), request.reporting_path())
       .value();
 }
 

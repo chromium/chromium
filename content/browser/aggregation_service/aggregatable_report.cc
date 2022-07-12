@@ -346,11 +346,12 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
 // static
 absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     AggregationServicePayloadContents payload_contents,
-    AggregatableReportSharedInfo shared_info) {
+    AggregatableReportSharedInfo shared_info,
+    std::string reporting_path) {
   std::vector<GURL> processing_urls =
       GetDefaultProcessingUrls(payload_contents.aggregation_mode);
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
-                        std::move(shared_info));
+                        std::move(shared_info), std::move(reporting_path));
 }
 
 // static
@@ -358,9 +359,10 @@ absl::optional<AggregatableReportRequest>
 AggregatableReportRequest::CreateForTesting(
     std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
-    AggregatableReportSharedInfo shared_info) {
+    AggregatableReportSharedInfo shared_info,
+    std::string reporting_path) {
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
-                        std::move(shared_info));
+                        std::move(shared_info), std::move(reporting_path));
 }
 
 // static
@@ -368,7 +370,8 @@ absl::optional<AggregatableReportRequest>
 AggregatableReportRequest::CreateInternal(
     std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
-    AggregatableReportSharedInfo shared_info) {
+    AggregatableReportSharedInfo shared_info,
+    std::string reporting_path) {
   if (!AggregatableReport::IsNumberOfProcessingUrlsValid(
           processing_urls.size(), payload_contents.aggregation_mode)) {
     return absl::nullopt;
@@ -400,18 +403,20 @@ AggregatableReportRequest::CreateInternal(
   // AggregatableReport construction later.
   base::ranges::sort(processing_urls);
 
-  return AggregatableReportRequest(std::move(processing_urls),
-                                   std::move(payload_contents),
-                                   std::move(shared_info));
+  return AggregatableReportRequest(
+      std::move(processing_urls), std::move(payload_contents),
+      std::move(shared_info), std::move(reporting_path));
 }
 
 AggregatableReportRequest::AggregatableReportRequest(
     std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
-    AggregatableReportSharedInfo shared_info)
+    AggregatableReportSharedInfo shared_info,
+    std::string reporting_path)
     : processing_urls_(std::move(processing_urls)),
       payload_contents_(std::move(payload_contents)),
-      shared_info_(std::move(shared_info)) {}
+      shared_info_(std::move(shared_info)),
+      reporting_path_(std::move(reporting_path)) {}
 
 AggregatableReportRequest::AggregatableReportRequest(
     AggregatableReportRequest&& other) = default;
@@ -420,6 +425,13 @@ AggregatableReportRequest& AggregatableReportRequest::operator=(
     AggregatableReportRequest&& other) = default;
 
 AggregatableReportRequest::~AggregatableReportRequest() = default;
+
+GURL AggregatableReportRequest::GetReportingUrl() const {
+  if (reporting_path_.empty()) {
+    return GURL();
+  }
+  return shared_info().reporting_origin.GetURL().Resolve(reporting_path_);
+}
 
 AggregatableReport::AggregationServicePayload::AggregationServicePayload(
     std::vector<uint8_t> payload,

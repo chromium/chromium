@@ -488,4 +488,37 @@ TEST(AggregatableReportTest, SharedInfoAdditionalFields) {
   EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
 }
 
+TEST(AggregatableReportTest, ReportingPathSet_SetInRequest) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest(
+          mojom::AggregationServiceMode::kExperimentalPoplar);
+
+  std::string reporting_path = "/example-path";
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        example_request.shared_info().Clone(),
+                                        reporting_path);
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->reporting_path(), reporting_path);
+  EXPECT_EQ(request->GetReportingUrl().path(), reporting_path);
+  EXPECT_EQ(request->GetReportingUrl().GetWithEmptyPath(),
+            example_request.shared_info().reporting_origin.GetURL());
+}
+
+TEST(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest(
+          mojom::AggregationServiceMode::kExperimentalPoplar);
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        example_request.shared_info().Clone());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_TRUE(request->reporting_path().empty());
+
+  // If the reporting path is empty,
+  EXPECT_FALSE(request->GetReportingUrl().is_valid());
+}
+
 }  // namespace content

@@ -258,7 +258,8 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // `shared_info.report_id` is not valid.
   static absl::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
-      AggregatableReportSharedInfo shared_info);
+      AggregatableReportSharedInfo shared_info,
+      std::string reporting_path = std::string());
 
   // Returns `absl::nullopt` if `payload_contents.contributions.size()` or
   // `processing_url.size()` is not valid for the
@@ -270,7 +271,8 @@ class CONTENT_EXPORT AggregatableReportRequest {
   static absl::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
-      AggregatableReportSharedInfo shared_info);
+      AggregatableReportSharedInfo shared_info,
+      std::string reporting_path = std::string());
 
   // Move-only.
   AggregatableReportRequest(AggregatableReportRequest&& other);
@@ -284,20 +286,32 @@ class CONTENT_EXPORT AggregatableReportRequest {
   const AggregatableReportSharedInfo& shared_info() const {
     return shared_info_;
   }
+  const std::string& reporting_path() const { return reporting_path_; }
+
+  // Returns the URL this report should be sent to. The return value is invalid
+  // if the reporting_path is empty.
+  GURL GetReportingUrl() const;
 
  private:
   static absl::optional<AggregatableReportRequest> CreateInternal(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
-      AggregatableReportSharedInfo shared_info);
+      AggregatableReportSharedInfo shared_info,
+      std::string reporting_path);
 
   AggregatableReportRequest(std::vector<GURL> processing_urls,
                             AggregationServicePayloadContents payload_contents,
-                            AggregatableReportSharedInfo shared_info);
+                            AggregatableReportSharedInfo shared_info,
+                            std::string reporting_path);
 
   std::vector<GURL> processing_urls_;
   AggregationServicePayloadContents payload_contents_;
   AggregatableReportSharedInfo shared_info_;
+
+  // The URL path where the assembled report should be sent (when combined with
+  // `shared_info_.reporting_origin`). If the `AggregatableReportSender` is not
+  // being used, this can be left empty.
+  std::string reporting_path_;
 };
 
 }  // namespace content

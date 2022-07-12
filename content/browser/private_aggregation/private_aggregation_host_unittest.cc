@@ -102,11 +102,49 @@ TEST_F(PrivateAggregationHostTest,
               AggregatableReportSharedInfo::DebugMode::kDisabled,
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"0.1",
-              /*api_identifier=*/"private-aggregation"));
+              /*api_identifier=*/"private-aggregation"),
+          /*reporting_path=*/"/.well-known/private-aggregation/report-fledge");
   ASSERT_TRUE(expected_request);
 
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
       validated_request.value(), expected_request.value()));
+}
+
+TEST_F(PrivateAggregationHostTest, ReportingPath) {
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+
+  const PrivateAggregationBudgetKey::Api apis[] = {
+      PrivateAggregationBudgetKey::Api::kFledge,
+      PrivateAggregationBudgetKey::Api::kSharedStorage};
+
+  std::vector<mojo::Remote<mojom::PrivateAggregationHost>> remotes{/*n=*/2};
+  std::vector<absl::optional<AggregatableReportRequest>> validated_requests{
+      /*n=*/2};
+
+  for (int i = 0; i < 2; i++) {
+    EXPECT_TRUE(host_->BindNewReceiver(
+        kExampleOrigin, apis[i], remotes[i].BindNewPipeAndPassReceiver()));
+    EXPECT_CALL(mock_callback_, Run(_, apis[i]))
+        .WillOnce(MoveArg<0>(&validated_requests[i]));
+
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
+        contributions;
+    contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+        /*bucket=*/123, /*value=*/456));
+    remotes[i]->SendHistogramReport(std::move(contributions),
+                                    mojom::AggregationServiceMode::kDefault);
+
+    remotes[i].FlushForTesting();
+    EXPECT_TRUE(remotes[i].is_connected());
+
+    ASSERT_TRUE(validated_requests[i]);
+  }
+
+  EXPECT_EQ(validated_requests[0]->reporting_path(),
+            "/.well-known/private-aggregation/report-fledge");
+  EXPECT_EQ(validated_requests[1]->reporting_path(),
+            "/.well-known/private-aggregation/report-shared-storage");
 }
 
 TEST_F(PrivateAggregationHostTest,
