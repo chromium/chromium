@@ -359,8 +359,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // is_response_committed() is true, the URL should no longer change.
   const GURL& url() const { return url_; }
 
-  // Representing the first party for cookies, if any, for this context. See
-  // URLRequest::site_for_cookies() for details.
+  // This returns the first party for cookies as derived from the storage key.
+  // For information on how this may differ from the SiteForCookies in the frame
+  // context please see the comments above StorageKey::ToNetSiteForCookies.
   // For service worker execution contexts, site_for_cookies() always
   // corresponds to the service worker script URL.
   const net::SiteForCookies site_for_cookies() const {
