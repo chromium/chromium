@@ -18,6 +18,8 @@ const eventLevelDebugReportsUrl =
     '/.well-known/attribution-reporting/debug/report-event-attribution';
 const aggregatableReportsUrl =
     '/.well-known/attribution-reporting/report-aggregate-attribution';
+const aggregatableDebugReportsUrl =
+    '/.well-known/attribution-reporting/debug/report-aggregate-attribution';
 
 /**
  * Method to clear the stash. Takes the URL as parameter. This could be for
@@ -219,6 +221,8 @@ const pollEventLevelDebugReports = interval =>
     pollAttributionReports(eventLevelDebugReportsUrl, interval);
 const pollAggregatableReports = interval =>
     pollAttributionReports(aggregatableReportsUrl, interval);
+const pollAggregatableDebugReports = interval =>
+    pollAttributionReports(aggregatableDebugReportsUrl, interval);
 
 const validateReportHeaders = headers => {
   assert_array_equals(headers['content-type'], ['application/json']);
