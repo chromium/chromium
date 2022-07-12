@@ -17,7 +17,16 @@
 
 namespace gin {
 
-typedef V8Test V8MemoryDumpProviderTest;
+class V8MemoryDumpProviderTest : public V8Test {
+  void SetUp() override {
+    // Sets the track objects flag for dumping object statistics. Set this
+    // before initializing V8, because flags should not be modified after
+    // initialization. Also, setting the flag as early as possible ensures more
+    // precise numbers.
+    v8::V8::SetFlagsFromString("--track-gc-object-stats");
+    V8Test::SetUp();
+  }
+};
 
 class V8MemoryDumpProviderWorkerTest : public V8MemoryDumpProviderTest {
  protected:
@@ -30,12 +39,6 @@ class V8MemoryDumpProviderWorkerTest : public V8MemoryDumpProviderTest {
 
 // Checks if the dump provider runs without crashing and dumps root objects.
 TEST_F(V8MemoryDumpProviderTest, DumpStatistics) {
-  // Sets the track objects flag for dumping object statistics. Since this is
-  // not set before V8::InitializePlatform the sizes will not be accurate, but
-  // this serves the purpose of this test.
-  const char track_objects_flag[] = "--track-gc-object-stats";
-  v8::V8::SetFlagsFromString(track_objects_flag, strlen(track_objects_flag));
-
   base::trace_event::MemoryDumpArgs dump_args = {
       base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
   std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
