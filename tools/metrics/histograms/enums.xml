@@ -52638,6 +52638,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Consumer manual launch"/>
 </enum>
 
+<enum name="KioskLowDiskSeverity">
+  <int value="0" label="None"/>
+  <int value="1" label="Medium severity"/>
+  <int value="2" label="High severity"/>
+</enum>
+
 <enum name="KioskNextHomeBridgeAction">
   <int value="0" label="List apps"/>
   <int value="1" label="Launch app"/>

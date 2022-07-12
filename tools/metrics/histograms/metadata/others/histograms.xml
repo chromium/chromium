@@ -7155,6 +7155,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.Session.LowDiskHighestSeverity"
+    enum="KioskLowDiskSeverity" expires_after="2023-07-01">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@chromium.org</owner>
+  <summary>
+    ChromeOS only. Records the highest severity of low disk notification of a
+    kiosk session. Logged on every kiosk session start, even if there was no
+    notification during the last session.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.Session.LowDiskSeverity" enum="KioskLowDiskSeverity"
+    expires_after="2023-07-01">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@chromium.org</owner>
+  <summary>
+    ChromeOS only. Records low disk notifications being issued. Logged once a
+    low disk notification is supposed to be shown.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.Session.NetworkDrops" units="network drops"
     expires_after="2023-06-01">
   <owner>pbond@chromium.org</owner>
