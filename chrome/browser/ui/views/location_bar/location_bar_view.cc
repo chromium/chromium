@@ -303,8 +303,10 @@ void LocationBarView::Init() {
     // first so that they appear on the left side of the icon container.
     // TODO(crbug.com/1318890): Improve the ordering heuristics for page action
     // icons and determine a way to handle simultaneous icon animations.
-    if (side_search::IsDSESupportEnabled(profile_))
+    if (side_search::IsDSESupportEnabled(profile_) &&
+        browser_->is_type_normal()) {
       params.types_enabled.push_back(PageActionIconType::kSideSearch);
+    }
     params.types_enabled.push_back(PageActionIconType::kSendTabToSelf);
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
     params.types_enabled.push_back(PageActionIconType::kQRCodeGenerator);
