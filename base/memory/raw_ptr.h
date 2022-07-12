@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <climits>
 #include <cstddef>
 #include <functional>
 #include <type_traits>
