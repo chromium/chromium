@@ -53,8 +53,6 @@
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #include "ios/chrome/browser/default_browser/promo_source.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
-#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/geolocation/geolocation_logger.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -729,12 +727,6 @@ bool IsSigninForcedByPolicy() {
 
     if (!IsStartSurfaceSplashStartupEnabled()) {
       [self handleShowStartSurfaceIfNecessary];
-    }
-
-    if (IsWebChannelsEnabled()) {
-      // Creating the DiscoverFeedService.
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          self.mainInterface.browser->GetBrowserState());
     }
   }
 

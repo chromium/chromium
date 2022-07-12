@@ -42,6 +42,7 @@
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
+#import "ios/chrome/app/feed_app_agent.h"
 #import "ios/chrome/app/first_run_app_state_agent.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
@@ -695,6 +696,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // Create app state agents.
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
+  [appState addAgent:[[FeedAppAgent alloc] init]];
 
   // Create the window accessibility agent only when multiple windows are
   // possible.

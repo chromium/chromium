@@ -254,6 +254,22 @@ source_set("first_run_app_state_agent") {
   ]
 }
 
+source_set("feed_app_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feed_app_agent.h",
+    "feed_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/ntp:features",
+  ]
+}
+
 source_set("app_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -276,6 +292,7 @@ source_set("app_internal") {
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
     ":enterprise_app_agent",
+    ":feed_app_agent",
     ":first_run_app_state_agent",
     ":mode",
     ":safe_mode_app_state_agent",
