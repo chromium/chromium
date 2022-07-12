@@ -61,6 +61,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
         Priority priority);
 
     virtual std::unique_ptr<MetricReportQueue> CreatePeriodicUploadReportQueue(
+        EventType event_type,
         Destination destination,
         Priority priority,
         ReportingSettings* reporting_settings,
@@ -141,7 +142,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void InitOnAffiliatedLogin();
   // Init collectors and event observers that need to start after an affiliated
   // user login with a delay, should only be scheduled once on login.
-  void DelayedInitOnAffiliatedLogin();
+  void DelayedInitOnAffiliatedLogin(Profile* profile);
 
   void InitOneShotCollector(std::unique_ptr<Sampler> sampler,
                             MetricReportQueue* report_queue,
@@ -175,7 +176,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       const std::string& setting_path,
       bool default_value,
       MetricReportQueue* metric_report_queue);
-  void InitNetworkCollectors();
+
+  void InitNetworkCollectors(Profile* profile);
 
   void InitAudioCollectors();
 
@@ -198,6 +200,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   std::unique_ptr<MetricReportQueue> info_report_queue_;
   std::unique_ptr<MetricReportQueue> telemetry_report_queue_;
+  std::unique_ptr<MetricReportQueue> user_telemetry_report_queue_;
   std::unique_ptr<MetricReportQueue> event_report_queue_;
   std::unique_ptr<MetricReportQueue>
       peripheral_events_and_telemetry_report_queue_;
