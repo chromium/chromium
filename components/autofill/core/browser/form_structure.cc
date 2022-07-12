@@ -283,6 +283,12 @@ void PopulateRandomizedFieldMetadata(
                           field.placeholder, /*include_checksum=*/false,
                           metadata->mutable_placeholder());
   }
+  if (!field.autocomplete_attribute.empty()) {
+    EncodeRandomizedValue(
+        encoder, form_signature, field_signature,
+        RandomizedEncoder::FIELD_AUTOCOMPLETE, field.autocomplete_attribute,
+        /*include_checksum=*/false, metadata->mutable_autocomplete());
+  }
 }
 
 // Defines necessary types for the rationalization logic, meaning that fields of

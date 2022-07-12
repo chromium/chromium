@@ -46,6 +46,7 @@ class RandomizedEncoder {
   static const char FIELD_CSS_CLASS[];
   static const char FIELD_PLACEHOLDER[];
   static const char FIELD_INITIAL_VALUE_HASH[];
+  static const char FIELD_AUTOCOMPLETE[];
 
   static const char kUrlKeyedAnonymizedDataCollectionEnabled[];
 

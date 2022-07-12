@@ -218,6 +218,9 @@ message AutofillRandomizedFieldMetadata {
   // Example: <input value="VVVVVVV">
   //          XXXXXXXX = hash("VVVVVVV"")
   optional AutofillRandomizedValue initial_value_hash = 9;
+
+  // Value of the autocomplete attribute. Example: <input autocomplete="XXX">
+  optional AutofillRandomizedValue autocomplete = 10;
 }
 
 // This message contains information about the field types in a single form.
