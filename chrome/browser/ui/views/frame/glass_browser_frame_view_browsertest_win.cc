@@ -27,15 +27,109 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/view_utils.h"
+
+class GlassBrowserFrameViewTest : public InProcessBrowserTest {
+ public:
+  GlassBrowserFrameViewTest() = default;
+  GlassBrowserFrameViewTest(const GlassBrowserFrameViewTest&) = delete;
+  GlassBrowserFrameViewTest& operator=(const GlassBrowserFrameViewTest&) =
+      delete;
+  ~GlassBrowserFrameViewTest() override = default;
+
+ protected:
+  GlassBrowserFrameView* GetGlassBrowserFrameView() {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    views::NonClientFrameView* frame_view =
+        browser_view->GetWidget()->non_client_view()->frame_view();
+
+    if (!views::IsViewClass<GlassBrowserFrameView>(frame_view))
+      return nullptr;
+    return static_cast<GlassBrowserFrameView*>(frame_view);
+  }
+
+  const WindowsCaptionButton* GetMaximizeButton() {
+    auto* glass_frame_view = GetGlassBrowserFrameView();
+    if (!glass_frame_view)
+      return nullptr;
+    auto* caption_button_container =
+        glass_frame_view->caption_button_container_for_testing();
+    return static_cast<const WindowsCaptionButton*>(
+        caption_button_container->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
+  }
+};
+
+// Test that in touch mode, the maximize button is enabled for a non-maximized
+// window.
+IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+                       NonMaximizedTouchMaximizeButtonState) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
+  auto* maximize_button = GetMaximizeButton();
+  if (!maximize_button)
+    GTEST_SKIP();
+
+  EXPECT_TRUE(maximize_button->GetVisible());
+  EXPECT_TRUE(maximize_button->GetEnabled());
+}
+
+// Test that in touch mode, the maximize button is disabled and not visible for
+// a maximized window.
+IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+                       MaximizedTouchMaximizeButtonState) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
+  auto* glass_frame_view = GetGlassBrowserFrameView();
+  if (!glass_frame_view)
+    GTEST_SKIP();
+
+  glass_frame_view->frame()->Maximize();
+
+  static_cast<views::View*>(glass_frame_view)->Layout();
+  auto* maximize_button = GetMaximizeButton();
+
+  // Button isn't visible, and should be disabled.
+  EXPECT_FALSE(maximize_button->GetEnabled());
+  EXPECT_FALSE(maximize_button->GetVisible());
+}
+
+// Test that in non touch mode, the maximize button is enabled for a
+// non-maximized window.
+IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+                       NonTouchNonMaximizedMaximizeButtonState) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{false};
+  auto* maximize_button = GetMaximizeButton();
+  if (!maximize_button)
+    GTEST_SKIP();
+
+  EXPECT_TRUE(maximize_button->GetVisible());
+  EXPECT_TRUE(maximize_button->GetEnabled());
+}
+
+// Test that in non touch mode, the maximize button is enabled and not visible
+// for a maximized window.
+IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+                       NonTouchMaximizedMaximizeButtonState) {
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{false};
+  auto* glass_frame_view = GetGlassBrowserFrameView();
+  if (!glass_frame_view)
+    GTEST_SKIP();
+
+  glass_frame_view->frame()->Maximize();
+
+  static_cast<views::View*>(glass_frame_view)->Layout();
+  auto* maximize_button = GetMaximizeButton();
+  EXPECT_FALSE(maximize_button->GetVisible());
+  EXPECT_TRUE(maximize_button->GetEnabled());
+}
 
 class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
  public:
