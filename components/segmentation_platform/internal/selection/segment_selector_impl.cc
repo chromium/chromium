@@ -27,6 +27,7 @@
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
 
 namespace segmentation_platform {
 namespace {
@@ -268,6 +269,11 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
   if (!result->rank) {
     stats::RecordSegmentSelectionFailure(config_->segmentation_key,
                                          GetFailureReason(result->state));
+    if (config_->on_demand_execution && !callback.is_null()) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), SegmentSelectionResult()));
+    }
     return;
   }
   ranks->insert(std::make_pair(current_segment_id, *result->rank));

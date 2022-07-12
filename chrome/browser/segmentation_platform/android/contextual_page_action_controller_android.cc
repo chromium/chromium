@@ -38,7 +38,7 @@ static void JNI_ContextualPageActionController_ComputeContextualPageAction(
 
   // Populate input context.
   // TODO(shaktisahu): Have these string constants defined at a common file.
-  input_context->metadata_args.emplace("url", url->spec());
+  input_context->metadata_args.emplace("url", *url);
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::
           SegmentationPlatformServiceFactory::GetForProfile(profile);

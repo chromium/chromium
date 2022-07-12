@@ -174,7 +174,6 @@ std::unique_ptr<Config> GetConfigForContextualPageActions() {
         SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
   }
   config->on_demand_execution = true;
-  config->trigger = TriggerType::kPageLoad;
   return config;
 }
 
