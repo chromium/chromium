@@ -134,6 +134,11 @@ const base::Feature kArcAccountRestrictions{"ArcAccountRestrictions",
 const base::Feature kArcAdbSideloadingFeature{
     "ArcAdbSideloading", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether files shared from ARC apps to Web Apps should be shared
+// through the FuseBox service.
+const base::Feature kArcFuseBoxFileSharing{"ArcFuseBoxFileSharing",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether to enable support for ARC Input Overlay.
 const base::Feature kArcInputOverlay{"ArcInputOverlay",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1695,6 +1700,11 @@ bool IsAmbientModePhotoPreviewEnabled() {
 
 bool IsAppNotificationsPageEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
+}
+
+bool IsArcFuseBoxFileSharingEnabled() {
+  return IsFileManagerFuseBoxEnabled() &&
+         base::FeatureList::IsEnabled(kArcFuseBoxFileSharing);
 }
 
 bool IsArcInputOverlayEnabled() {

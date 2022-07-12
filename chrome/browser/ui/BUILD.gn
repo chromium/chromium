@@ -3138,6 +3138,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom",
       "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings",
       "//chrome/browser/web_applications",
+      "//chrome/browser/webshare:storage",
       "//chrome/services/file_util/public/cpp",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/dbus/audio",
