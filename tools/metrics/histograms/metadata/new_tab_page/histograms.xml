@@ -855,6 +855,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.FeedPositionSegmentationResult"
+    enum="FeedPositionSegmentationResult" expires_after="2022-09-24">
+  <owner>hanxi@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <summary>
+    Logs the result from segmentation platform that determines whether the user
+    is a Feed active user or a non-Feed user. Recorded three times when a new
+    tab page is shown and Feed position (target) experiment is enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.HasCredentials" enum="BooleanYesNo"
     expires_after="2022-11-20">
   <owner>danpeng@google.com</owner>
