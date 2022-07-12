@@ -623,6 +623,12 @@ gfx::Size ShelfView::CalculatePreferredSize() const {
   return gfx::Size(hotseat_size, last_button_bounds.bottom());
 }
 
+void ShelfView::OnThemeChanged() {
+  views::AccessiblePaneView::OnThemeChanged();
+  if (separator_)
+    separator_->SchedulePaint();
+}
+
 void ShelfView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // This bounds change is produced by the shelf movement (rotation, alignment
   // change, etc.) and all content has to follow. Using an animation at that
