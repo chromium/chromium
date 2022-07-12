@@ -3777,39 +3777,6 @@
       },
     },
   },
-  'webgpu_swiftshader_blink_web_tests': {
-    # crbug.com/1343047
-    'remove_from': [
-      'Dawn Mac x64 DEPS Release (AMD)',
-      'Dawn Mac x64 DEPS Release (Intel)',
-      'Dawn Mac x64 Experimental Release (AMD)',
-      'Dawn Mac x64 Experimental Release (Intel)',
-      'Dawn Mac x64 Release (AMD)',
-      'Dawn Mac x64 Release (Intel)',
-    ]
-  },
-  'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
-    # crbug.com/1343047
-    'remove_from': [
-      'Dawn Mac x64 DEPS Release (AMD)',
-      'Dawn Mac x64 DEPS Release (Intel)',
-      'Dawn Mac x64 Experimental Release (AMD)',
-      'Dawn Mac x64 Experimental Release (Intel)',
-      'Dawn Mac x64 Release (AMD)',
-      'Dawn Mac x64 Release (Intel)',
-    ]
-  },
-  'webgpu_swiftshader_blink_web_tests_with_partial_backend_validation': {
-    # crbug.com/1343047
-    'remove_from': [
-      'Dawn Mac x64 DEPS Release (AMD)',
-      'Dawn Mac x64 DEPS Release (Intel)',
-      'Dawn Mac x64 Experimental Release (AMD)',
-      'Dawn Mac x64 Experimental Release (Intel)',
-      'Dawn Mac x64 Release (AMD)',
-      'Dawn Mac x64 Release (Intel)',
-    ]
-  },
   'webkit_unit_tests': {
     'remove_from': [
       # Flakily fails on Win7. https://crbug.com/943372.
