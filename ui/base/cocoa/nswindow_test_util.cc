@@ -12,7 +12,6 @@ NSWindowFullscreenNotificationWaiter::NSWindowFullscreenNotificationWaiter(
   // We only support one NSWindowFullscreenNotificationWaiter instance at once.
   DCHECK(!instance_);
   instance_ = this;
-  ;
 }
 
 NSWindowFullscreenNotificationWaiter::~NSWindowFullscreenNotificationWaiter() {
