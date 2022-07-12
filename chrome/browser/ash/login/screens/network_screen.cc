@@ -35,7 +35,6 @@ std::string NetworkScreen::GetResultString(Result result) {
     case Result::CONNECTED_REGULAR:
     case Result::CONNECTED_DEMO:
     case Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
-    case Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT:
       return "Connected";
     case Result::BACK_REGULAR:
     case Result::BACK_DEMO:
@@ -43,8 +42,6 @@ std::string NetworkScreen::GetResultString(Result result) {
       return "Back";
     case Result::NOT_APPLICABLE:
     case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
-    case Result::NOT_APPLICABLE_CONNECTED_DEMO:
-    case Result::NOT_APPLICABLE_CONNECTED_DEMO_CONSOLIDATED_CONSENT:
       return BaseScreen::kNotApplicable;
   }
 }
@@ -148,10 +145,7 @@ void NetworkScreen::UnsubscribeNetworkNotification() {
 
 void NetworkScreen::NotifyOnConnection() {
   if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-      exit_callback_.Run(Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT);
-    else
-      exit_callback_.Run(Result::CONNECTED_DEMO);
+    exit_callback_.Run(Result::CONNECTED_DEMO);
   } else {
     if (chromeos::features::IsOobeConsolidatedConsentEnabled())
       exit_callback_.Run(Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT);
@@ -262,11 +256,7 @@ bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
   if (is_hidden()) {
     // Screen not shown yet: skipping it.
     if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
-      if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-        exit_callback_.Run(
-            Result::NOT_APPLICABLE_CONNECTED_DEMO_CONSOLIDATED_CONSENT);
-      else
-        exit_callback_.Run(Result::NOT_APPLICABLE_CONNECTED_DEMO);
+      exit_callback_.Run(Result::CONNECTED_DEMO);
     } else {
       if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
         exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
