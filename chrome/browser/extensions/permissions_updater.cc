@@ -301,8 +301,6 @@ void PermissionsUpdater::RevokeOptionalPermissions(
     const PermissionSet& permissions,
     RemoveType remove_type,
     base::OnceClosure completion_callback) {
-  // TODO(devlin): Ideally, we'd have this CHECK in place, but unit tests are
-  // currently violating it.
   CHECK(PermissionsParser::GetOptionalPermissions(&extension)
             .Contains(permissions))
       << "Cannot remove optional permissions that are not "
