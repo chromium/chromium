@@ -74,8 +74,12 @@ If there are new files that need to be rolled in, add the intended files to
 the WPTIncludeList. Ensure these files are in the correct order by running
 "LC_ALL=C sort WPTIncludeList".
 
-When rolling in new versions of WPT support, modify WPT_HEAD in checkout.sh to
-the desired HEAD position. You can then call "./checkout.sh clone" which will
+The easiest way to roll is to just call "./roll_wpt.py" which does everything
+listed below and uploads a CL to Gerrit. See instructions below for more
+manually rolling in WPT.
+
+When rolling in new versions of WPT support, make note of the revision you want
+to roll to.  You can then call "./checkout.sh REVISION clone" which will
 pull in all the code.
 
 It is also important to update the hashes in the 'Version:' fields of
@@ -90,8 +94,8 @@ required to run the updated version.
 Once you've cloned the repositories you can call "./checkout.sh reduce" to
 remove everything that is not listed in WPTIncludeList.
 
-Note that calling "./checkout.sh" without arguments is equivalent of calling
-"./checkout.sh clone reduce".
+Note that calling "./checkout.sh" with only a revision argument is equivalent
+of calling "./checkout.sh clone reduce".
 
 Configuration
 =============
