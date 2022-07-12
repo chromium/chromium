@@ -634,14 +634,10 @@ bool BrowserAutofillManager::ShouldParseForms(
     has_logged_autofill_enabled_ = true;
   }
 
-  // TODO(crbug.com/1293341): Enable the experiment by default.
-  // The placement of the IsEnabled() call is chosen very intentionally.
-  // Only users with disabled autofill will go into the control or experiment
-  // group.
-  return autofill_enabled ||
-         (base::FeatureList::IsEnabled(
-              features::kAutofillFixServerQueriesIfPasswordManagerIsEnabled) &&
-          password_manager_enabled);
+  // Enable the parsing also for the password manager, so that we fetch server
+  // classifications if the password manager is enabled but autofill is
+  // disabled.
+  return autofill_enabled || password_manager_enabled;
 }
 
 void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,

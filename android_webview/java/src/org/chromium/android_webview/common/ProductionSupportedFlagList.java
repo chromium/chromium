@@ -152,10 +152,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_SERVER_TYPE_TAKES_PRECEDENCE,
                     "Enables server type marked as overrides to take precedence over the "
                             + "autocomplete attribute."),
-            Flag.baseFeature(
-                    AutofillFeatures.AUTOFILL_FIX_SERVER_QUERIES_IF_PASSWORD_MANAGER_IS_ENABLED,
-                    "Enables a autofill server queries if the password manager is enabled but "
-                            + "autofill for addresses and credit cards are disabled."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
                     "Enable Autofill for frame-transcending forms (forms whose fields live in "
                             + "different frames)."),

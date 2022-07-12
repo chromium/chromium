@@ -338,17 +338,6 @@ const base::Feature kAutofillTypeSpecificPopupWidth{
 const base::Feature kAutofillFixFillableFieldTypes{
     "AutofillFixFillableFieldTypes", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Lookups for field classifications are gated on either Autofill for addresses
-// or payments being enabled. As a consequence, if both are disabled, the
-// password manager does not get server-side field classifications anymore
-// and its performance is reduced. When this feature is enabled, Autofill parse
-// forms and perform server lookups even if only the password manager is
-// enabled.
-// TODO(crbug.com/1293341): Remove once launched.
-const base::Feature kAutofillFixServerQueriesIfPasswordManagerIsEnabled{
-    "AutofillFixServerQueriesIfPasswordManagerIsEnabled",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, the Autofill popup ignores second clicks for a certain period
 // (kAutofillIgnoreEarlyClicksOnPopupDuration) after the Autofill popup was
 // shown. This is to prevent double clicks accidentally accepting suggestions.

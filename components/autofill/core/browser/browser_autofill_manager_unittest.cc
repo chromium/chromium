@@ -2958,26 +2958,9 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
   EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
 }
 
-// Test fixture which enables
-// features::kAutofillFixServerQueriesIfPasswordManagerIsEnabled.
-// TODO(crbug.com/1293341) Once enabled by default, delete this test
-// fixture and use BrowserAutofillManagerTest in the test below.
-class BrowserAutofillManagerTestWithFixForQueries
-    : public BrowserAutofillManagerTest {
- public:
-  BrowserAutofillManagerTestWithFixForQueries() {
-    features_.InitAndEnableFeature(
-        features::kAutofillFixServerQueriesIfPasswordManagerIsEnabled);
-  }
-  ~BrowserAutofillManagerTestWithFixForQueries() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
 // Ensures that if autofill is disabled but the password manager is enabled,
 // Autofill still performs a lookup to the server.
-TEST_F(BrowserAutofillManagerTestWithFixForQueries,
+TEST_F(BrowserAutofillManagerTest,
        OnFormsSeen_AutofillDisabledPasswordManagerEnabled) {
   // Set up our form data.
   FormData form;
