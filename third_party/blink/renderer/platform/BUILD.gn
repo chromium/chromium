@@ -2459,7 +2459,10 @@ fuzzer_test("open_type_math_support_fuzzer") {
     ":blink_fuzzer_test_support",
     ":platform",
   ]
-  seed_corpus = "//third_party/blink/web_tests/external/wpt/fonts/math"
+  seed_corpuses = [
+    "//third_party/blink/web_tests/external/wpt/fonts/math",
+    "//testing/libfuzzer/fuzzers/woff2_corpus",
+  ]
 }
 
 # Fuzzer for blink::StretchyOperatorShaper
@@ -2469,7 +2472,10 @@ fuzzer_test("stretchy_operator_shaper_fuzzer") {
     ":blink_fuzzer_test_support",
     ":platform",
   ]
-  seed_corpus = "//third_party/blink/web_tests/external/wpt/fonts/math"
+  seed_corpuses = [
+    "//third_party/blink/web_tests/external/wpt/fonts/math",
+    "//testing/libfuzzer/fuzzers/woff2_corpus",
+  ]
 }
 
 # Fuzzer for blink::MHTMLParser.
