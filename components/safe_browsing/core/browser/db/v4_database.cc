@@ -159,6 +159,11 @@ void V4Database::InitializeOnIOSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
 }
 
+void V4Database::StopOnIO() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  weak_factory_on_io_.InvalidateWeakPtrs();
+}
+
 V4Database::~V4Database() {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
 }

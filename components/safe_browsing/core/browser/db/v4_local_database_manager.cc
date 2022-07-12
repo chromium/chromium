@@ -669,6 +669,8 @@ void V4LocalDatabaseManager::StopOnIOThread(bool shutdown) {
   // Delete the V4Database. Any pending writes to disk are completed.
   // This operation happens on the task_runner on which v4_database_ operates
   // and doesn't block the IO thread.
+  if (v4_database_)
+    v4_database_->StopOnIO();
   v4_database_.reset();
 
   // Delete the V4UpdateProtocolManager.
