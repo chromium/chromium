@@ -117,16 +117,16 @@ struct sched_attr {
 #define SCHED_FLAG_UTIL_CLAMP_MAX 0x40
 #endif
 
-int sched_getattr(pid_t pid,
-                  const struct sched_attr* attr,
-                  unsigned int size,
-                  unsigned int flags) {
+long sched_getattr(pid_t pid,
+                   const struct sched_attr* attr,
+                   unsigned int size,
+                   unsigned int flags) {
   return syscall(__NR_sched_getattr, pid, attr, size, flags);
 }
 
-int sched_setattr(pid_t pid,
-                  const struct sched_attr* attr,
-                  unsigned int flags) {
+long sched_setattr(pid_t pid,
+                   const struct sched_attr* attr,
+                   unsigned int flags) {
   return syscall(__NR_sched_setattr, pid, attr, flags);
 }
 #endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
@@ -261,11 +261,15 @@ void SetThreadLatencySensitivity(ProcessId process_id,
   attr.sched_flags |= SCHED_FLAG_UTIL_CLAMP_MAX;
 
   if (is_urgent) {
-    attr.sched_util_min = (boost_percent * kSchedulerUclampMax + 50) / 100;
+    attr.sched_util_min =
+        (saturated_cast<uint32_t>(boost_percent) * kSchedulerUclampMax + 50) /
+        100;
     attr.sched_util_max = kSchedulerUclampMax;
   } else {
     attr.sched_util_min = kSchedulerUclampMin;
-    attr.sched_util_max = (limit_percent * kSchedulerUclampMax + 50) / 100;
+    attr.sched_util_max =
+        (saturated_cast<uint32_t>(limit_percent) * kSchedulerUclampMax + 50) /
+        100;
   }
 
   DCHECK_GE(attr.sched_util_min, kSchedulerUclampMin);
