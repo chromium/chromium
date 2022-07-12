@@ -466,10 +466,10 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
                        ExternalGreylistFetchAndParseAfterStartup) {
   policy::PolicyMap policies;
   EnableBrowserSwitcher(&policies);
-  base::Value url_list(base::Value::Type::LIST);
+  base::Value::List url_list;
   url_list.Append("*");
   SetPolicy(&policies, policy::key::kBrowserSwitcherUrlList,
-            std::move(url_list));
+            base::Value(std::move(url_list)));
   SetPolicy(&policies, policy::key::kBrowserSwitcherExternalGreylistUrl,
             base::Value(kAValidUrl));
   policy_provider().UpdateChromePolicy(policies);
@@ -612,24 +612,24 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, WritesPrefsToCacheFile) {
   EnableBrowserSwitcher(&policies);
   SetPolicy(&policies, policy::key::kAlternativeBrowserPath,
             base::Value("IExplore.exe"));
-  base::Value alt_params(base::Value::Type::LIST);
+  base::Value::List alt_params;
   alt_params.Append("--bogus-flag");
   SetPolicy(&policies, policy::key::kAlternativeBrowserParameters,
-            std::move(alt_params));
+            base::Value(std::move(alt_params)));
   SetPolicy(&policies, policy::key::kBrowserSwitcherChromePath,
             base::Value("chrome.exe"));
-  base::Value chrome_params(base::Value::Type::LIST);
+  base::Value::List chrome_params;
   chrome_params.Append("--force-dark-mode");
   SetPolicy(&policies, policy::key::kBrowserSwitcherChromeParameters,
-            std::move(chrome_params));
-  base::Value url_list(base::Value::Type::LIST);
+            base::Value(std::move(chrome_params)));
+  base::Value::List url_list;
   url_list.Append("example.com");
   SetPolicy(&policies, policy::key::kBrowserSwitcherUrlList,
-            std::move(url_list));
-  base::Value greylist(base::Value::Type::LIST);
+            base::Value(std::move(url_list)));
+  base::Value::List greylist;
   greylist.Append("foo.example.com");
   SetPolicy(&policies, policy::key::kBrowserSwitcherUrlGreylist,
-            std::move(greylist));
+            base::Value(std::move(greylist)));
   SetPolicy(&policies, policy::key::kBrowserSwitcherParsingMode,
             base::Value(static_cast<int>(ParsingMode::kIESiteListMode)));
   policy_provider().UpdateChromePolicy(policies);

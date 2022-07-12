@@ -242,7 +242,7 @@ class BrowserSwitcherPrefs : public KeyedService,
   // pref on the same registrar.
 
   // Listens on *some* prefs, to apply a filter to them
-  // (e.g. convert ListValue => vector<string>).
+  // (e.g. convert Value::List => vector<string>).
   PrefChangeRegistrar filtering_change_registrar_;
 
   // Listens on *all* BrowserSwitcher prefs, to notify observers when prefs

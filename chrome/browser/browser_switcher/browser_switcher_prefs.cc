@@ -35,7 +35,7 @@ std::vector<std::string> GetListPref(PrefService* prefs,
   std::vector<std::string> list;
   if (pref_name.empty())
     return list;
-  for (const auto& value : prefs->GetList(pref_name)->GetListDeprecated())
+  for (const auto& value : prefs->GetValueList(pref_name))
     list.push_back(value.GetString());
   return list;
 }
@@ -52,10 +52,10 @@ void SetListPref(PrefService* prefs,
                  const std::vector<std::string>& list) {
   if (pref_name.empty())
     return;
-  base::ListValue list_value;
+  base::Value::List list_value;
   for (const auto& str : list)
-    list_value.Append(base::Value(str));
-  prefs->Set(pref_name, list_value);
+    list_value.Append(str);
+  prefs->SetList(pref_name, std::move(list_value));
 }
 
 void SetCachedRules(PrefService* prefs,
@@ -361,13 +361,11 @@ void BrowserSwitcherPrefs::UrlListChanged() {
   if (!prefs_->IsManagedPreference(prefs::kUrlList))
     return;
 
-  UMA_HISTOGRAM_COUNTS_100000(
-      "BrowserSwitcher.UrlListSize",
-      prefs_->GetList(prefs::kUrlList)->GetListDeprecated().size());
+  UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.UrlListSize",
+                              prefs_->GetValueList(prefs::kUrlList).size());
 
   bool has_wildcard = false;
-  for (const auto& url :
-       prefs_->GetList(prefs::kUrlList)->GetListDeprecated()) {
+  for (const auto& url : prefs_->GetValueList(prefs::kUrlList)) {
     std::unique_ptr<Rule> rule =
         CanonicalizeRule(url.GetString(), parsing_mode_);
     if (rule)
@@ -386,13 +384,13 @@ void BrowserSwitcherPrefs::GreylistChanged() {
   if (!prefs_->IsManagedPreference(prefs::kUrlGreylist))
     return;
 
-  UMA_HISTOGRAM_COUNTS_100000(
-      "BrowserSwitcher.GreylistSize",
-      prefs_->GetList(prefs::kUrlGreylist)->GetListDeprecated().size());
+  const base::Value::List& url_gray_list =
+      prefs_->GetValueList(prefs::kUrlGreylist);
+  UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.GreylistSize",
+                              url_gray_list.size());
 
   bool has_wildcard = false;
-  for (const auto& url :
-       prefs_->GetList(prefs::kUrlGreylist)->GetListDeprecated()) {
+  for (const auto& url : url_gray_list) {
     std::unique_ptr<Rule> rule =
         CanonicalizeRule(url.GetString(), parsing_mode_);
     if (rule)

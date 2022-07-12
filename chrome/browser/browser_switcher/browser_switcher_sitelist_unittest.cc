@@ -31,12 +31,11 @@ class TestBrowserSwitcherPrefs : public BrowserSwitcherPrefs {
       : BrowserSwitcherPrefs(prefs, nullptr) {}
 };
 
-std::unique_ptr<base::Value> StringArrayToValue(
-    const std::vector<const char*>& strings) {
-  std::vector<base::Value> values(strings.size());
-  std::transform(strings.begin(), strings.end(), values.begin(),
-                 [](const char* s) { return base::Value(s); });
-  return std::make_unique<base::Value>(values);
+base::Value StringArrayToValue(const std::vector<const char*>& strings) {
+  base::Value::List list;
+  for (const auto* string : strings)
+    list.Append(string);
+  return base::Value(std::move(list));
 }
 
 void CheckRuleSetSize(size_t expected_sitelist_size,
@@ -56,15 +55,13 @@ class BrowserSwitcherSitelistTest : public testing::TestWithParam<ParsingMode> {
                   const std::vector<const char*>& url_greylist,
                   bool enabled = true) {
     BrowserSwitcherPrefs::RegisterProfilePrefs(prefs_backend_.registry());
-    prefs_backend_.SetManagedPref(prefs::kEnabled,
-                                  std::make_unique<base::Value>(enabled));
+    prefs_backend_.SetManagedPref(prefs::kEnabled, base::Value(enabled));
     prefs_backend_.SetManagedPref(prefs::kUrlList,
                                   StringArrayToValue(url_list));
     prefs_backend_.SetManagedPref(prefs::kUrlGreylist,
                                   StringArrayToValue(url_greylist));
-    prefs_backend_.SetManagedPref(
-        prefs::kParsingMode,
-        std::make_unique<base::Value>(static_cast<int>(parsing_mode_)));
+    prefs_backend_.SetManagedPref(prefs::kParsingMode,
+                                  base::Value(static_cast<int>(parsing_mode_)));
     prefs_ = std::make_unique<TestBrowserSwitcherPrefs>(&prefs_backend_);
     sitelist_ = std::make_unique<BrowserSwitcherSitelistImpl>(prefs_.get());
   }
@@ -412,13 +409,13 @@ TEST_P(BrowserSwitcherSitelistTest, ShouldPickUpPrefChanges) {
 TEST_P(BrowserSwitcherSitelistTest, ShouldIgnoreNonManagedPrefs) {
   Initialize({}, {});
 
-  prefs_backend()->Set(prefs::kUrlList, *StringArrayToValue({"example.com"}));
+  prefs_backend()->Set(prefs::kUrlList, StringArrayToValue({"example.com"}));
   EXPECT_FALSE(ShouldSwitch(GURL("http://example.com/")));
 
   prefs_backend()->SetManagedPref(prefs::kUrlList,
                                   StringArrayToValue({"example.com"}));
   prefs_backend()->Set(prefs::kUrlGreylist,
-                       *StringArrayToValue({"morespecific.example.com"}));
+                       StringArrayToValue({"morespecific.example.com"}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://morespecific.example.com/")));
 }
 
@@ -502,8 +499,7 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
                                      ? ParsingMode::kIESiteListMode
                                      : ParsingMode::kDefault;
   prefs_backend()->SetManagedPref(
-      prefs::kParsingMode,
-      std::make_unique<base::Value>(static_cast<int>(new_parsing_mode)));
+      prefs::kParsingMode, base::Value(static_cast<int>(new_parsing_mode)));
   prefs()->OnPolicyUpdated(policy::PolicyNamespace(), policy::PolicyMap(),
                            policy::PolicyMap());
   base::RunLoop().RunUntilIdle();

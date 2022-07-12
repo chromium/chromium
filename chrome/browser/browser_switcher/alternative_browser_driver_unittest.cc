@@ -39,9 +39,9 @@ StringType UTF8ToNative(base::StringPiece src) {
 #endif
 }
 
-base::ListValue UTF8VectorToListValue(
+base::Value::List UTF8VectorToValueList(
     const std::vector<base::StringPiece>& src) {
-  base::ListValue out;
+  base::Value::List out;
   for (base::StringPiece str : src)
     out.Append(str);
   return out;
@@ -59,13 +59,12 @@ class AlternativeBrowserDriverTest : public testing::Test {
 
   void SetBrowserPath(const std::string& path) {
     prefs_backend_.SetManagedPref(prefs::kAlternativeBrowserPath,
-                                  std::make_unique<base::Value>(path));
+                                  base::Value(path));
   }
 
-  void SetBrowserParameters(const base::ListValue* params) {
-    prefs_backend_.SetManagedPref(
-        prefs::kAlternativeBrowserParameters,
-        base::Value::ToUniquePtrValue(params->Clone()));
+  void SetBrowserParameters(const base::Value::List& params) {
+    prefs_backend_.SetManagedPref(prefs::kAlternativeBrowserParameters,
+                                  base::Value(params.Clone()));
   }
 
   AlternativeBrowserDriverImpl* driver() { return driver_.get(); }
@@ -78,8 +77,8 @@ class AlternativeBrowserDriverTest : public testing::Test {
 
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLine) {
   SetBrowserPath("/usr/bin/true");
-  auto params = UTF8VectorToListValue({"a", "b", "c"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"a", "b", "c"});
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(5u, argv.size());
@@ -92,8 +91,8 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLine) {
 
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsUrl) {
   SetBrowserPath("/usr/bin/true");
-  auto params = UTF8VectorToListValue({"--flag=${url}#fragment"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"--flag=${url}#fragment"});
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(2u, argv.size());
@@ -207,9 +206,9 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsEnvVars) {
   _putenv("CC=CCC");
   _putenv("D=DDD");
   SetBrowserPath("something.exe");
-  auto params = UTF8VectorToListValue(
+  auto params = UTF8VectorToValueList(
       {"%A%", "%B%", "before_%CC%_between_%D%_after", "%NONEXISTENT%"});
-  SetBrowserParameters(&params);
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(6u, argv.size());
@@ -230,8 +229,8 @@ TEST_F(AlternativeBrowserDriverTest,
   EXPECT_EQ(L"something.exe", cmd_line.argv()[0]);
   EXPECT_EQ(L"http://evil.com/%A%", cmd_line.argv()[1]);
 
-  auto params = UTF8VectorToListValue({"${url}"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"${url}"});
+  SetBrowserParameters(params);
   cmd_line = driver()->CreateCommandLine(GURL("http://evil.com/%A%"));
   EXPECT_EQ(2u, cmd_line.argv().size());
   EXPECT_EQ(L"something.exe", cmd_line.argv()[0]);
@@ -277,8 +276,8 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineContainsUrl) {
   // Args come after `--args', e.g.:
   //     open -a Safari http://example.com/ --args abc def
   SetBrowserPath("");
-  auto params = UTF8VectorToListValue({"abc", "def"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"abc", "def"});
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   EXPECT_EQ(7u, cmd_line.argv().size());
   EXPECT_EQ("open", cmd_line.argv()[0]);
@@ -292,8 +291,8 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineContainsUrl) {
   // If args contain "${url}", only put the URL together with the other
   // args. e.g.:
   //     open -a Safari --args abc http://example.com/ def
-  params = UTF8VectorToListValue({"abc", "${url}", "def"});
-  SetBrowserParameters(&params);
+  params = UTF8VectorToValueList({"abc", "${url}", "def"});
+  SetBrowserParameters(params);
   cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   EXPECT_EQ(7u, cmd_line.argv().size());
   EXPECT_EQ("open", cmd_line.argv()[0]);
@@ -311,8 +310,8 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsTilde) {
   setenv("HOME", "/home/foobar", true);
 
   SetBrowserPath("/usr/bin/true");
-  auto params = UTF8VectorToListValue({"~/file.txt", "/tmp/backup.txt~"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"~/file.txt", "/tmp/backup.txt~"});
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(4u, argv.size());
@@ -329,9 +328,9 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsEnvVars) {
   setenv("D", "DDD", true);
 
   SetBrowserPath("/usr/bin/true");
-  auto params = UTF8VectorToListValue(
+  auto params = UTF8VectorToValueList(
       {"$A", "${B}", "before_${CC}_between_${D}_after", "$NONEXISTENT"});
-  SetBrowserParameters(&params);
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(6u, argv.size());
@@ -353,8 +352,8 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineDoesntExpandUrlContent) {
   EXPECT_EQ(UTF8ToNative("/usr/bin/true"), cmd_line.argv()[0]);
   EXPECT_EQ("http://evil.com/$A$%7BB%7D", cmd_line.argv()[1]);
 
-  auto params = UTF8VectorToListValue({"${url}"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"${url}"});
+  SetBrowserParameters(params);
   cmd_line = driver()->CreateCommandLine(GURL("http://evil.com/$A${B}"));
   EXPECT_EQ(2u, cmd_line.argv().size());
   EXPECT_EQ(UTF8ToNative("/usr/bin/true"), cmd_line.argv()[0]);
