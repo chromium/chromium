@@ -34,14 +34,33 @@
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
+
+namespace {
+
+class VttCueBoxResizeDelegate final : public ResizeObserver::Delegate {
+ public:
+  void OnResize(
+      const HeapVector<Member<ResizeObserverEntry>>& entries) override {
+    DCHECK_EQ(entries.size(), 1u);
+    // TODO(crbug.com/1335309): Do adjustment here.
+  }
+};
+
+}  // anonymous namespace
 
 VTTCueBox::VTTCueBox(Document& document)
     : HTMLDivElement(document),
       snap_to_lines_position_(std::numeric_limits<float>::quiet_NaN()) {
   SetShadowPseudoId(AtomicString("-webkit-media-text-track-display"));
+}
+
+void VTTCueBox::Trace(Visitor* visitor) const {
+  visitor->Trace(box_size_observer_);
+  HTMLDivElement::Trace(visitor);
 }
 
 void VTTCueBox::ApplyCSSProperties(
@@ -131,6 +150,27 @@ LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
 
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByVTTCue);
   return MakeGarbageCollected<LayoutVTTCue>(this, snap_to_lines_position_);
+}
+
+Node::InsertionNotificationRequest VTTCueBox::InsertedInto(
+    ContainerNode& insertion_point) {
+  if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled() &&
+      insertion_point.isConnected()) {
+    DCHECK(!box_size_observer_);
+    box_size_observer_ =
+        ResizeObserver::Create(GetDocument().domWindow(),
+                               MakeGarbageCollected<VttCueBoxResizeDelegate>());
+    box_size_observer_->observe(this);
+  }
+  return HTMLDivElement::InsertedInto(insertion_point);
+}
+
+void VTTCueBox::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLDivElement::RemovedFrom(insertion_point);
+  if (!box_size_observer_)
+    return;
+  box_size_observer_->disconnect();
+  box_size_observer_.Clear();
 }
 
 }  // namespace blink

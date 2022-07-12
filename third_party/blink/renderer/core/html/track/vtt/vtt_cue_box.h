@@ -43,12 +43,17 @@ struct VTTDisplayParameters;
 class VTTCueBox final : public HTMLDivElement {
  public:
   explicit VTTCueBox(Document&);
+  void Trace(Visitor* visitor) const override;
 
   void ApplyCSSProperties(const VTTDisplayParameters&);
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  InsertionNotificationRequest InsertedInto(
+      ContainerNode& insertion_point) override;
+  void RemovedFrom(ContainerNode& insertion_point) override;
 
+  Member<ResizeObserver> box_size_observer_;
   // The computed line position for snap-to-lines layout, and NaN for
   // non-snap-to-lines layout where no adjustment should take place.
   // This is set in applyCSSProperties and propagated to LayoutVTTCue.
