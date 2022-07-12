@@ -265,7 +265,8 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
     const LogicalSize& available_logical_size,
     const WritingModeConverter& container_converter,
-    const NGLogicalAnchorQuery& anchor_query) {
+    const NGLogicalAnchorQuery& anchor_query,
+    bool* has_anchor_functions_out) {
   struct AnchorEvaluatorImpl : public Length::AnchorEvaluator {
     STACK_ALLOCATED();
 
@@ -289,6 +290,7 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
     bool is_y_axis = false;
     bool is_right_or_bottom = false;
   } anchor_evaluator(anchor_query, container_converter);
+  bool has_anchor_functions = false;
 
   // Compute in physical, because anchors may be in different `writing-mode` or
   // `direction`.
@@ -297,31 +299,38 @@ NGLogicalOutOfFlowInsets ComputeOutOfFlowInsets(
       available_logical_size, writing_direction.GetWritingMode());
   anchor_evaluator.available_size = available_size.width;
   absl::optional<LayoutUnit> left;
-  if (!style.Left().IsAuto()) {
-    left = MinimumValueForLength(style.Left(), available_size.width,
+  if (const Length& left_length = style.Left(); !left_length.IsAuto()) {
+    left = MinimumValueForLength(left_length, available_size.width,
                                  &anchor_evaluator);
+    has_anchor_functions = left_length.HasAnchorQueries();
   }
   absl::optional<LayoutUnit> right;
-  if (!style.Right().IsAuto()) {
+  if (const Length& right_length = style.Right(); !right_length.IsAuto()) {
     anchor_evaluator.is_right_or_bottom = true;
-    right = MinimumValueForLength(style.Right(), available_size.width,
+    right = MinimumValueForLength(right_length, available_size.width,
                                   &anchor_evaluator);
+    has_anchor_functions |= right_length.HasAnchorQueries();
   }
 
   anchor_evaluator.is_y_axis = true;
   anchor_evaluator.available_size = available_size.height;
   absl::optional<LayoutUnit> top;
-  if (!style.Top().IsAuto()) {
+  if (const Length& top_length = style.Top(); !top_length.IsAuto()) {
     anchor_evaluator.is_right_or_bottom = false;
-    top = MinimumValueForLength(style.Top(), available_size.height,
+    top = MinimumValueForLength(top_length, available_size.height,
                                 &anchor_evaluator);
+    has_anchor_functions |= top_length.HasAnchorQueries();
   }
   absl::optional<LayoutUnit> bottom;
-  if (!style.Bottom().IsAuto()) {
+  if (const Length& bottom_length = style.Bottom(); !bottom_length.IsAuto()) {
     anchor_evaluator.is_right_or_bottom = true;
-    bottom = MinimumValueForLength(style.Bottom(), available_size.height,
+    bottom = MinimumValueForLength(bottom_length, available_size.height,
                                    &anchor_evaluator);
+    has_anchor_functions |= bottom_length.HasAnchorQueries();
   }
+
+  if (has_anchor_functions_out)
+    *has_anchor_functions_out = has_anchor_functions;
 
   // Convert the physical insets to logical.
   PhysicalToLogical<absl::optional<LayoutUnit>&> insets(writing_direction, top,

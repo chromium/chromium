@@ -1445,7 +1445,8 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
       container_writing_direction, node_info.container_physical_content_size);
   const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),
-      container_converter, container_builder_->AnchorQuery());
+      container_converter, container_builder_->AnchorQuery(),
+      &offset_info.disable_first_tier_cache);
 
   const LogicalSize computed_available_size =
       ComputeOutOfFlowAvailableSize(node_info.node, node_info.constraint_space,
@@ -1564,7 +1565,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
   }
 
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
-      offset, allow_first_tier_oof_cache_);
+      offset,
+      allow_first_tier_oof_cache_ && !offset_info.disable_first_tier_cache);
 
   return layout_result;
 }

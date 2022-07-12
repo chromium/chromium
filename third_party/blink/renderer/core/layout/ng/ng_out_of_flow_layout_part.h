@@ -187,6 +187,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // |initial_layout_result| for more details.
     bool has_cached_layout_result = false;
 
+    bool disable_first_tier_cache = false;
+
     // The offset from the OOF to the top of the fragmentation context root.
     // This should only be used when laying out a fragmentainer descendant.
     LogicalOffset original_offset;

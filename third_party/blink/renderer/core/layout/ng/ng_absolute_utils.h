@@ -38,7 +38,8 @@ CORE_EXPORT NGLogicalOutOfFlowInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
                        const WritingModeConverter& container_converter,
-                       const NGLogicalAnchorQuery& anchor_query);
+                       const NGLogicalAnchorQuery& anchor_query,
+                       bool* has_anchor_functions = nullptr);
 
 CORE_EXPORT LogicalSize
 ComputeOutOfFlowAvailableSize(const NGBlockNode&,
