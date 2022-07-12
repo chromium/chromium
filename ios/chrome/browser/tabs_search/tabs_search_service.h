@@ -120,8 +120,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   // A callback to return history search results once the current in progress
   // history search completes. Will be null if no search is in progress.
   base::OnceCallback<void(size_t result_count)> history_search_callback_;
-  // A history service instance for the current in progress history search.
-  // This service be null when no history search is in progress.
+  // A history service instance for the associated |browser_state_|.
   std::unique_ptr<history::BrowsingHistoryService> history_service_;
   // Provides dependencies and funnels callbacks from BrowsingHistoryService.
   std::unique_ptr<IOSBrowsingHistoryDriver> history_driver_;

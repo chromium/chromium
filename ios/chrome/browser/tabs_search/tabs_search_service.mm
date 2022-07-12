@@ -157,17 +157,19 @@ void TabsSearchService::SearchHistory(
   DCHECK(!browser_state_->IsOffTheRecord());
   DCHECK(completion);
 
+  if (!history_service_.get()) {
+    history_driver_ =
+        std::make_unique<IOSBrowsingHistoryDriver>(browser_state_, this);
+
+    history_service_ = std::make_unique<history::BrowsingHistoryService>(
+        history_driver_.get(),
+        ios::HistoryServiceFactory::GetForBrowserState(
+            browser_state_, ServiceAccessType::EXPLICIT_ACCESS),
+        SyncServiceFactory::GetForBrowserState(browser_state_));
+  }
+
   ongoing_history_search_term_ = term;
   history_search_callback_ = std::move(completion);
-
-  history_driver_ =
-      std::make_unique<IOSBrowsingHistoryDriver>(browser_state_, this);
-
-  history_service_ = std::make_unique<history::BrowsingHistoryService>(
-      history_driver_.get(),
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state_, ServiceAccessType::EXPLICIT_ACCESS),
-      SyncServiceFactory::GetForBrowserState(browser_state_));
 
   history::QueryOptions options;
   options.duplicate_policy = history::QueryOptions::REMOVE_ALL_DUPLICATES;
@@ -229,5 +231,4 @@ void TabsSearchService::HistoryQueryCompleted(
   std::move(history_search_callback_).Run(results.size());
 
   ongoing_history_search_term_ = std::u16string();
-  history_service_.reset();
 }
