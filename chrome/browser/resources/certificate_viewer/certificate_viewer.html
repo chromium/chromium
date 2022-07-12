@@ -91,19 +91,15 @@
 
       <!-- Details -->
       <div slot="panel" id="details" aria-labelledby="details-tab">
-        <div id="hierarchy-section" class="vertical-box">
+        <div class="vertical-box">
           <h3 id="hierarchy-label" role="heading">$i18n{hierarchy}</h3>
           <cr-tree id="hierarchy" class="section-contents"
                 aria-labelledby="hierarchy-label"
                 icon-visibility='hidden'></cr-tree>
-        </div>
-        <div id="cert-fields-section" class="vertical-box">
           <h3 id="cert-fields-label" role="heading">$i18n{certFields}</h3>
           <cr-tree id="cert-fields" class="section-contents"
                 aria-labelledby="cert-fields-label"
                 icon-visibility='hidden'></cr-tree>
-        </div>
-        <div id="cert-field-value-section" class="vertical-box">
           <h3 id="cert-field-value-label" role="heading">
             $i18n{certFieldVal}
           </h3>
