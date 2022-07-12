@@ -21,6 +21,7 @@ class IncognitoReauthProperties {
             new ReadableBooleanPropertyKey();
     public static final ReadableObjectPropertyKey<ListMenuButtonDelegate> MENU_BUTTON_DELEGATE =
             new ReadableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS = {ON_UNLOCK_INCOGNITO_CLICKED,
             ON_SEE_OTHER_TABS_CLICKED, IS_FULL_SCREEN, MENU_BUTTON_DELEGATE};
 

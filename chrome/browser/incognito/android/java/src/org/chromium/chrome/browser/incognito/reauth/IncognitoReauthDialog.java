@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -14,17 +15,17 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * This class is responsible for managing the Incognito re-auth dialog. It handles creation,
- * showing and hiding of the re-auth dialog.
- *
- * TODO(crbug.com/1227656): Clean this up to remove references to non-fullscreen logic.
+ * Manages the actual showing and hiding of the full screen Incognito re-auth modal dialog.
  */
 class IncognitoReauthDialog {
-    @NonNull
-    private final ModalDialogManager mModalDialogManager;
+    /** The {@link ModalDialogManager} which launches the full-screen re-auth dialog. */
+    private final @NonNull ModalDialogManager mModalDialogManager;
 
-    private final PropertyModel mModalDialogModel;
-    private final ModalDialogProperties.Controller mController =
+    /**
+     * The modal dialog controller to detect events on the dialog but it's not needed in our
+     * case.
+     */
+    private final ModalDialogProperties.Controller mModalDialogController =
             new ModalDialogProperties.Controller() {
                 @Override
                 public void onClick(PropertyModel model, int buttonType) {}
@@ -32,26 +33,49 @@ class IncognitoReauthDialog {
                 public void onDismiss(PropertyModel model, int dismissalCause) {}
             };
 
+    /**The {@link PropertyModel} of the underlying dialog where the re-auth view would be shown.*/
+    private final PropertyModel mModalDialogPropertyModel;
+
+    /**
+     * @param modalDialogManager The {@link ModalDialogManager} which is used to fire the
+     *                          dialog containing the Incognito re-auth view.
+     * @param incognitoReauthView The underlying Incognito re-auth {@link View} to use as custom
+     *         view inside the dialog.
+     */
     IncognitoReauthDialog(
             @NonNull ModalDialogManager modalDialogManager, @NonNull View incognitoReauthView) {
         mModalDialogManager = modalDialogManager;
-        mModalDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                                    .with(ModalDialogProperties.CONTROLLER, mController)
-                                    .with(ModalDialogProperties.CUSTOM_VIEW, incognitoReauthView)
-                                    .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                                    .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
-                                    .with(ModalDialogProperties.EXCEED_MAX_HEIGHT, true)
-                                    .build();
+        mModalDialogPropertyModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, incognitoReauthView)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
+                        .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
+                        .with(ModalDialogProperties.EXCEED_MAX_HEIGHT, true)
+                        .build();
     }
 
-    void showIncognitoReauthDialog(boolean showFullScreen) {
-        mModalDialogManager.showDialog(mModalDialogModel,
-                (showFullScreen) ? ModalDialogManager.ModalDialogType.APP
-                                 : ModalDialogManager.ModalDialogType.TAB,
+    /**
+     * Method to show the full-screen re-auth dialog.
+     */
+    void showIncognitoReauthDialog() {
+        mModalDialogManager.showDialog(mModalDialogPropertyModel,
+                ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
+    /**
+     * Method to hide the full-screen re-auth dialog.
+     *
+     * @param dismissalCause The {@link DialogDismissalCause} stating the reason why the incognito
+     *                       re-auth dialog is being dismissed.
+     */
     void dismissIncognitoReauthDialog(@DialogDismissalCause int dismissalCause) {
-        mModalDialogManager.dismissDialog(mModalDialogModel, dismissalCause);
+        mModalDialogManager.dismissDialog(mModalDialogPropertyModel, dismissalCause);
+    }
+
+    @VisibleForTesting
+    public PropertyModel getModalDialogPropertyModelForTesting() {
+        return mModalDialogPropertyModel;
     }
 }

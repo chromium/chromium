@@ -33,9 +33,12 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -166,6 +169,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @Override
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
+
         if (!ReengagementNotificationController.isEnabled()) return;
         new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable(profile -> {
             assert profile != null : "Unexpectedly null profile from TabModel.";
@@ -175,6 +179,17 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     mActivity, tracker, ReengagementActivity.class);
             controller.tryToReengageTheUser();
         }));
+    }
+
+    @Override
+    protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
+        return new IncognitoReauthCoordinatorFactory(mActivity, mTabModelSelectorSupplier.get(),
+                mModalDialogManagerSupplier.get(), new IncognitoReauthManager(),
+                new SettingsLauncherImpl(),
+                /*tabSwitcherCustomViewManagerOneshotSupplier= */ null,
+                /*incognitoReauthTopToolbarDelegate= */ null,
+                /*layoutManager=*/null,
+                /*isTabbedActivity= */ false);
     }
 
     @Override

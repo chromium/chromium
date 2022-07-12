@@ -52,6 +52,9 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthTopToolbarDelegate;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
 import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -522,6 +525,33 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
+    }
+
+    @Override
+    protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
+        // TODO(crbug.com/1324211, crbug.com/1227656) : Refactor below to remove
+        // IncognitoReauthTopToolbarDelegate and pass TopToolbarInteractabilityManager.
+        IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate =
+                new IncognitoReauthTopToolbarDelegate() {
+                    @Override
+                    public int disableNewTabButton() {
+                        return mToolbarManager.getTopToolbarInteractabilityManager()
+                                .disableNewTabButton();
+                    }
+
+                    @Override
+                    public void enableNewTabButton(int clientToken) {
+                        mToolbarManager.getTopToolbarInteractabilityManager().enableNewTabButton(
+                                clientToken);
+                    }
+                };
+
+        return new IncognitoReauthCoordinatorFactory(mActivity, mTabModelSelectorSupplier.get(),
+                mModalDialogManagerSupplier.get(), new IncognitoReauthManager(),
+                new SettingsLauncherImpl(),
+                mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier(),
+                incognitoReauthTopToolbarDelegate, mLayoutManager,
+                /*isTabbedActivity=*/true);
     }
 
     @Override

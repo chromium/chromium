@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.core.IsNot.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -29,12 +28,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.R;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -50,6 +48,7 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     private View mView;
     private PropertyModel mPropertyModel;
@@ -61,10 +60,7 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     @Mock
     private Runnable mSeeOtherTabsRunnableMock;
     @Mock
-    private TabModelSelector mTabModelSelectorMock;
-    @Mock
-    private TabModel mIncognitoTabModelMock;
-
+    private Runnable mCloseAllIncognitoTabsRunnable;
     @Mock
     private SettingsLauncher mSettingsLauncherMock;
 
@@ -78,12 +74,11 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        doReturn(mIncognitoTabModelMock).when(mTabModelSelectorMock).getModel(/*incognito=*/true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getActivity().setContentView(R.layout.incognito_reauth_view);
             mView = getActivity().findViewById(android.R.id.content);
             mIncognitoReauthMenuDelegate = new IncognitoReauthMenuDelegate(
-                    getActivity(), mTabModelSelectorMock, mSettingsLauncherMock);
+                    getActivity(), mCloseAllIncognitoTabsRunnable, mSettingsLauncherMock);
         });
     }
 
@@ -115,7 +110,8 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
 
         // Inside three dots menu.
         onView(withText(R.string.menu_close_all_incognito_tabs)).perform(click());
-        verify(mIncognitoTabModelMock).closeAllTabs();
+
+        verify(mCloseAllIncognitoTabsRunnable).run();
     }
 
     @Test

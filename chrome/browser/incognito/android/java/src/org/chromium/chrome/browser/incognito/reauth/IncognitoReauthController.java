@@ -137,21 +137,19 @@ public class IncognitoReauthController
      *         used to determine the current {@link LayoutType} which is shown.
      * @param profileSupplier A Observable Supplier of {@link Profile} which is used to query the
      *         preference value of the Incognito lock setting.
-     * @param backPressInReauthFullScreenRunnable A {@link Runnable} that would be invoked when
-     *         handling back presses in fullscreen dialogs.
      */
     public IncognitoReauthController(@NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher dispatcher,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory,
-            @NonNull Runnable backPressInReauthFullScreenRunnable) {
+            @NonNull IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory) {
         mTabModelSelector = tabModelSelector;
         mActivityLifecycleDispatcher = dispatcher;
         mProfileObservableSupplier = profileSupplier;
         mProfileObservableSupplier.addObserver(mProfileSupplierCallback);
         mIncognitoReauthCoordinatorFactory = incognitoReauthCoordinatorFactory;
-        mBackPressInReauthFullScreenRunnable = backPressInReauthFullScreenRunnable;
+        mBackPressInReauthFullScreenRunnable =
+                incognitoReauthCoordinatorFactory.getBackPressRunnable();
 
         layoutStateProviderOneshotSupplier.onAvailable(
                 mLayoutStateProviderCallbackController.makeCancelable(layoutStateProvider -> {
@@ -276,14 +274,14 @@ public class IncognitoReauthController
         mIncognitoReauthCoordinator =
                 mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
                         mIncognitoReauthCallback, showFullScreen);
-        mIncognitoReauthCoordinator.showDialog();
+        mIncognitoReauthCoordinator.show();
         mOnBackPressedInFullScreenReauthCallback.setEnabled(showFullScreen);
     }
 
     private void hideDialogIfShowing(@DialogDismissalCause int dismissalCause) {
         if (mIncognitoReauthCoordinator != null) {
             mOnBackPressedInFullScreenReauthCallback.setEnabled(false);
-            mIncognitoReauthCoordinator.hideDialogAndDestroy(dismissalCause);
+            mIncognitoReauthCoordinator.hide(dismissalCause);
             mIncognitoReauthCoordinator = null;
         }
     }

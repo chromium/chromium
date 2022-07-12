@@ -10,8 +10,10 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoStartup.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoTabPersistence.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/FullScreenIncognitoReauthCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthController.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorBase.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorFactory.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthDialog.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManager.java",
@@ -22,6 +24,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingUtils.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthTopToolbarDelegate.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthViewBinder.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/TabSwitcherIncognitoReauthCoordinator.java",
   ]
   deps = [
     ":java_resources",
@@ -109,8 +112,12 @@ android_library("incognito_java_tests") {
 
 robolectric_library("incognito_junit_tests") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/FullScreenIncognitoReauthCoordinatorTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorFactoryTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthDialogTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManagerTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/TabSwitcherIncognitoReauthCoordinatorTest.java",
   ]
 
   deps = [
@@ -119,6 +126,7 @@ robolectric_library("incognito_junit_tests") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
+    "//chrome/android/features/tab_ui/public:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
@@ -128,6 +136,7 @@ robolectric_library("incognito_junit_tests") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//third_party/android_support_test_runner:runner_java",

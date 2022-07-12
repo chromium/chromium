@@ -13,10 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.incognito.R;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,23 +40,23 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     }
 
     private final Context mContext;
-    private final TabModelSelector mTabModelSelector;
+    private final Runnable mCloseAllIncognitoTabsRunnable;
     private final SettingsLauncher mSettingsLauncher;
     private final BasicListMenu mIncognitoReauthMenu;
 
     /**
      * @param context The {@link Context} from where the android resources would be fetched.
-     * @param tabModelSelector The {@link TabModelSelector} which would be used to close the
+     * @param closeAllIncognitoTabRunnable The {@link Runnable} which would be used to close the
      *         Incognito tabs when the user clicks on "Close Incognito tabs" option.
      * @param settingsLauncher The {@link SettingsLauncher} which is
      *         responsible to opening the {@link SettingsActivity} when the user clicks on
      *         "Settings" option.
      */
     IncognitoReauthMenuDelegate(@NonNull Context context,
-            @NonNull TabModelSelector tabModelSelector,
+            @NonNull Runnable closeAllIncognitoTabRunnable,
             @NonNull SettingsLauncher settingsLauncher) {
         mContext = context;
-        mTabModelSelector = tabModelSelector;
+        mCloseAllIncognitoTabsRunnable = closeAllIncognitoTabRunnable;
         mSettingsLauncher = settingsLauncher;
         mIncognitoReauthMenu = buildIncognitoReauthMenu();
     }
@@ -82,6 +82,13 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      */
     BasicListMenu getBasicListMenu() {
         return mIncognitoReauthMenu;
+    }
+
+    /**
+     * @return {@link ListMenuButtonDelegate} which returns the underlying menu delegate.
+     */
+    ListMenuButtonDelegate getListMenuButtonDelegate() {
+        return () -> mIncognitoReauthMenu;
     }
 
     private BasicListMenu buildIncognitoReauthMenu() {
@@ -125,7 +132,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     }
 
     private void onCloseAllIncognitoTabsMenuItemClicked() {
-        mTabModelSelector.getModel(/*incognito=*/true).closeAllTabs();
+        mCloseAllIncognitoTabsRunnable.run();
     }
 
     private void onSettingsMenuItemClicked() {
