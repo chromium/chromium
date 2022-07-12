@@ -1136,17 +1136,13 @@ bool VisualViewport::ShouldDisableDesktopWorkarounds() const {
 }
 
 cc::AnimationHost* VisualViewport::GetCompositorAnimationHost() const {
-  // TODO(bokan): This and below can be reached for an inactive viewport since
-  // RootFrameViewport is created inside non outermost main frames and can can
-  // call into here. Once that's fixed we should probably DCHECK here that the
-  // viewport is active. https://crbug.com/1314858.
-  DCHECK(GetPage().MainFrame()->IsLocalFrame());
+  DCHECK(IsActiveViewport());
   ScrollingCoordinator* c = GetPage().GetScrollingCoordinator();
   return c ? c->GetCompositorAnimationHost() : nullptr;
 }
 
 cc::AnimationTimeline* VisualViewport::GetCompositorAnimationTimeline() const {
-  DCHECK(GetPage().MainFrame()->IsLocalFrame());
+  DCHECK(IsActiveViewport());
   ScrollingCoordinator* c = GetPage().GetScrollingCoordinator();
   return c ? c->GetCompositorAnimationTimeline() : nullptr;
 }
