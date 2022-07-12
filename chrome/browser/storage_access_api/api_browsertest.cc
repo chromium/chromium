@@ -511,12 +511,8 @@ class StorageAccessAPIStorageBrowserTest
     : public StorageAccessAPIBrowserTest,
       public testing::WithParamInterface<TestType> {
  public:
-  TestType GetTestType() const { return GetParam(); }
-
-  void ExpectStorage(TestType test_type,
-                     content::RenderFrameHost* frame,
-                     bool expected) {
-    switch (test_type) {
+  void ExpectStorage(content::RenderFrameHost* frame, bool expected) {
+    switch (GetTestType()) {
       case TestType::kFrame:
         storage::test::ExpectStorageForFrame(frame, expected);
         return;
@@ -526,8 +522,8 @@ class StorageAccessAPIStorageBrowserTest
     }
   }
 
-  void SetStorage(TestType test_type, content::RenderFrameHost* frame) {
-    switch (test_type) {
+  void SetStorage(content::RenderFrameHost* frame) {
+    switch (GetTestType()) {
       case TestType::kFrame:
         storage::test::SetStorageForFrame(frame);
         return;
@@ -536,6 +532,9 @@ class StorageAccessAPIStorageBrowserTest
         return;
     }
   }
+
+ private:
+  TestType GetTestType() const { return GetParam(); }
 };
 
 // Validate that the Storage Access API will unblock other types of storage
@@ -543,20 +542,18 @@ class StorageAccessAPIStorageBrowserTest
 // party pair requested on.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
                        ThirdPartyIFrameStorageRequestsAccess) {
-  const TestType test_type = GetTestType();
-
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/browsing_data/site_data.html");
 
-  ExpectStorage(test_type, GetFrame(), false);
-  SetStorage(test_type, GetFrame());
-  ExpectStorage(test_type, GetFrame(), true);
+  ExpectStorage(GetFrame(), false);
+  SetStorage(GetFrame());
+  ExpectStorage(GetFrame(), true);
 
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/browsing_data/site_data.html");
-  ExpectStorage(test_type, GetFrame(), false);
+  ExpectStorage(GetFrame(), false);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // Allow all requests to b.com on a.com to access storage.
@@ -565,28 +562,26 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
 
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/browsing_data/site_data.html");
-  ExpectStorage(test_type, GetFrame(), true);
+  ExpectStorage(GetFrame(), true);
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
                        NestedThirdPartyIFrameStorage) {
-  const TestType test_type = GetTestType();
-
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/iframe.html");
   NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
 
-  ExpectStorage(test_type, GetNestedFrame(), false);
-  SetStorage(test_type, GetNestedFrame());
-  ExpectStorage(test_type, GetNestedFrame(), true);
+  ExpectStorage(GetNestedFrame(), false);
+  SetStorage(GetNestedFrame());
+  ExpectStorage(GetNestedFrame(), true);
 
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/iframe.html");
   NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
-  ExpectStorage(test_type, GetNestedFrame(), false);
+  ExpectStorage(GetNestedFrame(), false);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   // Allow all requests to b.com on a.com to access storage.
@@ -596,7 +591,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
   NavigateToPageWithFrame("a.com");
   NavigateFrameTo("b.com", "/iframe.html");
   NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
-  ExpectStorage(test_type, GetNestedFrame(), true);
+  ExpectStorage(GetNestedFrame(), true);
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 }
 
