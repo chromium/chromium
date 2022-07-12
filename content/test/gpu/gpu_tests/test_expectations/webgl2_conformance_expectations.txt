@@ -876,6 +876,12 @@ crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/t
 
 crbug.com/1337803 [ chromeos chromeos-board-kevin ] conformance2/misc/expando-loss-2.html [ Failure ]
 
+# Must investigate ChromeOS failures with passthrough command decoder.
+crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
+# Failures on validating command decoder only; won't fix.
+crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
 ##############################
 # Lacros-like Linux Failures #
 ##############################
@@ -887,6 +893,9 @@ crbug.com/1210240 [ linux intel display-server-wayland no-passthrough ] conforma
 crbug.com/1215700 [ linux intel display-server-wayland no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 crbug.com/1218607 [ linux intel display-server-wayland no-passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1231736 [ linux intel display-server-wayland no-passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
+
+# Failures on validating command decoder only; won't fix.
+crbug.com/angleproject/5038 [ linux intel display-server-wayland no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Conflicting expectations to test that the
 # "Expectations have no collisions" unittest works.

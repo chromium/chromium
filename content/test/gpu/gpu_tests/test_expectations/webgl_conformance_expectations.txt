@@ -718,6 +718,9 @@ crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/e
 crbug.com/1185344 [ linux display-server-wayland intel no-swiftshader-gl angle-disabled ] WebglExtension_EXT_sRGB [ Failure ]
 crbug.com/1185344 [ linux display-server-wayland intel no-swiftshader-gl angle-disabled ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 
+# Failures on validating command decoder only; won't fix.
+crbug.com/angleproject/5038 [ linux intel display-server-wayland no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
 ########################
 # SwiftShader failures #
 ########################
