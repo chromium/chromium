@@ -3809,9 +3809,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                 .party_context());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
-    DISABLED_ComputeIsolationInfoForNavigationSiteForCookies) {
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       ComputeIsolationInfoForNavigationSiteForCookies) {
   // Start second server for HTTPS.
   https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
   ASSERT_TRUE(https_server()->Start());
