@@ -138,16 +138,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnStopSync) {
 
 // ChromeOS does not sign out, so the test below does not apply.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// On Lacros, signout is not supported with Mirror account consistency.
-// TODO(https://crbug.com/1260291): Enable this test once signout is supported.
-#define MAYBE_ClearOnSignOut DISABLED_ClearOnSignOut
-#else
-#define MAYBE_ClearOnSignOut ClearOnSignOut
-#endif
 // Offer data should get cleared from the database when the user signs out.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, MAYBE_ClearOnSignOut) {
+IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
   GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);

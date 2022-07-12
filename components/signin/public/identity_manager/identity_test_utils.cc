@@ -243,12 +243,6 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   // synchronously with IdentityManager.
   NOTREACHED();
 #else
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK_NE(identity_manager->GetAccountConsistency(),
-            AccountConsistencyMethod::kMirror);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
     return;
 
