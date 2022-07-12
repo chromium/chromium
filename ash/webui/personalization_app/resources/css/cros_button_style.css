@@ -6,8 +6,14 @@
  * #type=style
  * #css_wrapper_metadata_end */
 
+cr-button {
+  border-color: var(--cros-button-stroke-color-secondary);
+  border-radius: 16px;
+}
+
 cr-button.primary {
   background-color: var(--cros-button-background-color-primary);
+  border: 0;
   --text-color: var(--cros-button-label-color-primary);
   --ink-color: var(--cros-button-ripple-color-primary);
   --hover-bg-color: var(--cros-button-background-color-primary-hover-preblended);
@@ -15,11 +21,16 @@ cr-button.primary {
   --disabled-text-color: var(--cros-button-label-color-primary-disabled);
 }
 
+cr-button.primary:active {
+  box-shadow: 0 1px 2px rgba(66, 133, 244, 0.3), 0 1px 3px rgba(66, 133, 244, 0.15);
+}
+
 cr-button.primary:hover {
   background-color: var(--cros-button-background-color-primary-hover-preblended);
 }
 
 cr-button.secondary {
+  border: 1px solid var(--cros-button-stroke-color-secondary);
   --text-color: var(--cros-button-label-color-secondary);
   --border-color: var(--cros-button-stroke-color-secondary);
   --ink-color: var(--cros-button-ripple-color-secondary);
@@ -31,6 +42,7 @@ cr-button.secondary {
 
 cr-button.secondary:hover {
   background-color: var(--cros-button-background-color-secondary-hover);
+  border-color: var(--cros-button-stroke-color-secondary-hover);
 }
 
 cr-icon-button:focus-visible,

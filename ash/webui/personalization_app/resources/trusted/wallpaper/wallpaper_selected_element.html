@@ -49,6 +49,15 @@
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
   }
+
+  cr-button {
+    border-color: var(--cros-button-stroke-color-secondary);
+    border-radius: 16px;
+  }
+
+  cr-button + cr-button {
+    margin-inline-start: 8px;
+  }
 </style>
 <header id="container" class$="[[getContainerClass_(isLoading_, showImage_)]]">
   <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
@@ -97,7 +106,7 @@
               aria-label="$i18n{ariaLabelChangeDaily}"
               aria-pressed$="[[ariaPressed_]]"
               on-click="onClickDailyRefreshToggle_"
-              hidden$="[[!showDailyRefreshButton_]]"">
+              hidden$="[[!showDailyRefreshButton_]]">
             <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
             <div class="text">$i18n{changeDaily}</div>
           </cr-button>
