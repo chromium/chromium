@@ -13,7 +13,7 @@
   const gotAllEvents = new Promise((resolve) => {
     let eventHandler = (event) => {
       events.push(event);
-      if (events.length == 8) {
+      if (events.length == 9) {
         resolve();
       }
     };
@@ -21,6 +21,7 @@
     dp.Network.onRequestWillBeSentExtraInfo(eventHandler);
     dp.Network.onResponseReceived(eventHandler);
     dp.Network.onResponseReceivedExtraInfo(eventHandler);
+    dp.Network.onLoadingFinished(eventHandler);
   });
 
   session.evaluate(`
