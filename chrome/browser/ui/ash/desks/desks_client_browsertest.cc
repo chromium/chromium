@@ -2309,7 +2309,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RemoveWithInvalidDeskId) {
   base::GUID desk_id{};
   DesksClient::Get()->RemoveDesk(
       desk_id, false, base::BindLambdaForTesting([](std::string error) {
-        EXPECT_EQ("The desk id is not valid.", error);
+        EXPECT_EQ("The desk identifier is not valid.", error);
       }));
 
   EXPECT_EQ(1, desks_controller->desks().size());
@@ -2372,6 +2372,45 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
         loop.Quit();
       }));
   loop.Run();
+}
+
+// Tests setting first window to show on all desk and then unset it.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SetWindowProperties) {
+  // Create a new browser window.
+  CreateBrowser({});
+
+  auto* desks_controller = ash::DesksController::Get();
+
+  // Start with no all-desk window.
+  EXPECT_EQ(0, desks_controller->visible_on_all_desks_windows().size());
+
+  // Get the first browser window.
+  SessionID browser_session_id =
+      BrowserList::GetInstance()->get(0)->session_id();
+
+  base::RunLoop loop1;
+  // Set to all-desk window.
+  DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
+      browser_session_id, true,
+      base::BindLambdaForTesting([&](std::string error) {
+        EXPECT_TRUE(error.empty());
+        // Should have 1 all-desk window now.
+        EXPECT_EQ(1, desks_controller->visible_on_all_desks_windows().size());
+        loop1.Quit();
+      }));
+  loop1.Run();
+
+  base::RunLoop loop2;
+  // Unset all-desk window.
+  DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
+      browser_session_id, false,
+      base::BindLambdaForTesting([&](std::string error) {
+        EXPECT_TRUE(error.empty());
+        // Should have no all-desk window now.
+        EXPECT_EQ(0, desks_controller->visible_on_all_desks_windows().size());
+        loop2.Quit();
+      }));
+  loop2.Run();
 }
 
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
@@ -2626,11 +2665,4 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
   // Verify that the admin templates is removed.
   EXPECT_FALSE(
       ContainUuidInTemplates(kTestAdminTemplateUuid, GetDeskTemplates()));
-}
-
-using DesksExtensionApiTest = extensions::ExtensionApiTest;
-IN_PROC_BROWSER_TEST_F(DesksExtensionApiTest, TestDesksClientExtension) {
-  // This loads and runs an extension from
-  // chrome/test/data/extensions/api_test/wm_desks_private.
-  ASSERT_TRUE(RunExtensionTest("wm_desks_private"));
 }

@@ -181,6 +181,27 @@ class WmDesksPrivateGetAllDesksFunction : public ExtensionFunction {
   void OnGetAllDesks(const std::vector<const ash::Desk*>& desks,
                      std::string error_string);
 };
+
+class WmDesksPrivateSetWindowPropertiesFunction : public ExtensionFunction {
+ public:
+  WmDesksPrivateSetWindowPropertiesFunction();
+  WmDesksPrivateSetWindowPropertiesFunction(
+      const WmDesksPrivateSetWindowPropertiesFunction&) = delete;
+  WmDesksPrivateSetWindowPropertiesFunction& operator=(
+      const WmDesksPrivateSetWindowPropertiesFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.setWindowProperties",
+                             WMDESKSPRIVATE_SETWINDOWPROPERTIES)
+
+ protected:
+  ~WmDesksPrivateSetWindowPropertiesFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnSetWindowProperties(std::string error_string);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WM_WM_DESKS_PRIVATE_API_H_

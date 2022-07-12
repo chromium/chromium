@@ -42,6 +42,8 @@ class WmDesksPrivateApiTest : public ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, WmDesksPrivateApiTest) {
   CreateBrowserWindow(GURL(kExampleUrl1));
+  // Will invoke extension test in
+  // chrome/test/data/extensions/api_test/wm_desks_private.
   ASSERT_TRUE(RunExtensionTest("wm_desks_private")) << message_;
 }
 

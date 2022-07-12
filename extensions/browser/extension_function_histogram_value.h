@@ -1744,6 +1744,7 @@ enum HistogramValue {
   OFFSCREEN_CREATEDOCUMENT = 1681,
   PASSWORDSPRIVATE_REFRESHSCRIPTSIFNECESSARY = 1682,
   OFFSCREEN_CLOSEDOCUMENT = 1683,
+  WMDESKSPRIVATE_SETWINDOWPROPERTIES = 1684,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

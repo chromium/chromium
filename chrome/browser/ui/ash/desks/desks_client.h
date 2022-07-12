@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/desks_storage/core/desk_model.h"
+#include "components/sessions/core/session_id.h"
 
 class DesksTemplatesAppLaunchHandler;
 class Profile;
@@ -24,6 +25,10 @@ class Desk;
 class DeskTemplate;
 class DesksController;
 }  // namespace ash
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace desks_storage {
 class DeskModel;
@@ -132,12 +137,12 @@ class DesksClient : public ash::SessionObserver {
       LaunchDeskCallback callback,
       const std::u16string& customized_desk_name = std::u16string());
 
-  using CloseAllCallBack = base::OnceCallback<void(std::string error)>;
+  using ErrorHandlingCallBack = base::OnceCallback<void(std::string error)>;
   // Remove a desk, close all windows if `close_all` set to true, otherwise
   // combine the windows to the active desk to the left.
   void RemoveDesk(const base::GUID& desk_uuid,
                   bool close_all,
-                  CloseAllCallBack);
+                  ErrorHandlingCallBack);
 
   // Uses `app_launch_handler_` to launch apps from the restore data found in
   // `desk_template`.
@@ -157,6 +162,11 @@ class DesksClient : public ash::SessionObserver {
   // Notifies launch performance trackers that an app has been moved rather
   // than launched.
   void NotifyMovedSingleInstanceApp(int32_t window_id);
+
+  // Set the property of showing on all-desk or not to a window.
+  void SetAllDeskPropertyByBrowserSessionId(SessionID browser_session_id,
+                                            bool all_desk,
+                                            ErrorHandlingCallBack);
 
  private:
   class LaunchPerformanceTracker;
@@ -234,6 +244,9 @@ class DesksClient : public ash::SessionObserver {
   // Called by a launch performance tracker when it has completed monitoring the
   // launch of a template.
   void RemoveLaunchPerformanceTracker(base::GUID tracker_uuid);
+
+  // Get the pointer to the window by `browser_session_id`.
+  aura::Window* GetWindowByBrowserSessionId(SessionID browser_session_id);
 
   // Convenience pointer to ash::DesksController. Guaranteed to be not null for
   // the duration of `this`.

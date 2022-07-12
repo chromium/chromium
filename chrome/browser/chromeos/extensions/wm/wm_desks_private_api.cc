@@ -278,4 +278,32 @@ void WmDesksPrivateGetAllDesksFunction::OnGetAllDesks(
       api::wm_desks_private::GetAllDesks::Results::Create(api_desks)));
 }
 
+WmDesksPrivateSetWindowPropertiesFunction::
+    WmDesksPrivateSetWindowPropertiesFunction() = default;
+WmDesksPrivateSetWindowPropertiesFunction::
+    ~WmDesksPrivateSetWindowPropertiesFunction() = default;
+
+ExtensionFunction::ResponseAction
+WmDesksPrivateSetWindowPropertiesFunction::Run() {
+  std::unique_ptr<api::wm_desks_private::SetWindowProperties::Params> params(
+      api::wm_desks_private::SetWindowProperties::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  DesksClient::Get()->SetAllDeskPropertyByBrowserSessionId(
+      SessionID::FromSerializedValue(params->window_id),
+      params->window_properties.all_desks,
+      base::BindOnce(
+          &WmDesksPrivateSetWindowPropertiesFunction::OnSetWindowProperties,
+          this));
+  return RespondLater();
+}
+
+void WmDesksPrivateSetWindowPropertiesFunction::OnSetWindowProperties(
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+  Respond(NoArguments());
+}
+
 }  // namespace extensions

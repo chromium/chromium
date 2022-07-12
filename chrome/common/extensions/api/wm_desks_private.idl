@@ -31,12 +31,18 @@ namespace wmDesksPrivate {
 
   // Launch desk options
   dictionary LaunchOptions {
-    // Unique identifier for a template
+    // Unique identifier for a template.
     DOMString? templateUuid;
 
-    // User readable name of the desk
+    // User readable name of the desk.
     DOMString? deskName;
 };
+
+  // Window properties
+  dictionary WindowProperties {
+    // If window show up on all desks.
+    boolean allDesks;
+  };
 
   callback CaptureDeskAndSaveTemplateCallback =
       void (DeskTemplate deskTemplate);
@@ -66,16 +72,17 @@ namespace wmDesksPrivate {
     static void getSavedDeskTemplates(
         GetSavedDeskTemplatesCallback callback);
 
-    // Deletes the previously-saved desk template with id |templateUuid|. Note if
-    // no such existing desk template can be found, this will still be regarded
-    // as a successful operation. If the file operation has failed, an error
-    // will be returned.
+    // Deletes the previously-saved desk template with id |templateUuid|. Note
+    // if no such existing desk template can be found, this will still be
+    // regarded as a successful operation. If the file operation has failed, an
+    // error will be returned.
     static void deleteDeskTemplate(DOMString templateUuid,
                                    VoidCallback callback);
 
-    // Launches a desk, if `templateUuid` is present in the options, launches a desk
-    // template, otherwise launches an empty desk. If `deskName` is present in the options,
-    // using provided name as desk name, otherwise launches with auto generated name.
+    // Launches a desk, if `templateUuid` is present in the options, launches a
+    // desk template, otherwise launches an empty desk. If `deskName` is present
+    // in the options, using provided name as desk name, otherwise launches with
+    // auto generated name.
     static void launchDesk(LaunchOptions launchOptions,
                            DeskIdCallback callback);
 
@@ -86,13 +93,19 @@ namespace wmDesksPrivate {
                                     GetDeskTemplateJsonCallback callback);
 
     // Removes a desk as specified in `deskId`. If `combineDesks` of
-    // `RemoveDeskOptions` is present or set to true, remove the desk and combine
-    // windows to the active desk to the left. Otherwise close all windows on
-    // the desk.
-    static void removeDesk(DOMString deskId, optional RemoveDeskOptions removeDeskOptions,
-                                          VoidCallback callback);
+    // `RemoveDeskOptions` is present or set to true, remove the desk and
+    // combine windows to the active desk to the left. Otherwise close all
+    // windows on the desk.
+    static void removeDesk(DOMString deskId,
+                           optional RemoveDeskOptions removeDeskOptions,
+                           VoidCallback callback);
 
     // Returns all available desks.
     static void getAllDesks(GetAllDesksCallback callback);
+
+    // Set the window properties for window identified by the `windowId`.
+    static void setWindowProperties(long windowId,
+                                    WindowProperties windowProperties,
+                                    VoidCallback callback);
   };
 };

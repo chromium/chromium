@@ -22,7 +22,7 @@ chrome.test.runTests([
   // Test launch empty desk with a desk name.
   function testLaunchEmptyDeskWithName() {
     // Launch empty desk with `deskName`
-    chrome.wmDesksPrivate.launchDesk({ "deskName": "test" },
+    chrome.wmDesksPrivate.launchDesk({ deskName: "test" },
       chrome.test.callbackPass(function (result) {
         // Desk uuid should be returned.
         chrome.test.assertEq(typeof result, 'string');
@@ -32,18 +32,60 @@ chrome.test.runTests([
   // Test launch a desk template to a new desk.
   function testLaunchDeskTemplate() {
     // Launch template to a new desk
-    chrome.wmDesksPrivate.launchDesk({ "templateUuid": templateUuid },
+    chrome.wmDesksPrivate.launchDesk({ templateUuid: templateUuid },
       chrome.test.callbackPass(function (result) {
         // Desk uuid should be returned.
         chrome.test.assertEq(typeof result, 'string');
       }));
   },
 
-  // Test launch
+  // Test launch with invalid template ID.
   function testLaunchDeskTemplateWithInvalidID() {
     // Launch invalid template Uuid
-    chrome.wmDesksPrivate.launchDesk({ "templateUuid": "abcd" },
+    chrome.wmDesksPrivate.launchDesk({ templateUuid: "abcd" },
       // Launch desk fail with invalid templateUuid
       chrome.test.callbackFail("Storage error."));
-  }
+  },
+
+  // Test set window to show up on all desks.
+  function testSetToAllDeskWindowWithValidID() {
+    // Launch a new desk.
+    chrome.wmDesksPrivate.launchDesk({ deskName: "test" }, () => { });
+    // Create a new window.
+    var windowId;
+    chrome.windows.create((window) => {
+      windowId = window.tabs[0].windowId;
+      chrome.wmDesksPrivate.setWindowProperties(windowId, { allDesks: true },
+        chrome.test.callbackPass())
+    });
+  },
+
+  // Test revert setting window to show up on all desks.
+  function testUnsetToAllDeskWindowWithValidID() {
+    // Launch a new desk.
+    chrome.wmDesksPrivate.launchDesk({ deskName: "test" }, () => { });
+    // Create a new window.
+    var windowId;
+    chrome.windows.create((window) => {
+      windowId = window.tabs[0].windowId;
+      chrome.wmDesksPrivate.setWindowProperties(windowId, { allDesks: false },
+        chrome.test.callbackPass())
+    });
+  },
+
+  // Test SetToAllDeskWindow invalid `window_id`.
+  function testSetToAllDeskWindowWithInvalidID() {
+    // Launch invalid template Uuid
+    chrome.wmDesksPrivate.setWindowProperties(1234, { allDesks: true },
+      // Launch desk fail with invalid templateUuid
+      chrome.test.callbackFail("The window cannot be found."));
+  },
+
+  // Test UnsetAllDeskWindow invalid `window_id`.
+  function testUnsetAllDeskWindowWithInvalidID() {
+    // Launch invalid template Uuid
+    chrome.wmDesksPrivate.setWindowProperties(1234, { allDesks: false },
+      // Launch desk fail with invalid templateUuid
+      chrome.test.callbackFail("The window cannot be found."));
+    }
 ]);

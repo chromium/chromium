@@ -25,12 +25,18 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/desk_model_wrapper.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
+#include "components/sessions/core/session_id.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -51,9 +57,11 @@ constexpr char kBadProfileError[] =
     "Either the profile is not valid or there is not an active proflile.";
 constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
 constexpr char kNoSuchDeskError[] = "The desk cannot be found.";
-constexpr char kInvalidDeskIdError[] = "The desk id is not valid.";
+constexpr char kInvalidDeskIdError[] = "The desk identifier is not valid.";
 constexpr char kCantCloseDeskError[] = "The desk cannot be closed.";
 constexpr char kCantGetAllDesksError[] = "Unable to retrieve all desks.";
+constexpr char kNoSuchWindowError[] = "The window cannot be found.";
+constexpr char kInvalidWindowIdError[] = "The window identifier is not valid.";
 
 // Timeout time used in LaunchPerformanceTracker.
 constexpr base::TimeDelta kLaunchPerformanceTimeout = base::Minutes(3);
@@ -330,7 +338,7 @@ void DesksClient::LaunchEmptyDesk(LaunchDeskCallback callback,
 
 void DesksClient::RemoveDesk(const base::GUID& desk_uuid,
                              bool combine_desk,
-                             CloseAllCallBack callback) {
+                             ErrorHandlingCallBack callback) {
   // Return error if `desk_uuid` is invalid.
   if (!desk_uuid.is_valid()) {
     std::move(callback).Run(kInvalidDeskIdError);
@@ -476,6 +484,27 @@ void DesksClient::RemovePolicyPreconfiguredTemplate(
 void DesksClient::NotifyMovedSingleInstanceApp(int32_t window_id) {
   for (auto& id_to_tracker : template_ids_to_launch_performance_trackers_)
     id_to_tracker.second->OnMovedSingleInstanceApp(window_id);
+}
+
+void DesksClient::SetAllDeskPropertyByBrowserSessionId(
+    SessionID browser_session_id,
+    bool all_desk,
+    ErrorHandlingCallBack callback) {
+  if (!browser_session_id.is_valid()) {
+    std::move(callback).Run(kInvalidWindowIdError);
+    return;
+  }
+
+  aura::Window* window = GetWindowByBrowserSessionId(browser_session_id);
+  if (!window) {
+    std::move(callback).Run(kNoSuchWindowError);
+    return;
+  }
+  window->SetProperty(aura::client::kWindowWorkspaceKey,
+                      all_desk
+                          ? aura::client::kWindowWorkspaceVisibleOnAllWorkspaces
+                          : aura::client::kWindowWorkspaceUnassignedWorkspace);
+  std::move(callback).Run("");
 }
 
 void DesksClient::OnGetTemplateForDeskLaunch(
@@ -629,4 +658,13 @@ void DesksClient::OnLaunchComplete(int32_t launch_id) {
 
 void DesksClient::RemoveLaunchPerformanceTracker(base::GUID tracker_uuid) {
   template_ids_to_launch_performance_trackers_.erase(tracker_uuid);
+}
+
+aura::Window* DesksClient::GetWindowByBrowserSessionId(
+    SessionID browser_session_id) {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (browser->session_id() == browser_session_id)
+      return browser->window()->GetNativeWindow();
+  }
+  return nullptr;
 }

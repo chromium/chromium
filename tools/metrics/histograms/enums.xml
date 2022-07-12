@@ -35048,6 +35048,7 @@ Called by update_extension_histograms.py.-->
   <int value="1681" label="OFFSCREEN_CREATEDOCUMENT"/>
   <int value="1682" label="PASSWORDSPRIVATE_REFRESHSCRIPTSIFNECESSARY"/>
   <int value="1683" label="OFFSCREEN_CLOSEDOCUMENT"/>
+  <int value="1684" label="WMDESKSPRIVATE_SETWINDOWPROPERTIES"/>
 </enum>
 
 <enum name="ExtensionIconState">
