@@ -4,7 +4,7 @@
 
 // The <code>chrome.virtualKeyboard</code> API is a kiosk only API used to
 // configure virtual keyboard layout and behavior in kiosk sessions.
-[platforms=("chromeos")]
+[platforms=("chromeos", "lacros")]
 namespace virtualKeyboard {
   // <p>Determines whether advanced virtual keyboard features should be enabled
   //     or not. They are enabled by default.</p>

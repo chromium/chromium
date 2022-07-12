@@ -70,6 +70,10 @@
 #include "chrome/browser/extensions/api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/extensions/api/virtual_keyboard_private/lacros_virtual_keyboard_delegate.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/clipboard_extension_helper_chromeos.h"
 #endif
@@ -350,6 +354,8 @@ ChromeExtensionsAPIClient::CreateVirtualKeyboardDelegate(
     content::BrowserContext* browser_context) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<ChromeVirtualKeyboardDelegate>(browser_context);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return std::make_unique<LacrosVirtualKeyboardDelegate>();
 #else
   return nullptr;
 #endif

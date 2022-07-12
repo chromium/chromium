@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
@@ -19,6 +20,11 @@ namespace extensions {
 
 VirtualKeyboardRestrictFeaturesFunction::
     VirtualKeyboardRestrictFeaturesFunction() {}
+
+void VirtualKeyboardRestrictFeaturesFunction::OnRestrictFeatures(
+    api::virtual_keyboard::FeatureRestrictions update) {
+  Respond(OneArgument(base::Value::FromUniquePtrValue(update.ToValue())));
+}
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardRestrictFeaturesFunction::Run() {
@@ -44,11 +50,12 @@ VirtualKeyboardRestrictFeaturesFunction::Run() {
 
   VirtualKeyboardAPI* api =
       BrowserContextKeyedAPIFactory<VirtualKeyboardAPI>::Get(browser_context());
-  api::virtual_keyboard::FeatureRestrictions update =
-      api->delegate()->RestrictFeatures(*params);
+  api->delegate()->RestrictFeatures(
+      *params,
+      base::BindOnce(
+          &VirtualKeyboardRestrictFeaturesFunction::OnRestrictFeatures, this));
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(update.ToValue())));
+  return RespondLater();
 }
 
 }  // namespace extensions

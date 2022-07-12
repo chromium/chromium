@@ -26,6 +26,9 @@ class VirtualKeyboardRestrictFeaturesFunction : public ExtensionFunction {
   ~VirtualKeyboardRestrictFeaturesFunction() override = default;
   // ExtensionFunction override:
   ResponseAction Run() override;
+
+ private:
+  void OnRestrictFeatures(api::virtual_keyboard::FeatureRestrictions update);
 };
 
 }  // namespace extensions

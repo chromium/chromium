@@ -119,9 +119,9 @@ bool ShellVirtualKeyboardDelegate::DeleteClipboardItem(
   return false;
 }
 
-api::virtual_keyboard::FeatureRestrictions
-ShellVirtualKeyboardDelegate::RestrictFeatures(
-    const api::virtual_keyboard::RestrictFeatures::Params& params) {
+void ShellVirtualKeyboardDelegate::RestrictFeatures(
+    const api::virtual_keyboard::RestrictFeatures::Params& params,
+    OnRestrictFeaturesCallback callback) {
   // Return the given parameter as is, since there's no stored values.
   api::virtual_keyboard::FeatureRestrictions update;
   if (params.restrictions.spell_check_enabled) {
@@ -144,7 +144,7 @@ ShellVirtualKeyboardDelegate::RestrictFeatures(
     update.handwriting_enabled =
         std::make_unique<bool>(*params.restrictions.handwriting_enabled);
   }
-  return update;
+  std::move(callback).Run(std::move(update));
 }
 
 }  // namespace extensions

@@ -77,6 +77,7 @@ import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
+import "chromeos/crosapi/mojom/virtual_keyboard.mojom";
 import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
 import "chromeos/crosapi/mojom/wallpaper.mojom";
 import "chromeos/crosapi/mojom/web_app_service.mojom";
@@ -117,8 +118,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 87
-// Next method id: 91
+// Next version: 88
+// Next method id: 92
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -535,6 +536,11 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=20] BindVideoCaptureDeviceFactory@25(
       pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
+
+  // VirtualKeyboard is a service that allows trusted extensions in Lacros
+  // to control the virtual keyboard. Implemented in Ash.
+  [MinVersion=87] BindVirtualKeyboard@91(
+      pending_receiver<VirtualKeyboard> receiver);
 
   // Binds the vpn extension observer so that lacros can inform ash about
   // Vpn extension events.

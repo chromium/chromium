@@ -1,40 +1,34 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_VIRTUAL_KEYBOARD_PRIVATE_CHROME_VIRTUAL_KEYBOARD_DELEGATE_H_
-#define CHROME_BROWSER_EXTENSIONS_API_VIRTUAL_KEYBOARD_PRIVATE_CHROME_VIRTUAL_KEYBOARD_DELEGATE_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_VIRTUAL_KEYBOARD_PRIVATE_LACROS_VIRTUAL_KEYBOARD_DELEGATE_H_
+#define CHROME_BROWSER_EXTENSIONS_API_VIRTUAL_KEYBOARD_PRIVATE_LACROS_VIRTUAL_KEYBOARD_DELEGATE_H_
 
 #include <string>
 
-#include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/browser_context.h"
+#include "chromeos/crosapi/mojom/virtual_keyboard.mojom.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/common/api/virtual_keyboard.h"
 
-namespace media {
-class AudioSystem;
-}
-
 namespace extensions {
 
-class ChromeVirtualKeyboardDelegate
-    : public VirtualKeyboardDelegate,
-      public ash::ClipboardHistoryController::Observer {
+// The virtual keyboard api delegate for lacros browser, it handles virtual
+// keyboar api request from lacros browser extensions. Currently it only
+// supports RestrictFeatures requests, all other apis are unimplemented.
+class LacrosVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
  public:
-  explicit ChromeVirtualKeyboardDelegate(
-      content::BrowserContext* browser_context);
+  LacrosVirtualKeyboardDelegate();
 
-  ChromeVirtualKeyboardDelegate(const ChromeVirtualKeyboardDelegate&) = delete;
-  ChromeVirtualKeyboardDelegate& operator=(
-      const ChromeVirtualKeyboardDelegate&) = delete;
+  LacrosVirtualKeyboardDelegate(const LacrosVirtualKeyboardDelegate&) = delete;
+  LacrosVirtualKeyboardDelegate& operator=(
+      const LacrosVirtualKeyboardDelegate&) = delete;
 
-  ~ChromeVirtualKeyboardDelegate() override;
+  ~LacrosVirtualKeyboardDelegate() override;
 
-  // TODO(oka): Create ChromeVirtualKeyboardPrivateDelegate class and move all
-  // the methods except for RestrictFeatures into the class for clear separation
-  // of virtualKeyboard and virtualKeyboardPrivate API.
+ private:
+  // VirtualKeyboardDelegate impl:
   void GetKeyboardConfig(
       OnKeyboardSettingsCallback on_settings_callback) override;
   void OnKeyboardConfigChanged() override;
@@ -70,25 +64,13 @@ class ChromeVirtualKeyboardDelegate
       const api::virtual_keyboard::RestrictFeatures::Params& params,
       OnRestrictFeaturesCallback callback) override;
 
- private:
-  // ash::ClipboardHistoryController::Observer:
-  void OnClipboardHistoryItemListAddedOrRemoved() override;
-  void OnClipboardHistoryItemsUpdated(
-      const std::vector<base::UnguessableToken>& menu_item_ids) override;
+  void ParseRestrictFeaturesResult(
+      OnRestrictFeaturesCallback callback,
+      crosapi::mojom::VirtualKeyboardRestrictionsPtr update);
 
-  void OnGetHistoryValuesAfterItemsUpdated(base::Value updated_items);
-
-  void OnHasInputDevices(OnKeyboardSettingsCallback on_settings_callback,
-                         bool has_audio_input_devices);
-  void DispatchConfigChangeEvent(
-      std::unique_ptr<base::DictionaryValue> settings);
-
-  content::BrowserContext* browser_context_;
-  std::unique_ptr<media::AudioSystem> audio_system_;
-  base::WeakPtr<ChromeVirtualKeyboardDelegate> weak_this_;
-  base::WeakPtrFactory<ChromeVirtualKeyboardDelegate> weak_factory_{this};
+  base::WeakPtrFactory<LacrosVirtualKeyboardDelegate> weak_factory_{this};
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_VIRTUAL_KEYBOARD_PRIVATE_CHROME_VIRTUAL_KEYBOARD_DELEGATE_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_VIRTUAL_KEYBOARD_PRIVATE_LACROS_VIRTUAL_KEYBOARD_DELEGATE_H_

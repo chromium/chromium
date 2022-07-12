@@ -56,8 +56,9 @@ class ShellVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
   bool PasteClipboardItem(const std::string& clipboard_item_id) override;
   bool DeleteClipboardItem(const std::string& clipboard_item_id) override;
 
-  api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
-      const api::virtual_keyboard::RestrictFeatures::Params& params) override;
+  void RestrictFeatures(
+      const api::virtual_keyboard::RestrictFeatures::Params& params,
+      OnRestrictFeaturesCallback callback) override;
 
  private:
   bool is_hotrod_keyboard_ = false;

@@ -79,6 +79,7 @@
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/crosapi/mojom/virtual_keyboard.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
@@ -454,6 +455,9 @@ LacrosService::LacrosService()
       Crosapi::MethodMinVersions::kBindVpnExtensionObserverMinVersion>();
   ConstructRemote<crosapi::mojom::VpnService, &Crosapi::BindVpnService,
                   Crosapi::MethodMinVersions::kBindVpnServiceMinVersion>();
+  ConstructRemote<crosapi::mojom::VirtualKeyboard,
+                  &crosapi::mojom::Crosapi::BindVirtualKeyboard,
+                  Crosapi::MethodMinVersions::kBindVirtualKeyboardMinVersion>();
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The test controller is not available on production devices as tests only

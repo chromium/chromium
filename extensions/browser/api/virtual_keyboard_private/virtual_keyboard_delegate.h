@@ -30,6 +30,9 @@ class VirtualKeyboardDelegate {
   using OnGetClipboardHistoryCallback =
       base::OnceCallback<void(base::Value history)>;
 
+  using OnRestrictFeaturesCallback = base::OnceCallback<void(
+      api::virtual_keyboard::FeatureRestrictions update)>;
+
   // Fetch information about the preferred configuration of the keyboard. On
   // exit, |settings| is populated with the keyboard configuration if execution
   // is successful, otherwise it's set to nullptr.
@@ -125,9 +128,10 @@ class VirtualKeyboardDelegate {
   virtual bool DeleteClipboardItem(const std::string& clipboard_item_id) = 0;
 
   // Restricts the virtual keyboard IME features.
-  // Returns the values which were updated.
-  virtual api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
-      const api::virtual_keyboard::RestrictFeatures::Params& params) = 0;
+  // callback is called with the values which were updated.
+  virtual void RestrictFeatures(
+      const api::virtual_keyboard::RestrictFeatures::Params& params,
+      OnRestrictFeaturesCallback callback) = 0;
 };
 
 }  // namespace extensions

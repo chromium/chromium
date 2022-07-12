@@ -93,6 +93,7 @@ class WebAppServiceAsh;
 class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
 class VideoCaptureDeviceFactoryAsh;
+class VirtualKeyboardAsh;
 class VpnExtensionObserverAsh;
 class NetworkSettingsServiceAsh;
 
@@ -261,6 +262,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::SyncService> receiver) override;
   void BindSystemDisplay(
       mojo::PendingReceiver<mojom::SystemDisplay> receiver) override;
+  void BindVirtualKeyboard(
+      mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
   void BindWebAppService(
@@ -394,6 +397,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
 
+  VirtualKeyboardAsh* virtual_keyboard_ash() {
+    return virtual_keyboard_ash_.get();
+  }
+
   VpnExtensionObserverAsh* vpn_extension_observer_ash() {
     return vpn_extension_observer_ash_.get();
   }
@@ -473,6 +480,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
   std::unique_ptr<VideoCaptureDeviceFactoryAsh>
       video_capture_device_factory_ash_;
+  std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VpnExtensionObserverAsh> vpn_extension_observer_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
   std::unique_ptr<WallpaperAsh> wallpaper_ash_;

@@ -90,9 +90,10 @@ class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
     return false;
   }
 
-  api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
-      const api::virtual_keyboard::RestrictFeatures::Params& params) override {
-    return api::virtual_keyboard::FeatureRestrictions();
+  void RestrictFeatures(
+      const api::virtual_keyboard::RestrictFeatures::Params& params,
+      OnRestrictFeaturesCallback callback) override {
+    std::move(callback).Run(api::virtual_keyboard::FeatureRestrictions());
   }
 
  private:

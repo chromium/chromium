@@ -620,9 +620,9 @@ void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
   router->BroadcastEvent(std::move(event));
 }
 
-api::virtual_keyboard::FeatureRestrictions
-ChromeVirtualKeyboardDelegate::RestrictFeatures(
-    const api::virtual_keyboard::RestrictFeatures::Params& params) {
+void ChromeVirtualKeyboardDelegate::RestrictFeatures(
+    const api::virtual_keyboard::RestrictFeatures::Params& params,
+    OnRestrictFeaturesCallback callback) {
   const api::virtual_keyboard::FeatureRestrictions& restrictions =
       params.restrictions;
   api::virtual_keyboard::FeatureRestrictions update;
@@ -669,7 +669,7 @@ ChromeVirtualKeyboardDelegate::RestrictFeatures(
     // Keeping this unnecessary reload for now, just to avoid behaviour changes.
     ChromeKeyboardControllerClient::Get()->RebuildKeyboardIfEnabled();
   }
-  return update;
+  std::move(callback).Run(std::move(update));
 }
 
 }  // namespace extensions

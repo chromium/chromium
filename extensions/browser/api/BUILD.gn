@@ -152,11 +152,14 @@ group("api_implementations") {
     "//extensions/browser/api/virtual_keyboard_private",
   ]
 
+  if (is_chromeos) {
+    public_deps += [ "//extensions/browser/api/virtual_keyboard" ]
+  }
+
   if (is_chromeos_ash) {
     public_deps += [
       "//extensions/browser/api/cec_private",
       "//extensions/browser/api/diagnostics",
-      "//extensions/browser/api/virtual_keyboard",
       "//extensions/browser/api/webcam_private",
     ]
   }
