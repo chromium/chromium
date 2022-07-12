@@ -169,7 +169,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.LaunchSource"
-          cpp = "::apps::mojom::LaunchSource"
+          cpp = "::apps::LaunchSource"
         },
         {
           mojom = "crosapi.mojom.SharesheetLaunchSource"
@@ -228,6 +228,7 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/policy_domain_mojom_traits.h",
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
+        "//components/services/app_service/public/cpp/app_launch_util.h",
         "//components/services/app_service/public/cpp/app_types.h",
         "//components/services/app_service/public/cpp/preferred_app.h",
         "//chromeos/crosapi/mojom/sharesheet_mojom_traits.h",

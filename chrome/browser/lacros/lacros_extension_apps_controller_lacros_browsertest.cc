@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, ShowsInShelf) {
   crosapi::mojom::LaunchParamsPtr launch_params =
       crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id();
-  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  launch_params->launch_source = apps::LaunchSource::kFromTest;
   controller->Launch(std::move(launch_params), base::DoNothing());
 
   // Wait for item to exist in shelf.
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
   crosapi::mojom::LaunchParamsPtr launch_params =
       crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id();
-  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  launch_params->launch_source = apps::LaunchSource::kFromTest;
   controller->Launch(std::move(launch_params), base::DoNothing());
 
   // Wait for item to exist in shelf.
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, DefaultContextMenu) {
   crosapi::mojom::LaunchParamsPtr launch_params =
       crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id();
-  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  launch_params->launch_source = apps::LaunchSource::kFromTest;
   controller->Launch(std::move(launch_params), base::DoNothing());
 
   // Wait for item to exist in shelf.
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest,
   crosapi::mojom::LaunchParamsPtr launch_params =
       crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id();
-  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  launch_params->launch_source = apps::LaunchSource::kFromTest;
   controller->Launch(std::move(launch_params), base::DoNothing());
 
   // Wait for item to exist in shelf.

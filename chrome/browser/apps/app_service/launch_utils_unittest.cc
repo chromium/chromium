@@ -281,7 +281,7 @@ TEST_F(LaunchUtilsTest, ConvertToCrosapiIntent) {
 TEST_F(LaunchUtilsTest, FromCrosapiIncomplete) {
   auto params = crosapi::mojom::LaunchParams::New();
   params->app_id = "aaaa";
-  params->launch_source = apps::mojom::LaunchSource::kFromIntentUrl;
+  params->launch_source = apps::LaunchSource::kFromIntentUrl;
 
   auto converted_params = apps::ConvertCrosapiToLaunchParams(params, &profile_);
 
@@ -307,7 +307,7 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
       crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
   crosapi_params->disposition =
       crosapi::mojom::WindowOpenDisposition::kNewForegroundTab;
-  crosapi_params->launch_source = apps::mojom::LaunchSource::kFromSharesheet;
+  crosapi_params->launch_source = apps::LaunchSource::kFromSharesheet;
   const int64_t kDisplayId = 5;
   crosapi_params->display_id = kDisplayId;
   crosapi_params->intent = crosapi::mojom::Intent::New();

@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/mock_crosapi_app_service_proxy.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,8 +20,7 @@ namespace {
 const char kAppId[] = "test_app";
 const char kUrl[] = "https://www.google.com";
 const int32_t event_flag = ui::EF_NONE;
-const apps::mojom::LaunchSource launch_source =
-    apps::mojom::LaunchSource::kFromTest;
+const apps::LaunchSource launch_source = apps::LaunchSource::kFromTest;
 
 // Expected container and disposition for ui::EF_NONE event flag;
 const crosapi::mojom::LaunchContainer expected_container =
@@ -39,7 +39,8 @@ TEST(AppServiceProxyLacrosTest, Launch) {
   MockCrosapiAppServiceProxy mock_proxy;
   proxy.SetCrosapiAppServiceProxyForTesting(&mock_proxy);
 
-  proxy.LaunchAppWithUrl(kAppId, event_flag, GURL(kUrl), launch_source,
+  proxy.LaunchAppWithUrl(kAppId, event_flag, GURL(kUrl),
+                         ConvertLaunchSourceToMojomLaunchSource(launch_source),
                          apps::MakeWindowInfo(display::kDefaultDisplayId));
   mock_proxy.Wait();
   ASSERT_EQ(mock_proxy.launched_apps().size(), 1U);

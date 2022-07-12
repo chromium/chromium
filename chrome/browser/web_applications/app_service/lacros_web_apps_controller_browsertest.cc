@@ -53,6 +53,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -491,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Launch) {
   navigation_observer.StartWatchingNewWebContents();
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
-  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  launch_params->launch_source = apps::LaunchSource::kFromTest;
   lacros_web_apps_controller.Launch(std::move(launch_params),
                                     base::DoNothing());
   navigation_observer.Wait();
@@ -516,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
   navigation_observer.StartWatchingNewWebContents();
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
-  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  launch_params->launch_source = apps::LaunchSource::kFromTest;
   launch_params->intent = crosapi::mojom::Intent::New();
   launch_params->intent->action = apps_util::kIntentActionView;
   launch_params->intent->activity_name = launch_url.spec();

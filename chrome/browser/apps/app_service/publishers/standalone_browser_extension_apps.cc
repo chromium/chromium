@@ -219,7 +219,8 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
 
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
-  launch_params->launch_source = launch_source;
+  launch_params->launch_source =
+      ConvertMojomLaunchSourceToLaunchSource(launch_source);
   launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
       intent, ProfileManager::GetPrimaryUserProfile());
   controller_->Launch(std::move(launch_params),
@@ -249,7 +250,8 @@ void StandaloneBrowserExtensionApps::LaunchAppWithFiles(
 
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
-  launch_params->launch_source = launch_source;
+  launch_params->launch_source =
+      ConvertMojomLaunchSourceToLaunchSource(launch_source);
   launch_params->intent =
       apps_util::CreateCrosapiIntentForViewFiles(file_paths);
   controller_->Launch(std::move(launch_params),

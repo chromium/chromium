@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -288,10 +289,10 @@ struct EnumTraits<crosapi::mojom::WindowMode, apps::WindowMode> {
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource> {
-  static crosapi::mojom::LaunchSource ToMojom(apps::mojom::LaunchSource input);
+struct EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource> {
+  static crosapi::mojom::LaunchSource ToMojom(apps::LaunchSource input);
   static bool FromMojom(crosapi::mojom::LaunchSource input,
-                        apps::mojom::LaunchSource* output);
+                        apps::LaunchSource* output);
 };
 
 template <>
