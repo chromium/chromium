@@ -88,13 +88,13 @@ ui::PlatformWindowType WaylandProxyImpl::GetWindowType(
 bool WaylandProxyImpl::WindowHasPointerFocus(gfx::AcceleratedWidget widget) {
   auto* window = connection_->wayland_window_manager()->GetWindow(widget);
   DCHECK(window);
-  return window->HasPointerFocus();
+  return window->has_pointer_focus();
 }
 
 bool WaylandProxyImpl::WindowHasKeyboardFocus(gfx::AcceleratedWidget widget) {
   auto* window = connection_->wayland_window_manager()->GetWindow(widget);
   DCHECK(window);
-  return window->HasKeyboardFocus();
+  return window->has_keyboard_focus();
 }
 
 void WaylandProxyImpl::OnWindowAdded(ui::WaylandWindow* window) {

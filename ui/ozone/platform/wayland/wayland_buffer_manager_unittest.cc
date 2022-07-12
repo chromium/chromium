@@ -1107,7 +1107,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
     Sync();
     testing::Mock::VerifyAndClearExpectations(mock_surface);
 
-    SetPointerFocusedWindow(nullptr);
+    window_->SetPointerFocus(false);
     temp_window.reset();
     DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
 

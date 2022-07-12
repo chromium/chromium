@@ -55,7 +55,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     WaylandDragDropTest::SetUp();
     drag_controller()->SetExtendedDragAvailableForTesting();
 
-    EXPECT_FALSE(window_->HasPointerFocus());
+    EXPECT_FALSE(window_->has_pointer_focus());
     EXPECT_EQ(State::kIdle, drag_controller()->state());
   }
 

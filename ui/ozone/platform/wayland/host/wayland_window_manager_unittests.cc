@@ -94,7 +94,8 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
   // When window is shown, it automatically gets keyboard focus. Reset it.
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+  window_->set_keyboard_focus(false);
+  window1->set_keyboard_focus(false);
 
   Sync();
 
@@ -137,7 +138,8 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
   // When window is shown, it automatically gets keyboard focus. Reset it.
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+  window_->set_keyboard_focus(false);
+  window1->set_keyboard_focus(false);
 
   Sync();
 
