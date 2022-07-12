@@ -1349,7 +1349,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Scheduling.DrawDuration2"/>
   <affected-histogram
       name="Scheduling.DrawIntervalWithMainThreadCompositableAnimations2"/>
-  <affected-histogram name="Scheduling.InvalidationToReadyToActivateDuration2"/>
   <affected-histogram name="Scheduling.SwapAckWasFast"/>
 </histogram_suffixes>
 

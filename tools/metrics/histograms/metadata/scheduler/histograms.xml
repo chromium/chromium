@@ -184,22 +184,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduling.InvalidationToReadyToActivateDuration2"
-    units="microseconds" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <summary>
-    How long it takes for the compositor to rasterize pending tree content after
-    an impl-side invalidation before it is ready for activation.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
     enum="MessagePumpPhases" expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
