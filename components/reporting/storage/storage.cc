@@ -793,13 +793,13 @@ void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
           [](SignedEncryptionInfo signed_encryption_key,
-             KeyInStorage* key_in_storage) {
+             scoped_refptr<Storage> storage) {
             const Status status =
-                key_in_storage->UploadKeyFile(signed_encryption_key);
+                storage->key_in_storage_->UploadKeyFile(signed_encryption_key);
             LOG_IF(ERROR, !status.ok())
                 << "Failed to upload the new encription key.";
           },
-          std::move(signed_encryption_key), key_in_storage_.get()));
+          std::move(signed_encryption_key), base::WrapRefCounted(this)));
 }
 
 StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(Priority priority) {
