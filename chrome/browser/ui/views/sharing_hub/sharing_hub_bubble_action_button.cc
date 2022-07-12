@@ -23,8 +23,8 @@ namespace sharing_hub {
 namespace {
 
 // These values values come directly from the Figma redlines. See
-// https://crbug.com/1314486.
-static constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(8, 16);
+// https://crbug.com/1314486 and https://crbug.com/1343564.
+static constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(10, 16);
 static constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 16);
 static constexpr gfx::Size kPrimaryIconSize{16, 16};
 

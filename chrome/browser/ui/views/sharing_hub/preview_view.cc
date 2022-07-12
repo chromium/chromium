@@ -124,11 +124,11 @@ PreviewView::PreviewView(share::ShareAttempt attempt) {
   // use a hardcoded font, but we could also specify the font more explicitly
   // here.
   title_ = labels_container->AddChildView(std::make_unique<views::Label>(
-      attempt.title, views::style::CONTEXT_DIALOG_TITLE));
+      attempt.title, views::style::CONTEXT_DIALOG_BODY_TEXT));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   url_ = labels_container->AddChildView(std::make_unique<UrlLabel>(
-      attempt.url, views::style::CONTEXT_DIALOG_TITLE,
+      attempt.url, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_HINT));
   url_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }

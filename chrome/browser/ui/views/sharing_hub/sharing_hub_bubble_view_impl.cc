@@ -35,6 +35,8 @@ constexpr int kMaximumButtons = 10;
 // with arrow keys possible.
 constexpr int kActionButtonGroup = 0;
 
+constexpr int kInterItemPadding = 4;
+
 }  // namespace
 
 SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(views::View* anchor_view,
@@ -126,8 +128,9 @@ const views::View* SharingHubBubbleViewImpl::GetButtonContainerForTesting()
 void SharingHubBubbleViewImpl::Init() {
   const int kPadding = 8;
   set_margins(gfx::Insets::TLBR(kPadding, 0, kPadding, 0));
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kInterItemPadding));
   if (controller_->ShouldUsePreview()) {
     auto* preview = AddChildView(std::make_unique<PreviewView>(attempt_));
     preview->TakeCallbackSubscription(
@@ -150,7 +153,8 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
   auto* action_list_view =
       scroll_view_->SetContents(std::make_unique<views::View>());
   action_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kInterItemPadding));
 
   for (const auto& action : first_party_actions) {
     auto* view = action_list_view->AddChildView(
@@ -158,14 +162,10 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
     view->SetGroup(kActionButtonGroup);
   }
 
-  auto* separator =
-      action_list_view->AddChildView(std::make_unique<views::Separator>());
-  constexpr int kIndent = 12;
-  constexpr int kPadding = 4;
-  separator->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(kPadding, 0, kPadding, 0)));
+  action_list_view->AddChildView(std::make_unique<views::Separator>());
 
-  constexpr int kLabelLineHeight = 32;
+  constexpr int kIndent = 12;
+  constexpr int kLabelLineHeight = 40;
 
   auto* share_link_label =
       new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL),
