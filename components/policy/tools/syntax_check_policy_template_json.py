@@ -68,6 +68,12 @@ LEGACY_NEGATIVE_MINIMUM_ALLOWED = [
     'SamlLockScreenOfflineSigninTimeLimitDays',
 ]
 
+# Legacy boolean policies that don't describe the enable/disable case
+# specifically.
+LEGACY_NO_ENABLE_DISABLE_DESC = [
+    'DisablePluginFinder', 'IntegratedWebAuthenticationAllowed'
+]
+
 # List of policies where not all properties are required to be presented in the
 # example value. This could be useful e.g. in case of mutually exclusive fields.
 # See crbug.com/1068257 for the details.
@@ -700,18 +706,20 @@ class PolicyTemplateChecker(object):
       # Since the item captions don't appear everywhere the description does,
       # try and ensure the items are still described in the descriptions.
       value_to_names = {
-          None: {'None', 'Unset', 'unset', 'not set', 'not configured'},
+          None: {'none', 'unset', 'not set', 'not configured'},
           True: {'true', 'enable'},
           False: {'false', 'disable'},
       }
-      for value in required_values:
-        names = value_to_names[value]
-        if not any(name in policy['desc'].lower() for name in names):
-          self._Warning(
-              ('Policy %s doesn\'t seem to describe what happens when it is '
-               'set to %s. If possible update the description to describe this '
-               'while using at least one of %s') %
-              (policy.get('name'), value, names))
+
+      if policy['name'] not in LEGACY_NO_ENABLE_DISABLE_DESC:
+        for value in required_values:
+          names = value_to_names[value]
+          if not any(name in policy['desc'].lower() for name in names):
+            self._Warning((
+                'Policy %s doesn\'t seem to describe what happens when it is '
+                'set to %s. If possible update the description to describe this'
+                ' while using at least one of %s') %
+                          (policy.get('name'), value, names))
 
       values_seen = set()
       for item in items:

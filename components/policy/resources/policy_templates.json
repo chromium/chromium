@@ -4408,11 +4408,13 @@
       'id': 190,
       'caption': '''Allow sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>''',
       'tags': [],
-      'desc': '''This policy is deprecated, consider using BrowserSignin instead.
+      'desc': '''This policy is deprecated, consider using <ph name="BROWSER_SIGNIN_POLICY_NAME">BrowserSignin</ph> instead.
 
       Allows the user to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-      If you set this policy, you can configure whether a user is allowed to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Setting this policy to 'False' will prevent apps and extensions that use the chrome.identity API from functioning, so you may want to use <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> instead.''',
+      Setting this policy to Enabled will allows user to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      Setting this policy to Disabled will prevent sign in. It also blocks apps and extensions that use the chrome.identity API from functioning. To avoid that, use <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> instead.
+      ''',
     },
     {
       'name': 'EnableDeprecatedWebBasedSignin',
@@ -5937,9 +5939,9 @@
       'tags': [],
       'desc': '''Controls external extensions installation.
 
-      Enabling this setting blocks external extensions from being installed.
+      Setting this policy to Enabled blocks external extensions from being installed.
 
-      Disabling this setting or leaving it unset allows external extensions to be installed.
+      Setting this policy to Disabled or leaving it unset allows external extensions to be installed.
 
       External extensions and their installation are documented at https://developer.chrome.com/apps/external_extensions.
       ''',
@@ -12673,7 +12675,10 @@
       'id': 916,
       'caption': '''Use only policy-provided update URL when downloading and updating Kiosk Chrome apps''',
       'tags': [],
-      'desc': '''Setting the policy will disable in-session Kiosk Chrome apps update (which uses update URL from the extension manifest) and leaves only CRX pre-fetching as the update mechanism.''',
+      'desc': '''
+        Setting the policy to Disabled will disable in-session Kiosk Chrome apps update (which uses update URL from the extension manifest) and leaves only CRX pre-fetching as the update mechanism.
+        Setting the policy to Enabled or not set will allow in-session Kiosk Chrome apps update.
+        ''',
     },
     {
       'name': 'DeviceLocalAccountAutoLoginId',
@@ -31522,6 +31527,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'desc': '''setTimeout(…, 0) is commonly used to break down long Javascript tasks.
           When the policy is set to Enabled, setTimeouts and setIntervals with an interval smaller than 4ms are not clamped as aggressively.
           This improves short horizon performance, but websites abusing the API will still eventually have their setTimeouts clamped.
+
+          When the policy is set to Disabled, setTimeouts and setIntervals with an interval smaller than 4ms will be clamed.
 
           This may change task ordering on a web page, leading to unexpected behavior on sites that are dependent on a certain ordering in some way.
           It also may affect sites with a lot of setTimeout() with a timeout of 0ms usage, e.g. increasing CPU load.
