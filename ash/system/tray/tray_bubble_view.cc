@@ -16,7 +16,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -522,16 +522,14 @@ void TrayBubbleView::OnThemeChanged() {
     SetBorder(std::make_unique<views::HighlightBorder>(
         params_.corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
-    set_color(AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80));
+    set_color(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
     return;
   }
 
   DCHECK(layer());
   if (layer()->type() != ui::LAYER_SOLID_COLOR)
     return;
-  layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
+  layer()->SetColor(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 }
 
 void TrayBubbleView::MouseMovedOutOfHost() {
