@@ -35,6 +35,9 @@
                   '|content/renderer/accessibility/render_accessibility_impl' \
                   '|content/browser/accessibility/browser_accessibility(\.|_manager|_win|_com|_cocoa)'
     },
+    'accessibility_services_ash': {
+      'filepath': 'ash/accessibility/',
+    },
     'add_to_homescreen': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/webapps/|'\
                   'chrome/android/javatests/src/org/chromium/chrome/browser/webapps/|'\
@@ -204,9 +207,6 @@
         '|content/browser/renderer_host/render_widget_host_view_browsertest' \
         '|content/browser/renderer_host/delegated' \
         '|content/common/gpu/client/' \
-    },
-    'autoclick': {
-      'filepath': 'ash/autoclick/',
     },
     'autofill_assistant': {
       'filepath': 'chrome/android/features/autofill_assistant/|'\
@@ -2157,8 +2157,10 @@
                       'yuzo+watch@chromium.org',
                       'francisjp+watcha11y@google.com'],
     'accessibility_component_extensions': ['anastasi+watch@google.com',
+                                           'katie+watch@chromium.org',
                                            'shannc+watch@chromium.org'],
     'accessibility_minimal_core': ['aleventhal+watcha11y@chromium.org'],
+    'accessibility_services_ash': ['katie+watch@chromium.org'],
     'add_to_homescreen': ['dominickn+watch-a2hs@chromium.org',
                           'pkotwicz+watch@chromium.org',
                           'webapks-watchlist@chromium.org'],
@@ -2225,7 +2227,6 @@
                        'owenzhang+audio-settings-watch@google.com'],
     'aura': ['sadrul@chromium.org'],
     'aura_compositor': ['jbauman+watch@chromium.org'],
-    'autoclick': ['katie+watch@chromium.org'],
     'autofill_assistant': ['autofill_assistant+watch@google.com'],
     'autofill_payments': ['armalhotra+autofillwatch@google.com',
                           'jsaul+autofillwatch@google.com',
@@ -2464,7 +2465,8 @@
     'chromevox': ['akihiroota@chromium.org',
                   'anastasi+watch@google.com',
                   'dtseng+chromevox@chromium.org',
-                  'josiahk+watch@chromium.org'],
+                  'josiahk+watch@chromium.org',
+                  'katie+watch@chromium.org'],
     'clang_update': ['chromium-toolchains@engflow.com',
                      'dcheng@chromium.org',
                      'eugenis+clang@chromium.org',
