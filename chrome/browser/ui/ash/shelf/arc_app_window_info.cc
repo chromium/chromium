@@ -40,6 +40,12 @@ ArcAppWindowInfo::ArcAppWindowInfo(const arc::ArcAppShelfId& app_shelf_id,
 
 ArcAppWindowInfo::~ArcAppWindowInfo() = default;
 
+void ArcAppWindowInfo::OnWindowDestroying(aura::Window* window) {
+  DCHECK(observed_window_.IsObservingSource(window));
+  observed_window_.Reset();
+  window_ = nullptr;
+}
+
 void ArcAppWindowInfo::SetDescription(const std::string& title,
                                       const gfx::ImageSkia& icon) {
   DCHECK(base::IsStringUTF8(title));
@@ -69,8 +75,17 @@ void ArcAppWindowInfo::UpdateWindowProperties() {
 }
 
 void ArcAppWindowInfo::set_window(aura::Window* window) {
+  if (window_ == window)
+    return;
+
+  if (window_ && observed_window_.IsObservingSource(window_))
+    observed_window_.Reset();
+
   window_ = window;
   UpdateWindowProperties();
+
+  if (window && !observed_window_.IsObservingSource(window))
+    observed_window_.Observe(window);
 }
 
 aura::Window* ArcAppWindowInfo::ArcAppWindowInfo::window() {
