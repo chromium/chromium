@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_UPDATE_SERVICE_IMPL_H_
 #define CHROME_UPDATER_UPDATE_SERVICE_IMPL_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -107,6 +108,9 @@ class UpdateServiceImpl : public UpdateService {
 
   // The queue serializes periodic task execution.
   base::queue<base::OnceClosure> tasks_;
+
+  // Cancellation callbacks, keyed by appid.
+  std::multimap<std::string, base::RepeatingClosure> cancellation_callbacks_;
 };
 
 }  // namespace updater

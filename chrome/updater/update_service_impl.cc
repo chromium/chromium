@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -411,21 +412,32 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
     // Only overwrite the registration if there's no current registration.
     persisted_data_->RegisterApp(registration);
   }
-  // TODO(crbug.com/1290331): Retain the cancellation callback.
-  update_client_->Install(
+
+  std::multimap<std::string, base::RepeatingClosure>::iterator pos =
+      cancellation_callbacks_.emplace(registration.app_id, base::DoNothing());
+  pos->second = update_client_->Install(
       install_data_index,
       base::BindOnce(&GetComponents, config_, persisted_data_,
                      AppInstallDataIndex({std::make_pair(registration.app_id,
                                                          install_data_index)}),
                      false, false, PolicySameVersionUpdate::kAllowed),
       MakeUpdateClientCrxStateChangeCallback(config_, state_update),
-      MakeUpdateClientCallback(std::move(callback)));
+      MakeUpdateClientCallback(std::move(callback))
+          .Then(base::BindOnce(
+              [](scoped_refptr<UpdateServiceImpl> self,
+                 const std::multimap<std::string,
+                                     base::RepeatingClosure>::iterator& pos) {
+                self->cancellation_callbacks_.erase(pos);
+              },
+              base::WrapRefCounted(this), pos)));
 }
 
 void UpdateServiceImpl::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  // TODO(crbug.com/1290331): Implement.
+  auto range = cancellation_callbacks_.equal_range(app_id);
+  std::for_each(range.first, range.second,
+                [](const auto& i) { i.second.Run(); });
 }
 
 void UpdateServiceImpl::RunInstaller(const std::string& app_id,
