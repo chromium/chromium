@@ -13,19 +13,20 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/thread_annotations.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
@@ -312,15 +313,17 @@ class AttributionEventHandler : public AttributionObserver {
     DCHECK(!input_values_.empty());
     input_values_.pop_front();
 
-    base::RunLoop run_loop;
-    storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
-        cookie.cookie, cookie.source_url,
-        net::CookieOptions::MakeAllInclusive(),
-        base::BindLambdaForTesting([&](net::CookieAccessResult r) {
-          // TODO(apaseltiner): Consider surfacing `r` in output.
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    // TODO(apaseltiner): Consider surfacing `net::CookieAccessResult` in
+    // output.
+
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &network::mojom::CookieManager::SetCanonicalCookie,
+            base::Unretained(
+                storage_partition_->GetCookieManagerForBrowserProcess()),
+            cookie.cookie, cookie.source_url,
+            net::CookieOptions::MakeAllInclusive(), base::DoNothing()));
   }
 
   // For use with `absl::visit()`.
@@ -330,29 +333,29 @@ class AttributionEventHandler : public AttributionObserver {
 
     base::RepeatingCallback<bool(const url::Origin&)> filter;
     if (clear.origins.has_value()) {
-      filter = base::BindLambdaForTesting([&](const url::Origin& origin) {
-        return clear.origins->contains(origin);
-      });
+      filter = base::BindLambdaForTesting(
+          [origins = std::move(*clear.origins)](const url::Origin& origin) {
+            return origins.contains(origin);
+          });
     }
 
-    base::RunLoop run_loop;
-    manager_->ClearData(clear.delete_begin, clear.delete_end, std::move(filter),
-                        /*delete_rate_limit_data=*/true,
-                        run_loop.QuitClosure());
-    run_loop.Run();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AttributionManagerImpl::ClearData,
+                       base::Unretained(manager_), clear.delete_begin,
+                       clear.delete_end, std::move(filter),
+                       /*delete_rate_limit_data=*/true, base::DoNothing()));
   }
 
  private:
-  // Ensure that cookies are checked at the intended time. If this were
-  // instead only done after the loop, events would be enqueued at the correct
-  // timestamp but earlier cookie checks, which are async, could complete at
-  // later times, which will happen in the real browser but which would make
-  // the simulator nondeterministic.
   void FlushCookies() {
-    base::RunLoop run_loop;
-    storage_partition_->GetCookieManagerForBrowserProcess()->FlushCookieStore(
-        run_loop.QuitClosure());
-    run_loop.Run();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &network::mojom::CookieManager::FlushCookieStore,
+            base::Unretained(
+                storage_partition_->GetCookieManagerForBrowserProcess()),
+            base::DoNothing()));
   }
 
   // AttributionObserver:
@@ -660,11 +663,18 @@ base::Value RunAttributionSimulation(
                    /*fetch_time=*/base::Time::Now(),
                    /*expiry_time=*/base::Time::Max()));
 
+  base::Time last_event_time = GetEventTime(events->back());
+
   for (auto& event : *events) {
-    task_environment.AdvanceClock(GetEventTime(event) - base::Time::Now());
-    handler.Handle(std::move(event));
-    task_environment.RunUntilIdle();
+    base::Time event_time = GetEventTime(event);
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AttributionEventHandler::Handle,
+                       base::Unretained(&handler), std::move(event)),
+        event_time - base::Time::Now());
   }
+
+  task_environment.FastForwardBy(last_event_time - base::Time::Now());
 
   std::vector<AttributionReport> pending_reports =
       GetAttributionReportsForTesting(manager.get());
