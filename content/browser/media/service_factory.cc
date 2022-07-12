@@ -225,12 +225,11 @@ T& GetService(const base::Token& cdm_type,
 
 }  // namespace
 
-media::mojom::CdmService& GetCdmService(const base::Token& cdm_type,
-                                        BrowserContext* browser_context,
+media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
                                         const GURL& site,
                                         const CdmInfo& cdm_info) {
-  return GetService<media::mojom::CdmService>(cdm_type, browser_context, site,
-                                              cdm_info.name, cdm_info.path);
+  return GetService<media::mojom::CdmService>(
+      cdm_info.type.id, browser_context, site, cdm_info.name, cdm_info.path);
 }
 
 #if BUILDFLAG(IS_WIN)

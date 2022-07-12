@@ -19,11 +19,10 @@ namespace content {
 
 class BrowserContext;
 
-// Gets an instance of the CdmService for the `cdm_type`, `browser_context` and
-// the `site`. Instances are started lazily as needed. The CDM located at
-// `cdm_path` is loaded in the sandboxed process to be used by the service.
-media::mojom::CdmService& GetCdmService(const base::Token& cdm_type,
-                                        BrowserContext* browser_context,
+// Gets an instance of the CdmService for the `browser_context`, `site`, and
+// `cdm_info`. Instances are started lazily as needed. The CDM located at
+// `cdm_info` is loaded in the sandboxed process to be used by the service.
+media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
                                         const GURL& site,
                                         const CdmInfo& cdm_info);
 

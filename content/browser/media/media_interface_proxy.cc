@@ -576,10 +576,7 @@ media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
 
   auto* browser_context = render_frame_host().GetBrowserContext();
   auto& site = render_frame_host().GetSiteInstance()->GetSiteURL();
-  // TODO(crbug.com/1231162): Refactor GetCdmService() to only take a CdmInfo
-  // object. The current arguments are redundant.
-  auto& cdm_service =
-      GetCdmService(cdm_info.type.id, browser_context, site, cdm_info);
+  auto& cdm_service = GetCdmService(browser_context, site, cdm_info);
 
   mojo::Remote<media::mojom::CdmFactory> cdm_factory_remote;
   cdm_service.CreateCdmFactory(cdm_factory_remote.BindNewPipeAndPassReceiver(),
