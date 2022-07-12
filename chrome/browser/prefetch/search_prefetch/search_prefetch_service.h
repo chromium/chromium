@@ -8,8 +8,8 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
-#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -38,10 +38,6 @@ class WebContents;
 
 namespace network {
 struct ResourceRequest;
-}
-
-namespace {
-struct SearchPrefetchServingReasonRecorder;
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -102,6 +98,7 @@ enum class SearchPrefetchServingReason {
 class SearchPrefetchService : public KeyedService,
                               public TemplateURLServiceObserver {
  public:
+  struct SearchPrefetchServingReasonRecorder;
   explicit SearchPrefetchService(Profile* profile);
   ~SearchPrefetchService() override;
 
@@ -228,7 +225,7 @@ class SearchPrefetchService : public KeyedService,
   // is a prefetch hint, since a prerenderable result should be prefetchable.
   void CoordinatePrefetchWithPrerender(
       const AutocompleteMatch& match,
-      content::WebContents& web_contents,
+      content::WebContents* web_contents,
       TemplateURLService* template_url_service);
 
   // Prefetches that are started are stored using search terms as a key. Only

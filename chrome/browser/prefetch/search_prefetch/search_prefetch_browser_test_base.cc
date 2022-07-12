@@ -4,12 +4,13 @@
 
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_browser_test_base.h"
 
-#include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_request.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -19,13 +20,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
-#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -248,8 +245,8 @@ void SearchPrefetchBaseBrowserTest::AddNewSuggestionRule(
     std::vector<std::string> suggestions,
     int prefetch_index,
     int prerender_index) {
-  search_suggestion_rules_.emplace_back(SearchSuggestionTuple(
-      origin_query, suggestions, prefetch_index, prerender_index));
+  search_suggestion_rules_.emplace_back(origin_query, suggestions,
+                                        prefetch_index, prerender_index);
 }
 
 std::unique_ptr<net::test_server::HttpResponse>

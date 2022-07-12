@@ -4,6 +4,8 @@
 
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_macros.h"
 
 SearchPrefetchURLLoader::RequestHandler

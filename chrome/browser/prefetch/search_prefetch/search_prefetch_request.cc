@@ -4,17 +4,16 @@
 
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_request.h"
 
+#include <algorithm>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/trace_event/base_tracing.h"
-#include "build/build_config.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
-#include "chrome/browser/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
-#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,20 +22,16 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
-#include "net/base/load_flags.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
@@ -356,8 +351,8 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
     // response.
     // TODO(https://crbug.com/1295170): Do not start prerendering if this
     // request is about to expire.
-    prerender_manager.StartPrerenderSearchResult(prefetch_search_terms_,
-                                                 prerender_url);
+    prerender_manager_->StartPrerenderSearchResult(prefetch_search_terms_,
+                                                   prerender_url);
   }
 }
 

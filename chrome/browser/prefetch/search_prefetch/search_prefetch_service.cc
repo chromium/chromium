@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -34,7 +33,6 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
-#include "components/omnibox/browser/search_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -85,22 +83,6 @@ struct SearchPrefetchEligibilityReasonRecorder {
   bool navigation_prefetch_;
 };
 
-struct SearchPrefetchServingReasonRecorder {
- public:
-  explicit SearchPrefetchServingReasonRecorder(bool for_prerender)
-      : for_prerender_(for_prerender) {}
-  ~SearchPrefetchServingReasonRecorder() {
-    base::UmaHistogramEnumeration(
-        for_prerender_
-            ? "Omnibox.SearchPrefetch.PrefetchServingReason.Prerender"
-            : "Omnibox.SearchPrefetch.PrefetchServingReason",
-        reason_);
-  }
-
-  SearchPrefetchServingReason reason_ = SearchPrefetchServingReason::kServed;
-  const bool for_prerender_ = false;
-};
-
 void RecordFinalStatus(SearchPrefetchStatus status, bool navigation_prefetch) {
   if (navigation_prefetch) {
     UMA_HISTOGRAM_ENUMERATION(
@@ -121,6 +103,22 @@ bool ShouldPrefetch(const AutocompleteMatch& match) {
 }
 
 }  // namespace
+
+struct SearchPrefetchService::SearchPrefetchServingReasonRecorder {
+ public:
+  explicit SearchPrefetchServingReasonRecorder(bool for_prerender)
+      : for_prerender_(for_prerender) {}
+  ~SearchPrefetchServingReasonRecorder() {
+    base::UmaHistogramEnumeration(
+        for_prerender_
+            ? "Omnibox.SearchPrefetch.PrefetchServingReason.Prerender"
+            : "Omnibox.SearchPrefetch.PrefetchServingReason",
+        reason_);
+  }
+
+  SearchPrefetchServingReason reason_ = SearchPrefetchServingReason::kServed;
+  const bool for_prerender_ = false;
+};
 
 // static
 void SearchPrefetchService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -507,7 +505,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     if (SearchPrefetchUpgradeToPrerenderIsEnabled()) {
       if (!ShouldPrefetch(match))
         continue;
-      CoordinatePrefetchWithPrerender(match, *web_contents,
+      CoordinatePrefetchWithPrerender(match, web_contents,
                                       template_url_service);
       continue;
     }
@@ -741,8 +739,9 @@ void SearchPrefetchService::ObserveTemplateURLService(
 
 void SearchPrefetchService::CoordinatePrefetchWithPrerender(
     const AutocompleteMatch& match,
-    content::WebContents& web_contents,
+    content::WebContents* web_contents,
     TemplateURLService* template_url_service) {
+  DCHECK(web_contents);
   GURL prefetch_url = GetPreloadURLFromMatch(
       match, template_url_service, /*attach_prefetch_information=*/true);
   MaybePrefetchURL(prefetch_url);
@@ -752,8 +751,8 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   if (auto prefetch_request_iter =
           prefetches_.find(match.search_terms_args->search_terms);
       prefetch_request_iter != prefetches_.end()) {
-    PrerenderManager::CreateForWebContents(&web_contents);
-    auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
+    PrerenderManager::CreateForWebContents(web_contents);
+    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
     DCHECK(prerender_manager);
 
     // Prerender URL needs not to contain the prefetch information to help

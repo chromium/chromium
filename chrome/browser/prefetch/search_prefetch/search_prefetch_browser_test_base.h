@@ -7,8 +7,14 @@
 
 #include <string>
 
+#include <map>
+#include <memory>
+#include <tuple>
+#include <utility>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
