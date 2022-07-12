@@ -2101,10 +2101,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
   // On the second run, the FRE is still not marked finished and we should
   // reopen it.
   GoThroughFirstRunFlow(
-      // TODO(crbug.com/1322067): This is a bug, the type should be
-      // `kEnterpriseConsumerWelcome`.
       /*expected_welcome_type=*/EnterpriseProfileWelcomeUI::ScreenType::
-          kLacrosConsumerWelcome,
+          kLacrosEnterpriseWelcome,
       /*quit_on_welcome=*/true,
       /*quit_on_sync=*/absl::nullopt);
 }
@@ -2120,7 +2118,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
                        PRE_QuitAtEnd) {
   Profile* profile = GetPrimaryProfile();
-  // TODO(crbug.com/1322067): This is a bug, the flag should not be set.
+  // TODO(crbug.com/1322067): This is a bug, the flag is set too early
   EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Signin_EnterpriseAccountPrompt_ImportData"));

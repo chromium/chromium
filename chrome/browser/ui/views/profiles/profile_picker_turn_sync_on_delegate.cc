@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -134,6 +135,10 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   absl::optional<EnterpriseProfileWelcomeUI::ScreenType> welcome_screen_type;
   if (IsLacrosPrimaryProfileFirstRun(profile_)) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Show the enterprise version of the screen even if management consent was
+    // already given. See http://crbug.com/1322067.
+    enterprise_account_ = profile_->GetProfilePolicyConnector()->IsManaged();
+
     welcome_screen_type =
         enterprise_account_
             ? EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome
