@@ -4,8 +4,8 @@
 
 #include "media/formats/hls/types.h"
 
-#include <algorithm>
 #include <cmath>
+#include <functional>
 #include <limits>
 
 #include "base/containers/contains.h"
@@ -45,8 +45,7 @@ absl::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
   };
 
   // Extract the substring where `is_char_valid` succeeds
-  const char* end =
-      std::find_if_not(str.Str().cbegin(), str.Str().cend(), is_char_valid);
+  const char* end = base::ranges::find_if_not(str.Str(), is_char_valid);
   const auto name = str.Consume(end - str.Str().cbegin());
 
   // At least one character must have matched
@@ -110,16 +109,6 @@ absl::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
   *source_str = str;
   return result;
 }
-
-struct AttributeMapComparator {
-  bool operator()(const AttributeMap::Item& left,
-                  const AttributeMap::Item& right) {
-    return left.first < right.first;
-  }
-  bool operator()(const AttributeMap::Item& left, SourceString right) {
-    return left.first < right.Str();
-  }
-};
 
 }  // namespace
 
@@ -350,7 +339,7 @@ AttributeMap::AttributeMap(base::span<Item> sorted_items)
   // tries to access the stored value after filling by the index of a subsequent
   // duplicate key, rather than the first.
   DCHECK(
-      std::is_sorted(items_.begin(), items_.end(), AttributeMapComparator()));
+      base::ranges::is_sorted(items_, std::less(), &AttributeMap::Item::first));
 }
 
 ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
@@ -366,10 +355,11 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeMap::Fill(
 
     auto item = std::move(result).value();
 
-    // Look up the item. std::lower_bound performs a binary search to find the
-    // first item where the name comparison function fails.
-    auto entry = std::lower_bound(items_.begin(), items_.end(), item.name,
-                                  AttributeMapComparator());
+    // Look up the item. `base::ranges::lower_bound` performs a binary search to
+    // find the first entry where the name does not compare less than the given
+    // value.
+    auto entry = base::ranges::lower_bound(items_, item.name.Str(), std::less(),
+                                           &AttributeMap::Item::first);
     if (entry == items_.end()) {
       return item;
     }
