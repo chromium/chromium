@@ -2484,7 +2484,7 @@ void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
 
   if (pending_entry_) {
     if (pending_entry_index_ == -1)
-      delete pending_entry_;
+      pending_entry_.ClearAndDelete();
     pending_entry_index_ = -1;
     pending_entry_ = nullptr;
   }

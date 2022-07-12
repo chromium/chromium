@@ -802,7 +802,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // This may refer to an item in the entries_ list if the pending_entry_index_
   // != -1, or it may be its own entry that should be deleted. Be careful with
   // the memory management.
-  raw_ptr<NavigationEntryImpl, DanglingUntriaged> pending_entry_ = nullptr;
+  raw_ptr<NavigationEntryImpl> pending_entry_ = nullptr;
 
   // This keeps track of the NavigationRequests associated with the pending
   // NavigationEntry. When all of them have been deleted, or have stopped
