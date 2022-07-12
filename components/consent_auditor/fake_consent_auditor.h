@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/sync/protocol/user_consent_specifics.pb.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::Matcher;
@@ -69,13 +71,8 @@ class FakeConsentAuditor : public ConsentAuditor {
 
   const CoreAccountId& account_id() const { return account_id_; }
 
-  const sync_pb::UserConsentTypes::SyncConsent& recorded_sync_consent() const {
-    return recorded_sync_consent_;
-  }
-
-  const sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent&
-  recorded_play_consent() const {
-    return recorded_play_consent_;
+  const std::vector<sync_pb::UserConsentSpecifics>& recorded_consents() const {
+    return recorded_consents_;
   }
 
   const std::vector<std::vector<int>>& recorded_id_vectors() {
@@ -95,8 +92,10 @@ class FakeConsentAuditor : public ConsentAuditor {
  private:
   CoreAccountId account_id_;
 
-  sync_pb::UserConsentTypes::SyncConsent recorded_sync_consent_;
-  sync_pb::UserConsentTypes_ArcPlayTermsOfServiceConsent recorded_play_consent_;
+  // Holds specific consent information for assistant activity control consent,
+  // account password consent and autofill assistant consent. Does not (yet)
+  // contain recorded sync consent.
+  std::vector<sync_pb::UserConsentSpecifics> recorded_consents_;
 
   std::vector<std::vector<int>> recorded_id_vectors_;
   std::vector<int> recorded_confirmation_ids_;
