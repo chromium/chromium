@@ -441,4 +441,17 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_X) {
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 }
 
+TEST_F(EcheTrayTest, AcceleratorKeyHandled_BROWSER_BACK_KEY) {
+  ResetWebContentGoBack();
+  eche_tray()->SetGracefulGoBackCallback(
+      base::BindRepeating(&WebContentGoBack));
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_BROWSER_BACK, 0);
+
+  EXPECT_EQ(1u, num_web_content_go_back_calls_);
+}
+
 }  // namespace ash

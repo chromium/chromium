@@ -49,6 +49,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -456,6 +457,8 @@ void EcheTray::InitBubble() {
   // We need the header be always visible with the same size.
   static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
       ->SetFlexForView(header_view, 0, true);
+  static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
+      ->set_inside_border_insets(kBubblePadding);
 
   // The layer is needed to draw the header non-opaquely that is needed to
   // match the phone hub behavior.
@@ -713,34 +716,45 @@ bool EcheTray::ProcessAcceleratorKeys(ui::KeyEvent* event) {
   const ui::KeyboardCode key_code = event->key_code();
   const bool is_only_control_down = ui::Accelerator::MaskOutKeyEventFlags(
                                         event->flags()) == ui::EF_CONTROL_DOWN;
+  const bool any_modifier_pressed =
+      ui::Accelerator::MaskOutKeyEventFlags(event->flags());
 
-  if (event->type() == ui::ET_KEY_PRESSED && is_only_control_down) {
-    switch (key_code) {
-      case ui::VKEY_C:
-      case ui::VKEY_V:
-      case ui::VKEY_X:
-        ash::ToastManager::Get()->Show(ash::ToastData(
-            kEcheTrayCopyPasteNotImplementedToastId,
-            ash::ToastCatalogName::kEcheTrayCopyPasteNotImplemented,
-            l10n_util::GetStringUTF16(
-                IDS_ASH_ECHE_TOAST_COPY_PASTE_NOT_IMPLEMENTED),
-            ash::ToastData::kDefaultToastDuration,
-            /*visible_on_lock_screen=*/false));
-        return true;
-      case ui::VKEY_W:
-        // Please note that ctrl+w does not have a global accelerator action
-        // similar to AcceleratorAction::WINDOW_MINIMIZE that was used above.
-        //
-        // TODO(https://crbug/1338650): See if we can just leave this to be
-        // handled upper in the chain.
-        StartGracefulClose();
-        return true;
-      default:
-        // Do nothing
-        break;
-    }
+  if (event->type() != ui::ET_KEY_PRESSED)
+    return false;
+
+  switch (key_code) {
+    case ui::VKEY_C:
+    case ui::VKEY_V:
+    case ui::VKEY_X:
+      if (!is_only_control_down)
+        return false;
+      ash::ToastManager::Get()->Show(ash::ToastData(
+          kEcheTrayCopyPasteNotImplementedToastId,
+          ash::ToastCatalogName::kEcheTrayCopyPasteNotImplemented,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_ECHE_TOAST_COPY_PASTE_NOT_IMPLEMENTED),
+          ash::ToastData::kDefaultToastDuration,
+          /*visible_on_lock_screen=*/false));
+      return true;
+    case ui::VKEY_W:
+      if (!is_only_control_down)
+        return false;
+      // Please note that ctrl+w does not have a global accelerator action
+      // similar to AcceleratorAction::WINDOW_MINIMIZE that was used above.
+      //
+      // TODO(https://crbug/1338650): See if we can just leave this to be
+      // handled upper in the chain.
+      StartGracefulClose();
+      return true;
+    case ui::VKEY_BROWSER_BACK:
+      if (any_modifier_pressed)
+        return false;
+      OnArrowBackActivated();
+      return true;
+
+    default:
+      return false;
   }
-  return false;
 }
 
 bool EcheTray::IsBubbleVisible() {
