@@ -1115,9 +1115,7 @@ std::set<ui::AXPlatformNode*> BrowserAccessibility::GetReverseRelations(
 }
 
 std::u16string BrowserAccessibility::GetAuthorUniqueId() const {
-  std::u16string html_id;
-  node()->GetHtmlAttribute("id", &html_id);
-  return html_id;
+  return node()->GetHtmlAttribute("id");
 }
 
 const ui::AXUniqueId& BrowserAccessibility::GetUniqueId() const {

@@ -104,6 +104,7 @@ struct AX_BASE_EXPORT AXNodeData {
 
   bool HasHtmlAttribute(const char* attribute) const;
   bool GetHtmlAttribute(const char* attribute, std::string* value) const;
+  std::u16string GetHtmlAttribute(const char* attribute) const;
   bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
 
   //
