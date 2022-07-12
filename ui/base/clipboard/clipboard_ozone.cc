@@ -406,7 +406,8 @@ void ClipboardOzone::ReadAvailableTypes(
   DCHECK(CalledOnValidThread());
   DCHECK(types);
 
-  if (!IsReadAllowed(GetSource(buffer), data_dst, base::span<uint8_t>()))
+  if (!GetSourceAndCheckIfReadIsAllowed(buffer, data_dst,
+                                        base::span<uint8_t>()))
     return;
 
   types->clear();
