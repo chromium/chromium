@@ -2719,6 +2719,21 @@
             ]
         }
     ],
+    "CommerceHintAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled_commerce_hint_20220623",
+                    "enable_features": [
+                        "CommerceHintAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "CommerceMerchantViewer": [
         {
             "platforms": [
