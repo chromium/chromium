@@ -34,6 +34,7 @@ namespace {
 
 const char kHTTPOkText[] = "OK";
 const char kHTTPNotFoundText[] = "Not Found";
+const int kMaxBytesToReadWhenAvailableUnknown = 32768;
 
 }  // namespace
 
@@ -86,6 +87,24 @@ class InputStreamReaderWrapper
   }
 
   int ReadRawData(net::IOBuffer* buffer, int buffer_size) {
+    if (base::FeatureList::IsEnabled(
+            network::features::kOptimizeNetworkBuffers)) {
+      int available = 0;
+      // Only use `available` if the app has an estimate, otherwise it'll return
+      // 0. In that case we still want to do a blocking read until there's data
+      // or EOF.
+      if (input_stream_->BytesAvailable(&available) && available > 0) {
+        // Make sure a bad app doesn't lead to reading past the buffer.
+        buffer_size = std::min(available, buffer_size);
+      } else {
+        // `buffer_size' could be large since it comes from the size of the data
+        // pipe, but we don't want to synchronously wait for too many bytes in
+        // case they're coming from the network.
+        buffer_size =
+            std::min(kMaxBytesToReadWhenAvailableUnknown, buffer_size);
+      }
+    }
+
     return input_stream_reader_->ReadRawData(buffer, buffer_size);
   }
 
