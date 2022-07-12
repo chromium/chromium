@@ -12,6 +12,7 @@
 #include "chrome/android/chrome_jni_headers/TabInteractionRecorder_jni.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "content/public/browser/global_routing_id.h"
@@ -28,7 +29,6 @@ using content::RenderFrameHost;
 
 namespace {
 
-// static
 AutofillManager* GetAutofillManager(RenderFrameHost* render_frame_host) {
   auto* autofill_driver =
       autofill::ContentAutofillDriver::GetForRenderFrameHost(render_frame_host);
@@ -36,6 +36,13 @@ AutofillManager* GetAutofillManager(RenderFrameHost* render_frame_host) {
     return nullptr;
   return autofill_driver->autofill_manager();
 }
+
+bool IsCctRetainingStateEnabled() {
+  static bool enabled =
+      base::FeatureList::IsEnabled(chrome::android::kCCTRetainingState);
+  return enabled;
+}
+
 }  // namespace
 
 AutofillObserverImpl::AutofillObserverImpl(
@@ -97,6 +104,8 @@ void TabInteractionRecorderAndroid::RenderFrameHostStateChanged(
     RenderFrameHost* render_frame_host,
     RenderFrameHost::LifecycleState old_state,
     RenderFrameHost::LifecycleState new_state) {
+  if (!IsCctRetainingStateEnabled())
+    return;
   if (old_state == RenderFrameHost::LifecycleState::kActive) {
     rfh_observer_map_.erase(render_frame_host->GetGlobalId());
   } else if (new_state == RenderFrameHost::LifecycleState::kActive &&
@@ -107,6 +116,8 @@ void TabInteractionRecorderAndroid::RenderFrameHostStateChanged(
 
 void TabInteractionRecorderAndroid::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!IsCctRetainingStateEnabled())
+    return;
   if (has_form_interactions_)
     return;
   if (!navigation_handle->IsSameDocument() &&

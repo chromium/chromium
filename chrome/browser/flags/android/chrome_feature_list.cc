@@ -182,6 +182,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTIncognito,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTNewDownloadTab,
+    &kCCTPackageNameRecording,
     &kCCTPostMessageAPI,
     &kCCTRealTimeEngagementSignals,
     &kCCTRedirectPreconnect,
