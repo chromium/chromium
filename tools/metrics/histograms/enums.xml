@@ -40728,6 +40728,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4293" label="PrivateNetworkAccessPermissionPrompt"/>
   <int value="4294" label="PseudoBeforeAfterForDateTimeInputElement"/>
   <int value="4295" label="V8PendingBeacon_IsPending_AttributeGetter"/>
+  <int value="4296" label="ParentOfDisabledFormControlRespondsToMouseEvents"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

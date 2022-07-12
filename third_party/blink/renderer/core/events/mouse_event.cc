@@ -388,6 +388,21 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   if (type().IsEmpty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
 
+  if (is_click) {
+    auto& path = GetEventPath();
+    bool saw_disabled_control = false;
+    for (unsigned i = 0; i < path.size(); i++) {
+      auto& node = path[i].GetNode();
+      if (saw_disabled_control && node.WillRespondToMouseClickEvents()) {
+        UseCounter::Count(
+            node.GetDocument(),
+            WebFeature::kParentOfDisabledFormControlRespondsToMouseEvents);
+      }
+      if (IsDisabledFormControl(&node))
+        saw_disabled_control = true;
+    }
+  }
+
   DCHECK(!target() || target() != relatedTarget());
 
   EventTarget* related_target = relatedTarget();
