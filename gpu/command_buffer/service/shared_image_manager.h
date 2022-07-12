@@ -18,7 +18,6 @@
 namespace gpu {
 class DXGISharedHandleManager;
 class SharedImageRepresentationFactoryRef;
-class SharedImageBatchAccessManager;
 class VaapiDependenciesFactory;
 
 class GPU_GLES2_EXPORT SharedImageManager {
@@ -117,23 +116,12 @@ class GPU_GLES2_EXPORT SharedImageManager {
   // method is to facilitate pageflip testing on the viz thread.
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
 
-  SharedImageBatchAccessManager* batch_access_manager() const {
-#if BUILDFLAG(IS_ANDROID)
-    return batch_access_manager_.get();
-#else
-    return nullptr;
-#endif
-  }
-
 #if BUILDFLAG(IS_WIN)
   const scoped_refptr<DXGISharedHandleManager>& dxgi_shared_handle_manager()
       const {
     return dxgi_shared_handle_manager_;
   }
 #endif
-
-  bool BeginBatchReadAccess();
-  bool EndBatchReadAccess();
 
  private:
   class AutoLock;
@@ -143,10 +131,6 @@ class GPU_GLES2_EXPORT SharedImageManager {
   base::flat_set<std::unique_ptr<SharedImageBacking>> images_ GUARDED_BY(lock_);
 
   const bool display_context_on_another_thread_;
-
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<SharedImageBatchAccessManager> batch_access_manager_;
-#endif
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;

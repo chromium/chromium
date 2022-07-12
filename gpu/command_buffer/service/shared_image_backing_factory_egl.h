@@ -23,7 +23,6 @@ class ColorSpace;
 
 namespace gpu {
 class SharedImageBacking;
-class SharedImageBatchAccessManager;
 class GpuDriverBugWorkarounds;
 struct GpuPreferences;
 struct Mailbox;
@@ -33,11 +32,9 @@ struct Mailbox;
 class GPU_GLES2_EXPORT SharedImageBackingFactoryEGL
     : public SharedImageBackingFactoryGLCommon {
  public:
-  SharedImageBackingFactoryEGL(
-      const GpuPreferences& gpu_preferences,
-      const GpuDriverBugWorkarounds& workarounds,
-      const gles2::FeatureInfo* feature_info,
-      SharedImageBatchAccessManager* batch_access_manager);
+  SharedImageBackingFactoryEGL(const GpuPreferences& gpu_preferences,
+                               const GpuDriverBugWorkarounds& workarounds,
+                               const gles2::FeatureInfo* feature_info);
   ~SharedImageBackingFactoryEGL() override;
 
   // SharedImageBackingFactory implementation.
@@ -90,8 +87,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryEGL
       SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data);
-
-  raw_ptr<SharedImageBatchAccessManager> batch_access_manager_ = nullptr;
 };
 
 }  // namespace gpu

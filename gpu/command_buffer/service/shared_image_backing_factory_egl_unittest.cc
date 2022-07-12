@@ -95,8 +95,7 @@ class SharedImageBackingFactoryEGLThreadSafeTest
     GpuPreferences preferences;
     preferences.use_passthrough_cmd_decoder = use_passthrough();
     backing_factory_ = std::make_unique<SharedImageBackingFactoryEGL>(
-        preferences, workarounds, context_state_->feature_info(),
-        shared_image_manager_->batch_access_manager());
+        preferences, workarounds, context_state_->feature_info());
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =

@@ -23,7 +23,6 @@ namespace gpu {
 class GpuDriverBugWorkarounds;
 class SharedImageRepresentationGLTexture;
 class SharedImageRepresentationSkia;
-class SharedImageBatchAccessManager;
 struct Mailbox;
 
 namespace gles2 {
@@ -47,7 +46,6 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       uint32_t usage,
       size_t estimated_size,
       const SharedImageBackingFactoryGLCommon::FormatInfo format_into,
-      SharedImageBatchAccessManager* batch_access_manager,
       const GpuDriverBugWorkarounds& workarounds,
       const SharedImageBackingGLCommon::UnpackStateAttribs& attribs,
       bool use_passthrough,
@@ -80,7 +78,6 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
-  friend class SharedImageBatchAccessManager;
   class TextureHolder;
   class RepresentationGLShared;
   class RepresentationGLTexture;
@@ -125,7 +122,6 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       GUARDED_BY(lock_);
   base::flat_set<const RepresentationGLShared*> active_readers_
       GUARDED_BY(lock_);
-  raw_ptr<SharedImageBatchAccessManager> batch_access_manager_ = nullptr;
 
   const SharedImageBackingGLCommon::UnpackStateAttribs gl_unpack_attribs_;
   const bool use_passthrough_;

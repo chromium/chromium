@@ -22,10 +22,6 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gl/trace_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -80,9 +76,6 @@ SharedImageManager::SharedImageManager(bool thread_safe,
   DCHECK(!display_context_on_another_thread || thread_safe);
   if (thread_safe)
     lock_.emplace();
-#if BUILDFLAG(IS_ANDROID)
-  batch_access_manager_ = std::make_unique<SharedImageBatchAccessManager>();
-#endif
 #if BUILDFLAG(IS_WIN)
   auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
   if (d3d11_device) {
@@ -455,22 +448,6 @@ scoped_refptr<gfx::NativePixmap> SharedImageManager::GetNativePixmap(
   if (found == images_.end())
     return nullptr;
   return (*found)->GetNativePixmap();
-}
-
-bool SharedImageManager::BeginBatchReadAccess() {
-#if BUILDFLAG(IS_ANDROID)
-  return batch_access_manager_->BeginBatchReadAccess();
-#else
-  return true;
-#endif
-}
-
-bool SharedImageManager::EndBatchReadAccess() {
-#if BUILDFLAG(IS_ANDROID)
-  return batch_access_manager_->EndBatchReadAccess();
-#else
-  return true;
-#endif
 }
 
 }  // namespace gpu

@@ -15618,62 +15618,6 @@ static_assert(
     offsetof(EndSharedImageAccessDirectCHROMIUM, texture) == 4,
     "offset of EndSharedImageAccessDirectCHROMIUM texture should be 4");
 
-struct BeginBatchReadAccessSharedImageCHROMIUM {
-  typedef BeginBatchReadAccessSharedImageCHROMIUM ValueType;
-  static const CommandId kCmdId = kBeginBatchReadAccessSharedImageCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init() { SetHeader(); }
-
-  void* Set(void* cmd) {
-    static_cast<ValueType*>(cmd)->Init();
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-};
-
-static_assert(sizeof(BeginBatchReadAccessSharedImageCHROMIUM) == 4,
-              "size of BeginBatchReadAccessSharedImageCHROMIUM should be 4");
-static_assert(
-    offsetof(BeginBatchReadAccessSharedImageCHROMIUM, header) == 0,
-    "offset of BeginBatchReadAccessSharedImageCHROMIUM header should be 0");
-
-struct EndBatchReadAccessSharedImageCHROMIUM {
-  typedef EndBatchReadAccessSharedImageCHROMIUM ValueType;
-  static const CommandId kCmdId = kEndBatchReadAccessSharedImageCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init() { SetHeader(); }
-
-  void* Set(void* cmd) {
-    static_cast<ValueType*>(cmd)->Init();
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-};
-
-static_assert(sizeof(EndBatchReadAccessSharedImageCHROMIUM) == 4,
-              "size of EndBatchReadAccessSharedImageCHROMIUM should be 4");
-static_assert(
-    offsetof(EndBatchReadAccessSharedImageCHROMIUM, header) == 0,
-    "offset of EndBatchReadAccessSharedImageCHROMIUM header should be 0");
-
 struct EnableiOES {
   typedef EnableiOES ValueType;
   static const CommandId kCmdId = kEnableiOES;

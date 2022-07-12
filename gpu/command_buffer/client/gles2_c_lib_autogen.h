@@ -1665,12 +1665,6 @@ void GL_APIENTRY GLES2BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
 void GL_APIENTRY GLES2EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   gles2::GetGLContext()->EndSharedImageAccessDirectCHROMIUM(texture);
 }
-void GL_APIENTRY GLES2BeginBatchReadAccessSharedImageCHROMIUM() {
-  gles2::GetGLContext()->BeginBatchReadAccessSharedImageCHROMIUM();
-}
-void GL_APIENTRY GLES2EndBatchReadAccessSharedImageCHROMIUM() {
-  gles2::GetGLContext()->EndBatchReadAccessSharedImageCHROMIUM();
-}
 void GL_APIENTRY GLES2EnableiOES(GLenum target, GLuint index) {
   gles2::GetGLContext()->EnableiOES(target, index);
 }
@@ -3054,16 +3048,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         "glEndSharedImageAccessDirectCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(
             glEndSharedImageAccessDirectCHROMIUM),
-    },
-    {
-        "glBeginBatchReadAccessSharedImageCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glBeginBatchReadAccessSharedImageCHROMIUM),
-    },
-    {
-        "glEndBatchReadAccessSharedImageCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glEndBatchReadAccessSharedImageCHROMIUM),
     },
     {
         "glEnableiOES",

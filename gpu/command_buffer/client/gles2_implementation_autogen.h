@@ -1167,10 +1167,6 @@ void BeginSharedImageAccessDirectCHROMIUM(GLuint texture, GLenum mode) override;
 
 void EndSharedImageAccessDirectCHROMIUM(GLuint texture) override;
 
-void BeginBatchReadAccessSharedImageCHROMIUM() override;
-
-void EndBatchReadAccessSharedImageCHROMIUM() override;
-
 void EnableiOES(GLenum target, GLuint index) override;
 
 void DisableiOES(GLenum target, GLuint index) override;

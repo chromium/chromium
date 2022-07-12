@@ -1221,9 +1221,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoBeginSharedImageAccessDirectCHROMIUM(GLuint client_id, GLenum mode);
   void DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id);
 
-  void DoBeginBatchReadAccessSharedImageCHROMIUM();
-  void DoEndBatchReadAccessSharedImageCHROMIUM();
-
   void BindImage(uint32_t client_texture_id,
                  uint32_t texture_target,
                  gl::GLImage* image,
@@ -18570,28 +18567,6 @@ void GLES2DecoderImpl::DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id) {
   }
 
   texture_ref->EndAccessSharedImage();
-}
-
-void GLES2DecoderImpl::DoBeginBatchReadAccessSharedImageCHROMIUM() {
-  DCHECK(group_->shared_image_manager());
-
-  if (!group_->shared_image_manager()->BeginBatchReadAccess()) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
-                       "DoBeginBatchReadAccessSharedImageCHROMIUM",
-                       "shared image begin batch read access failed ");
-    return;
-  }
-}
-
-void GLES2DecoderImpl::DoEndBatchReadAccessSharedImageCHROMIUM() {
-  DCHECK(group_->shared_image_manager());
-
-  if (!group_->shared_image_manager()->EndBatchReadAccess()) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
-                       "DoEndBatchReadAccessSharedImageCHROMIUM",
-                       "shared image end batch read access failed ");
-    return;
-  }
 }
 
 void GLES2DecoderImpl::DoInsertEventMarkerEXT(

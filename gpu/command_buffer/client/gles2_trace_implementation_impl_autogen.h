@@ -2423,18 +2423,6 @@ void GLES2TraceImplementation::EndSharedImageAccessDirectCHROMIUM(
   gl_->EndSharedImageAccessDirectCHROMIUM(texture);
 }
 
-void GLES2TraceImplementation::BeginBatchReadAccessSharedImageCHROMIUM() {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "GLES2Trace::BeginBatchReadAccessSharedImageCHROMIUM");
-  gl_->BeginBatchReadAccessSharedImageCHROMIUM();
-}
-
-void GLES2TraceImplementation::EndBatchReadAccessSharedImageCHROMIUM() {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu", "GLES2Trace::EndBatchReadAccessSharedImageCHROMIUM");
-  gl_->EndBatchReadAccessSharedImageCHROMIUM();
-}
-
 void GLES2TraceImplementation::EnableiOES(GLenum target, GLuint index) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::EnableiOES");
   gl_->EnableiOES(target, index);

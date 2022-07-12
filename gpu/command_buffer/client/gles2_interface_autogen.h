@@ -864,8 +864,6 @@ virtual GLuint CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM(
 virtual void BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                                   GLenum mode) = 0;
 virtual void EndSharedImageAccessDirectCHROMIUM(GLuint texture) = 0;
-virtual void BeginBatchReadAccessSharedImageCHROMIUM() = 0;
-virtual void EndBatchReadAccessSharedImageCHROMIUM() = 0;
 virtual void EnableiOES(GLenum target, GLuint index) = 0;
 virtual void DisableiOES(GLenum target, GLuint index) = 0;
 virtual void BlendEquationiOES(GLuint buf, GLenum mode) = 0;

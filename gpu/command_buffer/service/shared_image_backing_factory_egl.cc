@@ -12,7 +12,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image_backing_egl_image.h"
-#include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,13 +28,11 @@ namespace gpu {
 SharedImageBackingFactoryEGL::SharedImageBackingFactoryEGL(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    const gles2::FeatureInfo* feature_info,
-    SharedImageBatchAccessManager* batch_access_manager)
+    const gles2::FeatureInfo* feature_info)
     : SharedImageBackingFactoryGLCommon(gpu_preferences,
                                         workarounds,
                                         feature_info,
-                                        /*progress_reporter=*/nullptr),
-      batch_access_manager_(batch_access_manager) {}
+                                        /*progress_reporter=*/nullptr) {}
 
 SharedImageBackingFactoryEGL::~SharedImageBackingFactoryEGL() = default;
 
@@ -145,8 +142,8 @@ SharedImageBackingFactoryEGL::MakeEglImageBacking(
 
   return std::make_unique<SharedImageBackingEglImage>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size, format_info, batch_access_manager_, workarounds_,
-      attribs_, use_passthrough_, pixel_data);
+      estimated_size, format_info, workarounds_, attribs_, use_passthrough_,
+      pixel_data);
 }
 
 }  // namespace gpu

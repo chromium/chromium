@@ -372,8 +372,7 @@ SharedImageFactory::SharedImageFactory(
 #elif BUILDFLAG(IS_ANDROID)
   if (use_gl) {
     auto egl_backing_factory = std::make_unique<SharedImageBackingFactoryEGL>(
-        gpu_preferences, workarounds, feature_info.get(),
-        shared_image_manager->batch_access_manager());
+        gpu_preferences, workarounds, feature_info.get());
     factories_.push_back(std::move(egl_backing_factory));
   }
   bool is_ahb_supported =

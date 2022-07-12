@@ -3173,22 +3173,6 @@ void EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   }
 }
 
-void BeginBatchReadAccessSharedImageCHROMIUM() {
-  gles2::cmds::BeginBatchReadAccessSharedImageCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::BeginBatchReadAccessSharedImageCHROMIUM>();
-  if (c) {
-    c->Init();
-  }
-}
-
-void EndBatchReadAccessSharedImageCHROMIUM() {
-  gles2::cmds::EndBatchReadAccessSharedImageCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::EndBatchReadAccessSharedImageCHROMIUM>();
-  if (c) {
-    c->Init();
-  }
-}
-
 void EnableiOES(GLenum target, GLuint index) {
   gles2::cmds::EnableiOES* c = GetCmdSpace<gles2::cmds::EnableiOES>();
   if (c) {

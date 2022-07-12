@@ -328,16 +328,14 @@
   OP(CreateAndTexStorage2DSharedImageINTERNALImmediate)        /* 569 */ \
   OP(BeginSharedImageAccessDirectCHROMIUM)                     /* 570 */ \
   OP(EndSharedImageAccessDirectCHROMIUM)                       /* 571 */ \
-  OP(BeginBatchReadAccessSharedImageCHROMIUM)                  /* 572 */ \
-  OP(EndBatchReadAccessSharedImageCHROMIUM)                    /* 573 */ \
-  OP(EnableiOES)                                               /* 574 */ \
-  OP(DisableiOES)                                              /* 575 */ \
-  OP(BlendEquationiOES)                                        /* 576 */ \
-  OP(BlendEquationSeparateiOES)                                /* 577 */ \
-  OP(BlendFunciOES)                                            /* 578 */ \
-  OP(BlendFuncSeparateiOES)                                    /* 579 */ \
-  OP(ColorMaskiOES)                                            /* 580 */ \
-  OP(IsEnablediOES)                                            /* 581 */
+  OP(EnableiOES)                                               /* 572 */ \
+  OP(DisableiOES)                                              /* 573 */ \
+  OP(BlendEquationiOES)                                        /* 574 */ \
+  OP(BlendEquationSeparateiOES)                                /* 575 */ \
+  OP(BlendFunciOES)                                            /* 576 */ \
+  OP(BlendFuncSeparateiOES)                                    /* 577 */ \
+  OP(ColorMaskiOES)                                            /* 578 */ \
+  OP(IsEnablediOES)                                            /* 579 */
 
 enum CommandId {
   kOneBeforeStartPoint =

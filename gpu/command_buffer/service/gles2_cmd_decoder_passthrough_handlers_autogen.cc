@@ -4602,28 +4602,6 @@ GLES2DecoderPassthroughImpl::HandleEndSharedImageAccessDirectCHROMIUM(
   return error::kNoError;
 }
 
-error::Error
-GLES2DecoderPassthroughImpl::HandleBeginBatchReadAccessSharedImageCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  error::Error error = DoBeginBatchReadAccessSharedImageCHROMIUM();
-  if (error != error::kNoError) {
-    return error;
-  }
-  return error::kNoError;
-}
-
-error::Error
-GLES2DecoderPassthroughImpl::HandleEndBatchReadAccessSharedImageCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  error::Error error = DoEndBatchReadAccessSharedImageCHROMIUM();
-  if (error != error::kNoError) {
-    return error;
-  }
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleEnableiOES(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

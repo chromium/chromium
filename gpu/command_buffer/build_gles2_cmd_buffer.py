@@ -4047,16 +4047,6 @@ _FUNCTION_INFO = {
     'decoder_func': 'DoEndSharedImageAccessDirectCHROMIUM',
     'extension': 'CHROMIUM_shared_image',
     'unit_test': False,
-  },
-  'BeginBatchReadAccessSharedImageCHROMIUM': {
-    'decoder_func': 'DoBeginBatchReadAccessSharedImageCHROMIUM',
-    'extension': 'CHROMIUM_shared_image',
-    'unit_test': False,
-  },
-  'EndBatchReadAccessSharedImageCHROMIUM': {
-    'decoder_func': 'DoEndBatchReadAccessSharedImageCHROMIUM',
-    'extension': 'CHROMIUM_shared_image',
-    'unit_test': False,
   }
 
 }

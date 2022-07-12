@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image_backing_factory_gl_texture.h"
+#include "gpu/command_buffer/service/shared_image_backing_gl_texture.h"
 
 #include <algorithm>
 #include <list>
@@ -25,7 +25,6 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_image.h"
-#include "gpu/command_buffer/service/shared_image_backing_gl_texture.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -51,7 +50,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/shared_image_backing_egl_image.h"
-#include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)

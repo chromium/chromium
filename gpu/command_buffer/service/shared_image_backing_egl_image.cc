@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/native_image_buffer.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -186,7 +185,6 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
     uint32_t usage,
     size_t estimated_size,
     const SharedImageBackingFactoryGLCommon::FormatInfo format_info,
-    SharedImageBatchAccessManager* batch_access_manager,
     const GpuDriverBugWorkarounds& workarounds,
     const SharedImageBackingGLCommon::UnpackStateAttribs& attribs,
     bool use_passthrough,
@@ -201,10 +199,8 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
                                       estimated_size,
                                       true /*is_thread_safe*/),
       format_info_(format_info),
-      batch_access_manager_(batch_access_manager),
       gl_unpack_attribs_(attribs),
       use_passthrough_(use_passthrough) {
-  DCHECK(batch_access_manager_);
   created_on_context_ = gl::g_current_gl_context;
   // On some GPUs (NVidia) keeping reference to egl image itself is not enough,
   // we must keep reference to at least one sibling. Note that this workaround
@@ -219,8 +215,6 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
 }
 
 SharedImageBackingEglImage::~SharedImageBackingEglImage() {
-  // Un-Register this backing from the |batch_access_manager_|.
-  batch_access_manager_->UnregisterEglBacking(this);
   DCHECK(!source_texture_holder_);
 }
 
@@ -370,16 +364,6 @@ void SharedImageBackingEglImage::EndRead(const RepresentationGLShared* reader) {
     active_readers_.erase(reader);
   }
 
-  // For batch reads, we only need to create 1 fence after the last
-  // EndRead() for the whole batch of reads. Hence we just register this backing
-  // here with the |batch_access_manager_| so that it can set an end read fence
-  // on this backing later after the last read of the batch. This improves
-  // performance because creating and inserting gl fences are costly. For non
-  // batch reads/regular reads, we create 1 fence per EndRead().
-  if (batch_access_manager_->IsDoingBatchReads()) {
-    batch_access_manager_->RegisterEglBackingForEndReadFence(this);
-    return;
-  }
   AutoLock auto_lock(this);
   read_fences_[gl::g_current_gl_context] =
       base::MakeRefCounted<gl::SharedGLFenceEGL>();

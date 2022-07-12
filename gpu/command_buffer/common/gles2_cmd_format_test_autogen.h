@@ -5184,28 +5184,6 @@ TEST_F(GLES2FormatTest, EndSharedImageAccessDirectCHROMIUM) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(GLES2FormatTest, BeginBatchReadAccessSharedImageCHROMIUM) {
-  cmds::BeginBatchReadAccessSharedImageCHROMIUM& cmd =
-      *GetBufferAs<cmds::BeginBatchReadAccessSharedImageCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd);
-  EXPECT_EQ(static_cast<uint32_t>(
-                cmds::BeginBatchReadAccessSharedImageCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, EndBatchReadAccessSharedImageCHROMIUM) {
-  cmds::EndBatchReadAccessSharedImageCHROMIUM& cmd =
-      *GetBufferAs<cmds::EndBatchReadAccessSharedImageCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd);
-  EXPECT_EQ(static_cast<uint32_t>(
-                cmds::EndBatchReadAccessSharedImageCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(GLES2FormatTest, EnableiOES) {
   cmds::EnableiOES& cmd = *GetBufferAs<cmds::EnableiOES>();
   void* next_cmd =

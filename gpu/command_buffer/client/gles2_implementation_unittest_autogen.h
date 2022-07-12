@@ -3017,28 +3017,6 @@ TEST_F(GLES2ImplementationTest, EndSharedImageAccessDirectCHROMIUM) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
-TEST_F(GLES2ImplementationTest, BeginBatchReadAccessSharedImageCHROMIUM) {
-  struct Cmds {
-    cmds::BeginBatchReadAccessSharedImageCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init();
-
-  gl_->BeginBatchReadAccessSharedImageCHROMIUM();
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
-TEST_F(GLES2ImplementationTest, EndBatchReadAccessSharedImageCHROMIUM) {
-  struct Cmds {
-    cmds::EndBatchReadAccessSharedImageCHROMIUM cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init();
-
-  gl_->EndBatchReadAccessSharedImageCHROMIUM();
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
 TEST_F(GLES2ImplementationTest, EnableiOES) {
   struct Cmds {
     cmds::EnableiOES cmd;
