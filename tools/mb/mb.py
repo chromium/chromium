@@ -181,12 +181,15 @@ class MetaBuildWrapper:
                         help='Sets GN arg android_default_version_code')
       subp.add_argument('--android-version-name',
                         help='Sets GN arg android_default_version_name')
+      subp.add_argument('--rts',
+                        default=None,
+                        help='which regression test selection model to use'
+                        ' For more info about RTS, please see'
+                        ' //docs/testing/regression-test-selection.md')
       subp.add_argument('--use-rts',
                         action='store_true',
                         default=False,
-                        help='whether or not to use regression test selection'
-                        ' For more info about RTS, please see'
-                        ' //docs/testing/regression-test-selection.md')
+                        help='Deprecated argument for enabling RTS')
 
       # TODO(crbug.com/1060857): Remove this once swarming task templates
       # support command prefixes.
@@ -469,10 +472,15 @@ class MetaBuildWrapper:
     return 0
 
   def RtsSelect(self):
-    model_dir = self.PathJoin(
-        self.chromium_src_dir, 'testing', 'rts', self._CipdPlatform())
+    if self.args.rts == 'rts-ml-chromium':
+      model_dir = self.PathJoin(self.chromium_src_dir, 'testing', 'rts',
+                                self.args.rts, self._CipdPlatform())
+      exe = self.PathJoin(model_dir, self.args.rts)
+    else:
+      model_dir = self.PathJoin(self.chromium_src_dir, 'testing', 'rts',
+                                self._CipdPlatform())
+      exe = self.PathJoin(model_dir, self.args.rts)
 
-    exe = self.PathJoin(model_dir, 'rts-chromium')
     if self.platform == 'win32':
       exe += '.exe'
 
@@ -489,12 +497,12 @@ class MetaBuildWrapper:
             'rts-target-change-recall must be between (0 and 1]', None)
       args += ['-target-change-recall', str(self.args.rts_target_change_recall)]
 
-    ret, _, _ = self.Run(args, force_verbose=True)
+    ret, _, err = self.Run(args, force_verbose=True)
     if ret != 0:
       self.WriteFailureAndRaise(err, None)
 
   def CmdGen(self):
-    if self.args.use_rts:
+    if self.args.rts:
       self.RtsSelect()
     vals = self.Lookup()
     return self.RunGNGen(vals)
@@ -1328,7 +1336,7 @@ class MetaBuildWrapper:
 
       # For more info about RTS, please see
       # //docs/testing/regression-test-selection.md
-      if self.args.use_rts:
+      if self.args.rts:
         self.AddFilterFileArg(target, build_dir, command)
 
       canonical_target = target.replace(':','_').replace('/','_')
@@ -1627,7 +1635,7 @@ class MetaBuildWrapper:
     if android_version_name:
       gn_args += ' android_default_version_name="%s"' % android_version_name
 
-    if self.args.use_rts:
+    if self.args.rts:
       gn_args += ' use_rts=true'
 
     args_gn_lines = []

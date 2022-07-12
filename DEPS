@@ -255,6 +255,9 @@ vars = {
   # for info on RTS
   'checkout_rts_model': False,
 
+  # Use the experimental version of the RTS model
+  'checkout_rts_experimental_model': False,
+
   # By default, do not check out the re-client binaries.
   'checkout_reclient': False,
 
@@ -872,6 +875,17 @@ deps = {
       ],
       'dep_type': 'cipd',
       'condition': 'checkout_rts_model and checkout_win',
+  },
+
+  'src/testing/rts/rts-ml-chromium/linux-amd64': {
+      'packages': [
+        {
+          'package': 'experimental/google.com/sshrimp/chromium/rts/model/linux-amd64',
+          'version': '3K1dz8hGV_xBeEcPKmXfrPYWCwXdRf6KVVLrg7AuJ0sC',
+        },
+      ],
+      'dep_type': 'cipd',
+      'condition': 'checkout_rts_experimental_model and checkout_linux',
   },
 
   'src/tools/luci-go': {

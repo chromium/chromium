@@ -684,5 +684,5 @@ try_.builder(
     ),
     cores = 16,
     builderless = False,
-    experiments = {"chromium_rts.ml_model": 100},
+    experiments = {"chromium_rts.experimental_model": 100},
 )

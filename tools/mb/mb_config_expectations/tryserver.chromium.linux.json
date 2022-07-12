@@ -473,7 +473,6 @@
   },
   "linux-rel-ml": {
     "gn_args": {
-      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "devtools_skip_typecheck": false,
       "ffmpeg_branding": "Chrome",
@@ -481,7 +480,6 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_clang_coverage": true,
       "use_dummy_lastchange": true,
       "use_goma": true
     }
