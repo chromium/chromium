@@ -55,7 +55,7 @@ using FakeAuthFactor =
 
 struct FakeUserDataAuthClient::UserCryptohomeState {
   // Maps labels to auth factors.
-  std::map<std::string, FakeAuthFactor> auth_factors;
+  base::flat_map<std::string, FakeAuthFactor> auth_factors;
 
   // A flag describing how we pretend that the user's home directory is
   // encrypted.
@@ -141,6 +141,33 @@ absl::optional<cryptohome::KeyData> AuthFactorToKeyData(
             return data;
           }),
       factor);
+}
+
+// Turns a cryptohome::Key into a pair of label and FakeAuthFactor.
+std::pair<std::string, FakeAuthFactor> KeyToAuthFactor(
+    const cryptohome::Key& key,
+    bool save_secret) {
+  const cryptohome::KeyData& data = key.data();
+  const std::string& label = data.label();
+  CHECK_NE(label, "") << "Key label must not be empty string";
+  absl::optional<std::string> secret = absl::nullopt;
+  if (save_secret && key.has_secret()) {
+    secret = key.secret();
+  }
+
+  switch (data.type()) {
+    case cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE:
+    case cryptohome::KeyData::KEY_TYPE_FINGERPRINT:
+      LOG(FATAL) << "Unsupported key type: " << data.type();
+      __builtin_unreachable();
+    case cryptohome::KeyData::KEY_TYPE_PASSWORD:
+      if (data.has_policy() && data.policy().low_entropy_credential()) {
+        return {label, PinFactor{.pin = secret, .locked = false}};
+      }
+      return {label, PasswordFactor{.password = secret}};
+    case cryptohome::KeyData::KEY_TYPE_KIOSK:
+      return {label, KioskFactor{}};
+  }
 }
 
 // Helper that automatically sends a reply struct to a supplied callback when
@@ -314,19 +341,30 @@ void FakeUserDataAuthClient::Mount(
   }
   DCHECK(account_id);
 
-  auto user_it = users_.find(*account_id);
-  if (user_it == std::end(users_)) {
-    LOG_IF(ERROR, !request.has_create())
-        << "UserDataAuth::Mount called without create field for nonexistant "
-           "user: "
-        << account_id->account_id();
-    // TODO(crbug.com/1334538): Old tests rely on this behavior, but new tests
-    // shouldn't: Instead, they should either fill in the `create` field, or
-    // they should set up a test user first.
-    user_it = users_.insert({*account_id, UserCryptohomeState()}).first;
+  const auto [user_it, was_inserted] =
+      users_.insert({*account_id, UserCryptohomeState()});
+  UserCryptohomeState& user_state = user_it->second;
+
+  // The real cryptohome supports this, but it's not used in chrome at the
+  // moment and thus not supported by fake cryptohome.
+  LOG_IF(FATAL, !was_inserted && request.has_create())
+      << "UserDataAuth::Mount called with create field for existing user: "
+      << account_id->account_id();
+  // TODO(crbug.com/1334538): Some tests rely on this working, but those should
+  // be migrated.
+  LOG_IF(ERROR, was_inserted && !request.has_create())
+      << "UserDataAuth::Mount called without create field for nonexistant "
+         "user: "
+      << account_id->account_id();
+
+  if (request.has_create()) {
+    const user_data_auth::CreateRequest& create_req = request.create();
+    CHECK_EQ(1, create_req.keys().size())
+        << "UserDataAuth::Mount called with `create` that does not contain "
+           "precisely one key";
+    user_state.auth_factors.insert(KeyToAuthFactor(
+        create_req.keys()[0], TestApi::Get()->enable_auth_check_));
   }
-  DCHECK(user_it != std::end(users_));
-  const UserCryptohomeState& user_state = user_it->second;
 
   const bool is_ecryptfs =
       user_state.home_encryption_method == HomeEncryptionMethod::kEcryptfs;
@@ -465,10 +503,7 @@ void FakeUserDataAuthClient::AddKey(
 
   const cryptohome::AccountIdentifier& account_id = request.account_id();
   const bool clobber_if_exists = request.clobber_if_exists();
-  const cryptohome::Key new_key = request.key();
-  const cryptohome::KeyData new_key_data = new_key.data();
-  const std::string& new_label = new_key_data.label();
-  CHECK_NE(new_label, "") << "Label must not be empty string";
+  const cryptohome::Key& new_key = request.key();
 
   auto user_it = users_.find(account_id);
   if (user_it == std::end(users_)) {
@@ -478,41 +513,13 @@ void FakeUserDataAuthClient::AddKey(
     user_it = users_.insert(user_it, {account_id, UserCryptohomeState()});
   }
   DCHECK(user_it != std::end(users_));
-  std::map<std::string, FakeAuthFactor>& auth_factors =
-      user_it->second.auth_factors;
+  UserCryptohomeState& user_state = user_it->second;
 
-  if (!clobber_if_exists) {
-    CHECK(auth_factors.find(new_label) == std::end(auth_factors))
-        << "Key exists, will not clobber: " << new_label;
-  }
-
-  // We only save the secret if auth checking is enabled.
-  absl::optional<std::string> secret =
-      TestApi::Get()->enable_auth_check_
-          ? absl::optional<std::string>(new_key.secret())
-          : absl::nullopt;
-
-  const cryptohome::KeyData::KeyType new_key_type = new_key_data.type();
-
-  if (new_key_type == cryptohome::KeyData::KEY_TYPE_KIOSK) {
-    auth_factors[new_label] = KioskFactor{};
-    return;
-  }
-
-  LOG_IF(WARNING, new_key_type != cryptohome::KeyData::KEY_TYPE_PASSWORD)
-      << "Unsupported key type, assuming KEY_TYPE_PASSWORD: " << new_key_type;
-
-  const bool is_low_entropy =
-      new_key_data.has_policy() &&
-      new_key_data.policy().has_low_entropy_credential() &&
-      new_key_data.policy().low_entropy_credential();
-
-  if (is_low_entropy) {
-    auth_factors[new_label] = PinFactor{std::move(secret)};
-    return;
-  }
-
-  auth_factors[new_label] = PasswordFactor{std::move(secret)};
+  auto [new_label, new_factor] =
+      KeyToAuthFactor(new_key, TestApi::Get()->enable_auth_check_);
+  CHECK(clobber_if_exists || !user_state.auth_factors.contains(new_label))
+      << "Key exists, will not clobber: " << new_label;
+  user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
 }
 void FakeUserDataAuthClient::RemoveKey(
     const ::user_data_auth::RemoveKeyRequest& request,
