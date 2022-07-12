@@ -838,11 +838,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     // exists (https://crbug.com/705550).
     if (!same_item_sequence_number) {
       scoped_refptr<SerializedScriptValue> state_object =
-          history_item ? history_item->StateObject() : nullptr;
-      DCHECK(!state_object || type == WebFrameLoadType::kBackForward);
-      frame_->DomWindow()->StatePopped(
-          state_object ? std::move(state_object)
-                       : SerializedScriptValue::NullValue());
+          history_item ? history_item->StateObject()
+                       : SerializedScriptValue::NullValue();
+      frame_->DomWindow()->DispatchPopstateEvent(std::move(state_object));
     }
   }
 }

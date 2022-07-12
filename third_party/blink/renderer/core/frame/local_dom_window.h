@@ -399,10 +399,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void EnqueueDocumentEvent(Event&, TaskType);
   void EnqueueNonPersistedPageshowEvent();
   void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
-  void EnqueuePopstateEvent(scoped_refptr<SerializedScriptValue>);
+  void DispatchPopstateEvent(scoped_refptr<SerializedScriptValue>);
   void DispatchWindowLoadEvent();
   void DocumentWasClosed();
-  void StatePopped(scoped_refptr<SerializedScriptValue>);
 
   void AcceptLanguagesChanged();
 
@@ -531,8 +530,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   String status_;
   String default_status_;
-
-  scoped_refptr<SerializedScriptValue> pending_state_object_;
 
   HeapHashSet<WeakMember<EventListenerObserver>> event_listener_observers_;
 
