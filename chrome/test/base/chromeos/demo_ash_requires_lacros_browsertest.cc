@@ -10,13 +10,14 @@
 #include "content/public/test/browser_test.h"
 
 // This is a demo for ash browser test, which requires Lacros.
-// To run this test, first build a Lacros chrome
-// $ autoninja -C out/lacrosdesktop chrome
-// then build test target and run:
+// To run this test, you need to build test with Lacros. That means
+// your gn args should contain "also_build_lacros_chrome = true"
+// Also, some gn args can cause trouble, strongly suggest you use
+// the linux-chromeos-rel bot(CI or CQ) gn args locally.
 // $ autoninja -C out/ashdesktop browser_tests
 // $ out/ashdesktop/browser_tests \
 //   --gtest_filter=DemoAshRequiresLacrosTest* \
-//   --lacros-chrome-path=out/lacrosdesktop \
+//   --lacros-chrome-path=out/ashdesktop/lacros_clang_x64 \
 //   --enable-pixel-output-in-tests
 // You should see there are 2 browser instances, one is ash browser,
 // another one is Lacros browser and Lacros is in the front.
