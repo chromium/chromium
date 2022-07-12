@@ -599,8 +599,9 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
          parent = parent.DirName()) {
       if (context_->HasPersistedPermission(origin_, parent,
                                            HandleType::kDirectory, type_,
-                                           MetricsOptions::kDoNotRecord))
+                                           MetricsOptions::kDoNotRecord)) {
         return true;
+      }
     }
     return false;
   }
@@ -757,8 +758,9 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
         type_ == GrantType::kRead ? GrantType::kWrite : GrantType::kRead;
     if (context_->HasPersistedPermission(origin_, path_, handle_type_,
                                          opposite_type,
-                                         MetricsOptions::kDoNotRecord))
+                                         MetricsOptions::kDoNotRecord)) {
       value.SetBoolKey(GetGrantKeyFromGrantType(opposite_type), true);
+    }
     value.SetKey(kPermissionLastUsedTimeKey,
                  base::TimeToValue(context_->clock_->Now()));
     return value;
