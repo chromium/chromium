@@ -61,4 +61,15 @@ void AttachTabGroupsToBrowserInstance(
   }
 }
 
+void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index,
+                          Browser* browser) {
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+
+  DCHECK(first_non_pinned_tab_index <= tab_strip_model->count());
+  for (int32_t tab_index = 0; tab_index < first_non_pinned_tab_index;
+       tab_index++) {
+    tab_strip_model->SetTabPinned(tab_index, /*pinned=*/true);
+  }
+}
+
 }  // namespace chrome_desks_util

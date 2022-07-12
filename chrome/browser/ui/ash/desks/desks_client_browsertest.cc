@@ -433,6 +433,16 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
     return browser;
   }
 
+  Browser* CreateBrowserWithPinnedTabs(const std::vector<GURL>& urls,
+                                       int first_non_pinned_tab_index) {
+    Browser* browser = CreateBrowserImpl(urls, absl::nullopt);
+
+    chrome_desks_util::SetBrowserPinnedTabs(first_non_pinned_tab_index,
+                                            browser);
+    browser->window()->Show();
+    return browser;
+  }
+
   Browser* CreateBrowserWithTabGroups(
       const std::vector<GURL>& urls,
       const std::vector<app_restore::TabGroupInfo>& tab_groups) {
@@ -560,6 +570,50 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, CaptureBrowserTabGroupsTest) {
   // We don't care about the order of the tab groups.
   EXPECT_THAT(expected_tab_groups, testing::UnorderedElementsAreArray(
                                        data->tab_group_infos.value()));
+}
+
+// Tests that a browser's pinned tabs can be captured correctly in a saved desk.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, CaptureBrowserWithPinnedTabs) {
+  std::vector<GURL> tabs = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
+  int expected_number_of_pinned_tabs = 1;
+
+  // Create a new browser and add a few tabs to it.
+  Browser* browser =
+      CreateBrowserWithPinnedTabs(tabs, expected_number_of_pinned_tabs);
+  aura::Window* window = browser->window()->GetNativeWindow();
+
+  const int32_t browser_window_id =
+      window->GetProperty(app_restore::kWindowIdKey);
+  // Get current tabs from browser.
+  std::vector<GURL> urls = GetURLsForBrowserWindow(browser);
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickSaveDeskAsTemplateButton();
+
+  std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
+  ASSERT_EQ(1u, templates.size());
+
+  const ash::DeskTemplate* desk_template = templates.front();
+  const app_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
+  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, app_id_to_launch_list.size());
+
+  // Find `browser` window's app restore data.
+  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
+  ASSERT_TRUE(iter != app_id_to_launch_list.end());
+  auto app_restore_data_iter = iter->second.find(browser_window_id);
+  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
+  const auto& data = app_restore_data_iter->second;
+  // Check the urls are captured correctly in the `desk_template`.
+  EXPECT_EQ(urls, data->urls.value());
+
+  // Assert number of pinned tabs is correct.
+  EXPECT_TRUE(data->first_non_pinned_tab_index.has_value());
+  EXPECT_THAT(expected_number_of_pinned_tabs,
+              data->first_non_pinned_tab_index.value());
 }
 
 // Tests that incognito browser windows will NOT be captured in the desk
@@ -962,6 +1016,40 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   // We don't care about the order of the tab groups.
   EXPECT_THAT(expected_tab_groups,
               testing::UnorderedElementsAreArray(got_tab_groups.value()));
+}
+
+// Tests that a browser's pinned tabs can be launched correctly in a saved desk.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchBrowserWithPinnedTabs) {
+  ASSERT_TRUE(DesksClient::Get());
+
+  // create expected values.
+  std::vector<GURL> tabs = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
+  int expected_number_of_pinned_tabs = 1;
+
+  // Create a new browser and add a few tabs to it.
+  Browser* browser =
+      CreateBrowserWithPinnedTabs(tabs, expected_number_of_pinned_tabs);
+
+  // Get current tabs from browser.
+  std::vector<GURL> urls = GetURLsForBrowserWindow(browser);
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickSaveDeskAsTemplateButton();
+
+  ClickFirstTemplateItem();
+
+  // Wait for tabs to load.
+  content::RunAllTasksUntilIdle();
+
+  // Verify that the browser was launched with the correct urls and active tab.
+  Browser* new_browser = FindLaunchedBrowserByURLs(urls);
+  ASSERT_TRUE(new_browser);
+
+  // Assert the number of pinned tabs is correct.
+  ASSERT_EQ(expected_number_of_pinned_tabs,
+            new_browser->tab_strip_model()->IndexOfFirstNonPinnedTab());
 }
 
 // Tests that browser session restore isn't triggered when we launch a template

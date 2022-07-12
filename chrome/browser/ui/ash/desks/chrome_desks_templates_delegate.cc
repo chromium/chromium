@@ -280,6 +280,15 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   if (tab_strip_model) {
     app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
     app_launch_info->active_tab_index = tab_strip_model->active_index();
+    int index_of_first_non_pinned_tab =
+        tab_strip_model->IndexOfFirstNonPinnedTab();
+    // Only set this field if there are pinned tabs. `IndexOfFirstNonPinnedTab`
+    // returns 0 if there are no pinned tabs.
+    if (index_of_first_non_pinned_tab > 0 &&
+        index_of_first_non_pinned_tab <= tab_strip_model->count()) {
+      app_launch_info->first_non_pinned_tab_index =
+          index_of_first_non_pinned_tab;
+    }
     if (tab_strip_model->SupportsTabGroups()) {
       app_launch_info->tab_group_infos =
           chrome_desks_util::ConvertTabGroupsToTabGroupInfos(

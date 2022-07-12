@@ -220,6 +220,13 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
             app_restore_data->tab_group_infos.value(), browser);
       }
 
+      if (app_restore_data->first_non_pinned_tab_index.has_value() &&
+          app_restore_data->first_non_pinned_tab_index.value() <=
+              urls->size()) {
+        chrome_desks_util::SetBrowserPinnedTabs(
+            app_restore_data->first_non_pinned_tab_index.value(), browser);
+      }
+
       // We need to handle minimized windows separately since unlike other
       // window types, it's not shown.
       if (window_state_type &&

@@ -27,6 +27,9 @@ void AttachTabGroupsToBrowserInstance(
     const std::vector<app_restore::TabGroupInfo>& tab_groups,
     Browser* browser);
 
+// Sets tabs in `browser` to be pinned up to the `first_non_pinned_tab_index`.
+void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index, Browser* browser);
+
 }  // namespace chrome_desks_util
 
 #endif
