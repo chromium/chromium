@@ -65,6 +65,7 @@ void PermissionUpdateMessageController::ShowMessageInternal(
   // more than expected.
   for (auto& delegate : message_delegates_) {
     if (delegate->GetTitleId() == title_id) {
+      delegate->AttachAdditionalCallback(std::move(callback));
       return;
     }
   }

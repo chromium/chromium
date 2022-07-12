@@ -152,7 +152,7 @@ TEST_F(PermissionUpdateMessageControllerAndroidTest,
   ShowMedia(mock_permission_update_callback2.Get(), false);
   EXPECT_EQ(1u, GetMessageDelegatesSize());
   EXPECT_CALL(mock_permission_update_callback1, Run(false));
-  EXPECT_CALL(mock_permission_update_callback2, Run(false)).Times(0);
+  EXPECT_CALL(mock_permission_update_callback2, Run(false));
 
   // Message is dismissed first by primary action, and then permission update
   // callback is invoked. In this case, the dismiss reason should be

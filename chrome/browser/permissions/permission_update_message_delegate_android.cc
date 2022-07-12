@@ -27,9 +27,9 @@ PermissionUpdateMessageDelegate::PermissionUpdateMessageDelegate(
     PermissionUpdatedCallback callback,
     base::OnceCallback<void(PermissionUpdateMessageDelegate*)> delete_callback_)
     : content_settings_types_(content_settings_types),
-      callback_(std::move(callback)),
       delete_callback_(std::move(delete_callback_)) {
-  DCHECK(callback_);
+  DCHECK(callback);
+  callbacks_.push_back(std::move(callback));
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::PERMISSION_UPDATE,
       base::BindOnce(
@@ -53,9 +53,13 @@ PermissionUpdateMessageDelegate::PermissionUpdateMessageDelegate(
                      base::Unretained(this)));
 }
 
+PermissionUpdateMessageDelegate::~PermissionUpdateMessageDelegate() {
+  DismissInternal();
+}
+
 void PermissionUpdateMessageDelegate::OnPermissionResult(
     bool all_permissions_granted) {
-  std::move(callback_).Run(all_permissions_granted);
+  RunCallbacks(all_permissions_granted);
   permissions::PermissionUmaUtil::RecordMissingPermissionInfobarAction(
       permissions::PermissionAction::GRANTED, content_settings_types_);
   // The callback may destroy `this`.
@@ -65,6 +69,11 @@ void PermissionUpdateMessageDelegate::OnPermissionResult(
 
 int PermissionUpdateMessageDelegate::GetTitleId() {
   return title_id_;
+}
+
+void PermissionUpdateMessageDelegate::AttachAdditionalCallback(
+    PermissionUpdatedCallback callback) {
+  callbacks_.push_back(std::move(callback));
 }
 
 void PermissionUpdateMessageDelegate::HandlePrimaryActionCallback() {
@@ -78,8 +87,9 @@ void PermissionUpdateMessageDelegate::HandleDismissCallback(
   message_.reset();
   // PermissionUpdateRequester::RequestPermissions can invoke its callback
   // synchronously in some cases. In that case, |OnPermissionResult| will be
-  // executed before this callback and |callback_| will be null.
-  if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION || !callback_) {
+  // executed before this callback and |callbacks_| will be empty.
+  if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION ||
+      callbacks_.empty()) {
     return;
   }
   permissions::PermissionUmaUtil::RecordMissingPermissionInfobarAction(
@@ -87,7 +97,7 @@ void PermissionUpdateMessageDelegate::HandleDismissCallback(
           ? permissions::PermissionAction::DISMISSED
           : permissions::PermissionAction::IGNORED,
       content_settings_types_);
-  std::move(callback_).Run(/*all_permissions_granted=*/false);
+  RunCallbacks(/*all_permissions_granted=*/false);
   // This dismiss callback should be executed in the end, because this can
   // destroy the current object.
   std::move(delete_callback_).Run(this);
@@ -100,6 +110,10 @@ void PermissionUpdateMessageDelegate::DismissInternal() {
   }
 }
 
-PermissionUpdateMessageDelegate::~PermissionUpdateMessageDelegate() {
-  DismissInternal();
+void PermissionUpdateMessageDelegate::RunCallbacks(
+    bool all_permissions_granted) {
+  for (auto& callback : callbacks_) {
+    std::move(callback).Run(all_permissions_granted);
+  }
+  callbacks_.clear();
 }

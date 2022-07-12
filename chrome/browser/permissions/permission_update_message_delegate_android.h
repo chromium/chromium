@@ -41,6 +41,7 @@ class PermissionUpdateMessageDelegate {
 
   void OnPermissionResult(bool all_permissions_granted);
   int GetTitleId();
+  void AttachAdditionalCallback(PermissionUpdatedCallback callback);
 
  private:
   friend class PermissionUpdateMessageControllerAndroidTest;
@@ -48,9 +49,10 @@ class PermissionUpdateMessageDelegate {
   void HandlePrimaryActionCallback();
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
   void DismissInternal();
+  void RunCallbacks(bool all_permissions_granted);
 
   std::vector<ContentSettingsType> content_settings_types_;
-  PermissionUpdatedCallback callback_;
+  std::vector<PermissionUpdatedCallback> callbacks_;
   base::OnceCallback<void(PermissionUpdateMessageDelegate*)> delete_callback_;
   std::unique_ptr<PermissionUpdateRequester> permission_update_requester_;
   std::unique_ptr<messages::MessageWrapper> message_;
