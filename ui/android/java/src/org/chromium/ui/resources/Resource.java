@@ -33,7 +33,9 @@ public interface Resource {
     boolean shouldRemoveResourceOnNullBitmap();
 
     /**
-     * @return The size of the bitmap.
+     * Returns the size the bitmap should be drawn to, but not necessarily the dimensions or number
+     * if pixels in the bitmap. When down sampling, this size will be larger than the bitmap, and
+     * the expectation is the bitmap will then be interpolated over this area.
      */
     Rect getBitmapSize();
 

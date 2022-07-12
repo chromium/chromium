@@ -238,7 +238,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         }
 
         @Override
-        protected void onCaptureStart(Canvas canvas, Rect dirtyRect) {
+        public void onCaptureStart(Canvas canvas, Rect dirtyRect) {
             RecordHistogram.recordEnumeratedHistogram("Android.Toolbar.BitmapCapture",
                     ToolbarCaptureType.TOP, ToolbarCaptureType.NUM_ENTRIES);
 
@@ -256,7 +256,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         }
 
         @Override
-        protected void onCaptureEnd() {
+        public void onCaptureEnd() {
             mToolbar.setTextureCaptureMode(false);
             // Forcing a texture capture should only be done for one draw. Turn off forced
             // texture capture.

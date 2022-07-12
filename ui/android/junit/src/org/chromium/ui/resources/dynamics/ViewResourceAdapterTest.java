@@ -25,6 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -37,8 +39,22 @@ import java.lang.ref.WeakReference;
  * Tests for {@link ViewResourceAdapter}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ViewResourceAdapterTest.ShadowCaptureUtils.class})
 public class ViewResourceAdapterTest {
+    /**
+     * Mock this out to avoid calling {@link View#draw(Canvas)} on the mocked mView.
+     * Otherwise the GC-related tests would fail because Mockito holds onto a references to the
+     * bitmap forever.
+     */
+    @Implements(CaptureUtils.class)
+    static class ShadowCaptureUtils {
+        @Implementation
+        public static boolean captureCommon(Canvas canvas, View view, Rect dirtyRect, float scale,
+                boolean drawWhileDetached, CaptureObserver observer) {
+            return true;
+        }
+    }
+
     private int mViewWidth;
     private int mViewHeight;
 
@@ -62,16 +78,7 @@ public class ViewResourceAdapterTest {
         when(mView.getWidth()).thenAnswer((invocation) -> mViewWidth);
         when(mView.getHeight()).thenAnswer((invocation) -> mViewHeight);
 
-        mAdapter = new ViewResourceAdapter(mView) {
-            /**
-             * Mock this out to avoid calling {@link View#draw(Canvas)} on the mocked mView.
-             * Otherwise the GC-related tests would fail.
-             */
-            @Override
-            protected boolean captureCommon(Canvas canvas, boolean drawWhileDetached) {
-                return true;
-            }
-        };
+        mAdapter = new ViewResourceAdapter(mView);
     }
 
     private Rect getBitmapSize() {

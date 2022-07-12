@@ -401,7 +401,7 @@ public class ViewResourceInflater {
         }
 
         @Override
-        protected void onCaptureEnd() {
+        public void onCaptureEnd() {
             ViewResourceInflater.this.onCaptureEnd();
         }
     }
