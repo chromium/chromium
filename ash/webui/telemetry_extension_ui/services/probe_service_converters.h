@@ -50,10 +50,7 @@ health::mojom::NonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::NonRemovableBlockDeviceResultPtr input);
 
 health::mojom::CachedVpdInfoPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SystemInfoPtr input);
-
-health::mojom::CachedVpdResultPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SystemResultPtr input);
+    cros_healthd::mojom::VpdInfoPtr input);
 
 health::mojom::CpuCStateInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::CpuCStateInfoPtr input);
@@ -110,17 +107,17 @@ health::mojom::BluetoothAdapterInfoPtr UncheckedConvertPtr(
 health::mojom::BluetoothResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BluetoothResultPtr input);
 
-health::mojom::OsInfoPtr UncheckedConvertPtr(
+health::mojom::SystemInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsInfoPtr input);
 
 health::mojom::OsVersionPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsVersionPtr);
 
-health::mojom::SystemInfoPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SystemInfoV2Ptr input);
+std::pair<health::mojom::CachedVpdInfoPtr, health::mojom::SystemInfoPtr>
+UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoV2Ptr input);
 
-health::mojom::SystemResultPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SystemResultV2Ptr input);
+std::pair<health::mojom::CachedVpdResultPtr, health::mojom::SystemResultPtr>
+UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultV2Ptr input);
 
 health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input);
@@ -156,6 +153,13 @@ template <class InputT>
 auto ConvertProbePtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
                             : nullptr;
+}
+
+template <class InputT>
+auto ConvertProbePairPtr(InputT input) {
+  return (!input.is_null())
+             ? unchecked::UncheckedConvertPairPtr(std::move(input))
+             : std::make_pair(nullptr, nullptr);
 }
 
 std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(

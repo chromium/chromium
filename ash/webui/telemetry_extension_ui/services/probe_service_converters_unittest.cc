@@ -66,7 +66,7 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kFan,
           cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
           cros_healthd::mojom::ProbeCategoryEnum::kBluetooth,
-          cros_healthd::mojom::ProbeCategoryEnum::kSystem2));
+          cros_healthd::mojom::ProbeCategoryEnum::kSystem));
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
@@ -269,29 +269,15 @@ TEST(ProbeServiceConverters, CachedVpdInfoPtr) {
   constexpr char kSerialNumber[] = "5CD9132880";
   constexpr char kModelName[] = "XX ModelName 007 XY";
 
-  auto input = cros_healthd::mojom::SystemInfo::New();
-  input->first_power_date = kFirstPowerDate;
-  input->product_sku_number = kSkuNumber;
-  input->product_serial_number = kSerialNumber;
-  input->product_model_name = kModelName;
+  auto input = cros_healthd::mojom::VpdInfo::New();
+  input->activate_date = kFirstPowerDate;
+  input->sku_number = kSkuNumber;
+  input->serial_number = kSerialNumber;
+  input->model_name = kModelName;
 
   EXPECT_EQ(ConvertProbePtr(std::move(input)),
             health::mojom::CachedVpdInfo::New(kFirstPowerDate, kSkuNumber,
                                               kSerialNumber, kModelName));
-}
-
-TEST(ProbeServiceConverters, CachedVpdResultPtrInfo) {
-  const auto output = ConvertProbePtr(
-      cros_healthd::mojom::SystemResult::NewSystemInfo(nullptr));
-  ASSERT_TRUE(output);
-  EXPECT_TRUE(output->is_vpd_info());
-}
-
-TEST(ProbeServiceConverters, CachedVpdResultPtrError) {
-  const auto output =
-      ConvertProbePtr(cros_healthd::mojom::SystemResult::NewError(nullptr));
-  ASSERT_TRUE(output);
-  EXPECT_TRUE(output->is_error());
 }
 
 TEST(ProbeServiceConverters, CpuCStateInfoPtr) {
@@ -678,81 +664,122 @@ TEST(ProbeServiceConverters, BluetoothResultPtrError) {
   EXPECT_TRUE(output->is_error());
 }
 
-TEST(ProbeServiceConverters, OsInfoPtr) {
+TEST(ProbeServiceConverters, SystemInfoPtr) {
   constexpr char kOemName[] = "OEM-NAME";
   constexpr char kReleaseMilestone[] = "87";
   constexpr char kBuildNumber[] = "13544";
   constexpr char kPatchNumber[] = "59.0";
   constexpr char kReleaseChannel[] = "stable-channel";
 
-  auto os_version = cros_healthd::mojom::OsVersion::New();
-  os_version->release_milestone = kReleaseMilestone;
-  os_version->build_number = kBuildNumber;
-  os_version->patch_number = kPatchNumber;
-  os_version->release_channel = kReleaseChannel;
-
+  auto os_version = cros_healthd::mojom::OsVersion::New(
+      kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
   auto input = cros_healthd::mojom::OsInfo::New();
   input->oem_name = kOemName;
   input->os_version = std::move(os_version);
 
-  const auto output = ConvertProbePtr(std::move(input));
-  ASSERT_TRUE(output);
-  EXPECT_EQ(output->oem_name, kOemName);
-
-  ASSERT_TRUE(output->os_version);
-  EXPECT_EQ(output->os_version->release_milestone, kReleaseMilestone);
-  EXPECT_EQ(output->os_version->build_number, kBuildNumber);
-  EXPECT_EQ(output->os_version->patch_number, kPatchNumber);
-  EXPECT_EQ(output->os_version->release_channel, kReleaseChannel);
+  EXPECT_EQ(ConvertProbePtr(std::move(input)),
+            health::mojom::SystemInfo::New(health::mojom::OsInfo::New(
+                kOemName,
+                health::mojom::OsVersion::New(kReleaseMilestone, kBuildNumber,
+                                              kPatchNumber, kReleaseChannel))));
 }
 
-TEST(ProbeServiceConverters, SystemResultPtr) {
-  constexpr char kOemName[] = "OEM-NAME";
+TEST(ProbeServiceConverters, OsVersionPtr) {
   constexpr char kReleaseMilestone[] = "87";
   constexpr char kBuildNumber[] = "13544";
   constexpr char kPatchNumber[] = "59.0";
   constexpr char kReleaseChannel[] = "stable-channel";
 
-  cros_healthd::mojom::SystemResultV2Ptr input;
+  auto input = cros_healthd::mojom::OsVersion::New(
+      kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
+
+  EXPECT_EQ(ConvertProbePtr(std::move(input)),
+            health::mojom::OsVersion::New(kReleaseMilestone, kBuildNumber,
+                                          kPatchNumber, kReleaseChannel));
+}
+
+TEST(ProbeServiceConverters, PairCachedVpdInfoPtrSystemInfoPtr) {
+  constexpr char kOemName[] = "OEM-NAME";
+  constexpr char kReleaseMilestone[] = "87";
+  constexpr char kBuildNumber[] = "13544";
+  constexpr char kPatchNumber[] = "59.0";
+  constexpr char kReleaseChannel[] = "stable-channel";
+  constexpr char kFirstPowerDate[] = "2021-43";
+  constexpr char kSkuNumber[] = "sku-1";
+  constexpr char kSerialNumber[] = "5CD9132880";
+  constexpr char kModelName[] = "XX ModelName 007 XY";
+
+  auto input = cros_healthd::mojom::SystemInfoV2::New();
   {
-    auto os_version = cros_healthd::mojom::OsVersion::New();
-    os_version->release_milestone = kReleaseMilestone;
-    os_version->build_number = kBuildNumber;
-    os_version->patch_number = kPatchNumber;
-    os_version->release_channel = kReleaseChannel;
+    auto vpd_info = cros_healthd::mojom::VpdInfo::New();
+    vpd_info->activate_date = kFirstPowerDate;
+    vpd_info->sku_number = kSkuNumber;
+    vpd_info->serial_number = kSerialNumber;
+    vpd_info->model_name = kModelName;
 
     auto os_info = cros_healthd::mojom::OsInfo::New();
     os_info->oem_name = kOemName;
-    os_info->os_version = std::move(os_version);
+    os_info->os_version = cros_healthd::mojom::OsVersion::New(
+        kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
+
+    input->os_info = std::move(os_info);
+    input->vpd_info = std::move(vpd_info);
+  }
+  EXPECT_EQ(ConvertProbePairPtr(std::move(input)),
+            std::make_pair(
+                health::mojom::CachedVpdInfo::New(kFirstPowerDate, kSkuNumber,
+                                                  kSerialNumber, kModelName),
+                health::mojom::SystemInfo::New(health::mojom::OsInfo::New(
+                    kOemName, health::mojom::OsVersion::New(
+                                  kReleaseMilestone, kBuildNumber, kPatchNumber,
+                                  kReleaseChannel)))));
+}
+
+TEST(ProbeServiceConverters, PairCachedVpdResultPtrSystemResultPtrInfo) {
+  constexpr char kOemName[] = "OEM-NAME";
+  constexpr char kReleaseMilestone[] = "87";
+  constexpr char kBuildNumber[] = "13544";
+  constexpr char kPatchNumber[] = "59.0";
+  constexpr char kReleaseChannel[] = "stable-channel";
+  constexpr char kFirstPowerDate[] = "2021-43";
+  constexpr char kSkuNumber[] = "sku-1";
+  constexpr char kSerialNumber[] = "5CD9132880";
+  constexpr char kModelName[] = "XX ModelName 007 XY";
+
+  cros_healthd::mojom::SystemResultV2Ptr input;
+  {
+    auto vpd_info = cros_healthd::mojom::VpdInfo::New();
+    vpd_info->activate_date = kFirstPowerDate;
+    vpd_info->sku_number = kSkuNumber;
+    vpd_info->serial_number = kSerialNumber;
+    vpd_info->model_name = kModelName;
+
+    auto os_info = cros_healthd::mojom::OsInfo::New();
+    os_info->oem_name = kOemName;
+    os_info->os_version = cros_healthd::mojom::OsVersion::New(
+        kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
 
     auto system_info_v2 = cros_healthd::mojom::SystemInfoV2::New();
     system_info_v2->os_info = std::move(os_info);
+    system_info_v2->vpd_info = std::move(vpd_info);
 
     input = cros_healthd::mojom::SystemResultV2::NewSystemInfoV2(
         std::move(system_info_v2));
   }
-
-  const auto output = ConvertProbePtr(std::move(input));
-  ASSERT_TRUE(output);
-  ASSERT_TRUE(output->is_system_info());
-
-  const auto& system_info_output = output->get_system_info();
-  ASSERT_TRUE(system_info_output->os_info);
-  EXPECT_EQ(system_info_output->os_info->oem_name, kOemName);
-
-  ASSERT_TRUE(system_info_output->os_info->os_version);
-  const auto& os_version_output = system_info_output->os_info->os_version;
-  EXPECT_EQ(os_version_output->release_milestone, kReleaseMilestone);
-  EXPECT_EQ(os_version_output->build_number, kBuildNumber);
-  EXPECT_EQ(os_version_output->patch_number, kPatchNumber);
-  EXPECT_EQ(os_version_output->release_channel, kReleaseChannel);
+  const auto output = ConvertProbePairPtr(std::move(input));
+  ASSERT_TRUE(output.first);
+  ASSERT_TRUE(output.first->is_vpd_info());
+  ASSERT_TRUE(output.second);
+  ASSERT_TRUE(output.second->is_system_info());
 }
 
-TEST(ProbeServiceConverters, SystemResultPtrError) {
-  const auto output =
-      ConvertProbePtr(cros_healthd::mojom::SystemResultV2::NewError(nullptr));
-  ASSERT_TRUE(output);
-  EXPECT_TRUE(output->is_error());
+TEST(ProbeServiceConverters, PairCachedVpdResultPtrSystemResultPtrError) {
+  const auto output = ConvertProbePairPtr(
+      cros_healthd::mojom::SystemResultV2::NewError(nullptr));
+  ASSERT_TRUE(output.first);
+  ASSERT_TRUE(output.first->is_error());
+  ASSERT_TRUE(output.second);
+  ASSERT_TRUE(output.second->is_error());
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
@@ -763,8 +790,6 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
     input->block_device_result =
         cros_healthd::mojom::NonRemovableBlockDeviceResult::NewBlockDeviceInfo(
             {});
-    input->system_result = cros_healthd::mojom::SystemResult::NewSystemInfo(
-        cros_healthd::mojom::SystemInfo::New());
     input->cpu_result = cros_healthd::mojom::CpuResult::NewCpuInfo(
         cros_healthd::mojom::CpuInfo::New());
     input->timezone_result =
@@ -782,7 +807,10 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
         cros_healthd::mojom::BluetoothResult::NewBluetoothAdapterInfo({});
     input->system_result_v2 =
         cros_healthd::mojom::SystemResultV2::NewSystemInfoV2(
-            cros_healthd::mojom::SystemInfoV2::New());
+            cros_healthd::mojom::SystemInfoV2::New(
+                cros_healthd::mojom::OsInfo::New(),
+                cros_healthd::mojom::VpdInfo::New(),
+                cros_healthd::mojom::DmiInfo::New()));
   }
 
   EXPECT_EQ(
@@ -821,7 +849,7 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
                   health::mojom::UInt64Value::New(0))),
           health::mojom::BluetoothResult::NewBluetoothAdapterInfo({}),
           health::mojom::SystemResult::NewSystemInfo(
-              health::mojom::SystemInfo::New())));
+              health::mojom::SystemInfo::New(health::mojom::OsInfo::New()))));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {

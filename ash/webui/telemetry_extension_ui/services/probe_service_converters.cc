@@ -45,7 +45,7 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
     case health::mojom::ProbeCategoryEnum::kBluetooth:
       return cros_healthd::mojom::ProbeCategoryEnum::kBluetooth;
     case health::mojom::ProbeCategoryEnum::kSystem:
-      return cros_healthd::mojom::ProbeCategoryEnum::kSystem2;
+      return cros_healthd::mojom::ProbeCategoryEnum::kSystem;
   }
   NOTREACHED();
 }
@@ -119,23 +119,10 @@ health::mojom::NonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
 }
 
 health::mojom::CachedVpdInfoPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SystemInfoPtr input) {
+    cros_healthd::mojom::VpdInfoPtr input) {
   return health::mojom::CachedVpdInfo::New(
-      std::move(input->first_power_date), std::move(input->product_sku_number),
-      std::move(input->product_serial_number),
-      std::move(input->product_model_name));
-}
-
-health::mojom::CachedVpdResultPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SystemResultPtr input) {
-  switch (input->which()) {
-    case cros_healthd::mojom::SystemResult::Tag::kSystemInfo:
-      return health::mojom::CachedVpdResult::NewVpdInfo(
-          ConvertProbePtr(std::move(input->get_system_info())));
-    case cros_healthd::mojom::SystemResult::Tag::kError:
-      return health::mojom::CachedVpdResult::NewError(
-          ConvertProbePtr(std::move(input->get_error())));
-  }
+      std::move(input->activate_date), std::move(input->sku_number),
+      std::move(input->serial_number), std::move(input->model_name));
 }
 
 health::mojom::CpuCStateInfoPtr UncheckedConvertPtr(
@@ -319,11 +306,11 @@ health::mojom::BluetoothResultPtr UncheckedConvertPtr(
   }
 }
 
-health::mojom::OsInfoPtr UncheckedConvertPtr(
+health::mojom::SystemInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsInfoPtr input) {
-  return health::mojom::OsInfo::New(
+  return health::mojom::SystemInfo::New(health::mojom::OsInfo::New(
       std::move(input->oem_name),
-      ConvertProbePtr(std::move(input->os_version)));
+      ConvertProbePtr(std::move(input->os_version))));
 }
 
 health::mojom::OsVersionPtr UncheckedConvertPtr(
@@ -333,30 +320,39 @@ health::mojom::OsVersionPtr UncheckedConvertPtr(
       std::move(input->patch_number), std::move(input->release_channel));
 }
 
-health::mojom::SystemInfoPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SystemInfoV2Ptr input) {
-  return health::mojom::SystemInfo::New(
-      ConvertProbePtr(std::move(input->os_info)));
+std::pair<health::mojom::CachedVpdInfoPtr, health::mojom::SystemInfoPtr>
+UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoV2Ptr input) {
+  return std::make_pair(ConvertProbePtr(std::move(input->vpd_info)),
+                        ConvertProbePtr(std::move(input->os_info)));
 }
 
-health::mojom::SystemResultPtr UncheckedConvertPtr(
-    cros_healthd::mojom::SystemResultV2Ptr input) {
+std::pair<health::mojom::CachedVpdResultPtr, health::mojom::SystemResultPtr>
+UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultV2Ptr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::SystemResultV2::Tag::kSystemInfoV2:
-      return health::mojom::SystemResult::NewSystemInfo(
-          ConvertProbePtr(std::move(input->get_system_info_v2())));
-    case cros_healthd::mojom::SystemResultV2::Tag::kError:
-      return health::mojom::SystemResult::NewError(
-          ConvertProbePtr(std::move(input->get_error())));
+    case cros_healthd::mojom::SystemResultV2::Tag::kSystemInfoV2: {
+      auto output = ConvertProbePairPtr(std::move(input->get_system_info_v2()));
+      return std::make_pair(
+          health::mojom::CachedVpdResult::NewVpdInfo(std::move(output.first)),
+          health::mojom::SystemResult::NewSystemInfo(std::move(output.second)));
+    }
+    case cros_healthd::mojom::SystemResultV2::Tag::kError: {
+      auto system_error = ConvertProbePtr(std::move(input->get_error()));
+      return std::make_pair(
+          health::mojom::CachedVpdResult::NewError(system_error.Clone()),
+          health::mojom::SystemResult::NewError(system_error.Clone()));
+    }
   }
 }
 
 health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input) {
+  auto system_result_output =
+      ConvertProbePairPtr(std::move(input->system_result_v2));
+
   return health::mojom::TelemetryInfo::New(
       ConvertProbePtr(std::move(input->battery_result)),
       ConvertProbePtr(std::move(input->block_device_result)),
-      ConvertProbePtr(std::move(input->system_result)),
+      std::move(system_result_output.first),
       ConvertProbePtr(std::move(input->cpu_result)),
       ConvertProbePtr(std::move(input->timezone_result)),
       ConvertProbePtr(std::move(input->memory_result)),
@@ -364,7 +360,7 @@ health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->fan_result)),
       ConvertProbePtr(std::move(input->stateful_partition_result)),
       ConvertProbePtr(std::move(input->bluetooth_result)),
-      ConvertProbePtr(std::move(input->system_result_v2)));
+      std::move(system_result_output.second));
 }
 
 }  // namespace unchecked
