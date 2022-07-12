@@ -658,6 +658,8 @@ source_set("ash") {
     "bruschetta/bruschetta_features.h",
     "bruschetta/bruschetta_launcher.cc",
     "bruschetta/bruschetta_launcher.h",
+    "bruschetta/bruschetta_mount_provider.cc",
+    "bruschetta/bruschetta_mount_provider.h",
     "bruschetta/bruschetta_service.cc",
     "bruschetta/bruschetta_service.h",
     "bruschetta/bruschetta_service_factory.cc",

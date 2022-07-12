@@ -30,6 +30,9 @@ class BruschettaService : public KeyedService {
   // return a null pointer if the name isn't recognised.
   base::WeakPtr<BruschettaLauncher> GetLauncher(std::string vm_name);
 
+  void SetLauncherForTesting(std::string vm_name,
+                             std::unique_ptr<BruschettaLauncher> launcher);
+
  private:
   base::flat_map<std::string, std::unique_ptr<BruschettaLauncher>> launchers_;
 };

@@ -45,6 +45,10 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
 
   // Runs `callback` when the OnContainerStarted signal arrives for the guest
   // with the given `id`.
+  // TODO(b/231390254): If Chrome crashes while a container is running then
+  // we'll never get another OnContainerStarted message, which means
+  // RunOnceContainerStarted hangs forever. We need to list running containers
+  // and adopt them, the same as we do for VMs.
   void RunOnceContainerStarted(GuestId id,
                                base::OnceCallback<void(GuestInfo)> callback);
 

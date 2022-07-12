@@ -40,6 +40,11 @@ GuestOsSessionTracker* GuestOsSessionTracker::GetForProfile(Profile* profile) {
 
 GuestOsSessionTracker::GuestOsSessionTracker(std::string owner_id)
     : owner_id_(std::move(owner_id)) {
+  if (!ash::ConciergeClient::Get() || !ash::CiceroneClient::Get()) {
+    // These're null in unit tests unless explicitly set up. If missing, don't
+    // register as an observer.
+    return;
+  }
   ash::ConciergeClient::Get()->AddVmObserver(this);
   ash::CiceroneClient::Get()->AddObserver(this);
   vm_tools::concierge::ListVmsRequest request;
@@ -50,6 +55,9 @@ GuestOsSessionTracker::GuestOsSessionTracker(std::string owner_id)
 }
 
 GuestOsSessionTracker::~GuestOsSessionTracker() {
+  if (!ash::ConciergeClient::Get() || !ash::CiceroneClient::Get()) {
+    return;
+  }
   ash::ConciergeClient::Get()->RemoveVmObserver(this);
   ash::CiceroneClient::Get()->RemoveObserver(this);
 }

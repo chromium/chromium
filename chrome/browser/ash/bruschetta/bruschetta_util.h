@@ -9,6 +9,6 @@ namespace bruschetta {
 
 extern const char kBruschettaVmName[];
 
-}
+}  // namespace bruschetta
 
 #endif  // CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_UTIL_H_

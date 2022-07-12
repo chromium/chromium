@@ -8,4 +8,4 @@ namespace bruschetta {
 
 const char kBruschettaVmName[] = "bru";
 
-}
+}  // namespace bruschetta

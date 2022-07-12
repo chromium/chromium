@@ -31,14 +31,15 @@ enum class BruschettaResult {
 class BruschettaLauncher {
  public:
   BruschettaLauncher(std::string vm_name, Profile* profile);
-  ~BruschettaLauncher();
+  virtual ~BruschettaLauncher();
   BruschettaLauncher(const BruschettaLauncher&) = delete;
   BruschettaLauncher& operator=(const BruschettaLauncher&) = delete;
 
   // Launches the Bruschetta instance this launcher controls if it's not already
   // running. Calls `callback` once Bruschetta is running or upon failure with
   // the result of the launch. Must be called on the UI thread.
-  void EnsureRunning(base::OnceCallback<void(BruschettaResult)> callback);
+  virtual void EnsureRunning(
+      base::OnceCallback<void(BruschettaResult)> callback);
 
   // Gets a weak pointer to self.
   base::WeakPtr<BruschettaLauncher> GetWeakPtr();
