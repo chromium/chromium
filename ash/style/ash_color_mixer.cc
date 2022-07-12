@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -16,6 +17,38 @@
 #include "ui/color/color_recipe.h"
 
 namespace ash {
+
+namespace {
+
+void AddShieldAndBaseColors(ui::ColorMixer& mixer,
+                            const ui::ColorProviderManager::Key& key) {
+  const bool use_dark_color =
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+
+  // Colors of the Shield and Base layers.
+  const SkColor default_background_color =
+      use_dark_color ? gfx::kGoogleGrey900 : SK_ColorWHITE;
+  // TODO(minch|skau): Investigate/fix whether should DCHECK the existence of
+  // the value of `use_color` here.
+  const SkColor background_color =
+      key.user_color.value_or(default_background_color);
+  mixer[kColorAshShieldAndBase20] = {
+      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.2f)};
+  mixer[kColorAshShieldAndBase40] = {
+      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.4f)};
+  mixer[kColorAshShieldAndBase60] = {
+      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.6f)};
+  mixer[kColorAshShieldAndBase80] = {
+      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.8f)};
+  mixer[kColorAshShieldAndBase90] = {
+      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.9f)};
+  mixer[kColorAshShieldAndBase95] = {
+      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.95f)};
+  mixer[kColorAshShieldAndBaseOpaque] = {
+      SkColorSetA(background_color, SK_AlphaOPAQUE)};
+}
+
+}  // namespace
 
 void AddCrosStylesColorMixer(ui::ColorProvider* provider,
                              const ui::ColorProviderManager::Key& key) {
@@ -32,6 +65,8 @@ void AddAshColorMixer(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) {
   auto* ash_color_provider = AshColorProvider::Get();
   ui::ColorMixer& mixer = provider->AddMixer();
+
+  AddShieldAndBaseColors(mixer, key);
 
   mixer[ui::kColorAshActionLabelFocusRingEdit] = {gfx::kGoogleBlue300};
   mixer[ui::kColorAshActionLabelFocusRingError] = {gfx::kGoogleRed300};
