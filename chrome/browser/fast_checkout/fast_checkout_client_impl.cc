@@ -8,18 +8,10 @@
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
+#include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace {
-// TODO(crbug.com/1338820): Remove these values from here once exposed in
-// autofill_assistant/browser/public.
-constexpr char kIntent[] = "INTENT";
-constexpr char kOriginalDeeplinkParameterName[] = "ORIGINAL_DEEPLINK";
-constexpr char kEnabledParameterName[] = "ENABLED";
-constexpr char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
-constexpr char kCallerParameterName[] = "CALLER";
-constexpr char kSourceParameterName[] = "SOURCE";
-
 constexpr char kIntentValue[] = "CHROME_FAST_CHECKOUT";
 constexpr char kTrue[] = "true";
 // TODO(crbug.com/1338521): Define and specify proper caller(s) and source(s).
@@ -44,13 +36,22 @@ bool FastCheckoutClientImpl::Start(const GURL& url) {
 
   is_running_ = true;
 
-  base::flat_map<std::string, std::string> params_map;
-  params_map[kIntent] = kIntentValue;
-  params_map[kOriginalDeeplinkParameterName] = url.spec();
-  params_map[kEnabledParameterName] = kTrue;
-  params_map[kStartImmediatelyParameterName] = kTrue;
-  params_map[kCallerParameterName] = kCaller;
-  params_map[kSourceParameterName] = kSource;
+  base::flat_map<std::string, std::string> params_map{
+      {autofill_assistant::public_script_parameters::kIntentParamenterName,
+       kIntentValue},
+      {autofill_assistant::public_script_parameters::
+           kOriginalDeeplinkParameterName,
+       url.spec()},
+      {autofill_assistant::public_script_parameters::kEnabledParameterName,
+       kTrue},
+      {autofill_assistant::public_script_parameters::
+           kStartImmediatelyParameterName,
+       kTrue},
+      {autofill_assistant::public_script_parameters::kCallerParameterName,
+       kCaller},
+      {autofill_assistant::public_script_parameters::kSourceParameterName,
+       kSource},
+  };
 
   external_script_controller_ = CreateHeadlessScriptController();
   external_script_controller_->StartScript(
