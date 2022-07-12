@@ -233,20 +233,7 @@ robolectric_binary("chrome_java_test_pagecontroller_junit_tests") {
 # remove this.
 java_group("chrome_java_test_support") {
   testonly = true
-  public_deps = [
-    ":chrome_java_integration_only_test_support",
-    ":chrome_java_test_support_common",
-  ]
-}
-
-# Rules, utilities and fakes for integration tests. Unit test targets shouldn't
-# depend on this.
-java_group("chrome_java_integration_test_support") {
-  testonly = true
-  public_deps = [
-    ":chrome_java_integration_only_test_support",
-    ":chrome_java_test_support_common",
-  ]
+  public_deps = [ ":chrome_java_integration_test_support" ]
 }
 
 # Rules, utilities and fakes for unit tests.
@@ -255,13 +242,13 @@ java_group("chrome_java_unit_test_support") {
   public_deps = [ ":chrome_java_test_support_common" ]
 }
 
-android_library("chrome_java_integration_only_test_support") {
+# Rules, utilities and fakes for integration tests. Unit test targets shouldn't
+# depend on this.
+android_library("chrome_java_integration_test_support") {
   testonly = true
-  visibility = [
-    # Do not depend directly on this target, depend on
-    # :chrome_java_integration_test_support instead.
-    ":*",
-  ]
+
+  public_deps = [ ":chrome_java_test_support_common" ]
+
   sources = [
     "javatests/src/org/chromium/chrome/browser/history/HistoryTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/history/StubbedHistoryProvider.java",
