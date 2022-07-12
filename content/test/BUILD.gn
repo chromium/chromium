@@ -1313,6 +1313,7 @@ test("content_browsertests") {
     "../browser/net/dns_https_protocol_upgrade_browsertest.cc",
     "../browser/net/http_cookie_browsertest.cc",
     "../browser/net/network_field_trial_browsertest.cc",
+    "../browser/net/network_service_memory_cache_browsertest.cc",
     "../browser/net/sandboxed_http_cache_browsertest.cc",
     "../browser/net/sandboxed_nqe_browsertest.cc",
     "../browser/net/sandboxed_socket_broker_browsertest.cc",
