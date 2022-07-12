@@ -234,7 +234,9 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
         scored_items.end(), ScoredHistoryMatch::MatchScoreGreater);
     scored_items.resize(first_pass_size);
 
-    // Filter unique matches to maximize the use of the |max_matches| capacity.
+    // Filter unique matches to maximize the use of the `max_matches` capacity.
+    // It's possible this'll still end up with duplicates as having unique
+    // URL IDs does not guarantee having unique `stripped_destination_url`.
     std::set<HistoryID> seen_history_ids;
     base::EraseIf(scored_items, [&](const auto& scored_item) {
       HistoryID scored_item_id = scored_item.url_info.id();

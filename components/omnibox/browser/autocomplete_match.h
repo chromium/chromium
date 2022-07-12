@@ -119,9 +119,7 @@ struct AutocompleteMatch {
     // clang-format on
 
     ACMatchClassification(size_t offset, int style)
-        : offset(offset),
-          style(style) {
-    }
+        : offset(offset), style(style) {}
 
     bool operator==(const ACMatchClassification& other) const {
       return offset == other.offset && style == other.style;
@@ -190,7 +188,8 @@ struct AutocompleteMatch {
 
   static const char* const kDocumentTypeStrings[];
 
-  // Return a string version of the core type values.
+  // Return a string version of the core type values. Only used for
+  // `RecordAdditionalInfo()`.
   static const char* DocumentTypeString(DocumentType type);
 
   // Use this function to convert integers to DocumentType enum values.
@@ -414,6 +413,10 @@ struct AutocompleteMatch {
   // same purpose as in GURLToStrippedGURL().
   void ComputeStrippedDestinationURL(const AutocompleteInput& input,
                                      TemplateURLService* template_url_service);
+
+  // Returns whether `destination_url` looks like a doc URL. If so, will also
+  // set `stripped_destination_url` to avoid repeating the computation later.
+  bool IsDocumentSuggestion();
 
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match.  If this match represents a selected keyword, i.e.

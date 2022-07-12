@@ -961,6 +961,19 @@ TEST_F(HistoryQuickProviderTest, KeywordModeExtractUserInput) {
   EXPECT_EQ(GURL("http://www.google.com/"), matches[0].destination_url);
 }
 
+TEST_F(HistoryQuickProviderTest,
+       QuickMatchToACMatch_HideUrlForDocumentSuggestion) {
+  AutocompleteInput input(u"face", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider().Start(input, false);
+  ScoredHistoryMatch history_match = BuildScoredHistoryMatch(
+      "https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit",
+      u"doc");
+
+  AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
+  EXPECT_TRUE(match.contents.empty());
+}
+
 // HQPOrderingTest -------------------------------------------------------------
 
 class HQPOrderingTest : public HistoryQuickProviderTest {

@@ -914,6 +914,9 @@ ACMatchClassifications DocumentProvider::Classify(
 
 // static
 const GURL DocumentProvider::GetURLForDeduping(const GURL& url) {
+  if (!url.is_valid())
+    return GURL();
+
   // Early exit to avoid unnecessary and more involved checks.
   if (!url.DomainIs("google.com"))
     return GURL();

@@ -46,8 +46,8 @@ namespace {
 
 bool IsTrivialClassification(const ACMatchClassifications& classifications) {
   return classifications.empty() ||
-      ((classifications.size() == 1) &&
-       (classifications.back().style == ACMatchClassification::NONE));
+         ((classifications.size() == 1) &&
+          (classifications.back().style == ACMatchClassification::NONE));
 }
 
 // Returns true if one of the |terms_prefixed_by_http_or_https| matches the
@@ -610,7 +610,8 @@ void AutocompleteMatch::ClassifyLocationInString(
   // Classifying an empty match makes no sense and will lead to validation
   // errors later.
   DCHECK_GT(match_length, 0U);
-  classification->push_back(ACMatchClassification(match_location,
+  classification->push_back(ACMatchClassification(
+      match_location,
       (style | ACMatchClassification::MATCH) & ~ACMatchClassification::DIM));
 
   // Mark post-match portion of string (if any).
@@ -622,7 +623,7 @@ void AutocompleteMatch::ClassifyLocationInString(
 
 // static
 AutocompleteMatch::ACMatchClassifications
-    AutocompleteMatch::MergeClassifications(
+AutocompleteMatch::MergeClassifications(
     const ACMatchClassifications& classifications1,
     const ACMatchClassifications& classifications2) {
   // We must return the empty vector only if both inputs are truly empty.
@@ -669,9 +670,9 @@ std::string AutocompleteMatch::ClassificationsToString(
 ACMatchClassifications AutocompleteMatch::ClassificationsFromString(
     const std::string& serialized_classifications) {
   ACMatchClassifications classifications;
-  std::vector<base::StringPiece> tokens = base::SplitStringPiece(
-      serialized_classifications, ",", base::KEEP_WHITESPACE,
-      base::SPLIT_WANT_NONEMPTY);
+  std::vector<base::StringPiece> tokens =
+      base::SplitStringPiece(serialized_classifications, ",",
+                             base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   DCHECK(!(tokens.size() & 1));  // The number of tokens should be even.
   for (size_t i = 0; i < tokens.size(); i += 2) {
     int classification_offset = 0;
@@ -681,8 +682,8 @@ ACMatchClassifications AutocompleteMatch::ClassificationsFromString(
       NOTREACHED();
       return classifications;
     }
-    classifications.push_back(ACMatchClassification(classification_offset,
-                                                    classification_style));
+    classifications.push_back(
+        ACMatchClassification(classification_offset, classification_style));
   }
   return classifications;
 }
@@ -822,9 +823,8 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
           template_url_service->search_terms_data())) {
     std::u16string search_terms;
     if (template_url->ExtractSearchTermsFromURL(
-        stripped_destination_url,
-        template_url_service->search_terms_data(),
-        &search_terms)) {
+            stripped_destination_url, template_url_service->search_terms_data(),
+            &search_terms)) {
       stripped_destination_url =
           GURL(template_url->url_ref().ReplaceSearchTerms(
               TemplateURLRef::SearchTermsArgs(search_terms),
@@ -852,8 +852,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   // specify one of the two.
   if (stripped_destination_url.SchemeIs(url::kHttpsScheme) &&
       (input.terms_prefixed_by_http_or_https().empty() ||
-       !WordMatchesURLContent(
-           input.terms_prefixed_by_http_or_https(), url))) {
+       !WordMatchesURLContent(input.terms_prefixed_by_http_or_https(), url))) {
     replacements.SetSchemeStr(url::kHttpScheme);
     needs_replacement = true;
   }
@@ -864,8 +863,8 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   }
 
   if (needs_replacement)
-    stripped_destination_url = stripped_destination_url.ReplaceComponents(
-        replacements);
+    stripped_destination_url =
+        stripped_destination_url.ReplaceComponents(replacements);
   return stripped_destination_url;
 }
 
@@ -946,15 +945,26 @@ void AutocompleteMatch::LogSearchEngineUsed(
 void AutocompleteMatch::ComputeStrippedDestinationURL(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service) {
-  // Other than document suggestions, computing |stripped_destination_url| will
+  // Other than document suggestions, computing `stripped_destination_url` will
   // have the same result during a match's lifecycle, so it's safe to skip
-  // re-computing it if it's already computed. Document suggestions'
-  // |stripped_url|s are pre-computed by the document provider, and overwriting
-  // them here would prevent potential deduping.
+  // re-computing it if it's already computed. Document provider and history
+  // quick provider document suggestions' `stripped_url`s are pre-computed by
+  // the document provider, and overwriting them here would be wasteful and, in
+  // the case of the document provider, prevent potential deduping.
   if (stripped_destination_url.is_empty()) {
     stripped_destination_url = GURLToStrippedGURL(
         destination_url, input, template_url_service, keyword);
   }
+}
+
+bool AutocompleteMatch::IsDocumentSuggestion() {
+  const GURL docs_url = DocumentProvider::GetURLForDeduping(destination_url);
+  // May as well set `stripped_destination_url` to avoid duplicate computation
+  // later in `ComputeStrippedDestinationURL()`. Additionally tracking if the
+  // suggestion is not a doc would add more clutter than benefit.
+  if (docs_url.is_valid())
+    stripped_destination_url = docs_url;
+  return docs_url.is_valid();
 }
 
 void AutocompleteMatch::GetKeywordUIState(
@@ -985,8 +995,7 @@ std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
 TemplateURL* AutocompleteMatch::GetTemplateURL(
     TemplateURLService* template_url_service,
     bool allow_fallback_to_destination_host) const {
-  return GetTemplateURLWithKeyword(
-      template_url_service, keyword,
+  return GetTemplateURLWithKeyword(template_url_service, keyword,
       allow_fallback_to_destination_host ?
           destination_url.host() : std::string());
 }
@@ -1102,8 +1111,8 @@ bool AutocompleteMatch::IsVerbatimType() const {
        provider != nullptr &&
        provider->type() == AutocompleteProvider::TYPE_SEARCH);
   return type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
-      type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-      is_keyword_verbatim_match;
+         type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
+         is_keyword_verbatim_match;
 }
 
 bool AutocompleteMatch::IsSearchProviderSearchSuggestion() const {

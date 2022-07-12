@@ -55,6 +55,8 @@ class HistoryQuickProvider : public HistoryProvider {
   FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest, DoTrimHttpsScheme);
   FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest,
                            CorrectAutocompleteWithTrailingSlash);
+  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest,
+                           QuickMatchToACMatch_HideUrlForDocumentSuggestion);
 
   ~HistoryQuickProvider() override;
 
