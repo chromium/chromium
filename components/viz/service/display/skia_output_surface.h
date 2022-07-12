@@ -162,10 +162,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids) = 0;
 
-  // Copy the output of the current frame if the |id| is zero, otherwise copy
-  // the output of a cached SkSurface for the given |id|.
-  virtual void CopyOutput(AggregatedRenderPassId id,
-                          const copy_output::RenderPassGeometry& geometry,
+  // Copy the output of the current frame if the |mailbox| is zero, otherwise
+  // create an SkSurface for the given |mailbox| and copy the output.
+  virtual void CopyOutput(const copy_output::RenderPassGeometry& geometry,
                           const gfx::ColorSpace& color_space,
                           std::unique_ptr<CopyOutputRequest> request,
                           const gpu::Mailbox& mailbox) = 0;
