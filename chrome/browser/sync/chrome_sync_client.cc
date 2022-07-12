@@ -127,6 +127,8 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
@@ -507,6 +509,18 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
       syncer::WORKSPACE_DESK,
       std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
           workspace_desk_delegate)));
+
+  if (chromeos::features::IsOAuthIppEnabled()) {
+    syncer::ModelTypeControllerDelegate*
+        printers_authorization_servers_delegate =
+            GetControllerDelegateForModelType(
+                syncer::PRINTERS_AUTHORIZATION_SERVERS)
+                .get();
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::PRINTERS_AUTHORIZATION_SERVERS,
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            printers_authorization_servers_delegate)));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return controllers;
@@ -604,6 +618,12 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetSyncBridge()
           ->change_processor()
           ->GetControllerDelegate();
+    case syncer::PRINTERS_AUTHORIZATION_SERVERS:
+      return ash::printing::oauth2::AuthorizationZonesManagerFactory::
+          GetForBrowserContext(profile_)
+              ->GetModelTypeSyncBridge()
+              ->change_processor()
+              ->GetControllerDelegate();
     case syncer::WIFI_CONFIGURATIONS:
       return WifiConfigurationSyncServiceFactory::GetForProfile(profile_,
                                                                 /*create=*/true)

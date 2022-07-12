@@ -126,7 +126,9 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
     }
     datatypes.Put(syncer::PRINTERS);
-    // TODO(pawliczek): Add PRINTERS_AUTHORIZATION_SERVERS when ready.
+    if (chromeos::features::IsOAuthIppEnabled()) {
+      datatypes.Put(syncer::PRINTERS_AUTHORIZATION_SERVERS);
+    }
     datatypes.Put(syncer::WIFI_CONFIGURATIONS);
     datatypes.Put(syncer::WORKSPACE_DESK);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -73,6 +73,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
@@ -243,6 +244,8 @@ SyncServiceFactory::SyncServiceFactory()
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(
+      ash::printing::oauth2::AuthorizationZonesManagerFactory::GetInstance());
   DependsOn(DeskSyncServiceFactory::GetInstance());
   DependsOn(WifiConfigurationSyncServiceFactory::GetInstance());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

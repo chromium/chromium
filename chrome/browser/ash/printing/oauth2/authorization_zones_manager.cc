@@ -6,13 +6,19 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zone.h"
+#include "chrome/browser/ash/printing/oauth2/profile_auth_servers_sync_bridge.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chromeos/printing/uri.h"
+#include "components/sync/model/model_type_store_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -20,10 +26,16 @@ namespace ash::printing::oauth2 {
 
 namespace {
 
-class AuthorizationZonesManagerImpl : public AuthorizationZonesManager {
+class AuthorizationZonesManagerImpl
+    : public AuthorizationZonesManager,
+      private ProfileAuthServersSyncBridge::Observer {
  public:
   explicit AuthorizationZonesManagerImpl(Profile* profile)
-      : url_loader_factory_(profile->GetURLLoaderFactory()) {}
+      : sync_bridge_(ProfileAuthServersSyncBridge::Create(
+            this,
+            ModelTypeStoreServiceFactory::GetForProfile(profile)
+                ->GetStoreFactory())),
+        url_loader_factory_(profile->GetURLLoaderFactory()) {}
 
   StatusCode SaveAuthorizationServerAsTrusted(
       const GURL& auth_server) override {
@@ -116,6 +128,23 @@ class AuthorizationZonesManagerImpl : public AuthorizationZonesManager {
     return it_server->second.get();
   }
 
+  syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override {
+    return sync_bridge_.get();
+  }
+
+  void OnProfileAuthorizationServersInitialized() override {
+    // TODO(pawliczek)
+    NOTIMPLEMENTED();
+  }
+
+  void OnProfileAuthorizationServersUpdate(
+      std::set<chromeos::Uri> removed,
+      std::set<chromeos::Uri> added) override {
+    // TODO(pawliczek)
+    NOTIMPLEMENTED();
+  }
+
+  std::unique_ptr<ProfileAuthServersSyncBridge> sync_bridge_;
   std::map<GURL, std::unique_ptr<AuthorizationZone>> servers_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };

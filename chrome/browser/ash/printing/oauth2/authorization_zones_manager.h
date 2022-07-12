@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/model_type_sync_bridge.h"
 
 class GURL;
 class Profile;
@@ -66,6 +67,7 @@ class AuthorizationZonesManager : public KeyedService {
   // `profile` must not be nullptr.
   static std::unique_ptr<AuthorizationZonesManager> Create(Profile* profile);
   ~AuthorizationZonesManager() override;
+  virtual syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() = 0;
 
   // Marks `auth_server` as trusted.
   virtual StatusCode SaveAuthorizationServerAsTrusted(
