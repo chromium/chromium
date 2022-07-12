@@ -413,30 +413,26 @@ void FileSystemAccessHandleBase::DoRemove(
 
   // A locked file cannot be removed. Acquire a write lock and release it
   // after the remove operation completes.
-  std::vector<scoped_refptr<WriteLock>> write_locks;
-  // TODO(crbug.com/1252614): A directory should only be able to be removed if
-  // none of the containing files are locked.
   auto write_lock = manager()->TakeWriteLock(url, lock_type);
   if (!write_lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));
     return;
   }
-  write_locks.push_back(std::move(write_lock));
 
-  // Bind the `write_locks` to the Remove callback to guarantee the locks are
+  // Bind the `write_lock` to the Remove callback to guarantee the lock is
   // held until the operation completes.
   auto wrapped_callback = base::BindOnce(
-      [](std::vector<scoped_refptr<WriteLock>> write_locks,
+      [](scoped_refptr<WriteLock> write_lock,
          base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
              callback,
          base::File::Error result) {
-        // Destroy locks so they are released by the time the callback runs.
-        write_locks.clear();
+        // Destroy lock so it is released by the time the callback runs.
+        write_lock.reset();
         std::move(callback).Run(
             file_system_access_error::FromFileError(result));
       },
-      std::move(write_locks), std::move(callback));
+      std::move(write_lock), std::move(callback));
 
   manager()->DoFileSystemOperation(FROM_HERE,
                                    &storage::FileSystemOperationRunner::Remove,
