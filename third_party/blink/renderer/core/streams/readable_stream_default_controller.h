@@ -84,6 +84,9 @@ class ReadableStreamDefaultController : public ReadableStreamController {
   // https://streams.spec.whatwg.org/#rs-default-controller-private-pull
   StreamPromiseResolver* PullSteps(ScriptState*) override;
 
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultcontroller-releasesteps
+  void ReleaseSteps() override;
+
  private:
   friend class ReadableStream;
   friend class ReadableStreamDefaultReader;

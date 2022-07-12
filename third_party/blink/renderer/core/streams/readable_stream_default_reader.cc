@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
 
@@ -94,24 +95,45 @@ StreamPromiseResolver* ReadableStreamDefaultReader::Read(
   }
 }
 
+void ReadableStreamDefaultReader::ErrorReadRequests(
+    ScriptState* script_state,
+    ReadableStreamDefaultReader* reader,
+    v8::Local<v8::Value> e) {
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultreadererrorreadrequests
+  // 1. Let readRequests be reader.[[readRequests]].
+  // 2. Set reader.[[readRequests]] to a new empty list.
+  // 3. For each readRequest of readRequests,
+  for (StreamPromiseResolver* promise : reader->read_requests_) {
+    //   a. Perform readRequest’s error steps, given e.
+    promise->Reject(script_state, e);
+  }
+  reader->read_requests_.clear();
+}
+
+void ReadableStreamDefaultReader::Release(ScriptState* script_state,
+                                          ReadableStreamDefaultReader* reader) {
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultreaderrelease
+  // 1. Perform ! ReadableStreamReaderGenericRelease(reader).
+  ReadableStreamGenericReader::GenericRelease(script_state, reader);
+
+  // 2. Let e be a new TypeError exception.
+  v8::Local<v8::Value> e = V8ThrowException::CreateTypeError(
+      script_state->GetIsolate(), "Releasing Default reader");
+
+  // 3. Perform ! ReadableStreamDefaultReaderErrorReadRequests(reader, e).
+  ErrorReadRequests(script_state, reader, e);
+}
+
 void ReadableStreamDefaultReader::releaseLock(ScriptState* script_state,
                                               ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-reader-release-lock
-  // 2. If this.[[ownerReadableStream]] is undefined, return.
+  // 1. If this.[[stream]] is undefined, return.
   if (!owner_readable_stream_) {
     return;
   }
 
-  // 3. If this.[[readRequests]] is not empty, throw a TypeError exception.
-  if (read_requests_.size() > 0) {
-    exception_state.ThrowTypeError(
-        "Cannot release a readable stream reader when it still has outstanding "
-        "read() calls that have not yet settled");
-    return;
-  }
-
-  // 4. Perform ! ReadableStreamReaderGenericRelease(this).
-  GenericRelease(script_state, this);
+  // 2. Perform ! ReadableStreamDefaultReaderRelease(this).
+  Release(script_state, this);
 }
 
 void ReadableStreamDefaultReader::SetUpDefaultReader(

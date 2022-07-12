@@ -334,6 +334,12 @@ StreamPromiseResolver* ReadableStreamDefaultController::PullSteps(
   return pendingPromise;
 }
 
+void ReadableStreamDefaultController::ReleaseSteps() {
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultcontroller-releasesteps
+  // 1. Return.
+  return;
+}
+
 //
 // Readable Stream Default Controller Abstract Operations
 //

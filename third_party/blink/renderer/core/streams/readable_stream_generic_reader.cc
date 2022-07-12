@@ -59,17 +59,20 @@ void ReadableStreamGenericReader::GenericRelease(
     ScriptState* script_state,
     ReadableStreamGenericReader* reader) {
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-release
-  // 1. Assert: reader.[[ownerReadableStream]] is not undefined.
-  DCHECK(reader->owner_readable_stream_);
+  // 1. Let stream be reader.[[stream]].
+  ReadableStream* stream = reader->owner_readable_stream_;
 
-  // 2. Assert: reader.[[ownerReadableStream]].[[reader]] is reader.
-  DCHECK_EQ(reader->owner_readable_stream_->reader_, reader);
+  // 2. Assert: stream is not undefined.
+  DCHECK(stream);
+
+  // 3. Assert: stream.[[reader]] is reader.
+  DCHECK_EQ(stream->reader_, reader);
 
   auto* isolate = script_state->GetIsolate();
 
-  // 3. If reader.[[ownerReadableStream]].[[state]] is "readable", reject
-  //    reader.[[closedPromise]] with a TypeError exception.
-  if (reader->owner_readable_stream_->state_ == ReadableStream::kReadable) {
+  // 4. If stream.[[state]] is "readable", reject reader.[[closedPromise]] with
+  // a TypeError exception.
+  if (stream->state_ == ReadableStream::kReadable) {
     reader->closed_promise_->MarkAsSilent(isolate);
     reader->closed_promise_->Reject(
         script_state,
@@ -78,8 +81,8 @@ void ReadableStreamGenericReader::GenericRelease(
             "This readable stream reader has been released and cannot be used "
             "to monitor the stream's state")));
   } else {
-    // 4. Otherwise, set reader.[[closedPromise]] to a promise rejected with a
-    //    TypeError exception.
+    // 5. Otherwise, set reader.[[closedPromise]] to a promise rejected with a
+    // TypeError exception.
     reader->closed_promise_ = StreamPromiseResolver::CreateRejectedAndSilent(
         script_state, v8::Exception::TypeError(V8String(
                           isolate,
@@ -87,13 +90,16 @@ void ReadableStreamGenericReader::GenericRelease(
                           "cannot be used to monitor the stream's state")));
   }
 
-  // 5. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
+  // 6. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
   reader->closed_promise_->MarkAsHandled(isolate);
 
-  // 6. Set reader.[[ownerReadableStream]].[[reader]] to undefined.
-  reader->owner_readable_stream_->reader_ = nullptr;
+  // 7. Perform ! stream.[[controller]].[[ReleaseSteps]]().
+  stream->readable_stream_controller_->ReleaseSteps();
 
-  // 7. Set reader.[[ownerReadableStream]] to undefined.
+  // 8. Set stream.[[reader]] to undefined.
+  stream->reader_ = nullptr;
+
+  // 9. Set reader.[[stream]] to undefined.
   reader->owner_readable_stream_ = nullptr;
 }
 

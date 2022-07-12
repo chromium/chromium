@@ -78,7 +78,7 @@ class ReadableByteStreamController : public ReadableStreamController {
     void Trace(Visitor*) const;
   };
 
-  enum class ReaderType { kDefault, kBYOB };
+  enum class ReaderType { kDefault, kBYOB, kNone };
 
   // https://streams.spec.whatwg.org/#pull-into-descriptor
   struct PullIntoDescriptor final
@@ -106,7 +106,7 @@ class ReadableByteStreamController : public ReadableStreamController {
     size_t bytes_filled;
     const size_t element_size;
     const ViewConstructorType view_constructor;
-    const ReaderType reader_type;
+    ReaderType reader_type;
 
     void Trace(Visitor*) const;
   };
@@ -131,11 +131,25 @@ class ReadableByteStreamController : public ReadableStreamController {
                                   size_t byte_offset,
                                   size_t byte_length);
 
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerenqueueclonedchunktoqueue
+  static void EnqueueClonedChunkToQueue(ReadableByteStreamController*,
+                                        DOMArrayBuffer*,
+                                        size_t byte_offset,
+                                        size_t byte_length);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerenqueuedetachedpullintotoqueue
+  static void EnqueueDetachedPullIntoToQueue(ReadableByteStreamController*,
+                                             PullIntoDescriptor*);
+
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-process-pull-into-descriptors-using-queue
   static void ProcessPullIntoDescriptorsUsingQueue(
       ScriptState*,
       ReadableByteStreamController*,
       ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerprocessreadrequestsusingqueue
+  static void ProcessReadRequestsUsingQueue(ScriptState*,
+                                            ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-call-pull-if-needed
   static void CallPullIfNeeded(ScriptState*, ReadableByteStreamController*);
@@ -196,6 +210,11 @@ class ReadableByteStreamController : public ReadableStreamController {
   static bool FillPullIntoDescriptorFromQueue(ReadableByteStreamController*,
                                               PullIntoDescriptor*);
 
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerfillreadrequestfromqueue
+  static void FillReadRequestFromQueue(ScriptState*,
+                                       ReadableByteStreamController*,
+                                       StreamPromiseResolver* read_request);
+
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-pull-into
   static void PullInto(ScriptState*,
                        ReadableByteStreamController*,
@@ -254,6 +273,9 @@ class ReadableByteStreamController : public ReadableStreamController {
 
   // https://streams.spec.whatwg.org/#rbs-controller-private-pull
   StreamPromiseResolver* PullSteps(ScriptState*) override;
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontroller-releasesteps
+  void ReleaseSteps() override;
 
   // autoAllocateChunkSize is encoded as 0 when it is undefined
   size_t auto_allocate_chunk_size_ = 0u;

@@ -701,18 +701,31 @@ class ReadableStream::PipeToEngine final
     // a. Perform ! WritableStreamDefaultWriterRelease(writer).
     WritableStreamDefaultWriter::Release(script_state_, writer_);
 
-    // b. Perform ! ReadableStreamReaderGenericRelease(reader).
-    ReadableStreamGenericReader::GenericRelease(script_state_, reader_);
+    // b. If reader implements ReadableStreamBYOBReader, perform !
+    // ReadableStreamBYOBReaderRelease(reader).
+    if (reader_->IsBYOBReader()) {
+      ReadableStreamGenericReader* reader = reader_;
+      ReadableStreamBYOBReader* byob_reader =
+          To<ReadableStreamBYOBReader>(reader);
+      ReadableStreamBYOBReader::Release(script_state_, byob_reader);
+    } else {
+      // c. Otherwise, perform ! ReadableStreamDefaultReaderRelease(reader).
+      DCHECK(reader_->IsDefaultReader());
+      ReadableStreamGenericReader* reader = reader_;
+      ReadableStreamDefaultReader* default_reader =
+          To<ReadableStreamDefaultReader>(reader);
+      ReadableStreamDefaultReader::Release(script_state_, default_reader);
+    }
 
     // TODO(ricea): Implement signal.
-    // c. If signal is not undefined, remove abortAlgorithm from signal.
+    // d. If signal is not undefined, remove abortAlgorithm from signal.
 
     v8::Local<v8::Value> error;
     if (error_maybe.ToLocal(&error)) {
-      // d. If error was given, reject promise with error.
+      // e. If error was given, reject promise with error.
       promise_->Reject(script_state_, error);
     } else {
-      // e. Otherwise, resolve promise with undefined.
+      // f. Otherwise, resolve promise with undefined.
       promise_->ResolveWithUndefined(script_state_);
     }
   }
@@ -1907,20 +1920,26 @@ v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
   // 6. If reader is not undefined and reader implements
   // ReadableStreamBYOBReader,
   if (reader && reader->IsBYOBReader()) {
-    //   a. For each readIntoRequest of reader.[[readIntoRequests]],
+    //   a. Let readIntoRequests be reader.[[readIntoRequests]].
     ReadableStreamBYOBReader* byob_reader =
         To<ReadableStreamBYOBReader>(reader);
+    HeapDeque<Member<ReadableStreamBYOBReader::ReadIntoRequest>>
+        read_into_requests;
+    read_into_requests.Swap(byob_reader->read_into_requests_);
+
+    //   b. Set reader.[[readIntoRequests]] to an empty list.
+    //      This is not required since we've already called Swap().
+
+    //   c. For each readIntoRequest of readIntoRequests,
     for (ReadableStreamBYOBReader::ReadIntoRequest* request :
-         byob_reader->read_into_requests_) {
+         read_into_requests) {
       //     i. Perform readIntoRequest's close steps, given undefined.
       request->CloseSteps(script_state, nullptr);
     }
-    //   b. Set reader.[[readIntoRequests]] to an empty list.
-    byob_reader->read_into_requests_.clear();
   }
 
-  // 7. Let sourceCancelPromise be ! stream.[[readableStreamController]].
-  //    [[CancelSteps]](reason).
+  // 7. Let sourceCancelPromise be !
+  // stream.[[controller]].[[CancelSteps]](reason).
   v8::Local<v8::Promise> source_cancel_promise =
       stream->readable_stream_controller_->CancelSteps(script_state, reason);
 
@@ -1934,8 +1953,8 @@ v8::Local<v8::Promise> ReadableStream::Cancel(ScriptState* script_state,
                        v8::Local<v8::Value>) override {}
   };
 
-  // 8. Return the result of transforming sourceCancelPromise with a
-  //    fulfillment handler that returns undefined.
+  // 8. Return the result of reacting to sourceCancelPromise with a
+  //    fulfillment step that returns undefined.
   return StreamThenPromise(
       script_state->GetContext(), source_cancel_promise,
       MakeGarbageCollected<ScriptFunction>(
@@ -1962,16 +1981,23 @@ void ReadableStream::Close(ScriptState* script_state, ReadableStream* stream) {
   if (ExecutionContext::From(script_state)->IsContextDestroyed())
     return;
 
-  // 5. If ! IsReadableStreamDefaultReader(reader) is true,
+  // 5. Resolve reader.[[closedPromise]] with undefined.
+  reader->closed_promise_->ResolveWithUndefined(script_state);
+
+  // 6. If reader implements ReadableStreamDefaultReader,
   if (reader->IsDefaultReader()) {
-    //   a. Repeat for each readRequest that is an element of reader.
-    //      [[readRequests]],
+    //   a. Let readRequests be reader.[[readRequests]].
     HeapDeque<Member<StreamPromiseResolver>> requests;
     requests.Swap(To<ReadableStreamDefaultReader>(reader)->read_requests_);
     bool for_author_code =
         To<ReadableStreamDefaultReader>(reader)->for_author_code_;
+    //   b. Set reader.[[readRequests]] to an empty list.`
+    //      This is not required since we've already called Swap()
+
+    //   c. Repeat for each readRequest that is an element of reader.
+    //      [[readRequests]],
     for (StreamPromiseResolver* promise : requests) {
-      //   i. Resolve readRequest.[[promise]] with !
+      //      i. Resolve readRequest.[[promise]] with !
       //      ReadableStreamCreateReadResult(undefined, true, reader.
       //      [[forAuthorCode]]).
       promise->Resolve(
@@ -1980,12 +2006,7 @@ void ReadableStream::Close(ScriptState* script_state, ReadableStream* stream) {
                            v8::Undefined(script_state->GetIsolate()), true,
                            for_author_code));
     }
-
-    //   b. Set reader.[[readRequests]] to an empty List.
-    //      This is not required since we've already called Swap().
   }
-  // 6. Resolve reader.[[closedPromise]] with undefined.
-  reader->closed_promise_->ResolveWithUndefined(script_state);
 }
 
 v8::Local<v8::Value> ReadableStream::CreateReadResult(
@@ -2056,42 +2077,29 @@ void ReadableStream::Error(ScriptState* script_state,
     return;
   }
 
-  // 6. If ! IsReadableStreamDefaultReader(reader) is true,
-  //   a. Repeat for each readRequest that is an element of reader.
-  //      [[readRequests]],
-  if (reader->IsDefaultReader()) {
-    ReadableStreamDefaultReader* default_reader =
-        To<ReadableStreamDefaultReader>(reader);
-    for (StreamPromiseResolver* promise : default_reader->read_requests_) {
-      //   i. Reject readRequest.[[promise]] with e.
-      promise->Reject(script_state, e);
-    }
-
-    //   b. Set reader.[[readRequests]] to a new empty List.
-    default_reader->read_requests_.clear();
-  }
-
-  // 7. Otherwise,
-  else {
-    // a. Assert: reader implements ReadableStreamBYOBReader.
-    DCHECK(reader->IsBYOBReader());
-    // b. For each readIntoRequest of reader.[[readIntoRequests]],
-    ReadableStreamBYOBReader* byob_reader =
-        To<ReadableStreamBYOBReader>(reader);
-    for (ReadableStreamBYOBReader::ReadIntoRequest* request :
-         byob_reader->read_into_requests_) {
-      // i. Perform readIntoRequests' error steps, given e.
-      request->ErrorSteps(script_state, e);
-    }
-    // c. Set reader.[[readIntoRequests]] to a new empty list.
-    byob_reader->read_into_requests_.clear();
-  }
-
-  // 8. Reject reader.[[closedPromise]] with e.
+  // 6. Reject reader.[[closedPromise]] with e.
   reader->closed_promise_->Reject(script_state, e);
 
-  // 9. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
+  // 7. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
   reader->closed_promise_->MarkAsHandled(isolate);
+
+  // 8. If reader implements ReadableStreamDefaultReader,
+  if (reader->IsDefaultReader()) {
+    //   a. Perform ! ReadableStreamDefaultReaderErrorReadRequests(reader, e).
+    ReadableStreamDefaultReader* default_reader =
+        To<ReadableStreamDefaultReader>(reader);
+    ReadableStreamDefaultReader::ErrorReadRequests(script_state, default_reader,
+                                                   e);
+  } else {
+    // 9. Otherwise,
+    // a. Assert: reader implements ReadableStreamBYOBReader.
+    DCHECK(reader->IsBYOBReader());
+    // b. Perform ! ReadableStreamBYOBReaderErrorReadIntoRequests(reader, e).
+    ReadableStreamBYOBReader* byob_reader =
+        To<ReadableStreamBYOBReader>(reader);
+    ReadableStreamBYOBReader::ErrorReadIntoRequests(script_state, byob_reader,
+                                                    e);
+  }
 }
 
 void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,

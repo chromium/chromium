@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 
 namespace blink {
 
@@ -166,6 +167,36 @@ void ReadableStreamBYOBReader::Read(ScriptState* script_state,
   }
 }
 
+void ReadableStreamBYOBReader::ErrorReadIntoRequests(
+    ScriptState* script_state,
+    ReadableStreamBYOBReader* reader,
+    v8::Local<v8::Value> e) {
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreambyobreadererrorreadintorequests
+  // 1. Let readIntoRequests be reader.[[readIntoRequests]].
+  // 2. Set reader.[[readIntoRequests]] to a new empty list.
+  // 3. For each readIntoRequest of readIntoRequests,
+  for (ReadableStreamBYOBReader::ReadIntoRequest* request :
+       reader->read_into_requests_) {
+    //   a. Perform readIntoRequest’s error steps, given e.
+    request->ErrorSteps(script_state, e);
+  }
+  reader->read_into_requests_.clear();
+}
+
+void ReadableStreamBYOBReader::Release(ScriptState* script_state,
+                                       ReadableStreamBYOBReader* reader) {
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreambyobreaderrelease
+  // 1. Perform ! ReadableStreamReaderGenericRelease(reader).
+  ReadableStreamGenericReader::GenericRelease(script_state, reader);
+
+  // 2. Let e be a new TypeError exception.
+  v8::Local<v8::Value> e = V8ThrowException::CreateTypeError(
+      script_state->GetIsolate(), "Releasing BYOB reader");
+
+  // 3. Perform ! ReadableStreamBYOBReaderErrorReadIntoRequests(reader, e).
+  ErrorReadIntoRequests(script_state, reader, e);
+}
+
 void ReadableStreamBYOBReader::releaseLock(ScriptState* script_state,
                                            ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#byob-reader-release-lock
@@ -174,16 +205,8 @@ void ReadableStreamBYOBReader::releaseLock(ScriptState* script_state,
     return;
   }
 
-  // 2. If this.[[readIntoRequests]] is not empty, throw a TypeError exception.
-  if (read_into_requests_.size() > 0) {
-    exception_state.ThrowTypeError(
-        "Cannot release a readable stream reader when it still has outstanding "
-        "read() calls that have not yet settled");
-    return;
-  }
-
-  // 3. Perform ! ReadableStreamReaderGenericRelease(this).
-  GenericRelease(script_state, this);
+  // 2. Perform ! ReadableStreamBYOBReaderRelease(this).
+  Release(script_state, this);
 }
 
 void ReadableStreamBYOBReader::SetUpBYOBReader(

@@ -60,6 +60,14 @@ class CORE_EXPORT ReadableStreamDefaultReader
   static StreamPromiseResolver* Read(ScriptState*,
                                      ReadableStreamDefaultReader* reader);
 
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultreadererrorreadrequests
+  static void ErrorReadRequests(ScriptState*,
+                                ReadableStreamDefaultReader* reader,
+                                v8::Local<v8::Value> e);
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultreaderrelease
+  static void Release(ScriptState*, ReadableStreamDefaultReader* reader);
+
   void Trace(Visitor*) const override;
 
   bool HasPendingActivity() const final;

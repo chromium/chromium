@@ -24,6 +24,9 @@ class ReadableStreamController : public ScriptWrappable {
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamcontroller-pullsteps
   virtual StreamPromiseResolver* PullSteps(ScriptState*) = 0;
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamcontroller-releasesteps
+  virtual void ReleaseSteps() = 0;
 };
 
 }  // namespace blink

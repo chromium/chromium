@@ -12,7 +12,7 @@ PASS ReadableStream should be able to call start method within prototype chain o
 PASS ReadableStream start should be able to return a promise
 PASS ReadableStream start should be able to return a promise and reject it
 PASS ReadableStream should be able to enqueue different objects.
-FAIL ReadableStream: if pull rejects, it should error the stream assert_true: expected true got false
+PASS ReadableStream: if pull rejects, it should error the stream
 PASS ReadableStream: should only call pull once upon starting the stream
 PASS ReadableStream: should call pull when trying to read from a started, empty stream
 PASS ReadableStream: should only call pull once on a non-empty stream read from before start fulfills
