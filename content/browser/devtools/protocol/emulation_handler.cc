@@ -30,6 +30,9 @@ namespace protocol {
 
 namespace {
 
+constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
+    "Command can only be executed on top-level targets";
+
 display::mojom::ScreenOrientation WebScreenOrientationTypeFromString(
     const std::string& type) {
   if (type == Emulation::ScreenOrientation::TypeEnum::PortraitPrimary)
@@ -177,6 +180,12 @@ Response EmulationHandler::ClearGeolocationOverride() {
 Response EmulationHandler::SetEmitTouchEventsForMouse(
     bool enabled,
     Maybe<std::string> configuration) {
+  if (!host_)
+    return Response::InternalError();
+
+  if (host_->GetParentOrOuterDocument())
+    return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
+
   touch_emulation_enabled_ = enabled;
   touch_emulation_configuration_ = configuration.fromMaybe("");
   UpdateTouchEventEmulationState();
@@ -545,12 +554,10 @@ WebContentsImpl* EmulationHandler::GetWebContents() {
 }
 
 void EmulationHandler::UpdateTouchEventEmulationState() {
-  if (!host_)
-    return;
+  DCHECK(host_);
   // We only have a single TouchEmulator for all frames, so let the main frame's
   // EmulationHandler enable/disable it.
-  if (!host_->is_main_frame())
-    return;
+  DCHECK(!host_->GetParentOrOuterDocument());
 
   if (touch_emulation_enabled_) {
     if (auto* touch_emulator =
