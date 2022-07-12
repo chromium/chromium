@@ -18,9 +18,9 @@
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
+#include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_report_scheduler.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
@@ -186,7 +186,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 
-  AttributionReportScheduler scheduler_;
+  ReportSchedulerTimer scheduler_timer_;
 
   std::unique_ptr<AttributionDataHostManager> data_host_manager_;
 

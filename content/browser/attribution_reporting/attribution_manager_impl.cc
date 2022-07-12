@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -18,10 +19,12 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
+#include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
@@ -50,6 +53,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -64,6 +68,55 @@ enum class ConversionReportSendOutcome {
   kDropped = 2,
   kFailedToAssemble = 3,
   kMaxValue = kFailedToAssemble,
+};
+
+// This class consolidates logic regarding when to schedule the browser to send
+// attribution reports. It talks directly to the `AttributionStorage` to help
+// make these decisions.
+//
+// While the class does not make large changes to the underlying database, it
+// is responsible for notifying the `AttributionStorage` when the browser comes
+// back online, which mutates report times for some scheduled reports.
+//
+// TODO(apaseltiner): Consider making this class an observer to allow it to
+// manage when to schedule things.
+class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
+ public:
+  AttributionReportScheduler(
+      base::RepeatingClosure send_reports,
+      base::SequenceBound<AttributionStorage>& attribution_storage)
+      : send_reports_(std::move(send_reports)),
+        attribution_storage_(attribution_storage) {}
+  ~AttributionReportScheduler() override = default;
+
+  AttributionReportScheduler(const AttributionReportScheduler&) = delete;
+  AttributionReportScheduler& operator=(const AttributionReportScheduler&) =
+      delete;
+  AttributionReportScheduler(AttributionReportScheduler&&) = delete;
+  AttributionReportScheduler& operator=(AttributionReportScheduler&&) = delete;
+
+ private:
+  // ReportSchedulerTimer::Delegate:
+  void GetNextReportTime(
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) override {
+    attribution_storage_.AsyncCall(&AttributionStorage::GetNextReportTime)
+        .Then(std::move(callback));
+  };
+  void OnReportingTimeReached() override { send_reports_.Run(); };
+  void AdjustOfflineReportTimes(
+      base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb)
+      override {
+    // Add delay to all reports that should have been sent while the browser was
+    // offline so they are not temporally joinable. We do this in storage to
+    // avoid pulling an unbounded number of reports into memory, only to
+    // immediately issue async storage calls to modify their report times.
+    attribution_storage_
+        .AsyncCall(&AttributionStorage::AdjustOfflineReportTimes)
+        .Then(std::move(maybe_set_timer_cb));
+  };
+
+  base::RepeatingClosure send_reports_;
+  base::SequenceBound<AttributionStorage>& attribution_storage_;
 };
 
 // The shared-task runner for all attribution storage operations. Note that
@@ -296,9 +349,10 @@ AttributionManagerImpl::AttributionManagerImpl(
           g_storage_task_runner.Get(),
           user_data_directory,
           std::move(storage_delegate))),
-      scheduler_(base::BindRepeating(&AttributionManagerImpl::GetReportsToSend,
-                                     base::Unretained(this)),
-                 attribution_storage_),
+      scheduler_timer_(std::make_unique<AttributionReportScheduler>(
+          base::BindRepeating(&AttributionManagerImpl::GetReportsToSend,
+                              base::Unretained(this)),
+          attribution_storage_)),
       data_host_manager_(std::move(data_host_manager)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
@@ -363,7 +417,7 @@ void AttributionManagerImpl::OnSourceStored(
   for (auto& observer : observers_)
     observer.OnSourceHandled(source, result.status);
 
-  scheduler_.ScheduleSend(result.min_fake_report_time);
+  scheduler_timer_.MaybeSet(result.min_fake_report_time);
 
   NotifySourcesChanged();
 
@@ -519,7 +573,7 @@ void AttributionManagerImpl::OnReportStored(const AttributionTrigger trigger,
     MaybeSendDebugReport(std::move(*report));
   }
 
-  scheduler_.ScheduleSend(min_new_report_time);
+  scheduler_timer_.MaybeSet(min_new_report_time);
 
   if (result.event_level_status() !=
       AttributionTrigger::EventLevelResult::kInternalError) {
@@ -597,7 +651,7 @@ void AttributionManagerImpl::ClearData(
             std::move(done).Run();
 
             if (manager) {
-              manager->scheduler_.Refresh();
+              manager->scheduler_timer_.Refresh();
               manager->NotifySourcesChanged();
               manager->NotifyReportsChanged(
                   AttributionReport::ReportType::kEventLevel);
@@ -632,7 +686,6 @@ void AttributionManagerImpl::OnGetReportsToSend(
     return;
 
   SendReports(std::move(reports), /*log_metrics=*/true, base::DoNothing());
-  scheduler_.Refresh();
 }
 
 void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
@@ -740,7 +793,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
 
               if (manager && success) {
                 manager->MarkReportCompleted(report_id);
-                manager->scheduler_.ScheduleSend(new_report_time);
+                manager->scheduler_timer_.MaybeSet(new_report_time);
                 manager->NotifyReportsChanged(
                     AttributionReport::GetReportType(report_id));
               }

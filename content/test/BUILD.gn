@@ -2062,6 +2062,7 @@ test("content_unittests") {
     "../browser/aggregation_service/aggregation_service_network_fetcher_impl_unittest.cc",
     "../browser/aggregation_service/aggregation_service_storage_sql_unittest.cc",
     "../browser/aggregation_service/public_key_parsing_utils_unittest.cc",
+    "../browser/aggregation_service/report_scheduler_timer_unittest.cc",
     "../browser/attribution_reporting/aggregatable_attribution_utils_unittest.cc",
     "../browser/attribution_reporting/attribution_aggregatable_report_golden_unittest.cc",
     "../browser/attribution_reporting/attribution_cookie_checker_impl_unittest.cc",
