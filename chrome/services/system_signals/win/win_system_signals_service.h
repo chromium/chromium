@@ -33,9 +33,9 @@ class WinSystemSignalsService
   WinSystemSignalsService& operator=(const WinSystemSignalsService&) = delete;
 
   // mojom::SystemSignalsService:
-  void GetBinarySignals(
-      std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
-      GetBinarySignalsCallback callback) override;
+  void GetFileSystemSignals(
+      const std::vector<device_signals::GetFileSystemInfoOptions>& requests,
+      GetFileSystemSignalsCallback callback) override;
   void GetAntiVirusSignals(GetAntiVirusSignalsCallback callback) override;
   void GetHotfixSignals(GetHotfixSignalsCallback callback) override;
 

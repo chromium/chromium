@@ -9,9 +9,9 @@ namespace system_signals {
 MacSystemSignalsService::MacSystemSignalsService() = default;
 MacSystemSignalsService::~MacSystemSignalsService() = default;
 
-void MacSystemSignalsService::GetBinarySignals(
-    std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
-    GetBinarySignalsCallback callback) {
+void MacSystemSignalsService::GetFileSystemSignals(
+    const std::vector<device_signals::GetFileSystemInfoOptions>& requests,
+    GetFileSystemSignalsCallback callback) {
   // TODO(b/231326198): Implement this.
   std::move(callback).Run({});
 }

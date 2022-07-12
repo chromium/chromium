@@ -30,9 +30,9 @@ WinSystemSignalsService::WinSystemSignalsService(
 
 WinSystemSignalsService::~WinSystemSignalsService() = default;
 
-void WinSystemSignalsService::GetBinarySignals(
-    std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
-    GetBinarySignalsCallback callback) {
+void WinSystemSignalsService::GetFileSystemSignals(
+    const std::vector<device_signals::GetFileSystemInfoOptions>& requests,
+    GetFileSystemSignalsCallback callback) {
   // TODO(b/231298500): Implement this.
   std::move(callback).Run({});
 }

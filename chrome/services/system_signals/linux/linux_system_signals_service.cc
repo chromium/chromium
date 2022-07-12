@@ -9,9 +9,9 @@ namespace system_signals {
 LinuxSystemSignalsService::LinuxSystemSignalsService() = default;
 LinuxSystemSignalsService::~LinuxSystemSignalsService() = default;
 
-void LinuxSystemSignalsService::GetBinarySignals(
-    std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
-    GetBinarySignalsCallback callback) {
+void LinuxSystemSignalsService::GetFileSystemSignals(
+    const std::vector<device_signals::GetFileSystemInfoOptions>& requests,
+    GetFileSystemSignalsCallback callback) {
   // TODO(b/231326345): Implement this.
   std::move(callback).Run({});
 }

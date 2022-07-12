@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/common/mojom/system_signals_mojom_traits.h"
+#include "components/device_signals/core/common/mojom/system_signals_mojom_traits_win.h"
 
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

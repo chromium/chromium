@@ -26,9 +26,9 @@ class MockSystemSignalsService : public mojom::SystemSignalsService {
   ~MockSystemSignalsService() override;
 
   MOCK_METHOD(void,
-              GetBinarySignals,
-              (std::vector<device_signals::mojom::BinarySignalsRequestPtr>,
-               GetBinarySignalsCallback),
+              GetFileSystemSignals,
+              (const std::vector<device_signals::GetFileSystemInfoOptions>&,
+               GetFileSystemSignalsCallback),
               (override));
 
 #if BUILDFLAG(IS_WIN)

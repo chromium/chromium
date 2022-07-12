@@ -3,9 +3,19 @@
 # found in the LICENSE file.
 
 static_library("common") {
-  public = [ "signals_constants.h" ]
+  public = [
+    "common_types.h",
+    "signals_constants.h",
+  ]
 
-  sources = [ "signals_constants.cc" ]
+  sources = [
+    "common_types.cc",
+    "signals_constants.cc",
+  ]
+
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+
+  deps = [ "//base" ]
 }
 
 source_set("features") {

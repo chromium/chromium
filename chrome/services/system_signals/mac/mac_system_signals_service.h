@@ -21,9 +21,9 @@ class MacSystemSignalsService
   MacSystemSignalsService& operator=(const MacSystemSignalsService&) = delete;
 
   // device_signals::mojom::SystemSignalsService:
-  void GetBinarySignals(
-      std::vector<device_signals::mojom::BinarySignalsRequestPtr> requests,
-      GetBinarySignalsCallback callback) override;
+  void GetFileSystemSignals(
+      const std::vector<device_signals::GetFileSystemInfoOptions>& requests,
+      GetFileSystemSignalsCallback callback) override;
 };
 
 }  // namespace system_signals
