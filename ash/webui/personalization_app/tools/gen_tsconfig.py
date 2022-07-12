@@ -16,6 +16,9 @@ gen_tsconfig.py --root_out_dir out_local/Release \
         --gn_target ash/webui/personalization_app/resources:build_ts
 
 gen_tsconfig.py --root_out_dir out_local/Release \
+        --gn_target chrome/test/data/webui/chromeos/personalization_app:build_ts
+
+gen_tsconfig.py --root_out_dir out_local/Release \
         --gn_target chrome/browser/resources/settings:build_ts
 
 """
@@ -52,7 +55,7 @@ def main(args):
     subprocess.check_call(
         ['autoninja', '-C', arguments.root_out_dir, arguments.gn_target])
 
-    gn_target_src_dir = arguments.gn_target.split(':')[0]
+    gn_target_src_dir, gn_target_suffix = arguments.gn_target.split(':')
 
     # find the auto generated tsconfig.json used by the build rule itself.
     out_json_path = os.path.join(
@@ -60,7 +63,7 @@ def main(args):
         'gen/',
         # build target's location in gen/ folder
         gn_target_src_dir,
-        'tsconfig.json')
+        f'tsconfig_{gn_target_suffix}.json')
     if not os.path.exists(out_json_path):
         print('Can not find the auto generated tsconfig.json file:',
               out_json_path)
