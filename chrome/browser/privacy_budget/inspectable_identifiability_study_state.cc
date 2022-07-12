@@ -37,9 +37,9 @@ void InspectableIdentifiabilityStudyState::SelectAllOffsetsForTesting() {
   CheckInvariants();
 }
 
-bool InspectableIdentifiabilityStudyState::is_using_assigned_block_sampling()
+bool InspectableIdentifiabilityStudyState::IsUsingAssignedBlockSampling()
     const {
-  return settings_.is_using_assigned_block_sampling();
+  return settings_.IsUsingAssignedBlockSampling();
 }
 
 }  // namespace test_utils

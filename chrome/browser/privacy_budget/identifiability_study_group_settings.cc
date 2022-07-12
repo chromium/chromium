@@ -47,8 +47,7 @@ IdentifiabilityStudyGroupSettings IdentifiabilityStudyGroupSettings::InitFrom(
     const std::string& reid_blocks,
     const std::string& reid_blocks_salts_ranges) {
   return IdentifiabilityStudyGroupSettings(
-      enabled, !blocks.empty(), !reid_blocks.empty(), expected_surface_count,
-      surface_budget,
+      enabled, expected_surface_count, surface_budget,
       DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceBlocks>(blocks),
       DecodeIdentifiabilityFieldTrialParam<std::vector<double>>(blocks_weights),
       DecodeIdentifiabilityFieldTrialParam<
@@ -61,8 +60,6 @@ IdentifiabilityStudyGroupSettings IdentifiabilityStudyGroupSettings::InitFrom(
 
 IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
     bool enabled,
-    bool is_using_assigned_block_sampling,
-    bool is_using_reid_score_estimator,
     int expected_surface_count,
     int surface_budget,
     IdentifiableSurfaceBlocks blocks,
@@ -71,8 +68,6 @@ IdentifiabilityStudyGroupSettings::IdentifiabilityStudyGroupSettings(
     IdentifiableSurfaceBlocks reid_blocks,
     std::vector<uint64_t> reid_blocks_salts_ranges)
     : enabled_(enabled),
-      is_using_assigned_block_sampling_(is_using_assigned_block_sampling),
-      is_using_reid_score_estimator_(is_using_reid_score_estimator),
       expected_surface_count_(base::clamp<int>(
           expected_surface_count,
           0,
@@ -103,13 +98,15 @@ bool IdentifiabilityStudyGroupSettings::Validate() {
     return true;
   // If the study is enabled, at least one of assigned-block-sampling or
   // reid-score-estimation or random-surface-assignment should be enabled.
-  if (!is_using_assigned_block_sampling_ && !is_using_reid_score_estimator_ &&
-      expected_surface_count_ == 0) {
+  if (!IsUsingAssignedBlockSampling() && !IsUsingReidScoreEstimator() &&
+      !IsUsingRandomSampling()) {
     return false;
   }
-  if (is_using_assigned_block_sampling_ && !ValidateAssignedBlockSampling())
+  if (IsUsingAssignedBlockSampling() && IsUsingRandomSampling())
     return false;
-  if (is_using_reid_score_estimator_ && !ValidateReidBlockEstimator())
+  if (IsUsingAssignedBlockSampling() && !ValidateAssignedBlockSampling())
+    return false;
+  if (IsUsingReidScoreEstimator() && !ValidateReidBlockEstimator())
     return false;
 
   return true;
@@ -161,13 +158,11 @@ bool IdentifiabilityStudyGroupSettings::ValidateReidBlockEstimator() {
 
 const IdentifiableSurfaceBlocks& IdentifiabilityStudyGroupSettings::blocks()
     const {
-  DCHECK(is_using_assigned_block_sampling_);
   return blocks_;
 }
 
 const std::vector<double>& IdentifiabilityStudyGroupSettings::blocks_weights()
     const {
-  DCHECK(is_using_assigned_block_sampling_);
   return blocks_weights_;
 }
 
@@ -183,6 +178,23 @@ IdentifiabilityStudyGroupSettings::reid_blocks() const {
 
 const std::vector<blink::IdentifiableSurface::Type>&
 IdentifiabilityStudyGroupSettings::allowed_random_types() const {
-  DCHECK(!is_using_assigned_block_sampling_);
   return allowed_random_types_;
+}
+
+bool IdentifiabilityStudyGroupSettings::IsUsingAssignedBlockSampling() const {
+  return !blocks().empty();
+}
+
+bool IdentifiabilityStudyGroupSettings::IsUsingRandomSampling() const {
+  return expected_surface_count() > 0;
+}
+
+bool IdentifiabilityStudyGroupSettings::IsUsingReidScoreEstimator() const {
+  return !reid_blocks().empty();
+}
+
+bool IdentifiabilityStudyGroupSettings::IsUsingSamplingOfSurfaces() const {
+  // Random and assigned block sampling are mutually exclusive.
+  DCHECK(!IsUsingRandomSampling() || !IsUsingAssignedBlockSampling());
+  return IsUsingRandomSampling() || IsUsingAssignedBlockSampling();
 }

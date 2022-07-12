@@ -28,7 +28,8 @@ constexpr PrivacyBudgetCost kDefaultMediumBudget = 30.0;
 
 struct ScopedValuation {
   ScopedValuation()
-      : study_configuration(test::ScopedPrivacyBudgetConfig::kEnable),
+      : study_configuration(
+            test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling),
         valuation(equivalence) {}
 
   explicit ScopedValuation(
@@ -166,8 +167,8 @@ TEST(SurfaceSetWithValuation, RepresentativeSurface) {
   const auto kEquivalenceList =
       IdentifiableSurfaceList(kEquivalenceSet.begin(), kEquivalenceSet.end());
 
-  test::ScopedPrivacyBudgetConfig::Parameters pb_parameters;
-  pb_parameters.enabled = true;
+  test::ScopedPrivacyBudgetConfig::Parameters pb_parameters(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
   pb_parameters.equivalence_classes.emplace_back(kEquivalenceList);
 
   ScopedValuation fixture(pb_parameters);

@@ -28,9 +28,9 @@ namespace {
 
 class UkmWorkerBrowserTest : public PlatformBrowserTest {
  public:
-  UkmWorkerBrowserTest() {
-    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
-  }
+  UkmWorkerBrowserTest()
+      : privacy_budget_config_(
+            test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling) {}
 
   void SetUpOnMainThread() override {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();

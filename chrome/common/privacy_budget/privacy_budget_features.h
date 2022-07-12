@@ -80,6 +80,9 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedTypes;
 // bits of information. This is the number of potentially identifiable surfaces
 // that we expect will be sampled per client.
 //
+// This parameter only affects random sampling of surfaces. Setting this to 0
+// will disable random sampling.
+//
 // * For now, allow (kIdentifiabilityStudyExpectedSurfaceCount or
 // kIdentifiabilityStudyBlocks) and kIdentifiabilityStudyReidSurfaceBlocks to be
 // specified at the same time.
@@ -224,6 +227,9 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerTypeCost;
 //
 // * Specifying a surface that is blocked (either via `BlockedHashes` or
 //   `BlockedTypes`) is an error.
+//
+// * A non-empty value for this parameter enables assigned block sampling and
+//   disables random sampling.
 //
 // * For now, allow (kIdentifiabilityStudyExpectedSurfaceCount or
 // kIdentifiabilityStudyBlocks) and kIdentifiabilityStudyReidSurfaceBlocks to be

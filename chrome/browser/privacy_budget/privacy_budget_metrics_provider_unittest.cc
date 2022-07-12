@@ -17,7 +17,7 @@
 
 TEST(PrivacyBudgetMetricsProvider, InitOnConstruction) {
   test::ScopedPrivacyBudgetConfig scoped_config(
-      test::ScopedPrivacyBudgetConfig::kEnable);
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
 
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
@@ -36,8 +36,8 @@ TEST(PrivacyBudgetMetricsProvider, OnClientStateClearedWithStudyEnabled) {
   const int kCorrectGeneration = 1;
 
   IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting();
-  test::ScopedPrivacyBudgetConfig::Parameters params;
-  params.enabled = true;
+  test::ScopedPrivacyBudgetConfig::Parameters params(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
   params.generation = kCorrectGeneration;
   test::ScopedPrivacyBudgetConfig scoped_config(params);
 
@@ -59,8 +59,8 @@ TEST(PrivacyBudgetMetricsProvider, OnClientStateClearedWithStudyDisabled) {
   const int kWrongGeneration = 2;
 
   IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting();
-  test::ScopedPrivacyBudgetConfig::Parameters params;
-  params.enabled = false;
+  test::ScopedPrivacyBudgetConfig::Parameters params(
+      test::ScopedPrivacyBudgetConfig::Presets::kDisable);
   params.generation = kWrongGeneration;
   test::ScopedPrivacyBudgetConfig scoped_config(params);
 

@@ -33,17 +33,21 @@ class ScopedPrivacyBudgetConfig {
   // number is that it is the default.
   constexpr static int kDefaultGeneration = 17;
 
-  // An expected surface count of one implies that the probability of selecting
-  // a surface is 1/1.
-  constexpr static int kDefaultExpectedSurfaceCount = 1;
+  enum class Presets {
+    // Enables the study with random sampling and with a probability of 1 of
+    // selecting each surface.
+    kEnableRandomSampling,
+
+    // Disables the study. The other parameters are undefined and should not be
+    // relied upon.
+    kDisable
+  };
 
   // These fields correspond to the equivalent features described in
   // privacy_budget_features.h
-  //
-  // The default values enable the identifiability study with a sampling rate of
-  // 1, which means every surface is included in UKM reports.
   struct Parameters {
     Parameters();
+    explicit Parameters(Presets);
     Parameters(const Parameters&);
     Parameters(Parameters&&);
     ~Parameters();
@@ -53,7 +57,7 @@ class ScopedPrivacyBudgetConfig {
 
     IdentifiableSurfaceList blocked_surfaces;
     IdentifiableSurfaceTypeList blocked_types;
-    int expected_surface_count = kDefaultExpectedSurfaceCount;
+    int expected_surface_count = 0;
     int active_surface_budget = std::numeric_limits<int>::max();
     IdentifiableSurfaceCostMap per_surface_cost;
     IdentifiableSurfaceTypeCostMap per_type_cost;
@@ -65,16 +69,6 @@ class ScopedPrivacyBudgetConfig {
     std::vector<blink::IdentifiableSurface::Type> allowed_random_types;
     bool enable_active_sampling = false;
     std::vector<std::string> actively_sampled_fonts;
-  };
-
-  enum Presets {
-    // Represents the default state of `Parameters` which enables the study with
-    // the default Parameters values.
-    kEnable,
-
-    // Disables the study. The other parameters are undefined and should not be
-    // relied upon.
-    kDisable
   };
 
   // Doesn't do anything until Apply() is called.

@@ -17,12 +17,24 @@ namespace test {
 
 // Are you happy now linker?
 const int ScopedPrivacyBudgetConfig::kDefaultGeneration;
-const int ScopedPrivacyBudgetConfig::kDefaultExpectedSurfaceCount;
+constexpr int kSelectAllSurfacesExpectedSurfaceCount = 1;
 
 ScopedPrivacyBudgetConfig::Parameters::Parameters() = default;
 ScopedPrivacyBudgetConfig::Parameters::Parameters(const Parameters&) = default;
 ScopedPrivacyBudgetConfig::Parameters::Parameters(Parameters&&) = default;
 ScopedPrivacyBudgetConfig::Parameters::~Parameters() = default;
+
+ScopedPrivacyBudgetConfig::Parameters::Parameters(Presets presets) {
+  switch (presets) {
+    case Presets::kEnableRandomSampling:
+      expected_surface_count = kSelectAllSurfacesExpectedSurfaceCount;
+      break;
+
+    case Presets::kDisable:
+      enabled = false;
+      break;
+  }
+}
 
 ScopedPrivacyBudgetConfig::~ScopedPrivacyBudgetConfig() {
   DCHECK(applied_) << "ScopedPrivacyBudgetConfig instance created but not "
@@ -37,18 +49,7 @@ ScopedPrivacyBudgetConfig::ScopedPrivacyBudgetConfig(
 }
 
 ScopedPrivacyBudgetConfig::ScopedPrivacyBudgetConfig(Presets presets) {
-  switch (presets) {
-    case kEnable:
-      Apply(Parameters());
-      break;
-
-    case kDisable: {
-      Parameters parameters;
-      parameters.enabled = false;
-      Apply(parameters);
-      break;
-    }
-  }
+  Apply(Parameters(presets));
 }
 
 void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {

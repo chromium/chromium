@@ -34,6 +34,9 @@ void ReportHashForReidScore(blink::IdentifiableSurface surface,
 
 PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
     const IdentifiabilityStudyGroupSettings& state_settings) {
+  if (!state_settings.IsUsingReidScoreEstimator())
+    return;
+
   // Initialize the Reid map with the surfaces from study settings:
   // Step 1: Get the list of blocks of surfaces from state settings.
   IdentifiableSurfaceBlocks reid_blocks = state_settings.reid_blocks();

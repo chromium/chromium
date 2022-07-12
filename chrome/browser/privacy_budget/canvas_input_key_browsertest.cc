@@ -48,7 +48,8 @@ constexpr char kValueExpectationSwitch[] = "value-expectation";
 class DISABLED_CanvasInputKeyBrowserTest : public PlatformBrowserTest {
  public:
   DISABLED_CanvasInputKeyBrowserTest() {
-    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
+    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters(
+        test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling));
   }
 
   content::WebContents* web_contents() {

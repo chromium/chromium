@@ -32,7 +32,7 @@ class InspectableIdentifiabilityStudyState : public IdentifiabilityStudyState {
   }
   int active_surface_budget() const { return active_surface_budget_; }
   int selected_block_offset() const { return selected_block_offset_; }
-  bool is_using_assigned_block_sampling() const;
+  bool IsUsingAssignedBlockSampling() const;
 
   void SelectAllOffsetsForTesting();
 

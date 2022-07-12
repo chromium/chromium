@@ -31,8 +31,8 @@ TEST(SurfaceSetValuationTest, NoConfig) {
   // Verify behavior when there's no server config that defines costing
   // parameters. All surfaces should be valued at 1.0.
 
-  test::ScopedPrivacyBudgetConfig::Parameters config_params;
-  config_params.enabled = true;
+  test::ScopedPrivacyBudgetConfig::Parameters config_params(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
   ASSERT_TRUE(config_params.per_surface_cost.empty());
   ASSERT_TRUE(config_params.per_type_cost.empty());
   test::ScopedPrivacyBudgetConfig study_configuration(config_params);
@@ -48,8 +48,8 @@ TEST(SurfaceSetValuationTest, NoConfig) {
 }
 
 TEST(SurfaceSetValuationTest, PerSurface) {
-  test::ScopedPrivacyBudgetConfig::Parameters config_params;
-  config_params.enabled = true;
+  test::ScopedPrivacyBudgetConfig::Parameters config_params(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
   config_params.per_surface_cost =
       IdentifiableSurfaceCostMap{{kSurface1, 0.5}, {kSurface2, 0.25}};
   test::ScopedPrivacyBudgetConfig study_configuration(config_params);
@@ -64,8 +64,8 @@ TEST(SurfaceSetValuationTest, PerSurface) {
 }
 
 TEST(SurfaceSetValuationTest, PerType) {
-  test::ScopedPrivacyBudgetConfig::Parameters config_params;
-  config_params.enabled = true;
+  test::ScopedPrivacyBudgetConfig::Parameters config_params(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
   config_params.per_type_cost[blink::IdentifiableSurface::Type::kWebFeature] =
       0.25;
   test::ScopedPrivacyBudgetConfig study_configuration(config_params);

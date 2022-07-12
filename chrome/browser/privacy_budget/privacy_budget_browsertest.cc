@@ -162,7 +162,8 @@ class PrivacyBudgetBrowserTestWithScopedConfig
     : public PrivacyBudgetBrowserTestBase {
  public:
   PrivacyBudgetBrowserTestWithScopedConfig() {
-    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
+    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters(
+        test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling));
     feature_list_.InitAndEnableFeatureWithParameters(
         ukm::kUkmFeature,
         base::FieldTrialParams{{"WhitelistEntries", "Identifiability"}});

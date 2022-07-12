@@ -67,7 +67,8 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, BlockListedMetrics) {
   constexpr uint64_t kBlockedSurface = 1;
   constexpr uint64_t kUnblockedSurface = 2;
 
-  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  test::ScopedPrivacyBudgetConfig::Parameters parameters(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
   parameters.blocked_surfaces = {
       blink::IdentifiableSurface::FromMetricHash(kBlockedSurface)};
   test::ScopedPrivacyBudgetConfig scoped_config(parameters);
@@ -105,7 +106,7 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, AddsStudyMetadataToFirstEvent) {
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
   test::ScopedPrivacyBudgetConfig scoped_config(
-      test::ScopedPrivacyBudgetConfig::kEnable);
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling);
 
   auto state =
       std::make_unique<test_utils::InspectableIdentifiabilityStudyState>(

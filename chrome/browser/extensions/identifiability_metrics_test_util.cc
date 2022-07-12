@@ -16,7 +16,8 @@
 namespace extensions {
 
 IdentifiabilityMetricsTestHelper::IdentifiabilityMetricsTestHelper() {
-  privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
+  privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters(
+      test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling));
 }
 
 IdentifiabilityMetricsTestHelper::~IdentifiabilityMetricsTestHelper() = default;
