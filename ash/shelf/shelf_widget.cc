@@ -542,11 +542,16 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
       -shelf->SelectValueForShelfAlignment(safety_margin, 0, 0),
       -shelf->SelectValueForShelfAlignment(0, 0, safety_margin)));
 
+  const bool is_vertical_alignment_in_overview =
+      !shelf->IsHorizontalAlignment() && ShelfConfig::Get()->in_overview_mode();
+
   // Show rounded corners except in maximized (which includes split view) mode,
-  // or whenever we are "in app".
+  // or whenever we are "in app", or the shelf is on the vertical alignment in
+  // overview mode.
   if (background_type == ShelfBackgroundType::kMaximized ||
       background_type == ShelfBackgroundType::kInApp ||
-      (tablet_mode && (in_app || split_view))) {
+      (tablet_mode && (in_app || split_view)) ||
+      is_vertical_alignment_in_overview) {
     opaque_background_.SetRoundedCornerRadius(0);
   } else {
     opaque_background_.SetRoundedCornerRadius(radius);
@@ -1117,6 +1122,10 @@ void ShelfWidget::HideIfShown() {
 void ShelfWidget::ShowIfHidden() {
   if (!IsVisible())
     Show();
+}
+
+ui::Layer* ShelfWidget::GetDelegateViewOpaqueBackgroundLayerForTesting() {
+  return delegate_view_->opaque_background_layer();
 }
 
 void ShelfWidget::OnMouseEvent(ui::MouseEvent* event) {

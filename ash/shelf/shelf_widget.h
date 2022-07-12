@@ -174,6 +174,8 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   void SetLoginShelfButtonOpacity(float target_opacity);
 
   // Internal implementation detail. Do not expose outside of tests.
+  ui::Layer* GetDelegateViewOpaqueBackgroundLayerForTesting();
+
   ShelfView* shelf_view_for_testing() const {
     return hotseat_widget()->GetShelfView();
   }

@@ -20,6 +20,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_navigation_widget.h"
+#include "ash/shelf/shelf_test_util.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
@@ -311,6 +312,51 @@ TEST_P(ShelfWidgetLayoutBasicsTest, LauncherInitiallySized) {
   const int margins = 2 * ShelfConfig::Get()->GetAppIconGroupMargin();
 
   EXPECT_EQ(status_width, total_width - nav_width - hotseat_width - margins);
+}
+
+TEST_F(ShelfWidgetTest, CheckVerticalShelfCornersInOverviewMode) {
+  // Verify corners of the shelf on the left alignment.
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(ShelfAlignment::kLeft, GetPrimaryShelf()->alignment());
+
+  ShelfWidget* const shelf_widget = GetShelfWidget();
+  ui::Layer* opaque_background_layer =
+      shelf_widget->GetDelegateViewOpaqueBackgroundLayerForTesting();
+
+  // The gfx::RoundedCornersF object is considered empty when all of the
+  // corners are squared (no effective radius).
+  EXPECT_FALSE(opaque_background_layer->rounded_corner_radii().IsEmpty());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  // Enter overview mode. Expect the shelf with square corners.
+  EnterOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(opaque_background_layer->rounded_corner_radii().IsEmpty());
+
+  // Exit overview mode. Expect the shelf with rounded corners.
+  ExitOverview();
+  WaitForOverviewAnimation(/*enter=*/false);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(opaque_background_layer->rounded_corner_radii().IsEmpty());
+
+  // Verify corners of the shelf on the right alignment.
+  shelf->SetAlignment(ShelfAlignment::kRight);
+  EXPECT_EQ(ShelfAlignment::kRight, GetPrimaryShelf()->alignment());
+  EXPECT_FALSE(opaque_background_layer->rounded_corner_radii().IsEmpty());
+
+  // Enter overview mode. Expect the shelf with square corners.
+  EnterOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(opaque_background_layer->rounded_corner_radii().IsEmpty());
+
+  // Exit overview mode. Expect the shelf with rounded corners.
+  ExitOverview();
+  WaitForOverviewAnimation(/*enter=*/false);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(opaque_background_layer->rounded_corner_radii().IsEmpty());
 }
 
 // Verifies when the shell is deleted with a full screen window we don't crash.
