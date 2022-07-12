@@ -6175,7 +6175,6 @@ crbug.com/1229666 external/wpt/html/semantics/forms/form-submission-0/urlencoded
 crbug.com/1093027 http/tests/credentialmanagement/credentialscontainer-create-with-virtual-authenticator.html [ Crash Failure Pass Timeout ]
 # The next test was originally skipped on mac for lack of support (crbug.com/613672). It is now skipped everywhere due to flakiness.
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
-crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Failure Pass ]
 # pause-on-elements-panel.js is marked as Slow, so it's required to also be Skipped due to it Timing out.
 crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Crash Failure Pass Timeout ]
 crbug.com/1085647 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Pass Timeout ]
