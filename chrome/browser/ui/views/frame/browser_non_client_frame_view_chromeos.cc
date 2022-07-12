@@ -659,6 +659,12 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     // when exiting fullscreen.
     if (enter_fullscreen || exit_fullscreen)
       ResetWindowControls();
+
+    // The client view (in particular the tab strip) has different layout in
+    // restored vs. maximized/fullscreen. Invalidate the layout because the
+    // window bounds may not have changed. https://crbug.com/1342414
+    if (frame()->client_view())
+      frame()->client_view()->InvalidateLayout();
   }
 
   if (key == chromeos::kWindowStateTypeKey) {
