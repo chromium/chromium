@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface ElementInternals: original interface defined
+PASS Partial interface ElementInternals: member names are unique
+PASS ElementInternals includes ARIAMixin: member names are unique
+PASS CustomStateSet interface: existence and properties of interface object
+PASS CustomStateSet interface object length
+PASS CustomStateSet interface object name
+PASS CustomStateSet interface: existence and properties of interface prototype object
+PASS CustomStateSet interface: existence and properties of interface prototype object's "constructor" property
+PASS CustomStateSet interface: existence and properties of interface prototype object's @@unscopables property
+FAIL CustomStateSet interface: setlike<DOMString> assert_equals: entries enumerable expected false but got true
+PASS CustomStateSet interface: operation add(DOMString)
+PASS CustomStateSet must be primary interface of customStateSet
+PASS Stringification of customStateSet
+PASS CustomStateSet interface: customStateSet must inherit property "add(DOMString)" with the proper type
+PASS CustomStateSet interface: calling add(DOMString) on customStateSet with too few arguments must throw TypeError
+PASS ElementInternals interface: attribute states
+Harness: the test ran to completion.
+

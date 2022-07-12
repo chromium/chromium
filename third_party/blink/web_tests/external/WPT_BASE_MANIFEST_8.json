@@ -11968,7 +11968,7 @@
      ]
     ],
     "local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html": [
-     "30503fdb22c53599cb7d8cecf6480f9d4a7f9203",
+     "3422914e23d7c1971bd5846824603ef3be8a3f25",
      [
       null,
       {}
@@ -12010,7 +12010,7 @@
      ]
     ],
     "local_FileSystemFileHandle-partitioned-manual.https.tentative.html": [
-     "c153b0c6afa7f900198f444965e04cf56c89b17f",
+     "0aefd9eca396b5374d69366193ca8501919bc125",
      [
       null,
       {}
@@ -112160,7 +112160,7 @@
       ]
      ],
      "flexbox_object.html": [
-      "22dbe66536880732fcee5943113c0b9b6e734bd2",
+      "701af7b78b6af3ea084ad3529adb9c5bda45ea34",
       [
        null,
        [
@@ -145429,6 +145429,19 @@
        {}
       ]
      ],
+     "overflow-clip-margin-svg.html": [
+      "db66ddbbdb2b8e9281214a2f136b75ac14f988da",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-margin-visual-box-and-value-with-border-radius.html": [
       "06ddb5c1630340d39af7cd2c35146910d5e5bcfc",
       [
@@ -145484,6 +145497,32 @@
        {}
       ]
      ],
+     "overflow-clip-x-visible-y-svg.html": [
+      "a7c55a07eb48f52c593f0111bfff2c6fe31bc4ce",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-x-visible-y-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-clip-y-visible-x-svg.html": [
+      "4fda07e9e6c9ede85ae5655e060ec77c6173fc29",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-y-visible-x-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-ellipsis-dynamic-001.html": [
       "2a9edba9308bf06009d7b9a27f21f1e0f1a231c7",
       [
@@ -145530,6 +145569,32 @@
        [
         [
          "/css/css-overflow/overflow-img-object-position-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-img-scroll-non-replaced.html": [
+      "6468c73068894979a8585191eb7358f0ee241880",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-img-scroll-non-replaced-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-img-scroll-replaced.html": [
+      "0657596d4f19ff91d0074918334eba5de8f00ffe",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-img-scroll-replaced-ref.html",
          "=="
         ]
        ],
@@ -145673,6 +145738,19 @@
        [
         [
          "/css/css-overflow/overflow-video-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "paint-containment-svg.html": [
+      "bf2939f70901db3cfa9755e1acaa87c67929bc18",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/paint-containment-svg-ref.html",
          "=="
         ]
        ],
@@ -158939,6 +159017,84 @@
       ],
       "block-aspect-ratio-037.html": [
        "26b795b2a0ba30fa61d16ef595107398bb605106",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-038.html": [
+       "d49547cbd030581c7588277448ec66058a9d1e7a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-039.html": [
+       "c12ee5ecaf0d119a664f45cca6001881c1f55892",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-040.html": [
+       "c2241f9d0a3b620587c79a18725dedc958c0849a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-041.html": [
+       "65b6fb290acdd971003f568d639580792769a832",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-042.html": [
+       "3f76d42b97125d793637f0477394b16f4ef848f0",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-043.html": [
+       "98fd3697dc3e68b9a102b74bf70e8c4075792bb5",
        [
         null,
         [
@@ -181471,7 +181627,7 @@
       ]
      ],
      "text-decoration-subelements-002.html": [
-      "c8eeea6b6f6ecdc54874768a535322caaa1eeca6",
+      "aa69b074446d280ad6437800b7c4fac94835b50b",
       [
        null,
        [
@@ -181486,11 +181642,11 @@
           null,
           [
            [
-            80,
+            0,
             80
            ],
            [
-            42,
+            0,
             42
            ]
           ]
@@ -236924,6 +237080,19 @@
        ]
       },
       "the-iframe-element": {
+       "iframe-initially-empty-is-updated.html": [
+        "3ad5b0f9f14e9df53f3a9087a8087ed5b8767334",
+        [
+         null,
+         [
+          [
+           "/html/semantics/embedded-content/the-iframe-element/iframe-initially-empty-is-updated-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "iframe-modify-scrolling-attr-to-yes.html": [
         "9d85aa543d2d1732b8534fcdfa62a42d11716586",
         [
@@ -249098,6 +249267,12 @@
      []
     ],
     "attribution-reporting": {
+     "debug": {
+      "report-event-attribution": [
+       "605d7589e099f89eee357d3c11377b08ad719286",
+       []
+      ]
+     },
      "report-aggregate-attribution": [
       "ffe9358e693d70afb5a9831ea043f863d5547ea8",
       []
@@ -268127,7 +268302,7 @@
       []
      ],
      "flexbox_object-ref.html": [
-      "3c38d720dc59cfc6c677dc3c9bc6bde6594ab6b0",
+      "8f3dd28e3e6ea2656c2dfe79ccd2dfa40af582a5",
       []
      ],
      "flexbox_order-abspos-space-around-ref.html": [
@@ -281224,6 +281399,10 @@
       "3cfa1a7eba3f724377530ec032c757029823e5e3",
       []
      ],
+     "overflow-clip-margin-svg-ref.html": [
+      "a40bd5aacee3d21c5fd480194866bb338a8e3057",
+      []
+     ],
      "overflow-clip-margin-visual-box-and-value-ref.html": [
       "000e12ad1bf1d2ddb291d67adbb0d816c9edb822",
       []
@@ -281236,12 +281415,28 @@
       "5a265c7a73978fdf7e84fbfbf72e2593433cd264",
       []
      ],
+     "overflow-clip-x-visible-y-svg-ref.html": [
+      "31e831d011de19491c502d7db8c4a0b084ec7b84",
+      []
+     ],
+     "overflow-clip-y-visible-x-svg-ref.html": [
+      "33b0a4d6ad4ec5cfb5d279413d315a6b9d328655",
+      []
+     ],
      "overflow-img-object-position-ref.html": [
       "dde966c99174c4d82fa4f6e1d7d10da0c301f087",
       []
      ],
      "overflow-img-ref.html": [
       "7764371702dc018e0911d1c90de12c1f23af9655",
+      []
+     ],
+     "overflow-img-scroll-non-replaced-ref.html": [
+      "426cb2be6609cfb2656da4240d132f2cde7544b0",
+      []
+     ],
+     "overflow-img-scroll-replaced-ref.html": [
+      "50793440a5254e81ea049de4e2213c0d6f23a7de",
       []
      ],
      "overflow-img-svg-ref.html": [
@@ -281262,6 +281457,10 @@
      ],
      "overflow-video-ref.html": [
       "4a8a83e04a8c85faf429a8324b524111ec9d459c",
+      []
+     ],
+     "paint-containment-svg-ref.html": [
+      "a40bd5aacee3d21c5fd480194866bb338a8e3057",
       []
      ],
      "reference": {
@@ -299011,7 +299210,7 @@
       []
      ],
      "insertparagraph.js": [
-      "24d16f873ab7952c778cc373a12df73b573a33b6",
+      "608b7ceccebafe6aadba0a9c02a97bee1b56e395",
       []
      ],
      "inserttext.js": [
@@ -299081,7 +299280,7 @@
     },
     "include": {
      "editor-test-utils.js": [
-      "4a9981a9c5f4bcc1274994aeabbaaebf933134b6",
+      "fe97251d8dd49e3595365470a2612220b4d396d9",
       []
      ],
      "implementation.js": [
@@ -302129,7 +302328,7 @@
       ]
      },
      "local-fs-test-helpers.js": [
-      "9d96e587f64e9573c4c076965e9e2dbedf6b2258",
+      "54961ae54bcb25ce95a461d7ccecfdd1414a6475",
       []
      ],
      "message-target-dedicated-worker.js": [
@@ -307898,6 +308097,22 @@
      },
      "tentative": {
       "restrict-properties": {
+       "README.md": [
+        "b3c24c3f82d2dbf07eefa9fa2e88fcf3817473d2",
+        []
+       ],
+       "popup-so.https.html.headers": [
+        "46ad58d83bf6e98913ca4c564b7acb8f19fa0093",
+        []
+       ],
+       "popup-soap.https.html.headers": [
+        "d83ed86fb9b5d159b9f380424887402edc96cb75",
+        []
+       ],
+       "popup-un.https.html.headers": [
+        "073ce7adfbd81cb7c0b2f91f96c8349b6677f26c",
+        []
+       ],
        "popup-with-cross-origin.https.html.headers": [
         "d5c99062d2bb8f9660b68c172754867b598ed43f",
         []
@@ -313606,6 +313821,10 @@
         "1eff64af1051951ddafea5eb12c77ac0c32ac57c",
         []
        ],
+       "iframe-initially-empty-is-updated-ref.html": [
+        "0484c397cd4bedd92f33a4c43f8d589ace6b1557",
+        []
+       ],
        "iframe-modify-scrolling-attr-to-yes-ref.html": [
         "3758ea2cab4096beccb3722a1cc534b71c662a64",
         []
@@ -313631,6 +313850,14 @@
         []
        ],
        "resources": {
+        "empty.html": [
+         "763b0739be64c36e62e7aa7d60efa355a4566af7",
+         []
+        ],
+        "hello-world.html": [
+         "0d1111b48c6fdc692554e1568cba46ad633519c5",
+         []
+        ],
         "iframe-loading-lazy-in-viewport.html": [
          "1efd2bd056dde80de03448a76b9bd28f94fd1795",
          []
@@ -326769,7 +326996,7 @@
       []
      ],
      "webxr-test.js": [
-      "c90e27262e4b9d1ccad18c6c5567a4c93d8445dc",
+      "452cdfa5e37d1c4c3173d41b0741250ca257aae2",
       []
      ],
      "webxr-test.js.headers": [
@@ -326782,7 +327009,7 @@
      []
     ],
     "idlharness.js": [
-     "b3fe8034e2323e0ddf4c00816f457e4b60c106d0",
+     "d2fb0366c8022ae0ad6a48a31243a03d46aa3260",
      []
     ],
     "idlharness.js.headers": [
@@ -333869,6 +334096,10 @@
      "4fb1904b45340efe1f9efdee1c3a236689f7fa4f",
      []
     ],
+    "idlharness.https.window.js.ini": [
+     "0159ec7f7088794b624581769ae9e63906ab58cc",
+     []
+    ],
     "remote-desktop-client-override.tentative.https.html.ini": [
      "a54a7fe051bd9239f6b74a9a256ec8ae054b370b",
      []
@@ -337545,7 +337776,7 @@
       []
      ],
      "webxr_test_constants.js": [
-      "042480da2bf1da718769fb2452a42da5cc3064f2",
+      "cabc4b4a965d5db8d9993a5c4591355dd01a1d21",
       []
      ],
      "webxr_test_constants_fake_depth.js": [
@@ -369925,7 +370156,7 @@
    "cookies": {
     "attributes": {
      "attributes-ctl.sub.html": [
-      "628d7a9f292dac101de55fc1a2f3f56337113ef7",
+      "7950751e27d97bca5e5a7b8e57703ac35873cdf5",
       [
        null,
        {
@@ -375567,7 +375798,7 @@
        ]
       ],
       "content-visibility-img.html": [
-       "66b39571ea5f11b89cfb17a7c60c6f21e98663c4",
+       "94981aa2649514855a9304c4e673f7b7b04680d5",
        [
         null,
         {}
@@ -375938,7 +376169,7 @@
       ]
      ],
      "linear-timing-functions-syntax.tentative.html": [
-      "b47633f2747497930cde9853385f3c6539d1c3e1",
+      "73267f08604d0243d63712c34fd073d58715f0b2",
       [
        null,
        {}
@@ -388404,7 +388635,7 @@
         ]
        ],
        "contain-intrinsic-size-invalid.html": [
-        "d50e582b2bbf125a67df84f84b26058080d7e760",
+        "b63b6f3826b5c0063e89ac42aedb1cedd6b95d92",
         [
          null,
          {}
@@ -398870,6 +399101,13 @@
        {}
       ]
      ],
+     "HTMLImageElement-x-and-y-ignore-transforms.html": [
+      "45c79f3672473961d06ff8fc2dba573bf90e330a",
+      [
+       null,
+       {}
+      ]
+     ],
      "MediaQueryList-addListener-handleEvent.html": [
       "43b144a9ae2d709233f046b298fbaefec4861944",
       [
@@ -399480,6 +399718,13 @@
      ],
      "pt-to-px-width.html": [
       "485149ac74ab16ce980105be599982420b36b548",
+      [
+       null,
+       {}
+      ]
+     ],
+     "range-bounding-client-rect-with-display-contents.html": [
+      "501a94e07fabc014dc0417d59d406bb6c7ed917a",
       [
        null,
        {}
@@ -420908,7 +421153,7 @@
      ]
     ],
     "idlharness.any.js": [
-     "5ee98548fb6f2209b8c4b5346830c0d723e68170",
+     "b1b57a4bb17c117c5b6dc866689e8745b49a2d22",
      [
       "event-timing/idlharness.any.html",
       {
@@ -430590,6 +430835,20 @@
      ]
     },
     "content-type": {
+     "multipart.window.js": [
+      "03b037a0e621cf72b9425625e7957ec6659a93ce",
+      [
+       "fetch/content-type/multipart.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Ensure capital letters can be used in the boundary value."
+         ]
+        ]
+       }
+      ]
+     ],
      "response.window.js": [
       "746f51c9bb511841e1edcb25db7afa8e5efd44b1",
       [
@@ -464075,6 +464334,42 @@
      ],
      "tentative": {
       "restrict-properties": {
+       "popup-so.https.html": [
+        "e5313a6e222d5b7671747516b8d056fda7e9db8b",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "popup-soap.https.html": [
+        "595a10a84bbc9c23ba609411e84f5e0bf107e6ac",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "popup-u.https.html": [
+        "595a10a84bbc9c23ba609411e84f5e0bf107e6ac",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "popup-un.https.html": [
+        "595a10a84bbc9c23ba609411e84f5e0bf107e6ac",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
        "popup-with-cross-origin.https.html": [
         "a84d52584e9b4fbd6a9a35e5472c5a990fdf2351",
         [
@@ -467251,6 +467546,15 @@
         [
          null,
          {}
+        ]
+       ],
+       "focusVisible.html": [
+        "aa7e66fffe1e5b93551089686f02540a2ade079e",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "legend-focusable.html": [
@@ -476389,6 +476693,13 @@
       ],
       "popup-shadow-dom.tentative.html": [
        "f2cb31a389cef0de615915830a09e055c2afa866",
+       [
+        null,
+        {}
+       ]
+      ],
+      "popup-show-event.tentative.html": [
+       "e4775ec49b453869b0c927e9c8cee6a861110a6d",
        [
         null,
         {}
@@ -520637,6 +520948,13 @@
        {}
       ]
      ],
+     "progress-based-animation-animation-longhand-properties.tentative.html": [
+      "d8005963c204f3487e68f526b756f8e37bb36258",
+      [
+       null,
+       {}
+      ]
+     ],
      "progress-based-animation-timeline.html": [
       "c768f180efbed29091d010bb77bb5dec8cca5c3d",
       [
@@ -525550,7 +525868,7 @@
      ]
     ],
     "historical.html": [
-     "2490f05b3e80aa67a0c70a9cb12be282fa0e15b2",
+     "4fa8be1dbc9537b904d51b74e8de37dc36a471d6",
      [
       null,
       {}
@@ -527858,34 +528176,14 @@
     ],
     "piping": {
      "abort.any.js": [
-      "45a358d5993d70a2008a84083095dbda962c40e9",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "503de9dcaf0893ad7471d001edacb30cbc7d0786",
       [
        "streams/piping/abort.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -527904,7 +528202,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -527923,7 +528221,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -527942,7 +528240,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -527957,30 +528255,14 @@
       ]
      ],
      "close-propagation-backward.any.js": [
-      "bd1e9cb92657b1402cc06cc7f1593429ad96230c",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "5ea47ab85c0c1fe78f71962d55a615d7a078f2d4",
       [
        "streams/piping/close-propagation-backward.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -527995,7 +528277,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528010,7 +528292,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528025,7 +528307,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528036,34 +528318,14 @@
       ]
      ],
      "close-propagation-forward.any.js": [
-      "fc3282eea74b40f395395b407090ef050b1bd349",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "71b6e262840090202301539601571f18a701c1e8",
       [
        "streams/piping/close-propagation-forward.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528082,7 +528344,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528101,7 +528363,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528120,7 +528382,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528135,34 +528397,14 @@
       ]
      ],
      "error-propagation-backward.any.js": [
-      "6dc203066e3d7e6841af271cab2099ad351d8559",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "ec74592f86effe41d5e9d07a8bb5acdbe839c7cd",
       [
        "streams/piping/error-propagation-backward.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528181,7 +528423,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528200,7 +528442,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528219,7 +528461,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528234,34 +528476,14 @@
       ]
      ],
      "error-propagation-forward.any.js": [
-      "f35ec665eec22fc347372db72e2873c70282151c",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "482da2f8a88e1870882fc6be54c562f4110568df",
       [
        "streams/piping/error-propagation-forward.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528280,7 +528502,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528299,7 +528521,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528318,7 +528540,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528333,38 +528555,14 @@
       ]
      ],
      "flow-control.any.js": [
-      "db83c011f4a718ddddef886c25588c88b007e438",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "09c4420f872adcf77a61b79ecf4f982cfe3e0a29",
       [
        "streams/piping/flow-control.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528387,7 +528585,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528410,7 +528608,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528433,7 +528631,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528452,34 +528650,14 @@
       ]
      ],
      "general.any.js": [
-      "2e02dfad78a0fa0f74d916075a2d87bf8430e2f5",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "bec3480f65394461dea9cbdda84a5fe4c21e8ed5",
       [
        "streams/piping/general.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528498,7 +528676,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528517,7 +528695,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528536,7 +528714,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528551,34 +528729,14 @@
       ]
      ],
      "multiple-propagation.any.js": [
-      "c9a486f3f9ac2fe595356bb14dea5a66796e3aaf",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "a78652fc06795e8f3f253871bf92fc557c286503",
       [
        "streams/piping/multiple-propagation.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528597,7 +528755,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528616,7 +528774,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528635,7 +528793,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528650,38 +528808,14 @@
       ]
      ],
      "pipe-through.any.js": [
-      "b34ca029f267a4262fbf8531576e1495455ea53f",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "26b1cd26a3c82f4fe2cd1ddadd7ed360a89335ce",
       [
        "streams/piping/pipe-through.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528704,7 +528838,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528727,7 +528861,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528750,7 +528884,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528769,34 +528903,14 @@
       ]
      ],
      "then-interception.any.js": [
-      "9f772ea5841d8f35487e7fa978bdd187b89896cd",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "543f916d940d9aecfd522e275238c36aeedbfd4d",
       [
        "streams/piping/then-interception.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528815,7 +528929,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528834,7 +528948,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528853,7 +528967,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -528868,26 +528982,14 @@
       ]
      ],
      "throwing-options.any.js": [
-      "bc1cf328da61e61a84caa01a37435bf9fbc46b9b",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "b9f906778f632b32a83800c806c8fc72294ae3cc",
       [
        "streams/piping/throwing-options.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -528898,7 +529000,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -528909,7 +529011,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -528920,33 +529022,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "transform-streams.any.js": [
-      "a368fecd6f00d6a38c865b0b6c52411e763a8bbb",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "caae9fbad8848a54d39ab3434a855e5eabcc5e43",
       [
        "streams/piping/transform-streams.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -528957,7 +529047,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -528968,7 +529058,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -528979,7 +529069,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529042,26 +529132,14 @@
     ],
     "readable-byte-streams": {
      "bad-buffers-and-views.any.js": [
-      "121694fb168fa3210309d2a7fe5310892446a110",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "3322116b19184039131594e4cf5898983a808ea2",
       [
        "streams/readable-byte-streams/bad-buffers-and-views.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529072,7 +529150,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529083,7 +529161,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529094,37 +529172,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "construct-byob-request.any.js": [
-      "1386d84599a4cd3e7b197c982f8f99c35f53d5c5",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ]
-        ]
-       }
-      ],
+      "8d460a1c81b7bdc74bb56b856f0f3a07bd982585",
       [
        "streams/readable-byte-streams/construct-byob-request.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529139,7 +529201,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529154,7 +529216,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529169,7 +529231,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529187,34 +529249,14 @@
       ]
      ],
      "general.any.js": [
-      "1090e80786f5c057fc73cb795a8410caa077f6f5",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "dd4fdc855786f296202905b0aeae8dd160dd7bd5",
       [
        "streams/readable-byte-streams/general.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529233,7 +529275,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529252,7 +529294,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529271,7 +529313,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529286,26 +529328,14 @@
       ]
      ],
      "non-transferable-buffers.any.js": [
-      "7c0bffb78710fe843e97b828c9cd2ddd043f30b6",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "e8ea3c4f9667630923fc8d6f0235912abc68b881",
       [
        "streams/readable-byte-streams/non-transferable-buffers.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529316,7 +529346,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529327,7 +529357,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529338,33 +529368,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "respond-after-enqueue.any.js": [
-      "f4be0d4a4db0db1f1185a38d6405f078aa97f2c9",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "b93cec97391e13eb60d8d5dc9d580da4bcc303fd",
       [
        "streams/readable-byte-streams/respond-after-enqueue.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529375,7 +529393,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529386,7 +529404,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -529397,49 +529415,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "tee.any.js": [
-      "13f03f06bc44f14cab4b0eb6646b3545303f4b9b",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ],
-         [
-          "script",
-          "../resources/rs-test-templates.js"
-         ]
-        ]
-       }
-      ],
+      "85844669cd9088e041e13ffaa3bac90beead916a",
       [
        "streams/readable-byte-streams/tee.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529466,7 +529456,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529493,7 +529483,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -529520,7 +529510,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530595,34 +530585,14 @@
     },
     "transform-streams": {
      "backpressure.any.js": [
-      "64c9d0930ed2f26af775fa0cb4bc58edac7fface",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "6befba41b79542676551325e02026420dc0e634e",
       [
        "streams/transform-streams/backpressure.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530641,7 +530611,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530660,7 +530630,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530679,7 +530649,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530694,30 +530664,14 @@
       ]
      ],
      "errors.any.js": [
-      "ba26b32b75a6a407c9a5fd3814365da51c3a21e1",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "0cca4c75479d6df522c88203fd0b3121b37b2121",
       [
        "streams/transform-streams/errors.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530732,7 +530686,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530747,7 +530701,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530762,7 +530716,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530773,30 +530727,14 @@
       ]
      ],
      "flush.any.js": [
-      "dc40532957b14bddb2555133dbd1b2f424846d89",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "9287f6f5eb78eb759447f722e943e1aa42a57d7a",
       [
        "streams/transform-streams/flush.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530811,7 +530749,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530826,7 +530764,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530841,7 +530779,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530852,34 +530790,14 @@
       ]
      ],
      "general.any.js": [
-      "d4f2a1d5a29cf6da1a3608c326f58c78d0580094",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ]
-        ]
-       }
-      ],
+      "c95691f7bf49df14bdcf80e9da289ee998667330",
       [
        "streams/transform-streams/general.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530898,7 +530816,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530917,7 +530835,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530936,7 +530854,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -530951,26 +530869,14 @@
       ]
      ],
      "lipfuzz.any.js": [
-      "c8c3803c6dfb4b1d259ced062752ea7048872ec9",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "f9f148aaf1c6a462afb7c93ebef775203315500a",
       [
        "streams/transform-streams/lipfuzz.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -530981,7 +530887,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -530992,7 +530898,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531003,33 +530909,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "patched-global.any.js": [
-      "5142d236fb65e893e77eebf3ed0160c77e2fc4ac",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "2d04e3b948b3246f339808770fc747a002728003",
       [
        "streams/transform-streams/patched-global.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531040,7 +530934,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531051,7 +530945,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531062,33 +530956,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "properties.any.js": [
-      "f2ac482e0de22346582c83b237a06c1319578f8c",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "02981b8bc76a5fccd20a9145fbf5b91eed0089d9",
       [
        "streams/transform-streams/properties.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531099,7 +530981,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531110,7 +530992,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531121,45 +531003,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "reentrant-strategies.any.js": [
-      "31e53949f3c26e1f62db78bd642796889d2b706d",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ],
-         [
-          "script",
-          "../resources/rs-utils.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "fc2f91886659f620867058306481b402970ef76d",
       [
        "streams/transform-streams/reentrant-strategies.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531182,7 +531040,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531205,7 +531063,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531228,7 +531086,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531247,34 +531105,14 @@
       ]
      ],
      "strategies.any.js": [
-      "d465d31ab09736d6e98f28016b19e2e14d51da0e",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "94055ad99dc94b8e8f28854d63400ae17d89b535",
       [
        "streams/transform-streams/strategies.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531293,7 +531131,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531312,7 +531150,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531331,7 +531169,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531346,34 +531184,14 @@
       ]
      ],
      "terminate.any.js": [
-      "8cb10679348b5015ad75fb1a74d4b6f4a7240b11",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ]
-        ]
-       }
-      ],
+      "670006366db2af711025caf1ac998c2c737614a2",
       [
        "streams/transform-streams/terminate.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531392,7 +531210,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531411,7 +531229,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531430,7 +531248,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531447,34 +531265,14 @@
     },
     "writable-streams": {
      "aborting.any.js": [
-      "0f8507ac3401313b6e06115b89d2b3e045c37642",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "e016cd191b876f2f262539f991d9109bbc70f9ad",
       [
        "streams/writable-streams/aborting.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531493,7 +531291,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531512,7 +531310,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531531,7 +531329,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531546,26 +531344,14 @@
       ]
      ],
      "bad-strategies.any.js": [
-      "b180bae57c0585fd910f0cc7dff7ce423212f96b",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "63fa443065ee41481dab78547538a73cb9c617af",
       [
        "streams/writable-streams/bad-strategies.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531576,7 +531362,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531587,7 +531373,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531598,41 +531384,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "bad-underlying-sinks.any.js": [
-      "0bfc036246a8709bd14117b252c1d186b8d8df0d",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "d0b3467978ea05f837ab70f56f6d11ff18ad898e",
       [
        "streams/writable-streams/bad-underlying-sinks.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531651,7 +531417,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531670,7 +531436,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531689,7 +531455,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531704,26 +531470,14 @@
       ]
      ],
      "byte-length-queuing-strategy.any.js": [
-      "9a61dd7cc69787eabe9cff2d8e500c694f4beee7",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "ce1962e8917f324620e838e6795fb16b1b556c3a",
       [
        "streams/writable-streams/byte-length-queuing-strategy.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531734,7 +531488,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531745,7 +531499,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531756,41 +531510,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "close.any.js": [
-      "cf997ed84cdcac06449fd16de18f5ad3e716e8ea",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "88855a92efd5508fc4f6713466e98ee3cb4d2ba2",
       [
        "streams/writable-streams/close.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531809,7 +531543,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531828,7 +531562,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531847,7 +531581,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -531862,26 +531596,14 @@
       ]
      ],
      "constructor.any.js": [
-      "75eed2a993fe5e096d6e092209a08b97b0c40ac3",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "eaac90e48b8f8680f9d158400eac46eaeb55749d",
       [
        "streams/writable-streams/constructor.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531892,7 +531614,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531903,7 +531625,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531914,33 +531636,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "count-queuing-strategy.any.js": [
-      "30edb3eb315c6281fee6c8f4a90dcd95bba487fe",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "064e16e81506f125a9a7cf16b22d14cca7d516fc",
       [
        "streams/writable-streams/count-queuing-strategy.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531951,7 +531661,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531962,7 +531672,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -531973,33 +531683,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "error.any.js": [
-      "be986fccc6eac651722ab42e0c03ff7f386fcfa8",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "faf3fdd95214304e3bc108057111a8a660117025",
       [
        "streams/writable-streams/error.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532010,7 +531708,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532021,7 +531719,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532032,33 +531730,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "floating-point-total-queue-size.any.js": [
-      "8e77ba0bb31185c5e0b7be69246e1c919c7bae6f",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "bd34cc53a695799ed8f0bd36dc71f5751cc7284a",
       [
        "streams/writable-streams/floating-point-total-queue-size.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532069,7 +531755,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532080,7 +531766,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532091,33 +531777,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "general.any.js": [
-      "fdd10b29aa0ebc5bf70f552b49afc9c899c25828",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "cede7fd0845b7402bfa663bf1dbec15d01868b1e",
       [
        "streams/writable-streams/general.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532128,7 +531802,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532139,7 +531813,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532150,33 +531824,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "properties.any.js": [
-      "0f7f876d8b6fc4b97dc8010ce57dea41d1e4b593",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ]
-        ]
-       }
-      ],
+      "c95bd7d0c080baf3e1a9d974b577d933737936e7",
       [
        "streams/writable-streams/properties.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532187,7 +531849,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532198,7 +531860,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
@@ -532209,41 +531871,21 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ]
         ]
        }
       ]
      ],
      "reentrant-strategy.any.js": [
-      "afde413b4252d15a0f683bed6941c2348161f5f2",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "eb05cc068043ea28fa3004d8cb6e241fe31cfe5f",
       [
        "streams/writable-streams/reentrant-strategy.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532262,7 +531904,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532281,7 +531923,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532300,7 +531942,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532315,34 +531957,14 @@
       ]
      ],
      "start.any.js": [
-      "02b5f2a387625a3654861cadd0dae3caef117cb0",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "82d869430dd70088a54db856240f4fbe1d2a94d7",
       [
        "streams/writable-streams/start.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532361,7 +531983,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532380,7 +532002,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532399,7 +532021,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532414,34 +532036,14 @@
       ]
      ],
      "write.any.js": [
-      "e3defa834820d40d79a3b72894075f5bb4ea0dea",
-      [
-       null,
-       {
-        "jsshell": true,
-        "script_metadata": [
-         [
-          "global",
-          "window,worker,jsshell"
-         ],
-         [
-          "script",
-          "../resources/test-utils.js"
-         ],
-         [
-          "script",
-          "../resources/recording-streams.js"
-         ]
-        ]
-       }
-      ],
+      "f0246f6cad39fd380c1625998ba1e203cb0a612a",
       [
        "streams/writable-streams/write.any.html",
        {
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532460,7 +532062,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532479,7 +532081,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -532498,7 +532100,7 @@
         "script_metadata": [
          [
           "global",
-          "window,worker,jsshell"
+          "window,worker"
          ],
          [
           "script",
@@ -535305,7 +534907,7 @@
        ]
       ],
       "getrotationofchar.html": [
-       "766afe5f96da16565052449581f9b1e86604d43a",
+       "3bacd471765705e7912d754c0737d052a655a963",
        [
         null,
         {}
@@ -568935,6 +568537,15 @@
      ],
      "xrSession_interactionMode.https.html": [
       "89cdc80132fb3dd4eb90fa477e280edc132912db",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "camera-access": {
+     "xrCamera_resolution.https.html": [
+      "d6d86908074da0ab61bc08381763a78e4e7b568c",
       [
        null,
        {}

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 93 tests; 81 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 95 tests; 81 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "SecurityError: An attempt was made to break through the security policy of the user agent."
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -18,6 +18,7 @@ PASS MIDIInputMap interface object name
 PASS MIDIInputMap interface: existence and properties of interface prototype object
 PASS MIDIInputMap interface: existence and properties of interface prototype object's "constructor" property
 PASS MIDIInputMap interface: existence and properties of interface prototype object's @@unscopables property
+FAIL MIDIInputMap interface: maplike<DOMString, MIDIInput> assert_equals: entries enumerable expected false but got true
 FAIL MIDIInputMap must be primary interface of inputs assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: inputs is not defined"
 FAIL Stringification of inputs assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: inputs is not defined"
 PASS MIDIOutputMap interface: existence and properties of interface object
@@ -26,6 +27,7 @@ PASS MIDIOutputMap interface object name
 PASS MIDIOutputMap interface: existence and properties of interface prototype object
 PASS MIDIOutputMap interface: existence and properties of interface prototype object's "constructor" property
 PASS MIDIOutputMap interface: existence and properties of interface prototype object's @@unscopables property
+FAIL MIDIOutputMap interface: maplike<DOMString, MIDIOutput> assert_equals: entries enumerable expected false but got true
 FAIL MIDIOutputMap must be primary interface of outputs assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: outputs is not defined"
 FAIL Stringification of outputs assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: outputs is not defined"
 PASS MIDIAccess interface: existence and properties of interface object

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1145 tests; 1115 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1146 tests; 1115 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
@@ -1115,6 +1115,7 @@ PASS AudioParamMap interface object name
 PASS AudioParamMap interface: existence and properties of interface prototype object
 PASS AudioParamMap interface: existence and properties of interface prototype object's "constructor" property
 PASS AudioParamMap interface: existence and properties of interface prototype object's @@unscopables property
+FAIL AudioParamMap interface: maplike<DOMString, AudioParam> assert_equals: entries enumerable expected false but got true
 PASS AudioParamMap must be primary interface of worklet_node.parameters
 PASS Stringification of worklet_node.parameters
 PASS AudioWorkletNode interface: existence and properties of interface object

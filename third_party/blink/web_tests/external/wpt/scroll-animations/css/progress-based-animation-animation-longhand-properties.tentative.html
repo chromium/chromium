@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<title>The various animation longhands with progress based animations</title>
+<link rel="help" src="https://drafts.csswg.org/css-animations-2">
+<link rel="help" src="https://github.com/w3c/csswg-drafts/issues/4862">
+<link rel="help" src="https://github.com/w3c/csswg-drafts/issues/6674">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  @keyframes anim {
+    from { translate: 0px; }
+    to { translate: 100px; }
+  }
+  #container {
+    width: 300px;
+    height: 300px;
+    overflow: scroll;
+  }
+  #target {
+    width: 100px;
+    height: 100px;
+    translate: none;
+  }
+</style>
+<body>
+<div id="log"></div>
+<script>
+"use strict";
+
+const createTargetAndScroller = function(t) {
+  let container = document.createElement('div');
+  container.id = 'container';
+  let target = document.createElement('div');
+  target.id = 'target';
+  let content = document.createElement('div');
+  content.style.blockSize = '100%';
+
+  // The height of target is 100px and the content is 100%, so the scroll range
+  // is [0, 100].
+
+  // <div id='container'>
+  //   <div id='target'></div>
+  //   <div style='block-size: 100%;'></div>
+  // </div>
+  document.body.appendChild(container);
+  container.appendChild(target);
+  container.appendChild(content);
+
+  if (t && typeof t.add_cleanup === 'function') {
+    t.add_cleanup(() => {
+      content.remove();
+      target.remove();
+      container.remove();
+    });
+  }
+
+  return [target, container];
+};
+
+// ------------------------------
+// Test animation-duration
+// ------------------------------
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+
+  scroller.scrollTop = 25; // [0, 100].
+  assert_equals(getComputedStyle(target).translate, '25px');
+}, 'animation-duration');
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '0s linear anim scroll(nearest)';
+
+  scroller.scrollTop = 25; // [0, 100].
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, 'animation-duration: 0s');
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = 'infinite linear anim scroll(nearest)';
+
+  scroller.scrollTop = 25; // [0, 100].
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, 'animation-duration: infinite');
+
+
+// ------------------------------
+// Test animation-iteration-count
+// ------------------------------
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+
+  scroller.scrollTop = 25; // [0, 100].
+  assert_equals(getComputedStyle(target).translate, '25px');
+
+  // Let animation become 50% in the 1st iteration.
+  target.style.animationIterationCount = '2';
+  assert_equals(getComputedStyle(target).translate, '50px');
+
+  // Let animation become 0% in the 2nd iteration.
+  target.style.animationIterationCount = '4';
+  assert_equals(getComputedStyle(target).translate, '0px');
+}, 'animation-iteration-count');
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+  target.style.animationIterationCount = '0';
+
+  scroller.scrollTop = 25; // [0, 100].
+  assert_equals(getComputedStyle(target).translate, '0px');
+}, 'animation-iteration-count: 0');
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+  target.style.animationIterationCount = 'infinite';
+
+  scroller.scrollTop = 25; // [0, 100].
+  assert_equals(getComputedStyle(target).translate, '100px');
+}, 'animation-iteration-count: infinite');
+
+
+// ------------------------------
+// Test animation-direction
+// ------------------------------
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+
+  scroller.scrollTop = 25 // [0, 100].
+  assert_equals(getComputedStyle(target).translate, '25px');
+}, 'animation-direction: normal');
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+  target.style.animationDirection = 'reverse';
+
+  scroller.scrollTop = 25; // 25% in the reversing direction.
+  assert_equals(getComputedStyle(target).translate, '75px');
+}, 'animation-direction: reverse');
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+  target.style.animationIterationCount = '2';
+  target.style.animationDirection = 'alternate';
+
+  scroller.scrollTop = 10; // 20% in the 1st iteration.
+  assert_equals(getComputedStyle(target).translate, '20px');
+
+  scroller.scrollTop = 60; // 20% in the 2nd iteration (reversing direction).
+  assert_equals(getComputedStyle(target).translate, '80px');
+}, 'animation-direction: alternate');
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+  target.style.animationIterationCount = '2';
+  target.style.animationDirection = 'alternate-reverse';
+
+  scroller.scrollTop = 10; // 20% in the 1st iteration (reversing direction).
+  assert_equals(getComputedStyle(target).translate, '80px');
+
+  scroller.scrollTop = 60; // 20% in the 2nd iteration.
+  assert_equals(getComputedStyle(target).translate, '20px');
+}, 'animation-direction: alternate-reverse');
+
+
+// ------------------------------
+// Test animation-delay
+// ------------------------------
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+
+  scroller.scrollTop = 25; // [0, 100].
+  assert_equals(getComputedStyle(target).translate, '25px');
+
+  //    (start delay: 10s)    (duration: 10s)
+  //         before              active
+  // |--------------------|--------------------|
+  // 0px                 50px                100px (The scroller)
+  //                      0%                 100%  (The iteration progress)
+
+  // Let animation be in before phase.
+  target.style.animationDelay = '10s';
+  assert_equals(getComputedStyle(target).translate, 'none');
+
+  scroller.scrollTop = 50; // The animation enters active phase.
+  assert_equals(getComputedStyle(target).translate, '0px');
+
+  scroller.scrollTop = 75; // The ieration progress is 50%.
+  assert_equals(getComputedStyle(target).translate, '50px');
+}, 'animation-delay with a positive value');
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+
+  //         active
+  // |--------------------|
+  // 0px                100px (The scroller)
+  // 50%                100%  (The iteration progress)
+
+  scroller.scrollTop = 20; // [0, 100].
+  target.style.animationDelay = '-5s';
+  assert_equals(getComputedStyle(target).translate, '60px');
+}, 'animation-delay with a negative value');
+
+
+// ------------------------------
+// Test animation-fill-mode
+// ------------------------------
+
+test(t => {
+  let [target, scroller] = createTargetAndScroller(t);
+  target.style.animation = '10s linear anim scroll(nearest)';
+  target.style.animationDelay = '10s';
+
+  scroller.scrollTop = 25;
+  assert_equals(getComputedStyle(target).translate, 'none');
+
+  target.style.animationFillMode = 'backwards';
+  assert_equals(getComputedStyle(target).translate, '0px');
+}, 'animation-fill-mode');
+
+</script>
+</body>

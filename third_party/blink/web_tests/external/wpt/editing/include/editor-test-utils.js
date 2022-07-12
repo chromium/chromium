@@ -123,6 +123,9 @@ class EditorTestUtils {
         if (node.hasChildNodes()) {
           return inclusiveDeepestFirstChildNode(node);
         }
+        if (node === this.editingHost) {
+          return null;
+        }
         if (node.nextSibling) {
           return inclusiveDeepestFirstChildNode(node.nextSibling);
         }

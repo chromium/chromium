@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 206 tests; 155 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 208 tests; 155 PASS, 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -90,12 +90,14 @@ PASS BluetoothManufacturerDataMap interface object name
 PASS BluetoothManufacturerDataMap interface: existence and properties of interface prototype object
 PASS BluetoothManufacturerDataMap interface: existence and properties of interface prototype object's "constructor" property
 PASS BluetoothManufacturerDataMap interface: existence and properties of interface prototype object's @@unscopables property
+FAIL BluetoothManufacturerDataMap interface: maplike<unsigned short, DataView> assert_equals: entries enumerable expected false but got true
 PASS BluetoothServiceDataMap interface: existence and properties of interface object
 PASS BluetoothServiceDataMap interface object length
 PASS BluetoothServiceDataMap interface object name
 PASS BluetoothServiceDataMap interface: existence and properties of interface prototype object
 PASS BluetoothServiceDataMap interface: existence and properties of interface prototype object's "constructor" property
 PASS BluetoothServiceDataMap interface: existence and properties of interface prototype object's @@unscopables property
+FAIL BluetoothServiceDataMap interface: maplike<UUID, DataView> assert_equals: entries enumerable expected false but got true
 PASS BluetoothAdvertisingEvent interface: existence and properties of interface object
 FAIL BluetoothAdvertisingEvent interface object length assert_equals: wrong value for BluetoothAdvertisingEvent.length expected 2 but got 0
 PASS BluetoothAdvertisingEvent interface object name
