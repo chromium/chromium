@@ -37,24 +37,4 @@ extern OomFunction g_oom_handling_function;
 
 }  // namespace partition_alloc
 
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::OomFunction;
-
-namespace internal {
-
-using ::partition_alloc::internal::g_oom_handling_function;
-using ::partition_alloc::internal::PartitionExcessiveAllocationSize;
-#if !defined(ARCH_CPU_64_BITS)
-using ::partition_alloc::internal::PartitionOutOfMemoryWithLargeVirtualSize;
-using ::partition_alloc::internal::
-    PartitionOutOfMemoryWithLotsOfUncommitedPages;
-#endif
-
-}  // namespace internal
-
-}  // namespace base
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_OOM_H_

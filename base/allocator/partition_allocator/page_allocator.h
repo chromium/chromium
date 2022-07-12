@@ -329,35 +329,4 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) size_t GetTotalMappedSize();
 
 }  // namespace partition_alloc
 
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::AllocPages;
-using ::partition_alloc::AllocPagesWithAlignOffset;
-using ::partition_alloc::DecommitAndZeroSystemPages;
-using ::partition_alloc::DecommitSystemPages;
-using ::partition_alloc::DecommittedMemoryIsAlwaysZeroed;
-using ::partition_alloc::DiscardSystemPages;
-using ::partition_alloc::FreePages;
-using ::partition_alloc::GetAllocPageErrorCode;
-using ::partition_alloc::GetTotalMappedSize;
-using ::partition_alloc::HasReservationForTesting;
-using ::partition_alloc::NextAlignedWithOffset;
-using ::partition_alloc::PageAccessibilityConfiguration;
-using ::partition_alloc::PageAccessibilityDisposition;
-using ::partition_alloc::PageTag;
-using ::partition_alloc::RecommitSystemPages;
-using ::partition_alloc::ReleaseReservation;
-using ::partition_alloc::ReserveAddressSpace;
-using ::partition_alloc::RoundDownToPageAllocationGranularity;
-using ::partition_alloc::RoundDownToSystemPage;
-using ::partition_alloc::RoundUpToPageAllocationGranularity;
-using ::partition_alloc::RoundUpToSystemPage;
-using ::partition_alloc::SetSystemPagesAccess;
-using ::partition_alloc::TryRecommitSystemPages;
-using ::partition_alloc::TrySetSystemPagesAccess;
-
-}  // namespace base
-
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_H_

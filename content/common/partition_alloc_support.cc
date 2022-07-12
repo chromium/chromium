@@ -449,7 +449,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocSortActiveSlotSpans)) {
-    base::PartitionRoot<
+    partition_alloc::PartitionRoot<
         partition_alloc::internal::ThreadSafe>::EnableSortActiveSlotSpans();
   }
 }

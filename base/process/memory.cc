@@ -52,7 +52,7 @@ bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
 namespace internal {
 bool ReleaseAddressSpaceReservation() {
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-  return ReleaseReservation();
+  return partition_alloc::ReleaseReservation();
 #else
   return false;
 #endif

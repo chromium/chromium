@@ -559,17 +559,17 @@ TEST_F(OutOfMemoryTest, TerminateBecauseOutOfMemoryReportsAllocSize) {
 
 void TestAllocationsReleaseReservation(void* (*alloc_fn)(size_t),
                                        void (*free_fn)(void*)) {
-  base::ReleaseReservation();
+  partition_alloc::ReleaseReservation();
   base::EnableTerminationOnOutOfMemory();
 
   constexpr size_t kMiB = 1 << 20;
   constexpr size_t kReservationSize = 512 * kMiB;  // MiB.
 
   size_t reservation_size = kReservationSize;
-  while (!base::ReserveAddressSpace(reservation_size)) {
+  while (!partition_alloc::ReserveAddressSpace(reservation_size)) {
     reservation_size -= 16 * kMiB;
   }
-  ASSERT_TRUE(base::HasReservationForTesting());
+  ASSERT_TRUE(partition_alloc::HasReservationForTesting());
   ASSERT_GT(reservation_size, 0u);
 
   // Allocate a large area at a time to bump into address space exhaustion
@@ -593,7 +593,7 @@ void TestAllocationsReleaseReservation(void* (*alloc_fn)(size_t),
     // was dropped instead of crashing.
     //
     // Meaning that the test is either successful, or crashes.
-    if (!base::HasReservationForTesting())
+    if (!partition_alloc::HasReservationForTesting())
       break;
   }
 
