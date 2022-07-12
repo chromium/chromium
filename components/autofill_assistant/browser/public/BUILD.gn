@@ -15,6 +15,7 @@ static_library("public") {
     "autofill_assistant_factory.h",
     "external_action_delegate.h",
     "headless_script_controller.h",
+    "public_script_parameters.h",
     "rectf.cc",
     "rectf.h",
     "runtime_manager.cc",

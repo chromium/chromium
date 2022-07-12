@@ -20,22 +20,12 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
+#include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-// TODO(b/234418435): Remove these values from here once exposed in
-// autofill_assistant/browser/public.
 namespace {
-constexpr char kPasswordChangeUsername[] = "PASSWORD_CHANGE_USERNAME";
-constexpr char kPasswordChangeSkipLoginParameter[] =
-    "PASSWORD_CHANGE_SKIP_LOGIN";
-constexpr char kIntentParameter[] = "INTENT";
-constexpr char kSourceParameter[] = "SOURCE";
 constexpr char kIntent[] = "PASSWORD_CHANGE";
-constexpr char kParameterStartImediately[] = "START_IMMEDIATELY";
-constexpr char kParameterOriginalDeepLink[] = "ORIGINAL_DEEPLINK";
-constexpr char kParameterEnabled[] = "ENABLED";
-constexpr char kParameterCaller[] = "CALLER";
 
 constexpr int kInChromeCaller = 7;
 constexpr int kSourcePasswordChangeLeakWarning = 10;
@@ -102,18 +92,28 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
   side_panel_coordinator_ = CreateSidePanel();
   side_panel_coordinator_->AddObserver(this);
 
-  base::flat_map<std::string, std::string> params_map;
-  params_map[kPasswordChangeUsername] = username_;
-  params_map[kIntentParameter] = kIntent;
-  params_map[kParameterStartImediately] = "true";
-  params_map[kParameterOriginalDeepLink] = url_.spec();
-  params_map[kPasswordChangeSkipLoginParameter] =
-      skip_login_ ? "true" : "false";
-  params_map[kParameterEnabled] = "true";
-  params_map[kParameterCaller] = base::NumberToString(kInChromeCaller);
-  params_map[kSourceParameter] =
-      skip_login_ ? base::NumberToString(kSourcePasswordChangeLeakWarning)
-                  : base::NumberToString(kSourcePasswordChangeSettings);
+  base::flat_map<std::string, std::string> params_map = {
+      {autofill_assistant::public_script_parameters::
+           kPasswordChangeUsernameParameterName,
+       username_},
+      {autofill_assistant::public_script_parameters::kIntentParamenterName,
+       kIntent},
+      {autofill_assistant::public_script_parameters::
+           kStartImmediatelyParameterName,
+       "true"},
+      {autofill_assistant::public_script_parameters::
+           kOriginalDeeplinkParameterName,
+       url_.spec()},
+      {autofill_assistant::public_script_parameters::
+           kPasswordChangeSkipLoginParameterName,
+       skip_login_ ? "true" : "false"},
+      {autofill_assistant::public_script_parameters::kEnabledParameterName,
+       "true"},
+      {autofill_assistant::public_script_parameters::kCallerParameterName,
+       base::NumberToString(kInChromeCaller)},
+      {autofill_assistant::public_script_parameters::kSourceParameterName,
+       skip_login_ ? base::NumberToString(kSourcePasswordChangeLeakWarning)
+                   : base::NumberToString(kSourcePasswordChangeSettings)}};
 
   external_script_controller_ = CreateHeadlessScriptController();
   external_script_controller_->StartScript(

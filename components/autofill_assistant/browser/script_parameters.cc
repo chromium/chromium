@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/value_util.h"
 
@@ -48,54 +49,22 @@ absl::optional<T> GetTypedParameter(
 // Parameter that allows setting the color of the overlay.
 const char kOverlayColorParameterName[] = "OVERLAY_COLORS";
 
-// Parameter that contains the current session username. Should be synced with
-// |SESSION_USERNAME_PARAMETER| from
-// .../password_manager/PasswordChangeLauncher.java
-// TODO(b/151401974): Eliminate duplicate parameter definitions.
-const char kPasswordChangeUsernameParameterName[] = "PASSWORD_CHANGE_USERNAME";
-
 // Special parameter for instructing the client to request and run a trigger
 // script from a remote RPC prior to starting the regular flow.
 const char kRequestTriggerScriptParameterName[] = "REQUEST_TRIGGER_SCRIPT";
 
-// Special bool parameter that MUST be present in all intents. It allows the
-// caller to either request immediate start of autofill assistant (if set to
-// true), or a delayed start using trigger scripts (if set to false). If this is
-// set to false, REQUEST_TRIGGER_SCRIPT or TRIGGER_SCRIPTS_BASE_64 must be set.
-const char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
-
-// Mandatory parameter that MUST be present and set to true in all intents.
-// Note: this parameter is automatically removed from |ToProto|.
-const char kEnabledParameterName[] = "ENABLED";
-
 // The parameter key for the user's email, as indicated by the caller.
 const char kCallerEmailParameterName[] = "USER_EMAIL";
-
-// The original deeplink as indicated by the caller. Use this parameter instead
-// of the initial URL when available to avoid issues where the initial URL
-// points to a redirect rather than the actual deeplink.
-const char kOriginalDeeplinkParameterName[] = "ORIGINAL_DEEPLINK";
 
 // Special parameter for declaring a user to be in a trigger script experiment.
 const char kTriggerScriptExperimentParameterName[] =
     "TRIGGER_SCRIPT_EXPERIMENT";
-
-// The intent parameter.
-const char kIntent[] = "INTENT";
 
 // Parameter that allows enabling Text-to-Speech functionality.
 const char kEnableTtsParameterName[] = "ENABLE_TTS";
 
 // Allows enabling observer-based WaitForDOM.
 const char kEnableObserversParameter[] = "ENABLE_OBSERVER_WAIT_FOR_DOM";
-
-// Parameter name of the CALLER script parameter. Note that the corresponding
-// values are integers, corresponding to the caller proto in the backend.
-const char kCallerParameterName[] = "CALLER";
-
-// Parameter name of the SOURCE script parameter. Note that the corresponding
-// values are integers, corresponding to the source proto in the backend.
-const char kSourceParameterName[] = "SOURCE";
 
 // Parameter to specify experiments.
 const char kExperimentsParameterName[] = "EXPERIMENT_IDS";
@@ -112,8 +81,9 @@ const char kSendAnnotateDomModelVersion[] = "SEND_ANNOTATE_DOM_MODEL_VERSION";
 // autofill-assistant onboarding. Even so, please always reach out to Chrome
 // privacy when you plan to make use of this list, and/or adjust it.
 constexpr std::array<const char*, 6> kNonSensitiveScriptParameters = {
-    "DEBUG_BUNDLE_ID",    "DEBUG_BUNDLE_VERSION",    "DEBUG_SOCKET_ID",
-    "FALLBACK_BUNDLE_ID", "FALLBACK_BUNDLE_VERSION", kIntent};
+    "DEBUG_BUNDLE_ID",         "DEBUG_BUNDLE_VERSION",
+    "DEBUG_SOCKET_ID",         "FALLBACK_BUNDLE_ID",
+    "FALLBACK_BUNDLE_VERSION", public_script_parameters::kIntentParamenterName};
 
 // Parameters to specify details before the first backend roundtrip.
 const char kDetailsShowInitialParameterName[] = "DETAILS_SHOW_INITIAL";
@@ -180,7 +150,7 @@ ScriptParameters::ToProto(bool only_non_sensitive_allowlisted) const {
 
   // TODO(arbesser): Send properly typed parameters to backend.
   for (const auto& parameter : parameters_) {
-    if (parameter.first == kEnabledParameterName) {
+    if (parameter.first == public_script_parameters::kEnabledParameterName) {
       continue;
     }
     if (parameter.second.is_client_side_only()) {
@@ -212,7 +182,8 @@ absl::optional<std::string> ScriptParameters::GetOverlayColors() const {
 
 absl::optional<std::string> ScriptParameters::GetPasswordChangeUsername()
     const {
-  return GetParameter(kPasswordChangeUsernameParameterName);
+  return GetParameter(
+      public_script_parameters::kPasswordChangeUsernameParameterName);
 }
 
 absl::optional<bool> ScriptParameters::GetRequestsTriggerScript() const {
@@ -221,15 +192,17 @@ absl::optional<bool> ScriptParameters::GetRequestsTriggerScript() const {
 }
 
 absl::optional<bool> ScriptParameters::GetStartImmediately() const {
-  return GetTypedParameter<bool>(parameters_, kStartImmediatelyParameterName);
+  return GetTypedParameter<bool>(
+      parameters_, public_script_parameters::kStartImmediatelyParameterName);
 }
 
 absl::optional<bool> ScriptParameters::GetEnabled() const {
-  return GetTypedParameter<bool>(parameters_, kEnabledParameterName);
+  return GetTypedParameter<bool>(
+      parameters_, public_script_parameters::kEnabledParameterName);
 }
 
 absl::optional<std::string> ScriptParameters::GetOriginalDeeplink() const {
-  return GetParameter(kOriginalDeeplinkParameterName);
+  return GetParameter(public_script_parameters::kOriginalDeeplinkParameterName);
 }
 
 absl::optional<bool> ScriptParameters::GetTriggerScriptExperiment() const {
@@ -238,7 +211,7 @@ absl::optional<bool> ScriptParameters::GetTriggerScriptExperiment() const {
 }
 
 absl::optional<std::string> ScriptParameters::GetIntent() const {
-  return GetParameter(kIntent);
+  return GetParameter(public_script_parameters::kIntentParamenterName);
 }
 
 absl::optional<std::string> ScriptParameters::GetCallerEmail() const {
@@ -254,11 +227,13 @@ absl::optional<bool> ScriptParameters::GetEnableObserverWaitForDom() const {
 }
 
 absl::optional<int> ScriptParameters::GetCaller() const {
-  return GetTypedParameter<int>(parameters_, kCallerParameterName);
+  return GetTypedParameter<int>(parameters_,
+                                public_script_parameters::kCallerParameterName);
 }
 
 absl::optional<int> ScriptParameters::GetSource() const {
-  return GetTypedParameter<int>(parameters_, kSourceParameterName);
+  return GetTypedParameter<int>(parameters_,
+                                public_script_parameters::kSourceParameterName);
 }
 
 std::vector<std::string> ScriptParameters::GetExperiments() const {
