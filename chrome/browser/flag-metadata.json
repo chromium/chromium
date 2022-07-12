@@ -2793,11 +2793,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "enable-start-surface-refactor",
-    "owners": [ "hanxi", "spdonghao" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-storage-pressure-event",
     "owners": [ "jarrydg", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 89

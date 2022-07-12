@@ -176,7 +176,6 @@ import org.chromium.chrome.browser.tasks.TasksUma;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
@@ -373,8 +372,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             new OneshotSupplierImpl<>();
 
     private final OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier =
-            new OneshotSupplierImpl<>();
-    private final OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier =
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<Tab> mStartSurfaceParentTabSupplier =
             new ObservableSupplierImpl<>();
@@ -706,12 +703,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // TODO(1239025): Remove all GTS enabled checks after GTS is enabled by default on
             // tablets.
             if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
-                createTabSwitcherOrStartSurface(compositorViewHolder, compositorViewHolder);
+                createStartSurface(compositorViewHolder, compositorViewHolder);
             }
 
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
-                    mStartSurfaceSupplier, mTabSwitcherSupplier, getTabContentManagerSupplier(),
+                    mStartSurfaceSupplier, getTabContentManagerSupplier(),
                     mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
@@ -735,24 +732,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // clang-format off
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.grid_tab_switcher_view_holder);
             mLayoutManager = new LayoutManagerChromeTablet(compositorViewHolder, mContentContainer,
-                mStartSurfaceSupplier, mTabSwitcherSupplier, getTabContentManagerSupplier(),
+                mStartSurfaceSupplier, getTabContentManagerSupplier(),
                 mRootUiCoordinator::getTopUiThemeColorProvider, mJankTracker,
                 tabSwitcherViewHolder, mRootUiCoordinator.getScrimCoordinator(),
                 getLifecycleDispatcher(), () -> createAndSetStartSurfaceForTablet());
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
-        }
-    }
-
-    private void createTabSwitcherOrStartSurface(
-            CompositorViewHolder compositorViewHolder, ViewGroup tabSwitcherContainer) {
-        // If the refactor is enabled, we create grid tab switcher directly instead of via start
-        // surface.
-        // TODO(crbug.com/1315676): Extends the refactor to allow Start Surface enabled case.
-        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(this)) {
-            createGridTabSwitcher(compositorViewHolder, tabSwitcherContainer);
-        } else if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(this)) {
-            createStartSurface(compositorViewHolder, tabSwitcherContainer);
         }
     }
 
@@ -769,19 +754,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getTabCreatorManagerSupplier().get(), getMenuOrKeyboardActionController(),
                 getMultiWindowModeStateDispatcher(), mJankTracker, getToolbarManager()::getToolbar,
                 new CrowButtonDelegateImpl(), mBackPressManager);
-    }
-
-    private void createGridTabSwitcher(
-            CompositorViewHolder compositorViewHolder, ViewGroup tabSwitcherContainer) {
-        mTabSwitcherSupplier.set(TabManagementModuleProvider.getDelegate().createGridTabSwitcher(
-                this, getLifecycleDispatcher(), getTabModelSelector(), getTabContentManager(),
-                getBrowserControlsManager(), getTabCreatorManagerSupplier().get(),
-                getMenuOrKeyboardActionController(), tabSwitcherContainer,
-                getShareDelegateSupplier(), getMultiWindowModeStateDispatcher(),
-                mRootUiCoordinator.getScrimCoordinator(),
-                /* rootView= */ tabSwitcherContainer,
-                compositorViewHolder::getDynamicResourceLoader, getSnackbarManager(),
-                getModalDialogManager()));
     }
 
     private void setupCompositorContentPostNative() {
@@ -892,15 +864,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         // create start surface.
-        createTabSwitcherOrStartSurface(compositorViewHolder, containerView);
-        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(this)
-                && mTabSwitcherSupplier.hasValue()) {
-            mTabSwitcherSupplier.get().getController().enableRecordingFirstMeaningfulPaint(
-                    getOnCreateTimestampMs());
-        } else if (mStartSurfaceSupplier.hasValue()) {
-            mStartSurfaceSupplier.get().enableRecordingFirstMeaningfulPaint(
-                    getOnCreateTimestampMs());
-        }
+        createStartSurface(compositorViewHolder, containerView);
+        mStartSurfaceSupplier.get().enableRecordingFirstMeaningfulPaint(getOnCreateTimestampMs());
         RecordHistogram.recordTimesHistogram(
                 TAB_SWITCHER_CREATION_TIME, SystemClock.uptimeMillis() - startTimeMs);
         return containerView;
@@ -1220,11 +1185,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
             }
 
-            if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(this)
-                    && mTabSwitcherSupplier.hasValue()) {
-                mTabSwitcherSupplier.get().getController().enableRecordingFirstMeaningfulPaint(
-                        getOnCreateTimestampMs());
-            } else if (mStartSurfaceSupplier.hasValue()) {
+            if (mStartSurfaceSupplier.hasValue()) {
                 mStartSurfaceSupplier.get().enableRecordingFirstMeaningfulPaint(
                         getOnCreateTimestampMs());
             }
@@ -1729,10 +1690,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
                 mBookmarkBridgeSupplier, mTabBookmarkerSupplier,
                 getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
-                mStartSurfaceSupplier, mTabSwitcherSupplier, mIntentMetadataOneshotSupplier,
-                mLayoutStateProviderSupplier, mStartSurfaceParentTabSupplier,
-                getBrowserControlsManager(), getWindowAndroid(), mJankTracker,
-                getLifecycleDispatcher(), getLayoutManagerSupplier(),
+                mStartSurfaceSupplier, mIntentMetadataOneshotSupplier, mLayoutStateProviderSupplier,
+                mStartSurfaceParentTabSupplier, getBrowserControlsManager(), getWindowAndroid(),
+                mJankTracker, getLifecycleDispatcher(), getLayoutManagerSupplier(),
                 /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
                 getModalDialogManagerSupplier(),
                 /* appMenuBlocker= */ this, this::supportsAppMenu, this::supportsFindInPage,
@@ -1794,10 +1754,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Supplier<Boolean> dialogVisibilitySupplier = null;
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(this)) {
             dialogVisibilitySupplier = () -> {
-                boolean isTabSwitcherOnlyRefactorEnabled =
-                        ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(this);
-                assert (isTabSwitcherOnlyRefactorEnabled && mTabSwitcherSupplier.get() != null)
-                        || mStartSurfaceSupplier.get() != null;
+                assert mStartSurfaceSupplier.get() != null;
                 // Return true if dialog from either tab switcher or tab strip is visible.
 
                 ToolbarManager toolbarManager = getToolbarManager();
@@ -1805,9 +1762,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 boolean isDialogVisible = tabGroupUi != null && tabGroupUi.isTabGridDialogVisible();
 
                 Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
-                        isTabSwitcherOnlyRefactorEnabled
-                        ? mTabSwitcherSupplier.get().getTabGridDialogVisibilitySupplier()
-                        : mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
+                        mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
 
                 if (tabSwitcherDialogVisibilitySupplier != null) {
                     isDialogVisible = isDialogVisible || tabSwitcherDialogVisibilitySupplier.get();
@@ -2528,7 +2483,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // showStartSurface(state). Let's do some auditing and clean up before perform the actual split.
     private void showOverview(
             @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
-        // TODO(crbug.com/1315676): Remove all StartSurfaceState relevant code.
         assert (state == StartSurfaceState.SHOWING_TABSWITCHER
                 || state == StartSurfaceState.SHOWING_HOMEPAGE
                 || state == StartSurfaceState.SHOWING_PREVIOUS
@@ -2541,7 +2495,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             //                showing the overview list before going to the start surface.
             mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
         } else if (mStartSurfaceSupplier.get() != null) {
-            assert !ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(this);
             if (ReturnToChromeUtil.shouldHideStartSurfaceWithAccessibilityOn(this)
                     || !HomepageManager.isHomepageEnabled()) {
                 state = StartSurfaceState.SHOWING_TABSWITCHER;

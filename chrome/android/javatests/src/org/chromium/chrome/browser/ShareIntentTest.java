@@ -144,7 +144,6 @@ public class ShareIntentTest {
                     mockActivity.getShareDelegateSupplier(), mockActivity.getActivityTabProvider(),
                     null, null, null, null, null, new OneshotSupplierImpl<>(),
                     new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
-                    new OneshotSupplierImpl<>(),
                     ()
                             -> null,
                     browserControlsManager, mActivityTestRule.getActivity().getWindowAndroid(),

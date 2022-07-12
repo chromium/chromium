@@ -45,7 +45,6 @@ import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CallbackHelper;
@@ -215,7 +214,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 new ObservableSupplierImpl<>();
 
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container,
-                mStartSurfaceSupplier, new OneshotSupplierImpl<>(), tabContentManagerSupplier,
+                mStartSurfaceSupplier, tabContentManagerSupplier,
                 () -> mTopUiThemeColorProvider, new DummyJankTracker());
         verify(mStartSurface)
                 .addTabSwitcherViewObserver(mTabSwitcherViewObserverArgumentCaptor.capture());
