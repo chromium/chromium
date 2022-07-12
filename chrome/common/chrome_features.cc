@@ -67,7 +67,7 @@ const base::Feature kAppDeduplicationService{"AppDeduplicationService",
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kAppProvisioningStatic{"AppDeduplicationService",
+const base::Feature kAppProvisioningStatic{"AppProvisioningStatic",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
