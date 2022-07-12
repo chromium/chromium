@@ -1093,8 +1093,8 @@ void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
   // Expand the group if the tab that is getting grouped is the active tab. This
   // can result in the group expanding in a series of actions where the final
   // active tab is not in the group.
-  if (model_index == selected_tabs_.active() && group.has_value() &&
-      IsGroupCollapsed(group.value())) {
+  if (static_cast<size_t>(model_index) == selected_tabs_.active() &&
+      group.has_value() && IsGroupCollapsed(group.value())) {
     ToggleTabGroupCollapsedState(
         group.value(), ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
   }
@@ -1213,11 +1213,12 @@ bool TabStrip::ShouldDrawStrokes() const {
 }
 
 void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
-  DCHECK_GE(new_selection.active(), 0)
+  DCHECK(new_selection.active().has_value())
       << "We should never transition to a state where no tab is active.";
-  Tab* const new_active_tab = tab_at(new_selection.active());
-  Tab* const old_active_tab =
-      selected_tabs_.active() >= 0 ? tab_at(selected_tabs_.active()) : nullptr;
+  Tab* const new_active_tab = tab_at(new_selection.active().value());
+  Tab* const old_active_tab = selected_tabs_.active().has_value()
+                                  ? tab_at(selected_tabs_.active().value())
+                                  : nullptr;
 
   if (new_active_tab != old_active_tab) {
     if (old_active_tab) {
@@ -1239,7 +1240,7 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
     tab_container_->layout_helper()->SetActiveTab(selected_tabs_.active(),
                                                   new_selection.active());
     if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-      tab_container_->ScrollTabToVisible(new_selection.active());
+      tab_container_->ScrollTabToVisible(new_selection.active().value());
     }
   }
 
@@ -1285,11 +1286,11 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
 }
 
 void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
-  if (active && selected_tabs_.active() >= 0) {
+  if (active && selected_tabs_.active().has_value()) {
     // When the browser window is activated, fire a selection event on the
     // currently active tab, to help enable per-tab modes in assistive
     // technologies.
-    tab_at(selected_tabs_.active())
+    tab_at(selected_tabs_.active().value())
         ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   }
   UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
@@ -1373,9 +1374,10 @@ void TabStrip::SelectTab(Tab* tab, const ui::Event& event) {
 
   if (IsValidModelIndex(model_index)) {
     if (!tab->IsActive()) {
-      int current_selection = selected_tabs_.active();
-      base::UmaHistogramSparse("Tabs.DesktopTabOffsetOfSwitch",
-                               current_selection - model_index);
+      if (selected_tabs_.active().has_value()) {
+        base::UmaHistogramSparse("Tabs.DesktopTabOffsetOfSwitch",
+                                 selected_tabs_.active().value() - model_index);
+      }
       base::UmaHistogramSparse("Tabs.DesktopTabOffsetFromLeftOfSwitch",
                                model_index);
       base::UmaHistogramSparse("Tabs.DesktopTabOffsetFromRightOfSwitch",

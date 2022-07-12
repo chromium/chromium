@@ -245,9 +245,13 @@ class TabStripModel : public TabGroupController {
   Profile* profile() const { return profile_; }
 
   // Retrieve the index of the currently active WebContents. This will be
-  // ui::ListSelectionModel::kUnselectedIndex if no tab is currently selected
-  // (this happens while the tab strip is being initialized or is empty).
-  int active_index() const { return selection_model_.active(); }
+  // kNoTab if no tab is currently selected (this happens while the tab strip is
+  // being initialized or is empty).
+  int active_index() const {
+    return selection_model_.active().has_value()
+               ? static_cast<int>(selection_model_.active().value())
+               : kNoTab;
+  }
 
   // Returns true if the tabstrip is currently closing all open tabs (via a
   // call to CloseAllTabs). As tabs close, the selection in the tabstrip

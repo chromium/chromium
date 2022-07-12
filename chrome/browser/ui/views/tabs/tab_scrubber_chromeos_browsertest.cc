@@ -264,11 +264,12 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
     if (tab_strip_model->empty() || !selection.active_tab_changed())
       return;
 
-    activation_order_.push_back(selection.new_model.active());
+    ASSERT_TRUE(selection.new_model.active().has_value());
+    activation_order_.push_back(selection.new_model.active().value());
   }
 
   // History of tab activation. Scrub() resets it.
-  std::vector<int> activation_order_;
+  std::vector<size_t> activation_order_;
 
  private:
   // Used to generate a sequence of scrolls. Starts with a cancel, is followed
@@ -328,13 +329,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Single) {
   AddTabs(browser(), 1);
 
   Scrub(browser(), 0, EACH_TAB);
-  EXPECT_EQ(1U, activation_order_.size());
-  EXPECT_EQ(0, activation_order_[0]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(0));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   Scrub(browser(), 1, EACH_TAB);
-  EXPECT_EQ(1U, activation_order_.size());
-  EXPECT_EQ(1, activation_order_[0]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(1));
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 }
 
@@ -343,19 +342,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Multi) {
   AddTabs(browser(), 4);
 
   Scrub(browser(), 0, EACH_TAB);
-  ASSERT_EQ(4U, activation_order_.size());
-  EXPECT_EQ(3, activation_order_[0]);
-  EXPECT_EQ(2, activation_order_[1]);
-  EXPECT_EQ(1, activation_order_[2]);
-  EXPECT_EQ(0, activation_order_[3]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   Scrub(browser(), 4, EACH_TAB);
-  ASSERT_EQ(4U, activation_order_.size());
-  EXPECT_EQ(1, activation_order_[0]);
-  EXPECT_EQ(2, activation_order_[1]);
-  EXPECT_EQ(3, activation_order_[2]);
-  EXPECT_EQ(4, activation_order_[3]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(1, 2, 3, 4));
   EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
 }
 
@@ -398,11 +389,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, FullScreenBrowser) {
   EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
   Scrub(browser(), 0, EACH_TAB);
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-  EXPECT_EQ(4U, activation_order_.size());
-  EXPECT_EQ(3, activation_order_[0]);
-  EXPECT_EQ(2, activation_order_[1]);
-  EXPECT_EQ(1, activation_order_[2]);
-  EXPECT_EQ(0, activation_order_[3]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
 }
 
 // Swipe 4 tabs in each direction with an extra swipe within each. The same
@@ -411,19 +398,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Repeated) {
   AddTabs(browser(), 4);
 
   Scrub(browser(), 0, REPEAT_TABS);
-  ASSERT_EQ(4U, activation_order_.size());
-  EXPECT_EQ(3, activation_order_[0]);
-  EXPECT_EQ(2, activation_order_[1]);
-  EXPECT_EQ(1, activation_order_[2]);
-  EXPECT_EQ(0, activation_order_[3]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   Scrub(browser(), 4, REPEAT_TABS);
-  ASSERT_EQ(4U, activation_order_.size());
-  EXPECT_EQ(1, activation_order_[0]);
-  EXPECT_EQ(2, activation_order_[1]);
-  EXPECT_EQ(3, activation_order_[2]);
-  EXPECT_EQ(4, activation_order_[3]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(1, 2, 3, 4));
   EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
 }
 
@@ -434,15 +413,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, Skipped) {
   AddTabs(browser(), 4);
 
   Scrub(browser(), 0, SKIP_TABS);
-  EXPECT_EQ(2U, activation_order_.size());
-  EXPECT_EQ(2, activation_order_[0]);
-  EXPECT_EQ(0, activation_order_[1]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(2, 0));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   Scrub(browser(), 4, SKIP_TABS);
-  EXPECT_EQ(2U, activation_order_.size());
-  EXPECT_EQ(2, activation_order_[0]);
-  EXPECT_EQ(4, activation_order_[1]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(2, 4));
   EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
 }
 
@@ -545,19 +520,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, RTLMulti) {
   AddTabs(browser(), 4);
 
   Scrub(browser(), 0, EACH_TAB);
-  ASSERT_EQ(4U, activation_order_.size());
-  EXPECT_EQ(3, activation_order_[0]);
-  EXPECT_EQ(2, activation_order_[1]);
-  EXPECT_EQ(1, activation_order_[2]);
-  EXPECT_EQ(0, activation_order_[3]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   Scrub(browser(), 4, EACH_TAB);
-  ASSERT_EQ(4U, activation_order_.size());
-  EXPECT_EQ(1, activation_order_[0]);
-  EXPECT_EQ(2, activation_order_[1]);
-  EXPECT_EQ(3, activation_order_[2]);
-  EXPECT_EQ(4, activation_order_[3]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(1, 2, 3, 4));
   EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
 }
 
@@ -571,15 +538,11 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, RTLSkipped) {
   AddTabs(browser(), 4);
 
   Scrub(browser(), 0, SKIP_TABS);
-  EXPECT_EQ(2U, activation_order_.size());
-  EXPECT_EQ(2, activation_order_[0]);
-  EXPECT_EQ(0, activation_order_[1]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(2, 0));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   Scrub(browser(), 4, SKIP_TABS);
-  EXPECT_EQ(2U, activation_order_.size());
-  EXPECT_EQ(2, activation_order_[0]);
-  EXPECT_EQ(4, activation_order_[1]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(2, 4));
   EXPECT_EQ(4, browser()->tab_strip_model()->active_index());
 }
 
@@ -621,10 +584,6 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, DisabledIfWindowCycleListOpen) {
   StopCyclingWindows(browser());
   EXPECT_TRUE(IsTabScrubberChromeOSEnabled());
   Scrub(browser(), 0, EACH_TAB);
-  ASSERT_EQ(4U, activation_order_.size());
-  EXPECT_EQ(3, activation_order_[0]);
-  EXPECT_EQ(2, activation_order_[1]);
-  EXPECT_EQ(1, activation_order_[2]);
-  EXPECT_EQ(0, activation_order_[3]);
+  EXPECT_THAT(activation_order_, testing::ElementsAre(3, 2, 1, 0));
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 }

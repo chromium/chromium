@@ -918,22 +918,22 @@ bool TabStripModel::ToggleSelectionAt(int index) {
   if (!delegate()->IsTabStripEditable())
     return false;
   CHECK(ContainsIndex(index));
+  const size_t index_size_t = static_cast<size_t>(index);
   ui::ListSelectionModel new_model = selection_model();
-  if (selection_model_.IsSelected(index)) {
+  if (selection_model_.IsSelected(index_size_t)) {
     if (selection_model_.size() == 1) {
       // One tab must be selected and this tab is currently selected so we can't
       // unselect it.
       return false;
     }
-    new_model.RemoveIndexFromSelection(index);
-    new_model.set_anchor(index);
-    if (new_model.active() == index ||
-        new_model.active() == ui::ListSelectionModel::kUnselectedIndex)
+    new_model.RemoveIndexFromSelection(index_size_t);
+    new_model.set_anchor(index_size_t);
+    if (!new_model.active().has_value() || new_model.active() == index_size_t)
       new_model.set_active(*new_model.selected_indices().begin());
   } else {
-    new_model.AddIndexToSelection(index);
-    new_model.set_anchor(index);
-    new_model.set_active(index);
+    new_model.AddIndexToSelection(index_size_t);
+    new_model.set_anchor(index_size_t);
+    new_model.set_active(index_size_t);
   }
   SetSelection(std::move(new_model), TabStripModelObserver::CHANGE_REASON_NONE,
                /*triggered_by_other_operation=*/false);
@@ -953,7 +953,7 @@ bool TabStripModel::IsTabSelected(int index) const {
 }
 
 void TabStripModel::SetSelectionFromModel(ui::ListSelectionModel source) {
-  CHECK_NE(ui::ListSelectionModel::kUnselectedIndex, source.active());
+  CHECK(source.active().has_value());
   SetSelection(std::move(source), TabStripModelObserver::CHANGE_REASON_NONE,
                /*triggered_by_other_operation=*/false);
 }
@@ -2017,8 +2017,9 @@ TabStripSelectionChange TabStripModel::SetSelection(
 
 #if DCHECK_IS_ON()
   // Validate that |new_model| only selects tabs that actually exist.
-  DCHECK(ContainsIndex(new_model.active()));
-  for (int selected_index : new_model.selected_indices()) {
+  DCHECK(new_model.active().has_value());
+  DCHECK(ContainsIndex(new_model.active().value()));
+  for (size_t selected_index : new_model.selected_indices()) {
     DCHECK(ContainsIndex(selected_index));
   }
 #endif
@@ -2602,8 +2603,9 @@ void TabStripModel::OnActiveTabChanged(
         ForgetOpener(old_contents);
     }
   }
+  DCHECK(selection.new_model.active().has_value());
   content::WebContents* new_opener =
-      GetOpenerOfWebContentsAt(selection.new_model.active());
+      GetOpenerOfWebContentsAt(selection.new_model.active().value());
 
   if ((reason & TabStripModelObserver::CHANGE_REASON_USER_GESTURE) &&
       new_opener != old_opener &&

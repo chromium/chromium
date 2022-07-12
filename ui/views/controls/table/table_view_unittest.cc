@@ -483,25 +483,8 @@ class TableViewTest : public ViewsTestBase,
     generator.GestureTapAt(GetPointForRow(row));
   }
 
-  // Returns the state of the selection model as a string. The format is:
-  // 'active=X anchor=X selection=X X X...'.
   std::string SelectionStateAsString() const {
-    const ui::ListSelectionModel& model(table_->selection_model());
-    std::string result = "active=" + base::NumberToString(model.active()) +
-                         " anchor=" + base::NumberToString(model.anchor()) +
-                         " selection=";
-    const ui::ListSelectionModel::SelectedIndices& selection(
-        model.selected_indices());
-    bool first = true;
-    for (int index : selection) {
-      if (first) {
-        first = false;
-      } else {
-        result += " ";
-      }
-      result += base::NumberToString(index);
-    }
-    return result;
+    return table_->selection_model().ToString();
   }
 
   void PressKey(ui::KeyboardCode code) { PressKey(code, ui::EF_NONE); }
@@ -1287,7 +1270,7 @@ TEST_P(TableViewTest, Selection) {
   table_->set_observer(&observer);
 
   // Initially no selection.
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   // Select the last row.
   table_->Select(3);
@@ -1383,11 +1366,12 @@ TEST_P(TableViewTest, SelectAll) {
   table_->set_observer(&observer);
 
   // Initially no selection.
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   table_->SetSelectionAll(/*select=*/true);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
-  EXPECT_EQ("active=-1 anchor=-1 selection=0 1 2 3", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=0 1 2 3",
+            SelectionStateAsString());
 
   table_->Select(2);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
@@ -1450,7 +1434,7 @@ TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
   table_->SetSelectOnRemove(false);
 
   // Initially no selection.
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   // Select row 3.
   table_->Select(3);
@@ -1462,7 +1446,7 @@ TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
   // selected item, so no item is selected.
   model_->RemoveRow(3);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   // Select row 1.
   table_->Select(1);
@@ -1472,7 +1456,7 @@ TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
   // Remove the selected row.
   model_->RemoveRow(1);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   // Select row 0.
   table_->Select(0);
@@ -1482,7 +1466,7 @@ TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
   // Remove the selected row.
   model_->RemoveRow(0);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   table_->set_observer(nullptr);
 }
@@ -1492,7 +1476,7 @@ TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
 // Verifies selection works by way of a gesture.
 TEST_P(TableViewTest, SelectOnTap) {
   // Initially no selection.
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   TableViewObserverImpl observer;
   table_->set_observer(&observer);
@@ -1526,7 +1510,7 @@ TEST_P(TableViewTest, KeyUpDown) {
   table_->RequestFocus();
 
   // Initially no selection.
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   PressKey(ui::VKEY_DOWN);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
@@ -1573,7 +1557,7 @@ TEST_P(TableViewTest, KeyUpDown) {
   PressKey(ui::VKEY_UP);
   EXPECT_TRUE(table_->header_row_is_active());
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   PressKey(ui::VKEY_DOWN);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
@@ -1591,7 +1575,7 @@ TEST_P(TableViewTest, KeyUpDown) {
   EXPECT_EQ("2 3 4 0 1", GetViewToModelAsString(table_));
 
   table_->Select(absl::nullopt);
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   observer.GetChangedCountAndClear();
 
@@ -1600,7 +1584,7 @@ TEST_P(TableViewTest, KeyUpDown) {
   PressKey(ui::VKEY_UP);
   EXPECT_TRUE(table_->header_row_is_active());
   EXPECT_EQ(0, observer.GetChangedCountAndClear());
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   PressKey(ui::VKEY_DOWN);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
@@ -1647,7 +1631,7 @@ TEST_P(TableViewTest, KeyUpDown) {
   PressKey(ui::VKEY_UP);
   EXPECT_TRUE(table_->header_row_is_active());
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   table_->set_observer(nullptr);
 }
@@ -1769,7 +1753,7 @@ TEST_P(TableViewTest, HomeEnd) {
   table_->RequestFocus();
 
   // Initially no selection.
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   PressKey(ui::VKEY_HOME);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
@@ -1800,7 +1784,7 @@ TEST_P(TableViewTest, Multiselection) {
   table_->SetGrouper(&grouper);
 
   // Initially no selection.
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   TableViewObserverImpl observer;
   table_->set_observer(&observer);
@@ -1861,7 +1845,7 @@ TEST_P(TableViewTest, MultiselectionWithSort) {
   table_->ToggleSortOrder(0);
 
   // Initially no selection.
-  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+  EXPECT_EQ("active=<none> anchor=<none> selection=", SelectionStateAsString());
 
   TableViewObserverImpl observer;
   table_->set_observer(&observer);

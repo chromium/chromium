@@ -1440,8 +1440,9 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
   // frame now.
   if (!attached_model->empty()) {
     if (!selection_model_before_attach_.empty() &&
-        selection_model_before_attach_.active() >= 0 &&
-        selection_model_before_attach_.active() < attached_model->count()) {
+        selection_model_before_attach_.active().has_value() &&
+        selection_model_before_attach_.active().value() <
+            static_cast<size_t>(attached_model->count())) {
       // Restore the selection.
       attached_model->SetSelectionFromModel(selection_model_before_attach_);
     } else if (attached_context_ == source_context_ &&
@@ -1836,13 +1837,13 @@ void TabDragController::ResetSelection(TabStripModel* model) {
     // |contents| is NULL if a tab was deleted out from under us.
     if (drag_data_[i].contents) {
       int index = model->GetIndexOfWebContents(drag_data_[i].contents);
-      DCHECK_NE(-1, index);
-      selection_model.AddIndexToSelection(index);
+      DCHECK_GE(index, 0);
+      selection_model.AddIndexToSelection(static_cast<size_t>(index));
       if (!has_one_valid_tab || i == source_view_index_) {
         // Reset the active/lead to the first tab. If the source tab is still
         // valid we'll reset these again later on.
-        selection_model.set_active(index);
-        selection_model.set_anchor(index);
+        selection_model.set_active(static_cast<size_t>(index));
+        selection_model.set_anchor(static_cast<size_t>(index));
         has_one_valid_tab = true;
       }
     }
@@ -1877,9 +1878,9 @@ void TabDragController::RestoreInitialSelection() {
 
   // The anchor/active may have been among the tabs that were dragged out. Force
   // the anchor/active to be valid.
-  if (selection_model.anchor() == ui::ListSelectionModel::kUnselectedIndex)
+  if (!selection_model.anchor().has_value())
     selection_model.set_anchor(*selection_model.selected_indices().begin());
-  if (selection_model.active() == ui::ListSelectionModel::kUnselectedIndex)
+  if (!selection_model.active().has_value())
     selection_model.set_active(*selection_model.selected_indices().begin());
   source_context_->GetTabStripModel()->SetSelectionFromModel(selection_model);
 }
@@ -2022,9 +2023,10 @@ void TabDragController::CompleteDrag() {
     int index = model->GetIndexOfWebContents(drag_data_[1].contents);
     // The tabs in the group may have been closed during the drag.
     if (index != TabStripModel::kNoTab) {
-      selection.AddIndexToSelection(index);
-      selection.set_active(index);
-      selection.set_anchor(index);
+      DCHECK_GE(index, 0);
+      selection.AddIndexToSelection(static_cast<size_t>(index));
+      selection.set_active(static_cast<size_t>(index));
+      selection.set_anchor(static_cast<size_t>(index));
       model->SetSelectionFromModel(selection);
     }
   }
@@ -2425,7 +2427,7 @@ void TabDragController::UpdateGroupForDraggedTabs() {
   // Pinned tabs cannot be grouped, so we only change the group membership of
   // unpinned tabs.
   std::vector<int> selected_unpinned;
-  for (const int& selected_index : selected) {
+  for (size_t selected_index : selected) {
     if (!attached_model->IsTabPinned(selected_index))
       selected_unpinned.push_back(selected_index);
   }

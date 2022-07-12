@@ -159,15 +159,11 @@ void TableExample::GetGroupRange(size_t model_index, GroupRange* range) {
 }
 
 void TableExample::OnSelectionChanged() {
-  PrintStatus("Selected: %s",
-              base::UTF16ToASCII(GetText(table_->selection_model().active(), 0))
-                  .c_str());
+  PrintStatus("Selected: %s", SelectedColumnName().c_str());
 }
 
 void TableExample::OnDoubleClick() {
-  PrintStatus("Double Click: %s",
-              base::UTF16ToASCII(GetText(table_->selection_model().active(), 0))
-                  .c_str());
+  PrintStatus("Double Click: %s", SelectedColumnName().c_str());
 }
 
 void TableExample::OnMiddleClick() {}
@@ -188,6 +184,13 @@ void TableExample::OnViewThemeChanged(View* observed_view) {
 
 void TableExample::OnViewIsDeleting(View* observed_view) {
   observer_.Reset();
+}
+
+std::string TableExample::SelectedColumnName() {
+  return table_->selection_model().active().has_value()
+             ? base::UTF16ToASCII(
+                   GetText(table_->selection_model().active().value(), 0))
+             : std::string("<None>");
 }
 
 }  // namespace views::examples

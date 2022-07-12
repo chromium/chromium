@@ -90,30 +90,28 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   };
 
   struct State {
-    State(WebContents* a_dst_contents,
-          int a_dst_index,
-          TabStripModelObserverAction a_action)
-        : src_contents(nullptr),
-          dst_contents(a_dst_contents),
-          src_index(-1),
-          dst_index(a_dst_index),
-          change_reason(CHANGE_REASON_NONE),
-          foreground(false),
-          action(a_action) {}
+    State(WebContents* dst_contents,
+          absl::optional<size_t> dst_index,
+          TabStripModelObserverAction action)
+        : dst_contents(dst_contents), dst_index(dst_index), action(action) {}
 
-    WebContents* src_contents;
+    WebContents* src_contents = nullptr;
     WebContents* dst_contents;
-    int src_index;
-    int dst_index;
-    int change_reason;
-    bool foreground;
+    absl::optional<size_t> src_index;
+    absl::optional<size_t> dst_index;
+    int change_reason = CHANGE_REASON_NONE;
+    bool foreground = false;
     TabStripModelObserverAction action;
 
     std::string ToString() const {
       std::ostringstream oss;
+      const auto optional_to_string = [](const auto& opt) {
+        return opt.has_value() ? base::NumberToString(opt.value())
+                               : std::string("<none>");
+      };
       oss << "State change: " << kActionNames[int{action}]
-          << "\n  Source index: " << src_index
-          << "\n  Destination index: " << dst_index
+          << "\n  Source index: " << optional_to_string(src_index)
+          << "\n  Destination index: " << optional_to_string(dst_index)
           << "\n  Source contents: " << src_contents
           << "\n  Destination contents: " << dst_contents
           << "\n  Change reason: " << change_reason
@@ -178,7 +176,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
 
   void PushActivateState(WebContents* old_contents,
                          WebContents* new_contents,
-                         int index,
+                         absl::optional<size_t> index,
                          int reason) {
     State s(new_contents, index, ACTIVATE);
     s.src_contents = old_contents;
@@ -200,8 +198,15 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   }
 
   void PushMoveState(WebContents* contents, int from_index, int to_index) {
-    State s(contents, to_index, MOVE);
-    s.src_index = from_index;
+    const auto tab_index_to_selection_model_index =
+        [](int tab_index) -> absl::optional<size_t> {
+      if (tab_index == TabStripModel::kNoTab)
+        return absl::nullopt;
+      DCHECK_GE(tab_index, 0);
+      return static_cast<size_t>(tab_index);
+    };
+    State s(contents, tab_index_to_selection_model_index(to_index), MOVE);
+    s.src_index = tab_index_to_selection_model_index(from_index);
     states_.push_back(s);
   }
 
@@ -322,25 +327,25 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   void TabChangedAt(WebContents* contents,
                     int index,
                     TabChangeType change_type) override {
-    states_.push_back(State(contents, index, CHANGE));
+    states_.emplace_back(contents, index, CHANGE);
   }
 
   void TabPinnedStateChanged(TabStripModel* tab_strip_model,
                              WebContents* contents,
                              int index) override {
-    states_.push_back(State(contents, index, PINNED));
+    states_.emplace_back(contents, index, PINNED);
   }
 
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override {
-    states_.push_back(State(nullptr, -1, CLOSE_ALL));
+    states_.emplace_back(nullptr, absl::nullopt, CLOSE_ALL);
   }
 
   void CloseAllTabsStopped(TabStripModel* tab_strip_model,
                            CloseAllStoppedReason reason) override {
     if (reason == kCloseAllCanceled) {
-      states_.push_back(State(nullptr, -1, CLOSE_ALL_CANCELED));
+      states_.emplace_back(nullptr, absl::nullopt, CLOSE_ALL_CANCELED);
     } else if (reason == kCloseAllCompleted) {
-      states_.push_back(State(nullptr, -1, CLOSE_ALL_COMPLETED));
+      states_.emplace_back(nullptr, absl::nullopt, CLOSE_ALL_COMPLETED);
     }
   }
 
@@ -492,7 +497,7 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
     State s2(raw_contents1, 0, MockTabStripModelObserver::ACTIVATE);
     observer.ExpectStateEquals(1, s2);
     State s3(raw_contents1, 0, MockTabStripModelObserver::SELECT);
-    s3.src_index = ui::ListSelectionModel::kUnselectedIndex;
+    s3.src_index = absl::nullopt;
     observer.ExpectStateEquals(2, s3);
     observer.ClearStates();
   }

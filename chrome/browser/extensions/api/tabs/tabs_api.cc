@@ -1393,7 +1393,7 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   if (!tabstrip)
     return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
   ui::ListSelectionModel selection;
-  int active_index = -1;
+  absl::optional<size_t> active_index;
 
   if (params->highlight_info.tabs.as_integers) {
     std::vector<int>& tab_indices = *params->highlight_info.tabs.as_integers;
@@ -1430,7 +1430,7 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
 
 bool TabsHighlightFunction::HighlightTab(TabStripModel* tabstrip,
                                          ui::ListSelectionModel* selection,
-                                         int* active_index,
+                                         absl::optional<size_t>* active_index,
                                          int index,
                                          std::string* error) {
   // Make sure the index is in range.
@@ -1441,8 +1441,8 @@ bool TabsHighlightFunction::HighlightTab(TabStripModel* tabstrip,
   }
 
   // By default, we make the first tab in the list active.
-  if (*active_index == -1)
-    *active_index = index;
+  if (!active_index->has_value())
+    *active_index = static_cast<size_t>(index);
 
   selection->AddIndexToSelection(index);
   return true;

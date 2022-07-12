@@ -342,8 +342,7 @@ void TabStripPageHandler::OnTabStripModelChanged(
 
   if (selection.active_tab_changed()) {
     content::WebContents* new_contents = selection.new_contents;
-    int index = selection.new_model.active();
-    if (new_contents && index != TabStripModel::kNoTab) {
+    if (new_contents && selection.new_model.active().has_value()) {
       page_->TabActiveChanged(
           extensions::ExtensionTabUtil::GetTabId(new_contents));
     }
@@ -655,12 +654,11 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
     // When a group is moved, all the tabs in it need to be selected at the same
     // time. This mimics the way the native tab strip works and also allows
     // this handler to ignore the events for each individual tab moving.
-    int active_index =
-        target_browser->tab_strip_model()->selection_model().active();
     ui::ListSelectionModel group_selection;
     group_selection.SetSelectedIndex(tabs_in_group.start());
     group_selection.SetSelectionFromAnchorTo(tabs_in_group.end() - 1);
-    group_selection.set_active(active_index);
+    group_selection.set_active(
+        target_browser->tab_strip_model()->selection_model().active());
     target_browser->tab_strip_model()->SetSelectionFromModel(group_selection);
 
     target_browser->tab_strip_model()->MoveGroupTo(group_id.value(), to_index);

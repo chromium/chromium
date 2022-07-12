@@ -94,7 +94,8 @@ class TabStripLayoutHelper {
   void UpdateGroupHeaderIndex(tab_groups::TabGroupId group);
 
   // Changes the active tab from |prev_active_index| to |new_active_index|.
-  void SetActiveTab(int prev_active_index, int new_active_index);
+  void SetActiveTab(absl::optional<size_t> prev_active_index,
+                    absl::optional<size_t> new_active_index);
 
   // Calculates the smallest width the tabs can occupy.
   int CalculateMinimumWidth();

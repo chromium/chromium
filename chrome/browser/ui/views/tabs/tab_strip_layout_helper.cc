@@ -181,15 +181,18 @@ void TabStripLayoutHelper::UpdateGroupHeaderIndex(
   slots_.insert(slots_.begin() + first_tab_slot_index, header_slot);
 }
 
-void TabStripLayoutHelper::SetActiveTab(int prev_active_index,
-                                        int new_active_index) {
-  if (prev_active_index >= 0) {
-    const int prev_slot_index = GetSlotIndexForExistingTab(prev_active_index);
+void TabStripLayoutHelper::SetActiveTab(
+    absl::optional<size_t> prev_active_index,
+    absl::optional<size_t> new_active_index) {
+  if (prev_active_index.has_value()) {
+    const int prev_slot_index =
+        GetSlotIndexForExistingTab(prev_active_index.value());
     slots_[prev_slot_index].state =
         slots_[prev_slot_index].state.WithActive(TabActive::kInactive);
   }
-  if (new_active_index >= 0) {
-    const int new_slot_index = GetSlotIndexForExistingTab(new_active_index);
+  if (new_active_index.has_value()) {
+    const int new_slot_index =
+        GetSlotIndexForExistingTab(new_active_index.value());
     slots_[new_slot_index].state =
         slots_[new_slot_index].state.WithActive(TabActive::kActive);
   }

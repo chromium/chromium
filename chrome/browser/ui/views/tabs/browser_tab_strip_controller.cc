@@ -647,11 +647,11 @@ void BrowserTabStripController::OnTabStripModelChanged(
     // It's possible for |new_contents| to be null when the final tab in a tab
     // strip is closed.
     content::WebContents* new_contents = selection.new_contents;
-    int index = selection.new_model.active();
-    if (new_contents && index != TabStripModel::kNoTab) {
+    absl::optional<size_t> index = selection.new_model.active();
+    if (new_contents && index.has_value()) {
       TabUIHelper::FromWebContents(new_contents)
           ->set_was_active_at_least_once();
-      SetTabDataAt(new_contents, index);
+      SetTabDataAt(new_contents, index.value());
     }
   }
 

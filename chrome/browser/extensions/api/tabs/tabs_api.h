@@ -126,7 +126,7 @@ class TabsHighlightFunction : public ExtensionFunction {
   ResponseAction Run() override;
   bool HighlightTab(TabStripModel* tabstrip,
                     ui::ListSelectionModel* selection,
-                    int* active_index,
+                    absl::optional<size_t>* active_index,
                     int index,
                     std::string* error);
   DECLARE_EXTENSION_FUNCTION("tabs.highlight", TABS_HIGHLIGHT)

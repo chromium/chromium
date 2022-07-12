@@ -42,7 +42,8 @@ void ActiveTabTracker::OnTabStripModelChanged(
   DCHECK(active_tab_changed_times_.find(model) !=
          active_tab_changed_times_.end());
 
-  const int prev_active_tab_index = selection.old_model.active();
+  const absl::optional<size_t> prev_active_tab_index =
+      selection.old_model.active();
 
   if (change.type() == TabStripModelChange::Type::kRemoved) {
     auto* remove = change.GetRemove();
@@ -52,7 +53,7 @@ void ActiveTabTracker::OnTabStripModelChanged(
       for (const auto& contents : remove->contents) {
         if (contents.remove_reason ==
                 TabStripModelChange::RemoveReason::kDeleted &&
-            contents.index == prev_active_tab_index) {
+            static_cast<size_t>(contents.index) == prev_active_tab_index) {
           active_tab_closed_callback_.Run(
               model, clock_->NowTicks() - active_tab_changed_times_[model]);
         }

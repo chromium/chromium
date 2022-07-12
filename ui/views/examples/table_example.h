@@ -61,6 +61,8 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
   void OnViewIsDeleting(View* observed_view) override;
 
  private:
+  std::string SelectedColumnName();
+
   // The table to be tested.
   raw_ptr<TableView> table_ = nullptr;
 

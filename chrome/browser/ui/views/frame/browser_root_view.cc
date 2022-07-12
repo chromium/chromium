@@ -336,7 +336,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
 
     gfx::ScopedCanvas scoped_canvas(canvas);
     int active_tab_index = tabstrip()->GetActiveIndex();
-    if (active_tab_index != ui::ListSelectionModel::kUnselectedIndex) {
+    if (active_tab_index != TabStripModel::kNoTab) {
       Tab* active_tab = tabstrip()->tab_at(active_tab_index);
       if (active_tab && active_tab->GetVisible()) {
         gfx::RectF bounds(active_tab->GetMirroredBounds());

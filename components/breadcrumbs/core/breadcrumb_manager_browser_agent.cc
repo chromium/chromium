@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/format_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -69,14 +70,15 @@ void BreadcrumbManagerBrowserAgent::LogTabReplaced(int old_tab_id,
 void BreadcrumbManagerBrowserAgent::LogActiveTabChanged(
     absl::optional<int> old_tab_id,
     absl::optional<int> new_tab_id,
-    int index) {
+    absl::optional<size_t> index) {
   std::vector<std::string> event = {"Switch"};
   if (old_tab_id) {
     event.push_back(base::StringPrintf("from Tab%d", old_tab_id.value()));
   }
   if (new_tab_id) {
-    event.push_back(
-        base::StringPrintf("to Tab%d at %d", new_tab_id.value(), index));
+    DCHECK(index.has_value());
+    event.push_back(base::StringPrintf("to Tab%d at %" PRIuS,
+                                       new_tab_id.value(), index.value()));
   }
   LogEvent(base::JoinString(event, " "));
 }

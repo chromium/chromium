@@ -1188,8 +1188,12 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
   if (tab_strip_model_->empty())
     return;
 
-  OnActiveTabChanged(selection.old_contents, selection.new_contents,
-                     selection.new_model.active(), selection.reason);
+  OnActiveTabChanged(
+      selection.old_contents, selection.new_contents,
+      selection.new_model.active().has_value()
+          ? static_cast<int>(selection.new_model.active().value())
+          : TabStripModel::kNoTab,
+      selection.reason);
 }
 
 void Browser::OnTabGroupChanged(const TabGroupChange& change) {

@@ -372,9 +372,10 @@ void TaskManagerView::InitAlwaysOnTopState() {
 }
 
 void TaskManagerView::ActivateSelectedTab() {
-  const int active_row = tab_table_->selection_model().active();
-  if (active_row != ui::ListSelectionModel::kUnselectedIndex)
-    table_model_->ActivateTask(active_row);
+  const absl::optional<size_t> active_row =
+      tab_table_->selection_model().active();
+  if (active_row.has_value())
+    table_model_->ActivateTask(active_row.value());
 }
 
 void TaskManagerView::SelectTaskOfActiveTab(Browser* browser) {

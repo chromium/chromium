@@ -239,10 +239,8 @@ void TabsEventRouter::OnTabStripModelChanged(
   if (tab_strip_model->empty())
     return;
 
-  if (selection.active_tab_changed()) {
-    DispatchActiveTabChanged(selection.old_contents, selection.new_contents,
-                             selection.new_model.active());
-  }
+  if (selection.active_tab_changed())
+    DispatchActiveTabChanged(selection.old_contents, selection.new_contents);
 
   if (selection.selection_changed()) {
     DispatchTabSelectionChanged(tab_strip_model, selection.old_model);
@@ -413,8 +411,7 @@ void TabsEventRouter::DispatchTabDetachedAt(WebContents* contents,
 }
 
 void TabsEventRouter::DispatchActiveTabChanged(WebContents* old_contents,
-                                               WebContents* new_contents,
-                                               int index) {
+                                               WebContents* new_contents) {
   base::Value::List args;
   int tab_id = ExtensionTabUtil::GetTabId(new_contents);
   args.Append(tab_id);
