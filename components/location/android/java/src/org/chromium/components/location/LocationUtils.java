@@ -92,26 +92,6 @@ public class LocationUtils {
     }
 
     /**
-     * Returns whether location services are enabled in sensors-only mode, i.e. when network
-     * location services are disabled but GPS and other sensors are enabled.
-     */
-    @SuppressWarnings("deprecation")
-    public boolean isSystemLocationSettingSensorsOnly() {
-        Context context = ContextUtils.getApplicationContext();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            LocationManager locationManager =
-                    (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            return locationManager != null && ApiHelperForP.isLocationEnabled(locationManager)
-                    && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                    && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        }
-
-        return Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE,
-                       Settings.Secure.LOCATION_MODE_OFF)
-                == Settings.Secure.LOCATION_MODE_SENSORS_ONLY;
-    }
-
-    /**
      * Returns true iff a prompt can be triggered to ask the user to turn on the system location
      * setting on their device.
      *
