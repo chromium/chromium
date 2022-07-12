@@ -262,22 +262,6 @@ RendererBlinkPlatformImpl::WrapURLLoaderFactory(
       /*terminate_sync_load_event=*/nullptr);
 }
 
-std::unique_ptr<blink::WebURLLoaderFactory>
-RendererBlinkPlatformImpl::WrapSharedURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> factory) {
-  std::vector<std::string> cors_exempt_header_list =
-      RenderThreadImpl::current()->cors_exempt_header_list();
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
-      cors_exempt_header_list.size());
-  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
-                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
-                   return blink::WebString::FromLatin1(h);
-                 });
-  return std::make_unique<blink::WebURLLoaderFactory>(
-      std::move(factory), web_cors_exempt_header_list,
-      /*terminate_sync_load_event=*/nullptr);
-}
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void RendererBlinkPlatformImpl::SetCompositingThreadType(
     base::PlatformThreadId thread_id) {

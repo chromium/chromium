@@ -100,7 +100,6 @@ class URLLoaderFactory;
 class URLLoaderFactoryInterfaceBase;
 }
 class PendingSharedURLLoaderFactory;
-class SharedURLLoaderFactory;
 }
 
 namespace url {
@@ -132,7 +131,6 @@ class WebDedicatedWorker;
 class WebDedicatedWorkerHostFactoryClient;
 class WebGraphicsContext3DProvider;
 class WebLocalFrame;
-class WebPublicSuffixList;
 class WebResourceRequestSenderDelegate;
 class WebSandboxSupport;
 class WebSecurityOrigin;
@@ -291,12 +289,6 @@ class BLINK_PLATFORM_EXPORT Platform {
       CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
           url_loader_factory);
 
-  // Returns a new WebURLLoaderFactory that wraps the given
-  // network::SharedURLLoaderFactory.
-  virtual std::unique_ptr<blink::WebURLLoaderFactory>
-  WrapSharedURLLoaderFactory(
-      scoped_refptr<network::SharedURLLoaderFactory> factory);
-
   // Returns the default User-Agent string, it can either full User-Agent string
   // or reduced User-Agent string based on policy setting.
   virtual WebString UserAgent() { return WebString(); }
@@ -326,11 +318,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual void AppendVariationsThrottles(
       const url::Origin& top_origin,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles) {}
-
-  // Public Suffix List --------------------------------------------------
-
-  // May return null on some platforms.
-  virtual WebPublicSuffixList* PublicSuffixList() { return nullptr; }
 
   // Allows the embedder to return a (possibly null)
   // blink::URLLoaderThrottleProvider for a worker.

@@ -52,10 +52,6 @@ namespace media {
 class GpuVideoAcceleratorFactories;
 }
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace viz {
 class RasterContextProvider;
 }
@@ -217,8 +213,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       blink::CrossVariantMojoRemote<
           network::mojom::URLLoaderFactoryInterfaceBase> url_loader_factory)
       override;
-  std::unique_ptr<blink::WebURLLoaderFactory> WrapSharedURLLoaderFactory(
-      scoped_refptr<network::SharedURLLoaderFactory> factory) override;
   std::unique_ptr<media::MediaLog> GetMediaLog(
       blink::MediaInspectorContext* inspector_context,
       scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner,

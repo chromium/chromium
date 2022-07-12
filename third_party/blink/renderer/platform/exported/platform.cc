@@ -300,12 +300,6 @@ std::unique_ptr<WebURLLoaderFactory> Platform::WrapURLLoaderFactory(
   return nullptr;
 }
 
-std::unique_ptr<blink::WebURLLoaderFactory>
-Platform::WrapSharedURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> factory) {
-  return nullptr;
-}
-
 std::unique_ptr<WebDedicatedWorkerHostFactoryClient>
 Platform::CreateDedicatedWorkerHostFactoryClient(
     WebDedicatedWorker*,
