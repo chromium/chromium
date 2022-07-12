@@ -111,9 +111,9 @@ void MachPortRendezvousServer::RegisterPortsForPid(
   DCHECK_LT(ports.size(), kMaximumRendezvousPorts);
   DCHECK(!ports.empty());
 
-  ScopedDispatchObject<dispatch_source_t> exit_watcher(
-      dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, pid, DISPATCH_PROC_EXIT,
-                             dispatch_source_->queue()));
+  ScopedDispatchObject<dispatch_source_t> exit_watcher(dispatch_source_create(
+      DISPATCH_SOURCE_TYPE_PROC, static_cast<uintptr_t>(pid),
+      DISPATCH_PROC_EXIT, dispatch_source_->queue()));
   dispatch_source_set_event_handler(exit_watcher, ^{
     OnClientExited(pid);
   });
@@ -226,10 +226,11 @@ std::unique_ptr<uint8_t[]> MachPortRendezvousServer::CreateReplyMessage(
   message->header.msgh_bits =
       MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_MOVE_SEND_ONCE) |
       MACH_MSGH_BITS_COMPLEX;
-  message->header.msgh_size = buffer_size;
+  message->header.msgh_size = checked_cast<mach_msg_size_t>(buffer_size);
   message->header.msgh_remote_port = reply_port;
   message->header.msgh_id = kMachRendezvousMsgIdResponse;
-  message->body.msgh_descriptor_count = port_count;
+  message->body.msgh_descriptor_count =
+      checked_cast<mach_msg_size_t>(port_count);
 
   auto descriptors =
       iterator.MutableSpan<mach_msg_port_descriptor_t>(port_count);
@@ -333,10 +334,10 @@ bool MachPortRendezvousClient::SendRequest(
   message->header.msgh_local_port = mig_get_reply_port();
   message->header.msgh_id = kMachRendezvousMsgIdRequest;
 
-  kern_return_t mr = mach_msg(&message->header, MACH_SEND_MSG | MACH_RCV_MSG,
-                              message->header.msgh_size, buffer_size,
-                              message->header.msgh_local_port,
-                              MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+  kern_return_t mr = mach_msg(
+      &message->header, MACH_SEND_MSG | MACH_RCV_MSG, message->header.msgh_size,
+      checked_cast<mach_msg_size_t>(buffer_size),
+      message->header.msgh_local_port, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
   if (mr != KERN_SUCCESS) {
     MACH_LOG(ERROR, mr) << "mach_msg";
     return false;

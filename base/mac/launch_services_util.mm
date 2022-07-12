@@ -23,9 +23,9 @@ NSRunningApplication* OpenApplicationWithPath(
   // NSWorkspace automatically adds the binary path as the first argument and
   // it should not be included into the list.
   std::vector<std::string> argv = command_line.argv();
-  int argc = argv.size();
+  size_t argc = argv.size();
   NSMutableArray* launch_args = [NSMutableArray arrayWithCapacity:argc - 1];
-  for (int i = 1; i < argc; ++i) {
+  for (size_t i = 1; i < argc; ++i) {
     [launch_args addObject:base::SysUTF8ToNSString(argv[i])];
   }
 
