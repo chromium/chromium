@@ -286,7 +286,8 @@ uint32_t NetworkServiceMemoryCache::GetDataPipeCapacity(size_t content_length) {
   if (data_pipe_capacity_for_testing_.has_value())
     return *data_pipe_capacity_for_testing_;
 
-  uint32_t default_capacity = features::GetDataPipeDefaultAllocationSize();
+  uint32_t default_capacity = features::GetDataPipeDefaultAllocationSize(
+      features::DataPipeAllocationSize::kLargerSizeIfPossible);
   if (content_length > default_capacity)
     return default_capacity;
   return static_cast<size_t>(content_length);
