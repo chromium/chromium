@@ -24,6 +24,18 @@
         width: 34px;
       }
 
+      @media (forced-colors: active) {
+        :host {
+          /* TODO(crbug.com/1176612): cr-toggle heavily relies on
+             background-color to convey various states (on/off,
+             enabled/disabled). Until proper specs for HCM exist, turn off
+             forced-colors automatic adjustments so that the cr-toggle is at
+             least visible. Replace with a HCM compliant implementation once
+             specs exist.*/
+          forced-color-adjust: none;
+        }
+      }
+
       @media (prefers-color-scheme: dark) {
         :host {
           --cr-toggle-checked-bar-color: var(--google-blue-300);
