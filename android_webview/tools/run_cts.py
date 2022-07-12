@@ -142,13 +142,15 @@ def GetTestRunFilterArg(args, test_run, test_app_mode=None, arch=None):
   return []
 
 
-def RunCTS(test_runner_args,
-           local_cts_dir,
-           apk,
-           voice_service=None,
-           additional_apks=None,
-           test_app_mode=None,
-           json_results_file=None):
+def RunCTS(
+    test_runner_args,
+    local_cts_dir,
+    apk,
+    *,  # Optional parameters must be passed by keyword (PEP 3102)
+    voice_service=None,
+    additional_apks=None,
+    test_app_mode=None,
+    json_results_file=None):
   """Run tests in apk using test_runner script at _TEST_RUNNER_PATH.
 
   Returns the script result code, test results will be stored in
@@ -277,17 +279,24 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
 
       if json_results_file:
         with tempfile.NamedTemporaryFile() as iteration_json_file:
-          iteration_cts_result = RunCTS(iter_test_runner_args, local_cts_dir,
-                                        test_apk, voice_service,
-                                        additional_apks, test_app_mode,
-                                        iteration_json_file.name)
+          iteration_cts_result = RunCTS(
+              test_runner_args=iter_test_runner_args,
+              local_cts_dir=local_cts_dir,
+              apk=test_apk,
+              voice_service=voice_service,
+              additional_apks=additional_apks,
+              test_app_mode=test_app_mode,
+              json_results_file=iteration_json_file.name)
           with open(iteration_json_file.name) as f:
             additional_results_json = json.load(f)
             MergeTestResults(cts_results_json, additional_results_json)
       else:
-        iteration_cts_result = RunCTS(iter_test_runner_args, local_cts_dir,
-                                      test_apk, voice_service, test_app_mode,
-                                      additional_apks)
+        iteration_cts_result = RunCTS(test_runner_args=iter_test_runner_args,
+                                      local_cts_dir=local_cts_dir,
+                                      apk=test_apk,
+                                      voice_service=voice_service,
+                                      additional_apks=additional_apks,
+                                      test_app_mode=test_app_mode)
       if iteration_cts_result:
         cts_result = iteration_cts_result
     if json_results_file:
