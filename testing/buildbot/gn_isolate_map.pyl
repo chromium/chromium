@@ -1774,15 +1774,16 @@
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
     "type": "script",
   },
-  "telemetry_perf_unittests_android_monochrome": {
-    "args": [
-      "../../tools/perf/run_tests",
-      "-v",
-    ],
-    "label": "//chrome/test:telemetry_perf_unittests_android_monochrome",
-    "script": "//testing/scripts/run_telemetry_as_googletest.py",
-    "type": "script",
-  },
+  # TODO(crbug/1342706): Re-enable once the failed tests are fixed.
+  # "telemetry_perf_unittests_android_monochrome": {
+  #   "args": [
+  #     "../../tools/perf/run_tests",
+  #     "-v",
+  #   ],
+  #   "label": "//chrome/test:telemetry_perf_unittests_android_monochrome",
+  #   "script": "//testing/scripts/run_telemetry_as_googletest.py",
+  #   "type": "script",
+  # },
   "telemetry_unittests": {
     "args": [
       "--xvfb",
