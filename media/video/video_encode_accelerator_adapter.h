@@ -165,6 +165,8 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   std::vector<uint8_t> resize_buf_;
 
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
+  VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes_ =
+      VideoEncodeAccelerator::kNoMode;
   Options options_;
   OutputCB output_cb_;
 

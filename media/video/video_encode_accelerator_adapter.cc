@@ -45,18 +45,48 @@ uint32_t ComputeCheckedDefaultBitrate(const gfx::Size& frame_size) {
       std::numeric_limits<uint32_t>::max());
 }
 
+uint32_t ComputeCheckedPeakBitrate(uint32_t target_bitrate) {
+  // TODO(crbug.com/1342850): Reconsider whether this is good peak bps.
+  base::CheckedNumeric<uint32_t> checked_bitrate_product =
+      base::CheckMul<uint32_t>(target_bitrate, 10u);
+  return checked_bitrate_product.ValueOrDefault(
+      std::numeric_limits<uint32_t>::max());
+}
+
+Bitrate CreateBitrate(
+    const absl::optional<Bitrate>& requested_bitrate,
+    const gfx::Size& frame_size,
+    VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes) {
+  uint32_t default_bitrate = ComputeCheckedDefaultBitrate(frame_size);
+  if (supported_rc_modes & VideoEncodeAccelerator::kVariableMode) {
+    // VEA supports VBR. Use |requested_bitrate| or VBR if bitrate is not
+    // specified.
+    return requested_bitrate.value_or(Bitrate::VariableBitrate(
+        default_bitrate, ComputeCheckedPeakBitrate(default_bitrate)));
+  }
+  // VEA doesn't support VBR. The bitrate configured to VEA must be CBR. In
+  // other words, if |requested_bitrate| is CBR, bitrate mode fallbacks to VBR.
+  if (requested_bitrate &&
+      requested_bitrate->mode() == Bitrate::Mode::kConstant) {
+    return *requested_bitrate;
+  }
+
+  return Bitrate::ConstantBitrate(
+      requested_bitrate ? requested_bitrate->target_bps() : default_bitrate);
+}
+
 VideoEncodeAccelerator::Config SetUpVeaConfig(
     VideoCodecProfile profile,
     const VideoEncoder::Options& opts,
     VideoPixelFormat format,
-    VideoFrame::StorageType storage_type) {
+    VideoFrame::StorageType storage_type,
+    VideoEncodeAccelerator::SupportedRateControlMode supported_rc_modes) {
   absl::optional<uint32_t> initial_framerate;
   if (opts.framerate.has_value())
     initial_framerate = static_cast<uint32_t>(opts.framerate.value());
 
-  uint32_t default_bitrate = ComputeCheckedDefaultBitrate(opts.frame_size);
   Bitrate bitrate =
-      opts.bitrate.value_or(Bitrate::ConstantBitrate(default_bitrate));
+      CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
   auto config =
       VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate,
                                      initial_framerate, opts.keyframe_interval);
@@ -198,7 +228,34 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
     return;
   }
 
+  auto supported_profiles =
+      gpu_factories_->GetVideoEncodeAcceleratorSupportedProfiles();
+  if (!supported_profiles) {
+    InitCompleted(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      "No profile is supported by video encode accelerator."));
+    return;
+  }
+
+  auto supported_rc_modes =
+      VideoEncodeAccelerator::SupportedRateControlMode::kNoMode;
+  for (const auto& supported_profile : *supported_profiles) {
+    if (supported_profile.profile == profile) {
+      supported_rc_modes = supported_profile.rate_control_modes;
+      break;
+    }
+  }
+
+  if (supported_rc_modes ==
+      VideoEncodeAccelerator::SupportedRateControlMode::kNoMode) {
+    std::move(done_cb).Run(EncoderStatus(
+        EncoderStatus::Codes::kEncoderInitializationError,
+        "The profile is not supported by video encode accelerator."));
+    return;
+  }
+
   profile_ = profile;
+  supported_rc_modes_ = supported_rc_modes;
   options_ = options;
   output_cb_ = std::move(output_cb);
   state_ = State::kWaitingForFirstFrame;
@@ -237,7 +294,8 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
   }
 
   auto vea_config =
-      SetUpVeaConfig(profile_, options_, format, first_frame->storage_type());
+      SetUpVeaConfig(profile_, options_, format, first_frame->storage_type(),
+                     supported_rc_modes_);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux/ChromeOS require a special configuration to use dmabuf storage.
@@ -374,11 +432,16 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     std::move(done_cb).Run(status);
     return;
   }
+  if (options.bitrate && options_.bitrate &&
+      options.bitrate->mode() != options_.bitrate->mode()) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      "Bitrate mode change is not supported."));
+    return;
+  }
 
-  uint32_t default_bitrate = ComputeCheckedDefaultBitrate(options.frame_size);
   Bitrate bitrate =
-      options.bitrate.value_or(Bitrate::ConstantBitrate(default_bitrate));
-
+      CreateBitrate(options.bitrate, options.frame_size, supported_rc_modes_);
   uint32_t framerate = base::ClampRound<uint32_t>(
       options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate));
 

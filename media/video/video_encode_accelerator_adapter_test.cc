@@ -53,6 +53,19 @@ class VideoEncodeAcceleratorAdapterTest
     vea_ = new FakeVideoEncodeAccelerator(vea_runner_);
     gpu_factories_ =
         std::make_unique<MockGpuVideoAcceleratorFactories>(nullptr);
+    supported_profiles_ = {
+        VideoEncodeAccelerator::SupportedProfile(
+            profile_,
+            /*max_resolution=*/gfx::Size(3840, 2160),
+            /*max_framerate_numerator=*/30,
+            /*max_framerate_denominator=*/1,
+            /*rc_modes=*/VideoEncodeAccelerator::kConstantMode |
+                VideoEncodeAccelerator::kVariableMode),
+    };
+
+    EXPECT_CALL(*gpu_factories_.get(),
+                GetVideoEncodeAcceleratorSupportedProfiles())
+        .WillRepeatedly(Return(supported_profiles_));
     EXPECT_CALL(*gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
         .WillRepeatedly(Return(vea_.get()));
     EXPECT_CALL(*gpu_factories_.get(), GetTaskRunner())
@@ -172,6 +185,7 @@ class VideoEncodeAcceleratorAdapterTest
 
  protected:
   VideoCodecProfile profile_ = VP8PROFILE_ANY;
+  std::vector<VideoEncodeAccelerator::SupportedProfile> supported_profiles_;
   base::test::TaskEnvironment task_environment_;
   raw_ptr<FakeVideoEncodeAccelerator> vea_;  // owned by |vae_adapter_|
   std::unique_ptr<MockGpuVideoAcceleratorFactories> gpu_factories_;
@@ -328,8 +342,11 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
         EXPECT_TRUE(false) << "should never come here";
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
-  adapter()->Initialize(VIDEO_CODEC_PROFILE_UNKNOWN, options,
-                        std::move(output_cb), ValidatingStatusCB());
+  adapter()->Initialize(
+      VIDEO_CODEC_PROFILE_UNKNOWN, options, std::move(output_cb),
+      base::BindLambdaForTesting([](EncoderStatus s) {
+        EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderInitializationError);
+      }));
 
   auto frame =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
