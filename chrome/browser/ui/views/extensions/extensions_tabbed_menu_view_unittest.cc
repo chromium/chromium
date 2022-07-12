@@ -1164,7 +1164,9 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 }
 
 // Test extensions with activeTab are placed in the correct site access section.
-TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_ActiveTabExtension) {
+// TODO(crbug.com/1343895): Fix and re-enable.
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       DISABLED_SiteAccessTab_ActiveTabExtension) {
   InstallExtensionWithPermissions("Extension", {"activeTab"});
 
   const GURL url("http://www.url.com");
