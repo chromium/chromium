@@ -115,6 +115,14 @@ void WaylandTest::Sync() {
   server_.Pause();
 }
 
+void WaylandTest::SetPointerFocusedWindow(WaylandWindow* window) {
+  connection_->wayland_window_manager()->SetPointerFocusedWindow(window);
+}
+
+void WaylandTest::SetKeyboardFocusedWindow(WaylandWindow* window) {
+  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(window);
+}
+
 void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
                                      int width,
                                      int height,
