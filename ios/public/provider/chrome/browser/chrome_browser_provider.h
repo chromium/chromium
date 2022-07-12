@@ -26,7 +26,6 @@ namespace ios {
 
 class ChromeBrowserProvider;
 class ChromeIdentityService;
-class ChromeTrustedVaultService;
 
 // Getter and setter for the provider. The provider should be set early, before
 // any browser code is called (as the getter will fail if the provider has not
@@ -72,8 +71,6 @@ class ChromeBrowserProvider {
       std::unique_ptr<ChromeIdentityService> service);
   // Returns an instance of a Chrome identity service.
   ChromeIdentityService* GetChromeIdentityService();
-  // Returns an instance of a Chrome trusted vault service.
-  virtual ChromeTrustedVaultService* GetChromeTrustedVaultService();
 
   // Returns an instance of the user feedback provider.
   virtual UserFeedbackProvider* GetUserFeedbackProvider() const;

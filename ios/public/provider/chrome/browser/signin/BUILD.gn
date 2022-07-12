@@ -11,8 +11,6 @@ source_set("signin") {
     "chrome_identity_interaction_manager.mm",
     "chrome_identity_service.h",
     "chrome_identity_service.mm",
-    "chrome_trusted_vault_service.h",
-    "chrome_trusted_vault_service.mm",
   ]
   deps = [
     "//base",
@@ -57,8 +55,6 @@ source_set("test_support") {
     "fake_chrome_identity_interaction_manager.mm",
     "fake_chrome_identity_service.h",
     "fake_chrome_identity_service.mm",
-    "fake_chrome_trusted_vault_service.h",
-    "fake_chrome_trusted_vault_service.mm",
   ]
   deps = [
     ":constants",
@@ -104,10 +100,7 @@ source_set("constants") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "chrome_identity_service_unittest.mm",
-    "chrome_trusted_vault_service_unittest.mm",
-  ]
+  sources = [ "chrome_identity_service_unittest.mm" ]
   deps = [
     ":fake_chrome_identity",
     ":signin",

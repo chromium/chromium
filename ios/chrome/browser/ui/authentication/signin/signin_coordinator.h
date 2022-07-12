@@ -110,7 +110,7 @@ class PrefRegistrySyncable;
                                                   promoAction;
 
 // Returns a coordinator for re-authentication workflow for Trusted
-// Vault for the primary identity. This is done with ChromeTrustedVaultService.
+// Vault for the primary identity. This is done with TrustedVaultService.
 // Related to IOSTrustedVaultClient.
 // `viewController` presents the sign-in.
 // `intent` Dialog to present.

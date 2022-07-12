@@ -63,11 +63,6 @@ ChromeIdentityService* ChromeBrowserProvider::GetChromeIdentityService() {
   return chrome_identity_service_.get();
 }
 
-ChromeTrustedVaultService*
-ChromeBrowserProvider::GetChromeTrustedVaultService() {
-  return nullptr;
-}
-
 UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
   return nullptr;
 }

@@ -9,7 +9,6 @@
 #include "base/check.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#include "ios/public/provider/chrome/browser/signin/fake_chrome_trusted_vault_service.h"
 #import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,14 +27,6 @@ TestChromeBrowserProvider::~TestChromeBrowserProvider() {}
 TestChromeBrowserProvider& TestChromeBrowserProvider::GetTestProvider() {
   ChromeBrowserProvider& provider = GetChromeBrowserProvider();
   return static_cast<TestChromeBrowserProvider&>(provider);
-}
-
-ChromeTrustedVaultService*
-TestChromeBrowserProvider::GetChromeTrustedVaultService() {
-  if (!chrome_trusted_vault_service_) {
-    chrome_trusted_vault_service_.reset(new FakeChromeTrustedVaultService());
-  }
-  return chrome_trusted_vault_service_.get();
 }
 
 TestUserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
