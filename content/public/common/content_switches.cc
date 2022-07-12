@@ -640,10 +640,15 @@ const char kPullToRefresh[] = "pull-to-refresh";
 // the debounce mechanimsm.
 const char kQuotaChangeEventInterval[] = "quota-change-event-interval";
 
-// Reduce the minor version number in the User-Agent string.  This flag
+// Reduce the minor version number in the User-Agent string. This flag
 // implements phase 4 of User-Agent reduction:
 // https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html.
 const char kReduceUserAgentMinorVersion[] = "reduce-user-agent-minor-version";
+
+// Reduce the platform and oscpu in the desktop User-Agent string. This flag
+// implements phase 5 of User-Agent reduction:
+// https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html.
+const char kReduceUserAgentPlatformOsCpu[] = "reduce-user-agent-platform-oscpu";
 
 // Register Pepper plugins (see pepper_plugin_list.cc for its format).
 const char kRegisterPepperPlugins[]         = "register-pepper-plugins";

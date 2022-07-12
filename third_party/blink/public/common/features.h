@@ -681,6 +681,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kReduceUserAgentMinorVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kUserAgentFrozenBuildVersion;
 
+// If enabled, the platform and oscpu of the User-Agent string will be reduced.
+BLINK_COMMON_EXPORT extern const base::Feature kReduceUserAgentPlatformOsCpu;
+
 // If enabled, we only report FCP if there’s a successful commit to the
 // compositor. Otherwise, FCP may be reported if first BeginMainFrame results in
 // a commit failure (see crbug.com/1257607).

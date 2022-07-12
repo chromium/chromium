@@ -187,6 +187,7 @@ CONTENT_EXPORT extern const char kProxyServer[];
 CONTENT_EXPORT extern const char kPullToRefresh[];
 CONTENT_EXPORT extern const char kQuotaChangeEventInterval[];
 CONTENT_EXPORT extern const char kReduceUserAgentMinorVersion[];
+CONTENT_EXPORT extern const char kReduceUserAgentPlatformOsCpu[];
 CONTENT_EXPORT extern const char kRegisterPepperPlugins[];
 CONTENT_EXPORT extern const char kRemoteDebuggingPipe[];
 CONTENT_EXPORT extern const char kRemoteDebuggingPort[];

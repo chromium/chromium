@@ -3102,6 +3102,13 @@ const char kReduceUserAgentMinorVersionDescription[] =
     "The Chrome version in the User-Agent string will be reported as "
     "Chrome/<major_version>.0.0.0.";
 
+const char kReduceUserAgentPlatformOsCpuName[] =
+    "Reduce the plaftform and oscpu in the desktop User-Agent string";
+const char kReduceUserAgentPlatformOsCpuDescription[] =
+    "Reduce the plaftform and oscpu in the desktop User-Agent string.  "
+    "The platform and oscpu in the User-Agent string will be reported as "
+    "<unifiedPlatform>";
+
 const char kWebSQLAccessName[] = "Allows access to WebSQL APIs";
 const char kWebSQLAccessDescription[] =
     "The WebSQL API is enabled by default, but can be disabled here.";

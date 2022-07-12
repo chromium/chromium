@@ -8531,6 +8531,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReduceUserAgentMinorVersionDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kReduceUserAgentMinorVersion)},
 
+    {"reduce-user-agent-platform-oscpu",
+     flag_descriptions::kReduceUserAgentPlatformOsCpuName,
+     flag_descriptions::kReduceUserAgentPlatformOsCpuDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kReduceUserAgentPlatformOsCpu)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-variable-refresh-rate",
      flag_descriptions::kEnableVariableRefreshRateName,

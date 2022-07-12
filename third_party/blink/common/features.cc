@@ -1425,6 +1425,9 @@ const base::Feature kReduceUserAgentMinorVersion{
 const base::FeatureParam<std::string> kUserAgentFrozenBuildVersion{
     &kReduceUserAgentMinorVersion, "build_version", "0"};
 
+const base::Feature kReduceUserAgentPlatformOsCpu{
+    "ReduceUserAgentPlatformOsCpu", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kReportFCPOnlyOnSuccessfulCommit{
     "ReportFCPOnlyOnSuccessfulCommit", base::FEATURE_DISABLED_BY_DEFAULT};
 

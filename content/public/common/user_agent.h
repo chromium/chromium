@@ -85,6 +85,11 @@ CONTENT_EXPORT std::string GetUnifiedPlatform();
 CONTENT_EXPORT std::string BuildUserAgentFromProduct(
     const std::string& product);
 
+// Helper function to generate a reduced user agent string with unified
+// platform from a given product name.
+CONTENT_EXPORT std::string BuildUnifiedPlatformUserAgentFromProduct(
+    const std::string& product);
+
 // Returns the model information. Returns a blank string if not on Android or
 // if on a codenamed (i.e. not a release) build of an Android.
 CONTENT_EXPORT std::string BuildModelInfo();

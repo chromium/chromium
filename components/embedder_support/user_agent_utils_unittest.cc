@@ -362,6 +362,17 @@ class UserAgentUtilsTest : public testing::Test,
     return minor_version;
   }
 
+  std::string GetUserAgentPlatformOsCpu(const std::string& user_agent_value) {
+    // A regular expression that matches Mozilla/5.0 ({platform_oscpu})
+    // in the User-Agent string.
+    static constexpr char kChromePlatformOscpuRegex[] =
+        "^Mozilla\\/5\\.0 \\((.+)\\) AppleWebKit\\/537\\.36";
+    std::string platform_oscpu;
+    EXPECT_TRUE(re2::RE2::PartialMatch(
+        user_agent_value, kChromePlatformOscpuRegex, &platform_oscpu));
+    return platform_oscpu;
+  }
+
   void VerifyFullUserAgent() {
     EXPECT_EQ(
         GetUserAgent(ForceMajorVersionToMinorPosition::kForceEnabled),
@@ -566,6 +577,23 @@ TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
       {blink::features::kReduceUserAgentMinorVersion}, {});
   { VerifyGetUserAgentFunctions(); }
 
+  // Verify that three user agent functions return the correct user agent string
+  // when both kReduceUserAgentMinorVersion and kReduceUserAgentPlatformOsCpu
+  // turn on.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion,
+       blink::features::kReduceUserAgentPlatformOsCpu},
+      {});
+  { VerifyGetUserAgentFunctions(); }
+
+  // Verify that three user agent functions return the correct user agent string
+  // when kReduceUserAgentPlatformOsCpu turns on.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentPlatformOsCpu}, {});
+  { VerifyGetUserAgentFunctions(); }
+
   // Verify that three user agent functions return the correct user agent
   // when kReduceUserAgentMinorVersion turns off.
   scoped_feature_list.Reset();
@@ -578,6 +606,103 @@ TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures({}, {});
   { VerifyGetUserAgentFunctions(); }
+}
+
+TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion,
+       blink::features::kReduceUserAgentPlatformOsCpu},
+      {});
+
+#if BUILDFLAG(IS_ANDROID)
+  // Verify the correct user agent is returned when the UseMobileUserAgent
+  // command line flag is present.
+  const char* const kArguments[] = {"chrome"};
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->InitFromArgv(1, kArguments);
+
+  // Verify the mobile platform and oscpu user agent string is not reduced when
+  // not using a mobile user agent.
+  ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  {
+    EXPECT_NE(
+        base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                           content::GetUnifiedPlatform().c_str(),
+                           version_info::GetMajorVersionNumber().c_str(), ""),
+        GetUserAgent());
+    EXPECT_NE(content::GetUnifiedPlatform().c_str(),
+              GetUserAgentPlatformOsCpu(GetUserAgent()));
+  }
+
+  // Verify the mobile platform and oscpu user agent string is not reduced when
+  // using a mobile user agent.
+  command_line->AppendSwitch(switches::kUseMobileUserAgent);
+  ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  {
+    EXPECT_NE(base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                                 content::GetUnifiedPlatform().c_str(),
+                                 version_info::GetMajorVersionNumber().c_str(),
+                                 "Mobile "),
+              GetUserAgent());
+  }
+
+#else
+  {
+    // Verify desktop unified platform user agent is returned.
+    EXPECT_EQ(base::StringPrintf(content::frozen_user_agent_strings::kDesktop,
+                                 content::GetUnifiedPlatform().c_str(),
+                                 version_info::GetMajorVersionNumber().c_str()),
+              GetUserAgent());
+  }
+
+  // Verify that the reduced user agent string respects
+  // --force-major-version-to-minor
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion,
+       blink::features::kReduceUserAgentPlatformOsCpu,
+       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
+      {});
+  {
+    EXPECT_EQ(base::StringPrintf("Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, "
+                                 "like Gecko) Chrome/%s.%s.0.0 Safari/537.36",
+                                 content::GetUnifiedPlatform().c_str(), "99",
+                                 version_info::GetMajorVersionNumber().c_str()),
+              GetUserAgent());
+  }
+
+  // Ensure that the ForceMajorVersionToMinorPosition policy is applied even
+  // when it contradicts Blink feature status values.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion,
+       blink::features::kReduceUserAgentPlatformOsCpu,
+       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
+      {});
+  {
+    EXPECT_EQ(base::StringPrintf(content::frozen_user_agent_strings::kDesktop,
+                                 content::GetUnifiedPlatform().c_str(),
+                                 version_info::GetMajorVersionNumber().c_str()),
+              GetUserAgent(ForceMajorVersionToMinorPosition::kForceDisabled));
+  }
+#endif
+
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion,
+       blink::features::kReduceUserAgentPlatformOsCpu},
+      {});
+// Verify only reduce platform and oscpu in desktop user agent string in
+// phase 5.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_NE(GetUserAgent(), GetReducedUserAgent());
+  EXPECT_NE(content::GetUnifiedPlatform().c_str(),
+            GetUserAgentPlatformOsCpu(GetUserAgent()));
+#else
+  EXPECT_EQ(GetUserAgent(), GetReducedUserAgent());
+#endif
 }
 
 TEST_F(UserAgentUtilsTest, UserAgentMetadata) {

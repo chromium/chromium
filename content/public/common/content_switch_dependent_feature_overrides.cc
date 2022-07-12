@@ -142,6 +142,11 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
     {switches::kReduceUserAgentMinorVersion,
      std::cref(blink::features::kReduceUserAgentMinorVersion),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
+    // Override for --reduce-user-agent-platform-oscpu.
+    {switches::kReduceUserAgentPlatformOsCpu,
+     std::cref(blink::features::kReduceUserAgentPlatformOsCpu),
+     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
 
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides;

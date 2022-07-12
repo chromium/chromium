@@ -55722,6 +55722,7 @@ from previous Chrome versions.
   <int value="-1839540507" label="OneGoogleBarModalOverlays:enabled"/>
   <int value="-1839496458" label="disable-file-manager-touch-mode"/>
   <int value="-1838482444" label="disable-settings-window"/>
+  <int value="-1837855388" label="ReduceUserAgentPlatformOsCpu:disabled"/>
   <int value="-1837401779" label="EnableFileManagerFormatDialog:enabled"/>
   <int value="-1837329460" label="NewEncodeCpuLoadEstimator:enabled"/>
   <int value="-1836854634" label="CloseTabSuggestions:enabled"/>
@@ -55778,6 +55779,7 @@ from previous Chrome versions.
   <int value="-1808477331" label="MidiManagerCros:disabled"/>
   <int value="-1808445397" label="ShareByDefaultInCCT:disabled"/>
   <int value="-1807797669" label="google-doodle-url"/>
+  <int value="-1807092388" label="ReduceUserAgentPlatformOsCpu:enabled"/>
   <int value="-1806739839"
       label="UseLookalikesForNavigationSuggestions:disabled"/>
   <int value="-1804485171" label="disable-fullscreen-tab-detaching"/>

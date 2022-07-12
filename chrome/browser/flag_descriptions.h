@@ -1745,6 +1745,9 @@ extern const char kDurableClientHintsCacheDescription[];
 extern const char kReduceUserAgentMinorVersionName[];
 extern const char kReduceUserAgentMinorVersionDescription[];
 
+extern const char kReduceUserAgentPlatformOsCpuName[];
+extern const char kReduceUserAgentPlatformOsCpuDescription[];
+
 extern const char kWebSQLAccessName[];
 extern const char kWebSQLAccessDescription[];
 

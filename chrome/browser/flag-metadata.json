@@ -5365,6 +5365,11 @@
     "expiry_milestone": 113
   },
   {
+    "name": "reduce-user-agent-platform-oscpu",
+    "owners": [ "miketaylr", "victortan"],
+    "expiry_milestone": 113
+  },
+  {
     "name": "reengagement-notification",
     "owners": [ "dtrainor", "xingliu" ],
     "expiry_milestone": 90

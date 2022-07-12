@@ -290,6 +290,13 @@ std::string GetReducedUserAgent(bool mobile, std::string major_version) {
   return user_agent;
 }
 
+std::string BuildUnifiedPlatformUserAgentFromProduct(
+    const std::string& product) {
+  std::string os_info;
+  base::StringAppendF(&os_info, "%s", GetUnifiedPlatform().c_str());
+  return BuildUserAgentFromOSAndProduct(os_info, product);
+}
+
 std::string BuildUserAgentFromProduct(const std::string& product) {
   std::string os_info;
   base::StringAppendF(&os_info, "%s%s", GetUserAgentPlatform().c_str(),

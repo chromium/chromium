@@ -185,6 +185,20 @@ bool ShouldReduceUserAgentMinorVersion(
               UserAgentReductionEnterprisePolicyState::kForceEnabled);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Returns true if both kReduceUserAgentMinorVersionName and
+// kReduceUserAgentPlatformOsCpu are enabled. It makes
+// kReduceUserAgentPlatformOsCpu depend on kReduceUserAgentMinorVersionName.
+// It helps us avoid introducing individual enterprise policy controls for
+// reducing the user agent platform and oscpu.
+bool ShouldReduceUserAgentPlatformOsCpu(
+    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+  return ShouldReduceUserAgentMinorVersion(user_agent_reduction) &&
+         base::FeatureList::IsEnabled(
+             blink::features::kReduceUserAgentPlatformOsCpu);
+}
+#endif
+
 const std::string& GetMajorInMinorVersionNumber() {
   static const base::NoDestructor<std::string> version_number([] {
     base::Version version(version_info::GetVersionNumber());
@@ -372,8 +386,14 @@ std::string GetUserAgentInternal(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent))
     product += " Mobile";
-#endif
   return content::BuildUserAgentFromProduct(product);
+#else
+  // In User-Agent reduction phase 5, only apply the <unifiedPlatform> to
+  // desktop UA strings.
+  return ShouldReduceUserAgentPlatformOsCpu(user_agent_reduction)
+             ? content::BuildUnifiedPlatformUserAgentFromProduct(product)
+             : content::BuildUserAgentFromProduct(product);
+#endif
 }
 
 std::string GetUserAgent(
