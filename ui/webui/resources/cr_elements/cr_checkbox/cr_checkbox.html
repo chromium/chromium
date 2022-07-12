@@ -86,6 +86,13 @@ List of customizable styles:
         width: var(--cr-checkbox-size);
       }
 
+      @media (forced-colors: active) {
+        /* paper-ripple is not showing in Windows HCM. Use outline instead. */
+        :host(:focus) #checkbox {
+          outline: var(--cr-focus-outline-hcm);
+        }
+      }
+
       #checkmark {
         border-color: var(--cr-checkbox-mark-color);
         border-style: solid;

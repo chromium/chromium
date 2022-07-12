@@ -11,6 +11,14 @@
         position: absolute;
       }
 
+      @media (forced-colors: active) {
+        :host dialog {
+          /* Use border instead of box-shadow (which does not work) in Windows
+             HCM. */
+          border: var(--cr-border-hcm);
+        }
+      }
+
       :host dialog::backdrop {
         background-color: transparent;
       }
@@ -46,6 +54,14 @@
       :host ::slotted(.dropdown-item:focus) {
         background-color: var(--cr-menu-background-focus-color);
         outline: none;
+      }
+
+      @media (forced-colors: active) {
+        :host ::slotted(.dropdown-item:focus) {
+          /* Use outline instead of background-color (which does not work) in
+             Windows HCM. */
+          outline: var(--cr-focus-outline-hcm);
+        }
       }
 
       .item-wrapper {

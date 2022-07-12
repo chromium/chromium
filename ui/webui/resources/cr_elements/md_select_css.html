@@ -62,6 +62,14 @@
         box-shadow: 0 0 0 2px var(--md-select-focus-shadow-color);
       }
 
+      @media (forced-colors: active) {
+        .md-select:focus {
+          /* Use outline instead of box-shadow (which does not work) in Windows
+             HCM. */
+          outline: var(--cr-focus-outline-hcm);
+        }
+      }
+
       /* Should not have an outline if opened by mouse click. */
       .md-select:active {
         box-shadow: none;

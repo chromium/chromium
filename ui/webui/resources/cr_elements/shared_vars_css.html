@@ -141,6 +141,16 @@
     }
   }
 
+  @media (forced-colors: active) {
+    html {
+      /* In Windows HCM, |box-shadow| is not showing. The suggested workaround
+         is to use |outline| or |border| instead. The color does not matter,
+         since it is forced by the OS so using 'transparent'. */
+      --cr-focus-outline-hcm: 2px solid transparent;
+      --cr-border-hcm: 2px solid transparent;
+    }
+  }
+
   /* Don't use color values past this point. Instead, create a variable that's
    * set for both light and dark modes and use a single variable below. */
 

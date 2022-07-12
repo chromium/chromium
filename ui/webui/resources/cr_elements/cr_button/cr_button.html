@@ -86,6 +86,14 @@
         box-shadow: 0 0 0 2px var(--focus-shadow-color);
       }
 
+      @media (forced-colors: active) {
+        :host-context(.focus-outline-visible):host(:focus) {
+          /* Use outline instead of box-shadow (which does not work) in Windows
+             HCM. */
+          outline: var(--cr-focus-outline-hcm);
+        }
+      }
+
       :host(:active) {
         background: var(--active-bg);
         box-shadow: var(--active-shadow,

@@ -39,6 +39,14 @@
         }
       }
 
+      @media (forced-colors: active) {
+        dialog {
+          /* Use border instead of box-shadow (which does not work) in Windows
+             HCM. */
+          border: var(--cr-border-hcm);
+        }
+      }
+
       dialog[open] #content-wrapper {
         /* Keep max-height within viewport, and flex content accordingly. */
         display: flex;
