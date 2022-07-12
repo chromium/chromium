@@ -9,6 +9,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../controls/settings_textarea.js';
 import '../i18n_setup.js';
 // <if expr="chromeos_ash or chromeos_lacros">
@@ -19,6 +20,7 @@ import './password_edit_dialog.js';
 import './password_remove_dialog.js';
 import './passwords_shared.css.js';
 
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
@@ -39,6 +41,12 @@ import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_re
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 import {getTemplate} from './password_view.html.js';
+
+export interface PasswordViewElement {
+  $: {
+    toast: CrToastElement,
+  };
+}
 
 const PasswordViewElementBase =
     PasswordRemovalMixin(PasswordRequestorMixin(MergePasswordsStoreCopiesMixin(
@@ -104,6 +112,11 @@ export class PasswordViewElement extends PasswordViewElementBase {
         value: () => [],
       },
 
+      toastText_: {
+        type: String,
+        value: '',
+      },
+
       credential: {
         type: Object,
         value: null,
@@ -161,6 +174,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   }
 
   private activeDialogAnchorStack_: Array<HTMLElement>;
+  private toastText_: string;
   credential: MultiStorePasswordUiEntry|null;
   private inAccount_: boolean|undefined;
   private isPasswordNotesEnabled_: boolean;
@@ -201,6 +215,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
       this.recentlyEdited_ = false;
       this.password_ = '';
       this.credential = null;
+      this.hideToast_();
       return;
     }
     const queryParameters = Router.getInstance().getQueryParameters();
@@ -290,12 +305,19 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.requestPlaintextPassword(
             this.credential!.getAnyId(),
             chrome.passwordsPrivate.PlaintextReason.COPY)
+        .then(() => {
+          this.toastText_ = this.i18n('passwordCopiedToClipboard');
+          this.showToast_();
+        })
         .catch(() => {});
   }
 
   /** Handler to copy the username from the username field. */
   private onCopyUsernameButtonClick_() {
-    navigator.clipboard.writeText(this.credential!.username);
+    navigator.clipboard.writeText(this.credential!.username).then(() => {
+      this.toastText_ = this.i18n('passwordUsernameCopiedToClipboard');
+      this.showToast_();
+    });
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED);
   }
@@ -333,6 +355,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   private onSavedPasswordEdited_(event: SavedPasswordEditedEvent) {
     this.recentlyEdited_ = true;
+
     const newUsername = event.detail.username;
     if (event.detail.username !== this.credential!.username ||
         event.detail.password !== this.credential!.password ||
@@ -454,6 +477,14 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.recentlyEdited_ = false;
     recordPasswordViewInteraction(
         PasswordViewPageInteractions.CREDENTIAL_FOUND);
+  }
+
+  private hideToast_() {
+    this.$.toast.hide();
+  }
+
+  private showToast_() {
+    this.$.toast.show();
   }
 }
 
