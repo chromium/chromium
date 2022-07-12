@@ -4555,11 +4555,6 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
 }
 
 void LocalFrameView::BeginLifecycleUpdates() {
-  // Avoid pumping frames for the initially empty document.
-  // TODO(schenney): This seems pointless because main frame updates do occur
-  // for pages like about:blank, at least according to log messages.
-  if (GetFrame().GetDocument()->IsInitialEmptyDocument())
-    return;
   lifecycle_updates_throttled_ = false;
 
   LayoutView* layout_view = GetLayoutView();
@@ -4572,6 +4567,10 @@ void LocalFrameView::BeginLifecycleUpdates() {
 
   ScheduleAnimation();
   SetIntersectionObservationState(kRequired);
+
+  // Do not report paint timing for the initially empty document.
+  if (GetFrame().GetDocument()->IsInitialEmptyDocument())
+    MarkIneligibleToPaint();
 
   // Non-main-frame lifecycle and commit deferral are controlled by their
   // main frame.

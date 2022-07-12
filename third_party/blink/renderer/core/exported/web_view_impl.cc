@@ -3790,7 +3790,6 @@ gfx::Size WebViewImpl::GetPreferredSizeForTest() {
 }
 
 void WebViewImpl::StopDeferringMainFrameUpdate() {
-  DCHECK(MainFrameImpl());
   scoped_defer_main_frame_update_ = nullptr;
 }
 

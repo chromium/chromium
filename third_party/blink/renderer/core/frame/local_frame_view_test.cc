@@ -79,6 +79,8 @@ class LocalFrameViewTest : public RenderingTest {
   Persistent<AnimationMockChromeClient> chrome_client_;
 };
 
+using LocalFrameViewSimTest = SimTest;
+
 TEST_F(LocalFrameViewTest, SetPaintInvalidationDuringUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
   GetDocument().getElementById("a")->setAttribute(html_names::kStyleAttr,
@@ -345,7 +347,7 @@ TEST_F(LocalFrameViewTest,
 // Ensure the fragment navigation "scroll into view and focus" behavior doesn't
 // activate synchronously while rendering is blocked waiting on a stylesheet.
 // See https://crbug.com/851338.
-TEST_F(SimTest, FragmentNavChangesFocusWhileRenderingBlocked) {
+TEST_F(LocalFrameViewSimTest, FragmentNavChangesFocusWhileRenderingBlocked) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimSubresourceRequest css_resource("https://example.com/sheet.css",
                                      "text/css");
@@ -403,7 +405,7 @@ TEST_F(SimTest, FragmentNavChangesFocusWhileRenderingBlocked) {
       << "Scroll offset wasn't changed after load completed.";
 }
 
-TEST_F(SimTest, ForcedLayoutWithIncompleteSVGChildFrame) {
+TEST_F(LocalFrameViewSimTest, ForcedLayoutWithIncompleteSVGChildFrame) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest svg_resource("https://example.com/file.svg", "image/svg+xml");
 
@@ -441,9 +443,6 @@ TEST_F(LocalFrameViewTest, TogglePaintEligibility) {
   GetDocument().View()->MarkFirstEligibleToPaint();
   EXPECT_FALSE(parent_timing.FirstEligibleToPaint().is_null());
 
-  // Subframes are throttled when first loaded.
-  EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRenderingForTest());
-
   // Toggle paint elgibility to true.
   ChildDocument().OverrideIsInitialEmptyDocument();
   ChildDocument().View()->BeginLifecycleUpdates();
@@ -468,7 +467,7 @@ TEST_F(LocalFrameViewTest, IsUpdatingLifecycle) {
   GetFrame().View()->SetTargetStateForTest(DocumentLifecycle::kUninitialized);
 }
 
-TEST_F(SimTest, PaintEligibilityNoSubframe) {
+TEST_F(LocalFrameViewSimTest, PaintEligibilityNoSubframe) {
   SimRequest resource("https://example.com/", "text/html");
 
   LoadURL("https://example.com/");
@@ -485,12 +484,12 @@ TEST_F(SimTest, PaintEligibilityNoSubframe) {
   EXPECT_FALSE(timing.FirstEligibleToPaint().is_null());
 }
 
-TEST_F(SimTest, SameOriginPaintEligibility) {
+TEST_F(LocalFrameViewSimTest, SameOriginPaintEligibility) {
   SimRequest resource("https://example.com/", "text/html");
 
   LoadURL("https://example.com/");
   resource.Complete(R"HTML(
-      <iframe id=frame top=4000px left=4000px>
+      <iframe id=frame style="position:absolute;top:4000px;left:4000px">
         <p>Hello</p>
       </iframe>
     )HTML");
@@ -502,7 +501,8 @@ TEST_F(SimTest, SameOriginPaintEligibility) {
 
   EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
 
-  // Same origin frames are not throttled.
+  // Same origin frames are not throttled, but initially empty frame
+  // are not eligible to paint.
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
   EXPECT_TRUE(frame_timing.FirstEligibleToPaint().is_null());
 
@@ -513,12 +513,13 @@ TEST_F(SimTest, SameOriginPaintEligibility) {
   EXPECT_FALSE(frame_timing.FirstEligibleToPaint().is_null());
 }
 
-TEST_F(SimTest, CrossOriginPaintEligibility) {
+TEST_F(LocalFrameViewSimTest, CrossOriginPaintEligibility) {
   SimRequest resource("https://example.com/", "text/html");
 
   LoadURL("https://example.com/");
   resource.Complete(R"HTML(
-      <iframe id=frame srcdoc ="<p>Hello</p>" sandbox top=4000px left=4000px>
+      <iframe id=frame srcdoc ="<p>Hello</p>" sandbox
+        style="position:absolute;top:4000px;left:4000px">
       </iframe>
     )HTML");
 
@@ -526,6 +527,11 @@ TEST_F(SimTest, CrossOriginPaintEligibility) {
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
   PaintTiming& frame_timing = PaintTiming::From(*frame_document);
+
+  // We do one lifecycle update before throttling initially empty documents.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  // And another to mark ineligible for paint.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
 
@@ -540,7 +546,7 @@ TEST_F(SimTest, CrossOriginPaintEligibility) {
   EXPECT_TRUE(frame_timing.FirstEligibleToPaint().is_null());
 }
 
-TEST_F(SimTest, NestedCrossOriginPaintEligibility) {
+TEST_F(LocalFrameViewSimTest, NestedCrossOriginPaintEligibility) {
   // Create a document with doubly nested iframes.
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
@@ -548,7 +554,8 @@ TEST_F(SimTest, NestedCrossOriginPaintEligibility) {
   LoadURL("https://example.com/");
   main_resource.Complete("<iframe id=outer src=iframe.html></iframe>");
   frame_resource.Complete(R"HTML(
-      <iframe id=inner srcdoc ="<p>Hello</p>" sandbox top=4000px left=4000px>
+      <iframe id=inner srcdoc ="<p>Hello</p>" sandbox
+        style="position:absolute;top:4000px;left:4000px">
       </iframe>
     )HTML");
 
@@ -562,9 +569,14 @@ TEST_F(SimTest, NestedCrossOriginPaintEligibility) {
   auto* inner_frame_document = inner_frame_element->contentDocument();
   PaintTiming& inner_frame_timing = PaintTiming::From(*inner_frame_document);
 
+  // We do one lifecycle update before throttling initially empty documents.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  // And another to mark ineligible for paint.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
   EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
   EXPECT_FALSE(outer_frame_document->View()->ShouldThrottleRenderingForTest());
-  EXPECT_TRUE(outer_frame_timing.FirstEligibleToPaint().is_null());
+  EXPECT_FALSE(outer_frame_timing.FirstEligibleToPaint().is_null());
   EXPECT_TRUE(inner_frame_document->View()->ShouldThrottleRenderingForTest());
   EXPECT_TRUE(inner_frame_timing.FirstEligibleToPaint().is_null());
 

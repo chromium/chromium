@@ -288,7 +288,7 @@ TEST_P(CompositingReasonFinderTest, DontPromoteEmptyIframe) {
   ASSERT_TRUE(child_frame);
   LocalFrameView* child_frame_view = child_frame->View();
   ASSERT_TRUE(child_frame_view);
-  EXPECT_TRUE(child_frame_view->CanThrottleRendering());
+  EXPECT_FALSE(child_frame_view->CanThrottleRendering());
 }
 
 TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
