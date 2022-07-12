@@ -77,13 +77,11 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
   scenic_session_.SetDebugName("Chromium ScenicWindow");
 
   // Subscribe to metrics events from the node. These events are used to
-  // get the device pixel ratio for the screen.
+  // get the device pixel ratio for the screen. In order to receive metrics
+  // events on this node, we must also attach it to the scene graph.
   node_.SetEventMask(fuchsia::ui::gfx::kMetricsEventMask);
-
-  // Add input shape.
-  node_.AddChild(input_node_);
-
-  node_.AddChild(render_node_);
+  view_.AddChild(node_);
+  safe_presenter_.QueuePresent();
 
   delegate_->OnAcceleratedWidgetAvailable(window_id_);
 
@@ -431,10 +429,13 @@ bool ScenicWindow::UpdateRootNodeVisibility() {
   bool should_show_root_node = is_visible_ && !is_zero_sized();
   if (should_show_root_node != is_root_node_shown_) {
     is_root_node_shown_ = should_show_root_node;
-    if (should_show_root_node)
-      view_.AddChild(node_);
-    else
-      node_.Detach();
+    if (should_show_root_node) {
+      // Attach nodes to render content and receive input.
+      node_.AddChild(input_node_);
+      node_.AddChild(render_node_);
+    } else {
+      node_.DetachChildren();
+    }
   }
   return is_root_node_shown_;
 }
