@@ -151,6 +151,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
+import org.chromium.chrome.browser.stylus_handwriting.StylusWritingCoordinator;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -398,6 +399,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private TextBubbleBackPressHandler mTextBubbleBackPressHandler;
     private SelectionPopupBackPressHandler mSelectionPopupBackPressHandler;
     private Callback<TabModelSelector> mSelectionPopupBackPressInitCallback;
+    private StylusWritingCoordinator mStylusWritingCoordinator;
 
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
@@ -451,6 +453,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // Make sure the root coordinator is created prior to calling super to ensure all
         // the activity lifecycle events are called.
         mRootUiCoordinator = createRootUiCoordinator();
+
+        mStylusWritingCoordinator = new StylusWritingCoordinator(
+                this, getLifecycleDispatcher(), getActivityTabProvider());
 
         // Create component before calling super to give its members a chance to catch
         // onPreInflationStartup event.
@@ -1590,6 +1595,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (mSelectionPopupBackPressHandler != null) {
             mSelectionPopupBackPressHandler.destroy();
             mSelectionPopupBackPressHandler = null;
+        }
+
+        if (mStylusWritingCoordinator != null) {
+            mStylusWritingCoordinator.destroy();
+            mStylusWritingCoordinator = null;
         }
 
         mActivityTabProvider.destroy();

@@ -723,7 +723,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                       uint32_t key_modifiers,
                       base::OnceClosure callback) override;
   void DragSourceSystemDragEnded() override;
-  void OnStartStylusWriting() override;
+  void OnStartStylusWriting(OnStartStylusWritingCallback callback) override;
   void SetBackgroundOpaque(bool opaque) override;
   void SetActive(bool active) override;
   // For both mainframe and childframe change the text direction of the
@@ -887,6 +887,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Returns the currently focused `Element` in any `LocalFrame` owned by the
   // associated `WebView`.
   Element* FocusedElement() const;
+
+  gfx::Rect GetAbsoluteCaretBounds();
 
   // Perform a hit test for a point relative to the root frame of the page.
   HitTestResult HitTestResultForRootFramePos(

@@ -116,6 +116,10 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
   // Requests to start stylus writing and returns true if successful.
   bool RequestStartStylusWriting();
 
+  void OnEditElementFocusedForStylusWriting(
+      const gfx::Rect& focused_edit_bounds,
+      const gfx::Rect& caret_bounds);
+
   base::android::ScopedJavaLocalRef<jobject> java_ime_adapter_for_testing(
       JNIEnv* env) {
     return java_ime_adapter_.get(env);

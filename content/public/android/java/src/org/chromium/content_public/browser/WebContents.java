@@ -419,6 +419,13 @@ public interface WebContents extends Parcelable {
     void setSmartClipResultHandler(final Handler smartClipHandler);
 
     /**
+     * Set the handler that provides stylus handwriting recognition.
+     *
+     * @param stylusWritingHandler the object that implements StylusWritingHandler interface.
+     */
+    void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler);
+
+    /**
      * Returns {@link EventForwarder} which is used to forward input/view events
      * to native content layer.
      */

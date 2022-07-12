@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
@@ -233,6 +234,25 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
     return viz::FrameSinkId();
 
   return remote_frame->GetFrameSinkId();
+}
+
+bool IsElementNotNullAndEditable(Element* element) {
+  if (!element)
+    return false;
+
+  if (IsEditable(*element))
+    return true;
+
+  auto* text_control = ToTextControlOrNull(element);
+  if (text_control && !text_control->IsDisabledOrReadOnly())
+    return true;
+
+  if (EqualIgnoringASCIICase(element->FastGetAttribute(html_names::kRoleAttr),
+                             "textbox")) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -490,24 +510,46 @@ void WebFrameWidgetImpl::DragSourceSystemDragEnded() {
   CancelDrag();
 }
 
-void WebFrameWidgetImpl::OnStartStylusWriting() {
+gfx::Rect WebFrameWidgetImpl::GetAbsoluteCaretBounds() {
+  LocalFrame* local_frame = GetPage()->GetFocusController().FocusedFrame();
+  if (local_frame) {
+    auto& selection = local_frame->Selection();
+    if (selection.GetSelectionInDOMTree().IsCaret())
+      return selection.AbsoluteCaretBounds();
+  }
+  return gfx::Rect();
+}
+
+void WebFrameWidgetImpl::OnStartStylusWriting(
+    OnStartStylusWritingCallback callback) {
   // Focus the stylus writable element for current touch sequence as we have
   // detected writing has started.
   LocalFrame* frame = GetPage()->GetFocusController().FocusedFrame();
   if (!frame)
-    return;
+    std::move(callback).Run(absl::nullopt, absl::nullopt);
+
   Element* stylus_writable_element =
       frame->GetEventHandler().CurrentTouchDownElement();
   if (!stylus_writable_element)
-    return;
+    std::move(callback).Run(absl::nullopt, absl::nullopt);
+
   if (auto* text_control = EnclosingTextControl(stylus_writable_element)) {
     text_control->Focus();
   } else if (auto* html_element =
                  DynamicTo<HTMLElement>(stylus_writable_element)) {
     html_element->Focus();
   }
-  // TODO(rbug.com/1330821): If we are unable to focus writable element for any
-  // reason, notify browser about the same.
+  Element* focused_element = FocusedElement();
+  // Since the element can change after it gets focused, we just verify if
+  // the focused element is editable to continue writing.
+  if (IsElementNotNullAndEditable(focused_element)) {
+    std::move(callback).Run(
+        focused_element->BoundsInViewport(),
+        frame->View()->FrameToViewport(GetAbsoluteCaretBounds()));
+    return;
+  }
+
+  std::move(callback).Run(absl::nullopt, absl::nullopt);
 }
 
 void WebFrameWidgetImpl::SetBackgroundOpaque(bool opaque) {

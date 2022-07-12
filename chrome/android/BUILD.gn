@@ -577,6 +577,7 @@ android_library("chrome_java") {
     "//components/site_engagement/content/android:java",
     "//components/spellcheck/browser/android:java",
     "//components/strictmode/android:java",
+    "//components/stylus_handwriting/android:java",
     "//components/subresource_filter/android:java",
     "//components/sync/android:sync_java",
     "//components/sync/protocol:protocol_java",

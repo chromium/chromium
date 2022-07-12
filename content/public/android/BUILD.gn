@@ -367,6 +367,8 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/SelectionPopupController.java",
     "java/src/org/chromium/content_public/browser/SmartClipProvider.java",
     "java/src/org/chromium/content_public/browser/SpeechRecognition.java",
+    "java/src/org/chromium/content_public/browser/StylusWritingHandler.java",
+    "java/src/org/chromium/content_public/browser/StylusWritingImeCallback.java",
     "java/src/org/chromium/content_public/browser/ViewEventSink.java",
     "java/src/org/chromium/content_public/browser/WebAuthenticationDelegate.java",
     "java/src/org/chromium/content_public/browser/WebContents.java",

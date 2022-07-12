@@ -86,7 +86,7 @@ public class GestureListenerManagerImpl
                 GestureListenerManagerImpl.this, mWebContents);
     }
 
-    private void resetGestureDetection() {
+    public void resetGestureDetection() {
         if (mNativeGestureListenerManager != 0) {
             GestureListenerManagerImplJni.get().resetGestureDetection(
                     mNativeGestureListenerManager, GestureListenerManagerImpl.this);

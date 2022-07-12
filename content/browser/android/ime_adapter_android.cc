@@ -365,6 +365,20 @@ bool ImeAdapterAndroid::RequestStartStylusWriting() {
   return false;
 }
 
+void ImeAdapterAndroid::OnEditElementFocusedForStylusWriting(
+    const gfx::Rect& focused_edit_bounds,
+    const gfx::Rect& caret_bounds) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (!obj.is_null()) {
+    gfx::Point caret_center = caret_bounds.CenterPoint();
+    Java_ImeAdapterImpl_onEditElementFocusedForStylusWriting(
+        env, obj, focused_edit_bounds.x(), focused_edit_bounds.y(),
+        focused_edit_bounds.right(), focused_edit_bounds.bottom(),
+        caret_center.x(), caret_center.y());
+  }
+}
+
 void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,
                                            const JavaParamRef<jobject>& obj,
                                            jint focus_type) {

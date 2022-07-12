@@ -1024,6 +1024,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorProperties.java",
   "java/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorSceneLayer.java",
   "java/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorViewBinder.java",
+  "java/src/org/chromium/chrome/browser/stylus_handwriting/StylusWritingCoordinator.java",
   "java/src/org/chromium/chrome/browser/suggestions/DestructionObserver.java",
   "java/src/org/chromium/chrome/browser/suggestions/ImageFetcher.java",
   "java/src/org/chromium/chrome/browser/suggestions/OfflinableSuggestion.java",

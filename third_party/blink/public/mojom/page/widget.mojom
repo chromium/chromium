@@ -79,8 +79,11 @@ interface FrameWidget {
   // Notifies the Widget that stylus writing has started. This is used primarily
   // to focus the input element where writing was detected to allow committing
   // recognized text. Stylus writing ends with a Ime commit and we do not need
-  // another message that writing has ended.
-  OnStartStylusWriting();
+  // another message that writing has ended. This message responds with the
+  // focused edit bounds and caret bounds after stylus writable element is
+  // focused, and null if that element could not be focused.
+  OnStartStylusWriting() => (gfx.mojom.Rect? focused_edit_bounds,
+                             gfx.mojom.Rect? caret_bounds);
 
   // Makes the Widget background transparent or opaque.
   SetBackgroundOpaque(bool opaque);

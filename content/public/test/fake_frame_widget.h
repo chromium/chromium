@@ -60,7 +60,7 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
                          ui::mojom::DragOperation operation,
                          base::OnceClosure callback) override {}
   void DragSourceSystemDragEnded() override {}
-  void OnStartStylusWriting() override {}
+  void OnStartStylusWriting(OnStartStylusWritingCallback callback) override {}
   void SetBackgroundOpaque(bool value) override {}
   void SetTextDirection(base::i18n::TextDirection direction) override;
   void SetActive(bool active) override;

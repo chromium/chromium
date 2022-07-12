@@ -143,6 +143,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
   bool RequestStartStylusWriting() override;
+  void OnEditElementFocusedForStylusWriting(
+      const gfx::Rect& focused_edit_bounds,
+      const gfx::Rect& caret_bounds) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
   void Destroy() override;

@@ -7,6 +7,7 @@ package org.chromium.content.browser.input;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import android.text.style.SuggestionSpan;
 import android.text.style.UnderlineSpan;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
@@ -42,6 +44,7 @@ import org.chromium.blink.mojom.EventType;
 import org.chromium.blink.mojom.FocusType;
 import org.chromium.blink_public.web.WebInputEventModifier;
 import org.chromium.blink_public.web.WebTextInputMode;
+import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.picker.InputDialogContainer;
@@ -50,6 +53,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
+import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
@@ -147,6 +151,11 @@ public class ImeAdapterImpl
 
     // Returns true if the overlaycontent flag is set in the JS, else false.
     private boolean mKeyboardOverlayContent;
+
+    // Whether to force show keyboard during stylus handwriting. We do not show it when writing
+    // system is active and stylus is used to edit input text. This is used to show the soft
+    // keyboard from Direct writing toolbar.
+    private boolean mForceShowKeyboardDuringStylusWriting;
 
     /**
      * {@ResultReceiver} passed in InputMethodManager#showSoftInput}. We need this to scroll to the
@@ -248,7 +257,12 @@ public class ImeAdapterImpl
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         boolean allowKeyboardLearning = mWebContents != null && !mWebContents.isIncognito();
-        return onCreateInputConnection(outAttrs, allowKeyboardLearning);
+        InputConnection inputConnection = onCreateInputConnection(outAttrs, allowKeyboardLearning);
+
+        if (mWebContents.getStylusWritingHandler() != null) {
+            mWebContents.getStylusWritingHandler().updateEditorInfo(outAttrs);
+        }
+        return inputConnection;
     }
 
     @Override
@@ -421,6 +435,12 @@ public class ImeAdapterImpl
         return modifiers;
     }
 
+    private void updateInputStateForStylusWriting() {
+        if (mWebContents.getStylusWritingHandler() == null) return;
+        mWebContents.getStylusWritingHandler().updateInputState(
+                mLastText, mLastSelectionStart, mLastSelectionEnd);
+    }
+
     /**
      * Updates internal representation of the text being edited and its selection and composition
      * properties.
@@ -541,6 +561,9 @@ public class ImeAdapterImpl
         } finally {
             TraceEvent.end("ImeAdapter.updateState");
         }
+
+        // Update input state to stylus writing service.
+        updateInputStateForStylusWriting();
     }
 
     /**
@@ -550,6 +573,19 @@ public class ImeAdapterImpl
         if (!isValid()) return;
         if (DEBUG_LOGS) Log.i(TAG, "showSoftKeyboard");
         View containerView = getContainerView();
+
+        // Block showing soft keyboard during stylus handwriting.
+        int lastToolType = mWebContents.getEventForwarder().getLastToolType();
+        if (mWebContents.getStylusWritingHandler() != null
+                && mWebContents.getStylusWritingHandler().isStylusWritingEnabled()
+                && (lastToolType == MotionEvent.TOOL_TYPE_STYLUS
+                        || lastToolType == MotionEvent.TOOL_TYPE_ERASER)
+                && mTextInputType != TextInputType.PASSWORD
+                && !mForceShowKeyboardDuringStylusWriting) {
+            if (DEBUG_LOGS) Log.i(TAG, "showSoftKeyboard: blocked during stylus writing");
+            return;
+        }
+
         mInputMethodManagerWrapper.showSoftInput(containerView, 0, getNewShowKeyboardReceiver());
         if (containerView.getResources().getConfiguration().keyboard
                 != Configuration.KEYBOARD_NOKEYS) {
@@ -971,7 +1007,8 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private void focusedNodeChanged(boolean isEditable, int left, int top, int right, int bottom) {
+    private void focusedNodeChanged(boolean isEditable, int nodeLeftDip, int nodeTopDip,
+            int nodeRightDip, int nodeBottomDip) {
         if (DEBUG_LOGS) Log.i(TAG, "focusedNodeChanged: isEditable [%b]", isEditable);
 
         // Update controller before the connection is restarted.
@@ -983,13 +1020,94 @@ public class ImeAdapterImpl
             mRestartInputOnNextStateUpdate = true;
         }
 
-        // TODO(mahesh.ma): Add Android stylus writing logic.
+        if (mWebContents.getStylusWritingHandler() != null) {
+            // Update edit bounds to stylus writing service.
+            Rect editableNodeBoundsPixOnScreen;
+            if (isEditable) {
+                float deviceScale = mWebContents.getRenderCoordinates().getDeviceScaleFactor();
+                editableNodeBoundsPixOnScreen = new Rect((int) (nodeLeftDip * deviceScale),
+                        (int) (nodeTopDip * deviceScale), (int) (nodeRightDip * deviceScale),
+                        (int) (nodeBottomDip * deviceScale));
+                editableNodeBoundsPixOnScreen.offset(
+                        0, mWebContents.getRenderCoordinates().getContentOffsetYPixInt());
+            } else {
+                editableNodeBoundsPixOnScreen = new Rect();
+            }
+            mWebContents.getStylusWritingHandler().onFocusedNodeChanged(
+                    editableNodeBoundsPixOnScreen, isEditable);
+        }
     }
 
     @CalledByNative
     private boolean requestStartStylusWriting() {
-        // TODO(mahesh.ma): Add Android stylus writing logic.
-        return false;
+        if (mWebContents.getStylusWritingHandler() == null) return false;
+        updateInputStateForStylusWriting();
+        return mWebContents.getStylusWritingHandler().requestStartStylusWriting(
+                new StylusWritingImeCallback() {
+                    @Override
+                    public void setEditableSelectionOffsets(int start, int end) {
+                        ImeAdapterImpl.this.setEditableSelectionOffsets(start, end);
+                    }
+
+                    @Override
+                    public void sendCompositionToNative(
+                            CharSequence text, int newCursorPosition, boolean isCommit) {
+                        ImeAdapterImpl.this.sendCompositionToNative(
+                                text, newCursorPosition, isCommit, 0);
+                    }
+
+                    @Override
+                    public void performEditorAction(int actionCode) {
+                        ImeAdapterImpl.this.performEditorAction(actionCode);
+                    }
+
+                    @Override
+                    public void showSoftKeyboard() {
+                        mForceShowKeyboardDuringStylusWriting = true;
+                        ImeAdapterImpl.this.showSoftKeyboard();
+                        mForceShowKeyboardDuringStylusWriting = false;
+                    }
+
+                    @Override
+                    public void hideKeyboard() {
+                        ImeAdapterImpl.this.hideKeyboard();
+                    }
+
+                    @Override
+                    public View getContainerView() {
+                        return mWebContents.getViewAndroidDelegate().getContainerView();
+                    }
+
+                    @Override
+                    public void resetGestureDetection() {
+                        GestureListenerManagerImpl gestureListenerManager =
+                                GestureListenerManagerImpl.fromWebContents(mWebContents);
+                        if (gestureListenerManager != null) {
+                            gestureListenerManager.resetGestureDetection();
+                        }
+                    }
+                });
+    }
+
+    @CalledByNative
+    void onEditElementFocusedForStylusWriting(int focusedEditLeft, int focusedEditTop,
+            int focusedEditRight, int focusedEditBottom, int caretX, int caretY) {
+        if (mWebContents.getStylusWritingHandler() == null) return;
+        Rect focusedEditBounds =
+                new Rect(focusedEditLeft, focusedEditTop, focusedEditRight, focusedEditBottom);
+        Point cursorPosition = new Point(caretX, caretY);
+        if (!focusedEditBounds.isEmpty()) {
+            int[] screenLocation = new int[2];
+            mWebContents.getViewAndroidDelegate().getContainerView().getLocationOnScreen(
+                    screenLocation);
+            int contentOffsetY = mWebContents.getRenderCoordinates().getContentOffsetYPixInt();
+            focusedEditBounds.offset(0, contentOffsetY);
+            cursorPosition.offset(screenLocation[0], screenLocation[1] + contentOffsetY);
+        }
+
+        // Send focused edit bounds and caret center position to Stylus writing service.
+        mWebContents.getStylusWritingHandler().onEditElementFocusedForStylusWriting(
+                focusedEditBounds, cursorPosition);
     }
 
     /**

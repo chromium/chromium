@@ -14,6 +14,7 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.ViewStructure;
 
@@ -50,6 +51,7 @@ import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -189,6 +191,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     private SmartClipCallback mSmartClipCallback;
 
     private EventForwarder mEventForwarder;
+
+    private StylusWritingHandler mStylusWritingHandler;
 
     // Cached copy of all positions and scales as reported by the renderer.
     private RenderCoordinatesImpl mRenderCoordinates;
@@ -791,12 +795,37 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler) {
+        mStylusWritingHandler = stylusWritingHandler;
+    }
+
+    public StylusWritingHandler getStylusWritingHandler() {
+        return mStylusWritingHandler;
+    }
+
+    @Override
     public EventForwarder getEventForwarder() {
         assert mNativeWebContentsAndroid != 0;
         if (mEventForwarder == null) {
             checkNotDestroyed();
             mEventForwarder =
                     WebContentsImplJni.get().getOrCreateEventForwarder(mNativeWebContentsAndroid);
+            mEventForwarder.setStylusWritingDelegate(new EventForwarder.StylusWritingDelegate() {
+                @Override
+                public boolean handleTouchEvent(MotionEvent motionEvent) {
+                    return mStylusWritingHandler != null
+                            && mStylusWritingHandler.handleTouchEvent(
+                                    motionEvent, getViewAndroidDelegate().getContainerView());
+                }
+
+                @Override
+                public void handleHoverEvent(MotionEvent motionEvent) {
+                    if (mStylusWritingHandler != null) {
+                        mStylusWritingHandler.handleHoverEvent(
+                                motionEvent, getViewAndroidDelegate().getContainerView());
+                    }
+                }
+            });
         }
         return mEventForwarder;
     }

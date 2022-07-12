@@ -20,6 +20,7 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderWidgetHostView;
+import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -245,6 +246,9 @@ public class MockWebContents implements WebContents {
 
     @Override
     public void setSmartClipResultHandler(Handler smartClipHandler) {}
+
+    @Override
+    public void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler) {}
 
     @Override
     public EventForwarder getEventForwarder() {

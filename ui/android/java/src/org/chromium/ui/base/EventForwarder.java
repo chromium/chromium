@@ -37,6 +37,40 @@ public class EventForwarder {
 
     private int mLastMouseButtonState;
 
+    // Track the last tool type of touch sequence.
+    private int mLastToolType;
+
+    // Delegate to call WebContents functionality.
+    private StylusWritingDelegate mStylusWritingDelegate;
+
+    /**
+     * Interface to provide stylus writing functionality.
+     */
+    public interface StylusWritingDelegate {
+        /**
+         * Handle touch events for stylus handwriting.
+         *
+         * @param motionEvent the motion event to be handled.
+         * @return true if the event is consumed.
+         */
+        boolean handleTouchEvent(MotionEvent motionEvent);
+
+        /**
+         * Handle hover events for stylus handwriting.
+         *
+         * @param motionEvent the motion event to be handled.
+         */
+        void handleHoverEvent(MotionEvent motionEvent);
+    }
+
+    public void setStylusWritingDelegate(StylusWritingDelegate stylusWritingDelegate) {
+        mStylusWritingDelegate = stylusWritingDelegate;
+    }
+
+    public int getLastToolType() {
+        return mLastToolType;
+    }
+
     @CalledByNative
     private static EventForwarder create(long nativeEventForwarder, boolean isDragDropEnabled) {
         return new EventForwarder(nativeEventForwarder, isDragDropEnabled);
@@ -69,6 +103,15 @@ public class EventForwarder {
      * @see View#onTouchEvent(MotionEvent)
      */
     public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            mLastToolType = event.getToolType(0);
+        }
+
+        if (mStylusWritingDelegate != null && mStylusWritingDelegate.handleTouchEvent(event)) {
+            // Stylus writing system can consume the touch events once writing is started.
+            return true;
+        }
+
         // TODO(mustaq): Should we include MotionEvent.TOOL_TYPE_STYLUS here?
         // crbug.com/592082
         if (event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE) {
@@ -213,6 +256,11 @@ public class EventForwarder {
      */
     public boolean onHoverEvent(MotionEvent event) {
         TraceEvent.begin("onHoverEvent");
+
+        if (mStylusWritingDelegate != null) {
+            mStylusWritingDelegate.handleHoverEvent(event);
+        }
+
         boolean didOffsetEvent = false;
         try {
             if (hasTouchEventOffset()) {

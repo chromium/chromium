@@ -1109,6 +1109,15 @@ bool RenderWidgetHostViewAndroid::RequestStartStylusWriting() {
          ime_adapter_android_->RequestStartStylusWriting();
 }
 
+void RenderWidgetHostViewAndroid::OnEditElementFocusedForStylusWriting(
+    const gfx::Rect& focused_edit_bounds,
+    const gfx::Rect& caret_bounds) {
+  if (ime_adapter_android_) {
+    ime_adapter_android_->OnEditElementFocusedForStylusWriting(
+        focused_edit_bounds, caret_bounds);
+  }
+}
+
 void RenderWidgetHostViewAndroid::RenderProcessGone() {
   Destroy();
 }

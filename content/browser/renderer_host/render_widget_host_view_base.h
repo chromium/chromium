@@ -249,6 +249,14 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Requests to start stylus writing and returns true if successful.
   virtual bool RequestStartStylusWriting();
 
+  // This message is received when the stylus writable element is focused.
+  // It receives the focused edit element bounds and the current caret bounds
+  // needed for stylus writing service. These bounds would be empty when the
+  // stylus writable element could not be focused.
+  virtual void OnEditElementFocusedForStylusWriting(
+      const gfx::Rect& focused_edit_bounds,
+      const gfx::Rect& caret_bounds) {}
+
   // This method will clear any cached fallback surface. For use in response to
   // a CommitPending where there is no content for TakeFallbackContentFrom.
   virtual void ClearFallbackSurfaceForCommitPending() {}
