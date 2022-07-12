@@ -165,6 +165,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് മിറർ ചെയ്യുന്നു</translation>
 <translation id="1885785240814121742">ഫിംഗർപ്രിന്‍റ് ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) എന്ന റെസല്യൂഷൻ പിന്തുണയ്‌ക്കുന്നില്ല. <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) എന്നതിലേക്ക് റെസല്യൂഷൻ മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" />-ൽ പുനഃസ്ഥാപിക്കും.</translation>
+<translation id="1908992311423394684">പുതുതായി ഇൻസ്റ്റാൾ ചെയ്തത്</translation>
 <translation id="1915307458270490472">ഹാംഗ് അപ്പ് ചെയ്യുക</translation>
 <translation id="1918022425394817322">മുകളിൽ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു</translation>
 <translation id="1919743966458266018">ടാസ്‌ക് മാനേജർ തുറക്കാനുള്ള കുറുക്കുവഴി മാറ്റി. <ph name="OLD_SHORTCUT" /> എന്നതിന് പകരം <ph name="NEW_SHORTCUT" /> ഉപയോഗിക്കുക.</translation>

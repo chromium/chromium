@@ -165,6 +165,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1882897271359938046">A espelhar para <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear com impressão digital</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> não suporta <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmara ajustada ao canto superior direito</translation>
 <translation id="1919743966458266018">O atalho para abrir o Gestor de tarefas foi alterado. Utilize <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
@@ -822,7 +823,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5763928712329149804">O Shelf Party está desativado.</translation>
 <translation id="576453121877257266">A Luz noturna está ativada.</translation>
 <translation id="5769373120130404283">Ecrã de privacidade</translation>
-<translation id="5777841717266010279">Parar a partilha do ecrã?</translation>
+<translation id="5777841717266010279">Parar partilha do ecrã?</translation>
 <translation id="5779721926447984944">Ficheiros fixados</translation>
 <translation id="5788127256798019331">Ficheiros do Google Play</translation>
 <translation id="5790085346892983794">Sucesso</translation>

@@ -218,7 +218,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="214888715418183969">Izvēlieties, kādu informāciju jums nav iebildumu kopīgot ar Chrome. Jūsu kopīgotie rādītāji tiks izmantoti, lai uzlabotu Chrome funkcijas, veiktspēju un stabilitāti.</translation>
 <translation id="2149973817440762519">Rediģēt grāmatzīmes</translation>
 <translation id="2155214902713132423">Šī verifikācijas metode nav pieejama šai ierīcei. Izvēlieties citu opciju savā otrā ierīcē.</translation>
-<translation id="2157851137955077194">Lai kopīgotu sava tālruņa saturu ar citu ierīci, ieslēdziet sinhronizāciju abu ierīču Chrome iestatījumos.</translation>
 <translation id="2158408438301413340">Pārlūkprogrammā Chrome nevarēja pārbaudīt visas paroles</translation>
 <translation id="2169830938017475061">Tikko</translation>
 <translation id="2172688499998841696">Attēlu aprakstu pievienošana ir izslēgta</translation>
@@ -662,7 +661,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4678082183394354975">Pārlūkā Chrome ir ieslēgta tumšā motīva lietošana vietnēs</translation>
 <translation id="4684427112815847243">Sinhronizēt visu</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}zero{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Sūtīt īsziņu uz manām ierīcēm</translation>
 <translation id="4699172675775169585">Kešatmiņā ievietotie attēli un faili</translation>
 <translation id="4719927025381752090">Piedāvāt tulkot</translation>
 <translation id="4720023427747327413">Atvērt, izmantojot <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="8873817150012960745">Lai sāktu, pieskarieties šeit</translation>
 <translation id="8881973373982641723">Tiek notīrīta vēsture, tostarp arī meklēšanas lodziņā.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt savus datus:<ph name="END_BOLD" /> lai aizsargātu jūsu konfidencialitāti, no saraksta automātiski tiek dzēstas vietnes, kas tajā ir glabātas ilgāk par četrām nedēļām. Ja kādu vietni apmeklējat atkārtoti, tā atkal var tikt iekļauta sarakstā. Ja nevēlaties, lai kāda vietne definē jūsu intereses, varat attiecīgo vietni noņemt.</translation>
-<translation id="889338405075704026">Pāriet uz Chrome iestatījumiem</translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="8906502871739599113">Reakcija ir dublēta</translation>
 <translation id="8909135823018751308">Kopīgot...</translation>
@@ -1498,7 +1495,6 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="8996847606757455498">Izvēlēties citu nodrošinātāju</translation>
 <translation id="8998729206196772491">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="MANAGED_DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chrome datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chrome, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
 <translation id="9022774213089566801">Bieži apmeklētas vietnes</translation>
-<translation id="9028914725102941583">Sinhronizācijas ieslēgšana, lai kopīgotu saturu vairākās ierīcēs</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videoklips}zero{# videoklipi}one{# videoklips}other{# videoklipi}}</translation>
 <translation id="9042893549633094279">Konfidencialitāte un drošība</translation>
 <translation id="9050666287014529139">Ieejas frāze</translation>

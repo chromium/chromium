@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Zaštićeno</translation>
 <translation id="2638942478653899953">Nije bilo moguće pristupiti Google disku. <ph name="BEGIN_LINK" />Odjavite se<ph name="END_LINK" /> i ponovo prijavite.</translation>
 <translation id="2649120831653069427">Dugina riba</translation>
+<translation id="2653059201992392941">Imate još <ph name="RETRIES" /> pokušaj/pokušaja.</translation>
 <translation id="2663066752008346276">burmanski/mjanmarski s tipkovnicom Myansan</translation>
 <translation id="2664412712123763093">Lokacija datoteke</translation>
 <translation id="2718540689505416944">Instaliranje aplikacije uz Linux</translation>
@@ -530,6 +531,7 @@
 <translation id="5489067830765222292">latvijski</translation>
 <translation id="5489965683297092283">Filtar <ph name="FILTER_NAME" /> je isključen.</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
+<translation id="5500104704744051184">Nećete moći koristiti ovu mrežu dok ne unesete PUK</translation>
 <translation id="5500122897333236901">Islandski</translation>
 <translation id="5508696409934741614">Točke</translation>
 <translation id="5522908512596376669">Popis datoteka promijenio se na prikaz popisa.</translation>
@@ -635,6 +637,7 @@
 <translation id="6395575651121294044">Broj stavki: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">To ime ne može se upotrijebiti kao datoteka naziva mape</translation>
 <translation id="6423031066725912715">vijetnamski s tipkovnicom TCVN</translation>
+<translation id="6430271654280079150">Imate još jedan pokušaj.</translation>
 <translation id="6485131920355264772">Dohvaćanje informacija o prostoru nije uspjelo</translation>
 <translation id="6495925982925244349">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, pojedinosti</translation>
 <translation id="649877868557234318">Izdvajanje datoteke <ph name="FILE_NAME" /> u mapu <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +904,7 @@
 <translation id="8579285237314169903">Sinkronizacija ovoliko stavki: <ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Popis datoteka promijenio se na prikaz minijatura.</translation>
 <translation id="8601932370724196034">Slikovna datoteka Crostinija</translation>
+<translation id="8608515571837163082">Unijeli ste netočan PIN previše puta. Unesite osmeroznamenkasti osobni ključ za deblokiranje (PUK) koji ste dobili od mobilnog operatera.</translation>
 <translation id="8609695766746872526">islandski</translation>
 <translation id="863903787380594467">Netočan PIN. Preostao vam je sljedeći broj pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – priključak</translation>

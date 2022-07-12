@@ -218,7 +218,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="214888715418183969">Válassza ki, hogy mit osztana meg szívesen a Chrome-mal. A megosztott mutatókat a Chrome funkcióinak, teljesítményének és stabilitásának fejlesztésére használjuk majd.</translation>
 <translation id="2149973817440762519">Könyvjelző szerkesztése</translation>
 <translation id="2155214902713132423">Ez az ellenőrzési módszer nem áll rendelkezésre ezen az eszközön. Válasszon másik lehetőséget a másik eszközén.</translation>
-<translation id="2157851137955077194">Ha szeretne megosztani valamit a telefonjáról egy másik eszközre, kapcsolja be a szinkronizálást a Chrome beállításaiban mindkét eszközön</translation>
 <translation id="2158408438301413340">A Chrome nem tudta ellenőrizni az összes jelszót</translation>
 <translation id="2169830938017475061">Most</translation>
 <translation id="2172688499998841696">A képleírások ki vannak kapcsolva</translation>
@@ -662,7 +661,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4678082183394354975">A sötét téma engedélyezve van a webhelyeknél a Chrome-ban</translation>
 <translation id="4684427112815847243">Az összes szinkronizálása</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">SMS küldése az eszközeire</translation>
 <translation id="4699172675775169585">A gyorsítótárban szereplő képek és fájlok</translation>
 <translation id="4719927025381752090">Fordítás felajánlása</translation>
 <translation id="4720023427747327413">Megnyitás itt: <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interne
 <translation id="8873817150012960745">Koppintson ide az indításhoz</translation>
 <translation id="8881973373982641723">Törli az előzményeket, köztük a keresőmező előzményeit is.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja<ph name="END_BOLD" />: Adatai védelme érdekében a négy hétnél régebbi webhelyeket automatikusan töröljük a listáról. Előfordulhat, hogy egy újra felkeresett webhely ismét megjelenik a listán. Arra is lehetősége van, hogy eltávolítsa valamelyik webhelyet, ha nem szeretné, hogy az adott webhely a jövőben bármikor is meghatározza az Ön érdeklődési köreit.</translation>
-<translation id="889338405075704026">Ugrás a Chrome beállításaira</translation>
 <translation id="8898822736010347272">Egyes felkeresett oldalak URL-jeit, korlátozott rendszer-információkat és bizonyos oldaltartalmakat küld el a Google-nak, hogy könnyebben felfedezhetők legyenek az internetezőkre leselkedő új veszélyek, és meg lehessen védeni a felhasználókat.</translation>
 <translation id="8906502871739599113">Reakció megkettőzve</translation>
 <translation id="8909135823018751308">Megosztás...</translation>
@@ -1498,7 +1495,6 @@ A megbízhatósági tokenek nagyobb fokú adatvédelmet biztosítanak az interne
 <translation id="8996847606757455498">Másik szolgáltató választása</translation>
 <translation id="8998729206196772491">Egy <ph name="MANAGED_DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chrome-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chrome-ból való kijelentkezéssel törli adatait erről az eszközről, de Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="9022774213089566801">Gyakran látogatott webhelyek</translation>
-<translation id="9028914725102941583">Szinkronizálás bekapcsolása az eszközök közötti megosztáshoz</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videó}other{# videó}}</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>
 <translation id="9050666287014529139">Összetett jelszó</translation>

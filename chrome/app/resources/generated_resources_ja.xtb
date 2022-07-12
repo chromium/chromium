@@ -379,6 +379,7 @@
 <translation id="1374844444528092021">ネットワーク「<ph name="NETWORK_NAME" />」が要求する証明書がインストールされていないか、証明書の有効期限が切れています。新しい証明書を取得して、もう一度接続してみてください。</translation>
 <translation id="1375321115329958930">保存したパスワード</translation>
 <translation id="1375557162880614858">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。</translation>
+<translation id="1375938286942050085">セットアップは完了です。デバイスでゲームをお楽しみください</translation>
 <translation id="137651782282853227">保存した住所がここに表示されます</translation>
 <translation id="1376771218494401509">ウィンドウに名前を付ける(&amp;W)...</translation>
 <translation id="1377600615067678409">今回はスキップ</translation>
@@ -393,6 +394,7 @@
 <translation id="138784436342154190">デフォルトの起動ページに戻しますか？</translation>
 <translation id="1388253969141979417">マイクの使用を許可するサイト</translation>
 <translation id="1388728792929436380">更新が完了すると、<ph name="DEVICE_TYPE" />が再起動されます。</translation>
+<translation id="1389601498324964367">割り当て管理ストレージ</translation>
 <translation id="139013308650923562">デバイスにインストールされたフォントの使用を許可する</translation>
 <translation id="1390548061267426325">通常のタブとして開く</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> には <ph name="PRINTER_NAME" /> で印刷する権限がありません。管理者にお問い合わせください。</translation>
@@ -1056,6 +1058,7 @@
 <translation id="1992924914582925289">デバイスから削除</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
 <translation id="1995916364271252349">サイトが使用、表示できる情報（位置情報、カメラ、ポップアップなど）を制御します</translation>
+<translation id="1997433994358798851">Chrome からデバイスに接続するには、Bluetooth の使用を許可する必要があります</translation>
 <translation id="1997616988432401742">ユーザーの証明書</translation>
 <translation id="1999115740519098545">起動時</translation>
 <translation id="2000419248597011803">Cookie と、アドレスバーや検索ボックスに入力した検索語句を既定の検索エンジンに送信します</translation>
@@ -1714,6 +1717,7 @@
 <translation id="25899519884572181">リーダーモードを終了</translation>
 <translation id="2593499352046705383">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/flex/InstallGuide をご覧ください。</translation>
 <translation id="2594999711683503743">Google で検索、または URL を入力</translation>
+<translation id="2599048253926156421">ユーザー名をクリップボードにコピーしました</translation>
 <translation id="2602501489742255173">開始するには上にスワイプします</translation>
 <translation id="2603115962224169880">パソコンのクリーンアップ</translation>
 <translation id="2603355571917519942">Voice Match は設定済みです</translation>
@@ -1935,6 +1939,7 @@
 <translation id="2804043232879091219">代替ブラウザを開けませんでした</translation>
 <translation id="2804667941345577550">開いているすべてのタブで、このサイトからログアウトします</translation>
 <translation id="2804680522274557040">カメラがオフになっています</translation>
+<translation id="280518252911523675">以前のパスワードを入力せずに続行した場合、ローカルデータは削除されます。このユーザーを再設定するため、お使いの Google アカウントでログインします。</translation>
 <translation id="2805539617243680210">これで準備完了です。</translation>
 <translation id="2805646850212350655">Microsoft 暗号化ファイル システム</translation>
 <translation id="2805756323405976993">アプリ</translation>
@@ -3047,6 +3052,7 @@
 <translation id="3895090224522145010">Kerberos ユーザー名</translation>
 <translation id="389521680295183045">サイトがデバイスのアクティブ状態の検出を要求できるようにする</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{画像}other{# 件の画像}}</translation>
+<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> はゲームに適した設計となっています。次に表示される「使い方・ヒント」アプリでは、何百種類もの最新ゲームにアクセスでき、ゲームに関する特典やデバイスに付属のゲームをご覧いただけます。</translation>
 <translation id="3898233949376129212">デバイスの言語</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">キーボードを選択</translation>
@@ -3195,6 +3201,7 @@
 <translation id="4033471457476425443">新しいフォルダを追加</translation>
 <translation id="4033711848170683365">このデバイスから閲覧データを完全に削除します。このプロフィールの Google アカウントは、<ph name="DEVICE_TYPE" /> の他のアプリで使用されている可能性があります。これらのアカウントは、<ph name="BEGIN_LINK" />[<ph name="SETTING_SECTION" />] &gt; [<ph name="ACCOUNTS_SECTION" />]<ph name="END_LINK" /> で削除できます。</translation>
 <translation id="4033963223187371752">セキュリティで保護されたサイトに、セキュリティで保護されていない画像やウェブフレームなどのコンテンツが埋め込まれている場合があります</translation>
+<translation id="4034741552964543387">ローカルデータを復元せずに続行</translation>
 <translation id="4034824040120875894">プリンタ</translation>
 <translation id="4035758313003622889">タスク マネージャ(&amp;T)</translation>
 <translation id="4035877632587724847">許可しない</translation>
@@ -3386,6 +3393,7 @@
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="4242577469625748426">デバイスにポリシー設定をインストールできませんでした: <ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4243504193894350135">プリンタは一時停止中です</translation>
+<translation id="424423026762293842">ローカルデータの復元</translation>
 <translation id="4244238649050961491">他のタッチペン アプリを探す</translation>
 <translation id="4246980464509998944">その他のコメント:</translation>
 <translation id="424726838611654458">常に Adobe Reader で開く</translation>
@@ -4935,6 +4943,7 @@
 <translation id="5792728279623964091">電源ボタンをタップしてください</translation>
 <translation id="5793339252089865437">モバイル ネットワーク経由でアップデートをダウンロードすると、追加料金が発生する可能性があります。</translation>
 <translation id="5793420564274426163">ペア設定の確認</translation>
+<translation id="5793430094159150686">パスワードが変更されています。ローカルデータを復元するには、以前のパスワードを入力する必要があります。</translation>
 <translation id="5794034487966529952">デスク「<ph name="DESK_TITLE" />」には <ph name="NUM_BROWSERS" /> 個のブラウザ ウィンドウが開いています</translation>
 <translation id="5794414402486823030">常にシステム ビューアで開く</translation>
 <translation id="5794700615121138172">Linux の共有フォルダ</translation>
@@ -5547,6 +5556,7 @@
 <translation id="6406303162637086258">ブラウザ再起動のシミュレート</translation>
 <translation id="6406506848690869874">同期</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Google アシスタントがパスワードの変更をサポートします</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 上にある自分のデータの読み取りと変更</translation>
 <translation id="6410257289063177456">画像ファイル</translation>
 <translation id="6410328738210026208">チャンネルを変更して Powerwash</translation>
@@ -5852,6 +5862,7 @@
 <translation id="6700093763382332031">モバイル SIM ロック</translation>
 <translation id="6700480081846086223"><ph name="HOST_NAME" /> をキャストします</translation>
 <translation id="6701535245008341853">プロフィールを取得できませんでした。</translation>
+<translation id="6701824422332982935">次の拡張機能を使用するにはページを再読み込みしてください</translation>
 <translation id="6702639462873609204">編集(&amp;E)...</translation>
 <translation id="6703212423117969852">しばらくしてから Chrome でもう一度お試しください。</translation>
 <translation id="6703254819490889819">バックアップを復元</translation>
@@ -5927,6 +5938,7 @@
 <translation id="6781978626986383437">Linux のバックアップがキャンセルされました</translation>
 <translation id="6782067259631821405">無効な PIN</translation>
 <translation id="6784523122863989144">プロファイルはサポートされています</translation>
+<translation id="6785872064505734160">Chrome の Google アシスタントは、ユーザーに代わってウェブサイトでの操作を完了できます</translation>
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6787097042755590313">その他のタブ</translation>
 <translation id="6787839852456839824">キーボード ショートカット</translation>
@@ -7071,6 +7083,7 @@
 <translation id="7903742244674067440">これらの認証局を識別する証明書がファイルに格納されています</translation>
 <translation id="7903925330883316394">ユーティリティ: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Linux ポートをネットワーク上の他のデバイスが利用できるようにします。</translation>
+<translation id="7906440585529721295">ローカルデータは削除されます</translation>
 <translation id="7907837847548254634">フォーカス中の項目をハイライト表示する</translation>
 <translation id="7908378463497120834">外部ストレージ デバイスの少なくとも 1 つのパーティションがマウントできませんでした。</translation>
 <translation id="7909324225945368569">プロフィールの名前を変更</translation>
@@ -7409,6 +7422,7 @@
 <translation id="822050276545350872">今後は待つ必要はありません</translation>
 <translation id="8221491193165283816">通知はデフォルトでブロックされています。このサイトの通知を表示するには、ここをクリックしてください。</translation>
 <translation id="822347941086490485">HID デバイスを検出しています...</translation>
+<translation id="8223573963214454788">続行（データは削除されます）</translation>
 <translation id="8225046344534779393">インターネット接続をご確認ください</translation>
 <translation id="8225265270453771718">アプリケーション ウィンドウの共有</translation>
 <translation id="8226222018808695353">アクセスできません</translation>
@@ -7509,6 +7523,7 @@
 <translation id="8314381333424235892">拡張機能がないか、インストールされていません</translation>
 <translation id="831440797644402910">このフォルダを開けません</translation>
 <translation id="8314835274931377415">スイッチ アクセスの設定を開始しますか？</translation>
+<translation id="8317582043908962055">PDF テキストを認識(&amp;D)</translation>
 <translation id="8317671367883557781">ネットワーク接続を追加</translation>
 <translation id="8319414634934645341">拡張キーの用途</translation>
 <translation id="8321837372750396788">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> で管理されます。</translation>
@@ -8391,6 +8406,7 @@
 <translation id="9203398526606335860">プロファイル記録の開始(&amp;P)</translation>
 <translation id="9203904171912129171">デバイスを選択</translation>
 <translation id="9206889157914079472">ロック画面でタッチペンによるメモ書きを許可</translation>
+<translation id="9208192193641542858">ローカルデータは以前のパスワードで保護されています。パスワードを最近変更した場合は、以前のパスワードをもう一度入力してください。</translation>
 <translation id="9209563766569767417">Linux コンテナの設定を確認しています</translation>
 <translation id="9209689095351280025">サイトは Cookie を使用してあなたをウェブ上でトラッキングできません</translation>
 <translation id="9211177926627870898">更新が必要です</translation>

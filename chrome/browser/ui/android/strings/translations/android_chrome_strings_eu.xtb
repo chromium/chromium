@@ -218,7 +218,6 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="214888715418183969">Aukeratu zer partekatu nahi duzun Chrome-rekin. Chrome-ren eginbideak, funtzionamendua eta egonkortasuna hobetzen laguntzeko erabiliko dira partekatzen dituzun neurketak.</translation>
 <translation id="2149973817440762519">Editatu laster-marka</translation>
 <translation id="2155214902713132423">Ezin da erabili egiaztapen-metodoa gailu honetan. Hautatu beste aukera bat beste gailuan.</translation>
-<translation id="2157851137955077194">Telefonoko zerbait beste gailu batekin partekatzeko, joan Chrome-ren ezarpenetara eta aktibatu sinkronizazioa bi gailuetan</translation>
 <translation id="2158408438301413340">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak</translation>
 <translation id="2169830938017475061">Orain</translation>
 <translation id="2172688499998841696">Desaktibatu dira irudien azalpenak</translation>
@@ -662,7 +661,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4678082183394354975">Webguneetarako gai iluna aktibatuta dago Chrome-n</translation>
 <translation id="4684427112815847243">Sinkronizatu dena</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Bidali testua zure gailuetara</translation>
 <translation id="4699172675775169585">Cachean gordetako irudiak eta fitxategiak</translation>
 <translation id="4719927025381752090">Eskaini itzultzea</translation>
 <translation id="4720023427747327413">Ireki <ph name="PRODUCT_NAME" />-n</translation>
@@ -1470,7 +1468,6 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="8873817150012960745">Hasteko, sakatu hau</translation>
 <translation id="8881973373982641723">Historia garbitzen du, bilaketa-koadroa barne.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Zure pribatutasuna babesteko, lau aste baino gehiago dituzten webguneak automatikoki ezabatzen ditugu. Baliteke beste behin bisitatzen duzun webgune bat berriro ere zerrendan agertzea. Bestela, webguneren batek zure interesak definitzerik nahi ez baduzu, webgune hori kendu egin dezakezu.</translation>
-<translation id="889338405075704026">Joan Chrome-ren ezarpenetara</translation>
 <translation id="8898822736010347272">Erabiltzen dituzun orri batzuen URLak, sistemari buruzko informazio mugatua eta orrietako eduki batzuk bidaltzen dizkio Google-ri mehatxuak aurkitzeko eta sarearen erabiltzaile guztiak babesteko.</translation>
 <translation id="8906502871739599113">Bikoiztu da erreakzioa</translation>
 <translation id="8909135823018751308">Partekatu…</translation>
@@ -1498,7 +1495,6 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="8996847606757455498">Aukeratu beste hornitzaile bat</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> domeinuak kudeatutako kontu batekin hastera zoaz saioa, eta, ondorioz, domeinu horretako administratzaileari emango diozu Chrome datuen kontrola. Datuak betiko lotuko zaizkio kontu honi. Chrome-ko saioa amaitzen baduzu, gailuko datuak ezabatu egingo dira, baina Google-ko kontuan izango dituzu gordeta.</translation>
 <translation id="9022774213089566801">Gehien bisitatutakoak</translation>
-<translation id="9028914725102941583">Beste gailuekin partekatzeko, aktibatu sinkronizazioa</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# bideo}other{# bideo}}</translation>
 <translation id="9042893549633094279">Pribatutasuna eta segurtasuna</translation>
 <translation id="9050666287014529139">Pasaesaldia</translation>

@@ -97,6 +97,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="1428770807407000502">Sinxronizatsiya qilinsinmi?</translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1436784010935106834">Olib tashlangan</translation>
+<translation id="1437543266176261764"><ph name="APP_NAME" /> ilovasida ochilgan</translation>
 <translation id="1448440926884431741">Kuzatiladigan mahsulotlarni bukmarklarda tartiblang</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
 <translation id="1466383950273130737">Chrome tilini tanlang</translation>
@@ -218,7 +219,6 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="214888715418183969">Chromega qaysi maʼlumotlarni ulashish mumkinligini tanlang. Siz taqdim qiladigan statistik maʼlumotlar Chrome funksiyalari, unumdorligi va barqarorligini yaxshilashga yordam beradi.</translation>
 <translation id="2149973817440762519">Xatcho‘p tahriri</translation>
 <translation id="2155214902713132423">Bu qurilmada mazkur tekshiruv usuli ishlamaydi. Boshqa qurilma orqali variant tanlang.</translation>
-<translation id="2157851137955077194">Telefoningizdan biror narsani boshqa qurilmaga ulashish uchun har ikki qurilmadagi Chrome brauzerida sinxronizatsiyani yoqing</translation>
 <translation id="2158408438301413340">Chrome barcha parollarni tekshira olmadi.</translation>
 <translation id="2169830938017475061">Hozir</translation>
 <translation id="2172688499998841696">Rasmlar tavsifi yoqilmagan</translation>
@@ -662,7 +662,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4678082183394354975">Chrome brauzerida bu saytlar uchun tungi mavzu yoniq</translation>
 <translation id="4684427112815847243">Hamma narsa sinxronlansin</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}}</translation>
-<translation id="4696983787092045100">Matnni qurilmalaringizga yuborish</translation>
 <translation id="4699172675775169585">Keshda saqlangan tavsirlar va boshqa fayllar</translation>
 <translation id="4719927025381752090">Tarjima qilishni taklif qilish</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> orqali ochish</translation>
@@ -1470,7 +1469,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="8873817150012960745">Boshlash uchun bu yerga bosing</translation>
 <translation id="8881973373982641723">Qidiruv maydonchasidagi tarixni tozalaydi.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Maʼlumotlaringizni qanday boshqarish mumkin:<ph name="END_BOLD" /> Mafliylikni himoya qilish maqsadida biz 4 haftadan uzoq saqlangan saytlarni avtomatik oʻchiramiz. Takroriy ochilgan saytlar roʻyxatda qayta chiqishi mumkin. Yoki qiziqishlaringizni aniqlamasligi uchun saytni olib tashlashingiz mumkin.</translation>
-<translation id="889338405075704026">Chrome sozlamalarini ochish</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8906502871739599113">Munosabat nusxalandi</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
@@ -1498,7 +1496,6 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="8996847606757455498">Boshqa provayderni tanlang</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chrome ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="9022774213089566801">Eng koʻp ochilgan</translation>
-<translation id="9028914725102941583">Qurilmalararo ulashish uchun sinxronizatsiyani yoqing</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ta video}other{# ta video}}</translation>
 <translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
 <translation id="9050666287014529139">Kodli ibora</translation>

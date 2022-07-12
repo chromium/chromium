@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">დაცული</translation>
 <translation id="2638942478653899953">Google Drive-თან დაკავშირება ვერ მოხერხდა. <ph name="BEGIN_LINK" />გამოდით<ph name="END_LINK" /> და ხელახლა შედით.</translation>
 <translation id="2649120831653069427">თევზი</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="2663066752008346276">ბირმული/მიანმარული Myansan კლავიატურით</translation>
 <translation id="2664412712123763093">ფაილის მდებარეობა</translation>
 <translation id="2718540689505416944">დააინსტალირეთ აპი Linux-ის მეშვეობით</translation>
@@ -529,6 +530,7 @@
 <translation id="5489067830765222292">ლატვიური</translation>
 <translation id="5489965683297092283">ფილტრი <ph name="FILTER_NAME" /> გამორთულია.</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
+<translation id="5500104704744051184">ამ ქსელს ვერ გამოიყენებთ, სანამ PUK-ს არ შეიყვანთ</translation>
 <translation id="5500122897333236901">ისლანდიური</translation>
 <translation id="5508696409934741614">წერტილები</translation>
 <translation id="5522908512596376669">ფაილების სია ნაჩვენებია სიის ხედში.</translation>
@@ -634,6 +636,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ერთეული</translation>
 <translation id="642282551015776456">ამ სახელის გამოყენება ფაილის ან საქაღალდის სახელად შეუძლებელია</translation>
 <translation id="6423031066725912715">ვიეტნამური TCVN კლავიატურით</translation>
+<translation id="6430271654280079150">1 მცდელობა დაგრჩათ.</translation>
 <translation id="6485131920355264772">ვერ მოხერხდა სივრცის ინფორმაციის მიღება</translation>
 <translation id="6495925982925244349">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>
 <translation id="649877868557234318">მიმდინარეობს „<ph name="FILE_NAME" />“-ის ამოღება „<ph name="FOLDER_NAME" />“-დან</translation>
@@ -900,6 +903,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ელემენტის სინქრონიზაცია…</translation>
 <translation id="8600173386174225982">ფაილების სია ნაჩვენებია ესკიზების ხედში.</translation>
 <translation id="8601932370724196034">Crostini იმიჯის ფაილი</translation>
+<translation id="8608515571837163082">არასწორი PIN-კოდი ზედმეტად ბევრჯერ შეიყვანეთ. შეიყვანეთ განბლოკვის პერსონალური 8-ციფრიანი გასაღები (PUK), რომელიც თქვენმა ოპერატორმა მოგაწოდათ.</translation>
 <translation id="8609695766746872526">ისლანდიური</translation>
 <translation id="863903787380594467">PIN-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> — პორტი</translation>

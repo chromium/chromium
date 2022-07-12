@@ -218,7 +218,6 @@
 <translation id="214888715418183969">Выберыце, што вы хочаце абагульваць з Chrome. Паказчыкі, якія вы з намі абагуліце, будуць выкарыстаны для паляпшэння функцый браўзера Chrome, стабільнасці і эфектыўнасці яго работы.</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
 <translation id="2155214902713132423">Дадзены спосаб спраўджання для гэтай прылады недаступны. Выберыце іншы варыянт на іншай прыладзе.</translation>
-<translation id="2157851137955077194">Каб абагульваць файлы з тэлефона і мець да іх доступ з іншай прылады, уключыце сінхранізацыю ў наладах Chrome на абедзвюх прыладах.</translation>
 <translation id="2158408438301413340">Браўзеру Chrome не ўдалося праверыць усе паролі</translation>
 <translation id="2169830938017475061">Зараз</translation>
 <translation id="2172688499998841696">Апісанні відарысаў выключаны</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">У браўзеры Chrome уключана цёмная тэма для сайтаў</translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Адправіць тэкст на вашы прылады</translation>
 <translation id="4699172675775169585">Відарысы і файлы ў кэшы</translation>
 <translation id="4719927025381752090">Прапаноўваць пераклад</translation>
 <translation id="4720023427747327413">Адкрыць у <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">Каб пачаць, націсніце тут</translation>
 <translation id="8881973373982641723">Будзе выдалена гісторыя, у тым ліку даныя, якія ўводзіліся ў полі пошуку.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Як кіраваць сваімі данымі.<ph name="END_BOLD" /> У мэтах аховы вашай прыватнасці сайты са спіса, унесеныя ў яго больш чым 4 тыдні таму назад, аўтаматычна выдаляюцца. Сайт, які вы наведаеце паўторна, можа з'явіцца ў спісе зноў. Вы таксама можаце выдаліць нейкі сайт, калі не хочаце, каб ён вызначаў вашы інтарэсы.</translation>
-<translation id="889338405075704026">Перайсці ў налады Chrome</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="8906502871739599113">Копія рэакцыі створана</translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">Выбраць іншага пастаўшчыка</translation>
 <translation id="8998729206196772491">Вы ўваходзіце праз уліковы запіс, які кіруецца даменам <ph name="MANAGED_DOMAIN" />, што дае адміністратару кантроль над вашымі данымі з браўзера Chrome. Вашы даныя будуць назаўсёды прывязаны да гэтага ўліковага запісу. Калі выйсці з браўзера Chrome, вашы даныя будуць выдалены з гэтай прылады, але застануцца ва Уліковым запісе Google.</translation>
 <translation id="9022774213089566801">Часта наведваюцца</translation>
-<translation id="9028914725102941583">Каб абагульваць файлы паміж прыладамі, уключыце сінхранізацыю</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{1 відэа}one{# відэа}few{# відэа}many{# відэа}other{# відэа}}</translation>
 <translation id="9042893549633094279">Прыватнасць і бяспека</translation>
 <translation id="9050666287014529139">Фраза-пароль</translation>

@@ -1259,6 +1259,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Προσθήκη Wi-Fi…</translation>
 <translation id="2162155940152307086">Ο συγχρονισμός θα ξεκινήσει μόλις αποχωρήσετε από τις ρυθμίσεις συγχρονισμού</translation>
+<translation id="2162705204091149050">Διαβάστε πληροφορίες σχετικά με το πρόγραμμα περιήγησης, το λειτουργικό σύστημα, τη συσκευή, το εγκατεστημένο λογισμικό και τα αρχεία σας</translation>
 <translation id="2162926944953615670">Δεν υπάρχουν διαθέσιμα προφίλ eSIM.</translation>
 <translation id="2163470535490402084">Συνδεθείτε στο διαδίκτυο για να συνδεθείτε στη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> και 1 ακόμα διακόπτης</translation>
@@ -1279,6 +1280,7 @@
 <translation id="2180620921879609685">Αποκλεισμός περιεχομένου σε οποιαδήποτε σελίδα</translation>
 <translation id="2182058453334755893">Αντιγράφηκε στο πρόχειρό σας</translation>
 <translation id="2184515124301515068">Επιτρέψτε στο Chrome να επιλέξει πότε οι ιστότοποι μπορούν να αναπαράγουν ήχο (συνιστάται)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Η σελίδα κοινοποιήθηκε από άλλη συσκευή</translation>
 <translation id="2187675480456493911">Έγινε συγχρονισμός με άλλες συσκευές στον λογαριασμό σας. Οι ρυθμίσεις που τροποποιούνται από άλλους χρήστες δεν θα συγχρονίζονται. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Σφάλμα εισαγωγής του πιστοποιητικού διακομιστή  </translation>
@@ -2508,6 +2510,7 @@
 <translation id="3359256513598016054">Περιορισμοί πολιτικής πιστοποιητικού</translation>
 <translation id="3360297538363969800">Η εκτύπωση απέτυχε. Ελέγξτε τον εκτυπωτή σας και δοκιμάστε ξανά.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Η συσκευή <ph name="DEVICE_NAME" /> μοιράζεται μαζί σας <ph name="ATTACHMENTS" />.}other{Η συσκευή <ph name="DEVICE_NAME" /> μοιράζεται μαζί σας <ph name="ATTACHMENTS" />.}}</translation>
+<translation id="3363202073972776113">Η διαχείριση αυτού του νέου προφίλ θα γίνεται από τον οργανισμό σας. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Από τον διαχειριστή σας: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Χρησιμοποιήστε το Ctrl ή το Alt</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
@@ -2542,6 +2545,7 @@
 <translation id="339722927132407568">Παγώνει</translation>
 <translation id="3399432415385675819">Οι ειδοποιήσεις θα απενεργοποιηθούν</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - περιπλεγμένη</translation>
+<translation id="3401484564516348917">Ανάγνωση πληροφοριών σχετικά με το πρόγραμμα περιήγησης, το λειτουργικό σύστημα, τη συσκευή, το εγκατεστημένο λογισμικό, τις τιμές μητρώου και τα αρχεία</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} κωδικός πρόσβασης έχει αποθηκευτεί σε αυτήν τη συσκευή}other{{COUNT} κωδικός πρόσβασης έχουν αποθηκευτεί σε αυτήν τη συσκευή}}</translation>
 <translation id="3402255108239926910">Επιλέξτε ένα avatar</translation>
 <translation id="3402585168444815892">Εγγραφή στη λειτουργία επίδειξης</translation>
@@ -2788,6 +2792,7 @@
 <translation id="3627879631695760395">Εγκατάσταση του <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Απενεργοποίηση Bluetooth</translation>
 <translation id="3629631988386925734">Εισαγάγετε τον κωδικό πρόσβασής σας για την ενεργοποίηση του Smart Lock. Την επόμενη φορά, το τηλέφωνό σας θα ξεκλειδώσει τη συσκευή <ph name="DEVICE_TYPE" />. Μπορείτε να απενεργοποιήσετε το Smart Lock στις Ρυθμίσεις.</translation>
+<translation id="3629664892718440872">Απομνημόνευση επιλογής</translation>
 <translation id="3630132874740063857">Το τηλέφωνό σας</translation>
 <translation id="3630995161997703415">Προσθέστε αυτόν τον ιστότοπο στο ράφι σας για να τον χρησιμοποιήσετε ανά πάσα στιγμή</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Επιτρέποντας στις συσκευές ChromeOS να στέλνουν αυτόματες αναφορές, μας βοηθάτε να επιλέξουμε ποιες διορθώσεις και βελτιώσεις θα θέσουμε σε προτεραιότητα για το ChromeOS. Αυτές οι αναφορές μπορούν να περιλαμβάνουν διάφορα στοιχεία, όπως πότε το ChromeOS παρουσιάζει σφάλματα, ποιες λειτουργίες καθώς και πόση μνήμη χρησιμοποιείτε συνήθως.<ph name="END_PARAGRAPH1" />
@@ -3277,6 +3282,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Ο πλήρης έλεγχος συσκευών MIDI απορρίφθηκε</translation>
+<translation id="4087328411748538168">Εμφάνιση στα δεξιά</translation>
 <translation id="4089235344645910861">Οι ρυθμίσεις αποθηκεύτηκαν. Ο συγχρονισμός ξεκίνησε.</translation>
 <translation id="4090103403438682346">Ενεργοποίηση επαληθευμένης πρόσβασης</translation>
 <translation id="4090947011087001172">Να γίνει επαναφορά των αδειών για τον ιστότοπο <ph name="SITE" />;</translation>
@@ -3970,6 +3976,7 @@
 <translation id="4779766576531456629">Μετονομασία δικτύου κινητής τηλεφωνίας eSIM</translation>
 <translation id="4780321648949301421">Αποθήκευση σελίδας &amp;ως...</translation>
 <translation id="4781443161433589743">Χρησιμοποιείτε την ισχυρότερη ασφάλεια του Chrome</translation>
+<translation id="4782861709165039462">Όλα τα μικρόφωνα απενεργοποιήθηκαν από τον διακόπτη εξοπλισμού συσκευών</translation>
 <translation id="4785719467058219317">Χρησιμοποιείτε ένα κλειδί ασφαλείας το οποίο δεν είναι εγγεγραμμένο σε αυτόν τον ιστότοπο</translation>
 <translation id="4785914069240823137">Ακύρωση περικοπής</translation>
 <translation id="4788092183367008521">Ελέγξτε τη σύνδεση δικτύου σας και δοκιμάστε ξανά.</translation>
@@ -4737,6 +4744,7 @@
 <translation id="5548075230008247516">Όλα τα στοιχεία αποεπιλέχθηκαν και έγινε έξοδος από τη λειτουργία επιλογής.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" και μία ακόμη καρτέλα}other{"<ph name="TAB_TITLE" />" και # ακόμη καρτέλες}}</translation>
 <translation id="5548606607480005320">Έλεγχος ασφαλείας</translation>
+<translation id="5548644592758170183">Εμφάνιση στα αριστερά</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Πληκτρολόγιο και εισαγωγή κειμένου</translation>
 <translation id="5553089923092577885">Αντιστοιχίσεις πολιτικής πιστοποιητικών</translation>
@@ -5590,6 +5598,7 @@
 <translation id="6406303162637086258">Προσομοίωση επανεκκίνησης προγράμματος περιήγησης</translation>
 <translation id="6406506848690869874">Συγχρονισμός</translation>
 <translation id="6406708970972405507">Ρυθμίσεις - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Επιτρέψτε στον Βοηθό Google να σας βοηθήσει να αλλάξετε τον κωδικό πρόσβασής σας</translation>
 <translation id="6408118934673775994">Διαβάστε και αλλάξτε τα δεδομένα σας στο <ph name="WEBSITE_1" />, στο <ph name="WEBSITE_2" /> και το <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Αρχεία εικόνας</translation>
 <translation id="6410328738210026208">Αλλαγή καναλιού και Powerwash</translation>
@@ -5973,6 +5982,7 @@
 <translation id="6781978626986383437">Η δημιουργία αντιγράφου ασφαλείας Linux ακυρώθηκε</translation>
 <translation id="6782067259631821405">Μη έγκυρο PIN</translation>
 <translation id="6784523122863989144">Το προφίλ δεν υποστηρίζεται</translation>
+<translation id="6785872064505734160">Ο Βοηθός Google στο Chrome μπορεί να εκτελέσει ενέργειες σε ιστοτόπους για εσάς.</translation>
 <translation id="6786747875388722282">Επεκτάσεις</translation>
 <translation id="6787097042755590313">Άλλη καρτέλα</translation>
 <translation id="6787839852456839824">Συντομεύσεις πληκτρολογίου</translation>
@@ -8216,6 +8226,7 @@
 <translation id="8980345560318123814">Αναφορές σχολίων</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Παρουσίασε σφάλμα</translation>
 <translation id="8981825781894055334">Δεν υπάρχει αρκετό χαρτί</translation>
+<translation id="8983018820925880511">Η διαχείριση αυτού του νέου προφίλ θα γίνεται από τον τομέα <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Ο ιστότοπος <ph name="ORIGIN" /> μπορεί να επεξεργαστεί το αρχείο <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Η συσκευή σας θα είναι ορατή σε όλους για <ph name="MINUTES" /> λεπτά. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Καλωσορίσατε στο Steam για Chromebook</translation>
@@ -8312,6 +8323,7 @@
 <translation id="9075413375877487220">Αυτή η επέκταση δεν θεωρείται αξιόπιστη από τη Βελτιωμένη Ασφαλή περιήγηση.</translation>
 <translation id="9076283476770535406">Μπορεί να διαθέτει περιεχόμενο για ενηλίκους</translation>
 <translation id="9076523132036239772">Λυπούμαστε, αλλά δεν ήταν δυνατή η επαλήθευση της διεύθυνσης ηλεκτρονικού ταχυδρομείου ή του κωδικού πρόσβασής σας. Δοκιμάστε πρώτα να συνδεθείτε σε ένα δίκτυο.</translation>
+<translation id="9076821103818989526">Πλαϊνό πλαίσιο</translation>
 <translation id="9076977315710973122">Κοινοποίηση SMB</translation>
 <translation id="9078193189520575214">Εφαρμογή αλλαγών…</translation>
 <translation id="9078316009970372699">Απενεργοποίηση δικτύου Άμεσης σύνδεσης</translation>

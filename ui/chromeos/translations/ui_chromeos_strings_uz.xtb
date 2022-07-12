@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Himoyalangan</translation>
 <translation id="2638942478653899953">Google Drive‘ga ulanib bo‘lmadi. Iltimos, <ph name="BEGIN_LINK" />tizimdan chiqing<ph name="END_LINK" /> va qaytadan kiring.</translation>
 <translation id="2649120831653069427">Kamalakbaliq</translation>
+<translation id="2653059201992392941">Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="2663066752008346276">Birma/Myanma (Myansan klaviaturasi)</translation>
 <translation id="2664412712123763093">Fayl joylashuvi</translation>
 <translation id="2718540689505416944">Linux bilan ilova oʻrnatish</translation>
@@ -529,6 +530,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5489067830765222292">Latish</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtri oʻchiq.</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
+<translation id="5500104704744051184">PUK kaliti kiritilmaguncha bu tarmoqdan foydalana olmaysiz</translation>
 <translation id="5500122897333236901">Island tili</translation>
 <translation id="5508696409934741614">Nuqtalar</translation>
 <translation id="5522908512596376669">Fayllar roʻyxati uchun saralash shakli almashdi.</translation>
@@ -634,6 +636,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ta fayl</translation>
 <translation id="642282551015776456">Fayl yoki jildga noto‘g‘ri nom berildi</translation>
 <translation id="6423031066725912715">Vyetnam (TCVN klaviaturasi)</translation>
+<translation id="6430271654280079150">Sizda 1 ta urinish qoldi.</translation>
 <translation id="6485131920355264772">Bo‘shliq ma’lumotini olib bo‘lmadi</translation>
 <translation id="6495925982925244349">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoyasi: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Batafsil</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> fayli <ph name="FOLDER_NAME" /> jildiga chiqarilmoqda</translation>
@@ -900,6 +903,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ta element sinxronlanmoqda...</translation>
 <translation id="8600173386174225982">Fayllar roʻyxati uchun saralash shakli eskizlarga almashdi.</translation>
 <translation id="8601932370724196034">Crostini tasvir fayli</translation>
+<translation id="8608515571837163082">PIN kod juda koʻp marta xato kiritildi. Aloqa operatori taqdim qilgan 8-raqamli shaxsiy qulfdan chiqarish kalitini (PUK) kiriting.</translation>
 <translation id="8609695766746872526">Island</translation>
 <translation id="863903787380594467">PIN kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

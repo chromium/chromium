@@ -218,7 +218,6 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="214888715418183969">Kies wat jy gemaklik voel om met Chrome te deel. Die maatstawwe wat jy deel, sal gebruik word om te help om Chrome se kenmerke, werkverrigting en stabiliteit te verbeter.</translation>
 <translation id="2149973817440762519">Wysig boekmerk</translation>
 <translation id="2155214902713132423">Hierdie verifikasiemetode is nie beskikbaar vir hierdie toestel nie. Kies ’n ander opsie op jou ander toestel.</translation>
-<translation id="2157851137955077194">Skakel sinkronisering op albei toestelle in Chrome-instellings aan om iets van jou foon af na 'n ander toestel toe te deel</translation>
 <translation id="2158408438301413340">Chrome kon nie alle wagwoorde nagaan nie</translation>
 <translation id="2169830938017475061">Nou</translation>
 <translation id="2172688499998841696">Prentbeskrywings is af</translation>
@@ -662,7 +661,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4678082183394354975">Donkertema vir werwe is aan in Chrome</translation>
 <translation id="4684427112815847243">Sinkroniseer alles</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Stuur teks na jou toestelle toe</translation>
 <translation id="4699172675775169585">Gekaste prente en lêers</translation>
 <translation id="4719927025381752090">Aanbieding om te vertaal</translation>
 <translation id="4720023427747327413">Maak in <ph name="PRODUCT_NAME" /> oop</translation>
@@ -1470,7 +1468,6 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="8873817150012960745">Tik hier om te begin</translation>
 <translation id="8881973373982641723">Vee geskiedenis uit, ook in die soekkassie.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Ons vee werwe op die lys wat ouer as 4 weke is outomaties uit om jou privaatheid te beskerm. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf verwyder as jy nie wil hê dat daardie werf ooit jou belangstellings moet bepaal nie.</translation>
-<translation id="889338405075704026">Gaan na Chrome-instellings</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="8906502871739599113">Reaksie is gedupliseer</translation>
 <translation id="8909135823018751308">Deel …</translation>
@@ -1498,7 +1495,6 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="8996847606757455498">Kies 'n ander verskaffer</translation>
 <translation id="8998729206196772491">Jy meld tans aan met 'n rekening wat deur <ph name="MANAGED_DOMAIN" /> bestuur word en gee sy administrateur beheer oor jou Chrome-data. Jou data sal permanent met hierdie rekening verbind word. As jy by Chrome afmeld, sal jou data van hierdie toestel af uitgevee word, maar dit sal steeds in jou Google-rekening geberg word.</translation>
 <translation id="9022774213089566801">Gereeld besoek</translation>
-<translation id="9028914725102941583">Skakel sinkronisering aan om tussen toestelle te deel</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video's}}</translation>
 <translation id="9042893549633094279">Privaatheid en sekuriteit</translation>
 <translation id="9050666287014529139">Wagfrase</translation>

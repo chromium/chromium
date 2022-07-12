@@ -1247,6 +1247,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">เพิ่ม WiFi...</translation>
 <translation id="2162155940152307086">การซิงค์จะเริ่มขึ้นเมื่อคุณออกจากการตั้งค่า</translation>
+<translation id="2162705204091149050">อ่านข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ อุปกรณ์ ซอฟต์แวร์ที่ติดตั้ง และไฟล์</translation>
 <translation id="2162926944953615670">ไม่มีโปรไฟล์ eSIM ที่ใช้ได้</translation>
 <translation id="2163470535490402084">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
@@ -1267,6 +1268,7 @@
 <translation id="2180620921879609685">บล็อกเนื้อหาในหน้าใดก็ได้</translation>
 <translation id="2182058453334755893">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="2184515124301515068">ให้ Chrome เลือกว่าเว็บไซต์จะเล่นเสียงได้เมื่อใด (แนะนำ)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">หน้าเว็บที่แชร์จากอุปกรณ์อื่น</translation>
 <translation id="2187675480456493911">ซิงค์กับอุปกรณ์อื่นในบัญชีของคุณแล้ว ระบบจะไม่ซิงค์การตั้งค่าที่ผู้ใช้คนอื่นๆ แก้ไข <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ข้อผิดพลาดในการนำเข้าใบรับรองเซิร์ฟเวอร์</translation>
@@ -2493,6 +2495,7 @@
 <translation id="3359256513598016054">ข้อจำกัดนโยบายใบรับรอง</translation>
 <translation id="3360297538363969800">การพิมพ์ล้มเหลว โปรดตรวจสอบเครื่องพิมพ์และลองอีกครั้ง</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> กำลังแชร์ <ph name="ATTACHMENTS" />กับคุณ}other{<ph name="DEVICE_NAME" /> กำลังแชร์ <ph name="ATTACHMENTS" />กับคุณ}}</translation>
+<translation id="3363202073972776113">โปรไฟล์ใหม่นี้จะจัดการโดยองค์กรของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">จากผู้ดูแลระบบ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">ใช้ Ctrl หรือ Alt อย่างใดอย่างหนึ่ง</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
@@ -2527,6 +2530,7 @@
 <translation id="339722927132407568">ค้าง</translation>
 <translation id="3399432415385675819">ระบบจะปิดใช้การแจ้งเตือน</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> เฮิรตซ์) - อินเตอร์เลซ</translation>
+<translation id="3401484564516348917">อ่านข้อมูลเกี่ยวกับเบราว์เซอร์ ระบบปฏิบัติการ อุปกรณ์ ซอฟต์แวร์ที่ติดตั้ง ค่ารีจิสทรี และไฟล์</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{มีรหัสผ่าน {COUNT} รายการจัดเก็บอยู่ในอุปกรณ์นี้}other{มีรหัสผ่าน {COUNT} รายการจัดเก็บอยู่ในอุปกรณ์นี้}}</translation>
 <translation id="3402255108239926910">เลือกรูปโปรไฟล์</translation>
 <translation id="3402585168444815892">ลงทะเบียนในโหมดสาธิต</translation>
@@ -2773,6 +2777,7 @@
 <translation id="3627879631695760395">ติดตั้ง <ph name="APP" />...</translation>
 <translation id="3628275722731025472">ปิดบลูทูธ</translation>
 <translation id="3629631988386925734">ป้อนรหัสผ่านเพื่อเปิดใช้ Smart Lock โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
+<translation id="3629664892718440872">จำตัวเลือกนี้</translation>
 <translation id="3630132874740063857">โทรศัพท์ของคุณ</translation>
 <translation id="3630995161997703415">เพิ่มเว็บไซต์นี้ลงในชั้นวางเพื่อใช้งานได้ทุกเมื่อ</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />การอนุญาตให้อุปกรณ์ Chrome OS ส่งรายงานอัตโนมัติจะช่วยให้เราจัดลำดับความสำคัญของสิ่งที่ต้องแก้ไขและปรับปรุงใน Chrome OS ได้ รายงานเหล่านี้ประกอบด้วยข้อมูลต่างๆ เช่น เวลาที่ Chrome OS ขัดข้อง ฟีเจอร์ที่ใช้ และจำนวนหน่วยความจำที่ใช้โดยปกติ<ph name="END_PARAGRAPH1" />
@@ -3262,6 +3267,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">ปฏิเสธไม่ให้ควบคุมอุปกรณ์ MIDI โดยสมบูรณ์</translation>
+<translation id="4087328411748538168">แสดงทางด้านขวา</translation>
 <translation id="4089235344645910861">บันทึกการตั้งค่าและเริ่มซิงค์แล้ว</translation>
 <translation id="4090103403438682346">เปิดใช้การเข้าถึงที่ได้รับการยืนยัน</translation>
 <translation id="4090947011087001172">รีเซ็ตสิทธิ์เว็บไซต์สำหรับ <ph name="SITE" /> ไหม</translation>
@@ -3954,6 +3960,7 @@
 <translation id="4779766576531456629">เปลี่ยนชื่อเครือข่ายมือถือของ eSIM</translation>
 <translation id="4780321648949301421">บันทึกหน้าเป็น...</translation>
 <translation id="4781443161433589743">คุณกำลังใช้การรักษาความปลอดภัยที่เข้มงวดที่สุดของ Chrome</translation>
+<translation id="4782861709165039462">ไมโครโฟนทั้งหมดถูกปิดใช้โดยสวิตช์ฮาร์ดแวร์อุปกรณ์</translation>
 <translation id="4785719467058219317">คุณกำลังใช้คีย์ความปลอดภัยที่ไม่ได้ลงทะเบียนกับเว็บไซต์นี้</translation>
 <translation id="4785914069240823137">ยกเลิกการครอบตัด</translation>
 <translation id="4788092183367008521">โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง</translation>
@@ -4721,6 +4728,7 @@
 <translation id="5548075230008247516">ยกเลิกการเลือกรายการทั้งหมด ออกจากโหมดการเลือกแล้ว</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก 1 แท็บ}other{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก # แท็บ}}</translation>
 <translation id="5548606607480005320">การตรวจสอบความปลอดภัย</translation>
+<translation id="5548644592758170183">แสดงทางด้านซ้าย</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">แป้นพิมพ์และการป้อนข้อความ</translation>
 <translation id="5553089923092577885">การจับคู่นโยบายใบรับรอง</translation>
@@ -5570,6 +5578,7 @@
 <translation id="6406303162637086258">จำลองการรีสตาร์ทเบราว์เซอร์</translation>
 <translation id="6406506848690869874">การซิงค์ข้อมูล</translation>
 <translation id="6406708970972405507">การตั้งค่า - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">ให้ Google Assistant ช่วยคุณเปลี่ยนรหัสผ่าน</translation>
 <translation id="6408118934673775994">อ่านและเปลี่ยนแปลงข้อมูลของคุณใน <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> และ <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">ไฟล์ภาพ</translation>
 <translation id="6410328738210026208">เปลี่ยนช่องและ Powerwash</translation>
@@ -5953,6 +5962,7 @@
 <translation id="6781978626986383437">ยกเลิกการสำรองข้อมูล Linux แล้ว</translation>
 <translation id="6782067259631821405">PIN ไม่ถูกต้อง</translation>
 <translation id="6784523122863989144">รองรับโปรไฟล์นี้</translation>
+<translation id="6785872064505734160">Google Assistant ใน Chrome ดำเนินการต่างๆ ในเว็บไซต์ให้คุณได้</translation>
 <translation id="6786747875388722282">ส่วนขยาย</translation>
 <translation id="6787097042755590313">แท็บอื่น</translation>
 <translation id="6787839852456839824">แป้นพิมพ์ลัด</translation>
@@ -8197,6 +8207,7 @@
 <translation id="8980345560318123814">รายงานความคิดเห็น</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - ขัดข้อง</translation>
 <translation id="8981825781894055334">กระดาษเหลือน้อย</translation>
+<translation id="8983018820925880511">โปรไฟล์ใหม่นี้จะจัดการโดย <ph name="DOMAIN" /> <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> แก้ไข <ph name="FILENAME" /> ได้</translation>
 <translation id="8984694057134206124">ทุกคนจะมองเห็นคุณเป็นเวลา <ph name="MINUTES" /> นาที <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">ยินดีต้อนรับสู่ Steam สำหรับ Chromebook</translation>
@@ -8293,6 +8304,7 @@
 <translation id="9075413375877487220">Google Safe Browsing เวอร์ชันปรับปรุงไม่เชื่อถือส่วนขยายนี้</translation>
 <translation id="9076283476770535406">เว็บไซต์นี้อาจมีเนื้อหาสำหรับผู้ใหญ่</translation>
 <translation id="9076523132036239772">ขออภัย ไม่สามารถยืนยันอีเมลและรหัสผ่านของคุณ ให้ลองเชื่อมต่อเครือข่ายก่อน</translation>
+<translation id="9076821103818989526">แผงด้านข้าง</translation>
 <translation id="9076977315710973122">การแชร์ SMB</translation>
 <translation id="9078193189520575214">กำลังนำการเปลี่ยนแปลงไปใช้...</translation>
 <translation id="9078316009970372699">ปิดใช้การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>

@@ -97,6 +97,7 @@
 <translation id="1428770807407000502">ปิดการซิงค์ใช่ไหม</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1436784010935106834">ลบออกแล้ว</translation>
+<translation id="1437543266176261764">ทำงานใน "<ph name="APP_NAME" />"</translation>
 <translation id="1448440926884431741">จัดระเบียบผลิตภัณฑ์ที่ติดตามในบุ๊กมาร์ก</translation>
 <translation id="1450753235335490080">แชร์<ph name="CONTENT_TYPE" />ไม่สำเร็จ</translation>
 <translation id="1466383950273130737">เลือกภาษาของ Chrome</translation>
@@ -218,7 +219,6 @@
 <translation id="214888715418183969">เลือกสิ่งที่คุณต้องการแชร์กับ Chrome เราจะใช้เมตริกที่คุณแชร์เพื่อช่วยปรับปรุงฟีเจอร์ ประสิทธิภาพ และความเสถียรของ Chrome</translation>
 <translation id="2149973817440762519">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="2155214902713132423">วิธีการยืนยันนี้ไม่พร้อมใช้งานสำหรับอุปกรณ์ โปรดเลือกตัวเลือกที่ต่างออกไปในอุปกรณ์อื่น</translation>
-<translation id="2157851137955077194">หากต้องการแชร์รายการจากโทรศัพท์ไปยังอุปกรณ์อื่น ให้เปิดการซิงค์ในการตั้งค่า Chrome ในอุปกรณ์ทั้ง 2 เครื่อง</translation>
 <translation id="2158408438301413340">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด</translation>
 <translation id="2169830938017475061">ตอนนี้</translation>
 <translation id="2172688499998841696">คำอธิบายรูปภาพปิดอยู่</translation>
@@ -662,7 +662,6 @@
 <translation id="4678082183394354975">ธีมมืดสำหรับเว็บไซต์เปิดอยู่ใน Chrome</translation>
 <translation id="4684427112815847243">ซิงค์ทุกอย่าง</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}}</translation>
-<translation id="4696983787092045100">ส่งข้อความไปยังอุปกรณ์ของคุณ</translation>
 <translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
 <translation id="4719927025381752090">เสนอการแปล</translation>
 <translation id="4720023427747327413">เปิดใน <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1469,6 @@
 <translation id="8873817150012960745">แตะที่นี่เพื่อเริ่มต้นใช้งาน</translation>
 <translation id="8881973373982641723">ล้างประวัติการเข้าชม รวมถึงสิ่งที่อยู่ในช่องค้นหา</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />วิธีที่คุณจัดการข้อมูลของตัวเองได้:<ph name="END_BOLD" /> เราลบเว็บไซต์ออกจากรายการที่เก่ากว่า 4 สัปดาห์โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ เว็บไซต์ที่คุณเข้าชมอีกครั้งอาจกลับมาปรากฏในรายการอีก หรือคุณจะนำเว็บไซต์ออกก็ได้หากไม่ต้องการให้เว็บไซต์นั้นระบุความสนใจเลย</translation>
-<translation id="889338405075704026">ไปที่การตั้งค่า Chrome</translation>
 <translation id="8898822736010347272">ส่ง URL ของหน้าบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้าไปให้ Google เพื่อช่วยตรวจหาภัยคุกคามใหม่ๆ และปกป้องทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="8906502871739599113">ทำความรู้สึกซ้ำแล้ว</translation>
 <translation id="8909135823018751308">แชร์…</translation>
@@ -1498,7 +1496,6 @@
 <translation id="8996847606757455498">เลือกผู้ให้บริการอื่น</translation>
 <translation id="8998729206196772491">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการโดย <ph name="MANAGED_DOMAIN" /> และทำให้ผู้ดูแลระบบของโดเมนควบคุมข้อมูล Chrome ของคุณได้ ข้อมูลดังกล่าวจะโยงกับบัญชีนี้อย่างถาวร การออกจากระบบ Chrome จะลบข้อมูลของคุณออกจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google</translation>
 <translation id="9022774213089566801">เข้าชมบ่อย</translation>
-<translation id="9028914725102941583">เปิดการซิงค์เพื่อแชร์ข้ามอุปกรณ์</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{วิดีโอ # รายการ}other{วิดีโอ # รายการ}}</translation>
 <translation id="9042893549633094279">ข้อมูลส่วนบุคคลและความปลอดภัย</translation>
 <translation id="9050666287014529139">ข้อความรหัสผ่าน</translation>

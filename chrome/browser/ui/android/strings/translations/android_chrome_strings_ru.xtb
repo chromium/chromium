@@ -97,6 +97,7 @@
 <translation id="1428770807407000502">Отключить синхронизацию?</translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1436784010935106834">Удалено</translation>
+<translation id="1437543266176261764">Выполняется в <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Упорядочивайте отслеживаемые товары в закладках</translation>
 <translation id="1450753235335490080">Не удается отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Выбор языка для Chrome</translation>
@@ -218,7 +219,6 @@
 <translation id="214888715418183969">Укажите, какие данные вы готовы передавать Chrome. Информация, которую вы будете предоставлять, поможет нам улучшать функции браузера, а также повышать его производительность и стабильность.</translation>
 <translation id="2149973817440762519">Закладка</translation>
 <translation id="2155214902713132423">Этот способ подтверждения недоступен для этого устройства. Выберите другой вариант на другом устройстве.</translation>
-<translation id="2157851137955077194">Чтобы поделиться контентом, откройте настройки Chrome на своем телефоне и другом устройстве, а затем включите синхронизацию.</translation>
 <translation id="2158408438301413340">Браузеру Chrome удалось проверить не все пароли.</translation>
 <translation id="2169830938017475061">Сейчас</translation>
 <translation id="2172688499998841696">Описания изображений отключены.</translation>
@@ -662,7 +662,6 @@
 <translation id="4678082183394354975">Тёмная тема для сайтов включена в Chrome.</translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
-<translation id="4696983787092045100">Отправить сообщения на свои устройства</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4719927025381752090">Предлагать перевести</translation>
 <translation id="4720023427747327413">Открыть в <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1469,6 @@
 <translation id="8873817150012960745">Нажмите здесь, чтобы начать</translation>
 <translation id="8881973373982641723">История будет удалена, в том числе в окне поиска</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Как вы можете управлять своими данными.<ph name="END_BOLD" /> Для защиты вашей конфиденциальности сайты, добавленные в список более четырех недель назад, удаляются из него автоматически. Если вы повторно зайдете на сайт, он может снова появиться в списке. Чтобы сайт не определял ваши интересы, удалите его.</translation>
-<translation id="889338405075704026">Открыть настройки Chrome</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей Интернета)</translation>
 <translation id="8906502871739599113">Копия отклика создана</translation>
 <translation id="8909135823018751308">Поделиться...</translation>
@@ -1498,7 +1496,6 @@
 <translation id="8996847606757455498">Выбрать другого поставщика</translation>
 <translation id="8998729206196772491">Вы входите в аккаунт, которым управляет администратор домена <ph name="MANAGED_DOMAIN" />. Он может контролировать ваши данные Chrome, которые теперь будут связаны с управляемым аккаунтом. При выходе из системы все данные Chrome, хранящиеся на этом устройстве, будут удалены, но останутся в вашем аккаунте Google.</translation>
 <translation id="9022774213089566801">Часто посещаемые</translation>
-<translation id="9028914725102941583">Включите синхронизацию</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# видеофайл}one{# видеофайл}few{# видеофайла}many{# видеофайлов}other{# видеофайла}}</translation>
 <translation id="9042893549633094279">Конфиденциальность и безопасность</translation>
 <translation id="9050666287014529139">Кодовая фраза</translation>

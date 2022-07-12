@@ -218,7 +218,6 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="214888715418183969">Izberite, kaj želite deliti s Chromom. Meritve, ki jih boste delili, bomo uporabili za izboljšanje Chromovih funkcij, delovanja in stabilnosti.</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2155214902713132423">Ta način preverjanja ni na voljo za to napravo. V drugi napravi izberite drugo možnost.</translation>
-<translation id="2157851137955077194">Če želite deliti kaj iz telefona z drugo napravo, v obeh napravah v nastavitvah Chroma vklopite sinhronizacijo</translation>
 <translation id="2158408438301413340">Chrome ni mogel preveriti vseh gesel</translation>
 <translation id="2169830938017475061">Zdaj</translation>
 <translation id="2172688499998841696">Opisi slik so izklopljeni</translation>
@@ -662,7 +661,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4678082183394354975">Temna tema za spletna mesta je vklopljena v Chromu</translation>
 <translation id="4684427112815847243">Sinhroniziraj vse</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}two{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Pošiljanje besedila v vaše naprave</translation>
 <translation id="4699172675775169585">Predpomnjene slike in datoteke</translation>
 <translation id="4719927025381752090">Ponudi prevajanje</translation>
 <translation id="4720023427747327413">Odpri v: <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Glede na interakcijo s spletnim mestom, kot je redno prijavljanje v račun, lahk
 <translation id="8873817150012960745">Dotaknite se tu, če želite začeti.</translation>
 <translation id="8881973373982641723">Izbriše zgodovino, vključno s tisto v iskalnem polju.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Zaradi zaščite vaše varnosti samodejno izbrišemo spletna mesta na seznamu, starejša od 4 tednov. Spletno mesto, ki ga znova obiščete, se morda znova prikaže na seznamu. Če ne želite, da bi to spletno mesto kdaj določalo vaša zanimanja, lahko spletno mesto odstranite.</translation>
-<translation id="889338405075704026">Odprite nastavitve Chroma</translation>
 <translation id="8898822736010347272">Pošilja URL-je nekaterih strani, ki jih obiščete, omejene podatke o sistemu in nekatere vsebine strani Googlu zaradi pomoči pri odkrivanju novih groženj in zaščiti vseh uporabnikov v spletu.</translation>
 <translation id="8906502871739599113">Odziv je podvojen</translation>
 <translation id="8909135823018751308">Skupna raba …</translation>
@@ -1498,7 +1495,6 @@ Glede na interakcijo s spletnim mestom, kot je redno prijavljanje v račun, lahk
 <translation id="8996847606757455498">Izberi drugega ponudnika:</translation>
 <translation id="8998729206196772491">Prijavljate se z računom, ki ga upravlja <ph name="MANAGED_DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="9022774213089566801">Pogosto obiskano</translation>
-<translation id="9028914725102941583">Vklopite sinhronizacijo, če želite deliti z drugimi napravami</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# videoposnetek}one{# videoposnetek}two{# videoposnetka}few{# videoposnetki}other{# videoposnetkov}}</translation>
 <translation id="9042893549633094279">Zasebnost in varnost</translation>
 <translation id="9050666287014529139">Geslo</translation>

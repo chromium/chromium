@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Корголгон</translation>
 <translation id="2638942478653899953">Google Drive жеткиликтүү эмес. <ph name="BEGIN_LINK" />Тутумдан чыгып<ph name="END_LINK" />, кайра кириңиз.</translation>
 <translation id="2649120831653069427">Түстүү балык</translation>
+<translation id="2653059201992392941">Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="2663066752008346276">Бирмача (Мьянма) жана Myansan баскычтобу</translation>
 <translation id="2664412712123763093">Файлдын жайгашкан жери</translation>
 <translation id="2718540689505416944">Колдонмону Linux менен орнотуу</translation>
@@ -529,6 +530,7 @@
 <translation id="5489067830765222292">Латвияча</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> чыпкасы өчүк.</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
+<translation id="5500104704744051184">PUK кодун киргизмейинче бул тармакты колдоно албайсыз</translation>
 <translation id="5500122897333236901">Исландча</translation>
 <translation id="5508696409934741614">Чекиттер</translation>
 <translation id="5522908512596376669">Файлдардын тизмеси тизме көрүнүшүнө которулду.</translation>
@@ -634,6 +636,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> элемент</translation>
 <translation id="642282551015776456">Муну файл же папка аталышы катары колдонууга болбойт</translation>
 <translation id="6423031066725912715">Вьетнамча (TCVN баскычтобу)</translation>
+<translation id="6430271654280079150">1 жолу аракет кыла аласыз.</translation>
 <translation id="6485131920355264772">Бош орун тууралуу маалымат түшпөй калды</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз башкарат, Чоо-жайы</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> папкасына чыгарылууда</translation>
@@ -900,6 +903,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> нерсе шайкештирилүүдө…</translation>
 <translation id="8600173386174225982">Файлдардын тизмеси эскиз көрүнүшүнө которулду.</translation>
 <translation id="8601932370724196034">Crostini сүрөт файлы</translation>
+<translation id="8608515571837163082">Туура эмес PIN код өтө көп жолу киргизилди. Байланыш операторуңуз берген 8 орундуу Жеке бөгөттөн чыгаруу ачкычын (PUK) киргизиңиз.</translation>
 <translation id="8609695766746872526">Исландча</translation>
 <translation id="863903787380594467">PIN код туура эмес. Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Оюкча</translation>

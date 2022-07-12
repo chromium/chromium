@@ -1643,6 +1643,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="264771271300359481">Non consentire ai siti di usare l'autorizzazione di accesso dei siti agli appunti</translation>
 <translation id="2649896281375932517">Consenti agli utenti di decidere</translation>
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude lo schermo</translation>
+<translation id="2656559539624760733">Non utilizzare Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usa l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
 <translation id="2661628029848851543">Sono consentiti tutti gli utilizzi degli account gestiti</translation>
@@ -3068,13 +3069,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4228745249339680042">La configurazione del criterio consente di specificare gli URL e i domini per i quali non vengono visualizzati messaggi quando vengono richiesti certificati di attestazione dei token di sicurezza. Viene inoltre inviato un segnale al token di sicurezza per indicare che potrebbe essere utilizzata la singola attestazione. Senza questo segnale, gli utenti di <ph name="PRODUCT_NAME" /> 65 e versioni successive ricevono un messaggio quando i siti richiedono l'attestazione dei token di sicurezza.
 
       Gli URL corrispondono soltanto ad appID U2F. I domini corrispondono soltanto a ID RP webauthn. Di conseguenza, per includere entrambe le API U2F e webauthn per un determinato sito, devono essere elencati sia il dominio sia l'URL appID.</translation>
-<translation id="4239112794240794697">Questo criterio consente di autorizzare Proiettore a creare e trascrivere la registrazione dello schermo e a caricarla su Drive per gli utenti aziendali.
-      Questo criterio non influisce sugli utenti di Family Link.
-      Questo criterio non influisce sul criterio <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> per gli utenti di Family Link.
-
-      Se il criterio viene attivato, Proiettore viene attivato.
-      Se il criterio viene disattivato, Proiettore viene disattivato.
-      Se il criterio non viene configurato, Proiettore viene disattivato per impostazione predefinita.</translation>
 <translation id="4239720644496144453">La cache non viene utilizzata per le app Android. Se più utenti installano la stessa app Android, questa viene scaricata per ogni utente.</translation>
 <translation id="4247914291127524388">Se il criterio viene impostato su Attivato, verrà disattivata la sincronizzazione di <ph name="GOOGLE_DRIVE_NAME" /> nell'app File di <ph name="PRODUCT_OS_NAME" /> quando si è connessi a una rete cellulare. I dati verranno sincronizzati con Drive solo se si è connessi a una rete Wi-Fi o Ethernet.
 
@@ -3532,6 +3526,12 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="487460824085252184">Esegui automaticamente la migrazione senza chiedere il consenso dell'utente</translation>
+<translation id="48749493657448872">Se questa impostazione viene attivata, <ph name="PRODUCT_NAME" /> verifica i certificati dei server mediante lo strumento di verifica dei certificati integrato.
+      Se viene disattivata, <ph name="PRODUCT_NAME" /> verifica i certificati del server mediante lo strumento di verifica dei certificati precedente fornito dalla piattaforma, a meno che non sia abilitato <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
+      Se non viene configurata, potrebbe essere utilizzato lo strumento di verifica dei certificati integrato o quello precedente.
+
+      È prevista la rimozione di questo criterio in <ph name="PRODUCT_NAME" /> per <ph name="MAC_OS_NAME" /> versione 107, in concomitanza con la rimozione del supporto dello strumento di verifica dei certificati precedente su <ph name="MAC_OS_NAME" />.
+      </translation>
 <translation id="4874982543810021567">Blocca WebUSB su questi siti</translation>
 <translation id="4876805738539874299">Versione SSL massima abilitata</translation>
 <translation id="4877402532842958110">Questo criterio è deprecato. Utilizza il criterio "<ph name="URL_ALLOWLIST_POLICY_NAME" />".
@@ -4331,6 +4331,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5733040281451845496">Se il criterio viene impostato su Attivato, i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni iniziano soltanto dopo il rilevamento della prima attività dell'utente in una sessione.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i ritardi di gestione dell'alimentazione e il limite di tempo iniziano immediatamente all'avvio della sessione.</translation>
+<translation id="5733357908790472408">Utilizza Chrome Root Store.</translation>
 <translation id="5735915264686983150">Nascondi e blocca le funzionalità disattivate</translation>
 <translation id="5737394734996319911">La funzione di accessibilità <ph name="PRODUCT_NAME" /> consente agli utenti di screen reader con disabilità visiva di recuperare le descrizioni delle immagini senza etichetta sul Web. Gli utenti che decidono di attivarla avranno la possibilità di usare un servizio Google anonimo per avere descrizioni automatiche delle immagini senza etichetta che trovano sul Web.
 
@@ -4605,13 +4606,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se viene impostato su Disattivato, gli utenti non possono riscattare tali offerte.</translation>
 <translation id="6046615715547751255">Non consentire i controlli di reporting granulare</translation>
 <translation id="6048199181629830227">Attiva la gestione della variazione dei picchi energetici</translation>
-<translation id="6052730367191220066">Consente di attivare la migrazione dei dispositivi gestiti da <ph name="MS_AD_NAME" /> nella gestione del cloud. Questo criterio consente di avviare da remoto una migrazione touchless di più dispositivi di una società. Inoltre, la migrazione sarà il più trasparente possibile per gli utenti finali.
-
-      Se questo criterio viene attivato e l'ID di registrazione è già stato caricato su DMServer, verrà attivato il Powerwash da remoto del dispositivo.
-
-      Se questo criterio viene disattivato o se non viene configurato, il Powerwash da remoto del dispositivo non verrà attivato, a prescindere dallo stato di caricamento dell'ID di registrazione.
-
-      Questo controllo viene attivato ogni volta che viene caricata la schermata di accesso e viene ripetuto ogni ora se sul dispositivo rimane visualizzata la schermata di accesso. Ciò consente di evitare che la migrazione inizi nel corso di una sessione utente causando potenziali problemi agli utenti finali.</translation>
 <translation id="6053681087509103368">Consenti a WebRTC di usare versioni obsolete del protocollo TLS/DTLS</translation>
 <translation id="6058879286588763839">A meno che <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> non venga specificato, sovrascrivendo <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> consente di specificare il criterio di gestione della modalità di ricarica della batteria (se supportato dal dispositivo). Per estendere la durata della batteria, il criterio controlla dinamicamente la ricarica della batteria riducendo al minimo l'usura e preservandone l'efficienza.
 
@@ -4805,6 +4799,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6265892395051519509">Consenti l'accesso ai sensori su questi siti</translation>
+<translation id="6266043141694454734">Determina se verranno utilizzati Chrome Root Store e lo strumento di verifica dei certificati integrato per verificare i certificati del server</translation>
 <translation id="6273015149273504999">
       Consente di specificare un elenco di app ed estensioni che vengono installate automaticamente nella schermata di accesso, senza l'interazione dell'utente, e che non possono essere disinstallate o disattivate dall'utente.
 
@@ -5794,6 +5789,23 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se entrambi i criteri <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> e <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> non vengono impostati, gli utenti possono scegliere la pagina iniziale che preferiscono.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="7258250780552783197">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene trasferito all'interno di <ph name="PRODUCT_OS_NAME" />.
+
+      I campi <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene trasferito tra un'origine e una destinazione e quali tag includere nella richiesta di analisi di quel file. Un tag che corrisponde a una regola "enable" verrà incluso nella richiesta di analisi se l'origine e la destinazione corrispondono alla regola associata a questo tag, purché nessuna regola "disable" con lo stesso tag corrisponda al trasferimento. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta. Una regola <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> è definita da un elenco di coppie, dove ogni coppia contiene un elenco di origini e un elenco di destinazioni. Il campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> definisce il file system a cui deve essere applicata una regola.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
+
+      Se il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> viene impostato su 1, <ph name="PRODUCT_OS_NAME" /> attende di ricevere una risposta dal servizio di analisi prima di consentire il trasferimento. Con qualsiasi altro valore intero, <ph name="PRODUCT_OS_NAME" /> consente immediatamente il trasferimento.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> consente di stabilire se <ph name="PRODUCT_OS_NAME" /> blocca o autorizza i file protetti tramite password.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> consente di controllare se <ph name="PRODUCT_OS_NAME" /> blocca o autorizza i file troppo grandi per essere analizzati.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> viene utilizzato per determinare per quali tag il connettore deve richiedere all'utente di inserire una giustificazione per ignorare una scansione che risulti in un avviso ignorabile. Se il campo non viene configurato, si presume che non sia richiesta alcuna giustificazione.
+
+      I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. Il campo del messaggio contiene il testo da mostrare all'utente e può includere al massimo 200 caratteri. Il campo <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> contiene un URL fornito dall'amministratore su cui l'utente potrà fare clic per ricevere maggiori informazioni fornite dal cliente sul motivo per cui l'azione è stata bloccata. Il campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> è facoltativo e contiene la lingua del messaggio. Un campo <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> vuoto o con il valore "default" indica il messaggio da utilizzare se non è disponibile alcun messaggio nella lingua dell'utente. Il campo dei tag specifica il tipo di scansioni per cui viene visualizzato il messaggio. L'elenco <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> può avere alcune voci o nessuna, e per ciascuna voce i campi del messaggio e dei tag non devono essere vuoti.
+
+      Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="7258823566580374486">Attiva separazione degli host di accesso remoto</translation>
 <translation id="7260204423892780600">Consente di gestire le impostazioni dell'Assistente Google.</translation>
 <translation id="7261140115553020049">Abilita il servizio Area di lavoro mobile</translation>
@@ -6187,11 +6199,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7687943045976362719">Se questa norma viene impostata, i tipi di contenuto specificati vengono gestiti da <ph name="PRODUCT_FRAME_NAME" />.
 
           Se la norma non viene impostata, verrà utilizzato per tutti i siti il renderer predefinito. (È possibile utilizzare la norma <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> per configurare il renderer predefinito).</translation>
-<translation id="7694245791806617022">Consente di controllare se la funzionalità "Ricorda password" è attiva nella finestra di dialogo dell'autenticazione Kerberos. Le password sono memorizzate criptate su disco, accessibili solo al demone del sistema Kerberos durante una sessione utente.
-
-          Se il criterio è attivato o non configurato, gli utenti possono decidere se le password Kerberos vengono ricordate, in modo da non dovere essere inserite nuovamente. Le richieste di Kerberos vengono recuperate automaticamente, a meno che non sia necessaria un'ulteriore autenticazione (autenticazione a due fattori).
-
-          Se il criterio è disattivato, le password non vengono mai ricordate e tutte le password memorizzate in precedenza vengono rimosse. Gli utenti devono inserire la propria password ogni volta che devono eseguire l'autenticazione con il sistema Kerberos. In base alle impostazioni del server, ciò avviene solitamente con una frequenza che varia da ogni otto ore a parecchi mesi di distanza.</translation>
 <translation id="7694807474048279351">Consente di pianificare un riavvio automatico in seguito all'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" />.
 
 Se questa norma viene impostata su true, viene pianificato un riavvio automatico in seguito all'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" /> e quando è necessario un riavvio per completare la procedura di aggiornamento. Il riavvio viene programmato subito ma potrebbe essere ritardato sul dispositivo di massimo 24 ore se un utente sta utilizzando il dispositivo.
@@ -7236,6 +7243,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       Se il criterio non viene configurato, viene usato un valore predefinito specifico della piattaforma: <ph name="IE_PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> oppure <ph name="SAFARI_PRODUCT_NAME" /> per <ph name="MAC_OS_NAME" />. Su <ph name="LINUX_OS_NAME" /> non è possibile aprire un browser alternativo.</translation>
 <translation id="8836975838488342340">La durata della validità del codice di accesso (in secondi).</translation>
+<translation id="883744045558067826">È possibile utilizzare Chrome Root Store, a seconda del processo di implementazione della funzionalità.</translation>
 <translation id="8839799083601163225">Questo criterio consente di stabilire se eseguire o meno il processo del servizio di rete con limitazione tramite sandbox.
       Se questo criterio viene attivato, il processo del servizio di rete verrà eseguito con limitazione tramite sandbox.
       Se questo criterio viene disattivato, il processo del servizio di rete verrà eseguito senza limitazione tramite sandbox. Gli utenti saranno esposti a rischi di sicurezza aggiuntivi correlati all'esecuzione del servizio di rete senza limitazione tramite sandbox.
@@ -7410,6 +7418,12 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       Il valore della norma deve essere specificato in millisecondi. I valori sono limitati a un intervallo compreso tra 30 secondi e 24 ore.</translation>
 <translation id="9040042535845939426">Imposta lo stato di Schermata sulla privacy nella schermata di accesso</translation>
+<translation id="9046609670147277653">Se questa impostazione viene attivata, <ph name="PRODUCT_NAME" /> verifica i certificati del server mediante lo strumento di verifica dei certificati integrato con Chrome Root Store usato come fonte di attendibilità pubblica.
+      Se viene disattivata, <ph name="PRODUCT_NAME" /> non utilizzerà Chrome Root Store. Se il criterio <ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" /> è disponibile e non è disattivato, per la verifica potrebbe essere usato lo strumento di verifica dei certificati di sistema o lo strumento di verifica integrato.
+      Se questa impostazione non è configurata, potrebbe essere utilizzato Chrome Root Store o le CA radice fornite dal sistema.
+
+      È prevista la rimozione di questo criterio in <ph name="PRODUCT_NAME" /> per <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" /> versione 111, in concomitanza con la rimozione del supporto per l'utilizzo dello strumento di verifica e delle CA radice forniti dalla piattaforma.
+      </translation>
 <translation id="9050853837490399534">Questa norma consente di stabilire se il dispositivo debba essere aggiornato a una build di correzione rapida.
 
       Se il valore della norma viene impostato su un token associato a una build di correzione rapida, il dispositivo verrà aggiornato alla build di correzione rapida corrispondente se l'aggiornamento non è bloccato da un'altra norma.
@@ -7459,6 +7473,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       Se il criterio viene impostato su Falso o se non viene configurato, le informazioni non vengono segnalate.
       Se viene impostato su Vero, gli eventi di accesso/uscita del dispositivo vengono segnalati.</translation>
+<translation id="9087652369391570821">Criterio di configurazione per il connettore OnFileTransfer di Chrome Enterprise</translation>
 <translation id="9088191250434406767">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono effettuare ricerche con le proprie fotocamere usando <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Se viene impostato su Disattivato, gli utenti non possono vedere il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca quando la ricerca tramite fotocamera con <ph name="GOOGLE_LENS_PRODUCT_NAME" /> è supportata.</translation>
 <translation id="9088433379343318874">Abilita il provider di contenuti dell'utente supervisionato</translation>
 <translation id="9088444059179765143">Configura il metodo di rilevamento automatico del fuso orario</translation>

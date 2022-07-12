@@ -218,7 +218,6 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="214888715418183969">Veldu hverju þú vilt deila með Chrome. Mæligildin sem þú deilir verða notuð til að bæta eiginleika, afköst og stöðugleika Chrome.</translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
 <translation id="2155214902713132423">Þessi staðfestingaraðferð er ekki í boði fyrir þetta tæki. Veldu annan valkost í hinu tækinu þínu.</translation>
-<translation id="2157851137955077194">Til að deila einhverju úr símanum þínum í annað tæki skaltu kveikja á samstillingu Chrome í báðum tækjum</translation>
 <translation id="2158408438301413340">Chrome gat ekki athugað öll aðgangsorð</translation>
 <translation id="2169830938017475061">Núna</translation>
 <translation id="2172688499998841696">Slökkt er á lýsingum mynda</translation>
@@ -662,7 +661,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4678082183394354975">Kveikt er á dökku þema fyrir vefsvæði í Chrome</translation>
 <translation id="4684427112815847243">Samstilla allt</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> í viðbót}}</translation>
-<translation id="4696983787092045100">Senda texta í tækin þín</translation>
 <translation id="4699172675775169585">Myndir og skrár í skyndiminni</translation>
 <translation id="4719927025381752090">Boð um þýðingu</translation>
 <translation id="4720023427747327413">Opna í <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="8873817150012960745">Ýttu hér til að byrja</translation>
 <translation id="8881973373982641723">Hreinsar feril, einnig í leitarreitnum.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Svona geturðu stjórnað gögnunum þínum:<ph name="END_BOLD" /> Til að gæta persónuverndar þinnar er vefsvæðum sem eru eldri en 4 vikna eytt sjálfkrafa af listunum. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig fjarlægt vefsvæði ef þú vilt ekki að viðkomandi vefsvæði skilgreini áhugasvið þín.</translation>
-<translation id="889338405075704026">Fara í stillingar Chrome</translation>
 <translation id="8898822736010347272">Sendir vefslóðir sumra vefsíðna sem þú skoðar, takmarkaðar kerfisupplýsingar og tiltekið innihald síðna til Google til að hjálpa til við að finna og loka á nýjar ógnir og vernda alla vefnotendur.</translation>
 <translation id="8906502871739599113">Viðbrögð afrituð</translation>
 <translation id="8909135823018751308">Deila…</translation>
@@ -1498,7 +1495,6 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="8996847606757455498">Velja aðra veitu</translation>
 <translation id="8998729206196772491">Þú ert að skrá þig út af reikningi sem <ph name="MANAGED_DOMAIN" /> stýrir og veitir í leiðinni stjórnanda lénsins umsjón með Chrome gögnunum þínum. Gögnin þín verða tengd við þennan reikning til frambúðar. Ef þú skráir þig út af Chrome verður gögnunum þínum á þessu tæki eytt, en þau verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="9022774213089566801">Oft skoðað</translation>
-<translation id="9028914725102941583">Kveiktu á samstillingu til að deila á milli tækja</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# myndskeið}one{# myndskeið}other{# myndskeið}}</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
 <translation id="9050666287014529139">Aðgangsorð</translation>

@@ -218,7 +218,6 @@
 <translation id="214888715418183969">আপুনি Chromeৰ সৈতে কি সহজে শ্বেয়াৰ কৰিব পাৰে সেয়া বাছনি কৰক। Chromeৰ সুবিধা, পাৰদৰ্শিতা আৰু স্থিৰতা উন্নত কৰাত সহায় কৰিবলৈ আপুনি শ্বেয়াৰ কৰা মেট্ৰিক্স ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="2155214902713132423">এই ডিভাইচটোৰ বাবে এই সত্যাপনৰ পদ্ধতিটো উপলব্ধ নহয়। আপোনাৰ অন্য এটা ডিভাইচত এটা অন্য বিকল্প বাছনি কৰক।</translation>
-<translation id="2157851137955077194">আপোনাৰ ফ’নৰ পৰা অন্য ডিভাইচলৈ কোনো সমল শ্বেয়াৰ কৰিবলৈ দুয়োটা ডিভাইচৰ Chromeৰ ছেটিংসমূহলৈ গৈ ছিংক অন কৰক</translation>
 <translation id="2158408438301413340">Chromeএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে</translation>
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">প্ৰতিচ্ছবিৰ বিৱৰণ অফ আছে</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">Chromeত ছাইটৰ বাবে গাঢ় ৰঙৰ থীম অন কৰা হৈছে</translation>
 <translation id="4684427112815847243">সকলো ছিংক কৰক</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />টা}}</translation>
-<translation id="4696983787092045100">আপোনাৰ ডিভাইচসমূহলৈ পাঠ পঠিয়াওক</translation>
 <translation id="4699172675775169585">কেশ্ব প্ৰতিচ্ছবি আৰু ফাইল</translation>
 <translation id="4719927025381752090">অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />ত খোলক</translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">আৰম্ভ কৰিবলৈ ইয়াত টিপক</translation>
 <translation id="8881973373982641723">সন্ধানৰ বাকচটোত থকাসমূহকে ধৰি ব্ৰাউজিঙৰ ইতিহাস মচে।</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />আপুনি নিজৰ ডেটা কেনেকৈ পৰিচালনা কৰিব পাৰে:<ph name="END_BOLD" /> আপোনাৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ, আমি ৪ সপ্তাহতকৈ পুৰণি হোৱা ছাইটসমূহ সূচীখনৰ পৰা স্বয়ংক্ৰিয়ভাৱে মচোঁ। আপুনি পুনৰ চোৱা ছাইট সূচীখনত পুনৰ প্ৰদৰ্শিত হ’ব পাৰে। অথবা আপুনি কোনো ছাইটে আপোনাৰ আগ্ৰহসমূহ আৰু কেতিয়াও সংজ্ঞাবদ্ধ কৰাটো নিবিচাৰিলে সেই ছাইটটো আঁতৰাব পাৰে।</translation>
-<translation id="889338405075704026">Chromeৰ ছেটিংসমূহলৈ যাওক</translation>
 <translation id="8898822736010347272">নতুন ভাবুকিবোৰ বিচাৰি পোৱাত আৰু ৱেবত থকা সকলোকে সুৰক্ষিত কৰাত সহায় কৰিবলৈ আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ, সীমিত ছিষ্টেমৰ তথ্য আৰু কিছুমান পৃষ্ঠাৰ সমল Googleলৈ পঠিয়ায়।</translation>
 <translation id="8906502871739599113">প্ৰতিক্ৰিয়া ডুপ্লিকেট কৰা হৈছে</translation>
 <translation id="8909135823018751308">শ্বেয়াৰ কৰক…</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">অন্য এক প্ৰদানকাৰী বাছনি কৰক</translation>
 <translation id="8998729206196772491">আপুনি <ph name="MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিছে আৰু সেইটোৰ প্ৰশাসকে আপোনাৰ Chrome ডেটা নিয়ন্ত্ৰণ কৰিবলৈ সুবিধা দিছে। আপোনাৰ ডেটা এই একাউণ্টটোৰ সৈতে স্থায়ীভাৱে সংযুক্তহৈ থাকিব। Chromeৰ পৰা ছাইন আউট কৰিলে আপোনাৰ ডেটা মচা যাব কিন্ত সেইবোৰ আপোনাৰ Google একাউণ্টত জমা হৈয়ে থাকিব।</translation>
 <translation id="9022774213089566801">সঘনাই যোৱা</translation>
-<translation id="9028914725102941583">সমগ্ৰ ডিভাইচত শ্বেয়াৰ কৰিবলৈ ছিংক অন কৰক</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{#টা ভিডিঅ’}one{#টা ভিডিঅ’}other{#টা ভিডিঅ’}}</translation>
 <translation id="9042893549633094279">গোপনীয়তা আৰু সুৰক্ষা</translation>
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>

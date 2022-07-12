@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Güvənli</translation>
 <translation id="2638942478653899953">Google Diskə daxil olmaq alınmadı. Lütfən, <ph name="BEGIN_LINK" />hesabdan çıxın<ph name="END_LINK" /> və yenidən daxil olun.</translation>
 <translation id="2649120831653069427">Göyqurşaqlı balıq</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> cəhdiniz qalıb.</translation>
 <translation id="2663066752008346276">Myansan klaviaturası ilə Birma/Myanma dili</translation>
 <translation id="2664412712123763093">Faylın yeri</translation>
 <translation id="2718540689505416944">Linux ilə tətbiqi quraşdırın</translation>
@@ -529,6 +530,7 @@
 <translation id="5489067830765222292">Latış</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtri deaktivdir.</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
+<translation id="5500104704744051184">PUK kodu daxil edilənə qədər bu şəbəkədən istifadə edə bilməyəcəksiniz</translation>
 <translation id="5500122897333236901">İsland</translation>
 <translation id="5508696409934741614">Nöqtə</translation>
 <translation id="5522908512596376669">Fayl siyahısı siyahı görünüşünə dəyişdirilib.</translation>
@@ -634,6 +636,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> element</translation>
 <translation id="642282551015776456">Bu ad qovluq adının faylı kimi istifadə edilə bilməz</translation>
 <translation id="6423031066725912715">TCVN klaviaturası ilə Vyetnam dili</translation>
+<translation id="6430271654280079150">1 cəhdiniz qalıb.</translation>
 <translation id="6485131920355264772">Boşluq infosunu əldə etmək alınmadı</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> faylı <ph name="FOLDER_NAME" /> qovluğunda arxivdən çıxarılır</translation>
@@ -898,6 +901,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> element sinxronlaşır...</translation>
 <translation id="8600173386174225982">Fayl siyahısı miniatür görünüşünə dəyişdirilib.</translation>
 <translation id="8601932370724196034">Crostini şəkil faylı</translation>
+<translation id="8608515571837163082">Yanlış PİN kod dəfələrlə daxil edilib. Pperator tərəfindən təmin edilən 8 rəqəmli Şəxsi Blokdan Çıxarma Açarını (PUK) daxil edin.</translation>
 <translation id="8609695766746872526">İsland</translation>
 <translation id="863903787380594467">Yanlış PIN. <ph name="RETRIES" /> cəhdiniz qalıb.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

@@ -218,7 +218,6 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="214888715418183969">Zgjidh se çfarë informacionesh ndihesh mirë të ndash me Chrome. Metrikat që ndan do të përdoren për të përmirësuar veçoritë, cilësinë e funksionimit dhe qëndrueshmërinë e Chrome.</translation>
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
 <translation id="2155214902713132423">Kjo mënyrë verifikimi nuk ofrohet për këtë pajisje. Zgjidh një opsion tjetër në pajisjen tjetër.</translation>
-<translation id="2157851137955077194">Për të ndarë diçka nga telefoni yt në një pajisje tjetër, aktivizo sinkronizimin në cilësimet e Chrome në të dyja pajisjet</translation>
 <translation id="2158408438301413340">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet</translation>
 <translation id="2169830938017475061">Tani</translation>
 <translation id="2172688499998841696">Përshkrimet e imazheve janë joaktive</translation>
@@ -662,7 +661,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4678082183394354975">Tema e errët për sajtet është aktive në Chrome</translation>
 <translation id="4684427112815847243">Sinkronizo gjithçka</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tjetër}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> të tjera}}</translation>
-<translation id="4696983787092045100">Dërgo tekstin te pajisjet e tua</translation>
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="4719927025381752090">Ofro që t'i përkthesh</translation>
 <translation id="4720023427747327413">Hape në <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="8873817150012960745">Trokit këtu për të filluar</translation>
 <translation id="8881973373982641723">Pastron historikun, duke përfshirë dhe në kutinë e kërkimit.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht nga lista sajtet që janë më të vjetra se 4 javë. Një sajt që ti viziton mund të shfaqet në listë përsëri. Ndryshe, mund ta heqësh një sajt nëse nuk dëshiron që ai të përcaktojë ndonjëherë interesat për ty.</translation>
-<translation id="889338405075704026">Shko te "Cilësimet" e Chrome</translation>
 <translation id="8898822736010347272">Dërgon te Google URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje faqeje për të ndihmuar në zbulimin e kërcënimeve të reja dhe për t'i mbrojtur të gjithë në ueb.</translation>
 <translation id="8906502871739599113">Reagimi u dublikua</translation>
 <translation id="8909135823018751308">Ndaj…</translation>
@@ -1498,7 +1495,6 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="8996847606757455498">Zgjidh një ofrues tjetër</translation>
 <translation id="8998729206196772491">Po identifikohesh me një llogari të menaxhuar nga <ph name="MANAGED_DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chrome. Duke dalë nga Chrome do të fshihen të dhënat e tua nga kjo pajisje, por do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
 <translation id="9022774213089566801">Të vizituara shpesh</translation>
-<translation id="9028914725102941583">Aktivizo sinkronizimin për të ndarë mes pajisjeve</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>

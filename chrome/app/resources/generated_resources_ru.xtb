@@ -1249,6 +1249,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Добавить подключение по Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронизация начнется, когда вы покинете страницу с настройками синхронизации.</translation>
+<translation id="2162705204091149050">Доступ к информации о вашем устройстве, браузере, ОС, установленном ПО и файлах.</translation>
 <translation id="2162926944953615670">Нет доступных профилей eSIM.</translation>
 <translation id="2163470535490402084">Чтобы войти в аккаунт на устройстве <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и ещё 1 переключатель</translation>
@@ -2494,6 +2495,7 @@
 <translation id="3359256513598016054">Ограничения политики сертификатов</translation>
 <translation id="3360297538363969800">Не удалось распечатать документ. Проверьте, всё ли в порядке с принтером, и повторите попытку.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}one{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}few{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}many{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}other{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}}</translation>
+<translation id="3363202073972776113">Новым профилем будет управлять ваша организация. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Сообщение от администратора: "<ph name="ADMIN_MESSAGE" />"</translation>
 <translation id="3365598184818502391">Необходимо использовать Ctrl или Alt</translation>
 <translation id="3368922792935385530">Подключено</translation>
@@ -2528,6 +2530,7 @@
 <translation id="339722927132407568">Зависает</translation>
 <translation id="3399432415385675819">Уведомления будут отключены</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Гц) – чересстрочная развертка</translation>
+<translation id="3401484564516348917">Доступ к информации о вашем устройстве, браузере, ОС, установленном ПО, значениях реестра и файлах.</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{На этом устройстве сохранен {COUNT} пароль}one{На этом устройстве сохранен {COUNT} пароль}few{На этом устройстве сохранено {COUNT} пароля}many{На этом устройстве сохранено {COUNT} паролей}other{На этом устройстве сохранено {COUNT} пароля}}</translation>
 <translation id="3402255108239926910">Выберите аватар</translation>
 <translation id="3402585168444815892">Регистрация для использования демонстрационного режима</translation>
@@ -2774,6 +2777,7 @@
 <translation id="3627879631695760395">Установка приложения "<ph name="APP" />"...</translation>
 <translation id="3628275722731025472">Отключить Bluetooth</translation>
 <translation id="3629631988386925734">Чтобы включить Smart Lock, введите пароль. После этого вы сможете разблокировать устройство <ph name="DEVICE_TYPE" /> с помощью телефона. Выключить Smart Lock можно в настройках.</translation>
+<translation id="3629664892718440872">Запомнить выбор</translation>
 <translation id="3630132874740063857">Телефон</translation>
 <translation id="3630995161997703415">Добавьте этот сайт на панель запуска, чтобы он всегда был у вас под рукой.</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Если вы разрешите устройствам Chrome OS отправлять автоматические отчеты в Google, это поможет нам определить, что нужно исправить и улучшить в первую очередь. В таких отчетах могут содержаться сведения о сбоях в Chrome OS, а также о том, какими функциями вы пользуетесь и сколько памяти обычно расходуете.<ph name="END_PARAGRAPH1" />
@@ -3263,6 +3267,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Запрещен полный контроль над устройствами MIDI</translation>
+<translation id="4087328411748538168">Показывать справа</translation>
 <translation id="4089235344645910861">Настройки сохранены. Синхронизация началась.</translation>
 <translation id="4090103403438682346">Включить службу проверенного доступа</translation>
 <translation id="4090947011087001172">Сбросить разрешения для сайта <ph name="SITE" />?</translation>
@@ -3955,6 +3960,7 @@
 <translation id="4779766576531456629">Переименовать мобильную сеть eSIM</translation>
 <translation id="4780321648949301421">Сохранить страницу как...</translation>
 <translation id="4781443161433589743">Используется максимальная защита в Chrome.</translation>
+<translation id="4782861709165039462">Все микрофоны отключены с помощью аппаратного переключателя устройства</translation>
 <translation id="4785719467058219317">Вы используете электронный ключ, который не зарегистрирован на этом сайте.</translation>
 <translation id="4785914069240823137">Отменить кадрирование</translation>
 <translation id="4788092183367008521">Проверьте подключение к сети и повторите попытку.</translation>
@@ -4722,6 +4728,7 @@
 <translation id="5548075230008247516">Выбор всех объектов отменен, выполнен выход из режима выбора.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" и ещё 1 вкладка}one{"<ph name="TAB_TITLE" />" и ещё # вкладка}few{"<ph name="TAB_TITLE" />" и ещё # вкладки}many{"<ph name="TAB_TITLE" />" и ещё # вкладок}other{"<ph name="TAB_TITLE" />" и ещё # вкладки}}</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
+<translation id="5548644592758170183">Показывать слева</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Клавиатура и ввод текста</translation>
 <translation id="5553089923092577885">Сопоставления политики сертификатов</translation>
@@ -5574,6 +5581,7 @@
 <translation id="6406303162637086258">Симулировать перезапуск браузера</translation>
 <translation id="6406506848690869874">Синхронизация</translation>
 <translation id="6406708970972405507">Настройки – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Позвольте Google Ассистенту помочь вам изменить пароль.</translation>
 <translation id="6408118934673775994">Просмотр и изменение данных на сайтах <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Файлы изображений</translation>
 <translation id="6410328738210026208">Выбрать другой канал и включить Powerwash</translation>
@@ -5963,6 +5971,7 @@
 <translation id="6781978626986383437">Резервное копирование контейнера Linux отменено.</translation>
 <translation id="6782067259631821405">Неверный PIN-код.</translation>
 <translation id="6784523122863989144">Профиль поддерживается.</translation>
+<translation id="6785872064505734160">Google Ассистент в Chrome может помогать вам выполнять действия на сайтах.</translation>
 <translation id="6786747875388722282">Расширения</translation>
 <translation id="6787097042755590313">Другая вкладка</translation>
 <translation id="6787839852456839824">Быстрые клавиши</translation>
@@ -8210,6 +8219,7 @@
 <translation id="8980345560318123814">Отчеты</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: произошел сбой</translation>
 <translation id="8981825781894055334">Заканчивается бумага.</translation>
+<translation id="8983018820925880511">Новым профилем будет управлять <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> может изменять файл "<ph name="FILENAME" />".</translation>
 <translation id="8984694057134206124">Ваше устройство будет видно всем пользователям поблизости в течение <ph name="MINUTES" /> мин. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Вас приветствует Steam для Chromebook</translation>
@@ -8306,6 +8316,7 @@
 <translation id="9075413375877487220">Это расширение не отвечает стандартам улучшенного Безопасного просмотра.</translation>
 <translation id="9076283476770535406">Может содержать контент для взрослых</translation>
 <translation id="9076523132036239772">Не удалось проверить адрес электронной почты или пароль. Подключитесь к сети.</translation>
+<translation id="9076821103818989526">Боковая панель</translation>
 <translation id="9076977315710973122">Общая папка SMB</translation>
 <translation id="9078193189520575214">Применение изменений…</translation>
 <translation id="9078316009970372699">Отключить мгновенную точку доступа</translation>

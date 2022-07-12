@@ -97,6 +97,7 @@
 <translation id="1428770807407000502">সিঙ্ক করা বন্ধ করতে চান?</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1436784010935106834">সরানো হয়েছে</translation>
+<translation id="1437543266176261764"><ph name="APP_NAME" />-এ চলছে</translation>
 <translation id="1448440926884431741">Bookmarks-এ আপনার ট্র্যাক করা সমস্ত প্রোডাক্ট সাজিয়ে রাখুন</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
 <translation id="1466383950273130737">Chrome-এর ভাষা বেছে নিন</translation>
@@ -218,7 +219,6 @@
 <translation id="214888715418183969">Chrome-এর সাথে আপনি কী কী স্বচ্ছন্দে শেয়ার করতে পারবেন তা বেছে নিন। আপনার শেয়ার করা মেট্রিক্স Chrome-এর ফিচার, পারফর্ম্যান্স ও স্থিতিশীলতা উন্নত করে তুলতে ব্যবহার করা হবে।</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="2155214902713132423">এই ডিভাইসের জন্য যাচাইকরণের এই পদ্ধতি উপলভ্য নেই। আপনার অন্য ডিভাইসে অন্য একটি বিকল্প বেছে নিন।</translation>
-<translation id="2157851137955077194">আপনার ফোন থেকে অন্য কোনও ডিভাইসে কিছু শেয়ার করতে হলে, দুটি ডিভাইসের Chrome সেটিংস থেকে সিঙ্ক ফিচার চালু করুন</translation>
 <translation id="2158408438301413340">Chrome সব পাসওয়ার্ড চেক করতে পারেনি</translation>
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">ছবির বিবরণ বন্ধ করা আছে</translation>
@@ -664,7 +664,6 @@
 <translation id="4678082183394354975">Chrome-এ সাইটের জন্য ডার্ক থিম চালু আছে</translation>
 <translation id="4684427112815847243">সবকিছু সিঙ্ক করুন</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> আরও অনেক}}</translation>
-<translation id="4696983787092045100">আপনার ডিভাইসে টেক্সট পাঠান</translation>
 <translation id="4699172675775169585">ক্যাশে করা ছবি এবং ফাইলগুলি</translation>
 <translation id="4719927025381752090">অনুবাদ করুন</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> এ খুলুন</translation>
@@ -1472,7 +1471,6 @@
 <translation id="8873817150012960745">শুরু করতে এখানে ট্যাপ করুন</translation>
 <translation id="8881973373982641723">ইতিহাস মুছে ফেলে। এর মধ্যে সার্চ বক্সের ব্রাউজিং ইতিহাসও থাকে।</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />আপনি কীভাবে ডেটা ম্যানেজ করতে পারেন:<ph name="END_BOLD" /> আপনার গোপনীয়তা রক্ষা করতে, আমরা ৪ সপ্তাহের বেশি পুরনো সাইট তালিকা থেকে অটোমেটিক মুছে ফেলি। আপনি আবার ভিজিট করেছেন এমন সাইট তালিকায় আবার দেখা যেতে পারে। অথবা যদি আপনি না চান যে কোনও সাইট আপনার আগ্রহকে ব্যাখ্যা করুক তাহলে সেই সাইটটি আপনি সরিয়ে দিতে পারবেন।</translation>
-<translation id="889338405075704026">Chrome সেটিংসে যান</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
 <translation id="8906502871739599113">প্রতিক্রিয়া ডুপ্লিকেট করা হয়েছে</translation>
 <translation id="8909135823018751308">শেয়ার করুন...</translation>
@@ -1500,7 +1498,6 @@
 <translation id="8996847606757455498">অন্য একটি পরিষেবা প্রদানকারী বেছে নিন</translation>
 <translation id="8998729206196772491">আপনি <ph name="MANAGED_DOMAIN" /> দ্বারা পরিচালিত একটি অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Chrome ডেটা নিয়ন্ত্রণ করতে দিচ্ছেন৷ আপনার ডেটা এই অ্যাকাউন্টের সাথে স্থায়ীভাবে আবদ্ধ হবে৷ Chrome থেকে সাইন-আউট করলে এই ডিভাইস থেকে আপনার ডেটা মুছে ফেলা হবে, কিন্তু এটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে।</translation>
 <translation id="9022774213089566801">আপনি প্রায়ই দেখেন</translation>
-<translation id="9028914725102941583">বিভিন্ন ডিভাইসের জুড়ে শেয়ার করার জন্য সিঙ্ক ফিচার চালু করুন</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{#টি ভিডিও}one{#টি ভিডিও}other{#টি ভিডিও}}</translation>
 <translation id="9042893549633094279">গোপনীয়তা এবং নিরাপত্তা</translation>
 <translation id="9050666287014529139">পাসফ্রেজ</translation>

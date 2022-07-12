@@ -1247,6 +1247,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Adicionar Wi-Fi...</translation>
 <translation id="2162155940152307086">A sincronização é iniciada depois de sair das definições de sincronização.</translation>
+<translation id="2162705204091149050">Ler informações sobre o seu navegador, SO, dispositivo, software instalado e ficheiros</translation>
 <translation id="2162926944953615670">Não existem perfis do eSIM disponíveis</translation>
 <translation id="2163470535490402084">Ligue-se à Internet para iniciar sessão no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor.</translation>
@@ -1267,6 +1268,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2180620921879609685">Bloquear conteúdos em qualquer página</translation>
 <translation id="2182058453334755893">Copiado para a área de transferência.</translation>
 <translation id="2184515124301515068">Permitir que o Chrome escolha quando os sites podem reproduzir som (recomendado)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Página partilhada a partir de outro dispositivo</translation>
 <translation id="2187675480456493911">Sincronizada com outros dispositivos na sua conta. As definições modificadas por outros utilizadores não serão sincronizadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Erro na importação do certificado do servidor</translation>
@@ -2494,6 +2496,7 @@ Pretende pará-lo?</translation>
 <translation id="3359256513598016054">Restrições de políticas de certificados</translation>
 <translation id="3360297538363969800">Falha ao imprimir. Verifique a impressora e tente novamente.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> está a partilhar <ph name="ATTACHMENTS" /> consigo.}other{<ph name="DEVICE_NAME" /> está a partilhar <ph name="ATTACHMENTS" /> consigo.}}</translation>
+<translation id="3363202073972776113">Este novo perfil vai ser gerido pela sua organização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Do seu administrador: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Utilize Ctrl ou Alt.</translation>
 <translation id="3368922792935385530">Ligado</translation>
@@ -2528,6 +2531,7 @@ Pretende pará-lo?</translation>
 <translation id="339722927132407568">Bloqueia</translation>
 <translation id="3399432415385675819">As notificações serão desativadas</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) – entrelaçado</translation>
+<translation id="3401484564516348917">Ler informações sobre o seu navegador, SO, dispositivo, software instalado, valores de registo e ficheiros</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} palavra-passe está armazenada neste dispositivo}other{{COUNT} palavras-passe estão armazenadas neste dispositivo}}</translation>
 <translation id="3402255108239926910">Escolha um avatar</translation>
 <translation id="3402585168444815892">A inscrever-se no modo de demonstração…</translation>
@@ -2774,6 +2778,7 @@ Pretende pará-lo?</translation>
 <translation id="3627879631695760395">Instalar a aplicação <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Desativar o Bluetooth</translation>
 <translation id="3629631988386925734">Introduza a palavra-passe para ativar o Smart Lock. Da próxima vez, o telemóvel irá desbloquear o <ph name="DEVICE_TYPE" />. Desative o Smart Lock nas Definições.</translation>
+<translation id="3629664892718440872">Memorizar esta escolha</translation>
 <translation id="3630132874740063857">O seu telemóvel</translation>
 <translation id="3630995161997703415">Adicione este site à prateleira para o utilizar em qualquer altura.</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS enviem relatórios automáticos, ajuda-nos a dar prioridade ao que deve ser corrigido e melhorado no Chrome OS. Estes relatórios podem incluir informações como a altura em que o Chrome OS falha, que funcionalidades utiliza e a quantidade de memória que utiliza habitualmente.<ph name="END_PARAGRAPH1" />
@@ -3263,6 +3268,7 @@ Pretende pará-lo?</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Controlo total dos dispositivos MIDI recusado</translation>
+<translation id="4087328411748538168">Mostrar à direita</translation>
 <translation id="4089235344645910861">Definições guardadas. A sincronização foi iniciada.</translation>
 <translation id="4090103403438682346">Ativar acesso confirmado</translation>
 <translation id="4090947011087001172">Pretende repor as autorizações de sites para <ph name="SITE" />?</translation>
@@ -3955,6 +3961,7 @@ Pretende pará-lo?</translation>
 <translation id="4779766576531456629">Mudar o nome da rede móvel do eSIM</translation>
 <translation id="4780321648949301421">Guardar página como...</translation>
 <translation id="4781443161433589743">Tem a segurança mais avançada do Chrome</translation>
+<translation id="4782861709165039462">Todos os microfones desativados pelo interruptor do hardware dos dispositivos</translation>
 <translation id="4785719467058219317">Está a utilizar uma chave de segurança que não está registada neste Website.</translation>
 <translation id="4785914069240823137">Cancele o recorte</translation>
 <translation id="4788092183367008521">Verifique a sua ligação à rede e tente novamente.</translation>
@@ -4722,6 +4729,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5548075230008247516">Todos os itens foram desselecionados e saiu do modo de seleção.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e mais 1 separador}other{"<ph name="TAB_TITLE" />" e mais # separadores}}</translation>
 <translation id="5548606607480005320">Verificação de segurança</translation>
+<translation id="5548644592758170183">Mostrar à esquerda</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Teclado e introdução de texto</translation>
 <translation id="5553089923092577885">Mapeamentos de políticas de certificados</translation>
@@ -5575,6 +5583,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6406303162637086258">Simular reinício do navegador</translation>
 <translation id="6406506848690869874">Sincronização</translation>
 <translation id="6406708970972405507">Definições - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Permita que o Assistente Google ajude a alterar a sua palavra-passe.</translation>
 <translation id="6408118934673775994">Ler e alterar os seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Ficheiros de imagem</translation>
 <translation id="6410328738210026208">Alterar canal e Powerwash</translation>
@@ -5958,6 +5967,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6781978626986383437">Cópia de segurança do Linux cancelada</translation>
 <translation id="6782067259631821405">PIN inválido</translation>
 <translation id="6784523122863989144">O perfil é suportado</translation>
+<translation id="6785872064505734160">O Assistente Google no Chrome pode concluir ações em Websites por si.</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787097042755590313">Outro separador</translation>
 <translation id="6787839852456839824">Atalhos de teclado</translation>
@@ -6995,7 +7005,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7789963078219276159">O fundo da página de início foi alterado para <ph name="CATEGORY" />.</translation>
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7792012425874949788">Ocorreu um erro ao iniciar sessão</translation>
-<translation id="7792388396321542707">Parar a partilha</translation>
+<translation id="7792388396321542707">Parar partilha</translation>
 <translation id="779308894558717334">Verde claro</translation>
 <translation id="7793098747275782155">Azul escuro</translation>
 <translation id="7797571222998226653">Desativado</translation>
@@ -8203,6 +8213,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8980345560318123814">Relatórios de comentários</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – falhou</translation>
 <translation id="8981825781894055334">Pouco papel.</translation>
+<translation id="8983018820925880511">Este novo perfil vai ser gerido pelo domínio <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> pode editar <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Estará visível para todos durante <ph name="MINUTES" /> minutos. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Damos-lhe as boas-vindas ao Steam para Chromebook</translation>
@@ -8299,6 +8310,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9075413375877487220">Esta extensão não é considerada fidedigna pela Navegação segura melhorada.</translation>
 <translation id="9076283476770535406">Pode ter conteúdo para adultos</translation>
 <translation id="9076523132036239772">Não foi possível confirmar o seu email ou a sua palavra-passe. Tente ligar primeiro a uma rede.</translation>
+<translation id="9076821103818989526">Painel lateral</translation>
 <translation id="9076977315710973122">Partilha do SMB</translation>
 <translation id="9078193189520575214">A aplicar alterações…</translation>
 <translation id="9078316009970372699">Desativar Ligação (à Internet) via telemóvel instantânea</translation>

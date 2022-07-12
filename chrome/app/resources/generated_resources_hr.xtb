@@ -1249,6 +1249,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Dodaj Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinkronizacija će se pokrenuti kad napustite postavke sinkronizacije</translation>
+<translation id="2162705204091149050">Čitati podatke o vašem pregledniku, OS-u, uređaju, instaliranom softveru i datotekama</translation>
 <translation id="2162926944953615670">Nije dostupan nijedan eSIM profil</translation>
 <translation id="2163470535490402084">Povežite se s internetom da biste se prijavili na uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i još jedan prekidač</translation>
@@ -1269,6 +1270,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2180620921879609685">Blokiraj sadržaj na bilo kojoj stranici</translation>
 <translation id="2182058453334755893">Kopirano u međuspremnik</translation>
 <translation id="2184515124301515068">Neka Chrome odluči kada web-lokacije mogu reproducirati zvuk (preporučeno)</translation>
+<translation id="2186206192313702726">Google objektiv</translation>
 <translation id="2186711480981247270">Stranica je podijeljena s drugog uređaja</translation>
 <translation id="2187675480456493911">Sinkronizirano s drugim uređajima na vašem računu. Postavke koje izmijene drugi korisnici neće se sinkronizirati. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Pogreška pri uvozu Certifikata poslužitelja</translation>
@@ -2496,6 +2498,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3359256513598016054">Ograničenja pravila certifikata</translation>
 <translation id="3360297538363969800">Ispis nije uspio. Provjerite svoj pisač i pokušajte ponovo.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> dijeli <ph name="ATTACHMENTS" /> s vama.}one{<ph name="DEVICE_NAME" /> dijeli <ph name="ATTACHMENTS" /> s vama.}few{<ph name="DEVICE_NAME" /> dijeli <ph name="ATTACHMENTS" /> s vama.}other{<ph name="DEVICE_NAME" /> dijeli <ph name="ATTACHMENTS" /> s vama.}}</translation>
+<translation id="3363202073972776113">Ovim novim profilom upravljat će vaša organizacija. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Od vašeg administratora: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Upotrijebite Ctrl ili Alt</translation>
 <translation id="3368922792935385530">Spojeno</translation>
@@ -2530,6 +2533,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="339722927132407568">Zamrzavanje</translation>
 <translation id="3399432415385675819">Obavijesti će se onemogućiti</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> herca) – isprepleteno</translation>
+<translation id="3401484564516348917">Čitati podatke o vašem pregledniku, OS-u, uređaju, instaliranom softveru, vrijednostima registra i datotekama</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} zaporka pohranjena je na ovom uređaju}one{{COUNT} zaporka pohranjena je na ovom uređaju}few{{COUNT} zaporke pohranjene su na ovom uređaju}other{{COUNT} zaporki pohranjeno je na ovom uređaju}}</translation>
 <translation id="3402255108239926910">Odaberite avatar</translation>
 <translation id="3402585168444815892">Prijava u demo način</translation>
@@ -2776,6 +2780,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3627879631695760395">Instaliranje aplikacije <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Isključivanje Bluetootha</translation>
 <translation id="3629631988386925734">Unesite zaporku da biste omogućili Smart Lock. Sljedeći će put vaš telefon otključati vaš <ph name="DEVICE_TYPE" />. Smart Lock možete isključiti u Postavkama.</translation>
+<translation id="3629664892718440872">Zapamti ovaj odabir</translation>
 <translation id="3630132874740063857">Vaš telefon</translation>
 <translation id="3630995161997703415">Dodajte tu web-lokaciju na svoju policu da biste je koristili kad želite</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite svojim uređajima s OS-om Chrome da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje OS-a Chrome. Ta izvješća mogu uključivati, primjerice, informacije o situacijama u kojima se OS Chrome ruši, o tome kojim se značajkama koristite i koliko memorije obično upotrebljavate.<ph name="END_PARAGRAPH1" />
@@ -3265,6 +3270,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Odbijena je potpuna kontrola nad MIDI uređajima</translation>
+<translation id="4087328411748538168">Prikaži s desne strane</translation>
 <translation id="4089235344645910861">Postavke spremljene. Sinkronizacija pokrenuta.</translation>
 <translation id="4090103403438682346">Omogući potvrđeni pristup</translation>
 <translation id="4090947011087001172">Želite li poništiti dopuštenja web-lokacije za <ph name="SITE" />?</translation>
@@ -3957,6 +3963,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4779766576531456629">Preimenovanje mobilne mreže eSIM-a</translation>
 <translation id="4780321648949301421">Spremi stranicu kao...</translation>
 <translation id="4781443161433589743">Imate najnapredniju Chromeovu zaštitu sigurnosti</translation>
+<translation id="4782861709165039462">Svi mikrofoni onemogućeni su pomoću hardverskog prekidača za uređaje</translation>
 <translation id="4785719467058219317">Upotrebljavate sigurnosni ključ koji nije registriran na toj web-lokaciji</translation>
 <translation id="4785914069240823137">Poništite obrezivanje</translation>
 <translation id="4788092183367008521">Provjerite mrežnu vezu i pokušajte ponovo.</translation>
@@ -4724,6 +4731,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5548075230008247516">Poništen je odabir svih stavki i zatvoren je način odabira.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />"}=1{„<ph name="TAB_TITLE" />" i još jedna kartica}one{„<ph name="TAB_TITLE" />" i još # kartica}few{„<ph name="TAB_TITLE" />" i još # kartice}other{„<ph name="TAB_TITLE" />" i još # kartica}}</translation>
 <translation id="5548606607480005320">Sigurnosna provjera</translation>
+<translation id="5548644592758170183">Prikaži s lijeve strane</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Tipkovnica i unos teksta</translation>
 <translation id="5553089923092577885">Mapiranja pravila certifikata</translation>
@@ -5573,6 +5581,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6406303162637086258">Simulacija ponovnog pokretanja preglednika</translation>
 <translation id="6406506848690869874">Sinkronizacija</translation>
 <translation id="6406708970972405507">Postavke – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Neka vam Google asistent pomogne promijeniti zaporku</translation>
 <translation id="6408118934673775994">pročitati i promijeniti vaše podatke na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="6410328738210026208">Promijeni kanal i pokreni Powerwash</translation>
@@ -5960,6 +5969,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6781978626986383437">Otkazano je sigurnosno kopiranje Linuxa</translation>
 <translation id="6782067259631821405">Nevažeći PIN</translation>
 <translation id="6784523122863989144">Profil je podržan</translation>
+<translation id="6785872064505734160">Google asistent u Chromeu može dovršiti radnje u web-lokacijama za vas</translation>
 <translation id="6786747875388722282">Proširenja</translation>
 <translation id="6787097042755590313">Druga kartica</translation>
 <translation id="6787839852456839824">Tipkovnički prečaci</translation>
@@ -8206,6 +8216,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8980345560318123814">Izvješća s povratnim informacijama</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – kartica se srušila</translation>
 <translation id="8981825781894055334">Ponestaje papira</translation>
+<translation id="8983018820925880511">Ovim novim profilom upravljat će <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Web-lokacija <ph name="ORIGIN" /> može uređivati datoteku <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Bit ćete vidljivi svima sljedeći broj minuta: <ph name="MINUTES" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Dobro došli u Steam za Chromebook</translation>
@@ -8302,6 +8313,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9075413375877487220">Poboljšano sigurno pregledavanje ne smatra to proširenje pouzdanim.</translation>
 <translation id="9076283476770535406">Možda ima sadržaj za odrasle</translation>
 <translation id="9076523132036239772">Nažalost, nismo uspjeli provjeriti vašu e-poštu ili zaporku. Pokušajte se prvo povezati s mrežom.</translation>
+<translation id="9076821103818989526">Bočna ploča</translation>
 <translation id="9076977315710973122">SMB-ovo dijeljenje</translation>
 <translation id="9078193189520575214">Primjena promjena...</translation>
 <translation id="9078316009970372699">Onemogućivanje Automatskog modemskog povezivanja</translation>

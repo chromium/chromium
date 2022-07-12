@@ -97,6 +97,7 @@
 <translation id="1428770807407000502">ಸಿಂಕ್‌ ಆಫ್‌ ಮಾಡುವುದೇ?</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
 <translation id="1436784010935106834">ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
+<translation id="1437543266176261764"><ph name="APP_NAME" /> ನಲ್ಲಿ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1448440926884431741">ನಿಮ್ಮ ಟ್ರ್ಯಾಕ್ ಮಾಡಿದ ಉತ್ಪನ್ನಗಳನ್ನು Bookmarks ನಲ್ಲಿ ಆಯೋಜಿಸಿ</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />ವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1466383950273130737">Chrome ನ ಭಾಷೆಯನ್ನು ಆರಿಸಿ</translation>
@@ -218,7 +219,6 @@
 <translation id="214888715418183969">ನೀವು Chrome ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುವುದನ್ನು ಆರಿಸಿ. ನೀವು ಹಂಚಿಕೊಳ್ಳುವ ಮೆಟ್ರಿಕ್‌ಗಳನ್ನು Chrome ನ ವೈಶಿಷ್ಟ್ಯಗಳು, ಕಾರ್ಯಕ್ಷಮತೆ ಮತ್ತು ಸ್ಥಿರತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="2149973817440762519">ಬುಕ್‌ಮಾರ್ಕ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2155214902713132423">ಈ ಸಾಧನಕ್ಕೆ ಈ ದೃಢೀಕರಣ ವಿಧಾನ ಲಭ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಮತ್ತೊಂದು ಸಾಧನದಲ್ಲಿ ಬೇರೊಂದು ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ.</translation>
-<translation id="2157851137955077194">ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಮತ್ತೊಂದು ಸಾಧನಕ್ಕೆ ಏನನ್ನಾದರೂ ಹಂಚಿಕೊಳ್ಳಲು, ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿರುವ, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="2158408438301413340">ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="2169830938017475061">ಈಗ</translation>
 <translation id="2172688499998841696">ಚಿತ್ರ ವಿವರಣೆಗಳು ಆಫ್ ಆಗಿವೆ</translation>
@@ -661,7 +661,6 @@
 <translation id="4678082183394354975">ಸೈಟ್‌ಗಳಿಗಾಗಿ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು Chrome ನಲ್ಲಿ ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಪಠ್ಯವನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="4699172675775169585">ಸಂಗ್ರಹಿಸಲಾಗಿರುವ ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳು</translation>
 <translation id="4719927025381752090">ಅನುವಾದಿಸಲು ಅವಕಾಶಿಸಿ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -1469,7 +1468,6 @@
 <translation id="8873817150012960745">ಪ್ರಾರಂಭಿಸಲು ಇಲ್ಲಿ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="8881973373982641723">ಹುಡುಕಾಟ ಪೆಟ್ಟಿಗೆಯು ಸೇರಿದಂತೆ, ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನೀವು ಹೇಗೆ ನಿರ್ವಹಿಸಬಹುದು:<ph name="END_BOLD" /> ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, 4 ವಾರಗಳಿಗಿಂತ ಹಳೆಯ ಸೈಟ್‌ಗಳನ್ನು ನಾವು ಪಟ್ಟಿಯಿಂದ ಸ್ವಯಂ-ಅಳಿಸುತ್ತೇವೆ. ನೀವು ಪುನಃ ಭೇಟಿ ನೀಡುವ ಸೈಟ್, ಪಟ್ಟಿಯಲ್ಲಿ ಮತ್ತೊಮ್ಮೆ ಕಾಣಿಸಿಕೊಳ್ಳಬಹುದು. ಒಂದು ಸೈಟ್ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಎಂದಿಗೂ ವ್ಯಾಖ್ಯಾನಿಸಬಾರದೆಂದು ನೀವು ಬಯಸಿದರೆ, ಆ ಸೈಟ್ ಅನ್ನು ನೀವು ತೆಗೆದುಹಾಕಬಹುದು.</translation>
-<translation id="889338405075704026">Go to Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="8898822736010347272">ಹೊಸ ಅಪಾಯಗಳನ್ನು ಕಂಡುಹಿಡಿಯಲು ಮತ್ತು ವೆಬ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರನ್ನು ರಕ್ಷಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳ URL ಗಳು, ಸೀಮಿತ ಸಿಸ್ಟಂ ಮಾಹಿತಿ ಮತ್ತು ಪುಟಗಳಲ್ಲಿನ ಕೆಲವು ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>
 <translation id="8906502871739599113">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಕಲು ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8909135823018751308">ಹಂಚಿಕೊಳ್ಳು...</translation>
@@ -1497,7 +1495,6 @@
 <translation id="8996847606757455498">ಬೇರೆ ಪೂರೈಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> ನಿರ್ವಹಿಸಿದ ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್‍‍ ಇನ್ ಮಾಡುತ್ತಿರುವಿರಿ ಮತ್ತು ಅದರ ನಿರ್ವಾಹಕ ನಿಯಂತ್ರಣವನ್ನು ನಿಮ್ಮ Chrome ಡೇಟಾದ ಮೂಲಕ ನೀಡುತ್ತಿರುವಿರಿ. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಈ ಖಾತೆಯೊಂದಿಗೆ ಜೋಡಿಸಲಾಗುತ್ತದೆ. Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡುವುದರಿಂದ ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ, ಆದರೆ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ.</translation>
 <translation id="9022774213089566801">ಆಗಾಗ್ಗೆ ಭೇಟಿ ನೀಡಿರುವುದು</translation>
-<translation id="9028914725102941583">ಸಾಧನಗಳಾದ್ಯಂತ ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ವೀಡಿಯೊ}one{# ವೀಡಿಯೊಗಳು}other{# ವೀಡಿಯೊಗಳು}}</translation>
 <translation id="9042893549633094279">ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ</translation>
 <translation id="9050666287014529139">ಪಾಸ್‌ಫ್ರೇಸ್</translation>

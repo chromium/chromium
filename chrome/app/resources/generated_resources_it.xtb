@@ -379,6 +379,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1374844444528092021">Il certificato richiesto dalla rete "<ph name="NETWORK_NAME" />" non è installato o non è più valido. Richiedi un nuovo certificato e riprova a connetterti.</translation>
 <translation id="1375321115329958930">Password salvate</translation>
 <translation id="1375557162880614858">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS Flex?</translation>
+<translation id="1375938286942050085">Configurazione completata. Dopodiché prepara il tuo dispositivo per giocare</translation>
 <translation id="137651782282853227">Gli indirizzi salvati verranno visualizzati qui</translation>
 <translation id="1376771218494401509">Assegna nome alla &amp;finestra…</translation>
 <translation id="1377600615067678409">Salta per ora</translation>
@@ -393,6 +394,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="138784436342154190">Ripristinare la pagina iniziale predefinita?</translation>
 <translation id="1388253969141979417">Possono utilizzare il microfono</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> verrà riavviato al termine degli aggiornamenti.</translation>
+<translation id="1389601498324964367">Spazio di archiviazione gestito dalla quota</translation>
 <translation id="139013308650923562">Autorizzati a utilizzare i caratteri installati sul tuo dispositivo</translation>
 <translation id="1390548061267426325">Apri in una scheda normale</translation>
 <translation id="1390907927270446471">L'utente <ph name="PROFILE_USERNAME" /> non è autorizzato a stampare dalla stampante <ph name="PRINTER_NAME" />. Contatta l'amministratore.</translation>
@@ -1059,6 +1061,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1992924914582925289">Rimuovi dal dispositivo</translation>
 <translation id="1994173015038366702">URL sito</translation>
 <translation id="1995916364271252349">Consente di stabilire quali informazioni possono essere usate e mostrate dai siti (posizione, videocamera, popup e non solo)</translation>
+<translation id="1997433994358798851">Chrome deve avere l'autorizzazione per utilizzare il Bluetooth per connettersi al dispositivo</translation>
 <translation id="1997616988432401742">I tuoi certificati</translation>
 <translation id="1999115740519098545">All'avvio</translation>
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
@@ -1720,6 +1723,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="25899519884572181">Esci dalla modalità Reader</translation>
 <translation id="2593499352046705383">Prima di iniziare, assicurati di avere una copia di backup dei tuoi dati. L'installazione di <ph name="DEVICE_OS" /> comporterà la sovrascrittura del disco rigido. Scopri di più all'indirizzo g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Cerca su Google o digita un URL</translation>
+<translation id="2599048253926156421">Nome utente copiato negli appunti</translation>
 <translation id="2602501489742255173">Scorri verso l'alto per iniziare</translation>
 <translation id="2603115962224169880">Pulisci il computer</translation>
 <translation id="2603355571917519942">Funzionalità Voice Match pronta</translation>
@@ -1941,6 +1945,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2804043232879091219">Impossibile aprire il browser alternativo</translation>
 <translation id="2804667941345577550">Uscirai da questo sito (schede aperte incluse)</translation>
 <translation id="2804680522274557040">Fotocamera disattivata</translation>
+<translation id="280518252911523675">Se continui senza inserire la password precedente, i tuoi dati locali verranno eliminati. Per configurare nuovamente questo utente, devi accedere con il tuo Account Google.</translation>
 <translation id="2805539617243680210">Ecco fatto.</translation>
 <translation id="2805646850212350655">Crittografia file system Microsoft</translation>
 <translation id="2805756323405976993">App</translation>
@@ -3054,6 +3059,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3895090224522145010">Nome utente di Kerberos</translation>
 <translation id="389521680295183045">I siti possono chiedere di sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{un'immagine}other{# immagini}}</translation>
+<translation id="3897746662269329507">Il tuo <ph name="DEVICE_TYPE" /> è stato progettato per i giochi. Si aprirà l'app Esplora, dove potrai accedere a centinaia dei giochi più recenti, visualizzare offerte per i giochi e scoprire funzionalità di gioco disponibili con il tuo dispositivo.</translation>
 <translation id="3898233949376129212">Lingua dispositivo</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> richiede le autorizzazioni: <ph name="FIRST_PERMISSION" /> e <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Seleziona la tastiera</translation>
@@ -3204,6 +3210,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4033471457476425443">Aggiungi nuova cartella</translation>
 <translation id="4033711848170683365">I dati di navigazione verranno eliminati definitivamente da questo dispositivo. Gli Account Google in questo profilo potrebbero essere usati da altre app installate su <ph name="DEVICE_TYPE" />. Puoi rimuoverli in <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">I siti sicuri potrebbero incorporare contenuti come immagini o frame Web non sicuri</translation>
+<translation id="4034741552964543387">Continua senza dati locali</translation>
 <translation id="4034824040120875894">Stampante</translation>
 <translation id="4035758313003622889">&amp;Task Manager</translation>
 <translation id="4035877632587724847">Non consentire</translation>
@@ -3395,6 +3402,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
 <translation id="4242577469625748426">Installazione delle impostazioni criterio sul dispositivo non riuscita. <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4243504193894350135">La stampante è in pausa</translation>
+<translation id="424423026762293842">Ripristina i dati locali</translation>
 <translation id="4244238649050961491">Trova altre app per stilo</translation>
 <translation id="4246980464509998944">Altri commenti:</translation>
 <translation id="424726838611654458">Apri sempre in Adobe Reader</translation>
@@ -4947,6 +4955,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5792728279623964091">Tocca il tasto di accensione</translation>
 <translation id="5793339252089865437">Se scarichi l'aggiornamento tramite la rete mobile, potresti incorrere in costi aggiuntivi.</translation>
 <translation id="5793420564274426163">Conferma accoppiamento</translation>
+<translation id="5793430094159150686">La tua password è cambiata. Per ripristinare i dati locali, devi inserire la password precedente.</translation>
 <translation id="5794034487966529952">Nella scrivania <ph name="DESK_TITLE" /> ci sono <ph name="NUM_BROWSERS" /> finestre del browser aperte</translation>
 <translation id="5794414402486823030">Apri sempre con visualizzatore di sistema</translation>
 <translation id="5794700615121138172">Cartelle condivise di Linux</translation>
@@ -5561,6 +5570,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6406303162637086258">Simula riavvio browser</translation>
 <translation id="6406506848690869874">Sincronizzazione</translation>
 <translation id="6406708970972405507">Impostazioni - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Consenti all'Assistente Google di aiutarti a cambiare la password</translation>
 <translation id="6408118934673775994">Leggere e modificare i tuoi dati su <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">File di immagine</translation>
 <translation id="6410328738210026208">Cambia canale ed esegui Powerwash</translation>
@@ -5867,6 +5877,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6700093763382332031">Blocco SIM rete mobile</translation>
 <translation id="6700480081846086223">Trasmetti <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Impossibile caricare il profilo.</translation>
+<translation id="6701824422332982935">Ricarica la pagina per utilizzare queste estensioni</translation>
 <translation id="6702639462873609204">&amp;Modifica...</translation>
 <translation id="6703212423117969852">Puoi riprovare più tardi in Chrome.</translation>
 <translation id="6703254819490889819">Ripristina copia di backup</translation>
@@ -5943,6 +5954,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6781978626986383437">Backup di Linux annullato</translation>
 <translation id="6782067259631821405">PIN non valido</translation>
 <translation id="6784523122863989144">Il profilo è supportato</translation>
+<translation id="6785872064505734160">L'Assistente Google in Chrome può completare azioni per te su vari siti web</translation>
 <translation id="6786747875388722282">Estensioni</translation>
 <translation id="6787097042755590313">Un'altra scheda</translation>
 <translation id="6787839852456839824">Scorciatoie da tastiera</translation>
@@ -7090,6 +7102,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7903742244674067440">Hai dei certificati su file che identificano queste autorità di certificazione</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904526211178107182">Rendi disponibili le porte Linux per altri dispositivi sulla tua rete.</translation>
+<translation id="7906440585529721295">I dati locali verranno eliminati</translation>
 <translation id="7907837847548254634">Evidenzia brevemente l'oggetto attivo</translation>
 <translation id="7908378463497120834">Spiacenti, impossibile montare almeno una partizione del dispositivo di archiviazione esterno.</translation>
 <translation id="7909324225945368569">Rinomina il tuo profilo</translation>
@@ -7428,6 +7441,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="822050276545350872">D'ora in poi non dovrai più attendere</translation>
 <translation id="8221491193165283816">Di solito blocchi le notifiche. Per ricevere notifiche da questo sito, fai clic qui.</translation>
 <translation id="822347941086490485">Ricerca di dispositivi HID in corso…</translation>
+<translation id="8223573963214454788">Continua ed elimina dati</translation>
 <translation id="8225046344534779393">Controlla la connessione a Internet</translation>
 <translation id="8225265270453771718">Condividi una finestra dell'applicazione</translation>
 <translation id="8226222018808695353">Vietato</translation>
@@ -7528,6 +7542,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8314381333424235892">Estensione mancante o non installata</translation>
 <translation id="831440797644402910">Impossibile aprire questa cartella</translation>
 <translation id="8314835274931377415">Vuoi avviare la configurazione di Switch Access?</translation>
+<translation id="8317582043908962055">Riconosci il testo PDF</translation>
 <translation id="8317671367883557781">Aggiungi connesione di rete</translation>
 <translation id="8319414634934645341">Utilizzo chiave esteso</translation>
 <translation id="8321837372750396788">Questo dispositivo <ph name="DEVICE_TYPE" /> verrà gestito da <ph name="MANAGER" />.</translation>
@@ -8410,6 +8425,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9203398526606335860">&amp;Profiling attivato</translation>
 <translation id="9203904171912129171">Seleziona un dispositivo</translation>
 <translation id="9206889157914079472">Scrittura di note con stilo nella schermata di blocco</translation>
+<translation id="9208192193641542858">I dati locali sono protetti dalla password precedente. Se hai cambiato la password di recente, prova a inserire nuovamente la password precedente.</translation>
 <translation id="9209563766569767417">Controllo della configurazione del container Linux</translation>
 <translation id="9209689095351280025">I siti non possono utilizzare i cookie per monitorare la tua attività sul Web.</translation>
 <translation id="9211177926627870898">Aggiornamento richiesto</translation>

@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
 <translation id="1264309058268477500">อื่นๆ</translation>
 <translation id="1264974993859112054">กีฬา</translation>
+<translation id="1266469291454105242">การปลดล็อกอุปกรณ์</translation>
 <translation id="1269516672602708785">สร้างเว็บไซต์แบบใหม่ใน Google Sites อย่างรวดเร็ว</translation>
 <translation id="1270502636509132238">วิธีการรับสินค้า</translation>
 <translation id="1281476433249504884">สแต็กเกอร์ 1</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">หาคู่และโฆษณาหาเพื่อน</translation>
 <translation id="1753706481035618306">เลขหน้า</translation>
 <translation id="1755621011177747277">การรับเลี้ยงบุตรบุญธรรม</translation>
+<translation id="1756026472674246267">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="175656076281618225">มายากล</translation>
 <translation id="1757773103848038814">แบบอักษรที่มีความกว้างคงที่</translation>
 <translation id="1763864636252898013">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะระบบปฏิบัติการของอุปกรณ์ของคุณไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">ยกเลิกการชำระเงิน</translation>
 <translation id="2148613324460538318">เพิ่มบัตร</translation>
 <translation id="2149968176347646218">การเชื่อมต่อไม่ปลอดภัย</translation>
+<translation id="2153609454945889823">ติดตั้งบริการ Google Play สำหรับ AR ไหม</translation>
 <translation id="2154054054215849342">ไม่มีการซิงค์สำหรับโดเมนของคุณ</translation>
 <translation id="2154484045852737596">แก้ไขบัตร</translation>
 <translation id="2161656808144014275">ข้อความ</translation>
@@ -832,6 +835,7 @@
 <translation id="3229277193950731405">คัดลอกสตริงเวอร์ชัน</translation>
 <translation id="323107829343500871">ป้อน CVC สำหรับ <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">ตรวจหาเนื้อหาที่สำคัญบนไซต์นี้เสมอ</translation>
+<translation id="3238395604961564389">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="3240791268468473923">ระบบได้เปิด Bottom Sheet ซึ่งแจ้งว่าไม่พบข้อมูลเข้าสู่ระบบที่ตรงกันสำหรับข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="324180406144491771">ลิงก์ “<ph name="HOST_NAME" />” ถูกบล็อก</translation>
@@ -944,6 +948,7 @@
 <translation id="3531780078352352885">แผ่นงาน</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ต้องการใช้ไมโครโฟนของคุณ</translation>
 <translation id="3533328374079021623">กล่องจดหมาย 5</translation>
+<translation id="3542768452570884558">เปิดลิงก์ในหน้าต่างใหม่</translation>
 <translation id="3550112004925580947">อุตสาหกรรมการบริการ</translation>
 <translation id="3552297013052089404">แบบอักษร Sans Serif</translation>
 <translation id="3558573058928565255">ตอนกลางวัน</translation>
@@ -1114,11 +1119,13 @@
 <translation id="4040350669425716613">วิทยาลัยและมหาวิทยาลัย</translation>
 <translation id="4056223980640387499">ซีเปีย</translation>
 <translation id="4058922952496707368">คีย์ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">ใช้การปลดล็อกอุปกรณ์เพื่อยืนยันบัตรได้เร็วขึ้น</translation>
 <translation id="4067098466788473230">ทุนการศึกษา</translation>
 <translation id="4067263367174615723">C1 (ซองจดหมาย)</translation>
 <translation id="4067947977115446013">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="4072193657607981494">กำลังโหลดนโยบาย</translation>
 <translation id="4072486802667267160">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณ โปรดลองอีกครั้ง</translation>
+<translation id="4073376909608563327">ใช้การปลดล็อกอุปกรณ์ไม่ได้</translation>
 <translation id="4073797364926776829">ดูบัตร</translation>
 <translation id="4075732493274867456">ไคลเอ็นต์และเซิร์ฟเวอร์ไม่รองรับโปรโตคอล SSL เวอร์ชันทั่วไปหรือชุดการเข้ารหัส</translation>
 <translation id="4079302484614802869">การกำหนดค่าพร็อกซีมีการตั้งค่าให้ใช้ URL สคริปต์ .pac ไม่ใช่พร็อกซีเซิร์ฟเวอร์แบบคงที่</translation>
@@ -1411,6 +1418,7 @@
 <translation id="4840250757394056958">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="484671803914931257">รับส่วนลดสำหรับ <ph name="MERCHANT_NAME" /> และอื่นๆ</translation>
+<translation id="484988093836683706">ใช้การปลดล็อกอุปกรณ์</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
 <translation id="4852429274334674023">ระบบปฏิบัติการ</translation>
 <translation id="485316830061041779">เยอรมัน</translation>
@@ -1798,6 +1806,7 @@
 <translation id="5921185718311485855">เปิด</translation>
 <translation id="5921639886840618607">บันทึกบัตรลงในบัญชี Google ไหม</translation>
 <translation id="5922853866070715753">เกือบเสร็จแล้ว</translation>
+<translation id="5923492272538889093">ใช้การปลดล็อกอุปกรณ์แทน CVC ใช่ไหม</translation>
 <translation id="5928444777041341328">บ้านและสวน</translation>
 <translation id="5932224571077948991">เว็บไซต์แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="5937560539988385583">แปลหน้าเว็บแล้ว</translation>
@@ -1971,6 +1980,7 @@
 <translation id="643051589346665201">เปลี่ยนรหัสผ่าน Google</translation>
 <translation id="6433490469411711332">แก้ไขข้อมูลติดต่อ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ปฏิเสธการเชื่อมต่อ</translation>
+<translation id="6433797564277305076">ยืนยันบัตรได้เร็วขึ้นโดยใช้การปลดล็อกอุปกรณ์จากนี้ไป</translation>
 <translation id="6440503408713884761">ละเว้น</translation>
 <translation id="6443406338865242315">ส่วนขยายและปลั๊กอินที่คุณติดตั้ง</translation>
 <translation id="6446163441502663861">Kahu (ซองจดหมาย)</translation>
@@ -2177,6 +2187,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{บันทึกบัตรนี้ไม่ได้ในตอนนี้}other{บันทึกบัตรเหล่านี้ไม่ได้ในตอนนี้}}</translation>
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
+<translation id="7058774143982824355">บริการโปรแกรมแยกวิเคราะห์รหัสผ่าน CSV</translation>
 <translation id="7061777300866737982">ความปลอดภัยสำหรับบ้าน</translation>
 <translation id="7062635574500127092">น้ำเงินอมเขียว</translation>
 <translation id="706295145388601875">เพิ่มและจัดการที่อยู่ในการตั้งค่า Chrome</translation>
@@ -2441,6 +2452,7 @@
 <translation id="7696089921647603491">ร็อกคลาสสิกและเพลงเก่า</translation>
 <translation id="7697066736081121494">Prc8 (ซองจดหมาย)</translation>
 <translation id="769721561045429135">ขณะนี้คุณมีบัตรต่างๆ ที่ใช้ได้ในอุปกรณ์นี้เท่านั้น คลิก "ทำต่อ" เพื่อดูบัตร</translation>
+<translation id="7698864304447945242">อัปเดตบริการ Google Play สำหรับ AR ไหม</translation>
 <translation id="7699293099605015246">บทความไม่พร้อมใช้งานในขณะนี้</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />ไปยัง <ph name="SITE" /> (ไม่ปลอดภัย)<ph name="END_LINK" /></translation>
@@ -2453,6 +2465,7 @@
 <translation id="7723047071702270851">แก้ไขบัตร</translation>
 <translation id="7734285854693414638">สร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
 <translation id="773466115871691567">แปลหน้าเว็บภาษา<ph name="SOURCE_LANGUAGE" />ทุกครั้ง</translation>
+<translation id="7736959720849233795">คัดลอกที่อยู่ลิงก์</translation>
 <translation id="7740996059027112821">มาตรฐาน</translation>
 <translation id="77424286611022110">เว็บไซต์นี้แสดงโฆษณาที่รบกวนหรือทำให้เข้าใจผิด <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">บล็อกเนื้อหาอันตรายแล้ว</translation>

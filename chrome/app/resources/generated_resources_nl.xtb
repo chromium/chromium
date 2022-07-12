@@ -1247,6 +1247,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wifi toevoegen...</translation>
 <translation id="2162155940152307086">De synchronisatie wordt gestart wanneer je de synchronisatie-instellingen verlaat</translation>
+<translation id="2162705204091149050">Informatie over je browser, OS, apparaat, geïnstalleerde software en bestanden lezen</translation>
 <translation id="2162926944953615670">Geen beschikbare e-simkaartprofielen</translation>
 <translation id="2163470535490402084">Maak verbinding met internet om in te loggen op je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> en nog 1 schakelaar</translation>
@@ -1267,6 +1268,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2180620921879609685">Content op elke pagina blokkeren</translation>
 <translation id="2182058453334755893">Naar klembord gekopieerd</translation>
 <translation id="2184515124301515068">Chrome laten kiezen wanneer sites geluid mogen afspelen (aanbevolen)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Pagina gedeeld vanaf een ander apparaat</translation>
 <translation id="2187675480456493911">Gesynchroniseerd met andere apparaten in je account. Instellingen die zijn aangepast door andere gebruikers, worden niet gesynchroniseerd. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Fout bij importeren van servercertificaat</translation>
@@ -2492,6 +2494,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3359256513598016054">Beleidsbeperkingen voor certificaat</translation>
 <translation id="3360297538363969800">Afdrukken is mislukt. Controleer je printer en probeer het opnieuw.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deelt <ph name="ATTACHMENTS" /> met jou.}other{<ph name="DEVICE_NAME" /> deelt <ph name="ATTACHMENTS" /> met jou.}}</translation>
+<translation id="3363202073972776113">Dit nieuwe profiel wordt beheerd door je organisatie. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Van je beheerder: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Gebruik Ctrl of Alt</translation>
 <translation id="3368922792935385530">Verbonden</translation>
@@ -2526,6 +2529,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="339722927132407568">Loopt vast</translation>
 <translation id="3399432415385675819">Meldingen worden uitgezet</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - geïnterlinieerd</translation>
+<translation id="3401484564516348917">Informatie over je browser, OS, apparaat, geïnstalleerde software, registerwaarden en bestanden lezen</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{Op dit apparaat is {COUNT} wachtwoord opgeslagen}other{Op dit apparaat zijn {COUNT} wachtwoorden opgeslagen}}</translation>
 <translation id="3402255108239926910">Kies een avatar</translation>
 <translation id="3402585168444815892">Inschrijven in demomodus</translation>
@@ -2667,7 +2671,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3518985090088779359">Accepteren en doorgaan</translation>
 <translation id="3519564332031442870">Backend-service voor afdrukken</translation>
 <translation id="3519938335881974273">Pagina opslaan als...</translation>
-<translation id="3520824492621090923">Apparaatinschrijving voor kiosks en digitale borden bevestigen?</translation>
+<translation id="3520824492621090923">Apparaatinschrijving voor kiosken en digitale borden bevestigen?</translation>
 <translation id="3521606918211282604">Schijfgrootte wijzigen</translation>
 <translation id="3522088408596898827">Er is zeer weinig schijfruimte beschikbaar. Maak schijfruimte vrij en probeer het opnieuw.</translation>
 <translation id="3524518036046613664">Apparaten vinden in je lokale netwerk, zoals printers</translation>
@@ -2772,6 +2776,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3627879631695760395"><ph name="APP" /> installeren...</translation>
 <translation id="3628275722731025472">Bluetooth uitzetten</translation>
 <translation id="3629631988386925734">Voer je wachtwoord in om Smart Lock aan te zetten. De volgende keer wordt <ph name="DEVICE_TYPE" /> ontgrendeld met je telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
+<translation id="3629664892718440872">Deze keuze onthouden</translation>
 <translation id="3630132874740063857">Je telefoon</translation>
 <translation id="3630995161997703415">Voeg deze site aan je plank toe om hem altijd te kunnen gebruiken</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Als je je Chrome OS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in Chrome OS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals wanneer Chrome OS crasht, welke functies je gebruikt en hoeveel geheugen je gewoonlijk gebruikt.<ph name="END_PARAGRAPH1" />
@@ -3261,6 +3266,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Volledig beheer van MIDI-apparaten geweigerd</translation>
+<translation id="4087328411748538168">Aan de rechterkant tonen</translation>
 <translation id="4089235344645910861">Instellingen opgeslagen. Synchronisatie gestart.</translation>
 <translation id="4090103403438682346">Verified Access aanzetten</translation>
 <translation id="4090947011087001172">Siterechten voor <ph name="SITE" /> resetten?</translation>
@@ -3411,7 +3417,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="424963718355121712">Apps moeten worden weergegeven vanaf de host waarop ze betrekking hebben</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Nee</translation>
-<translation id="4251377547188244181">Apparaatinschrijving voor kiosks en digitale borden</translation>
+<translation id="4251377547188244181">Apparaatinschrijving voor kiosken en digitale borden</translation>
 <translation id="4252035718262427477">Webpagina, één bestand (webbundel)</translation>
 <translation id="4252899949534773101">Bluetooth staat uit</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: content van tabblad gedeeld</translation>
@@ -3443,7 +3449,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4277434192562187284">XML-configuratiebron</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
-<translation id="4278498748067682896">Je gebruikt een upgrade voor kiosks en digitale borden waardoor het apparaat alleen de kioskmodus of modus voor digitale borden kan gebruiken. Als je wilt dat gebruikers kunnen inloggen op het apparaat, ga je terug en schrijf je het in via Chrome Enterprise Upgrade.</translation>
+<translation id="4278498748067682896">Je gebruikt een upgrade voor kiosken en digitale borden waardoor het apparaat alleen de kioskmodus of modus voor digitale borden kan gebruiken. Als je wilt dat gebruikers kunnen inloggen op het apparaat, ga je terug en schrijf je het in via Chrome Enterprise Upgrade.</translation>
 <translation id="4279129444466079448">Je kunt maximaal <ph name="PROFILE_LIMIT" /> e-simkaartprofielen installeren op dit apparaat. Als je nog een profiel wilt toevoegen, verwijder je eerst een bestaand profiel.</translation>
 <translation id="4280325816108262082">Het apparaat verbreekt de verbinding automatisch als het wordt uitgezet of niet wordt gebruikt</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
@@ -3951,6 +3957,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4779766576531456629">Naam van mobiel netwerk voor e-simkaart wijzigen</translation>
 <translation id="4780321648949301421">Bewaar pagina als...</translation>
 <translation id="4781443161433589743">Je gebruikt de sterkste beveiliging van Chrome</translation>
+<translation id="4782861709165039462">Alle microfoons zijn uitgezet met de hardwareschakelaar van het apparaat</translation>
 <translation id="4785719467058219317">Je gebruikt een beveiligingssleutel die niet is geregistreerd voor deze website</translation>
 <translation id="4785914069240823137">Bijsnijden annuleren</translation>
 <translation id="4788092183367008521">Controleer de netwerkverbinding en probeer het opnieuw.</translation>
@@ -4718,6 +4725,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5548075230008247516">Alle items zijn gedeselecteerd. De selectiemodus is beëindigd.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{<ph name="TAB_TITLE" />}=1{<ph name="TAB_TITLE" /> en 1 ander tabblad}other{<ph name="TAB_TITLE" /> en # andere tabbladen}}</translation>
 <translation id="5548606607480005320">Veiligheidscheck</translation>
+<translation id="5548644592758170183">Aan de linkerkant tonen</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Toetsenbord en tekstinvoer</translation>
 <translation id="5553089923092577885">Beleidstoewijzing voor certificaat</translation>
@@ -5566,6 +5574,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6406303162637086258">Opnieuw starten van browser simuleren</translation>
 <translation id="6406506848690869874">Synchronisatie</translation>
 <translation id="6406708970972405507">Instellingen: <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Laat de Google Assistent je helpen je wachtwoord te wijzigen</translation>
 <translation id="6408118934673775994">Je gegevens lezen en wijzigen op <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Afbeeldingsbestanden</translation>
 <translation id="6410328738210026208">Kanaal wijzigen en Powerwash uitvoeren</translation>
@@ -5949,6 +5958,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6781978626986383437">Back-up voor Linux geannuleerd</translation>
 <translation id="6782067259631821405">Ongeldige pincode</translation>
 <translation id="6784523122863989144">Profiel wordt ondersteund</translation>
+<translation id="6785872064505734160">De Google Assistent in Chrome kan acties voor je voltooien op websites</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6787097042755590313">Ander tabblad</translation>
 <translation id="6787839852456839824">Sneltoetsen</translation>
@@ -6434,7 +6444,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7257666756905341374">Gegevens lezen die je kopieert en plakt</translation>
 <translation id="7258192266780953209">Transformaties</translation>
 <translation id="7258225044283673131">De app reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
-<translation id="7260186537988033909">Apparaatinschrijving voor kiosks en digitale borden afgerond</translation>
+<translation id="7260186537988033909">Apparaatinschrijving voor kiosken en digitale borden afgerond</translation>
 <translation id="7262004276116528033">Deze inlogservice wordt gehost door <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">De <ph name="APP" />-app altijd gebruiken om ondersteunde weblinks te openen?</translation>
 <translation id="7267044199012331848">Kan de virtuele machine niet installeren. Probeer het opnieuw of neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
@@ -8192,6 +8202,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8980345560318123814">Feedbackrapporten</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: gecrasht</translation>
 <translation id="8981825781894055334">Papier is bijna op</translation>
+<translation id="8983018820925880511">Dit nieuwe profiel wordt beheerd door <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bewerken</translation>
 <translation id="8984694057134206124">Je bent <ph name="MINUTES" /> minuten zichtbaar voor iedereen. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Welkom bij Steam voor Chromebook</translation>
@@ -8288,6 +8299,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9075413375877487220">Deze extensie wordt niet vertrouwd door de uitgebreide versie van Safe Browsing.</translation>
 <translation id="9076283476770535406">De site kan content voor volwassenen bevatten</translation>
 <translation id="9076523132036239772">Je e-mailadres of wachtwoord kan niet worden geverifieerd. Probeer eerst verbinding met een netwerk te maken.</translation>
+<translation id="9076821103818989526">Zijvenster</translation>
 <translation id="9076977315710973122">SMB-share</translation>
 <translation id="9078193189520575214">Wijzigingen toepassen...</translation>
 <translation id="9078316009970372699">Instant-tethering uitzetten</translation>

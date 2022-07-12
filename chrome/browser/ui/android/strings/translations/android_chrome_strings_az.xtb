@@ -97,6 +97,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="1428770807407000502">Sinxronlaşdırma deaktiv edilsin?</translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1436784010935106834">Silindi</translation>
+<translation id="1437543266176261764"><ph name="APP_NAME" /> tətbiqində işləyir</translation>
 <translation id="1448440926884431741">Əlfəcinlərdə izlədiyiniz məhsulları təşkil edin</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> paylaşmaq mümkün deyil</translation>
 <translation id="1466383950273130737">Chrome dilini seçin</translation>
@@ -218,7 +219,6 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="214888715418183969">Chrome ilə nəyi paylaşmağa hazır olduğunuzu seçin. Paylaşdığınız göstəricilər Chrome funksiyaları, məhsuldarlığı və stabilliyini yaxşılaşdırmaq üçün istifadə ediləcək.</translation>
 <translation id="2149973817440762519">Əlfəcinə düzəliş edin</translation>
 <translation id="2155214902713132423">Bu doğrulama metodu bu cihaz üçün əlçatan deyil. Digər cihazınızda fərqli seçim edin.</translation>
-<translation id="2157851137955077194">Telefonunuzdakı hər hansı elementi digər cihaz ilə paylaşmaq üçün hər iki cihazın Chrome ayarlarında sinxronizasiyanı aktiv edin</translation>
 <translation id="2158408438301413340">Chrome bütün parolları yoxlaya bilmədi</translation>
 <translation id="2169830938017475061">İndi</translation>
 <translation id="2172688499998841696">Şəkil təsvirləri deaktivdir</translation>
@@ -662,7 +662,6 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="4678082183394354975">Saytlar üçün tünd tema Chrome'da aktivdir</translation>
 <translation id="4684427112815847243">Hər şeyi sinxronlaşdırın</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> digəri}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> digəri}}</translation>
-<translation id="4696983787092045100">Mətni Cihazlarınıza göndərin</translation>
 <translation id="4699172675775169585">Keşlənmiş şəkillər və fayllar</translation>
 <translation id="4719927025381752090">Tərcümə təklif edin</translation>
 <translation id="4720023427747327413">Aç <ph name="PRODUCT_NAME" /></translation>
@@ -1468,7 +1467,6 @@ Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuz
 <translation id="8873817150012960745">Başlamaq üçün bura toxunun</translation>
 <translation id="8881973373982641723">Axtarış bölməsindəki daxil olmaqla, tarixçəni silir.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Məxfiliyinizi qorumaq üçün 4 həftədən köhnə saytları siyahıdan avtomatik silirik. Yenidən ziyarət etdiyiniz sayt yenidən siyahıda görünə bilər. Və ya saytın sizin üçün maraqlar müəyyən etməsini istəmirsinizsə, həmin saytı silə bilərsiniz.</translation>
-<translation id="889338405075704026">Chrome ayarlarına keçin</translation>
 <translation id="8898822736010347272">Yeni təhlükələri aşkarlamaq və vebdə hər kəsi qorumağa yardım etmək üçün daxil olduğunuz bəzi səhifələrin URL'lərini, məhdud sistem məlumatlarını və bəzi səhifə məzmunlarını Google'a göndərin.</translation>
 <translation id="8906502871739599113">Reaksiya təkrarlanıb</translation>
 <translation id="8909135823018751308">Paylaşın...</translation>
@@ -1496,7 +1494,6 @@ Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuz
 <translation id="8996847606757455498">Başqa provayder seçin</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chrome datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chrome'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
 <translation id="9022774213089566801">Tez-tez ziyarət edilənlər</translation>
-<translation id="9028914725102941583">Cihazlar arasında paylaşım etmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Video}}</translation>
 <translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>

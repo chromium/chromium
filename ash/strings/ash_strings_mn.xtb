@@ -165,6 +165,7 @@
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> руу тусгаж байна</translation>
 <translation id="1885785240814121742">Түгжээг хурууны хээгээр тайлах</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц)-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) болгож өөрчилсөн. Өөрчлөлтийг хадгалахын тулд баталгаажуулахыг товшино уу. Өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
+<translation id="1908992311423394684">Шинээр суулгасан</translation>
 <translation id="1915307458270490472">Таслах</translation>
 <translation id="1918022425394817322">Камерыг баруун дээд булан руу зэрэгцүүлсэн</translation>
 <translation id="1919743966458266018">Ажлын менежерийг нээх товчлолын арга өөрчлөгдсөн. <ph name="OLD_SHORTCUT" />-н оронд <ph name="NEW_SHORTCUT" />-г ашиглана уу.</translation>

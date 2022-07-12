@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Zaštićeno</translation>
 <translation id="2638942478653899953">Nije moguće uspostaviti vezu sa Google diskom. <ph name="BEGIN_LINK" />Odjavite se<ph name="END_LINK" />, pa se ponovo prijavite.</translation>
 <translation id="2649120831653069427">Riba</translation>
+<translation id="2653059201992392941">Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">burmanski/Mijanmar sa mjansan tastaturom</translation>
 <translation id="2664412712123763093">Lokacija datoteke</translation>
 <translation id="2718540689505416944">Instalirajte aplikaciju za Linux</translation>
@@ -530,6 +531,7 @@
 <translation id="5489067830765222292">letonski</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> je isključen.</translation>
 <translation id="5494920125229734069">Izbor svih stavki</translation>
+<translation id="5500104704744051184">Nećete moći da koristite ovu mrežu dok ne unesete PUK</translation>
 <translation id="5500122897333236901">islandski</translation>
 <translation id="5508696409934741614">Tačke</translation>
 <translation id="5522908512596376669">Lista datoteka se promenila u prikaz liste.</translation>
@@ -635,6 +637,7 @@
 <translation id="6395575651121294044">Stavki: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Ovaj naziv ne može da se koristi kao naziv datoteke ili direktorijuma</translation>
 <translation id="6423031066725912715">vijetnamski sa tastaturom TCVN</translation>
+<translation id="6430271654280079150">Imate još 1 pokušaj.</translation>
 <translation id="6485131920355264772">Preuzimanje informacija o prostoru nije uspelo</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, detalji</translation>
 <translation id="649877868557234318">Izdvaja se <ph name="FILE_NAME" /> u <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +904,7 @@
 <translation id="8579285237314169903">Sinhronizuju se stavke (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Lista datoteka se promenila u prikaz sličica.</translation>
 <translation id="8601932370724196034">Crostini datoteka slike</translation>
+<translation id="8608515571837163082">Previše puta ste uneli pogrešan PIN. Unesite osmocifrenu ličnu šifru za otključavanje (PUK) koju vam je dao mobilni operater.</translation>
 <translation id="8609695766746872526">islandski</translation>
 <translation id="863903787380594467">Netačan PIN. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

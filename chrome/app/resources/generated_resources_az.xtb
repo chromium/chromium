@@ -1243,6 +1243,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi əlavə edin...</translation>
 <translation id="2162155940152307086">Sinxronizasiya ayarlarından çıxdıqdan sonra sinxronizasiya başlayacaq</translation>
+<translation id="2162705204091149050">Brauzeriniz, OS, cihazınız, quraşdırılmış proqram və fayllar haqqında məlumatları oxuyun</translation>
 <translation id="2162926944953615670">Əlçatan eSIM profili yoxdur</translation>
 <translation id="2163470535490402084">Daxil etmək üçün İnternetə qoşulmaq edin sizin <ph name="DEVICE_TYPE" /> .</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> və daha 1 dəyişdirici</translation>
@@ -2491,6 +2492,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3359256513598016054">Sertifikat Qaydaları Limitləri</translation>
 <translation id="3360297538363969800">Çap uğursuz oldu. Zəhmət olmasa printerinizi yoxlayın və yenidən cəhd edin.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" /> qoşmasını sizinlə paylaşır.}other{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" /> qoşmasını sizinlə paylaşır.}}</translation>
+<translation id="3363202073972776113">Bu yeni profil təşkilatınız tərəfindən idarə olunacaq. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Admininizdən: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl və ya Alt istifadə edin</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
@@ -2525,6 +2527,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="339722927132407568">Donur</translation>
 <translation id="3399432415385675819">Bildirişlər deaktiv ediləcək</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hers) - növbəli</translation>
+<translation id="3401484564516348917">Brauzeriniz, OS, cihazınız, quraşdırılmış proqram, qeyd dəyərləri və fayllar haqqında məlumatları oxuyun</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} parol bu cihazda saxlanılır}other{{COUNT} parol bu cihazda saxlanılır}}</translation>
 <translation id="3402255108239926910">Avatar seçin</translation>
 <translation id="3402585168444815892">Demo Rejimində qeydiyyat</translation>
@@ -2771,6 +2774,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3627879631695760395"><ph name="APP" /> quraşdırılır...</translation>
 <translation id="3628275722731025472">Bluetooth'u deaktiv edin</translation>
 <translation id="3629631988386925734">Smart Lock'u aktiv etmək üçün parolunuzu yazın. Növbəti dəfə telefon <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxaracaq. Ayarlardan Smart Lock'u deaktiv edə bilərsiniz</translation>
+<translation id="3629664892718440872">Bu seçimi yadda saxlayın</translation>
 <translation id="3630132874740063857">Telefonunuz</translation>
 <translation id="3630995161997703415">Hər hansı bir vaxt istifadə etmək üçün bu saytı rəfinizə əlavə edin</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarına avtomatik hesabatlar göndərmək icazəsi vermək bizə ChromeOS'da nəyi düzəldəcıyimizi və təkmilləşdirəcəyimizi prioritetləşdirməyə kömək edir. Bu hesabatlara ChromeOS'un nə vaxt çökməsi, hansı funksiyaların istifadə edilməsi və adətən nə qədər yaddaş istifadə edildiyi kimi məlumatlar daxil ola bilər.<ph name="END_PARAGRAPH1" />
@@ -3258,6 +3262,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4085298594534903246">JavaScript bu səhifədə bloklanmışdı.</translation>
 <translation id="4087089424473531098">Artırma yaradıldı: <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI cihazlar üzərində tam nəzarət rədd edildi</translation>
+<translation id="4087328411748538168">Sağda göstərin</translation>
 <translation id="4089235344645910861">Ayar yadda saxlandı. Sinxronizasiya başladı.</translation>
 <translation id="4090103403438682346">Doğrulanmış Girişi Aktiv edin</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> üçün sayt icazələri sıfırlansın?</translation>
@@ -3950,6 +3955,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4779766576531456629">eSIM Mobil şəbəkəsinin adını dəyişin</translation>
 <translation id="4780321648949301421">Səhifəni yadda saxlama formatı:</translation>
 <translation id="4781443161433589743">Chrome’un ən güclü güvənlik sistemi aktivdir</translation>
+<translation id="4782861709165039462">Bütün mikrofonlar cihazların aparat keçiricisi ilə deaktiv edilib</translation>
 <translation id="4785719467058219317">Bu veb saytda qeydiyyatda olmayan təhlükəsizlik açarından istifadə edirsiniz</translation>
 <translation id="4785914069240823137">Kəsilməni ləğv edin</translation>
 <translation id="4788092183367008521">Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin.</translation>
@@ -4717,6 +4723,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5548075230008247516">Bütün elementlərin seçimi silindi, seçim rejimindən çıxıldı.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" və digər 1 Tab}other{"<ph name="TAB_TITLE" />" və digər # Tab}}</translation>
 <translation id="5548606607480005320">Təhlükəsizlik yoxlanışı</translation>
+<translation id="5548644592758170183">Solda göstərin</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Klaviatura və mətn girişi</translation>
 <translation id="5553089923092577885">Sertifikat Siyasəti Tutuşdurmaları</translation>
@@ -5567,6 +5574,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6406303162637086258">Brauzeri yenidən başlatmağı modelləşdirin</translation>
 <translation id="6406506848690869874">Sinx</translation>
 <translation id="6406708970972405507">Ayarlar - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Google Assistentin parolu dəyişməkdə sizə kömək etməsinə icazə verin</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> və <ph name="WEBSITE_3" /> üzərində datanızı oxuyun və dəyişin</translation>
 <translation id="6410257289063177456">Təsvir Faylları</translation>
 <translation id="6410328738210026208">Kanal və Zavod sıfırlamasını dəyişin</translation>
@@ -5950,6 +5958,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6781978626986383437">Linux yedəkləməsi ləğv edildi</translation>
 <translation id="6782067259631821405">Yanlış PIN</translation>
 <translation id="6784523122863989144">Profil dəstəklənir</translation>
+<translation id="6785872064505734160">Chrome'da Google Assistent sizin üçün vebsaytlarda əməliyyatlar icra edə bilər</translation>
 <translation id="6786747875388722282">Artırmalar</translation>
 <translation id="6787097042755590313">Digər Tab</translation>
 <translation id="6787839852456839824">Klaviatura qısayolları</translation>
@@ -8191,6 +8200,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8980345560318123814">Rəy hesabatları</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Qəza oldu</translation>
 <translation id="8981825781894055334">Kağız azdır</translation>
+<translation id="8983018820925880511">Bu yeni profil <ph name="DOMAIN" /> tərəfindən idarə olunacaq. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> faylını redaktə edə bilər</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> dəqiqə ərzində hər kəs sizi görəcək. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook üçün Steam'ə xoş gəlmisiniz</translation>
@@ -8287,6 +8297,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9075413375877487220">Qabaqcıl Güvənli Baxış bu artırmaya etibar etmir.</translation>
 <translation id="9076283476770535406">Böyüklər üçün məzmun ola bilər</translation>
 <translation id="9076523132036239772">Üzr istəyirik, e-poçt və ya parolunuz təsdiq edilə bilməz. Əvvəlcə şəbəkəyə qoşulmağa cəhd edin.</translation>
+<translation id="9076821103818989526">Yan panel</translation>
 <translation id="9076977315710973122">SMB paylaşımı</translation>
 <translation id="9078193189520575214">Dəyişikliklər tətbiq olunur...</translation>
 <translation id="9078316009970372699">Cəld modemi deaktiv edin</translation>

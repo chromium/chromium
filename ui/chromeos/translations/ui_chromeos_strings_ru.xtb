@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Защищена</translation>
 <translation id="2638942478653899953">Не удается подключиться к Google Диску. Попробуйте <ph name="BEGIN_LINK" />выйти<ph name="END_LINK" /> и снова зайти в систему.</translation>
 <translation id="2649120831653069427">Рыбка</translation>
+<translation id="2653059201992392941">Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Бирманский, раскладка MyanSan</translation>
 <translation id="2664412712123763093">Местоположение файла</translation>
 <translation id="2718540689505416944">Установка приложения с помощью Linux</translation>
@@ -530,6 +531,7 @@
 <translation id="5489067830765222292">Латышский</translation>
 <translation id="5489965683297092283">Фильтр "<ph name="FILTER_NAME" />" отключен.</translation>
 <translation id="5494920125229734069">Выделить все</translation>
+<translation id="5500104704744051184">Вы не сможете использовать эту сеть, пока не введете PUK-код.</translation>
 <translation id="5500122897333236901">Исландский</translation>
 <translation id="5508696409934741614">Точки</translation>
 <translation id="5522908512596376669">Файлы отображаются в виде списка.</translation>
@@ -635,6 +637,7 @@
 <translation id="6395575651121294044">Объектов: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Недопустимое название для файла или папки</translation>
 <translation id="6423031066725912715">Вьетнамский, раскладка TCVN</translation>
+<translation id="6430271654280079150">Осталась одна попытка.</translation>
 <translation id="6485131920355264772">Не удалось получить информацию о свободном месте.</translation>
 <translation id="6495925982925244349">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
 <translation id="649877868557234318">Извлечение <ph name="FILE_NAME" /> в папку "<ph name="FOLDER_NAME" />"…</translation>
@@ -901,6 +904,7 @@
 <translation id="8579285237314169903">Синхронизация файлов (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Файлы отображаются в виде значков.</translation>
 <translation id="8601932370724196034">Графический файл Crostini</translation>
+<translation id="8608515571837163082">PIN-код был введен неверно слишком много раз. Введите 8-значный PUK-код, предоставленный оператором связи.</translation>
 <translation id="8609695766746872526">Исландский</translation>
 <translation id="863903787380594467">Неверный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>

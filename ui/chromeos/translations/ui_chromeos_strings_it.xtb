@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Hangul Romaja</translation>
 <translation id="112387589102719461">Inglese (USA) con tastiera Programmer Dvorak</translation>
 <translation id="1134697384939541955">Inglese (USA) con tastiera estesa</translation>
+<translation id="1138691154716715755">Questo mese</translation>
 <translation id="1148097584170732637">Elementi trovati: <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     Spazio nella memoria locale insufficiente. Sono necessari altri <ph name="FILE_SIZE" />.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, dettagli</translation>
 <translation id="4387004326333427325">Certificato di autenticazione rifiutato da remoto</translation>
 <translation id="4394214039309501350">Link esterno</translation>
+<translation id="4394980935660306080">Questa settimana</translation>
 <translation id="4401287888955153199">Estrai tutto</translation>
 <translation id="4410695710508688828">Operazione di estrazione non riuscita. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Crea una scorciatoia per i tuoi file</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">Apertura di "<ph name="PATH" />"…</translation>
 <translation id="4720185134442950733">Rete di dati mobili</translation>
 <translation id="4724850507808590449">Backup di <ph name="FILE_COUNT" /> foto completato</translation>
+<translation id="4725096204469550614">Quest'anno</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Atterraggio</translation>
 <translation id="4747271164117300400">Macedone</translation>

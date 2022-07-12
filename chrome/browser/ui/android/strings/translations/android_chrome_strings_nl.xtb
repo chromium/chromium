@@ -97,6 +97,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="1428770807407000502">Synchronisatie uitzetten?</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1436784010935106834">Verwijderd</translation>
+<translation id="1437543266176261764">Wordt uitgevoerd in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Orden je gevolgde producten in Bookmarks</translation>
 <translation id="1450753235335490080">Kan <ph name="CONTENT_TYPE" /> niet delen</translation>
 <translation id="1466383950273130737">Kies de taal voor Chromium</translation>
@@ -218,7 +219,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="214888715418183969">Kies welke informatie je bereid bent te delen met Chrome. De statistieken die je deelt, worden gebruikt om de functies, prestaties en stabiliteit van Chrome te verbeteren.</translation>
 <translation id="2149973817440762519">Bookmark bewerken</translation>
 <translation id="2155214902713132423">Deze verificatiemethode is niet beschikbaar voor dit apparaat. Kies een andere optie op je andere apparaat.</translation>
-<translation id="2157851137955077194">Als je iets op je telefoon wilt delen met een ander apparaat, zet je de synchronisatie in de Chrome-instellingen op beide apparaten aan</translation>
 <translation id="2158408438301413340">Chrome kan niet alle wachtwoorden checken</translation>
 <translation id="2169830938017475061">Nu</translation>
 <translation id="2172688499998841696">Afbeeldingsbeschrijvingen staan uit</translation>
@@ -662,7 +662,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4678082183394354975">Donker thema voor sites staat aan in Chrome</translation>
 <translation id="4684427112815847243">Alles synchroniseren</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andere}}</translation>
-<translation id="4696983787092045100">Tekst naar je apparaten verzenden</translation>
 <translation id="4699172675775169585">Gecachte afbeeldingen en bestanden</translation>
 <translation id="4719927025381752090">Aanbieden om te vertalen</translation>
 <translation id="4720023427747327413">Openen in <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1469,6 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="8873817150012960745">Tik hier om te beginnen</translation>
 <translation id="8881973373982641723">Hiermee wis je de geschiedenis, waaronder die in het zoekvak.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Ter bescherming van je privacy verwijderen we automatisch sites uit de lijst die ouder zijn dan 4 weken. Een site die je opnieuw bezoekt, kan weer op de lijst komen te staan. Je kunt ook sites verwijderen als je niet wilt dat deze interesses voor je definiëren.</translation>
-<translation id="889338405075704026">Naar Chrome-instellingen</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
 <translation id="8906502871739599113">Reactie gedupliceerd</translation>
 <translation id="8909135823018751308">Delen</translation>
@@ -1498,7 +1496,6 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="8996847606757455498">Een andere provider kiezen</translation>
 <translation id="8998729206196772491">Je logt in met een account dat wordt beheerd door <ph name="MANAGED_DOMAIN" /> waarmee je de eigenaar beheer geeft over je Chrome-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chrome, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
 <translation id="9022774213089566801">Veelbezocht</translation>
-<translation id="9028914725102941583">Zet de synchronisatie aan om content op apparaten te delen</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video's}}</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>
 <translation id="9050666287014529139">Wachtwoordzin</translation>

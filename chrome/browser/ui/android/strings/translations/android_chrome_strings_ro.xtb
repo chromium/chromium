@@ -219,7 +219,6 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="214888715418183969">Alege informațiile la care permiți accesul Chrome. Valorile transmise vor fi folosite pentru a ajuta la îmbunătățirea funcțiilor, performanței și stabilității Chrome.</translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
 <translation id="2155214902713132423">Această metodă de confirmare nu este disponibilă pentru dispozitiv. Alege altă opțiune pe alt dispozitiv.</translation>
-<translation id="2157851137955077194">Ca să trimiți ceva de pe telefon pe alt dispozitiv, activează sincronizarea în setările Chrome pe ambele dispozitive</translation>
 <translation id="2158408438301413340">Chrome nu a putut verifica toate parolele</translation>
 <translation id="2169830938017475061">Acum</translation>
 <translation id="2172688499998841696">Descrierile imaginilor sunt dezactivate</translation>
@@ -663,7 +662,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4678082183394354975">Tema întunecată pentru site-uri este activată în Chrome</translation>
 <translation id="4684427112815847243">Sincronizează tot</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Trimite text pe dispozitivele tale</translation>
 <translation id="4699172675775169585">Imaginile și fișierele memorate în cache</translation>
 <translation id="4719927025381752090">Oferă traducerea</translation>
 <translation id="4720023427747327413">Deschide în <ph name="PRODUCT_NAME" /></translation>
@@ -1471,7 +1469,6 @@ Trust Tokens îmbunătățește confidențialitatea pe web și nu poate fi folos
 <translation id="8873817150012960745">Atinge aici pentru a începe</translation>
 <translation id="8881973373982641723">Șterge istoricul, inclusiv din caseta de căutare.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> pentru a-ți proteja confidențialitatea, ștergem automat site-urile din listă mai vechi de patru săptămâni. Un site pe care îl accesezi din nou poate să reapară în listă. Poți să elimini un site dacă nu vrei ca acesta să îți definească vreodată categoriile de interese.</translation>
-<translation id="889338405075704026">Accesează setările Chrome</translation>
 <translation id="8898822736010347272">Trimite la Google adrese URL ale unor pagini pe care le accesezi, informații despre sistem limitate și o parte din conținutul paginii pentru a identifica amenințările noi și a proteja toți utilizatorii de pe web.</translation>
 <translation id="8906502871739599113">Reacția a fost dublată</translation>
 <translation id="8909135823018751308">Trimite…</translation>
@@ -1499,7 +1496,6 @@ Trust Tokens îmbunătățește confidențialitatea pe web și nu poate fi folos
 <translation id="8996847606757455498">Alege alt furnizor</translation>
 <translation id="8998729206196772491">Te conectezi cu un cont gestionat de <ph name="MANAGED_DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chrome. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chrome, datele se vor șterge de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
 <translation id="9022774213089566801">Accesate frecvent</translation>
-<translation id="9028914725102941583">Activează sincronizarea ca să trimiți de pe un dispozitiv pe altul</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{Un videoclip}few{# videoclipuri}other{# de videoclipuri}}</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
 <translation id="9050666287014529139">Expresie de acces</translation>

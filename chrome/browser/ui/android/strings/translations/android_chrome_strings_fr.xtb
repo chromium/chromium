@@ -218,7 +218,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="214888715418183969">Sélectionnez le type de données que vous acceptez de partager avec Chrome. Ces statistiques serviront à améliorer les fonctionnalités, les performances et la stabilité de Chrome.</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2155214902713132423">Cette méthode de validation n'est pas disponible pour cet appareil. Sélectionnez une autre option sur votre autre appareil.</translation>
-<translation id="2157851137955077194">Pour partager un contenu entre votre téléphone et un autre appareil, activez la synchronisation dans les paramètres Chrome sur les deux appareils</translation>
 <translation id="2158408438301413340">Chrome n'est pas parvenu à vérifier tous les mots de passe</translation>
 <translation id="2169830938017475061">Maintenant</translation>
 <translation id="2172688499998841696">Les descriptions d'images sont désactivées</translation>
@@ -662,7 +661,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4678082183394354975">Le thème sombre pour les sites est activé dans Chrome</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> de plus}}</translation>
-<translation id="4696983787092045100">Envoyer le SMS à vos appareils</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4719927025381752090">Proposer de traduire</translation>
 <translation id="4720023427747327413">Ouvrir dans <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="8873817150012960745">Appuyez ici pour commencer</translation>
 <translation id="8881973373982641723">Efface l'historique, y compris dans le champ de recherche.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : pour protéger votre confidentialité, nous supprimons automatiquement les sites de la liste s'ils datent de plus de quatre semaines. Un site peut réapparaître dans la liste si vous le consultez à nouveau. Vous pouvez également supprimer un site si vous ne souhaitez pas qu'il définisse des centres d'intérêt pour vous.</translation>
-<translation id="889338405075704026">Accéder aux paramètres Chrome</translation>
 <translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>
 <translation id="8906502871739599113">Réaction dupliquée</translation>
 <translation id="8909135823018751308">Partager…</translation>
@@ -1498,7 +1495,6 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="8996847606757455498">Sélectionner un autre fournisseur</translation>
 <translation id="8998729206196772491">Vous vous connectez avec un compte géré par <ph name="MANAGED_DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chrome. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chrome, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="9022774213089566801">Consultés régulièrement</translation>
-<translation id="9028914725102941583">Activer la synchronisation pour partager des contenus entre des appareils</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vidéo}one{# vidéo}other{# vidéos}}</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="9050666287014529139">Phrase secrète</translation>

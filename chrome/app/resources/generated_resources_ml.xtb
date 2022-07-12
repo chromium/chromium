@@ -1246,6 +1246,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi ചേർക്കുക...</translation>
 <translation id="2162155940152307086">നിങ്ങൾ സമന്വയിപ്പിക്കൽ ക്രമീകരണം വിടുമ്പോൾ, സമന്വയിപ്പിക്കൽ ആരംഭിക്കും</translation>
+<translation id="2162705204091149050">നിങ്ങളുടെ ബ്രൗസർ, OS, ഉപകരണം, ഇൻസ്റ്റാൾ ചെയ്ത സോഫ്റ്റ്‌വെയർ, ഫയലുകൾ എന്നിവയെ കുറിച്ചുള്ള വിവരങ്ങൾ വായിക്കുക</translation>
 <translation id="2162926944953615670">ലഭ്യമായ eSIM പ്രൊഫൈലുകളൊന്നുമില്ല</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ സൈൻ ഇൻ ചെയ്യാൻ ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> എന്നിവയും മറ്റൊരു സ്വിച്ചും</translation>
@@ -2492,6 +2493,7 @@
 <translation id="3359256513598016054">സര്‍‌ട്ടിഫിക്കറ്റ് നയ നിയന്ത്രണങ്ങള്‍‌</translation>
 <translation id="3360297538363969800">പ്രിന്റ് ചെയ്യൽ പരാജയപ്പെട്ടു. നിങ്ങളുടെ പ്രിന്റർ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> നിങ്ങളുമായി <ph name="ATTACHMENTS" /> പങ്കിടുന്നു.}other{<ph name="DEVICE_NAME" /> നിങ്ങളുമായി <ph name="ATTACHMENTS" /> പങ്കിടുന്നു.}}</translation>
+<translation id="3363202073972776113">പുതിയ ഈ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ സ്ഥാപനമായിരിക്കും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">നിങ്ങളുടെ അഡ്‌മിനിൽ നിന്ന്: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl അല്ലെങ്കിൽ Alt ഉപയോഗിക്കുക</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
@@ -2526,6 +2528,7 @@
 <translation id="339722927132407568">നിശ്ചലമായത്</translation>
 <translation id="3399432415385675819">അറിയിപ്പുകൾ പ്രവർത്തനരഹിതമാകും</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ഹേർട്‌സ്) - മിശ്രമാക്കിയത്</translation>
+<translation id="3401484564516348917">നിങ്ങളുടെ ബ്രൗസർ, OS, ഉപകരണം, ഇൻസ്റ്റാൾ ചെയ്ത സോഫ്റ്റ്‌വെയർ, രജിസ്ട്രി മൂല്യങ്ങൾ, ഫയലുകൾ എന്നിവയെ കുറിച്ചുള്ള വിവരങ്ങൾ വായിക്കുക</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‌വേഡ് സംഭരിച്ചിരിക്കുന്നു}other{ഈ ഉപകരണത്തിൽ {COUNT} പാസ്‍വേഡുകൾ സംഭരിച്ചിരിക്കുന്നു}}</translation>
 <translation id="3402255108239926910">അവതാർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3402585168444815892">ഡെമോ മോഡിൽ എൻറോൾ ചെയ്യുന്നു</translation>
@@ -2772,6 +2775,7 @@
 <translation id="3627879631695760395"><ph name="APP" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക...</translation>
 <translation id="3628275722731025472">Bluetooth ഓഫാക്കുക</translation>
 <translation id="3629631988386925734">Smart Lock പ്രവർത്തനക്ഷമമാക്കാൻ നിങ്ങളുടെ പാസ്‌വേഡ് നൽകുക. അടുത്ത തവണ നിങ്ങളുടെ ഫോൺ <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യും. ക്രമീകരണത്തിൽ Smart Lock ഓഫാക്കാം.</translation>
+<translation id="3629664892718440872">ഈ തിരഞ്ഞെടുക്കൽ ഓർക്കുക</translation>
 <translation id="3630132874740063857">നിങ്ങളുടെ ഫോൺ</translation>
 <translation id="3630995161997703415">എപ്പോൾ വേണമെങ്കിലും ഉപയോഗിക്കാൻ ഈ സൈറ്റിനെ നിങ്ങളുടെ ഷെൽഫിൽ ചേർക്കുക</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />സ്വയമേവയുള്ള റിപ്പോർട്ടുകൾ അയയ്ക്കാൻ നിങ്ങളുടെ ChromeOS ഉപകരണങ്ങളെ അനുവദിക്കുന്നത്, ChromeOS-ൽ എന്തൊക്കെ പരിഹരിക്കണമെന്നും മെച്ചപ്പെടുത്തണമെന്നുമുള്ള മുൻഗണന നൽകാൻ ഞങ്ങളെ സഹായിക്കുന്നു. ChromeOS എപ്പോഴാണ് ക്രാഷാകുന്നത്, ഏതൊക്കെ ഫീച്ചറുകളാണ് ഉപയോഗിക്കുന്നത്, സാധാരണ ഗതിയിൽ ഉപയോഗിക്കുന്ന മെമ്മറിയുടെ അളവ് എത്രയാണ് എന്നിവ പോലുള്ള കാര്യങ്ങൾ ഈ റിപ്പോർട്ടിൽ ഉൾപ്പെടുത്താം.<ph name="END_PARAGRAPH1" />
@@ -3260,6 +3264,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI ഉപകരണങ്ങളുടെ പൂർണ്ണ നിയന്ത്രണം നിരസിച്ചു</translation>
+<translation id="4087328411748538168">വലത് വശത്ത് കാണിക്കുക</translation>
 <translation id="4089235344645910861">ക്രമീകരണം സംരക്ഷിച്ചു. സമന്വയം ആരംഭിച്ചു.</translation>
 <translation id="4090103403438682346">പരിശോധിച്ചുറപ്പിച്ച ആക്‌സസ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4090947011087001172"><ph name="SITE" />-നുള്ള സൈറ്റ് അനുമതികൾ പുനഃസജ്ജീകരിക്കണോ?</translation>
@@ -3952,6 +3957,7 @@
 <translation id="4779766576531456629">ഇ-സിം സെല്ലുലാർ നെറ്റ്‌വർക്കിന്റെ പേര് മാറ്റുക</translation>
 <translation id="4780321648949301421">പേജ് ഇതുപോലെ സംരക്ഷിക്കുക...</translation>
 <translation id="4781443161433589743">നിങ്ങൾ Chrome-ന്റെ ഏറ്റവും ശക്തമായ സുരക്ഷയിലാണ്</translation>
+<translation id="4782861709165039462">ഉപകരണത്തിന്റെ ഹാർഡ്‌വെയർ സ്വിച്ച് ഉപയോഗിച്ച് എല്ലാ മൈക്രോഫോണുകളും പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="4785719467058219317">ഈ വെബ്സൈറ്റിൽ രജിസ്‌റ്റർ ചെയ്‌തിട്ടില്ലാത്ത ഒരു സുരക്ഷാ കീ ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
 <translation id="4785914069240823137">അരിക് വെട്ടൽ റദ്ദാക്കുക</translation>
 <translation id="4788092183367008521">നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിച്ച്, വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -4719,6 +4725,7 @@
 <translation id="5548075230008247516">എല്ലാ ഇനങ്ങളും തിരഞ്ഞെടുത്തത് മാറ്റി, തിരഞ്ഞെടുപ്പ് മോഡിൽ നിന്ന് പുറത്തുകടന്നു.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" എന്നതും മറ്റൊരു ടാബും}other{"<ph name="TAB_TITLE" />" എന്നതും മറ്റ് # ടാബുകളും}}</translation>
 <translation id="5548606607480005320">സുരക്ഷാ പരിശോധന</translation>
+<translation id="5548644592758170183">ഇടത് വശത്ത് കാണിക്കുക</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">കീബോർഡും ടെക്‌സ്റ്റ് ഇൻപുട്ടും</translation>
 <translation id="5553089923092577885">സര്‍‌ട്ടിഫിക്കറ്റ് നയ മാപ്പിംഗുകള്‍‌</translation>
@@ -5573,6 +5580,7 @@
 <translation id="6406303162637086258">ബ്രൗസർ പുനരാരംഭിക്കൽ പരീക്ഷിക്കുക</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6406708970972405507">ക്രമീകരണം - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">നിങ്ങളുടെ പാസ്‍വേഡ് മാറ്റാൻ സഹായിക്കുന്നതിന് Google Assistant-നെ അനുവദിക്കൂ</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> എന്നിവയിലെ നിങ്ങളുടെ ഡാറ്റ വായിക്കുക, മാറ്റുക</translation>
 <translation id="6410257289063177456">ചിത്ര ഫയലുകള്‍</translation>
 <translation id="6410328738210026208">ചാനലും പവർവാഷും മാറ്റുക</translation>
@@ -5956,6 +5964,7 @@
 <translation id="6781978626986383437">Linux ബാക്കപ്പ് റദ്ദാക്കി</translation>
 <translation id="6782067259631821405">പിൻ അസാധുവാണ്</translation>
 <translation id="6784523122863989144">പ്രൊഫൈലിന് പിന്തുണയുണ്ട്</translation>
+<translation id="6785872064505734160">Chrome-ലെ Google Assistant-ന് വെബ്‌സൈറ്റുകളിലുടനീളം നിങ്ങൾക്കായി പ്രവർത്തനങ്ങൾ പൂർത്തിയാക്കാനാവും</translation>
 <translation id="6786747875388722282">വിപുലീകരണങ്ങള്‍</translation>
 <translation id="6787097042755590313">മറ്റ് ടാബ്</translation>
 <translation id="6787839852456839824">കീബോർഡ് കുറുക്കുവഴികൾ</translation>
@@ -8199,6 +8208,7 @@
 <translation id="8980345560318123814">ഫീഡ്ബാക്ക് റിപ്പോർട്ടുകൾ</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - ക്രാഷായി</translation>
 <translation id="8981825781894055334">പേപ്പർ കുറവാണ്</translation>
+<translation id="8983018820925880511">പുതിയ ഈ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആയിരിക്കും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> എന്നതിന് <ph name="FILENAME" /> എഡിറ്റ് ചെയ്യാനാവും</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> മിനിറ്റ് നേരത്തേക്ക് എല്ലാവർക്കും നിങ്ങളെ കാണാനാകും. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook-നുള്ള Steam-ലേക്ക് സ്വാഗതം</translation>
@@ -8295,6 +8305,7 @@
 <translation id="9075413375877487220">ഈ വിപുലീകരണം, മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗിന് വിശ്വസനീയമല്ല.</translation>
 <translation id="9076283476770535406">ഇതിൽ മുതിർന്നവർക്കുള്ള ഉള്ളടക്കം ഉണ്ടായിരിക്കാം</translation>
 <translation id="9076523132036239772">ക്ഷമിക്കുക, നിങ്ങളുടെ ഇമെയിലോ പാസ്‌വേഡോ പരീശോധിച്ചുറപ്പിക്കാൻ കഴിഞ്ഞില്ല. ആദ്യം ഒരു നെറ്റ്‍വര്‍ക്കിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുക.</translation>
+<translation id="9076821103818989526">സൈഡ് പാനൽ</translation>
 <translation id="9076977315710973122">SMB പങ്കിടൽ</translation>
 <translation id="9078193189520575214">മാറ്റങ്ങൾ ബാധകമാക്കുന്നു...</translation>
 <translation id="9078316009970372699">തൽക്ഷണ ടെതറിംഗ് പ്രവർത്തനരഹിതമാക്കുക</translation>

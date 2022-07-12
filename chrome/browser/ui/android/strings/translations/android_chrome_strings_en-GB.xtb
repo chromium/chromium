@@ -219,7 +219,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="214888715418183969">Choose what you’re comfortable sharing with Chrome. The metrics that you share will be used to help improve Chrome’s features, performance and stability.</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2155214902713132423">This verification method isn’t available for this device. Pick a different option on your other device.</translation>
-<translation id="2157851137955077194">To share something from your phone to another device, turn on sync in Chrome settings on both devices</translation>
 <translation id="2158408438301413340">Chrome couldn’t check all passwords</translation>
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">Image descriptions are off</translation>
@@ -663,7 +662,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4678082183394354975">Dark theme for sites is on in Chrome</translation>
 <translation id="4684427112815847243">Sync everything</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
-<translation id="4696983787092045100">Send text to Your Devices</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4719927025381752090">Offer to translate</translation>
 <translation id="4720023427747327413">Open in <ph name="PRODUCT_NAME" /></translation>
@@ -1471,7 +1469,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8873817150012960745">Tap here to start</translation>
 <translation id="8881973373982641723">Clears history, including in the search box.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.</translation>
-<translation id="889338405075704026">Go to Chrome settings</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8906502871739599113">Reaction duplicated</translation>
 <translation id="8909135823018751308">Share…</translation>
@@ -1499,7 +1496,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
-<translation id="9028914725102941583">Turn on sync to share across devices</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Videos}}</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9050666287014529139">Passphrase</translation>

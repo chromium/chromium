@@ -1279,6 +1279,7 @@
 <translation id="2180620921879609685">封鎖任何頁面上的內容</translation>
 <translation id="2182058453334755893">已複製至剪貼簿</translation>
 <translation id="2184515124301515068">允許 Chrome 選擇何時讓網站播放音效 (建議)</translation>
+<translation id="2186206192313702726">Google 智能鏡頭</translation>
 <translation id="2186711480981247270">由其他裝置分享的頁面</translation>
 <translation id="2187675480456493911">此網絡已與您帳戶上的其他裝置同步。系統不會同步處理其他使用者修改的設定。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
@@ -5587,6 +5588,7 @@
 <translation id="6406303162637086258">模擬瀏覽器重新啟動</translation>
 <translation id="6406506848690869874">同步處理</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">讓「Google 助理」助您變更密碼</translation>
 <translation id="6408118934673775994">讀取及變更您在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 網站上的資料</translation>
 <translation id="6410257289063177456">圖片檔</translation>
 <translation id="6410328738210026208">變更版本並執行 Powerwash</translation>
@@ -5970,6 +5972,7 @@
 <translation id="6781978626986383437">已取消 Linux 備份</translation>
 <translation id="6782067259631821405">PIN 無效</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
+<translation id="6785872064505734160">Chrome 的「Google 助理」可助您完成各網站的操作</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787097042755590313">其他分頁</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>

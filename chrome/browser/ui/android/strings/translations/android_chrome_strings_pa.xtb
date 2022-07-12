@@ -218,7 +218,6 @@
 <translation id="214888715418183969">ਚੁਣੋ ਕਿ ਜਿਸ ਨਾਲ ਤੁਸੀਂ Chrome ਨਾਲ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨ ਵਿੱਚ ਸਹਿਜ ਹੋ। ਤੁਹਾਡੇ ਦੁਆਰਾ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਮੈਟਰਿਕਸ Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ, ਪ੍ਰਦਰਸ਼ਨ ਅਤੇ ਸਥਿਰਤਾ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਹਾਇਤਾ ਲਈ ਵਰਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="2149973817440762519">ਬੁੱਕਮਾਰਕ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="2155214902713132423">ਇਹ ਪੁਸ਼ਟੀਕਰਨ ਵਿਧੀ ਇਸ ਡੀਵਾਈਸ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਦੂਜੇ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ ਵੱਖਰਾ ਵਿਕਲਪ ਚੁਣੋ।</translation>
-<translation id="2157851137955077194">ਕਿਸੇ ਚੀਜ਼ ਨੂੰ ਆਪਣੇ ਫ਼ੋਨ ਤੋਂ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਦੋਵੇਂ ਡੀਵਾਈਸਾਂ 'ਤੇ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2158408438301413340">Chrome ਸਾਰੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਿਆ</translation>
 <translation id="2169830938017475061">ਹੁਣੇ</translation>
 <translation id="2172688499998841696">ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਬੰਦ ਹਨ</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ Chrome ਵਿੱਚ ਚਾਲੂ ਹੈ</translation>
 <translation id="4684427112815847243">ਸਭ ਕੁਝ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}}</translation>
-<translation id="4696983787092045100">ਲਿਖਤ ਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="4699172675775169585">ਕੈਚ ਕੀਤੇ ਚਿੱਤਰ ਅਤੇ ਫਾਈਲਾਂ</translation>
 <translation id="4719927025381752090">ਅਨੁਵਾਦ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇੱਥੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="8881973373982641723">ਇਤਿਹਾਸ ਕਲੀਅਰ ਹੋ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਖੋਜ ਬਾਕਸ ਵਿਚਲਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਵੀ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />ਤੁਸੀਂ ਆਪਣੇ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਵੇਂ ਕਰ ਸਕਦੇ ਹੋ:<ph name="END_BOLD" /> ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਦੀ ਸੁਰੱਖਿਆ ਲਈ, ਅਸੀਂ ਸੂਚੀ ਵਿੱਚੋਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਸਵੈਚਲਿਤ-ਮਿਟਾਉਂਦੇ ਹਾਂ ਜੋ 4 ਹਫ਼ਤਿਆਂ ਤੋਂ ਵੱਧ ਪੁਰਾਣੀਆਂ ਹਨ। ਉਹ ਸਾਈਟ ਸੂਚੀ ਵਿੱਚ ਦੁਬਾਰਾ ਦਿਸ ਸਕਦੀ ਹੈ, ਜਿਸ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ। ਜਾਂ ਜੇ ਤੁਸੀਂ ਨਹੀਂ ਚਾਹੁੰਦੇ ਕਿ ਕੋਈ ਸਾਈਟ ਤੁਹਾਡੇ ਲਈ ਦਿਲਚਸਪੀਆਂ ਨੂੰ ਪਰਿਭਾਸ਼ਿਤ ਕਰੇ, ਤਾਂ ਤੁਸੀਂ ਉਸ ਸਾਈਟ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।</translation>
-<translation id="889338405075704026">Chrome ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="8898822736010347272">ਵੈੱਬ 'ਤੇ ਨਵੇਂ ਖਤਰਿਆਂ ਨੂੰ ਲੱਭ ਕੇ ਹਰੇਕ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਕੁਝ ਪੰਨਿਆਂ ਦੇ URL, ਸੀਮਤ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਅਤੇ ਕੁਝ ਨਵੀਂ ਪੰਨਾ ਸਮੱਗਰੀ Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="8906502871739599113">ਪ੍ਰਤਿਕਿਰਿਆ ਡੁਪਲੀਕੇਟ ਕੀਤੀ ਗਈ</translation>
 <translation id="8909135823018751308">ਸ਼ੇਅਰ ਕਰੋ…</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">ਕੋਈ ਹੋਰ ਪ੍ਰਦਾਨਕ ਚੁਣੋ</translation>
 <translation id="8998729206196772491">ਤੁਸੀਂ <ph name="MANAGED_DOMAIN" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਉਸਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਆਪਣੇ Chrome ਡਾਟੇ ਦਾ ਕੰਟਰੋਲ ਦੇ ਰਹੇ ਹੋ। ਤੁਹਾਡਾ ਡਾਟਾ ਸਥਾਈ ਤੌਰ 'ਤੇ ਇਸ ਖਾਤੇ ਨਾਲ ਜੋੜ ਦਿੱਤਾ ਜਾਵੇਗਾ। Chrome ਤੋਂ ਸਾਈਨ-ਆਊਟ ਹੋਣ ਨਾਲ ਤੁਹਾਡਾ ਡਾਟਾ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ, ਪਰ ਇਹ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਸਟੋਰ ਰਹੇਗਾ।</translation>
 <translation id="9022774213089566801">ਅਕਸਰ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ</translation>
-<translation id="9028914725102941583">ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਸਾਂਝਾ ਕਰਨ ਲਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ਵੀਡੀਓ}one{# ਵੀਡੀਓ}other{# ਵੀਡੀਓ}}</translation>
 <translation id="9042893549633094279">ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ</translation>
 <translation id="9050666287014529139">ਪਾਸਫਰੇਜ਼</translation>

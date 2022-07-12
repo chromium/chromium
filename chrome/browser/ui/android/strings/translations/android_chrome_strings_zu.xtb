@@ -218,7 +218,6 @@ Uma usula umlando wakho wokubhrawuza — konke noma okwesayithi elithile — fut
 <translation id="214888715418183969">Khetha lokho onethezeke ngakho ukukwaba ne-Chrome. Ama-metric owabayo azosetshenziselwa ukusiza ukuthuthukisa izici ze-Chrome, ukusebenza, nokuzinza.</translation>
 <translation id="2149973817440762519">Hlela ibhukhimakhi</translation>
 <translation id="2155214902713132423">Le ndlela yokuqinisekisa ayitholakali kule divayisi. Khetha inketho ehlukile kwenye idivayisi yakho.</translation>
-<translation id="2157851137955077194">Ukuze wabelane ngokuthile kusuka efonini yakho kuya kwenye idivayisi, vula ukuvumelanisa kuzilungiselelo ze-Chrome kuwo womabili amadivayisi</translation>
 <translation id="2158408438301413340">I-Chrome ayikwazanga ukuhlola wonke amaphasiwedi</translation>
 <translation id="2169830938017475061">Manje</translation>
 <translation id="2172688499998841696">Izincazelo zesithombe zivaliwe</translation>
@@ -662,7 +661,6 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="4678082183394354975">Itimu emnyama yamasayithi ivuliwe ku-Chrome</translation>
 <translation id="4684427112815847243">Vumelanisa yonke into</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ngaphezulu}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ngaphezulu}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ngaphezulu}}</translation>
-<translation id="4696983787092045100">Thumela umbhalo kumadivayisi akho</translation>
 <translation id="4699172675775169585">Izithombe ezifakwe kunqolobane namafayela</translation>
 <translation id="4719927025381752090">Nika ukuhumusha</translation>
 <translation id="4720023427747327413">Vula ku-<ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenzis
 <translation id="8873817150012960745">Thepha lapha ukuze uqale</translation>
 <translation id="8881973373982641723">Kusula umlando, okufaka phakathi ibhokisi losesho.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Ungayiphatha kanjani idatha yakho:<ph name="END_BOLD" /> Ukuze sivikele ubumfihlo bakho, sisula ngokuzenzakalelayo amasayithi avela ohlwini amadala kunamaviki ama-4. Isayithi olivakashelayo futhi lingase livele futhi ohlwini. Noma ungasusa isayithi uma ungafuni ukuthi lelo sayithi likuchazele okuthakaselayo.</translation>
-<translation id="889338405075704026">Iya kuzilungiselelo ze-Chrome</translation>
 <translation id="8898822736010347272">Thumela ama-URL wamanye amakhasi owavakashelayo, ulwazi lwesistimu olulinganiselwe, nokunye okuqukethe kwekhasi ku-Google, ukusiza ukuthola izingozi ezintsha nokuvikela wonke umuntu kuwebhu.</translation>
 <translation id="8906502871739599113">Ukusabela kwenziwe impinda</translation>
 <translation id="8909135823018751308">Yabelana…</translation>
@@ -1498,7 +1495,6 @@ Amathokheni okuthemba athuthukisa ubumfihlo kuwebhu futhi awakwazi ukusetshenzis
 <translation id="8996847606757455498">Khetha omunye umhlinzeki</translation>
 <translation id="8998729206196772491">Ungena ngemvume nge-akhawunti ephethwe yi-<ph name="MANAGED_DOMAIN" /> futhi unikeza umlawuli ulawulo olungaphezulu kwedatha yakho ye-Chrome. Idatha yakho izohlanganiswa ngunaphakade kule akhawunti. Ukuphuma ngemvume ku-Chrome kuzosusa idatha yakho kusukela kule divayisi, kodwa kuzohlala kugcinwe ku-akhawunti yakho ye-Google.</translation>
 <translation id="9022774213089566801">Okuvakashelwa njalo</translation>
-<translation id="9028914725102941583">Vula ukuvumelanisa ukuze wabelane kuwo wonke amadivayisi</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Ividiyo}one{# Amavidiyo}other{# Amavidiyo}}</translation>
 <translation id="9042893549633094279">Ubumfihlo nokuvikeleka</translation>
 <translation id="9050666287014529139">Umushwana wokungena</translation>

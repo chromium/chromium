@@ -219,7 +219,6 @@
 <translation id="214888715418183969">Изберете какви податоци за користењето сакате да споделувате со Chrome. Метриката што ја споделувате ќе се користи за подобрување на функциите, изведбата и стабилноста на Chrome.</translation>
 <translation id="2149973817440762519">Измени Обележувач</translation>
 <translation id="2155214902713132423">Овој начин на потврда не е достапен за уредов. Изберете друга опција на другиот уред.</translation>
-<translation id="2157851137955077194">За да споделите нешто од телефонот на друг уред, вклучете ја синхронизацијата во поставките за Chrome на двата уреди</translation>
 <translation id="2158408438301413340">Chrome не може да ги провери сите лозинки</translation>
 <translation id="2169830938017475061">Сега</translation>
 <translation id="2172688499998841696">Описите за слики се исклучени.</translation>
@@ -663,7 +662,6 @@
 <translation id="4678082183394354975">Темната тема за сајтови е вклучена во Chrome</translation>
 <translation id="4684427112815847243">Синхронизирај сѐ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Испратете SMS до вашите уреди</translation>
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
 <translation id="4719927025381752090">Понудувај превод</translation>
 <translation id="4720023427747327413">Отвори во <ph name="PRODUCT_NAME" /></translation>
@@ -1471,7 +1469,6 @@
 <translation id="8873817150012960745">Допрете тука за да започнете</translation>
 <translation id="8881973373982641723">Ја брише историјата, вклучително и во полето за пребарување.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Како може да управувате со вашите податоци:<ph name="END_BOLD" /> заради заштита на вашата приватност, автоматски ги бришеме сајтовите од списокот што се постари од 4 седмици. Сајт што ќе го посетите повторно може да се појави на списокот повторно. Можете и да отстраните сајт ако не сакате тој сајт да ги дефинира вашите интереси.</translation>
-<translation id="889338405075704026">Одете во „Поставки за Chrome“</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
 <translation id="8906502871739599113">Реакцијата е дуплирана</translation>
 <translation id="8909135823018751308">Сподели…</translation>
@@ -1499,7 +1496,6 @@
 <translation id="8996847606757455498">Изберете друг одредувач</translation>
 <translation id="8998729206196772491">Се најавувате со сметка управувана од <ph name="MANAGED_DOMAIN" /> и му давате контрола над податоците на Chrome на нејзиниот администратор. Вашите податоци ќе бидат трајно врзани за оваа сметка. Одјавувањето од Chrome ќе ги избрише податоците од уредов, но тие ќе останат зачувани на сметката на Google.</translation>
 <translation id="9022774213089566801">Често посетувани</translation>
-<translation id="9028914725102941583">Вклучете ја синхронизацијата за да споделувате на сите уреди</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# видео}one{# видео}other{# видеа}}</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
 <translation id="9050666287014529139">Пристапна фраза</translation>

@@ -218,7 +218,6 @@
 <translation id="214888715418183969">選擇您想與 Chrome 分享的資料。您分享的數據將有助我們改善 Chrome 的功能、效能和穩定性。</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2155214902713132423">此裝置不支援此驗證方法。請在另一部裝置上採用其他選項。</translation>
-<translation id="2157851137955077194">如要將手機上的內容分享至另一部裝置，請同時在這兩部裝置的 Chrome 設定中開啟同步功能</translation>
 <translation id="2158408438301413340">Chrome 無法檢查所有密碼</translation>
 <translation id="2169830938017475061">現在</translation>
 <translation id="2172688499998841696">圖片描述功能已關閉</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">已在 Chrome 中啟用網站的深色主題背景</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
-<translation id="4696983787092045100">將文字傳送至您的裝置</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720023427747327413">用 <ph name="PRODUCT_NAME" /> 開啟</translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">輕按此處即可開始搜尋</translation>
 <translation id="8881973373982641723">清除記錄 (包括搜尋框中的記錄)。</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />為保障您的私隱，我們會自動刪除清單上超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
-<translation id="889338405075704026">前往 Chrome 設定</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>
 <translation id="8906502871739599113">複製咗反應</translation>
 <translation id="8909135823018751308">共用…</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998729206196772491">您即將登入由 <ph name="MANAGED_DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
-<translation id="9028914725102941583">開啟同步功能，即可在所有裝置上分享內容</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 部影片}other{# 部影片}}</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9050666287014529139">複雜密碼</translation>

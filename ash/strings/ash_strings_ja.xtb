@@ -152,6 +152,7 @@
 <translation id="1771761307086386028">右にスクロール</translation>
 <translation id="1774796056689732716">カレンダー、<ph name="CURRENT_MONTH_YEAR" />、現在 <ph name="DATE" /> が選択されています。</translation>
 <translation id="1787955149152357925">オフ</translation>
+<translation id="1797271123677381264">パスワードをお忘れの場合</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="1812997170047690955">画面上のアイテムを検索します</translation>
 <translation id="1823873187264960516">イーサネット: <ph name="ADDRESS" /></translation>
@@ -609,6 +610,7 @@
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4481530544597605423">ペア設定されていないデバイス</translation>
 <translation id="4505050298327493054">使用中のデスクです。</translation>
+<translation id="450584155212756404">Dev チャンネル</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4518404433291145981">Chromebook のロックを解除するには、先にスマートフォンのロックを解除します</translation>
 <translation id="4527045527269911712">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。</translation>
@@ -876,6 +878,7 @@
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
 <translation id="6064463340679478396">このファイルはもう使用しない</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
+<translation id="6074087755403037157">Beta チャンネル</translation>
 <translation id="6099678161144790572">過去 1 か月以内に編集したファイル</translation>
 <translation id="6103838137565245112">システム</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
@@ -1227,6 +1230,7 @@
 <translation id="8200772114523450471">再開</translation>
 <translation id="8203795194971602413">右クリック</translation>
 <translation id="8209010265547628927">リセット</translation>
+<translation id="8214996719228530800">Canary チャンネル</translation>
 <translation id="8219451629189078428">この間は Chromebook の電源をオンにしておく必要があります。充電器またはアダプタのケーブルが、Chromebook とコンセントの両方にしっかりと接続されていることを確認してください。また、Chromebook の電源をオフにしないでください。</translation>
 <translation id="8236042855478648955">休憩の時間です</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>

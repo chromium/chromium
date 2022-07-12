@@ -1260,6 +1260,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-fi জুড়ুন ...</translation>
 <translation id="2162155940152307086">আপনি সিঙ্ক সেটিংস পৃষ্ঠাটি ছেড়ে গেলে সিঙ্ক করা শুরু হবে</translation>
+<translation id="2162705204091149050">আপনার ব্রাউজার, OS, ডিভাইস, ইনস্টল করা সফ্টওয়্যার এবং ফাইলের ব্যাপারে তথ্য পড়ুন</translation>
 <translation id="2162926944953615670">কোনও ই-সিম (eSIM) প্রোফাইল উপলভ্য নেই</translation>
 <translation id="2163470535490402084">আপনার <ph name="DEVICE_TYPE" />এ সাইন-ইন করতে ইন্টারনেটে কানেক্ট করুন।</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> এবং আরও একটি সুইচ</translation>
@@ -2508,6 +2509,7 @@
 <translation id="3359256513598016054">সার্টিফিকেট নীতি বাধ্যবাধকতা</translation>
 <translation id="3360297538363969800">প্রিন্ট করা গেল না৷ অনুগ্রহ করে আপনার প্রিন্টারটি পরীক্ষা করে আবার চেষ্টা করুন৷</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> আপনার সাথে <ph name="ATTACHMENTS" /> শেয়ার করতে চাইছে।}one{<ph name="DEVICE_NAME" /> আপনার সাথে <ph name="ATTACHMENTS" /> শেয়ার করতে চাইছে।}other{<ph name="DEVICE_NAME" /> আপনার সাথে <ph name="ATTACHMENTS" /> শেয়ার করতে চাইছে।}}</translation>
+<translation id="3363202073972776113">এই নতুন প্রোফাইলটি আপনার সংস্থা দ্বারা ম্যানেজ করা হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">আপনার অ্যাডমিনিস্ট্রেটরের মেসেজ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl অথবা Alt ব্যবহার করুন</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
@@ -2542,6 +2544,7 @@
 <translation id="339722927132407568">আটকে যায়</translation>
 <translation id="3399432415385675819">বিজ্ঞপ্তি অক্ষম করা হবে</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> হার্জ) - একত্রে</translation>
+<translation id="3401484564516348917">আপনার ব্রাউজার, OS, ডিভাইস, ইনস্টল করা সফ্টওয়্যার, রেজিস্ট্রি ভ্যালু এবং ফাইলের ব্যাপারে তথ্য পড়ুন</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{এই ডিভাইসে {COUNT}টি পাসওয়ার্ড সেভ করা আছে}one{এই ডিভাইসে {COUNT}টি পাসওয়ার্ড সেভ করা আছে}other{এই ডিভাইসে {COUNT}টি পাসওয়ার্ড সেভ করা আছে}}</translation>
 <translation id="3402255108239926910">অবতার বেছে নিন</translation>
 <translation id="3402585168444815892">ডেমো মোডে এনরোল করা হচ্ছে</translation>
@@ -2788,6 +2791,7 @@
 <translation id="3627879631695760395"><ph name="APP" /> ইনস্টল করুন...</translation>
 <translation id="3628275722731025472">ব্লুটুথ বন্ধ করুন</translation>
 <translation id="3629631988386925734">Smart Lock চালু করতে আপনার পাসওয়ার্ড লিখুন। পরের বার, আপনার ফোন <ph name="DEVICE_TYPE" /> আনলক করবে। সেটিংসে গিয়ে Smart Lock বন্ধ করতে পারবেন।</translation>
+<translation id="3629664892718440872">এই পছন্দ মনে রাখবেন</translation>
 <translation id="3630132874740063857">আপনার ফোন</translation>
 <translation id="3630995161997703415">যেকোনও সময় ব্যবহার করার জন্য এই সাইটটিকে আপনার শেল্ফে যোগ করুন</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ডিভাইসকে অটোমেটিক রিপোর্ট পাঠানোর অনুমতি দিলে, ChromeOS কোন সমস্যার সমাধান ও ফিচারের উন্নতি করার ব্যাপারে প্রাধান্য দেবে সেই বিষয়ে সিদ্ধান্ত নিতে আমাদের সুবিধা হয়। এই রিপোর্টে ChromeOS ক্র্যাশ হওয়ার মতো বিষয়, আপনি কোন ফিচার ব্যবহার করেন এবং সাধারণত কতটা মেমরি ব্যবহার করেন তা অন্তর্ভুক্ত থাকতে পারে।<ph name="END_PARAGRAPH1" />
@@ -3276,6 +3280,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI ডিভাইসগুলির সম্পূর্ণ নিয়ন্ত্রণ দেওয়া হয়নি</translation>
+<translation id="4087328411748538168">ডানদিকে দেখান</translation>
 <translation id="4089235344645910861">সেটিংস সেভ করা হয়েছে। সিঙ্ক শুরু করা হয়েছে।</translation>
 <translation id="4090103403438682346">যাচাইকৃত অ্যাক্সেস সক্ষম করুন</translation>
 <translation id="4090947011087001172"><ph name="SITE" />-এর জন্য সাইট সম্পর্কিত অনুমতি রিসেট করবেন?</translation>
@@ -3971,6 +3976,7 @@
 <translation id="4779766576531456629">ই-সিম মোবাইল নেটওয়ার্কের নতুন নাম দিন</translation>
 <translation id="4780321648949301421">এইভাবে পৃষ্ঠা সেভ করুন...</translation>
 <translation id="4781443161433589743">আপনার কাছে Chrome-এর সবথেকে মজবুত সুরক্ষা ব্যবস্থা আছে</translation>
+<translation id="4782861709165039462">ডিভাইস হার্ডওয়্যার সুইচ দ্বারা বন্ধ করা সমস্ত মাইক্রোফোন</translation>
 <translation id="4785719467058219317">আপনি এমন একটি নিরাপত্তা কী ব্যবহার করছেন যেটি এই ওয়েবসাইটের সাথে রেজিস্টার করা নেই</translation>
 <translation id="4785914069240823137">ক্রপ করা বাতিল করুন</translation>
 <translation id="4788092183367008521">আপনার নেটওয়ার্ক কানেকশন পরীক্ষা করে আবার চেষ্টা করুন।</translation>
@@ -4738,6 +4744,7 @@
 <translation id="5548075230008247516">সব আইটেম বাছাই করা থেকে বাদ দেওয়া হয়েছে, 'বাছাই' মোড বন্ধ করা হয়েছে।</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" এবং অন্য ১টি ট্যাব}one{"<ph name="TAB_TITLE" />" এবং অন্য #টি ট্যাব}other{"<ph name="TAB_TITLE" />" এবং অন্য #টি ট্যাব}}</translation>
 <translation id="5548606607480005320">নিরাপত্তা সংক্রান্ত পরীক্ষা</translation>
+<translation id="5548644592758170183">বাঁদিকে দেখান</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">কীবোর্ড এবং টেক্সট ইনপুট</translation>
 <translation id="5553089923092577885">সার্টিফিকেট নীতি ম্যাপিং</translation>
@@ -5592,6 +5599,7 @@
 <translation id="6406303162637086258">ব্রাউজার রিস্টার্ট সিমুলেট করুন</translation>
 <translation id="6406506848690869874">সিঙ্ক</translation>
 <translation id="6406708970972405507">সেটিংস - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">আপনার পাসওয়ার্ড পরিবর্তন করতে Google Assistant-এর সাহায্য নিন</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, ও <ph name="WEBSITE_3" /> এ আপনার ডেটা পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="6410257289063177456">ছবি ফাইল</translation>
 <translation id="6410328738210026208">চ্যানেল পরিবর্তন  করুন এবং পাওয়ারওয়াশ করুন</translation>
@@ -5977,6 +5985,7 @@
 <translation id="6781978626986383437">Linux ব্যাক-আপ বাতিল করা হয়েছে</translation>
 <translation id="6782067259631821405">ভুল পিন</translation>
 <translation id="6784523122863989144">প্রোফাইল ব্যবহার করা যাবে</translation>
+<translation id="6785872064505734160">Chrome-এ Google Assistant আপনার হয়ে সমস্ত ওয়েবসাইটে বিভিন্ন অ্যাকশন সম্পূর্ণ করতে পারে</translation>
 <translation id="6786747875388722282">এক্সটেনশানসমূহ</translation>
 <translation id="6787097042755590313">অন্য ট্যাব</translation>
 <translation id="6787839852456839824">কীবোর্ড শর্টকাটগুলি</translation>
@@ -8222,6 +8231,7 @@
 <translation id="8980345560318123814">মতামতের রিপোর্ট</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - ক্র্যাশ করেছে</translation>
 <translation id="8981825781894055334">প্রিন্ট করার কাগজ কমে এসেছে</translation>
+<translation id="8983018820925880511">এই নতুন প্রোফাইলটি <ph name="DOMAIN" /> দ্বারা ম্যানেজ করা হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />-এর কাছে <ph name="FILENAME" /> ফাইল এডিট করার অনুমতি আছে</translation>
 <translation id="8984694057134206124">আপনাকে <ph name="MINUTES" /> মিনিটের জন্য সবাই দেখতে পাবে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook-এর Steam-এ স্বাগত</translation>
@@ -8318,6 +8328,7 @@
 <translation id="9075413375877487220">এই এক্সটেনশনটি উন্নত Safe Browsing-এর কাছে বিশ্বাসযোগ্য নয়।</translation>
 <translation id="9076283476770535406">এতে প্রাপ্তবয়স্কদের উপযোগী কন্টেন্ট থাকতে পারে</translation>
 <translation id="9076523132036239772">আপনার ইমেল আইডি বা পাসওয়ার্ড যাচাই করা যায়নি৷ প্রথমে একটি নেটওয়ার্কের সঙ্গে সংযোগ করার চেষ্টা করুন৷</translation>
+<translation id="9076821103818989526">সাইড প্যানেল</translation>
 <translation id="9076977315710973122">SMB শেয়ার করা</translation>
 <translation id="9078193189520575214">পরিবর্তনগুলি প্রয়োগ করা হচ্ছে…</translation>
 <translation id="9078316009970372699">ইনস্ট্যান্ট টিথারিং বন্ধ করুন</translation>

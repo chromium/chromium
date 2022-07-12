@@ -1281,6 +1281,7 @@
 <translation id="2180620921879609685">Блокирајте содржини на која било страница</translation>
 <translation id="2182058453334755893">Копирано во привремената меморија</translation>
 <translation id="2184515124301515068">Дозволете му на Chrome да избира кога сајтовите може да пуштаат звук (се препорачува)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Страница споделена од друг уред</translation>
 <translation id="2187675480456493911">Синхронизирано со други уреди на вашата сметка. Поставките што другите корисници ги измениле нема да се синхронизираат. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Грешка при увезување сертификат на сервер</translation>
@@ -5597,6 +5598,7 @@
 <translation id="6406303162637086258">Симулирај рестартирање на прелистувач</translation>
 <translation id="6406506848690869874">Синхронизација</translation>
 <translation id="6406708970972405507">Поставки - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Дозволете „Помошникот на Google“ да ви помогне да ја смените лозинката</translation>
 <translation id="6408118934673775994">Прочитајте ги и променете ги вашите податоци на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Датотеки со слики</translation>
 <translation id="6410328738210026208">Промени канал и ресетирај до фабрички вредности</translation>
@@ -5982,6 +5984,7 @@
 <translation id="6781978626986383437">Бекапот на Linux е откажан</translation>
 <translation id="6782067259631821405">Погрешен PIN</translation>
 <translation id="6784523122863989144">Профилот е поддржан</translation>
+<translation id="6785872064505734160">„Помошникот на Google“ во Chrome може да извршува дејства за вас на веб-сајтовите</translation>
 <translation id="6786747875388722282">Наставки</translation>
 <translation id="6787097042755590313">Друга картичка</translation>
 <translation id="6787839852456839824">Кратенки на тастатура</translation>

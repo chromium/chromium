@@ -3092,13 +3092,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4228745249339680042">Menyetel kebijakan ini akan menentukan URL dan domain yang tidak menampilkan perintah saat sertifikat pengesahan dari Kunci Keamanan diminta. Sinyal juga dikirimkan ke Kunci Keamanan yang menunjukkan bahwa pengesahan individu dapat digunakan. Jika tidak disetel, pengguna akan dimintai pengesahan Kunci Keamanan di <ph name="PRODUCT_NAME" /> versi 65 dan yang lebih baru saat situs memintanya.
 
       URL hanya akan cocok sebagai appID U2F. Domain hanya cocok sebagai ID webauthn RP. Oleh karena itu, untuk mencakup API U2F dan webauthn, cantumkan domain dan URL appID untuk situs tertentu.</translation>
-<translation id="4239112794240794697">Kebijakan ini memberi Projector izin untuk membuat dan mentranskripsikan rekaman layar dan mengupload ke Drive bagi pengguna versi bisnis.
-      Kebijakan ini tidak memengaruhi pengguna Family Link.
-      Kebijakan ini tidak memengaruhi kebijakan <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> bagi pengguna Family Link.
-
-      Jika kebijakan ini disetel ke aktif, Projector akan diaktifkan.
-      Jika kebijakan ini disetel ke nonaktif, Projector akan dinonaktifkan.
-      Jika kebijakan ini tidak disetel, Projector akan dinonaktifkan secara default.</translation>
 <translation id="4239720644496144453">Cache tidak digunakan untuk aplikasi Android. Jika beberapa pengguna memasang aplikasi Android yang sama, aplikasi akan didownload lagi untuk setiap pengguna.</translation>
 <translation id="4247914291127524388">Jika kebijakan disetel ke Aktif, sinkronisasi <ph name="GOOGLE_DRIVE_NAME" /> di aplikasi File <ph name="PRODUCT_OS_NAME" /> akan dinonaktifkan saat terhubung melalui koneksi seluler. Data hanya disinkronkan ke Drive saat terhubung melalui Wi-Fi atau Ethernet.
 
@@ -4646,13 +4639,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menukarkan penawaran ini.</translation>
 <translation id="6046615715547751255">Jangan izinkan kontrol pelaporan terperinci</translation>
 <translation id="6048199181629830227">Mengaktifkan fitur manajemen pengaktifan daya baterai</translation>
-<translation id="6052730367191220066">Aktifkan migrasi perangkat yang dikelola <ph name="MS_AD_NAME" /> ke pengelolaan cloud. Kebijakan ini memungkinkan migrasi nirsentuh beberapa perangkat di perusahaan untuk dimulai dari jarak jauh. Selain itu, proses migrasi akan dibuat setransparan mungkin bagi pengguna akhir.
-
-      Jika kebijakan ini disetel ke aktif dan ID pendaftaran telah diupload ke DMServer, powerwash di perangkat akan diaktifkan dari jarak jauh.
-
-      Jika kebijakan ini disetel ke nonaktif, powerwash di perangkat tidak akan dimulai dari jarak jauh, terlepas dari status upload ID pendaftaran.
-
-      Pemeriksaan ini dipicu setiap kali layar login dimuat, lalu dicoba lagi setiap jam (jika perangkat tetap berada di layar login). Tindakan ini mencegah migrasi dimulai di tengah-tengah sesi pengguna, yang akan menyebabkan potensi masalah bagi pengguna akhir.</translation>
 <translation id="6053681087509103368">Izinkan WebRTC menggunakan versi protokol TLS/DTLS yang usang</translation>
 <translation id="6058879286588763839">Menyetel <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> akan menentukan kebijakan pengelolaan daya mode pengisian daya baterai (jika didukung di perangkat), kecuali <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> yang menggantikan <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> ditentukan. Untuk memperpanjang masa pakai baterai, kebijakan secara dinamis mengontrol pengisian daya baterai dengan meminimalkan ketegangan dan keausan.
 
@@ -6255,11 +6241,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7687943045976362719">Jika kebijakan ini ditetapkan, jenis konten yang ditentukan akan ditangani oleh <ph name="PRODUCT_FRAME_NAME" />.
 
           Jika kebijakan ini tidak ditetapkan, perender default akan digunakan untuk semua situs. (Kebijakan <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> dapat digunakan untuk mengonfigurasi perender default.)</translation>
-<translation id="7694245791806617022">Mengontrol apakah fitur 'Ingat sandi' diaktifkan di dialog autentikasi Kerberos. Sandi disimpan dan dienkripsi di disk, serta hanya dapat diakses oleh daemon sistem Kerberos dan selama sesi pengguna.
-
-          Jika kebijakan ini diaktifkan atau tidak disetel, pengguna dapat menentukan apakah sandi Kerberos akan diingat, sehingga Anda tidak perlu memasukkannya lagi. Tiket Kerberos diambil secara otomatis, kecuali diperlukan autentikasi tambahan (autentikasi 2 langkah).
-
-          Jika kebijakan ini dinonaktifkan, sandi tidak akan pernah diingat dan semua sandi yang disimpan sebelumnya akan dihapus. Pengguna harus memasukkan sandinya setiap kali mereka perlu melakukan autentikasi dengan sistem Kerberos. Hal ini biasanya terjadi antara setiap 8 jam hingga beberapa bulan, tergantung pada setelan server.</translation>
 <translation id="7694807474048279351">Menjadwalkan mulai ulang otomatis setelah pembaruan <ph name="PRODUCT_OS_NAME" /> diterapkan.
 
       Saat kebijakan ini disetel ke true, mulai ulang otomatis akan dijadwalkan saat pembaruan <ph name="PRODUCT_OS_NAME" /> diterapkan dan diperlukan mulai ulang untuk menyelesaikan proses pembaruan. Mulai ulang dijadwalkan langsung namun mungkin ditunda di perangkat hingga 24 jam jika pengguna sedang menggunakan perangkat.

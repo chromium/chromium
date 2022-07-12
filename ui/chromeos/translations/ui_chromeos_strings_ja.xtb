@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">ハングル（ローマ字式）</translation>
 <translation id="112387589102719461">英語（アメリカ）（Programmer Dvorak）キーボード</translation>
 <translation id="1134697384939541955">英語（アメリカ）（拡張）キーボード</translation>
+<translation id="1138691154716715755">今月</translation>
 <translation id="1148097584170732637"><ph name="FILE_COUNT" />が見つかりました。
     <ph name="LINE_BREAK1" />
     ローカル ストレージに十分な空き容量がありません。あと <ph name="FILE_SIZE" /> 必要です。
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
 <translation id="4387004326333427325">認証証明書がリモートで拒否されました</translation>
 <translation id="4394214039309501350">外部リンク</translation>
+<translation id="4394980935660306080">今週</translation>
 <translation id="4401287888955153199">すべて解凍</translation>
 <translation id="4410695710508688828">抽出操作が失敗しました。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">ファイルのショートカットを作成</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">「<ph name="PATH" />」を開いています</translation>
 <translation id="4720185134442950733">モバイルデータ ネットワーク</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> 枚の写真をバックアップしました</translation>
+<translation id="4725096204469550614">今年</translation>
 <translation id="4725511304875193254">コーギー</translation>
 <translation id="4737050008115666127">滑走路</translation>
 <translation id="4747271164117300400">マケドニア語</translation>

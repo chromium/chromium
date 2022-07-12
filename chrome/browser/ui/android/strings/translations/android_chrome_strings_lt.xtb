@@ -218,7 +218,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="214888715418183969">Pasirinkite, ką norėtumėte bendrinti su „Chrome“. Jūsų bendrinama metrika bus naudojama „Chrome“ funkcijoms, našumui ir stabilumui tobulinti.</translation>
 <translation id="2149973817440762519">Redaguoti žymes</translation>
 <translation id="2155214902713132423">Šis patvirtinimo metodas šiame įrenginyje nepasiekiamas. Pasirinkite kitą parinktį kitame įrenginyje.</translation>
-<translation id="2157851137955077194">Norėdami bendrinti turinį iš savo telefono į kitą įrenginį, įjunkite sinchronizavimą abiejų įrenginių „Chrome“ nustatymuose</translation>
 <translation id="2158408438301413340">„Chrome“ nepavyko patikrinti visų slaptažodžių</translation>
 <translation id="2169830938017475061">Dabar</translation>
 <translation id="2172688499998841696">Vaizdų aprašai išjungti</translation>
@@ -662,7 +661,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4678082183394354975">Tamsioji tema, skirta svetainėms, įjungta sistemoje „Chrome“</translation>
 <translation id="4684427112815847243">Viską sinchronizuoti</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Siųsti teksto pranešimą savo įrenginiams</translation>
 <translation id="4699172675775169585">Talpykloje esantys vaizdai ir failai</translation>
 <translation id="4719927025381752090">Siūlyti versti</translation>
 <translation id="4720023427747327413">Atidaryti naudojant „<ph name="PRODUCT_NAME" />“</translation>
@@ -1470,7 +1468,6 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="8873817150012960745">Palieskite čia, kad pradėtumėte</translation>
 <translation id="8881973373982641723">Išvaloma istorija, įskaitant paieškos laukelį.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti savo duomenis:<ph name="END_BOLD" /> siekdami apsaugoti jūsų privatumą, automatiškai ištriname svetaines iš senesnių nei 4 savaičių sąrašų. Dar kartą aplankyta svetainė gali vėl atsirasti sąraše. Arba galite pašalinti svetainę, jei nenorite, kad ji nustatinėtų jūsų pomėgius ateityje.</translation>
-<translation id="889338405075704026">Eiti į „Chrome“ nustatymus</translation>
 <translation id="8898822736010347272">„Google“ siunčiami kai kurių lankomų puslapių URL, ribota sistemos informacija ir kai kurių puslapių turinys, kad būtų galima aptikti naujas grėsmes ir apsaugoti visus žiniatinklio naudotojus.</translation>
 <translation id="8906502871739599113">Pateikta tiksli reakcijos kopija</translation>
 <translation id="8909135823018751308">Bendrinti…</translation>
@@ -1498,7 +1495,6 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="8996847606757455498">Pasirinkti kitą teikėją</translation>
 <translation id="8998729206196772491">Prisijungiate naudodami „<ph name="MANAGED_DOMAIN" />“ tvarkomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chrome“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chrome“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
 <translation id="9022774213089566801">Dažnai lankytasi</translation>
-<translation id="9028914725102941583">Įjunkite sinchronizavimą, kad galėtumėte bendrinti turinį įrenginiuose</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vaizdo įrašas}one{# vaizdo įrašas}few{# vaizdo įrašai}many{# vaizdo įrašo}other{# vaizdo įrašų}}</translation>
 <translation id="9042893549633094279">Privatumas ir sauga</translation>
 <translation id="9050666287014529139">Slaptafrazė</translation>

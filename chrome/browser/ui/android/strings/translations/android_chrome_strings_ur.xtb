@@ -218,7 +218,6 @@
 <translation id="214888715418183969">‏منتخب کریں کہ Chrome کے ساتھ کون سی معلومات کا اشتراک کرنے کے لیے آپ مطمئن ہیں۔ آپ کی اشتراک کی جانے والی میٹرکس کا استعمال Chrome کی خصوصیات، کارکردگی اور استحکام کو بہتر بنانے کے لئے کیا جائے گا۔</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2155214902713132423">توثیق کا یہ طریقہ اس آلے کے لیے دستیاب نہیں ہے۔ اپنے دوسرے آلے پر ایک مختلف اختیار منتخب کریں۔</translation>
-<translation id="2157851137955077194">‏اپنے فون سے کسی دوسرے آلہ پر کسی چیز کا اشتراک کرنے کے لیے، دونوں آلات پر Chrome کی ترتیبات میں مطابقت پذیری کو آن کریں</translation>
 <translation id="2158408438301413340">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا</translation>
 <translation id="2169830938017475061">ابھی</translation>
 <translation id="2172688499998841696">تصویر کی تفصیلات آف ہیں</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">‏Chrome میں سائٹس کیلئے گہری تھیم آن ہے</translation>
 <translation id="4684427112815847243">ہر چیز کی مطابقت پذیری کریں</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}}</translation>
-<translation id="4696983787092045100">اپنے آلات پر متن بھیجیں</translation>
 <translation id="4699172675775169585">کیش کردہ تصاویر اور فائلیں</translation>
 <translation id="4719927025381752090">ترجمہ کرنے کی پیشکش</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> میں کھولیں</translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">شروع کرنے کیلئے یہاں تھپتھپائیں</translation>
 <translation id="8881973373982641723">تلاش کے خانے میں موجود سرگزشت سمیت سرگزشت کو صاف کرتی ہے۔</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />آپ کس طرح اپنے ڈیٹا کا نظم کر سکتے ہیں:<ph name="END_BOLD" /> آپ کی رازداری کے تحفظ کے لئے، ہم فہرست کی 4 ہفتے سے زیادہ پرانی سائٹس کو خودکار طور پر حذف کر دیتے ہیں۔ اگر کوئی سائٹ آپ دوبارہ ملاحظہ کرتے ہیں تو وہ فہرست میں دوبارہ نظر آ سکتی ہے۔ یا آپ سائٹ کو ہٹا سکتے ہیں اگر آپ نہیں چاہتے ہیں کہ وہ سائٹ آپ کی دلچسپیوں کا کبھی بھی تعین کرے۔</translation>
-<translation id="889338405075704026">‏Chrome کی ترتیبات میں جائیں</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
 <translation id="8906502871739599113">ردعمل کو عمل ڈپلیکیٹ بنایا گیا</translation>
 <translation id="8909135823018751308">اشتراک کریں…</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">کسی دوسرے فراہم کنندہ کا انتخاب کریں</translation>
 <translation id="8998729206196772491">‏آپ <ph name="MANAGED_DOMAIN" /> کے زیر انتظام اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chrome ڈیٹا پر کنٹرول دے رہے ہیں۔ آپ کا ڈیٹا اس اکاؤنٹ سے مستقل طور پر مربوط ہو جائے گا۔ Chrome سے سائن آؤٹ کرنے سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن یہ آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>
 <translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
-<translation id="9028914725102941583">سبھی آلات پر اشتراک کرنے کے لیے مطابقت پذیری کو آن کریں</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ویڈیو}other{# ویڈیوز}}</translation>
 <translation id="9042893549633094279">رازداری اور سیکیورٹی</translation>
 <translation id="9050666287014529139">پاس فریز</translation>

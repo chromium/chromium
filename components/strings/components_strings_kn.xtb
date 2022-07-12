@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="1264309058268477500">ಪರ್ಯಾಯ</translation>
 <translation id="1264974993859112054">ಕ್ರೀಡೆ</translation>
+<translation id="1266469291454105242">ಸಾಧನದ ಅನ್‌ಲಾಕ್</translation>
 <translation id="1269516672602708785">Google Sites ನಲ್ಲಿ ತ್ವರಿತವಾಗಿ ಹೊಸ ಸೈಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="1270502636509132238">ಪಿಕಪ್ ವಿಧಾನ</translation>
 <translation id="1281476433249504884">ಸ್ಟ್ಯಾಕರ್ 1</translation>
@@ -329,6 +330,7 @@
 <translation id="1753068535428855445">ಡೇಟಿಂಗ್ ಮತ್ತು ಪರ್ಸನಲ್ಸ್</translation>
 <translation id="1753706481035618306">ಪುಟ ಸಂಖ್ಯೆ</translation>
 <translation id="1755621011177747277">ದತ್ತು ಸ್ವೀಕಾರ</translation>
+<translation id="1756026472674246267">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="175656076281618225">ಮ್ಯಾಜಿಕ್</translation>
 <translation id="1757773103848038814">ಮೊನೋಸ್ಪೇಸ್ ಫಾಂಟ್</translation>
 <translation id="1763864636252898013">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು ನಿಮ್ಮ ಸಾಧನದ ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಂ‌ ಪ್ರಕಾರ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
@@ -454,6 +456,7 @@
 <translation id="214556005048008348">ಪಾವತಿಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="2148613324460538318">ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="2149968176347646218">ಕನೆಕ್ಷನ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
+<translation id="2153609454945889823">Google Play Services for AR ಗಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="2154054054215849342">ಸಿಂಕ್ ಸೇವೆಯು ನಿಮ್ಮ ಡೊಮೇನ್‌ಗೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="2154484045852737596">ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2161656808144014275">ಪಠ್ಯ</translation>
@@ -829,6 +832,7 @@
 <translation id="3229277193950731405">ಆವೃತ್ತಿ ಸ್ಟ್ರಿಂಗ್ ಅನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> ಗೆ CVC ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3234666976984236645">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಯಾವಾಗೂ ಮುಖ್ಯ ವಿಷಯವನ್ನು ಹುಡುಕಿ</translation>
+<translation id="3238395604961564389">ಲಿಂಕ್‌ ಅನ್ನು ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನ ನೋಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="3240791268468473923">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತಿಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಯಾವುದೇ ರುಜುವಾತು ಶೀಟ್ ಅನ್ನು ತೆರೆಯಲಾಗಿಲ್ಲ</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” ಲಿಂಕ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -942,6 +946,7 @@
 <translation id="3531780078352352885">ಜಾಬ್ ಶೀಟ್‌ಗಳು</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="3533328374079021623">ಮೇಲ್‌ಬಾಕ್ಸ್ 5</translation>
+<translation id="3542768452570884558">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="3550112004925580947">ಹಾಸ್ಪಿಟಾಲಿಟಿ ಉದ್ಯಮ</translation>
 <translation id="3552297013052089404">ಸ್ಯಾನ್ಸ್ ಸೆರಿಫ್ ಫಾಂಟ್</translation>
 <translation id="3558573058928565255">ದಿನದ ಸಮಯ</translation>
@@ -1111,11 +1116,13 @@
 <translation id="4040350669425716613">ಕಾಲೇಜುಗಳು ಮತ್ತು ವಿಶ್ವವಿದ್ಯಾನಿಲಯಗಳು</translation>
 <translation id="4056223980640387499">ಸೆಪಿಯಾ</translation>
 <translation id="4058922952496707368">ಕೀ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಲು ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಿ</translation>
 <translation id="4067098466788473230">ಅಧ್ಯಯನ ಅನುದಾನಗಳು ಮತ್ತು ವಿದ್ಯಾರ್ಥಿವೇತನಗಳು</translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">ಮಾನ್ಯವಾದ ವಿಳಾಸ ಸೇರಿಸಿ</translation>
 <translation id="4072193657607981494">ನೀತಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4072486802667267160">ನಿಮ್ಮ ಆರ್ಡ‌ರ್ ಅನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4073376909608563327">ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="4073797364926776829">ಕಾರ್ಡ್ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="4075732493274867456">ಸಾಮಾನ್ಯ SSL ಪ್ರೊಟೋಕಾಲ್ ಆವೃತ್ತಿ ಅಥವಾ ಸೈಫರ್ ಸ್ಯೂಟ್ ಅನ್ನು ಕ್ಲೈಂಟ್ ಮತ್ತು ಸರ್ವರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="4079302484614802869">ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಬಳಸುವಂತೆ ಹೊಂದಿಸಲಾಗಿದೆ, ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳಲ್ಲ.</translation>
@@ -1408,6 +1415,7 @@
 <translation id="4840250757394056958">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="484462545196658690">ಆಟೋ</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ಮತ್ತು ಇತ್ಯಾದಿಗಳ ಮೇಲೆ ರಿಯಾಯಿತಿ ಪಡೆಯಿರಿ</translation>
+<translation id="484988093836683706">ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಿ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
 <translation id="4852429274334674023">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್‌ಗಳು</translation>
 <translation id="485316830061041779">ಜರ್ಮನ್</translation>
@@ -1795,6 +1803,7 @@
 <translation id="5921185718311485855">ಆನ್</translation>
 <translation id="5921639886840618607">Google ಖಾತೆಯಲ್ಲಿ ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಬೇಕೇ?</translation>
 <translation id="5922853866070715753">ಬಹುತೇಕ ಮುಗಿದಿದೆ</translation>
+<translation id="5923492272538889093">CVC ಬದಲಾಗಿ ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸಿ?</translation>
 <translation id="5928444777041341328">ಮನೆ ಮತ್ತು ಉದ್ಯಾನವನ</translation>
 <translation id="5932224571077948991">ಅತಿಕ್ರಮಣಕಾರಿಯಾಗಿರುವ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ಸೈಟ್ ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="5937560539988385583">ಪುಟವನ್ನು ಅನುವಾದಿಸಲಾಗಿದೆ</translation>
@@ -1967,6 +1976,7 @@
 <translation id="643051589346665201">Google ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6433490469411711332">ಸಂಪರ್ಕ ಮಾಹಿತಿ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ಸಂಪರ್ಕಗೊಳ್ಳಲು ನಿರಾಕರಿಸಿದೆ.</translation>
+<translation id="6433797564277305076">ಇನ್ನು ಮುಂದೆ, ಸಾಧನದ ಅನ್‌ಲಾಕ್ ಬಳಸುವ ಮೂಲಕ ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6440503408713884761">ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="6443406338865242315">ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ ವಿಸ್ತರಣೆಗಳು ಮತ್ತು ಪ್ಲಗ್‌ಇನ್‌ಗಳು</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -2173,6 +2183,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ಇದೀಗ ಈ ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}one{ಇದೀಗ ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}other{ಇದೀಗ ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}}</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> ಈ ವೆಬ್‌ಸೈಟ್‌ನ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೀಡಿದೆ ಎಂದು <ph name="BROWSER" /> ಪರಿಶೀಲಿಸಿದೆ.</translation>
+<translation id="7058774143982824355">CSV ಪಾಸ್‌ವರ್ಡ್ ವಿಶ್ಲೇಷಕ ಸೇವೆ</translation>
 <translation id="7061777300866737982">ಗೃಹ ಸುರಕ್ಷತೆ ಮತ್ತು ಭದ್ರತೆ</translation>
 <translation id="7062635574500127092">ಗಾಢ ಹಸಿರು-ನೀಲಿ</translation>
 <translation id="706295145388601875">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ವಿಳಾಸಗಳನ್ನು ಸೇರಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
@@ -2436,6 +2447,7 @@
 <translation id="7696089921647603491">ಕ್ಲಾಸಿಕ್ ರಾಕ್ ಮತ್ತು ಓಲ್ಡೀಸ್</translation>
 <translation id="7697066736081121494">Prc8 (Envelope)</translation>
 <translation id="769721561045429135">ಸದ್ಯಕ್ಕೆ, ಈ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದಾದ ಕಾರ್ಡ್‌ಗಳನ್ನು ಮಾತ್ರವೇ ನೀವು ಹೊಂದಿದ್ದೀರಿ. ಕಾರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಮುಂದುವರಿಸಿ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
+<translation id="7698864304447945242">Google Play Services for AR ಗಾಗಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="7699293099605015246">ಲೇಖನಗಳು ಸದ್ಯಕ್ಕೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="7701040980221191251">ಯಾವುದೂ ಇಲ್ಲ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> ಗೆ (ಅಸುರಕ್ಷಿತ) ಮುಂದುವರೆಸು<ph name="END_LINK" /></translation>
@@ -2448,6 +2460,7 @@
 <translation id="7723047071702270851">ಕಾರ್ಡ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="7734285854693414638">Google Forms ನಲ್ಲಿ ಹೊಸ ಫಾರ್ಮ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="773466115871691567">ಯಾವಾಗಲು <ph name="SOURCE_LANGUAGE" /> ನಲ್ಲಿನ ಪುಟಗಳನ್ನು ಅನುವಾದ ಮಾಡಿ</translation>
+<translation id="7736959720849233795">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="7740996059027112821">ಪ್ರಮಾಣಿತ</translation>
 <translation id="77424286611022110">ಈ ಸೈಟ್ ಅತಿಕ್ರಮಣಕಾರಿ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸುತ್ತದೆ. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">ಅಪಾಯಕಾರಿ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>

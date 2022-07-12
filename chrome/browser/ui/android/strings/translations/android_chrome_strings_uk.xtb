@@ -218,7 +218,6 @@
 <translation id="214888715418183969">Виберіть, до яких даних надати доступ веб-переглядачу Chrome. Ми використовуватимемо їх, щоб покращувати функції, продуктивність і стабільність Chrome.</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
 <translation id="2155214902713132423">Цей спосіб підтвердження недоступний для цього пристрою. Виберіть інакший спосіб на іншому пристрої.</translation>
-<translation id="2157851137955077194">Щоб файли з вашого телефона були доступними на іншому вашому пристрої, увімкніть синхронізацію в налаштуваннях Chrome на обох пристроях</translation>
 <translation id="2158408438301413340">Chrome не вдалося перевірити всі паролі</translation>
 <translation id="2169830938017475061">Зараз</translation>
 <translation id="2172688499998841696">Описи зображень вимкнено</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">Темну тему для сайтів у веб-переглядачі Chrome увімкнено</translation>
 <translation id="4684427112815847243">Синхронізувати все</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Надіслати SMS на пристрої</translation>
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720023427747327413">Відкрити в <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">Натисніть тут, щоб почати</translation>
 <translation id="8881973373982641723">Буде очищено історію, зокрема в полі пошуку.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Як ви можете керувати своїми даними.<ph name="END_BOLD" /> З міркувань конфіденційності ми автоматично видаляємо сайти зі списку через 4 тижні. Якщо ви знову відвідаєте сайт, він може повторно з’явитися в списку. Ви можете вилучити зі списку сайт, якщо не хочете, щоб за ним визначалися ваші інтереси.</translation>
-<translation id="889338405075704026">Перейти в налаштування Chrome</translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>
 <translation id="8906502871739599113">Реакція повторюється</translation>
 <translation id="8909135823018751308">Надіслати…</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">Вибрати іншого постачальника</translation>
 <translation id="8998729206196772491">Ви входите в обліковий запис, зареєстрований у домені <ph name="MANAGED_DOMAIN" />, і надаєте його адміністратору доступ до своїх даних Chrome. Ваші дані буде назавжди зв’язано з цим обліковим записом. Якщо ви вийдете з облікового запису в Chrome, дані буде видалено з цього пристрою, але вони залишаться у вашому обліковому записі Google.</translation>
 <translation id="9022774213089566801">Часто відвідувані</translation>
-<translation id="9028914725102941583">Увімкніть синхронізацію, щоб файли були доступними на всіх ваших пристроях</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# відео}one{# відео}few{# відео}many{# відео}other{# відео}}</translation>
 <translation id="9042893549633094279">Конфіденційність і безпека</translation>
 <translation id="9050666287014529139">Парольна фраза</translation>

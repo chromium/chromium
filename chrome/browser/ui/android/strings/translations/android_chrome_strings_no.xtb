@@ -218,7 +218,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="214888715418183969">Velg hva du synes er greit å dele med Chrome. Målingene du deler, brukes til å gjøre funksjonene, ytelsen og stabiliteten til Chrome bedre.</translation>
 <translation id="2149973817440762519">Rediger bokmerke</translation>
 <translation id="2155214902713132423">Denne bekreftelsesmåten er ikke tilgjengelig for denne enheten. Velg et annet alternativ på den andre enheten.</translation>
-<translation id="2157851137955077194">For å dele noe på telefonen med en annen enhet, slå på synkronisering i Chrome-innstillingene på begge enhetene</translation>
 <translation id="2158408438301413340">Chrome kunne ikke sjekke alle passordene</translation>
 <translation id="2169830938017475061">Nå</translation>
 <translation id="2172688499998841696">Bildebeskrivelser er av</translation>
@@ -662,7 +661,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4678082183394354975">Mørkt tema for nettsteder er påslått i Chrome</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}other{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}}</translation>
-<translation id="4696983787092045100">Send tekst til enhetene dine</translation>
 <translation id="4699172675775169585">Bufrede bilder og filer</translation>
 <translation id="4719927025381752090">Tilby å oversette</translation>
 <translation id="4720023427747327413">Åpne i <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="8873817150012960745">Trykk her for å begynne</translation>
 <translation id="8881973373982641723">Tømmer loggen, inkludert loggen i søkefeltet.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Slik kan du administrere dataene dine:<ph name="END_BOLD" /> For å beskytte personvernet ditt sletter vi automatisk nettsteder som er eldre enn fire uker, fra listen. Nettsteder du besøker på nytt, kan havne på listen igjen. Alternativt kan du fjerne et nettsted hvis du ikke vil at nettstedet noensinne skal definere interesser for deg.</translation>
-<translation id="889338405075704026">Gå til Chrome-innstillingene</translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
 <translation id="8906502871739599113">Reaksjonen er duplisert</translation>
 <translation id="8909135823018751308">Del</translation>
@@ -1498,7 +1495,6 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="8996847606757455498">Velg en annen leverandør</translation>
 <translation id="8998729206196772491">Du logger på med en konto som administreres av <ph name="MANAGED_DOMAIN" />, og du gir administratoren for dette domenet kontroll over Chrome-dataene dine. Dataene dine blir permanent knyttet til denne kontoen. Når du logger av Chrome, slettes dataene dine fra denne enheten, men de fortsetter å være lagret i Google-kontoen din.</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
-<translation id="9028914725102941583">Slå på synkronisering for å dele på tvers av enheter</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videoer}}</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="9050666287014529139">Passordfrase</translation>

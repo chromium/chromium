@@ -5575,6 +5575,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6406303162637086258">Simuler le redémarrage du navigateur</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6406708970972405507">Paramètres – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Autorisez l'Assistant Google à vous aider à changer de mot de passe</translation>
 <translation id="6408118934673775994">Accéder aux données des sites <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" />, et les modifier</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="6410328738210026208">Changer de version et Powerwash</translation>
@@ -5960,6 +5961,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6781978626986383437">Sauvegarde Linux annulée</translation>
 <translation id="6782067259631821405">Code incorrect</translation>
 <translation id="6784523122863989144">Profil accepté</translation>
+<translation id="6785872064505734160">L'Assistant Google dans Chrome peut effectuer des actions sur les sites Web à votre place</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787097042755590313">Autre onglet</translation>
 <translation id="6787839852456839824">Raccourcis clavier</translation>

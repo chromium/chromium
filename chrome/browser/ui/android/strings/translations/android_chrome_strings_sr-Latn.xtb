@@ -97,6 +97,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="1428770807407000502">Želite da isključite sinhronizaciju?</translation>
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1436784010935106834">Uklonjeno</translation>
+<translation id="1437543266176261764">Koristi <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
 <translation id="1450753235335490080">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Izaberite jezik za Chrome</translation>
@@ -218,7 +219,6 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="214888715418183969">Izaberite šta želite da delite sa Chrome-om. Pokazatelje koje delite koristimo za poboljšanje funkcija, performansi i stabilnosti Chrome-a.</translation>
 <translation id="2149973817440762519">Izmenite obeleživač</translation>
 <translation id="2155214902713132423">Ovaj način verifikacije nije dostupan za ovaj uređaj. Izaberite drugu opciju na drugom uređaju.</translation>
-<translation id="2157851137955077194">Da biste delili sadržaj telefona sa drugim uređajem, uključite sinhronizaciju u podešavanjima Chrome-a na oba uređaja</translation>
 <translation id="2158408438301413340">Chrome nije uspeo da proveri sve lozinke</translation>
 <translation id="2169830938017475061">Sada</translation>
 <translation id="2172688499998841696">Opisi slika su isključeni</translation>
@@ -662,7 +662,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4678082183394354975">Tamna tema za sajtove je uključena u Chrome-u</translation>
 <translation id="4684427112815847243">Sinhronizuj sve</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Pošaljite SMS uređajima</translation>
 <translation id="4699172675775169585">Keširane slike i fajlovi</translation>
 <translation id="4719927025381752090">Ponudi prevod</translation>
 <translation id="4720023427747327413">Otvori u <ph name="PRODUCT_NAME" />-u</translation>
@@ -1470,7 +1469,6 @@ Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkr
 <translation id="8873817150012960745">Dodirnite ovde da biste započeli</translation>
 <translation id="8881973373982641723">Briše istoriju, uključujući istoriju u okviru za pretragu.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Radi zaštite privatnosti, sa liste automatski brišemo sajtove koji su stariji od 4 nedelje. Sajt koji ponovo posetite može ponovo da se pojavi na listi. Možete i da uklonite sajt ako ne želite da on ikad definiše interesovanja za vas.</translation>
-<translation id="889338405075704026">Idite u podešavanja Chrome-a</translation>
 <translation id="8898822736010347272">Šalje Google-u URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica da bi se otkrile nove pretnje i zaštitili svi širom veba.</translation>
 <translation id="8906502871739599113">Reakcija je duplirana</translation>
 <translation id="8909135823018751308">Deli...</translation>
@@ -1498,7 +1496,6 @@ Pouzdani tokeni poboljšavaju privatnost na vebu i ne mogu da se koriste za otkr
 <translation id="8996847606757455498">Odaberite drugog dobavljača</translation>
 <translation id="8998729206196772491">Prijavljujete se pomoću naloga kojim upravlja <ph name="MANAGED_DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chrome podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chrome-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
 <translation id="9022774213089566801">Često posećivano</translation>
-<translation id="9028914725102941583">Uključite sinhronizaciju da biste delili sadržaj na više uređaja</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video snimak}few{# video snimka}other{# video snimaka}}</translation>
 <translation id="9042893549633094279">Privatnost i bezbednost</translation>
 <translation id="9050666287014529139">Pristupna fraza</translation>

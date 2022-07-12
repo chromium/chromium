@@ -218,7 +218,6 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="214888715418183969">Wähle aus, welche Messwerte für Chrome freigegeben werden sollen. Die freigegebenen Messwerte werden verwendet, um die Funktionen, die Leistung und die Stabilität von Chrome zu verbessern.</translation>
 <translation id="2149973817440762519">Lesezeichen bearbeiten</translation>
 <translation id="2155214902713132423">Diese Bestätigungsmethode ist für dieses Gerät nicht verfügbar. Wähle auf deinem anderen Gerät eine andere Option aus.</translation>
-<translation id="2157851137955077194">Wenn du Inhalte auf deinem Smartphone mit einem anderen Gerät teilen möchtest, aktiviere auf beiden Geräten in den Chrome-Einstellungen die Synchronisierung</translation>
 <translation id="2158408438301413340">Chrome konnte nicht alle Passwörter prüfen</translation>
 <translation id="2169830938017475061">Jetzt</translation>
 <translation id="2172688499998841696">Bildbeschreibungen sind deaktiviert</translation>
@@ -662,7 +661,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4678082183394354975">Dunkles Design für Websites in Chrome aktiviert</translation>
 <translation id="4684427112815847243">Alles synchronisieren</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}}</translation>
-<translation id="4696983787092045100">SMS an meine Geräte senden</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
 <translation id="4720023427747327413">In <ph name="PRODUCT_NAME" /> öffnen</translation>
@@ -1470,7 +1468,6 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="8873817150012960745">Zum Starten hier tippen</translation>
 <translation id="8881973373982641723">Löscht den Verlauf, auch im Suchfeld.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Zum Schutz deiner Daten entfernen wir automatisch Websites aus der Liste, die älter als vier Wochen sind. Wenn du eine der Websites noch einmal besuchst, kann sie wieder in der Liste erscheinen. Du kannst einzelne Websites auch entfernen, wenn du nicht möchtest, dass sie Interessen für dich definieren.</translation>
-<translation id="889338405075704026">Zu den Chrome-Einstellungen</translation>
 <translation id="8898822736010347272">URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
 <translation id="8906502871739599113">Reaktion dupliziert</translation>
 <translation id="8909135823018751308">Teilen...</translation>
@@ -1498,7 +1495,6 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="8996847606757455498">Anderen Anbieter auswählen</translation>
 <translation id="8998729206196772491">Du meldest dich mit einem von <ph name="MANAGED_DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chrome abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="9022774213089566801">Häufig besucht</translation>
-<translation id="9028914725102941583">Synchronisierung aktivieren, um geräteübergreifend zu teilen</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Videos}}</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
 <translation id="9050666287014529139">Passphrase</translation>

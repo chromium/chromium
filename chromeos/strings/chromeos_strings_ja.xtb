@@ -123,6 +123,7 @@
 <translation id="188114911237521550">ダークモードをオフにする</translation>
 <translation id="1881188606372070653">法的理由によりコンテンツの変更をリクエストするには、<ph name="BEGIN_LINK1" />法的な問題に関するヘルプページ<ph name="END_LINK1" />をご覧ください。アカウント情報とシステム情報の一部が Google に送信されます。ご提供いただいた情報は、Google で技術的な問題の解決やサービスの改善を図るため、<ph name="BEGIN_LINK2" />プライバシー ポリシー<ph name="END_LINK2" />と<ph name="BEGIN_LINK3" />利用規約<ph name="END_LINK3" />に沿って使用されます。</translation>
 <translation id="1887850431809612466">ハードウェア リビジョン</translation>
+<translation id="1904932688895783618">関連リソース:</translation>
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
 <translation id="1932611479324127242">バッテリー カットオフ</translation>
@@ -137,6 +138,7 @@
 <translation id="2016697457005847575">トラブルシューティングの手順を試す</translation>
 <translation id="2016848882344942759">--ホワイトラベルなし--</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">スクリーンセーバーを表示するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2085089206770112532">ディスプレイの明るさを下げる</translation>
 <translation id="2105810540595158374">デバイスの種類はゲーム コントローラです。</translation>
@@ -773,6 +775,7 @@
 <translation id="7763470514545477072">ドメイン サフィックス マッチ</translation>
 <translation id="7769672763586021400">モデル ID</translation>
 <translation id="7784116172884276937">DNS サーバーが設定されていません</translation>
+<translation id="779591286616261875">新しい報告を送信</translation>
 <translation id="7799817062559422778">ライトモード</translation>
 <translation id="780301667611848630">いいえ</translation>
 <translation id="7805768142964895445">ステータス</translation>
@@ -925,6 +928,7 @@
 <translation id="9082718469794970195">この動画を使う</translation>
 <translation id="9087578468327036362">このクエリを報告</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
+<translation id="9092255287806472980">お寄せいただいたフィードバックは担当チームが内容を確認したうえで、Chrome OS の改善に役立てられます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">デバイスを分解する必要があります</translation>
 <translation id="9098156406873149060">ユーザーデータを保持する</translation>

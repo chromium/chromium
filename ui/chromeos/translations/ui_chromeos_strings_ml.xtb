@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">സുരക്ഷിതമാക്കി</translation>
 <translation id="2638942478653899953">Google ഡ്രൈവിൽ പ്രവേശിക്കാനായില്ല. <ph name="BEGIN_LINK" />ലോഗ് ഔട്ട്<ph name="END_LINK" /> ചെയ്‌ത ശേഷം തിരികെ ലോഗ് ഇൻ ചെയ്യുക.</translation>
 <translation id="2649120831653069427">റെയിൻബോഫിഷ്</translation>
+<translation id="2653059201992392941">നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="2663066752008346276">Myansan കീബോർഡ് ഉള്ള ബർമീസ്/മ്യാൻമർ</translation>
 <translation id="2664412712123763093">ഫയൽ ലൊക്കേഷൻ</translation>
 <translation id="2718540689505416944">Linux ഉപയോഗിച്ച് ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
@@ -530,6 +531,7 @@
 <translation id="5489067830765222292">ലാത്വിയൻ</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ഫിൽട്ടർ ഓഫാണ്.</translation>
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
+<translation id="5500104704744051184">PUK നൽകുന്നത് വരെ നിങ്ങൾക്ക് ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാനാകില്ല</translation>
 <translation id="5500122897333236901">ഐസ്‌ലാന്‍ഡിക്</translation>
 <translation id="5508696409934741614">ഡോട്ടുകൾ</translation>
 <translation id="5522908512596376669">ഫയൽ ലിസ്‌റ്റ് ഗ്രിഡ് കാഴ്‌ചയിലേക്ക് മാറ്റിയിട്ടുണ്ട്.</translation>
@@ -635,6 +637,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ</translation>
 <translation id="642282551015776456">ഈ നാമം ഒരു ഫോൾഡർ നാമത്തിന്റെ ഫയൽ ആയി ഉപയോഗിക്കരുത്</translation>
 <translation id="6423031066725912715">TCVN കീബോർഡ് ഉള്ള വിയറ്റ്നാമീസ്</translation>
+<translation id="6430271654280079150">നിങ്ങൾക്ക് ഒരു ശ്രമം കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="6485131920355264772">സ്‌പെയ്‌സ് വിവരം വീണ്ടെടുക്കുന്നതിന് പരാജയപ്പെട്ടു</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, വിശദാംശങ്ങൾ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> എന്നത് <ph name="FOLDER_NAME" /> എന്നതിലേക്ക് എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു</translation>
@@ -901,6 +904,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ സമന്വയിപ്പിക്കുന്നു...</translation>
 <translation id="8600173386174225982">ഫയൽ ലിസ്‌റ്റ് ലഘുചിത്ര കാഴ്‌ചയിലേക്ക് മാറ്റിയിട്ടുണ്ട്.</translation>
 <translation id="8601932370724196034">Crostini ചിത്ര ഫയൽ</translation>
+<translation id="8608515571837163082">തെറ്റായ പിൻ നിരവധി തവണ നൽകി. നിങ്ങളുടെ സേവനദാതാവ് നൽകിയ 8 അക്ക പേഴ്‌സണൽ അൺബ്ലോക്കിംഗ് കീ (PUK) നൽകുക.</translation>
 <translation id="8609695766746872526">ഐസ്‌ലാന്‍ഡിക്</translation>
 <translation id="863903787380594467">പിൻ തെറ്റാണ്. നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - പോർട്ട്</translation>

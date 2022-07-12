@@ -218,7 +218,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="214888715418183969">Tria quina informació vols compartir amb Chrome. Les mètriques que comparteixis s'utilitzaran per ajudar a millorar les funcions, el rendiment i l'estabilitat de Chrome.</translation>
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
 <translation id="2155214902713132423">Aquest mètode de verificació no està disponible per a aquest dispositiu. Selecciona una opció diferent a l'altre dispositiu.</translation>
-<translation id="2157851137955077194">Per compartir elements del telèfon amb un altre dispositiu, activa la sincronització a la configuració de Chrome en tots dos dispositius</translation>
 <translation id="2158408438301413340">Chrome no ha pogut comprovar totes les contrasenyes</translation>
 <translation id="2169830938017475061">Ara</translation>
 <translation id="2172688499998841696">Les descripcions de les imatges estan desactivades</translation>
@@ -442,6 +441,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
 <translation id="3341262203274374114">No es pot deixar de seguir. S'ha produït un error.</translation>
 <translation id="3359667936385849800">Utilitza el teu proveïdor de serveis actual</translation>
+<translation id="3365271666488085187">Chrome pot tenir en compte aquest interès</translation>
 <translation id="3367813778245106622">Torna a iniciar la sessió per començar la sincronització</translation>
 <translation id="3373979091428520308">Per compartir aquesta pàgina amb un altre dispositiu, activa la sincronització a la configuració de Chrome de l'altre dispositiu</translation>
 <translation id="3374023511497244703">Les adreces d'interès, l'historial, les contrasenyes i altres dades de Chrome ja no se sincronitzaran amb el teu Compte de Google</translation>
@@ -475,6 +475,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB disponibles</translation>
 <translation id="3549657413697417275">Cerca a l'historial</translation>
 <translation id="3557336313807607643">Afegeix als contactes</translation>
+<translation id="3560491354538957576">El lloc web pot definir interessos</translation>
 <translation id="3563767357928833671">Es mostren els continguts del porta-retalls</translation>
 <translation id="3566923219790363270">Encara s'està preparant Chrome per a la RV. Reinicia'l més tard.</translation>
 <translation id="3568688522516854065">Inicia la sessió i activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis</translation>
@@ -660,7 +661,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="4678082183394354975">El tema fosc per als llocs web està activat a Chrome</translation>
 <translation id="4684427112815847243">Sincronitza-ho tot</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}}</translation>
-<translation id="4696983787092045100">Envia text als teus dispositius</translation>
 <translation id="4699172675775169585">Imatges i fitxers desats a la memòria cau</translation>
 <translation id="4719927025381752090">Proposa traduir aquest idioma</translation>
 <translation id="4720023427747327413">Obre a <ph name="PRODUCT_NAME" /></translation>
@@ -1468,7 +1468,6 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="8873817150012960745">Toca aquí per començar</translation>
 <translation id="8881973373982641723">Esborra l'historial, inclòs el del quadre de cerca.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Com pots gestionar les teves dades<ph name="END_BOLD" />: amb la finalitat de protegir la teva privadesa, suprimim automàticament els llocs web de la llista que tenen més de 4 setmanes. És possible que un lloc web que tornis a visitar aparegui de nou a la llista. També pots suprimir un lloc web si no vols que mai et defineixi interessos.</translation>
-<translation id="889338405075704026">Ves a la configuració de Chrome</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="8906502871739599113">Reacció duplicada</translation>
 <translation id="8909135823018751308">Comparteix...</translation>
@@ -1496,7 +1495,6 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="8996847606757455498">Tria un altre proveïdor</translation>
 <translation id="8998729206196772491">Estàs iniciant la sessió amb un compte gestionat per <ph name="MANAGED_DOMAIN" /> i estàs donant a l'administrador el control de les teves dades de Chrome. Les dades passaran a estar vinculades a aquest compte permanentment. Si tanques la sessió de Chrome, se suprimiran les teves dades d'aquest dispositiu, però continuaran emmagatzemades al teu compte de Google.</translation>
 <translation id="9022774213089566801">Visitats amb freqüència</translation>
-<translation id="9028914725102941583">Activa la sincronització per compartir elements entre dispositius</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>
 <translation id="9050666287014529139">Frase de contrasenya</translation>

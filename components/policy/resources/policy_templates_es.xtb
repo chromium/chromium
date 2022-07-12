@@ -3094,13 +3094,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4228745249339680042">Si se define esta política, se especificarán las URL y los dominios para los que no se muestra ningún mensaje cuando se solicitan certificados de atestación de las llaves de seguridad. Asimismo, se envía una señal a la llave de seguridad para indicar que es posible que se utilice esa atestación individual. Sin esta política, se muestra un mensaje a los usuarios de <ph name="PRODUCT_NAME" /> versión 65 y versiones posteriores cuando los sitios web solicitan la atestación de las llaves de seguridad.
 
       Las URL solo se identifican como appIDs U2F. Los dominios se identifican únicamente como IDs RP de WebAuthn. Por ello, para incluir tanto las API WebAuthn como U2F, se deben indicar la URL appID y el dominio de un determinado sitio web.</translation>
-<translation id="4239112794240794697">Esta política concede permiso a Projector para crear y transcribir grabaciones de pantalla y subirlas a Drive para los usuarios de empresa.
-      Esta política no afecta a los usuarios de Family Link.
-      Esta política no afecta a la política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para usuarios de Family Link.
-
-      Si se habilita esta política, se habilitará Projector.
-      Si se inhabilita esta política, se inhabilitará Projector.
-      Si no se establece esta política, Projector se inhabilitará de forma predeterminada.</translation>
 <translation id="4239720644496144453">La caché no se utiliza en las aplicaciones para Android. Si varios usuarios instalan la misma aplicación para Android, se descargará una nueva para cada uno de ellos.</translation>
 <translation id="4247914291127524388">Si se asigna el valor "Habilitada" a esta política, se desactivará la sincronización de <ph name="GOOGLE_DRIVE_NAME" /> en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /> cuando se utilice una conexión de datos móviles. Los datos solos se sincronizarán con Drive si el dispositivo está conectado a una red Wi-Fi o Ethernet.
 
@@ -4646,13 +4639,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se inhabilita la política, los usuarios no podrán canjear estas ofertas.</translation>
 <translation id="6046615715547751255">No permitir los controles de informes granulares</translation>
 <translation id="6048199181629830227">Habilitar la gestión de energía Peak Shift</translation>
-<translation id="6052730367191220066">Habilitar la migración de dispositivos gestionados por <ph name="MS_AD_NAME" /> a la gestión en la nube. Esta política permite iniciar de forma remota una migración sin contacto de varios dispositivos de una empresa. Además, se ofrecerá toda la información posible sobre la migración a los usuarios finales.
-
-      Si se habilita esta política y el ID de registro ya se ha subido a DMServer, se activará la función Powerwash en un dispositivo de forma remota.
-
-      Si se inhabilita esta política o no se establece, no se activará la función Powerwash en un dispositivo de forma remota, independientemente del estado de subida del ID de registro.
-
-      Esta comprobación se activará siempre que se cargue la pantalla de inicio de sesión y se repetirá cada hora (si el dispositivo se mantiene en la pantalla de inicio de sesión). Así, se evita que la migración comience en medio de la sesión de un usuario, lo que podría causar problemas a los usuarios finales.</translation>
 <translation id="6053681087509103368">Permitir que WebRTC use versiones obsoletas del protocolo TLD/DTLS</translation>
 <translation id="6058879286588763839">A menos que se especifique <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> (lo que anula <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />), si se asigna un valor a <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, se especificará la política de gestión de energía del modo de carga de la batería (si el dispositivo lo admite). Para ampliar la duración de la batería, esta política controla dinámicamente la carga de la batería reduciendo el desgaste y el estrés de la misma.
 
@@ -6259,11 +6245,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7687943045976362719">Si se asigna un valor a esta política, <ph name="PRODUCT_FRAME_NAME" /> gestiona los tipos de contenido especificados.
 
           Si no se asigna ningún valor a esta política, se usará el procesador predeterminado para todos los sitios web. Se puede usar la política <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> para configurar el procesador predeterminado.</translation>
-<translation id="7694245791806617022">Permite controlar si la función "Recordar contraseña" está habilitada en el cuadro de diálogo de autenticación Kerberos. Las contraseñas se almacenan cifradas en disco y solo se puede acceder a ellas con el daemon del sistema Kerberos durante una sesión de usuario.
-
-          Si se habilita esta política o no se configura, los usuarios podrán decidir si se recuerdan las contraseñas de Kerberos para que no tengan que introducirlas de nuevo. Los tickets de Kerberos se obtienen automáticamente a menos que se necesite una autenticación adicional (autenticación de dos factores).
-
-          Si se inhabilita esta política, nunca se recordarán las contraseñas y se eliminarán todas las contraseñas almacenadas anteriormente. Los usuarios tendrán que introducir la contraseña cada vez que quieran autenticarse en el sistema Kerberos. Según la configuración del servidor, esto puede ocurrir cada 8 horas o cada varios meses.</translation>
 <translation id="7694807474048279351">Programa un reinicio automático después de haberse aplicado una actualización de <ph name="PRODUCT_OS_NAME" />.
 
       Si el valor de esta política se establece en True, se programará un reinicio automático cuando se haya aplicado una actualización de <ph name="PRODUCT_OS_NAME" /> y sea necesario reiniciar para que se complete el proceso de actualización. El reinicio se programa para que se realice en el dispositivo de forma inmediata, pero se puede retrasar hasta 24 horas si un usuario está utilizando el dispositivo en ese momento.

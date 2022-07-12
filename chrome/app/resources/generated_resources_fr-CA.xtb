@@ -5575,6 +5575,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6406303162637086258">Simuler le redémarrage du navigateur</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6406708970972405507">Paramètres – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Permettre à l'Assistant Google de vous aider à changer votre mot de passe</translation>
 <translation id="6408118934673775994">Accéder à vos données sur <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> et <ph name="WEBSITE_3" /> et les modifier</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="6410328738210026208">Changement de version et réinitialisation « Powerwash »</translation>
@@ -5960,6 +5961,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6781978626986383437">Sauvegarde Linux annulée</translation>
 <translation id="6782067259631821405">NIP incorrect</translation>
 <translation id="6784523122863989144">Le profil est pris en charge</translation>
+<translation id="6785872064505734160">L'Assistant Google dans Chrome peut effectuer des actions dans différents sites Web pour vous</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787097042755590313">Autre onglet</translation>
 <translation id="6787839852456839824">Raccourcis clavier</translation>

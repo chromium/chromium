@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">საკითხავი სია</translation>
 <translation id="1264309058268477500">ალტერნატიული</translation>
 <translation id="1264974993859112054">სპორტი</translation>
+<translation id="1266469291454105242">მოწყობილობის განბლოკვის მეთოდი</translation>
 <translation id="1269516672602708785">Google Sites-ში ახალი საიტის სწრაფად შექმნა</translation>
 <translation id="1270502636509132238">წაღების მეთოდი</translation>
 <translation id="1281476433249504884">სტეკერი 1</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">პაემნები და გაცნობა</translation>
 <translation id="1753706481035618306">გვერდის ნომერი</translation>
 <translation id="1755621011177747277">ბავშვის აყვანა</translation>
+<translation id="1756026472674246267">ბმულის გახსნა ახალ ჩანართში</translation>
 <translation id="175656076281618225">მაგია</translation>
 <translation id="1757773103848038814">Monospace შრიფტი</translation>
 <translation id="1763864636252898013">ეს ს ერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი არ ენდობა თქვენი მოწყობილობის ოპერაციულ სისტემას. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">გადახდის გაუქმება</translation>
 <translation id="2148613324460538318">ბარათის დამატება</translation>
 <translation id="2149968176347646218">კავშირი დაუცველია</translation>
+<translation id="2153609454945889823">გსურთ, დააინსტალიროთ Google Play Services AR-ისთვის?</translation>
 <translation id="2154054054215849342">სინქრონიზაცია მიუწვდომელია თქვენი დომენისთვის</translation>
 <translation id="2154484045852737596">ბარათის რედაქტირება</translation>
 <translation id="2161656808144014275">ტექსტი</translation>
@@ -832,6 +835,7 @@
 <translation id="3229277193950731405">ვერსიის ფრაზის კოპირება</translation>
 <translation id="323107829343500871">შეიყვანეთ <ph name="CREDIT_CARD" />-ის CVC</translation>
 <translation id="3234666976984236645">ამ საიტზე ყოველთვის აღმოაჩინოს მნიშვნელოვანი შინაარსი</translation>
+<translation id="3238395604961564389">ბმულის გახსნა ინკოგნიტო ფანჯარაში</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, თქვენი ბრაუზერის იერსახის მოსარგებად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="3240791268468473923">უსაფრთხო გადახდისთვის საჭირო ავტორიზაციის მონაცემების არარსებობის ფურცელი გახსნილია</translation>
 <translation id="324180406144491771">„<ph name="HOST_NAME" />“-ის ბმულები დაბლოკილია</translation>
@@ -945,6 +949,7 @@
 <translation id="3531780078352352885">დავალების ფურცლები</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ითხოვს თქვენი მიკროფონის გამოყენების ნებართვას</translation>
 <translation id="3533328374079021623">საფოსტო ყუთი 5</translation>
+<translation id="3542768452570884558">ბმულის გახსნა ახალ ფანჯარაში</translation>
 <translation id="3550112004925580947">სტუმართმოყვარეობის ინდუსტრია</translation>
 <translation id="3552297013052089404">Sans-serif შრიფტი</translation>
 <translation id="3558573058928565255">დღე</translation>
@@ -1115,11 +1120,13 @@
 <translation id="4040350669425716613">კოლეჯები და უნივერსიტეტები</translation>
 <translation id="4056223980640387499">სეპია</translation>
 <translation id="4058922952496707368">გასაღები „<ph name="SUBKEY" />“ <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">მოწყობილობის განბლოკვის მეთოდის გამოყენება ბარათების უფრო სწრაფად დასადასტურებლად</translation>
 <translation id="4067098466788473230">სასწავლო გრანტები და სტიპენდიები</translation>
 <translation id="4067263367174615723">C1 (კონვერტი)</translation>
 <translation id="4067947977115446013">მიუთითეთ სწორი მისამართი</translation>
 <translation id="4072193657607981494">მიმდინარეობს წესების ჩატვირთვა</translation>
 <translation id="4072486802667267160">თქვენი შეკვეთის დამუშავება ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
+<translation id="4073376909608563327">მოწყობილობის განბლოკვის მეთოდის გამოყენება ვერ მოხერხდა</translation>
 <translation id="4073797364926776829">ბარათის ნახვა</translation>
 <translation id="4075732493274867456">კლიენტისა და სერვერის მიერ არ არის მხარდაჭერილი SSL პროტოკოლის საერთო ვერსია ან შიფრატორების ნაკრები.</translation>
 <translation id="4079302484614802869">პროქსის კონფიგურაცია დაყენებულია .pac სკრიპტის URL-ის გამოსაყენებლად, ფიქსირებული პროქსი სერვერების ნაცვლად.</translation>
@@ -1412,6 +1419,7 @@
 <translation id="4840250757394056958">თქვენი Chrome-ის ისტორიის ნახვა</translation>
 <translation id="484462545196658690">ავტომატური</translation>
 <translation id="484671803914931257">მიიღეთ ფასდაკლება <ph name="MERCHANT_NAME" />-სა და სხვა ობიექტებში</translation>
+<translation id="484988093836683706">მოწყობილობის განბლოკვის მეთოდის გამოყენება</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="4852429274334674023">ოპერაციული სისტემები</translation>
 <translation id="485316830061041779">გერმანული</translation>
@@ -1799,6 +1807,7 @@
 <translation id="5921185718311485855">ჩართული</translation>
 <translation id="5921639886840618607">გსურთ ბარათის შენახვა Google ანგარიშში?</translation>
 <translation id="5922853866070715753">თითქმის მზადაა</translation>
+<translation id="5923492272538889093">გსურთ, CVC-ის ნაცვლად გამოიყენოთ მოწყობილობის განბლოკვის მეთოდი?</translation>
 <translation id="5928444777041341328">სახლი და ბაღი</translation>
 <translation id="5932224571077948991">საიტზე ნაჩვენებია მომაბეზრებელი ან შეცდომაში შემყვანი რეკლამა</translation>
 <translation id="5937560539988385583">გვერდი ითარგმნა</translation>
@@ -1972,6 +1981,7 @@
 <translation id="643051589346665201">Google პაროლის შეცვლა</translation>
 <translation id="6433490469411711332">საკონტაქტო ინფორმაციის რედაქტირება</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" />-მა უარყო დაკავშირება.</translation>
+<translation id="6433797564277305076">დაადასტურეთ ბარათები უფრო სწრაფად — გამოიყენეთ ამიერიდან მოწყობილობის განბლოკვის მეთოდი</translation>
 <translation id="6440503408713884761">იგნორირებული</translation>
 <translation id="6443406338865242315">თქვენ მიერ დაინსტალირებული გაფართოებები და დანამატები</translation>
 <translation id="6446163441502663861">Kahu (კონვერტი)</translation>
@@ -2178,6 +2188,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ამ ბარათის შენახვა ამჟამად ვერ მოხერხდება}other{ამ ბარათების შენახვა ამჟამად ვერ მოხერხდება}}</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />-მა დაადასტურა, რომ ამ ვებსაიტის სერტიფიკატის გამცემია <ph name="ISSUER" />.</translation>
+<translation id="7058774143982824355">CSV პაროლების სინტაქსიკური ანალიზის სერვისი</translation>
 <translation id="7061777300866737982">სახლის დაცულობა და უსაფრთხოება</translation>
 <translation id="7062635574500127092">ზურმუხტისფერი</translation>
 <translation id="706295145388601875">მისამართების დამატება და მართვა Chrome-ის პარამეტრებიდან</translation>
@@ -2442,6 +2453,7 @@
 <translation id="7696089921647603491">კლასიკური როკი და ძველი ჰიტები</translation>
 <translation id="7697066736081121494">Prc8 (კონვერტი)</translation>
 <translation id="769721561045429135">ამჟამად თქვენ გაქვთ ბარათები, რომელთა გამოყენებაც შეგიძლიათ მხოლოდ ამ მოწყობილობაზე. ბარათების გადასახედად დააწკაპუნეთ „გაგრძელებაზე“.</translation>
+<translation id="7698864304447945242">გსურთ, განაახლოთ Google Play Services AR-ისთვის?</translation>
 <translation id="7699293099605015246">სტატიები ამჟამად მიუწვდომელია</translation>
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />გადასვლა <ph name="SITE" />-ზე (არასაიმედო)<ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@
 <translation id="7723047071702270851">ბარათის რედაქტირება</translation>
 <translation id="7734285854693414638">Google Forms-ში ახალი ფორმის სწრაფად შექმნა</translation>
 <translation id="773466115871691567">ყოველთვის ითარგმნოს <ph name="SOURCE_LANGUAGE" /> გვერდები</translation>
+<translation id="7736959720849233795">ბმულის მისამართის კოპირება</translation>
 <translation id="7740996059027112821">სტანდარტული</translation>
 <translation id="77424286611022110">ამ საიტზე ნაჩვენებია მომაბეზრებელი ან შეცდომაში შემყვანი რეკლამა. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">სახიფათო კონტენტი დაიბლოკა.</translation>

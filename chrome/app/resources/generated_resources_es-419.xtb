@@ -5570,6 +5570,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6406303162637086258">Simular reinicio de navegador</translation>
 <translation id="6406506848690869874">Sincronización</translation>
 <translation id="6406708970972405507">Configuración: <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Permite que el Asistente de Google te ayude a cambiar la contraseña</translation>
 <translation id="6408118934673775994">Leer y modificar tus datos en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Archivos de imagen</translation>
 <translation id="6410328738210026208">Cambiar canal y Powerwash</translation>
@@ -5953,6 +5954,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6781978626986383437">Se canceló la copia de seguridad de Linux</translation>
 <translation id="6782067259631821405">El PIN no es válido</translation>
 <translation id="6784523122863989144">El perfil es compatible</translation>
+<translation id="6785872064505734160">El Asistente de Google en Chrome puede completar acciones por ti en diferentes sitios web</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6787097042755590313">Otra pestaña</translation>
 <translation id="6787839852456839824">Accesos directos</translation>

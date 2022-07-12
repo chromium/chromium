@@ -116,6 +116,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1264309058268477500">Alternativno</translation>
 <translation id="1264974993859112054">Sportovi</translation>
+<translation id="1266469291454105242">Otključavanje uređaja</translation>
 <translation id="1269516672602708785">Brzo kreirajte novu web lokaciju na usluzi Google Web lokacije</translation>
 <translation id="1270502636509132238">Način preuzimanja</translation>
 <translation id="1281476433249504884">Slagač 1</translation>
@@ -330,6 +331,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1753068535428855445">Zabavljanje i lični oglasi</translation>
 <translation id="1753706481035618306">Broj stranice</translation>
 <translation id="1755621011177747277">Usvajanje</translation>
+<translation id="1756026472674246267">Otvori link u novoj kartici</translation>
 <translation id="175656076281618225">Magija</translation>
 <translation id="1757773103848038814">Font fiksnog razmaka</translation>
 <translation id="1763864636252898013">Ovaj server nije mogao potvrditi da je ovo domena <ph name="DOMAIN" />. Operativni sistem vašeg uređaja ne smatra njenu potvrdu sigurnosti pouzdanom. Uzrok može biti u pogrešnoj konfiguraciji ili da je napadač presreo vašu vezu.</translation>
@@ -455,6 +457,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="214556005048008348">Otkaži plaćanje</translation>
 <translation id="2148613324460538318">Dodaj karticu</translation>
 <translation id="2149968176347646218">Veza nije sigurna</translation>
+<translation id="2153609454945889823">Instalirati Google Play usluge za AR?</translation>
 <translation id="2154054054215849342">Sinhronizacija nije dostupna za vašu domenu</translation>
 <translation id="2154484045852737596">Uredi karticu</translation>
 <translation id="2161656808144014275">Tekst</translation>
@@ -832,6 +835,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3229277193950731405">Kopiraj niz verzije</translation>
 <translation id="323107829343500871">Unesite CVC za <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Uvijek detektiraj važan sadržaj s ove web lokacije</translation>
+<translation id="3238395604961564389">Otvori link u anonimnom prozoru</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da prilagodite izgled preglednika</translation>
 <translation id="3240791268468473923">Otvorena je tabela obavještenja da nema akreditiva za sigurno plaćanje koji se podudaraju</translation>
 <translation id="324180406144491771">Linkovi hosta "<ph name="HOST_NAME" />" su blokirani</translation>
@@ -945,6 +949,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3531780078352352885">Tabele za posao</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi koristiti vaš mikrofon</translation>
 <translation id="3533328374079021623">Poštansko sanduče 5</translation>
+<translation id="3542768452570884558">Otvori link u novom prozoru</translation>
 <translation id="3550112004925580947">Ugostiteljstvo</translation>
 <translation id="3552297013052089404">Font Sans-serif</translation>
 <translation id="3558573058928565255">Dan</translation>
@@ -1115,11 +1120,13 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4040350669425716613">Fakulteti i univerziteti</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4058922952496707368">Ključ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Koristi uređaj za brže potvrđivanje kartica</translation>
 <translation id="4067098466788473230">Studijski grantovi i stipendije</translation>
 <translation id="4067263367174615723">C1 (omotnica)</translation>
 <translation id="4067947977115446013">Dodajte važeću adresu</translation>
 <translation id="4072193657607981494">Učitavanje pravila</translation>
 <translation id="4072486802667267160">Došlo je do greške prilikom obrade vaše narudžbe. Pokušajte ponovo.</translation>
+<translation id="4073376909608563327">Korištenje otključavanja uređaja nije uspjelo</translation>
 <translation id="4073797364926776829">Prikaži karticu</translation>
 <translation id="4075732493274867456">Klijent i server ne podržavaju verziju zajedničkog SSL protokola ili paket za šifriranje.</translation>
 <translation id="4079302484614802869">Konfiguracija proxy poslužitelja postavljena je za upotrebu URL-a .pac skripte, a ne fiksnih proxy poslužitelja.</translation>
@@ -1412,6 +1419,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4840250757394056958">Pregledajte historiju Chromea</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="484671803914931257">Ostvarite popust u trgovini <ph name="MERCHANT_NAME" /> i još u više njih</translation>
+<translation id="484988093836683706">Koristi otključavanje uređaja</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="4852429274334674023">Operativni sistemi</translation>
 <translation id="485316830061041779">Njemačka</translation>
@@ -1799,6 +1807,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5921185718311485855">Uključeno</translation>
 <translation id="5921639886840618607">Sačuvati karticu na Google računu?</translation>
 <translation id="5922853866070715753">Skoro je gotovo</translation>
+<translation id="5923492272538889093">Koristiti otključavanje uređaja umjesto CVC-a?</translation>
 <translation id="5928444777041341328">Dom i vrt</translation>
 <translation id="5932224571077948991">Web-lokacija prikazuje ometajuće ili obmanjujuće oglase</translation>
 <translation id="5937560539988385583">Stranica je prevedena</translation>
@@ -1972,6 +1981,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="643051589346665201">Promijeni Google lozinku</translation>
 <translation id="6433490469411711332">Uređivanje podataka za kontakt</translation>
 <translation id="6433595998831338502">Host računar <ph name="HOST_NAME" /> je odbio povezivanje.</translation>
+<translation id="6433797564277305076">Potvrdite kartice brže koristeći otključavanja uređaja od sada</translation>
 <translation id="6440503408713884761">Zanemareno</translation>
 <translation id="6443406338865242315">Koje ekstenzije i dodatke ste instalirali</translation>
 <translation id="6446163441502663861">Kahu (koverta)</translation>
@@ -2178,6 +2188,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Trenutno nije moguće sačuvati ovu karticu}one{Trenutno nije moguće sačuvati ove kartice}few{Trenutno nije moguće sačuvati ove kartice}other{Trenutno nije moguće sačuvati ove kartice}}</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7058163556978339998">Preglednik <ph name="BROWSER" /> je potvrdio da je izdavač <ph name="ISSUER" /> izdao certifikat ovoj web lokaciji.</translation>
+<translation id="7058774143982824355">CSV usluga raščlanjivača lozinke</translation>
 <translation id="7061777300866737982">Sigurnost i obezbjeđenje doma</translation>
 <translation id="7062635574500127092">Tirkizna</translation>
 <translation id="706295145388601875">Dodajte adrese i upravljajte njima u postavkama Chromea</translation>
@@ -2442,6 +2453,7 @@ Dodatni detalji:
 <translation id="7696089921647603491">Klasični rock i stari hitovi</translation>
 <translation id="7697066736081121494">Prc8 (koverta)</translation>
 <translation id="769721561045429135">Trenutno imate kartice koje se mogu koristiti samo na ovom uređaju. Kliknite Nastavi da pregledate kartice.</translation>
+<translation id="7698864304447945242">Ažurirati Google Play usluge za AR?</translation>
 <translation id="7699293099605015246">Članci trenutno nisu dostupni</translation>
 <translation id="7701040980221191251">Nema</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Nastavi na <ph name="SITE" /> (nesigurno)<ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@ Dodatni detalji:
 <translation id="7723047071702270851">Uredite karticu</translation>
 <translation id="7734285854693414638">Brzo kreirajte novi obrazac na usluzi Google Forms</translation>
 <translation id="773466115871691567">Uvijek prevedi stranice na <ph name="SOURCE_LANGUAGE" /> jezik</translation>
+<translation id="7736959720849233795">Kopiraj adresu linka</translation>
 <translation id="7740996059027112821">Standardno</translation>
 <translation id="77424286611022110">Ova web lokacija prikazuje nametljive ili obmanjujuće oglase. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Opasan sadržaj je blokiran.</translation>

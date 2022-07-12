@@ -218,7 +218,6 @@
 <translation id="214888715418183969">Chrome と共有してもよいものを選択してください。ご提供いただいた指標は、Chrome の機能、パフォーマンス、安定性の向上に利用させていただきます。</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
 <translation id="2155214902713132423">この認証方法は、このデバイスでは使用できません。他のデバイスで別の方法を選択してください。</translation>
-<translation id="2157851137955077194">お使いのスマートフォンから別のデバイスにデータを共有するには、両方のデバイスの Chrome 設定で同期をオンにしてください</translation>
 <translation id="2158408438301413340">Chrome ですべてのパスワードを確認できませんでした</translation>
 <translation id="2169830938017475061">たった今</translation>
 <translation id="2172688499998841696">画像の説明をオフにしました</translation>
@@ -442,6 +441,7 @@
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="3341262203274374114">フォローを解除できません。エラーが発生しました。</translation>
 <translation id="3359667936385849800">現在のサービス プロバイダを使用</translation>
+<translation id="3365271666488085187">Chrome では上記の興味 / 関心が考慮されます</translation>
 <translation id="3367813778245106622">同期を開始するにはもう一度ログインします</translation>
 <translation id="3373979091428520308">このページを別のデバイスと共有するには、別のデバイスの Chrome 設定で同期をオンにしてください</translation>
 <translation id="3374023511497244703">ブックマーク、履歴、パスワード、その他の Chrome データは、Google アカウントに同期されなくなります</translation>
@@ -475,6 +475,7 @@
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB の空き</translation>
 <translation id="3549657413697417275">履歴を検索</translation>
 <translation id="3557336313807607643">連絡先に追加</translation>
+<translation id="3560491354538957576">サイトに基づいて興味 / 関心が定義されます</translation>
 <translation id="3563767357928833671">クリップボードの内容が表示されています</translation>
 <translation id="3566923219790363270">Chrome はまだ VR の準備中です。しばらく待ってから Chrome を再起動してください。</translation>
 <translation id="3568688522516854065">他のデバイスと同じタブを使用するには、ログインして同期を有効にします</translation>
@@ -660,7 +661,6 @@
 <translation id="4678082183394354975">Chrome でサイトのダークモードがオンになっています</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 件}}</translation>
-<translation id="4696983787092045100">デバイスにテキストを送信</translation>
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> で開く</translation>
@@ -1468,7 +1468,6 @@
 <translation id="8873817150012960745">始めるにはここをタップ</translation>
 <translation id="8881973373982641723">検索ボックスなどの履歴を削除します。</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するために、4 週間以上経過したサイトはリストから自動削除されます。再度アクセスしたサイトが、またリストに表示される場合があります。ユーザーの興味 / 関心を定義させたくないサイトを完全に削除することもできます。</translation>
-<translation id="889338405075704026">Chrome 設定に移動</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
 <translation id="8906502871739599113">リアクションを複製しました</translation>
 <translation id="8909135823018751308">共有...</translation>
@@ -1496,7 +1495,6 @@
 <translation id="8996847606757455498">別のプロバイダを選択</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> で管理されているアカウントでログインして、Chrome データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>
-<translation id="9028914725102941583">デバイス間で共有するには同期をオンにします</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 個の動画}other{# 個の動画}}</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>

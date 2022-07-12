@@ -218,7 +218,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="214888715418183969">Välj vad du vill dela med Chrome. Den statistik du delar används för att förbättra Chromes funktioner, prestanda och stabilitet.</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2155214902713132423">Den här verifieringsmetoden är inte tillgänglig för den här enheten. Välj ett annat alternativ på den andra enheten.</translation>
-<translation id="2157851137955077194">Om du vill dela något från telefonen till en annan enhet aktiverar du synkronisering i Chrome-inställningarna på båda enheterna</translation>
 <translation id="2158408438301413340">Chrome kunde inte kontrollera alla lösenord</translation>
 <translation id="2169830938017475061">Nu</translation>
 <translation id="2172688499998841696">Bildbeskrivningar har inaktiverats</translation>
@@ -663,7 +662,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4678082183394354975">Mörkt tema för webbplatser har aktiverats i Chrome</translation>
 <translation id="4684427112815847243">Synkronisera allt</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> till}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> till}}</translation>
-<translation id="4696983787092045100">Skicka texten till dina enheter</translation>
 <translation id="4699172675775169585">Cachade bilder och filer</translation>
 <translation id="4719927025381752090">Erbjud översättning</translation>
 <translation id="4720023427747327413">Öppna i <ph name="PRODUCT_NAME" /></translation>
@@ -1471,7 +1469,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="8873817150012960745">Börja genom att trycka här</translation>
 <translation id="8881973373982641723">Rensar historiken, inklusive från sökrutan.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> För att skydda din integritet raderar vi automatiskt webbplatser som är äldre än fyra veckor från listan. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan också ta bort en webbplats om du inte vill att webbplatsen någonsin ska definiera dina intressen.</translation>
-<translation id="889338405075704026">Öppna Chrome-inställningarna</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8906502871739599113">Reaktionen har duplicerats</translation>
 <translation id="8909135823018751308">Dela …</translation>
@@ -1499,7 +1496,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="8996847606757455498">Välj en annan leverantör</translation>
 <translation id="8998729206196772491">Du håller på att logga in med ett konto som hanteras av <ph name="MANAGED_DOMAIN" />, vilket ger administratören kontroll över data i Chrome. Din data kopplas permanent till det här kontot. Om du loggar ut från Chrome raderas all din data från enheten, men den lagras fortfarande i Google-kontot.</translation>
 <translation id="9022774213089566801">Mest besökta</translation>
-<translation id="9028914725102941583">Aktivera synkronisering om du vill dela mellan enheter</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videor}}</translation>
 <translation id="9042893549633094279">Integritet och säkerhet</translation>
 <translation id="9050666287014529139">Lösenfras</translation>

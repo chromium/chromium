@@ -218,7 +218,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="214888715418183969">Piliin kung ano ang kumportable kang ibahagi sa Chrome. Gagamitin ang mga sukatang ibabahagi mo para makatulong sa pagpapahusay ng mga feature, performance, at stability ng Chrome.</translation>
 <translation id="2149973817440762519">I-edit ang Bookmark</translation>
 <translation id="2155214902713132423">Hindi available para sa device na ito ang paraan ng pag-verify na ito. Pumili ng ibang opsyon sa iyong iba pang device.</translation>
-<translation id="2157851137955077194">Para magbahagi ng isang bagay sa isa pang device mula sa iyong telepono, i-on ang pag-sync sa mga setting ng Chrome sa dalawang device</translation>
 <translation id="2158408438301413340">Hindi masuri ng Chrome ang lahat ng password</translation>
 <translation id="2169830938017475061">Ngayon</translation>
 <translation id="2172688499998841696">Naka-off ang mga paglalarawan ng larawan</translation>
@@ -662,7 +661,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4678082183394354975">Naka-on sa Chrome ang madilim na tema para sa mga site</translation>
 <translation id="4684427112815847243">I-sync lahat</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> iba pa}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> iba pa}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> na iba pa}}</translation>
-<translation id="4696983787092045100">Ipadala ang text sa Iyong Mga Device</translation>
 <translation id="4699172675775169585">Mga naka-cache na larawan at file</translation>
 <translation id="4719927025381752090">Mag-alok na magsalin</translation>
 <translation id="4720023427747327413">Buksan sa <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="8873817150012960745">Mag-tap dito para magsimula</translation>
 <translation id="8881973373982641723">Kini-clear ang history, kasama ang nasa box para sa paghahanap.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Para protektahan ang iyong privacy, awtomatiko kaming nagde-delete sa listahan ng mga site na mas matagal sa 4 na linggo. Posibleng lumabas ulit sa listahan ang isang site na bibisitahin mo ulit. O puwede kang mag-alis ng site kung ayaw mo kailanman na tumukoy ang site na iyon ng mga interes para sa iyo.</translation>
-<translation id="889338405075704026">Pumunta sa mga setting ng Chrome</translation>
 <translation id="8898822736010347272">Nagpapadala ng mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page sa Google, para makatulong na tumuklas ng mga bagong banta at protektahan ang lahat ng nasa web.</translation>
 <translation id="8906502871739599113">Na-duplicate ang reaksyon</translation>
 <translation id="8909135823018751308">Ibahagi…</translation>
@@ -1498,7 +1495,6 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="8996847606757455498">Pumili ng ibang provider</translation>
 <translation id="8998729206196772491">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="MANAGED_DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
 <translation id="9022774213089566801">Madalas na binibisita</translation>
-<translation id="9028914725102941583">I-on ang pag-sync para makapagbahagi sa mga device</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}one{# Video}other{# na Video}}</translation>
 <translation id="9042893549633094279">Privacy at seguridad</translation>
 <translation id="9050666287014529139">Passphrase</translation>

@@ -1255,6 +1255,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi нэмэх...</translation>
 <translation id="2162155940152307086">Таныг синк хийх тохиргооноос гарсны дараа синк хийж эхэлнэ</translation>
+<translation id="2162705204091149050">Таны хөтөч, OS, төхөөрөмж, суулгасан программ хангамж болон файлуудын талаарх мэдээллийг унших</translation>
 <translation id="2162926944953615670">Боломжтой eSIM профайл байхгүй байна</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" />-д нэвтрэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> болон өөр 1 сэлгүүр</translation>
@@ -1275,6 +1276,7 @@
 <translation id="2180620921879609685">Аливаа хуудсан дээрх контентыг блоклох</translation>
 <translation id="2182058453334755893">Түр санах ой руу хуулсан</translation>
 <translation id="2184515124301515068">Сайтуудад дуу тоглуулах боломжтой үеийг сонгох зөвшөөрлийг Chrome-д олгох (санал болгосон)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Өөр төхөөрөмжөөс хуваалцсан хуудас</translation>
 <translation id="2187675480456493911">Таны бүртгэл дээрх бусад төхөөрөмжтэй синк хийдэг. Бусад хэрэглэгчийн өөрчилсөн тохиргоог синк хийхгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Серверийн Гэрчилгээг Импортлох үеийн алдаа</translation>
@@ -2504,6 +2506,7 @@
 <translation id="3359256513598016054">Гэрчилгээ бодлогын хязгаарлалтууд</translation>
 <translation id="3360297538363969800">Хэвлэж чадсангүй. Принтерээ шалгаад дахин оролдоно уу.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" />-г тантай хуваалцаж байна.}other{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" />-г тантай хуваалцаж байна.}}</translation>
+<translation id="3363202073972776113">Энэ шинэ профайлыг танай байгууллагаас удирдана. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Таны администратораас: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl эсвэл Alt-г ашиглана уу</translation>
 <translation id="3368922792935385530">Холбогдсон</translation>
@@ -2538,6 +2541,7 @@
 <translation id="339722927132407568">Царцдаг</translation>
 <translation id="3399432415385675819">Мэдэгдлийг идэвхгүй болгоно</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Герц) - сүлжилдсэн</translation>
+<translation id="3401484564516348917">Таны хөтөч, OS, төхөөрөмж, суулгасан программ хангамж, бүртгэлийн утгууд болон файлуудын талаарх мэдээллийг унших</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{Энэ төхөөрөмж дээр {COUNT} нууц үг хадгалсан}other{Энэ төхөөрөмж дээр {COUNT} нууц үг хадгалсан}}</translation>
 <translation id="3402255108239926910">Аватар сонгох</translation>
 <translation id="3402585168444815892">Туршилтын горимд бүртгүүлж байна</translation>
@@ -2784,6 +2788,7 @@
 <translation id="3627879631695760395"><ph name="APP" />-г суулгах...</translation>
 <translation id="3628275722731025472">Bluetooth-г унтраах</translation>
 <translation id="3629631988386925734">Smart Lock-г идэвхжүүлэхийн тулд нууц үгээ оруулна уу. Дараагийн удаа таны утас таны <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно.</translation>
+<translation id="3629664892718440872">Энэ сонголтыг санах</translation>
 <translation id="3630132874740063857">Таны утас</translation>
 <translation id="3630995161997703415">Энэ сайтыг хүссэн үедээ ашиглахын тулд тавиуртаа нэмнэ үү</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />ChromeOS төхөөрөмжүүддээ автомат тайлан илгээхийг зөвшөөрснөөр бидэнд ChromeOS-д юуг засаж, сайжруулахыг чухалчилж үзэхэд тусална. Эдгээр тайланд ChromeOS хэзээ гэмтсэн, та ямар онцлогууд, ашигладаг болон хэр хэмжээний санах ойг ихэвчлэн ашигладаг зэргийг багтааж болно.<ph name="END_PARAGRAPH1" />
@@ -3272,6 +3277,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI төхөөрөмжүүдийг бүрэн удирдахыг зөвшөөрөөгүй</translation>
+<translation id="4087328411748538168">Баруун талд харуулах</translation>
 <translation id="4089235344645910861">Тохиргоонуудыг хадгалсан. Синкийг эхлүүлсэн.</translation>
 <translation id="4090103403438682346">Хандалт баталгаажуулалтыг идэвхжүүлэх</translation>
 <translation id="4090947011087001172"><ph name="SITE" />-н сайтын зөвшөөрлийг шинэчлэх үү?</translation>
@@ -3965,6 +3971,7 @@
 <translation id="4779766576531456629">eSIM-н үүрэн холбооны сүлжээний нэрийг өөрчлөх</translation>
 <translation id="4780321648949301421">Хуудсыг... хэлбэрээр хадгалах</translation>
 <translation id="4781443161433589743">Та Chrome-н хамгийн найдвартай хамгаалалтад байна</translation>
+<translation id="4782861709165039462">Бүх микрофоныг төхөөрөмжүүдийн техник хангамжийн сэлгүүрээр идэвхгүй болгосон</translation>
 <translation id="4785719467058219317">Та энэ веб сайтад бүртгүүлээгүй аюулгүй байдлын түлхүүрийг ашиглаж байна</translation>
 <translation id="4785914069240823137">Тайралтыг цуцална уу</translation>
 <translation id="4788092183367008521">Сүлжээний холболтоо шалгаад дахин оролдоно уу.</translation>
@@ -4732,6 +4739,7 @@
 <translation id="5548075230008247516">Бүх зүйлийн сонголтыг болиулсан. Сонголтын горимоос гарсан.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" болон бусад 1 таб}other{"<ph name="TAB_TITLE" />" болон бусад # таб}}</translation>
 <translation id="5548606607480005320">Аюулгүй байдлын шалгалт</translation>
+<translation id="5548644592758170183">Зүүн талд харуулах</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Гар болон текстийн оролт</translation>
 <translation id="5553089923092577885">Гэрчилгээний бодлогын зураглал</translation>
@@ -5584,6 +5592,7 @@
 <translation id="6406303162637086258">Веб хөтөчийг дахин эхлүүлэх</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6406708970972405507">Тохиргоо - <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Нууц үг өөрчлөхөд тань туслах боломжийг Google Туслахад олгоно уу</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> дахь мэдээллээ унших, өөрчлөх</translation>
 <translation id="6410257289063177456">Зургийн файлууд</translation>
 <translation id="6410328738210026208">Сувгийг өөрчилж, үйлдвэрийн тохиргоонд нь оруулах</translation>
@@ -5967,6 +5976,7 @@
 <translation id="6781978626986383437">Linux-н нөөцлөлтийг цуцалсан</translation>
 <translation id="6782067259631821405">Буруу ПИН</translation>
 <translation id="6784523122863989144">Профайлыг дэмждэггүй</translation>
+<translation id="6785872064505734160">Chrome-н Google Туслах нь вебсайт дээрх үйлдлүүдийг танд зориулан гүйцээх боломжтой</translation>
 <translation id="6786747875388722282">Өргөтгөлүүд</translation>
 <translation id="6787097042755590313">Бусад таб</translation>
 <translation id="6787839852456839824">Компьютерийн гарын богино холбоос</translation>
@@ -8207,6 +8217,7 @@
 <translation id="8980345560318123814">Санал хүсэлтийн тайлан</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Гэмтсэн</translation>
 <translation id="8981825781894055334">Цаас дуусаж байна</translation>
+<translation id="8983018820925880511">Энэ шинэ профайлыг <ph name="DOMAIN" /> удирдана. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> нь <ph name="FILENAME" />-г засах боломжтой</translation>
 <translation id="8984694057134206124">Та бүх хүнд <ph name="MINUTES" /> минутын турш харагдана. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook-д зориулсан Steam-д тавтай морилно уу</translation>
@@ -8303,6 +8314,7 @@
 <translation id="9075413375877487220">Энэ өргөтгөлд Сайжруулсан аюулгүй хөтөч итгэдэггүй.</translation>
 <translation id="9076283476770535406">Үүнд насанд хүрэгсдэд зориулсан агуулга байж болзошгүй</translation>
 <translation id="9076523132036239772">Уучлаарай, таны и-мэйл болон нууц үгийг баталгаажуулж чадсангүй. Эхлээд сүлжээнд холбогдоно уу.</translation>
+<translation id="9076821103818989526">Хажуугийн самбар</translation>
 <translation id="9076977315710973122">SMB-г хуваалцах</translation>
 <translation id="9078193189520575214">Өөрчлөлтийг хэрэгжүүлж байна...</translation>
 <translation id="9078316009970372699">Шуурхай модем болгохыг идэвхгүй болгох</translation>

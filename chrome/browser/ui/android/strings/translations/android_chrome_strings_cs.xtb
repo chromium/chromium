@@ -218,7 +218,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="214888715418183969">Vyberte, co chcete sdílet s Chromem. Sdílené metriky budou použity k vylepšení funkcí, výkonu a stability Chromu.</translation>
 <translation id="2149973817440762519">Upravit záložku</translation>
 <translation id="2155214902713132423">Metoda ověření pro toto zařízení není k dispozici. Ve druhém zařízení vyberte jinou možnost.</translation>
-<translation id="2157851137955077194">Chcete-li něco z telefonu sdílet do jiného zařízení, zapněte v nastavení Chromu na obou zařízeních synchronizaci</translation>
 <translation id="2158408438301413340">Chromu se nepodařilo zkontrolovat všechna hesla</translation>
 <translation id="2169830938017475061">Teď</translation>
 <translation id="2172688499998841696">Popisy obrázků jsou vypnuté</translation>
@@ -662,7 +661,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4678082183394354975">V Chromu je pro weby zapnutý tmavý motiv</translation>
 <translation id="4684427112815847243">Synchronizovat vše</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}few{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}many{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}other{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> dalších}}</translation>
-<translation id="4696983787092045100">Odeslat text do vašich zařízení</translation>
 <translation id="4699172675775169585">Obrázky a soubory v mezipaměti</translation>
 <translation id="4719927025381752090">Nabízet překlad</translation>
 <translation id="4720023427747327413">Otevřít v aplikaci <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="8873817150012960745">Začnete klepnutím sem</translation>
 <translation id="8881973373982641723">Vymaže historii, včetně vyhledávacího pole.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Jak můžete své údaje spravovat:<ph name="END_BOLD" /> Abychom chránili vaše soukromí, weby starší než 4 měsíce ze seznamu automaticky mažeme. Web, který navštívíte znovu, se může na seznamu opět objevit. Pokud nechcete, aby nějaký web definoval vaše zájmy, můžete ho odstranit.</translation>
-<translation id="889338405075704026">Přejít do nastavení Chromu</translation>
 <translation id="8898822736010347272">Odesílá adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek do Googlu a pomáhá tak objevovat nové hrozby a chránit všechny uživatele internetu.</translation>
 <translation id="8906502871739599113">Reakce byla duplikována</translation>
 <translation id="8909135823018751308">Sdílet…</translation>
@@ -1498,7 +1495,6 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="8996847606757455498">Vybrat jiného poskytovatele</translation>
 <translation id="8998729206196772491">Přihlašujete se pomocí účtu spravovaného doménou <ph name="MANAGED_DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chrome. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z Chromu svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
 <translation id="9022774213089566801">Často navštěvované</translation>
-<translation id="9028914725102941583">Chcete-li umožnit sdílení mezi zařízeními, zapněte synchronizaci</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}few{# videa}many{# videa}other{# videí}}</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
 <translation id="9050666287014529139">Heslová fráze</translation>

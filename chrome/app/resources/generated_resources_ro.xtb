@@ -1269,6 +1269,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2180620921879609685">să blocheze conținutul din toate paginile</translation>
 <translation id="2182058453334755893">Copiat în clipboard</translation>
 <translation id="2184515124301515068">Permite Chrome să aleagă când site-urile pot reda sunet (recomandat)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Pagină trimisă de pe alt dispozitiv</translation>
 <translation id="2187675480456493911">Sincronizată cu alte dispozitive din contul tău. Setările modificate de alți utilizatori nu vor fi sincronizate. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Eroare de import a certificatului serverului</translation>
@@ -5581,6 +5582,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6406303162637086258">Simulați repornirea browserului</translation>
 <translation id="6406506848690869874">Sincronizare</translation>
 <translation id="6406708970972405507">Setări – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Schimbă parola cu ajutorul Asistentului Google</translation>
 <translation id="6408118934673775994">Citește și modifică datele de pe <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Fișiere imagine</translation>
 <translation id="6410328738210026208">Schimbați canalul și folosiți Powerwash</translation>
@@ -5966,6 +5968,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6781978626986383437">Backupul Linux a fost anulat</translation>
 <translation id="6782067259631821405">PIN nevalid</translation>
 <translation id="6784523122863989144">Profilul este acceptat</translation>
+<translation id="6785872064505734160">În Chrome, Asistentul Google poate să realizeze pentru tine acțiuni pe site-uri</translation>
 <translation id="6786747875388722282">Extensii</translation>
 <translation id="6787097042755590313">Altă filă</translation>
 <translation id="6787839852456839824">Comenzi rapide de la tastatură</translation>

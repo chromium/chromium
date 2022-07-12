@@ -3084,13 +3084,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4228745249339680042">Si estableces la política, se especificarán las URL y los dominios para los cuales no se mostrarán mensajes cuando se soliciten confirmaciones de certificaciones de las llaves de seguridad. Además, se enviará una señal a la llave de seguridad para indicar que se puede usar la certificación individual. Sin esto, se mostrará un mensaje a los usuarios que tengan <ph name="PRODUCT_NAME" /> 65 y versiones posteriores cuando los sitios soliciten certificaciones de llaves de seguridad.
 
       Las URL solo coincidirán como appID de U2F. Los dominios solo coincidirán como RP ID de webauthn. Por lo tanto, para abarcar las API de U2F y webauthn, deben incluirse el dominio y la URL de appID para un sitio determinado.</translation>
-<translation id="4239112794240794697">Esta política le da a Projector permiso para crear y transcribir grabaciones de pantalla y subirlas a Drive para usuarios empresariales.
-      Esta política no afecta a los usuarios de Family Link.
-      Esta política no afecta la política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para los usuarios de Family Link.
-
-      Si habilitas la política, se activará Projector.
-      Si inhabilitas la política, se desactivará Projector.
-      Si no estableces la política, se desactivará Projector de forma predeterminada.</translation>
 <translation id="4239720644496144453">Las apps de Android no usan caché. Si varios usuarios instalan la misma app de Android, se descargará una para cada usuario.</translation>
 <translation id="4247914291127524388">Si habilitas la política, se desactivará la sincronización de <ph name="GOOGLE_DRIVE_NAME" /> en la app de Archivos del <ph name="PRODUCT_OS_NAME" /> cuando el dispositivo tenga una conexión móvil. Los datos solo se sincronizarán con Drive si el dispositivo está conectado a una red Wi-Fi o Ethernet.
 
@@ -4638,13 +4631,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si la inhabilitas, los usuarios no podrán canjear esas ofertas.</translation>
 <translation id="6046615715547751255">No permitir los controles de informes detallados</translation>
 <translation id="6048199181629830227">Habilita la administración de carga fuera del horario de mayor consumo</translation>
-<translation id="6052730367191220066">Habilitar la migración de los dispositivos administrados por <ph name="MS_AD_NAME" /> a la administración en la nube Esta política permite el comienzo remoto de una migración sin contacto de varios dispositivos pertenecientes a una empresa. Además, la migración será lo más transparente posible para los usuarios finales.
-
-      Si se habilita esta política y ya se cargó la ID de inscripción al DMServer, se activará un Powerwash de dispositivo de manera remota.
-
-      Si se inhabilita esta política o no se establece, no se activará un Powerwash de dispositivo de manera remota, independientemente del estado de carga de la ID de inscripción.
-
-      Cada vez que carga la pantalla de acceso, se activa esta verificación y, luego, se vuelve a activar cada una hora (si el dispositivo sigue en la pantalla de acceso). Esto impide que la migración comience durante una sesión de usuario, lo que puede causar problemas para los usuarios finales.</translation>
 <translation id="6053681087509103368">Permitir que WebRTC use versiones obsoletas del protocolo TLD/DTLS</translation>
 <translation id="6058879286588763839">A menos que especifiques <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> (que anula <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />), si estableces <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, se especificará la política de administración de energía en el modo de carga de la batería (cuando lo admita el dispositivo). Para extender la duración de la batería, la política controlará de forma dinámica la carga de la batería y reducirá su desgaste debido al uso.
 
@@ -6245,11 +6231,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7687943045976362719">Si se configura esta política, <ph name="PRODUCT_FRAME_NAME" /> determinará los tipos de contenido especificados.
 
           Si no se configura esta política, se usará el procesador determinado en todos los sitios. (Se puede usar la política <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> para configurar este procesador).</translation>
-<translation id="7694245791806617022">Determina si se habilita la función "Recordar contraseña" en el cuadro de diálogo de la autenticación Kerberos. Las contraseñas se almacenan encriptadas en el disco, y solo puede acceder a ellas el daemon del sistema Kerberos durante la sesión de usuario.
-
-          Si se habilita esta política o no se establece, los usuarios podrán decidir si se recuerdan las contraseñas de Kerberos para no tener que ingresarlas de nuevo. Los tickets de Kerberos se recuperan automáticamente a menos que se requiera autenticación adicional (autenticación de dos factores).
-
-          Si se inhabilita esta política, las contraseñas no se recordarán nunca y se quitarán todas las contraseñas previamente almacenadas. Los usuarios deberán ingresar su contraseña cada vez que necesiten autenticación en el sistema Kerberos. Según la configuración del servidor, esta acción debe realizarse cada 8 horas o cada varios meses.</translation>
 <translation id="7694807474048279351">Programa un reinicio automático después de aplicar una actualización de <ph name="PRODUCT_OS_NAME" />.
 
       Si esta política se establece como verdadera, se programa un reinicio automático cuando se aplica una actualización de <ph name="PRODUCT_OS_NAME" /> y se requiere un reinicio para completar el proceso de actualización. El reinicio se programa de inmediato, pero puede demorarse en el dispositivo hasta 24 horas si un usuario está usando el dispositivo en ese momento.

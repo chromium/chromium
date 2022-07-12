@@ -11,6 +11,7 @@
 <translation id="1120073797882051782">Romaja de hangul</translation>
 <translation id="112387589102719461">Anglès (EUA) amb teclat Dvorak per a programadors</translation>
 <translation id="1134697384939541955">Anglès (EUA) amb teclat ampliat</translation>
+<translation id="1138691154716715755">Aquest mes</translation>
 <translation id="1148097584170732637">S'han trobat <ph name="FILE_COUNT" />.
     <ph name="LINE_BREAK1" />
     No hi ha prou espai disponible a l'emmagatzematge local. Cal tenir <ph name="FILE_SIZE" /> més.
@@ -378,6 +379,7 @@
 <translation id="4380245540200674032">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, gestionada per l'administrador, detalls</translation>
 <translation id="4387004326333427325">S'ha rebutjat el certificat d'autenticació de manera remota</translation>
 <translation id="4394214039309501350">Enllaç extern</translation>
+<translation id="4394980935660306080">Aquesta setmana</translation>
 <translation id="4401287888955153199">Extreu-ho tot</translation>
 <translation id="4410695710508688828">L'operació d'extracció ha fallat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Crea una drecera per als fitxers</translation>
@@ -421,6 +423,7 @@
 <translation id="4712283082407695269">S'està obrint <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Xarxa de dades mòbils</translation>
 <translation id="4724850507808590449">S'ha creat una còpia de seguretat de <ph name="FILE_COUNT" /> fotos</translation>
+<translation id="4725096204469550614">Aquest any</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Aterratge</translation>
 <translation id="4747271164117300400">Macedoni</translation>

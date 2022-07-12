@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">Список для чтения</translation>
 <translation id="1264309058268477500">Другой</translation>
 <translation id="1264974993859112054">Спорт</translation>
+<translation id="1266469291454105242">Разблокировка устройства</translation>
 <translation id="1269516672602708785">Быстро создать сайт в Google Сайтах</translation>
 <translation id="1270502636509132238">Способ получения</translation>
 <translation id="1281476433249504884">Укладчик 1</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">Встречи и знакомства</translation>
 <translation id="1753706481035618306">Номер страницы</translation>
 <translation id="1755621011177747277">Усыновление/удочерение</translation>
+<translation id="1756026472674246267">Открыть ссылку в новой вкладке</translation>
 <translation id="175656076281618225">Магия</translation>
 <translation id="1757773103848038814">Моноширинный шрифт</translation>
 <translation id="1763864636252898013">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Операционная система устройства не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">Отменить оплату</translation>
 <translation id="2148613324460538318">Добавить карту</translation>
 <translation id="2149968176347646218">Подключение не защищено</translation>
+<translation id="2153609454945889823">Установить Сервисы Google Play для AR?</translation>
 <translation id="2154054054215849342">В вашем домене синхронизация недоступна</translation>
 <translation id="2154484045852737596">Изменение данных карты</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -831,6 +834,7 @@
 <translation id="3229277193950731405">Скопировать строку с версией</translation>
 <translation id="323107829343500871">Введите CVC-код карты <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Всегда находить важный контент на этом сайте</translation>
+<translation id="3238395604961564389">Открыть ссылку в режиме инкогнито</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить внешний вид браузера.</translation>
 <translation id="3240791268468473923">Экран несоответствия учетных данных для защищенных платежей открыт</translation>
 <translation id="324180406144491771">Ссылки "<ph name="HOST_NAME" />" заблокированы</translation>
@@ -944,6 +948,7 @@
 <translation id="3531780078352352885">Листы задания</translation>
 <translation id="3532844647053365774">Сайт <ph name="HOST" /> запрашивает доступ к микрофону.</translation>
 <translation id="3533328374079021623">Почтовый ящик 5</translation>
+<translation id="3542768452570884558">Открыть ссылку в новом окне</translation>
 <translation id="3550112004925580947">Индустрия гостеприимства</translation>
 <translation id="3552297013052089404">Шрифт без засечек</translation>
 <translation id="3558573058928565255">До дня</translation>
@@ -1114,11 +1119,13 @@
 <translation id="4040350669425716613">Колледжи и университеты</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">Ключ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Использовать разблокировку устройства для быстрого подтверждения карт</translation>
 <translation id="4067098466788473230">Гранты на образование и стипендии</translation>
 <translation id="4067263367174615723">C1 (конверт)</translation>
 <translation id="4067947977115446013">Введите действительный адрес</translation>
 <translation id="4072193657607981494">Загрузка правил</translation>
 <translation id="4072486802667267160">При обработке заказа произошла ошибка. Повторите попытку.</translation>
+<translation id="4073376909608563327">Не удалось разблокировать устройство</translation>
 <translation id="4073797364926776829">Посмотреть карту</translation>
 <translation id="4075732493274867456">Клиент и сервер поддерживают разные версии протокола SSL или набора шифров.</translation>
 <translation id="4079302484614802869">Конфигурация прокси-сервера предусматривает использование URL PAC-скриптов вместо фиксированных прокси-серверов.</translation>
@@ -1411,6 +1418,7 @@
 <translation id="4840250757394056958">Посмотреть историю Chrome</translation>
 <translation id="484462545196658690">Выбрать автоматически</translation>
 <translation id="484671803914931257">Получите скидку в магазине "<ph name="MERCHANT_NAME" />" и у других продавцов</translation>
+<translation id="484988093836683706">Использовать разблокировку устройства</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
 <translation id="4852429274334674023">Операционные системы</translation>
 <translation id="485316830061041779">Немецкий</translation>
@@ -1798,6 +1806,7 @@
 <translation id="5921185718311485855">ВКЛ</translation>
 <translation id="5921639886840618607">Сохранить карту в аккаунте Google?</translation>
 <translation id="5922853866070715753">Почти готово…</translation>
+<translation id="5923492272538889093">Использовать разблокировку устройства вместо CVC-кода?</translation>
 <translation id="5928444777041341328">Дом и сад</translation>
 <translation id="5932224571077948991">Сайт показывает навязчивую или вводящую в заблуждение рекламу</translation>
 <translation id="5937560539988385583">Страница переведена</translation>
@@ -1971,6 +1980,7 @@
 <translation id="643051589346665201">Изменить пароль Google</translation>
 <translation id="6433490469411711332">Изменить контактную информацию</translation>
 <translation id="6433595998831338502">Сайт <ph name="HOST_NAME" /> не позволяет установить соединение.</translation>
+<translation id="6433797564277305076">Подтверждайте карты быстрее с помощью разблокировки устройства.</translation>
 <translation id="6440503408713884761">Пропускается</translation>
 <translation id="6443406338865242315">Установленные расширения и плагины.</translation>
 <translation id="6446163441502663861">Kahu (конверт)</translation>
@@ -2177,6 +2187,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Сейчас сохранить эту карту нельзя.}one{Сейчас сохранить эти карты нельзя.}few{Сейчас сохранить эти карты нельзя.}many{Сейчас сохранить эти карты нельзя.}other{Сейчас сохранить эти карты нельзя.}}</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7058163556978339998">Данные браузера <ph name="BROWSER" /> подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
+<translation id="7058774143982824355">Сервис синтаксического анализа паролей в файлах CSV</translation>
 <translation id="7061777300866737982">Обеспечение безопасности и охрана дома</translation>
 <translation id="7062635574500127092">Бирюзовый</translation>
 <translation id="706295145388601875">Добавить и изменить адреса в настройках Chrome</translation>
@@ -2441,6 +2452,7 @@
 <translation id="7696089921647603491">Классический рок и старые популярные песни</translation>
 <translation id="7697066736081121494">Prc8 (конверт)</translation>
 <translation id="769721561045429135">Сейчас ваши карты можно использовать только на этом устройстве. Чтобы посмотреть информацию о них, нажмите "Продолжить".</translation>
+<translation id="7698864304447945242">Обновить Сервисы Google Play для AR?</translation>
 <translation id="7699293099605015246">Статьи пока недоступны</translation>
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Перейти на сайт <ph name="SITE" /> (небезопасно)<ph name="END_LINK" /></translation>
@@ -2453,6 +2465,7 @@
 <translation id="7723047071702270851">Измените данные карты</translation>
 <translation id="7734285854693414638">Быстро создать форму в Google Формах</translation>
 <translation id="773466115871691567">Переводить страницы на этом языке: <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="7736959720849233795">Копировать адрес ссылки</translation>
 <translation id="7740996059027112821">Стандартный</translation>
 <translation id="77424286611022110">Этот сайт показывает навязчивую или вводящую в заблуждение рекламу. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Опасный контент заблокирован</translation>

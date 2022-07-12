@@ -218,7 +218,6 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="214888715418183969">Chagua data ambayo ungependa kushiriki na Chrome. Data utakayoshiriki itatumiwa kuboresha vipengele, utendaji na uthabiti wa Chrome.</translation>
 <translation id="2149973817440762519">Badilisha Alamisho</translation>
 <translation id="2155214902713132423">Njia hii ya uthibitishaji haipatikani kwenye kifaa hiki. Teua chaguo tofauti kwenye kifaa chako kingine.</translation>
-<translation id="2157851137955077194">Ili ushiriki kitu kutoka simu yako hadi kifaa kingine, washa usawazishaji katika mipangilio ya Chrome kwenye vifaa vyote viwili</translation>
 <translation id="2158408438301413340">Chrome imeshindwa kukagua manenosiri yote</translation>
 <translation id="2169830938017475061">Sasa</translation>
 <translation id="2172688499998841696">Kipengele cha maelezo ya picha kimezimwa</translation>
@@ -662,7 +661,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4678082183394354975">Mandhari meusi ya tovuti yamewashwa katika Chrome</translation>
 <translation id="4684427112815847243">Sawazisha kila kitu</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> zaidi}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> zaidi}}</translation>
-<translation id="4696983787092045100">Tuma maandishi kwenye Vifaa Vyako</translation>
 <translation id="4699172675775169585">Picha na faili zilizoakibishwa</translation>
 <translation id="4719927025381752090">Jitolee kutafsiri</translation>
 <translation id="4720023427747327413">Fungua katika <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="8873817150012960745">Gusa hapa ili uanze</translation>
 <translation id="8881973373982641723">Hufuta historia, ikiwa ni pamoja na iliyo kwenye kisanduku cha kutafutia.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Ili kulinda faragha yako, tunafuta kiotomatiki tovuti zilizohifadhiwa kwenye orodha kwa zaidi ya wiki nne. Tovuti unayoitembelea tena huenda ikaonekana tena kwenye orodha. Au unaweza kuondoa tovuti iwapo usingependa tovuti hiyo itambue tena mambo yanayokuvutia.</translation>
-<translation id="889338405075704026">Nenda kwenye mipangilio ya Chrome</translation>
 <translation id="8898822736010347272">Hutuma URL za baadhi ya kurasa unazotembelea, maelezo machache ya mfumo na baadhi ya maudhui ya kurasa kwa Google, ili kusaidia kugundua na kuzuia vitisho vipya na kulinda kila mtu kwenye wavuti.</translation>
 <translation id="8906502871739599113">Maoni yamejirudia</translation>
 <translation id="8909135823018751308">Shiriki...</translation>
@@ -1498,7 +1495,6 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="8996847606757455498">Chagua mtoa huduma mwingine</translation>
 <translation id="8998729206196772491">Unaingia kwa kutumia akaunti inayodhibitiwa na <ph name="MANAGED_DOMAIN" /> na kumpa msimamizi wa kikoa hicho udhibiti wa data yako ya Chrome. Data yako ya Chrome itahusishwa na akaunti hii daima. Kuondoka kwenye Chrome kutafuta data yako kwenye kifaa hiki, lakini itaendelea kuhifadhiwa katika Akaunti yako ya Google.</translation>
 <translation id="9022774213089566801">Unazotembelea mara kwa mara</translation>
-<translation id="9028914725102941583">Washa usawazishaji ili ushiriki kwenye vifaa vyote</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{Video #}other{Video #}}</translation>
 <translation id="9042893549633094279">Faragha na usalama</translation>
 <translation id="9050666287014529139">Kaulisiri</translation>

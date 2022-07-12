@@ -3067,13 +3067,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4228745249339680042">Lorsqu'elle est configurée, cette règle permet de spécifier les URL et les domaines pour lesquels aucune boîte de dialogue ne s'affiche lorsque les certificats d'attestation de la clé de sécurité sont demandés. Un signal est également envoyé à la clé de sécurité pour indiquer qu'une attestation individuelle peut être utilisée. Sans cela, dans <ph name="PRODUCT_NAME" /> 65 et versions ultérieures, les utilisateurs sont avertis lorsque des sites demandent une attestation des clés de sécurité.
 
       Les URL ne sont reconnues que comme des identifiants d'application U2F. Les domaines ne sont reconnus que comme des identifiants RP WebAuthn. Ainsi, pour couvrir à la fois les API U2F et WebAuthn d'un site donné, vous devez préciser l'URL et le domaine de l'identifiant d'application.</translation>
-<translation id="4239112794240794697">Cette règle autorise Projector à créer et transcrire un enregistrement d'écran et à l'importer dans Drive pour les utilisateurs gérés par une entreprise.
-      Cette règle n'affecte pas les utilisateurs de Family Link.
-      Cette règle n'affecte pas la règle <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> pour les utilisateurs de Family Link.
-
-      Si elle est activée, Projector sera activé.
-      Si elle est désactivée, Projector sera désactivé.
-      Si la règle n'est pas configurée, Projector sera désactivé par défaut.</translation>
 <translation id="4239720644496144453">Le cache n'est pas utilisé pour les applications Android. Si plusieurs utilisateurs installent la même application Android, celle-ci sera à nouveau téléchargée pour chacun d'eux.</translation>
 <translation id="4247914291127524388">Si cette règle est activée, <ph name="GOOGLE_DRIVE_NAME" /> ne se synchronise pas avec l'application Fichiers sur <ph name="PRODUCT_OS_NAME" /> lorsque l'utilisateur est connecté à un réseau mobile. Les données sont seulement synchronisées avec Google Drive si l'utilisateur est connecté à un réseau Wi-Fi ou Ethernet.
 
@@ -4608,13 +4601,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si elle est désactivée, ils ne peuvent pas en bénéficier.</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
-<translation id="6052730367191220066">Activez la migration des appareils gérés <ph name="MS_AD_NAME" /> vers la gestion dans le cloud. Cette règle permet de démarrer à distance la migration sans contact de plusieurs appareils d'une même entreprise. De plus, la migration sera aussi discrète que possible pour les utilisateurs finaux.
-
-      Si la règle est activée et que l'identifiant d'enregistrement a déjà été importé dans le DMServer, un Powerwash de l'appareil sera déclenché à distance.
-
-      Si la règle est désactivée ou si elle n'est pas définie, le Powerwash à distance ne sera pas déclenché, que l'identifiant d'enregistrement ait été importé ou non.
-
-      Cette vérification est déclenchée dès que l'écran de connexion est chargé, puis retentée toutes les heures (si l'écran de connexion reste affiché). Cela empêche le démarrage d'une migration lors d'une session utilisateur, ce qui risquerait de poser problème aux utilisateurs finaux.</translation>
 <translation id="6053681087509103368">Autoriser WebRTC à utiliser des versions obsolètes du protocole TLD/DTLS</translation>
 <translation id="6058879286588763839">La règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />" permet de gérer l'alimentation suivant le mode de recharge de la batterie (si l'appareil le permet), sauf si la règle "<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />" est spécifiée et remplace ainsi la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />". Pour prolonger l'autonomie de la batterie, cette règle contrôle dynamiquement la recharge de la batterie en réduisant au maximum les contraintes et l'usure.
 
@@ -6202,11 +6188,6 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 
 
 Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous les sites. (La règle <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> peut être utilisée pour configurer le moteur de rendu par défaut.)</translation>
-<translation id="7694245791806617022">Permet de contrôler si la fonctionnalité "Mémoriser le mot de passe" est activée ou non dans la boîte de dialogue d'authentification Kerberos. Les mots de passe sont stockés chiffrés sur le disque, et ne sont accessibles qu'au démon du système Kerberos et pendant une session utilisateur.
-
-          Si cette règle est activée ou si elle n'est pas définie, les utilisateurs peuvent décider de mémoriser les mots de passe Kerberos afin de ne pas avoir à les saisir de nouveau. Les tickets Kerberos sont récupérés automatiquement, sauf si une authentification supplémentaire est requise (authentification à deux facteurs).
-
-          Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés et tous ceux qui l'ont été précédemment sont supprimés. Les utilisateurs doivent saisir leur mot de passe à chaque authentification auprès du système Kerberos. De manière générale, la fréquence d'authentification est comprise entre huit heures et plusieurs mois selon les paramètres du serveur.</translation>
 <translation id="7694807474048279351">Planifie un démarrage automatique après une mise à jour de <ph name="PRODUCT_OS_NAME" />.
 
       Si vous définissez cette règle sur "True", un démarrage automatique est planifié après la mise à jour de <ph name="PRODUCT_OS_NAME" /> et le redémarrage de l'appareil. Le redémarrage est planifié immédiatement, mais peut être reporté de 24 heures

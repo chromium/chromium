@@ -165,6 +165,7 @@
 <translation id="1882897271359938046">Пресликавање у <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Откључајте отиском прста</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не подржава резолуцију <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Резолуција је промењена у <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Да бисте задржали промене, кликните на Потврди. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1908992311423394684">Ново инсталирање</translation>
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1918022425394817322">Камера је уклопљена у горњи десни угао</translation>
 <translation id="1919743966458266018">Пречица за отварање менаџера задатака је промењена. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>

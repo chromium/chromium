@@ -218,7 +218,6 @@
 <translation id="214888715418183969">ለChrome ለማጋራት የሚመችዎትን ይምረጡ። የሚያጋሯቸው መለኪያዎች የChromeን ባህሪዎች፣ አፈፃፀም እና መረጋጋትን ለማሻሻል ጥቅም ላይ ይውላሉ።</translation>
 <translation id="2149973817440762519">እልባት አርትዕ</translation>
 <translation id="2155214902713132423">ይህ የማረጋገጫ ዘዴ ለዚህ መሣሪያ አይገኝም። በሌላ መሣሪያዎ ላይ ሌላ አማራጭ ይምረጡ።</translation>
-<translation id="2157851137955077194">የሆነ ነገር ከስልክዎ ወደ ሌላ መሣሪያ ለማጋራት በሁለቱም መሣሪያዎች ላይ በChrome ቅንብሮች ውስጥ ስምረትን ያብሩ</translation>
 <translation id="2158408438301413340">Chrome ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም</translation>
 <translation id="2169830938017475061">አሁን</translation>
 <translation id="2172688499998841696">የምስል መግለጫዎች ጠፍተዋል</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">ለጣቢያዎች ጠቆር ያለ ገጽታ በChrome ውስጥ በርቷል</translation>
 <translation id="4684427112815847243">ሁሉንም ያመሳስሉ</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ተጨማሪ}}</translation>
-<translation id="4696983787092045100">ጽሑፍ ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="4699172675775169585">የተሸጎጡ ምስሎች እና ፋይሎች</translation>
 <translation id="4719927025381752090">ለመተርጎም ጥያቄ አቅርብ</translation>
 <translation id="4720023427747327413">በ<ph name="PRODUCT_NAME" /> ውስጥ ክፈት</translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">ለመጀመር እዚህ መታ ያድርጉ</translation>
 <translation id="8881973373982641723">በፍለጋ ሳጥኑ ውስጥ ጨምሮ ታሪክን ያጸዳል።</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />የእርስዎን ውሂብ እንዴት ማቀናበር እንደሚችሉ፦<ph name="END_BOLD" /> የእርስዎን ግላዊነት ለመጠበቅ ከ4 ሳምንታት በላይ የቆዩ ጣቢያዎችን ከዝርዝሩ ውስጥ በራስ-ሰር እንሰርዛለን። እንደገና የሚጎበኙት ጣቢያ እንደገና በዝርዝሩ ላይ ሊታይ ይችላል። ወይም ጣቢያው ለእርስዎ ዝንባሌዎችን እንዲገልጽ ካልፈለጉ ጣቢያን ማስወገድ ይችላሉ።</translation>
-<translation id="889338405075704026">ወደ የChrome ቅንብሮች ይሂዱ</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
 <translation id="8906502871739599113">ምላሽ ተባዝቷል</translation>
 <translation id="8909135823018751308">አጋራ…</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">ሌላ አቅራቢ ይምረጡ</translation>
 <translation id="8998729206196772491">በ<ph name="MANAGED_DOMAIN" /> ወደሚተዳደር መለያ እየገቡና ሙሉውን የChrome ውሂብዎ ቁጥጥር ለአስተዳዳሪው እየሰጡ ነው። የእርስዎ ውሂብ እስከመጨረሻው ከዚህ መለያ ጋር ይተሳሰራል። ከChrome ዘግቶ መውጣት ውሂብዎን ከዚህ መሣሪያ ይሰርዘዋል፣ ነገር ግን በእርስዎ የGoogle መለያ ላይ እንደተከማቸ ይቆያል።</translation>
 <translation id="9022774213089566801">በተደጋጋሚነት የተጎበኙ</translation>
-<translation id="9028914725102941583">በተለያዩ መሣሪያዎች ላይ ለማጋራት ስምረትን ያብሩ</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ቪዲዮ}one{# ቪዲዮዎች}other{# ቪዲዮዎች}}</translation>
 <translation id="9042893549633094279">ግላዊነት እና ደኅንነት</translation>
 <translation id="9050666287014529139">የይለፍ ሐረግ</translation>

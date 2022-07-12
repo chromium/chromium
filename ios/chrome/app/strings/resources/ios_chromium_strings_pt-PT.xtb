@@ -74,6 +74,7 @@
 <translation id="5945387852661427312">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chromium. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chromium elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
 <translation id="5983312940147103417">Melhore o Chromium</translation>
 <translation id="602807004951640891">Ao utilizar o Chromium, aceita os <ph name="BEGIN_LINK_TOS" />Termos de Utilização<ph name="END_LINK_TOS" />.</translation>
+<translation id="6062449165341879460">A sua organização <ph name="DOMAIN" /> vai ter acesso aos seus dados do Chromium, marcadores, histórico, palavras-passe e outras definições que armazenar nesta conta. Quando terminar sessão, os dados são limpos deste dispositivo.  No entanto, os dados permanecem armazenados na sua Conta Google gerida e ficam disponíveis para a sua organização. A sua organização também pode definir Políticas do Utilizador específicas dessa conta que podem alterar o comportamento do Chromium.</translation>
 <translation id="6119647025869519954">Para definir o Chromium como o navegador predefinido:
 1. Abra as Definições
 2. Toque em App de navegador predefinida

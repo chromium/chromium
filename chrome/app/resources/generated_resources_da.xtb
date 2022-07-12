@@ -2549,7 +2549,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Der er ikke gemt nogen adgangskoder til dette website</translation>
 <translation id="3404249063913988450">Aktivér Pauseskærm</translation>
-<translation id="3405664148539009465">Tilpas skriftstørrelser</translation>
+<translation id="3405664148539009465">Tilpas skrifttyper</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Har tilladelse til at bruge virtual reality-enheder og -data</translation>
 <translation id="3406396172897554194">Søg efter sproget eller navnet på indtastningsmetoden</translation>
@@ -5590,6 +5590,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6406303162637086258">Simuler genstart af browser</translation>
 <translation id="6406506848690869874">Synkronisering</translation>
 <translation id="6406708970972405507">Indstillinger – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Lad Google-assistenten hjælpe dig med at skifte adgangskode</translation>
 <translation id="6408118934673775994">Læse og redigere dine data på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Billedfiler</translation>
 <translation id="6410328738210026208">Skift kanal og powerwash</translation>
@@ -5975,6 +5976,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6781978626986383437">Linux-sikkerhedskopieringen blev annulleret</translation>
 <translation id="6782067259631821405">Ugyldig pinkode</translation>
 <translation id="6784523122863989144">Profilen understøttes</translation>
+<translation id="6785872064505734160">Google Assistent i Chrome kan udføre handlinger for dig på websites</translation>
 <translation id="6786747875388722282">Udvidelser</translation>
 <translation id="6787097042755590313">Anden fane</translation>
 <translation id="6787839852456839824">Tastaturgenveje</translation>

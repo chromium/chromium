@@ -218,7 +218,6 @@
 <translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आप जो मेट्रिक शेयर करते हैं उसका इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में किया जाएगा. साथ ही, इसका इस्तेमाल क्रैश होने जैसी दिक्कतों को ठीक करने में भी होगा.</translation>
 <translation id="2149973817440762519">बुकमार्क में बदलाव करें</translation>
 <translation id="2155214902713132423">इस डिवाइस पर, पुष्टि का यह तरीका इस्तेमाल नहीं किया जा सकता. अपने दूसरे डिवाइस पर, पुष्टि का कोई दूसरा तरीका चुनें.</translation>
-<translation id="2157851137955077194">अपने फ़ोन से किसी दूसरे डिवाइस पर कुछ शेयर करने के लिए, दोनों डिवाइस पर Chrome की सेटिंग में जाकर सिंक की सुविधा चालू करें</translation>
 <translation id="2158408438301413340">Chrome सभी पासवर्ड की जांच नहीं कर सका</translation>
 <translation id="2169830938017475061">अभी</translation>
 <translation id="2172688499998841696">इमेज की जानकारी जोड़ने की सुविधा बंद कर दी गई है</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">Chrome में साइटों के लिए, गहरे रंग वाली थीम चालू है</translation>
 <translation id="4684427112815847243">सब कुछ सिंक करें</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
-<translation id="4696983787092045100">अपने डिवाइस पर मैसेज भेजें</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> में खोलें</translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">शुरू करने के लिए, यहां टैप करें</translation>
 <translation id="8881973373982641723">ब्राउज़िंग का इतिहास मिटाता है और इसमें खोज बॉक्स का ब्राउज़िंग इतिहास भी शामिल है.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />अपना डेटा कैसे मैनेज करें:<ph name="END_BOLD" /> आपकी निजता को सुरक्षित रखने के लिए, हम सूची से उन साइटों को ऑटोमैटिकली मिटा देते हैं जिन्हें चार हफ़्ते से पहले देखा गया था. अगर आपने किसी साइट को फिर से देखा है, तो उसे सूची में दोबारा शामिल किया जा सकता है. इसके अलावा, जिस साइट को पसंद के विषयों का अनुमान लगाने वाली सूची में शामिल नहीं करवाना है उसे हटाया भी जा सकता है.</translation>
-<translation id="889338405075704026">Chrome की सेटिंग में जाएं</translation>
 <translation id="8898822736010347272">आप जिन पेजों पर जाते हैं उनमें से कुछ के यूआरएल, सिस्टम की सीमित जानकारी, और पेज की कुछ सामग्री को यह Google को भेजता है. ऐसा इसलिए जिससे कि नए खतरों को खोजा जा सके और वेब पर सभी सुरक्षित रहें.</translation>
 <translation id="8906502871739599113">प्रतिक्रिया डुप्लीकेट है</translation>
 <translation id="8909135823018751308">शेयर करें…</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">सेवा देने वाली कोई और कंपनी चुनें</translation>
 <translation id="8998729206196772491">आप <ph name="MANAGED_DOMAIN" /> से प्रबंधित खाते में साइन इन कर रहे हैं और उसके एडमिन को अपने Chrome डेटा पर नियंत्रण दे रहे हैं. आपका डेटा इस खाते से स्थायी रूप से जुड़ जाएगा. Chrome से साइन आउट करने से आपका डेटा इस डिवाइस से मिट जाएगा, लेकिन वह आपके Google खाते में बना रहेगा.</translation>
 <translation id="9022774213089566801">अक्सर देखी जाने वाली वेबसाइटें</translation>
-<translation id="9028914725102941583">सभी डिवाइस पर शेयर करने के लिए सिंक की सुविधा चालू करें</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# वीडियो}one{# वीडियो}other{# वीडियो}}</translation>
 <translation id="9042893549633094279">निजता और सुरक्षा</translation>
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>

@@ -116,6 +116,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1264309058268477500">Alternativo</translation>
 <translation id="1264974993859112054">Desporto</translation>
+<translation id="1266469291454105242">Desbloqueio do dispositivo</translation>
 <translation id="1269516672602708785">Crie rapidamente um novo site no Google Sites</translation>
 <translation id="1270502636509132238">Método de recolha</translation>
 <translation id="1281476433249504884">Empilhador 1</translation>
@@ -330,6 +331,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1753068535428855445">Encontros e anúncios pessoais</translation>
 <translation id="1753706481035618306">Número de página</translation>
 <translation id="1755621011177747277">Adoção</translation>
+<translation id="1756026472674246267">Abrir link num novo separador</translation>
 <translation id="175656076281618225">Magia</translation>
 <translation id="1757773103848038814">Tipo de letra de monoespaço</translation>
 <translation id="1763864636252898013">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o sistema operativo do seu dispositivo não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
@@ -455,6 +457,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="214556005048008348">Cancelar pagamento</translation>
 <translation id="2148613324460538318">Adicionar cartão</translation>
 <translation id="2149968176347646218">A ligação não é segura</translation>
+<translation id="2153609454945889823">Instalar os Serviços do Google Play para realidade aumentada?</translation>
 <translation id="2154054054215849342">A sincronização não está disponível para o domínio</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -832,6 +835,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3229277193950731405">Copiar string da versão</translation>
 <translation id="323107829343500871">Introduzir o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detetar sempre conteúdo importante neste site</translation>
+<translation id="3238395604961564389">Abrir link numa janela de navegação anónima</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar o aspeto do seu navegador</translation>
 <translation id="3240791268468473923">A página de credenciais de pagamento seguro sem correspondência com as credenciais está aberta</translation>
 <translation id="324180406144491771">Os links do anfitrião "<ph name="HOST_NAME" />" estão bloqueados</translation>
@@ -945,6 +949,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3531780078352352885">Folhas da tarefa</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> pretende utilizar o seu microfone.</translation>
 <translation id="3533328374079021623">Caixa de correio 5</translation>
+<translation id="3542768452570884558">Abrir link numa nova janela</translation>
 <translation id="3550112004925580947">Indústria hoteleira</translation>
 <translation id="3552297013052089404">Tipo de letra Sans Serif</translation>
 <translation id="3558573058928565255">Dia e hora</translation>
@@ -1115,11 +1120,13 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4040350669425716613">Universidades</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Chave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Usar o desbloqueio do dispositivo para confirmar os cartões mais rapidamente</translation>
 <translation id="4067098466788473230">Subsídios e bolsas para estudantes</translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">Adicionar endereço válido</translation>
 <translation id="4072193657607981494">A carregar políticas…</translation>
 <translation id="4072486802667267160">Ocorreu um erro ao processar a sua encomenda. Tente novamente.</translation>
+<translation id="4073376909608563327">Não foi possível usar o desbloqueio do dispositivo</translation>
 <translation id="4073797364926776829">Ver cartão</translation>
 <translation id="4075732493274867456">O cliente e o servidor não suportam uma versão do protocolo SSL ou um conjunto de cifras comum.</translation>
 <translation id="4079302484614802869">A configuração do proxy está definida para utilizar um URL de script .pac e não servidores proxy fixos.</translation>
@@ -1412,6 +1419,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4840250757394056958">Ver o Histórico do Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Obtenha descontos no comerciante <ph name="MERCHANT_NAME" /> e outros</translation>
+<translation id="484988093836683706">Usar desbloqueio do dispositivo</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4852429274334674023">Sistemas operativos</translation>
 <translation id="485316830061041779">Alemão</translation>
@@ -1799,6 +1807,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5921185718311485855">Ativado</translation>
 <translation id="5921639886840618607">Pretende guardar o cartão na Conta Google?</translation>
 <translation id="5922853866070715753">Estamos quase a terminar</translation>
+<translation id="5923492272538889093">Usar o desbloqueio do dispositivo em vez do Código de Segurança/CVC?</translation>
 <translation id="5928444777041341328">Casa e jardim</translation>
 <translation id="5932224571077948991">O site apresenta anúncios intrusivos ou enganadores.</translation>
 <translation id="5937560539988385583">Página traduzida</translation>
@@ -1972,6 +1981,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="643051589346665201">Alterar palavra-passe Google</translation>
 <translation id="6433490469411711332">Editar informações de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> recusou estabelecer ligação.</translation>
+<translation id="6433797564277305076">Confirme os seus cartões mais rapidamente ao usar o desbloqueio do dispositivo a partir de agora</translation>
 <translation id="6440503408713884761">Ignorado</translation>
 <translation id="6443406338865242315">As extensões e os plug-ins que instalou.</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -2178,6 +2188,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{De momento, não é possível guardar este cartão.}other{De momento, não é possível guardar estes cartões.}}</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7058163556978339998">O <ph name="BROWSER" /> confirmou que a <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
+<translation id="7058774143982824355">Serviço do analisador de palavras-passe CSV</translation>
 <translation id="7061777300866737982">Segurança em casa</translation>
 <translation id="7062635574500127092">Azul esverdeado</translation>
 <translation id="706295145388601875">Adicione e faça a gestão de endereços nas Definições do Chrome.</translation>
@@ -2441,6 +2452,7 @@ Detalhes adicionais:
 <translation id="7696089921647603491">Rock clássico e músicas antigas</translation>
 <translation id="7697066736081121494">Prc8 (Envelope)</translation>
 <translation id="769721561045429135">De momento, tem cartões que apenas podem ser utilizados neste dispositivo. Clique em Continuar para rever os cartões.</translation>
+<translation id="7698864304447945242">Atualizar os Serviços do Google Play para realidade aumentada?</translation>
 <translation id="7699293099605015246">De momento, não estão disponíveis artigos</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Prosseguir para <ph name="SITE" /> (não seguro)<ph name="END_LINK" /></translation>
@@ -2453,6 +2465,7 @@ Detalhes adicionais:
 <translation id="7723047071702270851">Editar cartão</translation>
 <translation id="7734285854693414638">Crie rapidamente um novo formulário no Google Forms</translation>
 <translation id="773466115871691567">Traduza sempre páginas em <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="7736959720849233795">Copiar endereço do link</translation>
 <translation id="7740996059027112821">Padrão</translation>
 <translation id="77424286611022110">Este site apresenta anúncios intrusivos ou enganadores. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Conteúdo perigoso bloqueado.</translation>

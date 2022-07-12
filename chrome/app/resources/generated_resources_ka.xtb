@@ -1247,6 +1247,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi-ს დამატება…</translation>
 <translation id="2162155940152307086">სინქრონიზაცია დაიწყება სინქრონიზაციის პარამეტრებიდან გამოსვლის შემდეგ</translation>
+<translation id="2162705204091149050">ინფორმაციის წაკითხვა თქვენი ბრაუზერის, ოპერაციული სისტემის, მოწყობილობის, დაინსტალირებული პროგრამული უზრუნველყოფისა და ფაილების შესახებ</translation>
 <translation id="2162926944953615670">eSIM-პროფილები მიუწვდომელია</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" />-ის მეშვეობით შესასვლელად, გთხოვთ, დაუკავშირდეთ ინტერნეტს.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> და 1 სხვა გადამრთველი</translation>
@@ -2493,6 +2494,7 @@
 <translation id="3359256513598016054">სერტიფიკატის პოლიტიკის შეზღუდვები</translation>
 <translation id="3360297538363969800">ბეჭდვა ვერ მოხერხდა. შეამოწმეთ პრინტერი და ხელახლა სცადეთ.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-ის მიერ თქვენთან ზიარდება <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" />-ის მიერ თქვენთან ზიარდება <ph name="ATTACHMENTS" />.}}</translation>
+<translation id="3363202073972776113">ამ ახალი პროფილის მმართველი იქნება თქვენი ორგანიზაცია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">თქვენი ადმინისტრატორისგან: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">გამოიყენეთ Ctrl ან Alt</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
@@ -2527,6 +2529,7 @@
 <translation id="339722927132407568">იჭედება</translation>
 <translation id="3399432415385675819">შეტყობინებები გაითიშება</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ჰერცი) — ინტერლეისით</translation>
+<translation id="3401484564516348917">ინფორმაციის წაკითხვა თქვენი ბრაუზერის, ოპერაციული სისტემის, მოწყობილობის, დაინსტალირებული პროგრამული უზრუნველყოფის, რეესტრის მნიშვნელობებისა და ფაილების შესახებ</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{ამ მოწყობილობაზე შენახულია {COUNT} პაროლი}other{ამ მოწყობილობაზე შენახულია {COUNT} პაროლი}}</translation>
 <translation id="3402255108239926910">აირჩიეთ ავატარი</translation>
 <translation id="3402585168444815892">მიმდინარეობს დემო-რეჟიმში რეგისტრაცია</translation>
@@ -2773,6 +2776,7 @@
 <translation id="3627879631695760395"><ph name="APP" />-ის ინსტალაცია...</translation>
 <translation id="3628275722731025472">Bluetooth-ის გამორთვა</translation>
 <translation id="3629631988386925734">Smart Lock-ის ჩასართავად შეიყვანეთ თქვენი პაროლი. შემდეგში <ph name="DEVICE_TYPE" /> განიბლოკება თქვენი ტელეფონის მეშვეობით. Smart Lock-ის გამორთვა შესაძლებელია პარამეტრებიდან.</translation>
+<translation id="3629664892718440872">ამ არჩევანის დამახსოვრება</translation>
 <translation id="3630132874740063857">თქვენი ტელეფონი</translation>
 <translation id="3630995161997703415">დაამატეთ ეს საიტი თქვენს თაროს და იქონიეთ მასზე წვდომა ნებისმიერ დროს</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />თქვენი ChromeOS მოწყობილობებისთვის ავტომატური ანგარიშების გაგზავნის დაშვება გვეხმარება, პრიორიტეტი მივანიჭოთ იმას, რაც ChromeOS-ში გასწორებას და გაუმჯობესებას საჭიროებს. აღნიშნული ანგარიშები შეიძლება მოიცავდეს ინფორმაციას იმის შესახებ, თუ როდის გაითიშა ავარიულად ChromeOS, რომელ ფუნქციებს და რა მოცულობის მეხსიერებას იყენებთ.<ph name="END_PARAGRAPH1" />
@@ -3262,6 +3266,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI მოწყობილობების სრული კონტროლი უარყოფილია</translation>
+<translation id="4087328411748538168">მარჯვნივ ჩვენება</translation>
 <translation id="4089235344645910861">პარამეტრები შენახულია. სინქრონიზაცია დაიწყო.</translation>
 <translation id="4090103403438682346">ჩართეთ შემოწმებული წვდომა</translation>
 <translation id="4090947011087001172">გსურთ, გადააყენოთ საიტის ნებართვები <ph name="SITE" />-ისთვის?</translation>
@@ -3954,6 +3959,7 @@
 <translation id="4779766576531456629">eSIM ფიჭური ქსელის გადარქმევა</translation>
 <translation id="4780321648949301421">გვერდის შენახვა, როგორც…</translation>
 <translation id="4781443161433589743">თქვენ Chrome-ის უძლიერესი დაცვა გაქვთ ჩართული</translation>
+<translation id="4782861709165039462">ყველა მიკროფონი გათიშულია მოწყობილობების აპარატული გადამრთველით</translation>
 <translation id="4785719467058219317">თქვენ მიერ გამოყენებული უსაფრთხოების გასაღები არ არის რეგისტრირებული ამ ვებსაიტზე</translation>
 <translation id="4785914069240823137">ჩამოჭრის გაუქმება</translation>
 <translation id="4788092183367008521">გთხოვთ, შეამოწმოთ თქვენი კავშირი ქსელთან და ხელახლა ცადოთ.</translation>
@@ -4721,6 +4727,7 @@
 <translation id="5548075230008247516">ყველა ერთეულის არჩევა გაუქმდა, არჩევის რეჟიმიდან გახვედით.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ და 1 სხვა ჩანართი}other{„<ph name="TAB_TITLE" />“ და # სხვა ჩანართი}}</translation>
 <translation id="5548606607480005320">უსაფრთხოების შემოწმება</translation>
+<translation id="5548644592758170183">მარცხნივ ჩვენება</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">კლავიატურა და ტექსტის შეყვანა</translation>
 <translation id="5553089923092577885">სერტიფიკატის წესის შედარება</translation>
@@ -5573,6 +5580,7 @@
 <translation id="6406303162637086258">ბრაუზერის გადატვირთვის მოდელირება</translation>
 <translation id="6406506848690869874">სინქრონიზაცია</translation>
 <translation id="6406708970972405507">პარამეტრები — <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">დაიხმარეთ Google ასისტენტი პაროლის შეცვლაში</translation>
 <translation id="6408118934673775994">წაიკითხეთ და შეცვალეთ თქვენი მონაცემები <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> და <ph name="WEBSITE_3" />-ზე</translation>
 <translation id="6410257289063177456">გამოსახულების ფაილები</translation>
 <translation id="6410328738210026208">არხის შეცვლა და განახლება</translation>
@@ -5956,6 +5964,7 @@
 <translation id="6781978626986383437">Linux სარეზერვო კოპირება გაუქმდა</translation>
 <translation id="6782067259631821405">PIN-კოდი არასწორია</translation>
 <translation id="6784523122863989144">პროფილი მხარდაჭერილია</translation>
+<translation id="6785872064505734160">Google ასისტენტს Chrome-ში გახსნილ სხვადასხვა ვებსაიტზე შეუძლია გარკვეული მოქმედების შესრულება თქვენ ნაცვლად</translation>
 <translation id="6786747875388722282">გაფართოებები</translation>
 <translation id="6787097042755590313">სხვა ჩანართი</translation>
 <translation id="6787839852456839824">კლავიატურის მალსახმობები</translation>
@@ -8199,6 +8208,7 @@
 <translation id="8980345560318123814">უკუკავშირის ანგარიშები</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> — ავარიულად გაითიშა</translation>
 <translation id="8981825781894055334">ქაღალდი იწურება</translation>
+<translation id="8983018820925880511">ამ ახალ პროფილს მართავს <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FILENAME" />“-ის რედაქტირება</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> წუთის განმავლობაში ყველასთვის ხილული იქნებით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">მოგესალმებათ Steam Chromebook-ისთვის</translation>
@@ -8295,6 +8305,7 @@
 <translation id="9075413375877487220">გაძლიერებული Safe Browsing არ ენდობა ამ გაფართოებას.</translation>
 <translation id="9076283476770535406">ის შეიძლება შეიცავდეს ზრდასრულებისთვის განკუთვნილ კონტენტს</translation>
 <translation id="9076523132036239772">სამწუხაროდ, თქვენი ელფოსტის ან პაროლის გადამოწმება ვერ მოხერხდა. ჯერ სცადეთ დაუკავშირდეთ ქსელს.</translation>
+<translation id="9076821103818989526">გვერდითი პანელი</translation>
 <translation id="9076977315710973122">გაზიარება SMB პროტოკოლით</translation>
 <translation id="9078193189520575214">მიმდინარეობს ცვლილებების მისადაგება...</translation>
 <translation id="9078316009970372699">მყისიერი ტეტერინგის გათიშვა</translation>

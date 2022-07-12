@@ -218,7 +218,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="214888715418183969">Scegli quali dati condividere con Chrome. Le metriche che condividi verranno utilizzate per contribuire a migliorare le funzionalità, le prestazioni e la stabilità di Chrome.</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2155214902713132423">Questo metodo di verifica non è disponibile per il dispositivo in uso. Scegli un'opzione diversa sull'altro dispositivo.</translation>
-<translation id="2157851137955077194">Per condividere contenuti dal tuo telefono con un altro dispositivo, attiva la sincronizzazione nelle impostazioni di Chrome su entrambi i dispositivi</translation>
 <translation id="2158408438301413340">Chrome non ha potuto controllare tutte le password</translation>
 <translation id="2169830938017475061">Ora</translation>
 <translation id="2172688499998841696">Le descrizioni delle immagini sono disattivate</translation>
@@ -442,6 +441,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
 <translation id="3359667936385849800">Usa il tuo attuale fornitore di servizi</translation>
+<translation id="3365271666488085187">Chrome può considerare questo interesse</translation>
 <translation id="3367813778245106622">Accedi nuovamente per avviare la sincronizzazione</translation>
 <translation id="3373979091428520308">Per condividere questa pagina con un altro dispositivo, attiva la sincronizzazione nelle impostazioni di Chrome sull'altro dispositivo</translation>
 <translation id="3374023511497244703">I preferiti, la cronologia, le password e altri dati di Chrome non verranno più sincronizzati con il tuo Account Google</translation>
@@ -475,6 +475,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB disponibili</translation>
 <translation id="3549657413697417275">Cerca nella cronologia</translation>
 <translation id="3557336313807607643">Aggiungi ai contatti</translation>
+<translation id="3560491354538957576">Il sito può definire interessi</translation>
 <translation id="3563767357928833671">Contenuti degli Appunti visualizzati</translation>
 <translation id="3566923219790363270">La modalità VR è ancora nella fase preparatoria in Chrome. Riavvia Chrome più tardi.</translation>
 <translation id="3568688522516854065">Accedi e attiva la sincronizzazione per trovare le tue schede degli altri dispositivi</translation>
@@ -660,7 +661,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4678082183394354975">Il tema scuro per i siti è attivo in Chrome</translation>
 <translation id="4684427112815847243">Sincronizza tutto</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e altre <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e altre <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4696983787092045100">Invia testo ai tuoi dispositivi</translation>
 <translation id="4699172675775169585">Immagini e file memorizzati nella cache</translation>
 <translation id="4719927025381752090">Proponi di tradurre</translation>
 <translation id="4720023427747327413">Apri in <ph name="PRODUCT_NAME" /></translation>
@@ -1468,7 +1468,6 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="8873817150012960745">Tocca qui per iniziare</translation>
 <translation id="8881973373982641723">Viene cancellata la cronologia, anche nella casella di ricerca.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati<ph name="END_BOLD" />: per tutelare la tua privacy, eliminiamo automaticamente dall'elenco i siti risalenti a più di 4 settimane prima della data corrente. Un sito che visiti un'altra volta potrebbe essere visualizzato di nuovo nell'elenco. Puoi anche rimuovere un sito se non vuoi che definisca i tuoi interessi.</translation>
-<translation id="889338405075704026">Apri le impostazioni di Chrome</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del Web.</translation>
 <translation id="8906502871739599113">Reazione duplicata</translation>
 <translation id="8909135823018751308">Condividi…</translation>
@@ -1496,7 +1495,6 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="8996847606757455498">Scegli un altro fornitore</translation>
 <translation id="8998729206196772491">Stai per eseguire l'accesso con un account gestito da <ph name="MANAGED_DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="9022774213089566801">Più visitati</translation>
-<translation id="9028914725102941583">Attiva la sincronizzazione per la condivisione tra dispositivi</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9050666287014529139">Passphrase</translation>

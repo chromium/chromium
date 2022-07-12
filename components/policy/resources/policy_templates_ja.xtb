@@ -1527,6 +1527,7 @@
 <translation id="264771271300359481">クリップボードのサイト権限の使用をどのサイトにも許可しない</translation>
 <translation id="2649896281375932517">ユーザーの指定による</translation>
 <translation id="2650049181907741121">ユーザーがデバイスの蓋を閉じた際に行われる操作</translation>
+<translation id="2656559539624760733">Chrome Root Store を使用しない。</translation>
 <translation id="2658653824183107970">新しい <ph name="CORS" /> の実装ではなく以前の <ph name="CORS" /> の実装を使用する</translation>
 <translation id="2660846099862559570">プロキシを使用しない</translation>
 <translation id="2661628029848851543">管理対象アカウントの使用はすべて許可されます</translation>
@@ -2923,7 +2924,6 @@
 <translation id="4228745249339680042">このポリシーでは、セキュリティ キーの構成証明がリクエストされたときにメッセージを表示しない URL とドメインを指定できます。このとき、セキュリティ キーには、個別の構成が使用されることを示すシグナルも送られます。このポリシーで指定しないサイトからセキュリティ キーの構成がリクエストされた場合、<ph name="PRODUCT_NAME" /> バージョン 65 以降では、ユーザーにメッセージが表示されます。
 
       URL は U2F の appID が一致するもののみが対象となります。ドメインは WebAuthn の RP ID が一致するもののみが対象となります。U2F と WebAuthn API の両方に対応するには、サイトの appID URL とドメインを指定してください。</translation>
-<translation id="4239112794240794697">このポリシーは、企業ユーザーの場合、画面録画の文字起こしの作成と Google ドライブへのアップロードの権限を Projector に付与します。このポリシーは、ファミリー リンクのユーザーには影響しません。このポリシーは、ファミリー リンクのユーザー向けの <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> ポリシーには影響しません。ポリシーを有効にした場合、Projector は有効になります。ポリシーを無効にした場合、Projector は無効になります。ポリシーを未設定のままにした場合、Projector はデフォルトで無効になります。</translation>
 <translation id="4239720644496144453">キャッシュは Android アプリには使用されません。複数のユーザーが同じ Android アプリをインストールする場合、アプリはユーザーごとに新しくダウンロードされます。</translation>
 <translation id="4247914291127524388">このポリシーを有効に設定した場合、モバイル接続時に <ph name="PRODUCT_OS_NAME" /> ファイルアプリで <ph name="GOOGLE_DRIVE_NAME" /> の同期がオフになります。この場合、データは Wi-Fi またはイーサネット接続時にのみドライブに同期されます。
 
@@ -3359,6 +3359,12 @@
 <translation id="4861767323695239729">ユーザー セッションで許可する入力方法を設定します</translation>
 <translation id="4873380469296842901">この設定を有効にした場合、スマートフォン ハブをすでにオプトインしているユーザーは、Chrome OS 上でスマートフォンの通知を送受信できます。この設定を無効にした場合、ユーザーはこの機能を使用できません。PhoneHubAllowed ポリシーを無効にした場合も、ユーザーはこの機能を使用できません。このポリシーを未設定のままにした場合、デフォルトでは、企業の管理対象ユーザーと管理対象外ユーザーのいずれもこの機能を使用できます。</translation>
 <translation id="487460824085252184">ユーザーの同意を求めずに自動的に移行する</translation>
+<translation id="48749493657448872">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。
+      無効な場合、<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> が有効になっていない限り、<ph name="PRODUCT_NAME" /> はプラットフォームから提供される従来の証明書確認機能を使用してサーバー証明書の確認を行います。
+      未設定の場合、組み込みまたは従来の証明書確認機能が使用される可能性があります。
+
+      このポリシーは <ph name="MAC_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 107 で削除される予定です（<ph name="MAC_OS_NAME" /> での従来の証明書確認機能のサポートが削除されるため）。
+      </translation>
 <translation id="4874982543810021567">WebUSB をブロックするサイト</translation>
 <translation id="4876805738539874299">有効な SSL の最大バージョン</translation>
 <translation id="4877402532842958110">このポリシーはサポートが終了しています。代わりに <ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
@@ -4092,6 +4098,7 @@
 <translation id="5733040281451845496">このポリシーを有効に設定した場合、電力管理の待機時間とセッションの時間制限のカウントは、セッションでユーザーがなんらかの操作をするまで開始されません。
 
       このポリシーを無効に設定するか未設定のままにした場合、電力管理の待機時間とセッションの時間制限のカウントは、セッション開始直後に開始されます。</translation>
+<translation id="5733357908790472408">Chrome Root Store を使用する。</translation>
 <translation id="5735915264686983150">無効にした機能を非表示にしてブロックする</translation>
 <translation id="5737394734996319911"><ph name="PRODUCT_NAME" />
           ユーザー補助機能を使用すると、スクリーン リーダーを使用する
@@ -4361,10 +4368,6 @@
 <translation id="603768430528561926">このポリシーを有効に設定するか未設定のままにした場合、企業向けデバイスのユーザーは <ph name="PRODUCT_OS_NAME" /> の登録特典を利用できます。このポリシーを無効に設定した場合、ユーザーはこの特典を利用できません。</translation>
 <translation id="6046615715547751255">詳細なレポート コントロールを許可しない</translation>
 <translation id="6048199181629830227">電力のピークシフト管理を有効にする</translation>
-<translation id="6052730367191220066"><ph name="MS_AD_NAME" /> 管理対象デバイスのクラウド管理への移行を有効にします。このポリシーを設定すると、会社の複数デバイスのタッチレス移行をリモートで開始できます。また、移行に関する情報は可能な限りエンドユーザーに提供されます。
-
-      このポリシーを有効に設定し、登録 ID がすでに DMServer にアップロードされている場合は、リモート デバイスの Powerwash がトリガーされます。
-      このポリシーを無効に設定するか未設定のままにした場合、登録 ID のアップロード ステータスにかかわらず、リモート デバイスの Powerwash はトリガーされません。このチェックは、ログイン画面が読み込まれるたびに行われ、デバイスにログイン画面が表示されたままとなっている場合はその後 1 時間ごとに行われます。エンドユーザーに問題が生じる可能性があるため、このようにユーザー セッション中に移行が開始されないようになっています。</translation>
 <translation id="6053681087509103368">WebRTC に TLD / DTLS プロトコルの廃止されたバージョンの使用を許可する</translation>
 <translation id="6058879286588763839"><ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> が指定されていない場合に（指定されていれば <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> はオーバーライドされます）、<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> ではバッテリー充電モードの電力管理ポリシーを指定できます（デバイスが対応している場合）。このポリシーでは、バッテリー充電を動的に制御して負荷と消耗を最小限に抑えることで、電池を長持ちさせます。
 
@@ -4550,6 +4553,7 @@
 <translation id="6258658183356534534">User-Agent Client Hints の GREASE 更新機能を管理します。</translation>
 <translation id="6261643884958898336">マシン識別情報に関するレポートを作成</translation>
 <translation id="6265892395051519509">センサーへのアクセスを許可するサイトを指定します</translation>
+<translation id="6266043141694454734">サーバー証明書の確認に Chrome Root Store と組み込みの証明書確認機能を使用するかどうかを指定する</translation>
 <translation id="6273015149273504999">
       ユーザーに操作を求めずにログイン画面でサイレント インストールするアプリと拡張機能のリストを指定します。ここで指定されたアプリや拡張機能をユーザーがアンインストールまたは無効化することはできません。
 
@@ -5475,6 +5479,23 @@
       <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> と <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> が両方とも未設定の場合、ホームページはユーザーが選択します。
 
       <ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみこの機能を使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
+<translation id="7258250780552783197"><ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise Connectors サービス設定のリストで、<ph name="PRODUCT_OS_NAME" /> 内でファイルが転送された場合に呼び出されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、転送元と転送先の間でやり取りされるファイルを分析のため送信すべきかどうかと、そのファイルの分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。「有効」ルールに該当するタグは、転送元と転送先がそのタグに関連付けられているルールと一致し、同じタグの「無効」ルールがその転送と一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。<ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> ルールはペアのリストで定義されます。各ペアには、転送元のリストと転送先のリストが含まれます。<ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> では、ルールを適用するファイル システムを定義します。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、<ph name="PRODUCT_OS_NAME" /> は分析サービスからの応答を待ってから、転送を許可します。その他の整数値を設定した場合、<ph name="PRODUCT_OS_NAME" /> はただちに転送を許可します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> フィールドでは、パスワードで保護されているファイルを <ph name="PRODUCT_OS_NAME" /> でブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> フィールドでは、<ph name="PRODUCT_OS_NAME" /> で分析可能なサイズより大きいファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由は不要とみなされます。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。message フィールドでは、ユーザーに表示するテキストを半角 200 文字以内で指定します。<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" /> フィールドでは、管理者が提供する URL を指定します。ユーザーはこの URL をクリックして、操作がブロックされた理由について、お客様から提供された情報を確認できます。<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> フィールドでは、メッセージの言語を指定します（省略可）。<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> フィールドを空白にするか、「default」の値を指定した場合、ユーザーの言語のメッセージがないときは、デフォルトのメッセージが使用されます。tag フィールドでは、メッセージを表示するスキャンの種類を指定します。<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" /> リストには、0 以上のエントリを指定できます。各エントリには、空白以外のメッセージと tag フィールドを含める必要があります。
+
+      このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
 <translation id="7258823566580374486">リモート アクセス ホストのカーテンを有効にする</translation>
 <translation id="7260204423892780600">Google アシスタントの設定を管理します。</translation>
 <translation id="7261140115553020049">フローティング ワークスペース サービスを有効にする</translation>
@@ -5843,11 +5864,6 @@
 <translation id="7687943045976362719">このポリシーが設定されている場合、指定されたコンテンツ タイプは <ph name="PRODUCT_FRAME_NAME" /> で処理されます。
 
           このポリシーが未設定の場合、デフォルトのレンダラがすべてのサイトで使用されます（<ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> ポリシーを使用してデフォルトのレンダラを設定することもできます）。</translation>
-<translation id="7694245791806617022">Kerberos 認証ダイアログで「パスワードを保存する」機能が有効かどうかを制御します。パスワードはディスク上で暗号化して保存され、ユーザー セッション中に Kerberos システム デーモンからのみアクセスできます。
-
-          このポリシーが有効に設定されているか未設定の場合、ユーザーは再入力の手間を省くために Kerberos パスワードを保存するかどうかを指定できます。Kerberos チケットは、追加の認証（2 段階認証プロセス）が必要な場合以外は自動的に取得されます。
-
-          このポリシーが無効に設定されている場合、パスワードは保存されず、以前に保存されたパスワードもすべて削除されます。ユーザーは、Kerberos システムで認証が必要となるたびにパスワードを入力しなければなりません。この場合、パスワードの確認は、サーバーの設定に応じて通常 8 時間～数か月ごとに行われます。</translation>
 <translation id="7694807474048279351"><ph name="PRODUCT_OS_NAME" /> のアップデート適用後に自動的に再起動するように設定します。
 
       このポリシーを true に設定すると、<ph name="PRODUCT_OS_NAME" /> のアップデートが適用されてアップデート プロセスを完了するために再起動が必要な場合に、自動再起動が行われます。再起動はすぐに行うようにスケジュール設定されますが、その時間にユーザーがデバイスを使用していた場合、自動再起動の実行は最大 24 時間延期されます。
@@ -6860,6 +6876,7 @@
 
       このポリシーを未設定のままにすると、プラットフォーム固有のデフォルトが使用されます。すなわち、<ph name="MS_WIN_NAME" /> の場合は <ph name="IE_PRODUCT_NAME" />、<ph name="MAC_OS_NAME" /> の場合は <ph name="SAFARI_PRODUCT_NAME" /> が使用されます。<ph name="LINUX_OS_NAME" /> では、代替ブラウザの起動は失敗します。</translation>
 <translation id="8836975838488342340">アクセスコードが有効な時間（秒）です。</translation>
+<translation id="883744045558067826">機能の起動プロセスで必要な場合は Chrome Root Store を使用する。</translation>
 <translation id="8839799083601163225">このポリシーでは、ネットワーク サービス処理をサンドボックス化して実行するかどうかを管理します。
       このポリシーを有効に設定した場合、ネットワーク サービス処理はサンドボックス化されます。
       このポリシーを無効に設定した場合、ネットワーク サービス処理はサンドボックス化されません。この場合、サンドボックス化されていないネットワーク サービスを実行することによるセキュリティ上のリスクが発生します。
@@ -7036,6 +7053,12 @@
       このポリシーを設定した場合、ユーザーが変更したりオーバライドしたりすることはできません。
       ポリシーの値はミリ秒単位で指定します。値の範囲は 30 秒～24 時間です。</translation>
 <translation id="9040042535845939426">ログイン画面でのプライバシー スクリーンの状態を設定する</translation>
+<translation id="9046609670147277653">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。その際、Chrome Root Store がパブリック トラストのソースとして使用されます。
+      無効な場合、<ph name="PRODUCT_NAME" /> では Chrome Root Store は使用されません。確認では、システムの証明書確認機能、または <ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" /> ポリシーが利用可能で無効になっていない場合は組み込みの確認機能が使用されます。
+      未設定の場合、Chrome Root Store またはシステムが提供するルートが使用される可能性があります。
+
+      このポリシーは <ph name="MS_WIN_NAME" /> および <ph name="MAC_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 111 で削除される予定です（プラットフォームから提供される証明書確認機能とルートを使用するためのサポートが削除されるため）。
+      </translation>
 <translation id="9050853837490399534">このポリシーでは、デバイスを Quick Fix ビルドに更新するかどうかを管理します。
 
       Quick Fix ビルドにマッピングされているトークンをポリシーの値に設定した場合、別のポリシーで更新がブロックされていない限り、デバイスを対応する Quick Fix ビルドに更新します。
@@ -7085,6 +7108,7 @@
 
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       このポリシーを true に設定した場合、デバイスのログイン / ログアウト イベントが報告されます。</translation>
+<translation id="9087652369391570821">OnFileTransfer Chrome Enterprise コネクタの設定ポリシー</translation>
 <translation id="9088191250434406767">このポリシーを未設定のままにするか有効に設定した場合、ユーザーはカメラと <ph name="GOOGLE_LENS_PRODUCT_NAME" /> を使用して検索できます。このポリシーを無効に設定した場合、<ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索が可能な場合でも、検索ボックスに <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ボタンは表示されません。</translation>
 <translation id="9088433379343318874">監視対象ユーザーのコンテンツ プロバイダを有効にする</translation>
 <translation id="9088444059179765143">タイムゾーン自動検出の方法を設定する</translation>

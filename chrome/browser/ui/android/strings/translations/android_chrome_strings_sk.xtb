@@ -218,7 +218,6 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="214888715418183969">Vyberte, čo chcete zdieľať s Chromom. Zdieľané metriky pomôžu zlepšovať funkcie, výkonnosť aj stabilitu Chromu.</translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2155214902713132423">Tento spôsob overenia nie pre toto zariadenie k dispozícii. Vyberte si inú možnosť v druhom zariadení.</translation>
-<translation id="2157851137955077194">Ak chcete niečo zo svojho telefónu zdieľať s iným zariadením, zapnite v oboch synchronizáciu v nastaveniach Chromu</translation>
 <translation id="2158408438301413340">Chromu sa nepodarilo skontrolovať všetky heslá</translation>
 <translation id="2169830938017475061">Teraz</translation>
 <translation id="2172688499998841696">Popisy obrázkov sú vypnuté</translation>
@@ -662,7 +661,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4678082183394354975">Tmavý motív pre weby je v Chrome zapnutý</translation>
 <translation id="4684427112815847243">Synchronizovať všetko</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ďalšia}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ďalšie}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ďalšej}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ďalších}}</translation>
-<translation id="4696983787092045100">Odoslať text do vašich zariadení</translation>
 <translation id="4699172675775169585">Obrázky a súbory vo vyrovnávacej pamäti</translation>
 <translation id="4719927025381752090">Ponúkať preklad</translation>
 <translation id="4720023427747327413">Otvoriť v aplikácii <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nedá sa pod
 <translation id="8873817150012960745">Začnite klepnutím tu</translation>
 <translation id="8881973373982641723">Vymaže históriu (aj vo vyhľadávacom poli).</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Ako môžete spravovať svoje údaje:<ph name="END_BOLD" /> v rámci ochrany vášho súkromia zo zoznamu automaticky odstraňujeme weby, ktoré sú staršie ako štyri týždne. Web, ktorý znova navštívite, sa môže v zozname opäť objaviť. Prípadne môžete určitý web odstrániť, keď nechcete, aby vám definoval záujmy.</translation>
-<translation id="889338405075704026">Prejsť do nastavení Chromu</translation>
 <translation id="8898822736010347272">Odosiela webové adresy niektorých navštívených stránok, obmedzené informácie o systéme a určitý obsah stránok, aby pomáhalo objavovať nové hrozby a chrániť všetkých na internete.</translation>
 <translation id="8906502871739599113">Bol vytvorený duplikát reakcie</translation>
 <translation id="8909135823018751308">Zdieľať…</translation>
@@ -1498,7 +1495,6 @@ Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nedá sa pod
 <translation id="8996847606757455498">Vybrať iného poskytovateľa</translation>
 <translation id="8998729206196772491">Prihlasujete sa pomocou účtu spravovaného doménou <ph name="MANAGED_DOMAIN" /> a jej správcovi tým dávate kontrolu nad svojimi údajmi Chromu. Vaše údaje budú natrvalo prepojené s týmto účtom. Odhlásením z Chromu odstránite údaje z príslušného zariadenia, avšak naďalej zostanú uložené vo vašom účte Google.</translation>
 <translation id="9022774213089566801">Často navštevované</translation>
-<translation id="9028914725102941583">Zapnite synchronizáciu a zdieľajte medzi zariadeniami</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}few{# videá}many{# Videos}other{# videí}}</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>

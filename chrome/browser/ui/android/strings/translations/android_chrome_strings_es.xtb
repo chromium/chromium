@@ -218,7 +218,6 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="214888715418183969">Elige qué quieres compartir con Chrome. Las métricas que compartas nos ayudarán a mejorar las funciones, el rendimiento y la estabilidad de Chrome.</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2155214902713132423">El método de verificación no está disponible en este dispositivo. Elige una opción diferente en tu otro dispositivo.</translation>
-<translation id="2157851137955077194">Si quieres compartir algo de tu teléfono con otro dispositivo, activa la sincronización en la configuración de Chrome en ambos dispositivos.</translation>
 <translation id="2158408438301413340">Chrome no ha podido comprobar todas las contraseñas</translation>
 <translation id="2169830938017475061">Ahora</translation>
 <translation id="2172688499998841696">Las descripciones de imágenes están desactivadas</translation>
@@ -662,7 +661,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4678082183394354975">El tema oscuro para sitios está activado en Chrome</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
-<translation id="4696983787092045100">Enviar mensaje de texto a tus dispositivos</translation>
 <translation id="4699172675775169585">Archivos e imágenes almacenados en caché</translation>
 <translation id="4719927025381752090">Ofrecer la traducción</translation>
 <translation id="4720023427747327413">Abrir en <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="8873817150012960745">Toca aquí para empezar</translation>
 <translation id="8881973373982641723">Borra el historial, incluido el del cuadro de búsqueda.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> para proteger tu privacidad, eliminamos automáticamente los sitios de la lista que tengan una antigüedad superior a 4 semanas. Es posible que un sitio que vuelvas a visitar aparezca de nuevo en la lista. También puedes eliminar un sitio si no quieres que defina tus intereses.</translation>
-<translation id="889338405075704026">Ir a configuración de Chrome</translation>
 <translation id="8898822736010347272">Envía a Google las URL de las páginas que visitas, información limitada del sistema y contenido de las páginas para ayudar a descubrir nuevas amenazas y proteger a los usuarios de la Web.</translation>
 <translation id="8906502871739599113">Reacción duplicada</translation>
 <translation id="8909135823018751308">Compartir…</translation>
@@ -1498,7 +1495,6 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998729206196772491">Estás iniciando sesión con una cuenta gestionada por <ph name="MANAGED_DOMAIN" />, lo que significa que vas a proporcionar a su administrador el control sobre tus datos de Chrome. Los datos se vincularán de forma permanente a esta cuenta. Si cierras sesión en Chrome, se eliminarán los datos de este dispositivo, pero permanecerán almacenados en tu cuenta de Google.</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
-<translation id="9028914725102941583">Activar la sincronización para compartir con otros dispositivos</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>

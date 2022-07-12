@@ -3078,13 +3078,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4228745249339680042">A definição da política especifica os URLs e domínios para os quais nenhuma solicitação será exibida quando os certificados de atestado das chaves de segurança forem solicitados. Além disso, um sinal será enviado para a chave de segurança indicando que o atestado individual pode ser usado. Se a política não for definida, os usuários receberão uma solicitação no <ph name="PRODUCT_NAME" /> 65 ou versões mais recentes quando os sites solicitarem o atestado das chaves de segurança.
 
       Os URLs serão interpretados apenas como U2F appIDs. Os domínios serão interpretados apenas como webauthn RP IDs. Sendo assim, para abranger as APIs U2F e webauthn, tanto o domínio quanto o URL do appID precisam ser listados para um site.</translation>
-<translation id="4239112794240794697">Esta política concede ao Projector permissão para criar, transcrever e fazer upload de gravações de tela para o Drive para usuários corporativos.
-      Esta política não afeta usuários do Family Link.
-      Esta política não afeta a política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para usuários do Family Link.
-
-      Se ela for ativada, o Projector será ativado.
-      Se ela for desativada, o Projector será desativado.
-      Se a política for deixada sem definição, o Projector será desativado por padrão.</translation>
 <translation id="4239720644496144453">O cache não é usado para apps Android. Se vários usuários instalarem o mesmo app Android, o download dele será feito novamente para cada usuário.</translation>
 <translation id="4247914291127524388">Se a política for definida como ativada, a sincronização do <ph name="GOOGLE_DRIVE_NAME" /> no app Arquivos do <ph name="PRODUCT_OS_NAME" /> será desativada quando estiver em uma conexão celular. Os dados serão sincronizados com o Drive apenas quando houver conexão a uma rede Wi-Fi ou de Ethernet.
 
@@ -4625,13 +4618,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como "Desativada", os usuários não poderão resgatar essas ofertas.</translation>
 <translation id="6046615715547751255">Não permitir controles de geração de relatórios granulares</translation>
 <translation id="6048199181629830227">Ativar o gerenciamento de energia no período de pico</translation>
-<translation id="6052730367191220066">Ativar a migração de dispositivos gerenciados por <ph name="MS_AD_NAME" /> no gerenciamento de nuvem. Esta política permite o início remoto de uma migração sem toque de vários dispositivos em uma empresa. O processo de migração será o mais transparente possível para os usuários finais.
-
-      Se a política for ativada e o ID de registro já tiver sido enviado ao DMServer, o sistema vai acionar um Powerwash do dispositivo remoto.
-
-      Se a política for desativada ou não for definida, o Powerwash do dispositivo remoto não será acionado, independente do status de upload do ID de registro.
-
-      Essa verificação ocorre sempre que a tela de login é carregada e é repetida de hora em hora quando o dispositivo permanece na tela de login. Isso evita que a migração seja iniciada no meio de uma sessão do usuário, o que pode causar problemas para usuários finais.</translation>
 <translation id="6053681087509103368">Permitir que WebRTC use versões obsoletas do protocolo TLD/DTLS</translation>
 <translation id="6058879286588763839">A menos que <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> seja especificada, o que substitui <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> especifica a política de gerenciamento de energia para o modo de carregamento da bateria, se compatível com o dispositivo. Para prolongar a duração da bateria, a política controla de maneira dinâmica o carregamento da bateria minimizando o estresse e o desgaste.
 
@@ -6229,11 +6215,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7687943045976362719">Se esta política for definida, os tipos de conteúdo especificados serão processados pelo <ph name="PRODUCT_FRAME_NAME" />.
 
 Se esta política não for definida, o renderizador padrão será usado para todos os sites. A política <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> pode ser usada para configurar o renderizador padrão.</translation>
-<translation id="7694245791806617022">Controla se o recurso "Lembrar senha" está ativado na caixa de diálogo de autenticação do Kerberos. As senhas são armazenadas de maneira criptografada no disco e só podem ser acessadas pelo daemon do sistema Kerberos e durante uma sessão do usuário.
-
-          Se esta política for ativada ou não estiver definida, o usuário poderá decidir se as senhas do Kerberos serão memorizadas, para que ele não precise digitá-las novamente. Os tíquetes do Kerberos serão buscados automaticamente, a não ser que uma autenticação adicional seja necessária (autenticação de dois fatores).
-
-          Se esta política for desativada, as senhas nunca serão lembradas, e todas as senhas armazenadas anteriormente serão removidas. O usuário precisará inserir a senha sempre que tiver que fazer autenticação no sistema Kerberos. Dependendo das configurações do servidor, isso acontecerá no mínimo a cada oito horas, mas é possível definir até intervalos de meses.</translation>
 <translation id="7694807474048279351">Agendar uma reinicialização automática após a aplicação de uma atualização do <ph name="PRODUCT_OS_NAME" /> 
 
       Quando esta política está definida como "verdadeira", uma reinicialização automática é agendada quando uma atualização do <ph name="PRODUCT_OS_NAME" /> é aplicada e uma reinicialização é obrigatória para concluir o processo. A reinicialização é agendada imediatamente, mas pode ser adiada pelo dispositivo em até 24 horas se um usuário o estiver usando no momento.

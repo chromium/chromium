@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">সুরক্ষিত</translation>
 <translation id="2638942478653899953">Google ড্রাইভে পৌঁছানো যাবে না৷ অনুগ্রহ করে <ph name="BEGIN_LINK" />লগ-আউট<ph name="END_LINK" /> করুন এবং আবার লগ-ইন করুন৷</translation>
 <translation id="2649120831653069427">রেনবোফিশ</translation>
+<translation id="2653059201992392941">আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="2663066752008346276">বার্মিজ/মায়ানমার ভাষায় মায়ানসান কীবোর্ড</translation>
 <translation id="2664412712123763093">ফাইলের লোকেশন</translation>
 <translation id="2718540689505416944">Linux ব্যবহার করে অ্যাপ ইনস্টল করুন</translation>
@@ -529,6 +530,7 @@
 <translation id="5489067830765222292">লাতভিয়ান</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ফিল্টার বন্ধ আছে।</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
+<translation id="5500104704744051184">আপনি PUK না লেখা পর্যন্ত এই নেটওয়ার্ক ব্যবহার করতে পারবেন না</translation>
 <translation id="5500122897333236901">আইসল্যান্ডিক</translation>
 <translation id="5508696409934741614">বিন্দু</translation>
 <translation id="5522908512596376669">লিস্ট ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
@@ -634,6 +636,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টি আইটেম</translation>
 <translation id="642282551015776456">ফাইল বা ফোল্ডারের নাম হিসাবে নামটি ব্যবহৃত নাও হতে পারে</translation>
 <translation id="6423031066725912715">ভিয়েতনামি ভাষায় টিসিভিএন (TCVN) কীবোর্ড</translation>
+<translation id="6430271654280079150">আপনি আর ১ বার চেষ্টা করতে পারেন।</translation>
 <translation id="6485131920355264772">স্থান তথ্য পুনরুদ্ধার করতে ব্যর্থ হয়েছে</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />-এ <ph name="FILE_NAME" /> এক্সট্যাক্ট করা হচ্ছে</translation>
@@ -900,6 +903,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />টি আইটেম সিঙ্ক করা হচ্ছে...</translation>
 <translation id="8600173386174225982">থাম্বনেল ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
 <translation id="8601932370724196034">Crostini ছবির ফাইল</translation>
+<translation id="8608515571837163082">একটি ভুল পিন অনেকবার লেখা হয়েছে। আপনার পরিষেবা প্রদানকারীর থেকে পাওয়া ৮-সংখ্যার 'পার্সোনাল আনব্লকিং কী' (PUK) লিখুন।</translation>
 <translation id="8609695766746872526">আইসল্যান্ডিক</translation>
 <translation id="863903787380594467">ভুল পিন দিয়েছেন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - পোর্ট</translation>

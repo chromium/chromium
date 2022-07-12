@@ -2131,7 +2131,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2966937470348689686">Pārvaldīt Android preferences</translation>
 <translation id="2967926928600500959">Šīm kārtulām atbilstošie URL tiks piespiedu kārtā atvērti noteiktā pārlūkā.</translation>
 <translation id="2972581237482394796">&amp;Pāratsaukt</translation>
-<translation id="2973324205039581528">Nerādīt vietni</translation>
+<translation id="2973324205039581528">Izslēgt skaņu vietnē</translation>
 <translation id="2973537811036309675">Sānu panelis</translation>
 <translation id="2976557544729462544">Dažās perifērajās ierīcēs ir jāatspējo datu piekļuves aizsardzība, lai tās darbotos pareizi vai pilnīgi.</translation>
 <translation id="2977480621796371840">Noņemt no grupas</translation>
@@ -3924,7 +3924,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4742334355511750246">Nedrīkst rādīt attēlus</translation>
 <translation id="4742970037960872810">Atcelt teksta atzīmēšanu</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Uzzināt, kā atjaunināt lietojumprogrammas<ph name="END_LINK" /></translation>
-<translation id="4744981231093950366">{NUM_TABS,plural, =1{Rādīt vietni}zero{Rādīt vietnes}one{Rādīt vietnes}other{Rādīt vietnes}}</translation>
+<translation id="4744981231093950366">{NUM_TABS,plural, =1{Ieslēgt skaņu vietnē}zero{Ieslēgt skaņu vietnēs}one{Ieslēgt skaņu vietnēs}other{Ieslēgt skaņu vietnēs}}</translation>
 <translation id="474609389162964566">Piekļuve Asistentam ar komandu “Ok Google”</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">Parasti vietnēs savienojums ar HID ierīcēm tiek veidots, lai nodrošinātu funkcijas, kuru darbībai nepieciešamas reti sastopamas tastatūras, spēļu vadāmierīces un citas ierīces.</translation>
@@ -4158,7 +4158,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4972129977812092092">Printera rediģēšana</translation>
 <translation id="4972164225939028131">Nepareiza parole</translation>
 <translation id="4972737347717125191">Atļaut vietnēm pieprasīt atļauju izmantot virtuālās realitātes ierīces un datus</translation>
-<translation id="4973325300212422370">{NUM_TABS,plural, =1{Nerādīt vietni}zero{Nerādīt vietnes}one{Nerādīt vietnes}other{Nerādīt vietnes}}</translation>
+<translation id="4973325300212422370">{NUM_TABS,plural, =1{Izslēgt skaņu vietnē}zero{Izslēgt skaņu vietnēs}one{Izslēgt skaņu vietnēs}other{Izslēgt skaņu vietnēs}}</translation>
 <translation id="497403230787583386">Drošības pārbaudes ir pabeigtas. Dokuments tiks izdrukāts.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Piekļuves apstiprināšana</translation>
@@ -5572,6 +5572,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6406303162637086258">Imitēt pārlūkprogrammas restartēšanu</translation>
 <translation id="6406506848690869874">Sinhronizācija</translation>
 <translation id="6406708970972405507">Iestatījumi — <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Atļaujiet Google asistentam palīdzēt nomainīt paroli</translation>
 <translation id="6408118934673775994">Lasīt un mainīt jūsu datus vietnēs <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> un <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Attēlu faili</translation>
 <translation id="6410328738210026208">Mainīt kanālu un Powerwash</translation>
@@ -5959,6 +5960,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6781978626986383437">Linux dublējums atcelts</translation>
 <translation id="6782067259631821405">Nederīgs PIN</translation>
 <translation id="6784523122863989144">Profils tiek atbalstīts</translation>
+<translation id="6785872064505734160">Google asistents pārlūkprogrammā Chrome var veikt darbības vietnēs jūsu vārdā.</translation>
 <translation id="6786747875388722282">Paplašinājumi</translation>
 <translation id="6787097042755590313">Cita cilne</translation>
 <translation id="6787839852456839824">Īsinājumtaustiņi</translation>

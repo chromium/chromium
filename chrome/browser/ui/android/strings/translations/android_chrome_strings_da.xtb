@@ -218,7 +218,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="214888715418183969">Vælg, hvad der gerne må deles med Chrome. De metrics, du deler, bruges til at hjælpe med at forbedre Chromes funktioner, ydeevne og stabilitet.</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
 <translation id="2155214902713132423">Denne bekræftelsesmetode er ikke tilgængelig for denne enhed. Vælg en anden metode på din anden enhed.</translation>
-<translation id="2157851137955077194">Hvis du vil dele noget på din telefon med en anden enhed, kan du aktivere synkronisering i Chrome-indstillingerne på begge enheder</translation>
 <translation id="2158408438301413340">Chrome kunne ikke tjekke alle adgangskoder</translation>
 <translation id="2169830938017475061">Nu</translation>
 <translation id="2172688499998841696">Billedbeskrivelser er slået fra</translation>
@@ -662,7 +661,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4678082183394354975">Mørkt tema på websites er aktiveret i Chrome</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> mere}}</translation>
-<translation id="4696983787092045100">Send sms til dine enheder</translation>
 <translation id="4699172675775169585">Billeder og filer, der er gemt i cache</translation>
 <translation id="4719927025381752090">Tilbyd at oversætte</translation>
 <translation id="4720023427747327413">Åbn i <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="8873817150012960745">Tryk her for at komme i gang</translation>
 <translation id="8881973373982641723">Rydder historikken, herunder fra søgefeltet.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Sådan administrerer du dine data:<ph name="END_BOLD" /> Vi sletter automatisk websites, der er ældre end 4 uger, fra listen for at beskytte dine personlige oplysninger. Et website, du besøger igen, kan blive vist på listen igen. Du kan også fjerne et website, hvis du ikke vil have, at websitet nogensinde skal definere interesser for dig igen.</translation>
-<translation id="889338405075704026">Gå til Chrome-indstillinger</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="8906502871739599113">Reaktionen blev kopieret</translation>
 <translation id="8909135823018751308">Del…</translation>
@@ -1498,7 +1495,6 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>
 <translation id="8998729206196772491">Du er ved at logge ind med en konto, der administreres af <ph name="MANAGED_DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>
-<translation id="9028914725102941583">Aktivér synkronisering for at dele mellem enheder</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video}other{# videoer}}</translation>
 <translation id="9042893549633094279">Sikkerhed og privatliv</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>

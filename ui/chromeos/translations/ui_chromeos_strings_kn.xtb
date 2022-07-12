@@ -190,6 +190,7 @@
 <translation id="2621713457727696555">ಸುರಕ್ಷಿತವಾಗಿದೆ</translation>
 <translation id="2638942478653899953">Google ಡ್ರೈವ್ ಅನ್ನು ತಲುಪಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು <ph name="BEGIN_LINK" />ಲಾಗ್ ಔಟ್<ph name="END_LINK" /> ಮಾಡಿ ಹಾಗೂ ಮತ್ತೆ ಹಿಂತಿರುಗಿ ಲಾಗ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="2649120831653069427">ರೈನ್‌ಬೋಫಿಶ್</translation>
+<translation id="2653059201992392941">ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="2663066752008346276">ಮ್ಯಾನ್ಸನ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಬರ್ಮೀಸ್/ಮ್ಯಾನ್ಮಾರ್</translation>
 <translation id="2664412712123763093">ಫೈಲ್ ಸ್ಥಳ</translation>
 <translation id="2718540689505416944">Linux ಸಹಾಯದಿಂದ ಆ್ಯಪ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">ಲ್ಯಾಟ್ವಿಯನ್</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ಫಿಲ್ಟರ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="5500104704744051184">ನೀವು PUK ಕೋಡ್ ನಮೂದಿಸುವವರೆಗೂ ಈ ನೆಟ್‌ವರ್ಕ್ ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5500122897333236901">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
 <translation id="5508696409934741614">ಚುಕ್ಕೆಗಳು</translation>
 <translation id="5522908512596376669">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು, ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
@@ -631,6 +633,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ಐಟಂಗಳು</translation>
 <translation id="642282551015776456">ಈ ಹೆಸರನ್ನು ಫೋಲ್ಡರ್‌ನ ಫೈಲ್‌ನಂತೆ ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6423031066725912715">TCVN ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ವಿಯೆಟ್ನಾಮೀಸ್</translation>
+<translation id="6430271654280079150">ನೀವು 1 ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನವನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="6485131920355264772">ಅಂತರ ಮಾಹಿತಿಯನ್ನು ಹಿಂಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ನಿಂದ <ph name="FOLDER_NAME" /> ಗೆ ಬೇರ್ಪಡಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -889,6 +892,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ಐಟಂಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8600173386174225982">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು, ಥಂಬ್‌ನೇಲ್ ವೀಕ್ಷಣೆಗೆ ಬದಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="8601932370724196034">Crostini ಚಿತ್ರದ ಫೈಲ್</translation>
+<translation id="8608515571837163082">ತಪ್ಪಾದ ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿಲಾಗಿದೆ. ಕ್ಯಾರಿಯರ್ ಒದಗಿಸಿದ 8-ಸಂಖ್ಯೆಯ ಪರ್ಸನಲ್ ಅನ್‌ಬ್ಲಾಕಿಂಗ್ ಕೀ (PUK) ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="8609695766746872526">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
 <translation id="863903787380594467">ತಪ್ಪಾದ ಪಿನ್. ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ಪೋರ್ಟ್</translation>

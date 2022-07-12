@@ -218,7 +218,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="214888715418183969">Valitse, mitä olet valmis jakamaan Chromelle. Jakamasi mittarit auttavat parantamaan Chromen ominaisuuksia, toimintaa ja vakautta.</translation>
 <translation id="2149973817440762519">Muokkaa kirjanmerkkiä</translation>
 <translation id="2155214902713132423">Tämä vahvistustapa ei ole saatavilla tälle laitteelle. Valitse muu vaihtoehto toisella laitteellasi.</translation>
-<translation id="2157851137955077194">Jos haluat jakaa jotakin puhelimelta toiselle laitteelle, ota synkronointi käyttöön molempien laitteiden Chrome-asetuksista</translation>
 <translation id="2158408438301413340">Chrome ei voinut tarkistaa kaikkia salasanoja</translation>
 <translation id="2169830938017475061">Nyt</translation>
 <translation id="2172688499998841696">Kuvaselitykset ovat poissa päältä</translation>
@@ -662,7 +661,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4678082183394354975">Sivustojen tumma teema on päällä Chromessa</translation>
 <translation id="4684427112815847243">Synkronoi kaikki</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muu}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muuta}}</translation>
-<translation id="4696983787092045100">Lähetä teksti laitteillesi</translation>
 <translation id="4699172675775169585">Välimuistissa olevat kuvat ja tiedostot</translation>
 <translation id="4719927025381752090">Tarjoudu kääntämään</translation>
 <translation id="4720023427747327413">Avaa kohteessa <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="8873817150012960745">Aloita napauttamalla tätä</translation>
 <translation id="8881973373982641723">Tyhjentää historian esim. hakukentästä.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Yksityisyytesi suojaamiseksi poistamme listalta automaattisesti yli neljä viikkoa vanhat sivustotiedot. Jos käyt taas sivustolla, se voi näkyä listalla uudelleen. Voit myös poistaa sivuston, jos et halua sen koskaan määrittelevän sinua kiinnostavia aiheita.</translation>
-<translation id="889338405075704026">Siirry Chrome-asetuksiin</translation>
 <translation id="8898822736010347272">Lähettää Googlelle joidenkin vierailemiesi sivujen URL-osoitteita, rajallisia järjestelmätietoja ja osia sivujen sisällöstä auttaakseen löytämään uusia uhkia ja suojaamaan kaikkia verkon käyttäjiä.</translation>
 <translation id="8906502871739599113">Reaktio kopioitu</translation>
 <translation id="8909135823018751308">Jaa…</translation>
@@ -1498,7 +1495,6 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="8996847606757455498">Valitse toinen palvelu</translation>
 <translation id="8998729206196772491">Olet kirjautumassa sisään verkkotunnuksen <ph name="MANAGED_DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="9022774213089566801">Usein avatut</translation>
-<translation id="9028914725102941583">Ota synkronointi käyttöön, niin voit jakaa sisältöä laitteiden välillä</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videota}}</translation>
 <translation id="9042893549633094279">Yksityisyys ja turvallisuus</translation>
 <translation id="9050666287014529139">Tunnuslause</translation>

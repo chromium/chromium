@@ -3061,13 +3061,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="4228745249339680042">Politikanın ayarlanması, Güvenlik Anahtarları'ndan onay sertifikaları istendiğinde kendisi için hiçbir istem gösterilmeyecek URL'leri ve alan adlarını belirtir. Ayrıca, Güvenlik Anahtarı'na bağımsız onayın kullanılabileceğini belirten bir sinyal gönderilir. Bu olmadan, siteler Güvenlik Anahtarları'nın onayını istediğinde kullanıcılar <ph name="PRODUCT_NAME" /> sürüm 65 ve sonraki sürümlerde istem alır.
 
       URL'ler yalnızca U2F appID'leri olarak eşleşir. Alan adları yalnızca webauthn RP ID'leri olarak eşleşir. Dolayısıyla, belirli bir site için hem U2F hem de webauthn API'lerini kapsamak istiyorsanız hem appID URL'sini hem de alan adını listelemeniz gerekir.</translation>
-<translation id="4239112794240794697">Bu politika, kurumsal kullanıcılar için Projector uygulamasının ekran kaydı oluşturup metne dönüştürmesine ve bunları Drive'a yüklemesine izin verir.
-      Bu politika Family Link kullanıcılarını etkilemez.
-      Bu politika Family Link kullanıcıları için <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> politikasını etkilemez.
-
-      Politika etkinleştirilirse projektör de etkinleştirilir.
-      Politika devre dışı bırakılırsa projektör de devre dışı bırakılır.
-      Politika ayarlanmazsa projektör varsayılan olarak devre dışı bırakılır.</translation>
 <translation id="4239720644496144453">Önbellek, Android uygulamaları için kullanılmaz. Birden fazla kullanıcı aynı Android uygulamasını yüklerse bu uygulama her kullanıcı için yeniden indirilir.</translation>
 <translation id="4247914291127524388">Politika Etkin değerine ayarlanırsa hücresel bağlantı kullanılırken <ph name="PRODUCT_OS_NAME" /> Dosyalar uygulamasında <ph name="GOOGLE_DRIVE_NAME" /> senkronizasyonu devre dışı bırakılır. Yalnızca kablosuz ağ veya Ethernet bağlantısı kullanılırken veriler Drive ile senkronize edilir.
 
@@ -4593,13 +4586,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar teklifleri kullanamazlar.</translation>
 <translation id="6046615715547751255">Ayrıntılı raporlama kontrollerine izin verme</translation>
 <translation id="6048199181629830227">Güç tüketimi en üst düzeydeyken pil kullanımına geçme güç yönetimini etkinleştir</translation>
-<translation id="6052730367191220066"><ph name="MS_AD_NAME" /> tarafından yönetilen cihazların bulut yönetimine taşınmasını etkinleştirir. Bu politika, bir şirketteki çeşitli cihazların hiç dokunulmadan uzaktan taşınmasına olanak tanır. Ayrıca, taşıma işlemi son kullanıcılar açısından mümkün olduğunca şeffaf bir şekilde gerçekleştirilir.
-
-      Bu politika etkinleştirilirse ve kayıt kimliği halihazırda DMServer'a yüklenmiş olursa cihazın powerwash işlevi uzaktan tetiklenir.
-
-      Bu politika devre dışı bırakılır veya ayarlanmazsa, kayıt kimliğinin yüklenme durumu ne olursa olsun cihazın powerwash işlevi uzaktan tetiklenmez.
-
-      Bu denetim, giriş ekranı her yüklendiğinde tetiklenir. Cihazda giriş ekranı açık kalırsa denetim saatte bir yeniden tetiklenir. Böylece, taşıma işlemi kullanıcı oturumunun ortasında başlamaz ve son kullanıcıların bundan dolayı sorun yaşama ihtimali ortadan kalkar.</translation>
 <translation id="6053681087509103368">WebRTC'nin, TLD/DTLS protokolünün eski sürümlerini kullunmasına izin ver</translation>
 <translation id="6058879286588763839"><ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> politikasını geçersiz kılan <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> belirtilmediğinde <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> politikasının ayarlanması pil şarj modu güç yönetimi politikasını belirtir (cihazda destekleniyorsa). Politika, pil ömrünü uzatmak için stresi ve yıpranmayı en aza indirerek pil şarjını dinamik olarak kontrol eder.
 
@@ -6203,11 +6189,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7687943045976362719">Bu politika ayarlanırsa, belirtilen içerik türleri <ph name="PRODUCT_FRAME_NAME" /> tarafından işlenir.
 
           Bu politika ayarlanmazsa, tüm siteler için varsayılan oluşturucu kullanılır. (<ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> politikası, varsayılan oluşturucuyu yapılandırmak için kullanılabilir.)</translation>
-<translation id="7694245791806617022">Kerberos kimlik doğrulama iletişim kutusunda "Şifreyi hatırla" özelliğinin etkinleştirilip etkinleştirilmediğini kontrol eder. Şifreler diskte şifrelenmiş olarak saklanır ve yalnızca Kerberos sistemi hayalet programı tarafından ve bir kullanıcı oturumu sırasında erişilebilir.
-
-          Bu politika etkinleştirilir veya ayarlanırsa kullanıcılar, tekrar girmeleri gerekmesin diye Kerberos şifrelerinin hatırlanıp hatırlanmayacağına karar verebilirler. Ek bir kimlik doğrulama işlemi (iki faktörlü kimlik doğrulama) gerekmedikçe Kerberos biletleri otomatik olarak getirilir.
-
-          Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve daha önce saklanan tüm şifreler silinir. Kullanıcılar, Kerberos sisteminde kimlik doğrulamaları gerektiğinde her zaman şifrelerini girmelidirler. Sunucu ayarlarına bağlı olarak, bu genellikle her 8 saatte bir ile birkaç ayda bir arasında olur.</translation>
 <translation id="7694807474048279351"><ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra otomatik yeniden başlatma planla.
 
       Bu politika true (doğru) olarak ayarlandığında, <ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra güncelleme işleminin tamamlanması için otomatik yeniden başlatma gerekliyse bir otomatik yeniden başlatma planlanır. Yeniden başlatma derhal planlanır, ancak kullanıcı o an cihazı kullanıyorsa bu işlem cihaz üzerinden 24 saate kadar geciktirilebilir.

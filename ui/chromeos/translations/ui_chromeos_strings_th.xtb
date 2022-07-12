@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">ปลอดภัย</translation>
 <translation id="2638942478653899953">ไม่สามารถเข้าถึง Google ไดรฟ์ โปรด<ph name="BEGIN_LINK" />ออกจากระบบ<ph name="END_LINK" /> และเข้าสู่ระบบใหม่อีกครั้ง</translation>
 <translation id="2649120831653069427">ปลาเรนโบว์</translation>
+<translation id="2653059201992392941">คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="2663066752008346276">พม่า/เมียนมาด้วยแป้นพิมพ์เมียนซาน</translation>
 <translation id="2664412712123763093">ตำแหน่งที่ตั้งไฟล์</translation>
 <translation id="2718540689505416944">ติดตั้งแอปด้วย Linux</translation>
@@ -530,6 +531,7 @@
 <translation id="5489067830765222292">ลัตเวีย</translation>
 <translation id="5489965683297092283">ตัวกรอง <ph name="FILTER_NAME" /> ปิดอยู่</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
+<translation id="5500104704744051184">คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะป้อน PUK</translation>
 <translation id="5500122897333236901">ไอซ์แลนดิก</translation>
 <translation id="5508696409934741614">จุด</translation>
 <translation id="5522908512596376669">เปลี่ยนรายการไฟล์เป็นมุมมองรายการแล้ว</translation>
@@ -635,6 +637,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> รายการ</translation>
 <translation id="642282551015776456">ชื่อนี้ไม่สามารถใช้เป็นชื่อไฟล์ของโฟลเดอร์</translation>
 <translation id="6423031066725912715">เวียดนามด้วยแป้นพิมพ์ TCVN</translation>
+<translation id="6430271654280079150">คุณลองได้อีก 1 ครั้ง</translation>
 <translation id="6485131920355264772">การดึงข้อมูลพื้นที่ล้มเหลว</translation>
 <translation id="6495925982925244349">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
 <translation id="649877868557234318">กำลังแตกข้อมูล <ph name="FILE_NAME" /> ไปที่ <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +904,7 @@
 <translation id="8579285237314169903">กำลังซิงค์ <ph name="NUMBER_OF_FILES" /> รายการ...</translation>
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
+<translation id="8608515571837163082">ป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป ป้อนคีย์การเลิกบล็อกส่วนตัว (PUK) 8 หลักจากผู้ให้บริการ</translation>
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>
 <translation id="863903787380594467">PIN ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - พอร์ต</translation>

@@ -1269,6 +1269,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2180620921879609685">Blokovat obsah na všech stránkách</translation>
 <translation id="2182058453334755893">Zkopírováno do schránky</translation>
 <translation id="2184515124301515068">Nechat Chrome zvolit, kdy weby mohou přehrávat zvuk (doporučeno)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Stránka byla sdílena z jiného zařízení</translation>
 <translation id="2187675480456493911">Synchronizuje se s jinými zařízeními v účtu. Změny nastavení provedené jinými uživateli se nesynchronizují. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Chyba při importu certifikátu serveru</translation>
@@ -5570,6 +5571,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6406303162637086258">Simulovat restart prohlížeče</translation>
 <translation id="6406506848690869874">Synchronizace</translation>
 <translation id="6406708970972405507">Nastavení – <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Asistent Google vám se změnou hesla pomůže</translation>
 <translation id="6408118934673775994">Čtení a úprava dat na webu <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> a <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Obrázkové soubory</translation>
 <translation id="6410328738210026208">Změnit kanál a použít funkci Powerwash</translation>
@@ -5957,6 +5959,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6781978626986383437">Zálohování kontejneru systému Linux bylo zrušeno</translation>
 <translation id="6782067259631821405">Neplatný kód PIN</translation>
 <translation id="6784523122863989144">Profil je podporován</translation>
+<translation id="6785872064505734160">Asistent Google v Chromu může na webech provádět různé akce za vás</translation>
 <translation id="6786747875388722282">Rozšíření</translation>
 <translation id="6787097042755590313">Jiná karta</translation>
 <translation id="6787839852456839824">Klávesové zkratky</translation>

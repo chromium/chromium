@@ -218,7 +218,6 @@
 <translation id="214888715418183969">‏انتخاب کنید می‌خواهید چه چیزهایی با Chrome هم‌رسانی شود. از سنجه‌هایی که هم‌رسانی می‌کنید برای کمک به بهبود ویژگی‌ها، عملکرد، و پایداری Chrome استفاده خواهد شد.</translation>
 <translation id="2149973817440762519">ویرایش نشانک</translation>
 <translation id="2155214902713132423">این روشِ به‌تأیید رساندن برای این دستگاه دردسترس نیست. گزینه دیگری را در دستگاه دیگرتان انتخاب کنید.</translation>
-<translation id="2157851137955077194">‏برای به‌اشتراک گذاشتن چیزی از تلفنتان با دستگاهی دیگر، در تنظیمات Chrome هر دو دستگاه «همگام‌سازی» را روشن کنید</translation>
 <translation id="2158408438301413340">‏Chrome نتوانست همه گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="2169830938017475061">اکنون</translation>
 <translation id="2172688499998841696">توضیحات تصویر خاموش است</translation>
@@ -662,7 +661,6 @@
 <translation id="4678082183394354975">‏زمینه تیره برای سایت‌ها در Chrome روشن است</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
-<translation id="4696983787092045100">ارسال نوشتار به دستگاه‌های شما</translation>
 <translation id="4699172675775169585">تصاویر و فایل‌های قرار گرفته در حافظه پنهان</translation>
 <translation id="4719927025381752090">پیشنهاد برای ترجمه</translation>
 <translation id="4720023427747327413">بازکردن در <ph name="PRODUCT_NAME" /></translation>
@@ -1470,7 +1468,6 @@
 <translation id="8873817150012960745">برای شروع، اینجا ضربه بزنید</translation>
 <translation id="8881973373982641723">سابقه‌ها، ازجمله سابقه موجود در چارگوش جستجو پاک می‌شود.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />چگونه می‌توانید داده‌هایتان را مدیریت کنید:<ph name="END_BOLD" /> برای محافظت از حریم خصوصی شما، سایت‌های موجود در فهرست را که قدیمی‌تر از ۴ هفته باشند به‌طور خودکار حذف می‌کنیم. سایت‌هایی که مجدداً از آن‌ها بازدید می‌کنید ممکن است دوباره در فهرست نمایش داده شود. یا اگر نمی‌خواهید سایت خاصی هرگز به علایق شما پی ببرد می‌توانید آن سایت را از فهرست بردارید.</translation>
-<translation id="889338405075704026">‏به تنظیمات Chrome بروید</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
 <translation id="8906502871739599113">واکنش کپی شد</translation>
 <translation id="8909135823018751308">اشتراک‌گذاری‌...</translation>
@@ -1498,7 +1495,6 @@
 <translation id="8996847606757455498">انتخاب ارائه‌دهنده دیگر</translation>
 <translation id="8998729206196772491">‏هم‌اکنون درحال ورود به سیستم با یک حساب مدیریت‌شده توسط <ph name="MANAGED_DOMAIN" /> و ارائه کنترل داده‌های Chrome خودتان به سرپرست این حساب هستید. داده‌هایتان به‌طور دائم به این حساب مرتبط می‌شوند. با خروج از Chrome، داده‌هایتان از این دستگاه حذف می‌شوند اما همچنان در حساب Google شما باقی می‌ماند.</translation>
 <translation id="9022774213089566801">اغلب از آن‌ها بازدید شده است</translation>
-<translation id="9028914725102941583">برای هم‌رسانی بین دستگاه‌ها، «همگام‌سازی» را روشن کنید</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ویدیو}one{# ویدیو}other{# ویدیو}}</translation>
 <translation id="9042893549633094279">حریم خصوصی و امنیت</translation>
 <translation id="9050666287014529139">گذرعبارت</translation>

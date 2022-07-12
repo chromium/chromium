@@ -74,6 +74,7 @@
 <translation id="5945387852661427312">Prijavljujete se s računom kojim upravlja domena <ph name="DOMAIN" /> i dajete njenom administratoru kontrolu nad svojim podacima iz Chromiuma. Vaši podaci će se trajno povezati s ovim računom. Odjavom iz Chromiuma će se izbrisati vaši podaci s ovog uređaja, ali će ostati pohranjeni na vašem Google računu.</translation>
 <translation id="5983312940147103417">Poboljšajte Chromium</translation>
 <translation id="602807004951640891">Korištenjem Chromiuma prihvatate <ph name="BEGIN_LINK_TOS" />Uslove korištenja usluge<ph name="END_LINK_TOS" />.</translation>
+<translation id="6062449165341879460">Vaša organizacija <ph name="DOMAIN" /> će imati pristup podacima Chromiuma, oznakama, historiji, lozinkama i drugim postavkama koje pohranjujete na ovom računu Kada se odjavite, vaši podaci će biti obrisani s ovog uređaja.  Međutim, vaši podaci će ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija također može postaviti pravila za korisnike koja su specifična za taj račun koja mogu promijeniti ponašanje Chromiuma.</translation>
 <translation id="6119647025869519954">Da postavite Chromium kao zadani preglednik:
 1. Otvorite Postavke
 2. Dodirnite Zadana aplikacija preglednika

@@ -194,6 +194,7 @@
 <translation id="2621713457727696555">Beveiligd</translation>
 <translation id="2638942478653899953">Google Drive kan niet worden bereikt. <ph name="BEGIN_LINK" />Log uit<ph name="END_LINK" /> en log weer in.</translation>
 <translation id="2649120831653069427">Regenboogvis</translation>
+<translation id="2653059201992392941">Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="2663066752008346276">Birmaans (Myanmar) met MyanSan-toetsenbord</translation>
 <translation id="2664412712123763093">Bestandslocatie</translation>
 <translation id="2718540689505416944">App installeren met Linux</translation>
@@ -531,6 +532,7 @@
 <translation id="5489067830765222292">Lets</translation>
 <translation id="5489965683297092283">Het filter <ph name="FILTER_NAME" /> staat uit.</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
+<translation id="5500104704744051184">Je kunt dit netwerk pas gebruiken nadat je de pukcode hebt opgegeven</translation>
 <translation id="5500122897333236901">IJslands</translation>
 <translation id="5508696409934741614">Stippen</translation>
 <translation id="5522908512596376669">Bestandslijst is gewijzigd naar lijstweergave.</translation>
@@ -636,6 +638,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
 <translation id="642282551015776456">Deze naam mag niet worden gebruikt als de naam van een bestand of map.</translation>
 <translation id="6423031066725912715">Vietnamees met TCVN-toetsenbord</translation>
+<translation id="6430271654280079150">Je hebt nog 1 poging.</translation>
 <translation id="6485131920355264772">Kan ruimte-informatie niet ophalen</translation>
 <translation id="6495925982925244349">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> uitpakken naar <ph name="FOLDER_NAME" /></translation>
@@ -902,6 +905,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> items synchroniseren...</translation>
 <translation id="8600173386174225982">Bestandslijst is gewijzigd naar miniatuurweergave.</translation>
 <translation id="8601932370724196034">Crostini-afbeeldingsbestand</translation>
+<translation id="8608515571837163082">Je hebt te vaak een verkeerde pincode opgegeven. Geef de 8-cijferige pukcode op die je van de provider hebt gekregen.</translation>
 <translation id="8609695766746872526">IJslands</translation>
 <translation id="863903787380594467">Onjuiste pincode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" />: poort</translation>

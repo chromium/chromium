@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1264309058268477500">বিকল্প</translation>
 <translation id="1264974993859112054">খেলাধূলা</translation>
+<translation id="1266469291454105242">ডিভাইস আনলক</translation>
 <translation id="1269516672602708785">Google Sites-এ চটপট নতুন সাইট তৈরি করুন</translation>
 <translation id="1270502636509132238">পিক-আপের পদ্ধতি</translation>
 <translation id="1281476433249504884">স্ট্যাকার ১</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">ডেটিং ও ব্যক্তিগত</translation>
 <translation id="1753706481035618306">পৃষ্ঠা সংখ্যা</translation>
 <translation id="1755621011177747277">দত্তক নেওয়া</translation>
+<translation id="1756026472674246267">নতুন ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="175656076281618225">ম্যাজিক</translation>
 <translation id="1757773103848038814">Monospace ফন্ট</translation>
 <translation id="1763864636252898013">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেটটি আপনার ডিভােইসের নিকট বিশ্বাসযোগ্য নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
@@ -456,6 +458,7 @@
 <translation id="214556005048008348">পেমেন্ট বাতিল করুন</translation>
 <translation id="2148613324460538318">কার্ড যোগ করুন</translation>
 <translation id="2149968176347646218">কানেকশন সুরক্ষিত নয়</translation>
+<translation id="2153609454945889823">Google Play Services for AR ইনস্টল করবেন?</translation>
 <translation id="2154054054215849342">আপনার ডোমেনের জন্য সিঙ্ক উপলভ্য নেই</translation>
 <translation id="2154484045852737596">কার্ড সম্পাদনা করুন</translation>
 <translation id="2161656808144014275">পাঠ্য</translation>
@@ -833,6 +836,7 @@
 <translation id="3229277193950731405">ভার্সন স্ট্রিং কপি করুন</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-এর CVC লিখুন</translation>
 <translation id="3234666976984236645">এই সাইটে সবসময় গুরুত্বপূর্ণ কন্টেন্ট শনাক্ত করুন</translation>
+<translation id="3238395604961564389">লিঙ্কটি ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="3240791268468473923">সুরক্ষিত পেমেন্ট ক্রেডেনশিয়ালের সাথে মিল নেই এমন পেমেন্ট ক্রেডেনশিয়ালের শিট খোলা আছে</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” লিঙ্ক ব্লক করা হয়েছে</translation>
@@ -946,6 +950,7 @@
 <translation id="3531780078352352885">জব শিট</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> আপনার মাইক্রোফোন ব্যবহার করতে চায়</translation>
 <translation id="3533328374079021623">মেলবক্স ৫</translation>
+<translation id="3542768452570884558">নতুন উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="3550112004925580947">হসপিটালিটি শিল্প</translation>
 <translation id="3552297013052089404">Sans-Serif ফন্ট</translation>
 <translation id="3558573058928565255">দিনের সময়</translation>
@@ -1116,11 +1121,13 @@
 <translation id="4040350669425716613">কলেজ ও বিশ্ববিদ্যালয়</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
 <translation id="4058922952496707368">কী "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">কার্ড আরও দ্রুত কনফার্ম করতে ডিভাইস আনলক ব্যবহার করুন</translation>
 <translation id="4067098466788473230">অধ্যয়নের অনুদান ও বৃত্তি</translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">সঠিক ঠিকানা যোগ করুন</translation>
 <translation id="4072193657607981494">নীতি লোড হচ্ছে</translation>
 <translation id="4072486802667267160">আপনার অর্ডার প্রক্রিয়া করার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</translation>
+<translation id="4073376909608563327">ডিভাইস আনলক ব্যবহার করা যাচ্ছে না</translation>
 <translation id="4073797364926776829">কার্ড দেখুন</translation>
 <translation id="4075732493274867456">ক্লায়েন্ট ও সার্ভারটি কোনো অভিন্ন SSL প্রোটোকল সংস্করণ বা সাইফার স্যুট সমর্থন করে না।</translation>
 <translation id="4079302484614802869">প্রক্সি কনফিগারেশনটি .pac স্ক্রিপ্ট URL-এ ব্যবহার করাতে সেট থাকে স্থির প্রক্সি সার্ভারগুলিতে নয়৷</translation>
@@ -1413,6 +1420,7 @@
 <translation id="4840250757394056958">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" />-এ ডিসকাউন্ট পান এবং আরও অনেক কিছু</translation>
+<translation id="484988093836683706">ডিভাইস আনলক ব্যবহার করুন</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4852429274334674023">অপারেটিং সিস্টেম</translation>
 <translation id="485316830061041779">জার্মান</translation>
@@ -1800,6 +1808,7 @@
 <translation id="5921185718311485855">চালু করা আছে</translation>
 <translation id="5921639886840618607">Google অ্যাকাউন্টে কার্ড সেভ করবেন?</translation>
 <translation id="5922853866070715753">প্রায় শেষ</translation>
+<translation id="5923492272538889093">সিভিসি কোডের পরিবর্তে ডিভাইস আনলক ব্যবহার করবেন?</translation>
 <translation id="5928444777041341328">বাড়ি এবং বাগান</translation>
 <translation id="5932224571077948991">সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়</translation>
 <translation id="5937560539988385583">পৃষ্ঠা অনুবাদ করা হয়ে গেছে</translation>
@@ -1972,6 +1981,7 @@
 <translation id="643051589346665201">Google পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="6433490469411711332">পরিচিতি তথ্য সম্পাদনা করুন</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> সংযোগ করতে প্রত্যাখ্যান করেছে।</translation>
+<translation id="6433797564277305076">এখন থেকে কার্ডগুলি আরও দ্রুত কনফার্ম করতে ডিভাইস আনলক ব্যবহার করুন</translation>
 <translation id="6440503408713884761">এড়ানো হয়েছে</translation>
 <translation id="6443406338865242315">কোন কোন এক্সটেনশন ও প্লাগ-ইন আপনি ইনস্টল করেছেন</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -2178,6 +2188,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{এই মুহূর্তে কার্ডটি সেভ করা যাবে না}one{এই মুহূর্তে কার্ডগুলি সেভ করা যাবে না}other{এই মুহূর্তে কার্ডগুলি সেভ করা যাবে না}}</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> এই ওয়েবসাইটের সার্টিফিকেট ইস্যু করেছে এবং <ph name="BROWSER" /> সেটি যাচাই করেছে।</translation>
+<translation id="7058774143982824355">CSV পাসওয়ার্ড পার্সার পরিষেবা</translation>
 <translation id="7061777300866737982">বাড়ির নিরাপত্তা ও নিরাপত্তা</translation>
 <translation id="7062635574500127092">নীলচে সবুজ</translation>
 <translation id="706295145388601875">Chrome সেটিংসে ঠিকানা যোগ ও ম্যানেজ করুন</translation>
@@ -2442,6 +2453,7 @@
 <translation id="7696089921647603491">ক্লাসিক রক ও পুরানো দিনের</translation>
 <translation id="7697066736081121494">Prc8 (Envelope)</translation>
 <translation id="769721561045429135">এই মুহূর্তে, আপনার কাছে থাকা কার্ডগুলি শুধুমাত্র এই ডিভাইসে ব্যবহার করা যেতে পারে। কার্ডগুলির পর্যালোচনা চালিয়ে যেতে ক্লিক করুন।</translation>
+<translation id="7698864304447945242">Google Play Services for AR আপডেট করবেন?</translation>
 <translation id="7699293099605015246">নিবন্ধ এখন পাওয়া যাবে না</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> এ এগিয়ে যান (নিরাপদ নয়) <ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@
 <translation id="7723047071702270851">কার্ড সম্পাদনা করুন</translation>
 <translation id="7734285854693414638">Google Forms-এ চটপট নতুন ফর্ম তৈরি করুন</translation>
 <translation id="773466115871691567">সব সময় <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ দেখতে চাই</translation>
+<translation id="7736959720849233795">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
 <translation id="7740996059027112821">মানক</translation>
 <translation id="77424286611022110">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়। <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">বিপজ্জনক কন্টেন্ট ব্লক করা হয়েছে।</translation>

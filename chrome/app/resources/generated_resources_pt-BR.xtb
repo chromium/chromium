@@ -1280,6 +1280,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2180620921879609685">Bloquear conteúdo em qualquer página</translation>
 <translation id="2182058453334755893">Copiado para a área de transferência</translation>
 <translation id="2184515124301515068">Permitir que Chrome defina quando os sites podem tocar áudio (recomendado)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Página compartilhada de outro dispositivo</translation>
 <translation id="2187675480456493911">Sincronizada com outros dispositivos na sua conta. As configurações modificadas por outros usuários não serão sincronizadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Erro de importação do certificado de servidor</translation>
@@ -5592,6 +5593,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6406303162637086258">Simular reinicialização do navegador</translation>
 <translation id="6406506848690869874">Sincronizar</translation>
 <translation id="6406708970972405507">Configurações: <ph name="SECTION_TITLE" /></translation>
+<translation id="6407955178761087876">Permita que o Google Assistente ajude você a mudar sua senha</translation>
 <translation id="6408118934673775994">Ler e alterar seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Arquivos de imagem</translation>
 <translation id="6410328738210026208">Mudar de canal e executar PowerWash</translation>
@@ -5977,6 +5979,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6781978626986383437">Backup do Linux cancelado</translation>
 <translation id="6782067259631821405">PIN inválido</translation>
 <translation id="6784523122863989144">O perfil é compatível</translation>
+<translation id="6785872064505734160">O Google Assistente no Chrome pode concluir ações em sites para você</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787097042755590313">Outra guia</translation>
 <translation id="6787839852456839824">Atalhos do teclado</translation>
