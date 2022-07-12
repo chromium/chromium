@@ -415,6 +415,12 @@ void RenderViewTest::SetUp() {
 
   render_thread_->SetIOTaskRunner(test_io_thread_->task_runner());
 
+  // Setting flags and really doing anything with WebKit is fairly fragile and
+  // hacky, but this is the world we live in...
+  // Note that we need to set flags *before* initializing V8 (as part of blink),
+  // as it's not allowed to modify them later.
+  v8::V8::SetFlagsFromString("--expose-gc");
+
   // ContentClient must be initialized before Blink, because Blink now eagerly
   // loads the default stylesheets, which are fetched from the resource bundle
   // using ContentClient.
@@ -452,11 +458,6 @@ void RenderViewTest::SetUp() {
   params_ = std::make_unique<MainFunctionParams>(command_line_.get());
   platform_ = std::make_unique<RendererMainPlatformDelegate>(*params_);
   platform_->PlatformInitialize();
-
-  // Setting flags and really doing anything with WebKit is fairly fragile and
-  // hacky, but this is the world we live in...
-  std::string flags("--expose-gc");
-  v8::V8::SetFlagsFromString(flags.c_str(), flags.size());
 
   // Ensure that we register any necessary schemes when initializing WebKit,
   // since we are using a MockRenderThread.
