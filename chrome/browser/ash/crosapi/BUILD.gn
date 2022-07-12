@@ -353,6 +353,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "audio_service_ash_unittest.cc",
     "browser_data_migrator_unittest.cc",
     "browser_data_migrator_util_unittest.cc",
     "browser_loader_unittest.cc",
@@ -401,6 +402,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos:test_support",
     "//chrome/common/printing",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/crosapi/cpp:cpp",
     "//chromeos/crosapi/cpp:crosapi_constants",
