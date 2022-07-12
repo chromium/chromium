@@ -7165,8 +7165,8 @@ crbug.com/1342518 [ Mac ] external/wpt/webmessaging/event.data.sub.htm [ Failure
 crbug.com/1342518 [ Win ] external/wpt/webmessaging/event.data.sub.htm [ Failure Pass ]
 
 # Sheriff 2022-07-08
-crbug.com/1180274 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
-crbug.com/1180274 virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Failure Pass ]
+crbug.com/1180274 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
+crbug.com/1180274 virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 crbug.com/1180274 virtual/first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 crbug.com/1180274 virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 
