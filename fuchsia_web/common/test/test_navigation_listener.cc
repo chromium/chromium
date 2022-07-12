@@ -12,7 +12,16 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+
+namespace {
+
+const char* PageTypeToString(fuchsia::web::PageType type) {
+  return type == fuchsia::web::PageType::NORMAL ? "NORMAL" : "ERROR";
+}
+
+}  // namespace
 
 TestNavigationListener::TestNavigationListener() {
   // Set up the default acknowledgement handling behavior.
@@ -24,19 +33,20 @@ TestNavigationListener::~TestNavigationListener() = default;
 void TestNavigationListener::RunUntilNavigationStateMatches(
     const fuchsia::web::NavigationState& expected_state) {
   DCHECK(before_ack_);
+  DCHECK(!expected_state_);
 
-  // Spin the runloop until the expected conditions are met.
-  if (AllFieldsMatch(expected_state))
-    return;
-
-  base::RunLoop run_loop;
-  base::AutoReset<BeforeAckCallback> callback_setter(
-      &before_ack_,
-      base::BindRepeating(&TestNavigationListener::QuitLoopIfAllFieldsMatch,
-                          base::Unretained(this),
-                          base::Unretained(&expected_state),
-                          run_loop.QuitClosure(), before_ack_));
-  run_loop.Run();
+  expected_state_ = &expected_state;
+  if (!AllFieldsMatch(nullptr)) {
+    // Spin the runloop until the expected conditions are met.
+    base::RunLoop run_loop;
+    base::AutoReset<BeforeAckCallback> callback_setter(
+        &before_ack_,
+        base::BindRepeating(&TestNavigationListener::QuitLoopIfAllFieldsMatch,
+                            base::Unretained(this), run_loop.QuitClosure(),
+                            before_ack_));
+    run_loop.Run();
+  }
+  expected_state_ = nullptr;
 }
 
 void TestNavigationListener::RunUntilLoaded() {
@@ -155,10 +165,7 @@ void TestNavigationListener::OnNavigationStateChanged(
 
     if (current_state_.has_page_type()) {
       state_string.append(base::StringPrintf(
-          " page_type=%s ",
-          (current_state_.page_type() == fuchsia::web::PageType::NORMAL
-               ? "NORMAL"
-               : "ERROR")));
+          " page_type=%s ", PageTypeToString(current_state_.page_type())));
     }
 
     if (current_state_.has_is_main_document_loaded()) {
@@ -177,53 +184,94 @@ void TestNavigationListener::OnNavigationStateChanged(
 }
 
 bool TestNavigationListener::AllFieldsMatch(
-    const fuchsia::web::NavigationState& expected) {
-  if (expected.has_url() &&
-      (!current_state_.has_url() || expected.url() != current_state_.url())) {
-    return false;
+    std::vector<FailureReason>* failure_reasons) {
+  bool success = true;
+
+  if (expected_state_->has_url() &&
+      (!current_state_.has_url() ||
+       expected_state_->url() != current_state_.url())) {
+    if (failure_reasons) {
+      failure_reasons->push_back({"url", expected_state_->url()});
+    }
+    success = false;
   }
 
-  if (expected.has_title() && (!current_state_.has_title() ||
-                               expected.title() != current_state_.title())) {
-    return false;
+  if (expected_state_->has_title() &&
+      (!current_state_.has_title() ||
+       expected_state_->title() != current_state_.title())) {
+    if (failure_reasons) {
+      failure_reasons->push_back({"title", expected_state_->title()});
+    }
+    success = false;
   }
 
-  if (expected.has_can_go_forward() &&
+  if (expected_state_->has_can_go_forward() &&
       (!current_state_.has_can_go_forward() ||
-       expected.can_go_forward() != current_state_.can_go_forward())) {
-    return false;
+       expected_state_->can_go_forward() != current_state_.can_go_forward())) {
+    if (failure_reasons) {
+      failure_reasons->push_back(
+          {"can_go_forward",
+           base::NumberToString(expected_state_->can_go_forward())});
+    }
+    success = false;
   }
 
-  if (expected.has_can_go_back() &&
+  if (expected_state_->has_can_go_back() &&
       (!current_state_.has_can_go_back() ||
-       expected.can_go_back() != current_state_.can_go_back())) {
-    return false;
+       expected_state_->can_go_back() != current_state_.can_go_back())) {
+    if (failure_reasons) {
+      failure_reasons->push_back(
+          {"can_go_back",
+           base::NumberToString(expected_state_->can_go_back())});
+    }
+    success = false;
   }
 
-  if (expected.has_page_type() &&
+  if (expected_state_->has_page_type() &&
       (!current_state_.has_page_type() ||
-       expected.page_type() != current_state_.page_type())) {
-    return false;
+       expected_state_->page_type() != current_state_.page_type())) {
+    if (failure_reasons) {
+      failure_reasons->push_back(
+          {"page_type", PageTypeToString(expected_state_->page_type())});
+    }
+    success = false;
   }
 
-  if (expected.has_is_main_document_loaded() &&
+  if (expected_state_->has_is_main_document_loaded() &&
       (!current_state_.has_is_main_document_loaded() ||
-       expected.is_main_document_loaded() !=
+       expected_state_->is_main_document_loaded() !=
            current_state_.is_main_document_loaded())) {
-    return false;
+    if (failure_reasons) {
+      failure_reasons->push_back(
+          {"is_main_document_loaded",
+           base::NumberToString(expected_state_->is_main_document_loaded())});
+    }
+    success = false;
   }
 
-  return true;
+  return success;
 }
 
 void TestNavigationListener::QuitLoopIfAllFieldsMatch(
-    const fuchsia::web::NavigationState* expected_state,
     base::RepeatingClosure quit_run_loop_closure,
     TestNavigationListener::BeforeAckCallback before_ack_callback,
     const fuchsia::web::NavigationState& change,
     fuchsia::web::NavigationEventListener::OnNavigationStateChangedCallback
         ack_callback) {
-  if (AllFieldsMatch(*expected_state))
+  std::vector<FailureReason> failure_reasons;
+
+  if (AllFieldsMatch(VLOG_IS_ON(1) ? &failure_reasons : nullptr)) {
+    VLOG(1) << "All navigation expectations satisfied, continuing...";
     quit_run_loop_closure.Run();
+  } else if (VLOG_IS_ON(1)) {
+    std::vector<std::string> formatted_reasons;
+    for (const auto& reason : failure_reasons) {
+      formatted_reasons.push_back(base::StringPrintf("%s=%s", reason.field_name,
+                                                     reason.expected.c_str()));
+    }
+    VLOG(1) << "Still waiting on the following unmet expectations: "
+            << base::JoinString(formatted_reasons, ", ");
+  }
+
   before_ack_callback.Run(change, std::move(ack_callback));
 }

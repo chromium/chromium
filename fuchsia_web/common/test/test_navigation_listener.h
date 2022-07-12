@@ -13,6 +13,8 @@
 
 // Observes navigation events and enables test code to block until a desired
 // navigational state is observed.
+// When run with -v1, information about navigation state transitions and
+// unmet test expectations are logged.
 class TestNavigationListener final
     : public fuchsia::web::NavigationEventListener {
  public:
@@ -77,16 +79,22 @@ class TestNavigationListener final
   void SetBeforeAckHook(BeforeAckCallback before_ack);
 
  private:
+  struct FailureReason {
+    const char* field_name;
+    std::string expected;
+  };
+
   // fuchsia::web::NavigationEventListener implementation.
   void OnNavigationStateChanged(
       fuchsia::web::NavigationState change,
       OnNavigationStateChangedCallback callback) override;
 
-  // Compare the current state with all fields of |expected| that have been set.
-  bool AllFieldsMatch(const fuchsia::web::NavigationState& expected);
+  // Compare the current state with all fields of |expected_state_| that have
+  // been set. Any expectation mismatches will be recorded in |failure_reasons|,
+  // if set.
+  bool AllFieldsMatch(std::vector<FailureReason>* failure_reasons);
 
   void QuitLoopIfAllFieldsMatch(
-      const fuchsia::web::NavigationState* expected_state,
       base::RepeatingClosure quit_run_loop_closure,
       BeforeAckCallback before_ack_callback,
       const fuchsia::web::NavigationState& change,
@@ -95,6 +103,9 @@ class TestNavigationListener final
 
   fuchsia::web::NavigationState current_state_;
   fuchsia::web::NavigationState last_changes_;
+
+  // Set for the duration of a call to RunUntilNavigationStateMatches().
+  const fuchsia::web::NavigationState* expected_state_ = nullptr;
 
   BeforeAckCallback before_ack_;
 };
