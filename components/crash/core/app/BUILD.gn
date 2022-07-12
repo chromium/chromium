@@ -288,6 +288,7 @@ source_set("unit_tests") {
     ]
     deps += [
       ":run_as_crashpad_handler",
+      "//components/crash/win:unit_tests",
       "//third_party/breakpad:client",
       "//third_party/crashpad/crashpad/client:client",
       "//third_party/crashpad/crashpad/snapshot:snapshot",
