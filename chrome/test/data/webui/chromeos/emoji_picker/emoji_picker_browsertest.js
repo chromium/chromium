@@ -92,7 +92,7 @@ var EmojiPickerTrieTest = class extends PolymerTest {
   /** @override */
   get featureList() {
     return {
-      enabled: ['chromeos::features::kImeSystemEmojiPickerSearchExtension']
+      enabled: ['chromeos::features::kImeSystemEmojiPickerSearchExtension'],
     };
   }
   /** @override */

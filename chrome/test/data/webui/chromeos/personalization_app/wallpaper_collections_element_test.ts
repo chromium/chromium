@@ -39,7 +39,7 @@ suite('WallpaperCollectionsTest', function() {
 
     personalizationStore.data.wallpaper.loading = {
       ...personalizationStore.data.wallpaper.loading,
-      collections: false
+      collections: false,
     };
     personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
@@ -135,7 +135,7 @@ suite('WallpaperCollectionsTest', function() {
 
     testProxy.resetResolver('sendImageCounts');
     personalizationStore.data.wallpaper.backdrop.images = {
-      'id_0': [wallpaperProvider.images![0]]
+      'id_0': [wallpaperProvider.images![0]],
     };
     personalizationStore.data.wallpaper.loading.images = {'id_0': false};
     personalizationStore.notifyObservers();
@@ -179,7 +179,7 @@ suite('WallpaperCollectionsTest', function() {
     personalizationStore.data.wallpaper.loading = {
       ...personalizationStore.data.wallpaper.loading,
       collections: false,
-      local: {images: false, data: {[kDefaultImageSymbol]: false}}
+      local: {images: false, data: {[kDefaultImageSymbol]: false}},
     };
     personalizationStore.data.wallpaper.local.images =
         wallpaperProvider.localImages;
@@ -368,10 +368,10 @@ suite('WallpaperCollectionsTest', function() {
 
         // First thumbnail loads in.
         personalizationStore.data.wallpaper.loading.local.data = {
-          'LocalImage0.png': false
+          'LocalImage0.png': false,
         };
         personalizationStore.data.wallpaper.local.data = {
-          'LocalImage0.png': 'local_data_0'
+          'LocalImage0.png': 'local_data_0',
         };
         personalizationStore.notifyObservers();
 

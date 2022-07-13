@@ -154,7 +154,7 @@ suite('GooglePhotosPhotosTest', function() {
         name: '1',
         date: toString16('First row'),
         url: {url: '1'},
-        location: '1'
+        location: '1',
       },
       // Second row.
       {
@@ -163,7 +163,7 @@ suite('GooglePhotosPhotosTest', function() {
         name: '2',
         date: toString16('Second row'),
         url: {url: '2'},
-        location: '2'
+        location: '2',
       },
       {
         id: '3',
@@ -171,7 +171,7 @@ suite('GooglePhotosPhotosTest', function() {
         name: '3',
         date: toString16('Second row'),
         url: {url: '3'},
-        location: '3'
+        location: '3',
       },
       // Third row.
       {
@@ -180,8 +180,8 @@ suite('GooglePhotosPhotosTest', function() {
         name: '4',
         date: toString16('Third row'),
         url: {url: '4'},
-        location: '4'
-      }
+        location: '4',
+      },
     ];
 
     // Set values returned by |wallpaperProvider|.
@@ -313,7 +313,7 @@ suite('GooglePhotosPhotosTest', function() {
         name: 'foo',
         date: toString16('Wednesday, February 16, 2022'),
         url: {url: 'foo.com'},
-        location: undefined
+        location: undefined,
       },
       // Section of photos with one location.
       {
@@ -322,7 +322,7 @@ suite('GooglePhotosPhotosTest', function() {
         name: 'bar',
         date: toString16('Friday, November 12, 2021'),
         url: {url: 'bar.com'},
-        location: 'home1'
+        location: 'home1',
       },
       {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
@@ -330,7 +330,7 @@ suite('GooglePhotosPhotosTest', function() {
         name: 'baz',
         date: toString16('Friday, November 12, 2021'),
         url: {url: 'baz.com'},
-        location: 'home1'
+        location: 'home1',
       },
       // Section of photos with different locations.
       {
@@ -339,7 +339,7 @@ suite('GooglePhotosPhotosTest', function() {
         name: 'bare',
         date: toString16('Friday, July 16, 2021'),
         url: {url: 'bare.com'},
-        location: 'home2'
+        location: 'home2',
       },
       {
         id: '0a268a11-877a-4936-81d4-38cc8s9dn396',
@@ -347,8 +347,8 @@ suite('GooglePhotosPhotosTest', function() {
         name: 'baze',
         date: toString16('Friday, July 16, 2021'),
         url: {url: 'baze.com'},
-        location: 'home3'
-      }
+        location: 'home3',
+      },
     ];
 
     const sections =
@@ -432,7 +432,7 @@ suite('GooglePhotosPhotosTest', function() {
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
-      location: 'home1'
+      location: 'home1',
     };
 
     const anotherPhoto: GooglePhotosPhoto = {
@@ -441,7 +441,7 @@ suite('GooglePhotosPhotosTest', function() {
       name: 'bar',
       date: {data: []},
       url: {url: 'bar.com'},
-      location: 'home2'
+      location: 'home2',
     };
 
     const yetAnotherPhoto: GooglePhotosPhoto = {
@@ -450,7 +450,7 @@ suite('GooglePhotosPhotosTest', function() {
       name: 'baz',
       date: {data: []},
       url: {url: 'baz.com'},
-      location: 'home3'
+      location: 'home3',
     };
 
     // Set values returned by |wallpaperProvider|.
@@ -498,7 +498,7 @@ suite('GooglePhotosPhotosTest', function() {
       attribution: [],
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
-      key: photo.id
+      key: photo.id,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosElement);
@@ -524,7 +524,7 @@ suite('GooglePhotosPhotosTest', function() {
       attribution: [],
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
-      key: anotherPhoto.dedupKey
+      key: anotherPhoto.dedupKey,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosElement);
@@ -551,7 +551,7 @@ suite('GooglePhotosPhotosTest', function() {
       attribution: [],
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kCustomized,
-      key: '//foo'
+      key: '//foo',
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosElement);
@@ -800,7 +800,7 @@ suite('GooglePhotosPhotosTest', function() {
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
-      location: 'home'
+      location: 'home',
     };
 
     // Set values returned by |wallpaperProvider|.

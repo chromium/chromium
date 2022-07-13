@@ -106,7 +106,7 @@ suite('PersonalizationBreadcrumbTest', function() {
           goToRoute(path: Paths, queryParams: Object = {}) {
             resolve([path, queryParams]);
             PersonalizationRouter.instance = original;
-          }
+          },
         } as PersonalizationRouter;
       };
     });
@@ -169,7 +169,7 @@ suite('PersonalizationBreadcrumbTest', function() {
           goToRoute(path: Paths, queryParams: Object = {}) {
             resolve([path, queryParams]);
             PersonalizationRouter.instance = original;
-          }
+          },
         } as PersonalizationRouter;
       };
     });
@@ -199,7 +199,7 @@ suite('PersonalizationBreadcrumbTest', function() {
 
     breadcrumbElement = initElement(PersonalizationBreadcrumb, {
       'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-      'googlePhotosAlbumId': googlePhotosAlbum.id
+      'googlePhotosAlbumId': googlePhotosAlbum.id,
     });
 
     const breadcrumbContainer =
@@ -207,7 +207,8 @@ suite('PersonalizationBreadcrumbTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      breadcrumbElement.i18n('googlePhotosLabel'), googlePhotosAlbum.title
+      breadcrumbElement.i18n('googlePhotosLabel'),
+      googlePhotosAlbum.title,
     ]);
 
     const original = PersonalizationRouter.instance;
@@ -217,7 +218,7 @@ suite('PersonalizationBreadcrumbTest', function() {
           goToRoute(path: Paths, queryParams: Object = {}) {
             resolve([path, queryParams]);
             PersonalizationRouter.instance = original;
-          }
+          },
         } as PersonalizationRouter;
       };
     });
@@ -246,7 +247,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      breadcrumbElement.i18n('googlePhotosLabel')
+      breadcrumbElement.i18n('googlePhotosLabel'),
     ]);
 
     const original = PersonalizationRouter.instance;
@@ -256,7 +257,7 @@ suite('PersonalizationBreadcrumbTest', function() {
           goToRoute(path: Paths, queryParams: Object = {}) {
             resolve([path, queryParams]);
             PersonalizationRouter.instance = original;
-          }
+          },
         } as PersonalizationRouter;
       };
     });
@@ -286,7 +287,7 @@ suite('PersonalizationBreadcrumbTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      breadcrumbElement.i18n('myImagesLabel')
+      breadcrumbElement.i18n('myImagesLabel'),
     ]);
 
     const original = PersonalizationRouter.instance;
@@ -296,7 +297,7 @@ suite('PersonalizationBreadcrumbTest', function() {
           goToRoute(path: Paths, queryParams: Object = {}) {
             resolve([path, queryParams]);
             PersonalizationRouter.instance = original;
-          }
+          },
         } as PersonalizationRouter;
       };
     });
@@ -344,7 +345,7 @@ suite('PersonalizationBreadcrumbTest', function() {
 
         breadcrumbElement = initElement(PersonalizationBreadcrumb, {
           'path': Paths.AMBIENT_ALBUMS,
-          'topicSource': TopicSource.kGooglePhotos
+          'topicSource': TopicSource.kGooglePhotos,
         });
 
         const breadcrumbContainer =
@@ -352,7 +353,7 @@ suite('PersonalizationBreadcrumbTest', function() {
         assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
         assertBreadcrumbs(breadcrumbContainer, [
           breadcrumbElement.i18n('screensaverLabel'),
-          breadcrumbElement.i18n('ambientModeTopicSourceGooglePhotos')
+          breadcrumbElement.i18n('ambientModeTopicSourceGooglePhotos'),
         ]);
 
         const original = PersonalizationRouter.instance;
@@ -362,7 +363,7 @@ suite('PersonalizationBreadcrumbTest', function() {
               goToRoute(path: Paths, queryParams: Object = {}) {
                 resolve([path, queryParams]);
                 PersonalizationRouter.instance = original;
-              }
+              },
             } as PersonalizationRouter;
           };
         });
@@ -386,7 +387,7 @@ suite('PersonalizationBreadcrumbTest', function() {
 
         breadcrumbElement = initElement(PersonalizationBreadcrumb, {
           'path': Paths.AMBIENT_ALBUMS,
-          'topicSource': TopicSource.kArtGallery
+          'topicSource': TopicSource.kArtGallery,
         });
 
         const breadcrumbContainer =
@@ -394,7 +395,7 @@ suite('PersonalizationBreadcrumbTest', function() {
         assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
         assertBreadcrumbs(breadcrumbContainer, [
           breadcrumbElement.i18n('screensaverLabel'),
-          breadcrumbElement.i18n('ambientModeTopicSourceArtGallery')
+          breadcrumbElement.i18n('ambientModeTopicSourceArtGallery'),
         ]);
 
         const original = PersonalizationRouter.instance;
@@ -404,7 +405,7 @@ suite('PersonalizationBreadcrumbTest', function() {
               goToRoute(path: Paths, queryParams: Object = {}) {
                 resolve([path, queryParams]);
                 PersonalizationRouter.instance = original;
-              }
+              },
             } as PersonalizationRouter;
           };
         });

@@ -90,7 +90,7 @@ suite('AmbientPreviewTest', function() {
               goToRoute(path: Paths, queryParams: Object = {}) {
                 resolve([path, queryParams]);
                 PersonalizationRouter.instance = original;
-              }
+              },
             } as PersonalizationRouter;
           };
         });

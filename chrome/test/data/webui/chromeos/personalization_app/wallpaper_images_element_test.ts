@@ -118,7 +118,7 @@ suite('WallpaperImagesTest', function() {
         wallpaperProvider.collections;
     personalizationStore.data.wallpaper.loading.images = {
       'id_0': false,
-      'id_1': false
+      'id_1': false,
     };
     personalizationStore.data.wallpaper.loading.collections = false;
 

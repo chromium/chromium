@@ -49,7 +49,7 @@ export function fakeNetworkHealthProviderTestSuite() {
               completeResolver.resolve();
             }
             whichSample++;
-          }
+          },
         });
 
     provider.observeNetworkList(networkListObserverRemote);
@@ -73,7 +73,7 @@ export function fakeNetworkHealthProviderTestSuite() {
           onNetworkStateChanged: (network) => {
             assertDeepEquals(fakeCellularNetwork, network);
             resolver.resolve();
-          }
+          },
         });
 
     provider.observeNetwork(networkStateObserverRemote, 'cellularGuid');
@@ -93,7 +93,7 @@ export function fakeNetworkHealthProviderTestSuite() {
           onNetworkStateChanged: (network) => {
             assertDeepEquals(fakeWifiNetwork, network);
             wifiResolver.resolve();
-          }
+          },
         });
 
     const ethernetNetworkStateObserverRemote =
@@ -101,7 +101,7 @@ export function fakeNetworkHealthProviderTestSuite() {
           onNetworkStateChanged: (network) => {
             assertDeepEquals(fakeEthernetNetwork, network);
             ethernetResolver.resolve();
-          }
+          },
         });
 
     provider.observeNetwork(wifiNetworkStateObserverRemote, 'wifiGuid');

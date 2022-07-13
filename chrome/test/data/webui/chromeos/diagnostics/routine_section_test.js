@@ -72,7 +72,8 @@ export function routineSectionTestSuite() {
     routineSectionElement.routineRuntime = runtime;
 
     if (!(routines[0] instanceof RoutineGroup) && routines.length === 1 && [
-          RoutineType.kBatteryDischarge, RoutineType.kBatteryCharge
+          RoutineType.kBatteryDischarge,
+          RoutineType.kBatteryCharge,
         ].includes(routines[0])) {
       routineSectionElement.isPowerRoutine = true;
     }
@@ -986,7 +987,7 @@ export function routineSectionTestSuite() {
     const localNetworkGroup = new RoutineGroup(
         [
           createRoutine(RoutineType.kGatewayCanBePinged, true),
-          createRoutine(RoutineType.kLanConnectivity, true)
+          createRoutine(RoutineType.kLanConnectivity, true),
         ],
         'localNetworkGroupLabel');
 
@@ -1295,7 +1296,7 @@ export function routineSectionTestSuite() {
           [
             createRoutine(RoutineType.kDnsResolverPresent, true),
           ],
-          'wifiGroupLabel')
+          'wifiGroupLabel'),
     ];
     routineController.setFakeStandardRoutineResult(
         RoutineType.kCaptivePortal, StandardRoutineResult.kTestFailed);

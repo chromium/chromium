@@ -167,7 +167,7 @@ export function routineResultEntryTestSuite() {
     const item = createCompletedStatus(
         RoutineType.kCpuStress,
         /** @type {!RoutineResult} */ ({
-          simpleResult: StandardRoutineResult.kTestPassed
+          simpleResult: StandardRoutineResult.kTestPassed,
         }));
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
@@ -186,7 +186,7 @@ export function routineResultEntryTestSuite() {
     const item = createCompletedStatus(
         RoutineType.kCpuStress,
         /** @type {!RoutineResult} */ ({
-          simpleResult: StandardRoutineResult.kTestFailed
+          simpleResult: StandardRoutineResult.kTestFailed,
         }));
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
@@ -227,8 +227,8 @@ export function routineResultEntryTestSuite() {
             simpleResult: StandardRoutineResult.kTestPassed,
             isCharging: true,
             percentDelta: 10,
-            timeDeltaSeconds: 10
-          }
+            timeDeltaSeconds: 10,
+          },
         }));
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
@@ -267,7 +267,7 @@ export function routineResultEntryTestSuite() {
 
           item = createCompletedStatus(
               routine, /* @type {!RoutineResult} */ ({
-                simpleResult: StandardRoutineResult.kTestPassed
+                simpleResult: StandardRoutineResult.kTestPassed,
               }));
 
           return updateItem(item);
@@ -306,7 +306,7 @@ export function routineResultEntryTestSuite() {
 
           item = createCompletedStatus(
               routine, /* @type {!RoutineResult} */ ({
-                simpleResult: StandardRoutineResult.kTestFailed
+                simpleResult: StandardRoutineResult.kTestFailed,
               }));
           expectedAnnounceText = 'Lan Connectivity test - FAILED';
 

@@ -48,7 +48,7 @@ export function scannerSelectTest() {
 
     const scannerArr = [
       createScanner(firstScannerId, firstScannerName),
-      createScanner(secondScannerId, secondScannerName)
+      createScanner(secondScannerId, secondScannerName),
     ];
     scannerSelect.scanners = scannerArr;
     flush();
@@ -64,7 +64,7 @@ export function scannerSelectTest() {
   test('scannersSortedAlphabetically', () => {
     const scanners = [
       createScanner(secondScannerId, secondScannerName),
-      createScanner(firstScannerId, firstScannerName)
+      createScanner(firstScannerId, firstScannerName),
     ];
     scannerSelect.scanners = scanners;
     flush();

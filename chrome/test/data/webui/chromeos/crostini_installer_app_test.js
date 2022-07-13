@@ -14,8 +14,11 @@ const InstallerError = crostini.mojom.InstallerError;
 class FakePageHandler extends TestBrowserProxy {
   constructor() {
     super([
-      'install', 'cancel', 'cancelBeforeStart', 'onPageClosed',
-      'requestAmountOfFreeDiskSpace'
+      'install',
+      'cancel',
+      'cancelBeforeStart',
+      'onPageClosed',
+      'requestAmountOfFreeDiskSpace',
     ]);
 
     this.requestAmountOfFreeDiskSpaceResult_ = new Promise((resolve) => {
@@ -133,7 +136,7 @@ suite('<crostini-installer-app>', () => {
 
   const diskTicks = [
     {value: 1000, ariaValue: '1', label: '1'},
-    {value: 2000, ariaValue: '2', label: '2'}
+    {value: 2000, ariaValue: '2', label: '2'},
   ];
 
   test('installFlow', async () => {

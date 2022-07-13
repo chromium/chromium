@@ -586,7 +586,7 @@ suite('PrintManagementTest', () => {
       createJobEntry(
           'oldest', 'titleC',
           convertToMojoTime(new Date(Date.UTC(2020, 1, 1, 1, 1, 1))),
-          PrinterErrorCode.NO_ERROR, completedInfo, /*activeInfo=*/ null)
+          PrinterErrorCode.NO_ERROR, completedInfo, /*activeInfo=*/ null),
     ];
 
     // Initialize with a reversed array of |expectedArr|, since we expect the
@@ -1061,7 +1061,7 @@ suite('PrintJobEntryTest', () => {
 
     // Change date and assert it shows the correct date (Feb 5, 2020);
     jobEntryTestElement.set('jobEntry.creationTime', {
-      internalValue: convertToMojoTime(new Date('February 5, 2020 03:24:00'))
+      internalValue: convertToMojoTime(new Date('February 5, 2020 03:24:00')),
     });
     assertEquals(
         'Feb 5, 2020',

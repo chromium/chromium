@@ -120,7 +120,7 @@ export function dispatchMouseEvent(element, button, eventType = 'contextmenu') {
     button: button,
     buttons: 0,
     clientX: element.getBoundingClientRect().x,
-    clientY: element.getBoundingClientRect().y
+    clientY: element.getBoundingClientRect().y,
   }));
 }
 

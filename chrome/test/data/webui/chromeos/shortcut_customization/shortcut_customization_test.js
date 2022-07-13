@@ -162,7 +162,7 @@ export function shortcutCustomizationAppTest() {
       bubbles: true,
       composed: true,
       detail: /**@type {!Object}*/ (
-          {description: 'test', accelerators: [acceleratorInfo]})
+          {description: 'test', accelerators: [acceleratorInfo]}),
     }));
     await flushTasks();
 

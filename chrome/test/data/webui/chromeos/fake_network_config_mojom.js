@@ -100,7 +100,7 @@ export class FakeNetworkConfig {
           deviceState:
               chromeos.networkConfig.mojom.DeviceStateType.kUninitialized,
           inhibitReason:
-              chromeos.networkConfig.mojom.InhibitReason.kNotInhibited
+              chromeos.networkConfig.mojom.InhibitReason.kNotInhibited,
         });
     this.deviceStates_.set(type, deviceState);
     return deviceState;
@@ -681,9 +681,13 @@ export class FakeNetworkConfig {
       this.methodCalled('getSupportedVpnTypes');
       resolve({
         vpnTypes: [
-          'ikev2', 'l2tpipsec', 'openvpn', 'thirdpartyvpn', 'arcvpn',
-          'wireguard'
-        ]
+          'ikev2',
+          'l2tpipsec',
+          'openvpn',
+          'thirdpartyvpn',
+          'arcvpn',
+          'wireguard',
+        ],
       });
     });
   }

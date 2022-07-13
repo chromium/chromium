@@ -106,7 +106,7 @@ export function fakeRoutineListExecutorTestSuite() {
     /** @type {!Array<!RoutineResultInfo>} */
     const routines = [{
       type: RoutineType.kCpuStress,
-      result: {simpleResult: StandardRoutineResult.kTestFailed}
+      result: {simpleResult: StandardRoutineResult.kTestFailed},
     }];
     return runRoutinesAndAssertResults(routines);
   });
@@ -116,19 +116,19 @@ export function fakeRoutineListExecutorTestSuite() {
     const routines = [
       {
         type: RoutineType.kCpuStress,
-        result: {simpleResult: StandardRoutineResult.kTestPassed}
+        result: {simpleResult: StandardRoutineResult.kTestPassed},
       },
       {
         type: RoutineType.kCpuCache,
-        result: {simpleResult: StandardRoutineResult.kTestFailed}
+        result: {simpleResult: StandardRoutineResult.kTestFailed},
       },
       {
         type: RoutineType.kCpuFloatingPoint,
-        result: {simpleResult: StandardRoutineResult.kTestPassed}
+        result: {simpleResult: StandardRoutineResult.kTestPassed},
       },
       {
         type: RoutineType.kCpuPrime,
-        result: {simpleResult: StandardRoutineResult.kTestFailed}
+        result: {simpleResult: StandardRoutineResult.kTestFailed},
       },
       {
         type: RoutineType.kBatteryCharge,
@@ -137,9 +137,9 @@ export function fakeRoutineListExecutorTestSuite() {
             simpleResult: StandardRoutineResult.kTestFailed,
             isCharging: true,
             percentDelta: 10,
-            timeDeltaSeconds: 10
-          }
-        }
+            timeDeltaSeconds: 10,
+          },
+        },
       },
     ];
 

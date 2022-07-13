@@ -161,7 +161,7 @@ class MockMethod {
       this.overrides_.push({
         parent: opt_parent,
         functionName: opt_functionName,
-        originalFunction: opt_parent[opt_functionName]
+        originalFunction: opt_parent[opt_functionName],
       });
       opt_parent[opt_functionName] = fn;
       fn.functionName = opt_functionName;

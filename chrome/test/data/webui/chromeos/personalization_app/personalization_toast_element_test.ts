@@ -74,7 +74,7 @@ suite('PersonalizationToastTest', function() {
 
     personalizationStore.data.error = {
       message: 'There was an error',
-      dismiss: {callback: dismissCallback}
+      dismiss: {callback: dismissCallback},
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationToastElement);

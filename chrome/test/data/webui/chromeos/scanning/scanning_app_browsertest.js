@@ -38,10 +38,20 @@ ScanningAppBrowserTest.prototype = {
 // You must register all suites in unified test here as well for consistency,
 // although technically is not necessary.
 const debug_suites_list = [
-  'ActionToolbar', 'ColorModeSelect', 'FileTypeSelect', 'LoadingPage',
-  'MultiPageCheckbox', 'MultiPageScan', 'PageSizeSelect', 'ResolutionSelect',
-  'ScanApp', 'ScanDoneSection', 'ScannerSelect', 'ScanPreview', 'ScanToSelect',
-  'SourceSelect'
+  'ActionToolbar',
+  'ColorModeSelect',
+  'FileTypeSelect',
+  'LoadingPage',
+  'MultiPageCheckbox',
+  'MultiPageScan',
+  'PageSizeSelect',
+  'ResolutionSelect',
+  'ScanApp',
+  'ScanDoneSection',
+  'ScannerSelect',
+  'ScanPreview',
+  'ScanToSelect',
+  'SourceSelect',
 ];
 
 // Flaky. See crbug.com/1334465

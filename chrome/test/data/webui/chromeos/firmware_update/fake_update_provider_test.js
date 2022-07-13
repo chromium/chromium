@@ -25,7 +25,7 @@ export function fakeUpdateProviderTest() {
     const updateObserverRemote = /** @type {!UpdateObserverRemote} */ ({
       onUpdateListChanged: (firmwareUpdates) => {
         assertDeepEquals(fakeFirmwareUpdates[0], firmwareUpdates);
-      }
+      },
     });
 
     provider.observePeripheralUpdates(updateObserverRemote);

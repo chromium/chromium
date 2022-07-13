@@ -33,7 +33,7 @@ export function fakeShimlessRmaServiceTestSuite() {
         state: State.kWelcomeScreen,
         canExit: true,
         canGoBack: false,
-        error: RmadErrorCode.kOk
+        error: RmadErrorCode.kOk,
       },
     ];
     service.setStates(states);
@@ -333,11 +333,11 @@ export function fakeShimlessRmaServiceTestSuite() {
     const expectedComponents = [
       {
         component: ComponentType.kKeyboard,
-        state: ComponentRepairStatus.kOriginal
+        state: ComponentRepairStatus.kOriginal,
       },
       {
         component: ComponentType.kTouchpad,
-        state: ComponentRepairStatus.kMissing
+        state: ComponentRepairStatus.kMissing,
       },
     ];
     service.setGetComponentListResult(expectedComponents);
@@ -350,7 +350,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     const components = [
       {
         component: ComponentType.kKeyboard,
-        state: ComponentRepairStatus.kOriginal
+        state: ComponentRepairStatus.kOriginal,
       },
     ];
     const states = [
@@ -370,7 +370,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     const components = [
       {
         component: ComponentType.kKeyboard,
-        state: ComponentRepairStatus.kOriginal
+        state: ComponentRepairStatus.kOriginal,
       },
     ];
     const states = [
@@ -594,13 +594,13 @@ export function fakeShimlessRmaServiceTestSuite() {
       ({
         component: ComponentType.kLidAccelerometer,
         status: CalibrationStatus.kCalibrationInProgress,
-        progress: 0.5
+        progress: 0.5,
       }),
       /** @type {!CalibrationComponentStatus} */
       ({
         component: ComponentType.kBaseAccelerometer,
         status: CalibrationStatus.kCalibrationComplete,
-        progress: 1.0
+        progress: 1.0,
       }),
     ];
     service.setGetCalibrationComponentListResult(expectedCalibrationComponents);
@@ -746,7 +746,7 @@ export function fakeShimlessRmaServiceTestSuite() {
        */
       onError(error) {
         assertEquals(error, RmadErrorCode.kRequestInvalid);
-      }
+      },
     });
     service.observeError(errorObserver);
     return service.triggerErrorObserver(RmadErrorCode.kRequestInvalid, 0);
@@ -763,7 +763,7 @@ export function fakeShimlessRmaServiceTestSuite() {
       onOsUpdateProgressUpdated(operation, progress) {
         assertEquals(operation, OsUpdateOperation.kDownloading);
         assertEquals(progress, 0.75);
-      }
+      },
     });
     service.observeOsUpdateProgress(osUpdateObserver);
     return service.triggerOsUpdateObserver(
@@ -781,7 +781,7 @@ export function fakeShimlessRmaServiceTestSuite() {
            */
           onUpdateRoFirmwareStatusChanged(status) {
             assertEquals(UpdateRoFirmwareStatus.kDownloading, status);
-          }
+          },
         });
     service.observeRoFirmwareUpdateProgress(roFirmwareUpdateObserver);
     return service.triggerUpdateRoFirmwareObserver(
@@ -801,7 +801,7 @@ export function fakeShimlessRmaServiceTestSuite() {
         assertEquals(
             calibrationStatus.status, CalibrationStatus.kCalibrationComplete);
         assertEquals(calibrationStatus.progress, 0.5);
-      }
+      },
     });
     service.observeCalibrationProgress(calibrationObserver);
     return service.triggerCalibrationObserver(
@@ -809,7 +809,7 @@ export function fakeShimlessRmaServiceTestSuite() {
         ({
           component: ComponentType.kBaseAccelerometer,
           status: CalibrationStatus.kCalibrationComplete,
-          progress: 0.5
+          progress: 0.5,
         }),
         0);
   });
@@ -824,7 +824,7 @@ export function fakeShimlessRmaServiceTestSuite() {
       onCalibrationStepComplete(status) {
         assertEquals(
             status, CalibrationOverallStatus.kCalibrationOverallComplete);
-      }
+      },
     });
     service.observeCalibrationProgress(calibrationObserver);
     return service.triggerCalibrationOverallObserver(
@@ -842,7 +842,7 @@ export function fakeShimlessRmaServiceTestSuite() {
       onProvisioningUpdated(status, progress) {
         assertEquals(status, ProvisioningStatus.kInProgress);
         assertEquals(progress, 0.25);
-      }
+      },
     });
     service.observeProvisioningProgress(provisioningObserver);
     return service.triggerProvisioningObserver(
@@ -861,7 +861,7 @@ export function fakeShimlessRmaServiceTestSuite() {
            */
           onHardwareWriteProtectionStateChanged(enable) {
             assertEquals(enable, true);
-          }
+          },
         });
     service.observeHardwareWriteProtectionState(
         hardwareWriteProtectionStateObserver);
@@ -878,7 +878,7 @@ export function fakeShimlessRmaServiceTestSuite() {
            */
           onPowerCableStateChanged(enable) {
             assertEquals(enable, true);
-          }
+          },
         });
     service.observePowerCableState(powerCableStateObserver);
     return service.triggerPowerCableObserver(true, 0);
@@ -898,7 +898,7 @@ export function fakeShimlessRmaServiceTestSuite() {
           onHardwareVerificationResult(isCompliant, errorMessage) {
             assertEquals(true, isCompliant);
             assertEquals('ok', errorMessage);
-          }
+          },
         });
     service.observeHardwareVerificationStatus(observer);
     return service.triggerHardwareVerificationStatusObserver(true, 'ok', 0);
@@ -917,7 +917,7 @@ export function fakeShimlessRmaServiceTestSuite() {
           onFinalizationUpdated(status, progress) {
             assertEquals(FinalizationStatus.kInProgress, status);
             assertEquals(0.5, progress);
-          }
+          },
         });
     service.observeFinalizationStatus(finalizationObserver);
     return service.triggerFinalizationObserver(

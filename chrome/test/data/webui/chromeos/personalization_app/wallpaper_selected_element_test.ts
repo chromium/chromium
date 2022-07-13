@@ -247,7 +247,7 @@ suite('WallpaperSelectedTest', function() {
 
         wallpaperSelectedElement = initElement(WallpaperSelected, {
           'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-          'googlePhotosAlbumId': ''
+          'googlePhotosAlbumId': '',
         });
         await waitAfterNextRender(wallpaperSelectedElement);
 
@@ -307,7 +307,7 @@ suite('WallpaperSelectedTest', function() {
 
         wallpaperSelectedElement = initElement(WallpaperSelected, {
           'path': Paths.GOOGLE_PHOTOS_COLLECTION,
-          'googlePhotosAlbumId': album_id
+          'googlePhotosAlbumId': album_id,
         });
         personalizationStore.notifyObservers();
 

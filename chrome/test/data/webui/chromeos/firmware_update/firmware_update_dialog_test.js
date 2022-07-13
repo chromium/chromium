@@ -21,7 +21,7 @@ export function firmwareUpdateDialogTest() {
     updateDialogElement.update = fakeFirmwareUpdate;
     updateDialogElement.installationProgress = {
       percentage: 0,
-      state: UpdateState.kIdle
+      state: UpdateState.kIdle,
     };
     document.body.appendChild(updateDialogElement);
   });

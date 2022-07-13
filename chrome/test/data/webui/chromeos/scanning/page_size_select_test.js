@@ -72,8 +72,13 @@ export function pageSizeSelectTest() {
   // Verify the pages sizes are sorted correctly.
   test('pageSizesSortedCorrectly', () => {
     pageSizeSelect.options = [
-      PageSize.Tabloid, PageSize.Letter, PageSize.A3, PageSize.Max,
-      PageSize.Legal, PageSize.B4, PageSize.A4
+      PageSize.Tabloid,
+      PageSize.Letter,
+      PageSize.A3,
+      PageSize.Max,
+      PageSize.Legal,
+      PageSize.B4,
+      PageSize.A4,
     ];
     flush();
 

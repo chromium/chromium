@@ -176,7 +176,7 @@ export function searchPageTestSuite() {
     const data = {
       contentList: fakeSearchResponse.results,
       isQueryEmpty: true,
-      isPopularContent: true
+      isPopularContent: true,
     };
     iframe.contentWindow.postMessage(data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
 

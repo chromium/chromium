@@ -134,7 +134,7 @@ suite('WallpaperPreviewTest', function() {
 
     personalizationStore.data.wallpaper.currentSelected = {
       ...personalizationStore.data.wallpaper.currentSelected,
-      type: WallpaperType.kPolicy
+      type: WallpaperType.kPolicy,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperPreviewElement);

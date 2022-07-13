@@ -86,10 +86,16 @@ export function inputListTestSuite() {
       hasAssistantKey: false,
       numberPadPresent: NumberPadPresence.kUnknown,
       topRowKeys: [
-        TopRowKey.kBack, TopRowKey.kForward, TopRowKey.kRefresh,
-        TopRowKey.kFullscreen, TopRowKey.kOverview,
-        TopRowKey.kScreenBrightnessDown, TopRowKey.kScreenBrightnessUp,
-        TopRowKey.kVolumeMute, TopRowKey.kVolumeDown, TopRowKey.kVolumeUp
+        TopRowKey.kBack,
+        TopRowKey.kForward,
+        TopRowKey.kRefresh,
+        TopRowKey.kFullscreen,
+        TopRowKey.kOverview,
+        TopRowKey.kScreenBrightnessDown,
+        TopRowKey.kScreenBrightnessUp,
+        TopRowKey.kVolumeMute,
+        TopRowKey.kVolumeDown,
+        TopRowKey.kVolumeUp,
       ],
       topRightKey: TopRightKey.kUnknown,
     };

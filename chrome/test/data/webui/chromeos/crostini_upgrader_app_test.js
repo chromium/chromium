@@ -11,8 +11,14 @@ import {flushTasks} from 'chrome://test/test_util.js';
 class FakePageHandler extends TestBrowserProxy {
   constructor() {
     super([
-      'backup', 'startPrechecks', 'upgrade', 'restore', 'cancel',
-      'cancelBeforeStart', 'onPageClosed', 'launch'
+      'backup',
+      'startPrechecks',
+      'upgrade',
+      'restore',
+      'cancel',
+      'cancelBeforeStart',
+      'onPageClosed',
+      'launch',
     ]);
   }
 

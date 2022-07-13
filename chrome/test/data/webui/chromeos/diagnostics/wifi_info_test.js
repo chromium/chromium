@@ -53,7 +53,7 @@ export function wifiInfoTestSuite() {
     return /** @type {!Network} */ (Object.assign({}, fakeWifiNetwork, {
       typeProperties: {
         wifi: wifiTypeProperties,
-      }
+      },
     }));
   }
 

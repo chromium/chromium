@@ -80,8 +80,8 @@ var EduCoexistenceAppTestWithArcAccountRestrictionsEnabled =
     return {
       enabled: [
         'chromeos::features::kArcAccountRestrictions',
-        'chromeos::features::kLacrosSupport'
-      ]
+        'chromeos::features::kLacrosSupport',
+      ],
     };
   }
 };

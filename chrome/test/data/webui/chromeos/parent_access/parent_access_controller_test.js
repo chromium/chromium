@@ -41,7 +41,7 @@ suite(parent_access_controller_tests.suiteName, function() {
 
         const parentAccessResult = await Promise.race([
           parentAccessController.whenParentAccessResult(),
-          parentAccessController.whenInitializationError()
+          parentAccessController.whenInitializationError(),
         ]);
 
         // Verify that the result received is the one set in test_content.html

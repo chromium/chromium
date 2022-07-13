@@ -137,7 +137,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
           name: 'foo',
           date: {data: []},
           url: {url: 'foo.com'},
-          location: 'home1'
+          location: 'home1',
         },
         {
           id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
@@ -145,7 +145,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
           name: 'bar',
           date: {data: []},
           url: {url: 'bar.com'},
-          location: 'home2'
+          location: 'home2',
         },
       ],
       [otherAlbum.id]: [
@@ -155,7 +155,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
           name: 'baz',
           date: {data: []},
           url: {url: 'baz.com'},
-          location: 'home3'
+          location: 'home3',
         },
       ],
     };
@@ -263,7 +263,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
-      location: 'home1'
+      location: 'home1',
     };
 
     const anotherPhoto: GooglePhotosPhoto = {
@@ -272,7 +272,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       name: 'bar',
       date: {data: []},
       url: {url: 'bar.com'},
-      location: 'home2'
+      location: 'home2',
     };
 
     const yetAnotherPhoto: GooglePhotosPhoto = {
@@ -281,7 +281,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       name: 'baz',
       date: {data: []},
       url: {url: 'baz.com'},
-      location: 'home3'
+      location: 'home3',
     };
 
     // Set values returned by |wallpaperProvider|.
@@ -333,7 +333,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       attribution: [],
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
-      key: photo.id
+      key: photo.id,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
@@ -358,7 +358,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       attribution: [],
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
-      key: anotherPhoto.id
+      key: anotherPhoto.id,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
@@ -383,7 +383,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       attribution: [],
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
-      key: yetAnotherPhoto.dedupKey
+      key: yetAnotherPhoto.dedupKey,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
@@ -408,7 +408,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       attribution: [],
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kCustomized,
-      key: '//foo'
+      key: '//foo',
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
@@ -674,7 +674,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
-      location: 'home'
+      location: 'home',
     };
 
     // Initialize Google Photos data in the |personalizationStore|.

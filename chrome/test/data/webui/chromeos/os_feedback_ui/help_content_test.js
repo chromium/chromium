@@ -39,7 +39,7 @@ export function helpContentTestSuite() {
     helpContentElement.searchResult = {
       contentList: contentList,
       isQueryEmpty: isQueryEmpty,
-      isPopularContent: isPopularContent
+      isPopularContent: isPopularContent,
     };
 
     document.body.appendChild(helpContentElement);

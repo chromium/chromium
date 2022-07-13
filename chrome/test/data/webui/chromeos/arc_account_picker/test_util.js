@@ -20,7 +20,7 @@ export function getFakeAccountsNotAvailableInArcList() {
       id: '1',
       email: 'test@gmail.com',
       fullName: 'Test User',
-      image: 'data:image/png;base64,abc123'
+      image: 'data:image/png;base64,abc123',
     },
     {id: '2', email: 'test2@gmail.com', fullName: 'Test2 User', image: ''},
     {id: '3', email: 'test3@gmail.com', fullName: 'Test3 User', image: ''},

@@ -48,7 +48,7 @@ suite('GooglePhotosCollectionTest', function() {
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
-      location: 'home'
+      location: 'home',
     }]);
 
     googlePhotosCollectionElement =
@@ -144,7 +144,7 @@ suite('GooglePhotosCollectionTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       title: 'Album 0',
       photoCount: 1,
-      preview: {url: 'foo.com'}
+      preview: {url: 'foo.com'},
     }];
     wallpaperProvider.setGooglePhotosAlbums(albums);
     wallpaperProvider.setGooglePhotosPhotos([{
@@ -153,7 +153,7 @@ suite('GooglePhotosCollectionTest', function() {
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
-      location: 'home'
+      location: 'home',
     }]);
 
     googlePhotosCollectionElement =

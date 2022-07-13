@@ -65,7 +65,7 @@ export function fakeSystemDataProviderTestSuite() {
         /** @type {!BatteryHealthObserverRemote} */ ({
           onBatteryHealthUpdated: (batteryHealth) => {
             assertDeepEquals(fakeBatteryHealth[0], batteryHealth);
-          }
+          },
         });
 
     provider.observeBatteryHealth(batteryHealthObserverRemote);
@@ -79,7 +79,7 @@ export function fakeSystemDataProviderTestSuite() {
         /** @type {!BatteryChargeStatusObserverRemote} */ ({
           onBatteryChargeStatusUpdated: (batteryChargeStatus) => {
             assertDeepEquals(fakeBatteryChargeStatus[0], batteryChargeStatus);
-          }
+          },
         });
 
     provider.observeBatteryChargeStatus(batteryChargeStatusObserverRemote);
@@ -92,7 +92,7 @@ export function fakeSystemDataProviderTestSuite() {
     const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({
       onCpuUsageUpdated: (cpuUsage) => {
         assertDeepEquals(fakeCpuUsage[0], cpuUsage);
-      }
+      },
     });
 
     provider.observeCpuUsage(cpuObserverRemote);
@@ -106,7 +106,7 @@ export function fakeSystemDataProviderTestSuite() {
         /** @type {!MemoryUsageObserverRemote} */ ({
           onMemoryUsageUpdated: (memoryUsage) => {
             assertDeepEquals(fakeMemoryUsage[0], memoryUsage);
-          }
+          },
         });
 
     provider.observeMemoryUsage(memoryUsageObserverRemote);
@@ -179,7 +179,7 @@ export function fakeSystemDataProviderTestSuite() {
           completeResolver.resolve();
         }
         whichSample++;
-      }
+      },
     });
 
     provider.observeCpuUsage(cpuObserverRemote);
@@ -218,7 +218,7 @@ export function fakeSystemDataProviderTestSuite() {
           completeResolver.resolve();
         }
         whichSample++;
-      }
+      },
     });
 
     provider.observeMemoryUsage(memoryObserverRemote);
@@ -258,7 +258,7 @@ export function fakeSystemDataProviderTestSuite() {
               completeResolver.resolve();
             }
             whichSample++;
-          }
+          },
         });
 
     provider.observeBatteryHealth(batteryHealthObserverRemote);
@@ -299,7 +299,7 @@ export function fakeSystemDataProviderTestSuite() {
               completeResolver.resolve();
             }
             whichSample++;
-          }
+          },
         });
 
     provider.observeBatteryChargeStatus(batteryChargeStatusObserverRemote);
@@ -341,7 +341,7 @@ export function fakeSystemDataProviderTestSuite() {
           completeResolver.resolve();
         }
         whichSample++;
-      }
+      },
     });
 
     provider.observeCpuUsage(cpuObserverRemote);

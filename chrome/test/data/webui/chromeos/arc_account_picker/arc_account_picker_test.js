@@ -54,7 +54,7 @@ suite(arc_account_picker_test.suiteName, () => {
     assertFalse(accountsFound);
     flush();
     const uiAccounts = [
-      ...arcAccountPickerComponent.shadowRoot.querySelectorAll('.account-item')
+      ...arcAccountPickerComponent.shadowRoot.querySelectorAll('.account-item'),
     ].filter(item => item.id !== 'addAccountButton');
     assertEquals(0, uiAccounts.length);
   });
@@ -68,7 +68,7 @@ suite(arc_account_picker_test.suiteName, () => {
     assertTrue(accountsFound);
     flush();
     const uiAccounts = [
-      ...arcAccountPickerComponent.shadowRoot.querySelectorAll('.account-item')
+      ...arcAccountPickerComponent.shadowRoot.querySelectorAll('.account-item'),
     ].filter(item => item.id !== 'addAccountButton');
     assertEquals(fakeAccounts.length, uiAccounts.length);
   });

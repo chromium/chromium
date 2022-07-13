@@ -123,7 +123,7 @@ suite('Personalization app controller', () => {
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
-      location: 'home'
+      location: 'home',
     }];
 
     wallpaperProvider.setGooglePhotosAlbums([album]);
@@ -248,7 +248,7 @@ suite('Personalization app controller', () => {
           // Begin loading local image list.
           {
             'wallpaper.loading.local': {images: true, data: {}},
-            'wallpaper.local': {images: null, data: {}}
+            'wallpaper.local': {images: null, data: {}},
           },
           // Done loading local image data.
           {
@@ -258,8 +258,8 @@ suite('Personalization app controller', () => {
                 {path: 'LocalImage0.png'},
                 {path: 'LocalImage1.png'},
               ],
-              data: {}
-            }
+              data: {},
+            },
           },
           // Mark image 0 as loading.
           {
@@ -284,7 +284,7 @@ suite('Personalization app controller', () => {
                 {path: 'LocalImage1.png'},
               ],
               data: {},
-            }
+            },
           },
           // Finish loading image 0.
           {
@@ -298,7 +298,7 @@ suite('Personalization app controller', () => {
                 {path: 'LocalImage1.png'},
               ],
               data: {'LocalImage0.png': 'data://localimage0data'},
-            }
+            },
           },
           // Finish loading image 1.
           {
@@ -315,8 +315,8 @@ suite('Personalization app controller', () => {
                 'LocalImage0.png': 'data://localimage0data',
                 'LocalImage1.png': 'data://localimage1data',
               },
-            }
-          }
+            },
+          },
         ],
         personalizationStore.states.map(filterAndFlattenState(
             ['wallpaper.local', 'wallpaper.loading.local'])));
@@ -411,7 +411,7 @@ suite('Personalization app controller', () => {
             name: 'set_local_image_data',
             id: 'NewPath.png',
             data: 'data://newpath',
-          }
+          },
         ],
         personalizationStore.actions,
     );
@@ -470,7 +470,7 @@ suite('Personalization app controller', () => {
                 'NewPath.png': 'data://newpath',
               },
             },
-          }
+          },
         ],
         personalizationStore.states.map(filterAndFlattenState(
             ['wallpaper.local', 'wallpaper.loading.local'])));
@@ -867,7 +867,7 @@ suite('does not respond to re-selecting the current wallpaper', () => {
           name: 'foo',
           date: {data: []},
           url: {url: 'foo.com'},
-          location: 'home'
+          location: 'home',
         };
         // Reset the history of actions and prior states, but keep the current
         // state.

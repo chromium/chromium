@@ -406,7 +406,7 @@ export function shareDataPageTestSuite() {
         fileName: stringToMojoString16('fake.zip'),
         fileData: {
           bytes: fakeFileData,
-        }
+        },
       };
     };
 

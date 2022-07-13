@@ -9,7 +9,7 @@ import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 const EMPTY_SELECTED_PATH = {
   baseName: '',
-  filePath: ''
+  filePath: '',
 };
 
 /**

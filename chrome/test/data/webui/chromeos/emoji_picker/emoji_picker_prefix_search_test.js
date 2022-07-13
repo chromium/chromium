@@ -9,7 +9,7 @@ import {assertCloseTo} from './emoji_picker_test_util.js';
 const mockCollection1 = [
   {base: {string: '😹', name: 'cat with tears of joy'}},
   {base: {string: '🤠', name: 'cowboy hat face'}},
-  {base: {string: '🥲', name: 'smiling face with tear'}}
+  {base: {string: '🥲', name: 'smiling face with tear'}},
 ];
 
 const mockCollection2 = [

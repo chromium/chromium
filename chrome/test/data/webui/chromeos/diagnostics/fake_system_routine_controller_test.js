@@ -51,7 +51,7 @@ export function fakeSystemRoutineContollerTestSuite() {
         }
 
         resolver.resolve();
-      }
+      },
     });
     controller.runRoutine(expectedType, routineRunnerRemote);
     return controller.getRunRoutinePromiseForTesting().then(() => {
@@ -89,7 +89,7 @@ export function fakeSystemRoutineContollerTestSuite() {
         // Mark that the test completed.
         wasRun = true;
         resolver.resolve();
-      }
+      },
     });
 
     controller.runRoutine(expectedType, routineRunnerRemote);

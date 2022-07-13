@@ -181,7 +181,7 @@ export function navigationViewPanelTestSuite() {
 
     await addNavigationSections([
       viewElement.createSelectorItem('dummyPage1', 'dummy-page1', '', 'page1'),
-      viewElement.createSelectorItem('dummyPage1', 'dummy-page2', '', 'page2')
+      viewElement.createSelectorItem('dummyPage1', 'dummy-page2', '', 'page2'),
     ]);
 
 

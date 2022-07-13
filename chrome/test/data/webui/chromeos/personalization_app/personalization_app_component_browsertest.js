@@ -40,13 +40,14 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
  ['GooglePhotosCollectionTest', 'google_photos_collection_element_test.js'],
  [
    'GooglePhotosPhotosByAlbumIdTest',
-   'google_photos_photos_by_album_id_element_test.js'
+   'google_photos_photos_by_album_id_element_test.js',
  ],
  ['GooglePhotosPhotosTest', 'google_photos_photos_element_test.js'],
  ['KeyboardBacklightTest', 'keyboard_backlight_element_test.js'],
  ['LocalImagesTest', 'local_images_element_test.js'],
  [
-   'PersonalizationBreadcrumbTest', 'personalization_breadcrumb_element_test.js'
+   'PersonalizationBreadcrumbTest',
+   'personalization_breadcrumb_element_test.js',
  ],
  ['PersonalizationMainTest', 'personalization_main_element_test.js'],
  ['PersonalizationRouterTest', 'personalization_router_element_test.js'],

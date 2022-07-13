@@ -54,7 +54,7 @@ export function ethernetInfoTestSuite() {
     return Object.assign({}, fakeEthernetNetwork, {
       typeProperties: {
         ethernet: ethernetTypeProperies,
-      }
+      },
     });
   }
 

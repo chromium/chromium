@@ -263,7 +263,7 @@ export function shimlessRMAAppTest() {
           state: State.kSelectComponents,
           canExit: true,
           canGoBack: true,
-          error: RmadErrorCode.kOk
+          error: RmadErrorCode.kOk,
         }],
         fakeChromeVersion[0]);
 
@@ -287,7 +287,7 @@ export function shimlessRMAAppTest() {
           state: State.kSelectComponents,
           canExit: true,
           canGoBack: true,
-          error: RmadErrorCode.kOk
+          error: RmadErrorCode.kOk,
         }],
         fakeChromeVersion[0]);
 
@@ -328,7 +328,7 @@ export function shimlessRMAAppTest() {
           state: State.kSelectComponents,
           canExit: true,
           canGoBack: true,
-          error: RmadErrorCode.kOk
+          error: RmadErrorCode.kOk,
         }],
         fakeChromeVersion[0]);
 
@@ -367,7 +367,7 @@ export function shimlessRMAAppTest() {
           state: State.kSelectComponents,
           canExit: true,
           canGoBack: true,
-          error: RmadErrorCode.kOk
+          error: RmadErrorCode.kOk,
         }],
         fakeChromeVersion[0]);
 
@@ -444,7 +444,7 @@ export function shimlessRMAAppTest() {
           state: State.kWelcomeScreen,
           canExit: true,
           canGoBack: true,
-          error: RmadErrorCode.kOk
+          error: RmadErrorCode.kOk,
         }],
         fakeChromeVersion[0]);
 
@@ -479,8 +479,9 @@ export function shimlessRMAAppTest() {
         {
           bubbles: true,
           composed: true,
-          detail: () => Promise.resolve(
-              {stateResult: {state: State.kUpdateOs, error: RmadErrorCode.kOk}})
+          detail: () => Promise.resolve({
+            stateResult: {state: State.kUpdateOs, error: RmadErrorCode.kOk},
+          }),
         },
         ));
     await flushTasks();
@@ -509,9 +510,9 @@ export function shimlessRMAAppTest() {
               state: State.kUpdateOs,
               error: RmadErrorCode.kOk,
               canExit: false,
-              canGoBack: false
-            }
-          })
+              canGoBack: false,
+            },
+          }),
         },
         ));
     await flushTasks();
@@ -542,9 +543,9 @@ export function shimlessRMAAppTest() {
               state: State.kCheckCalibration,
               error: RmadErrorCode.kOk,
               canExit: false,
-              canGoBack: false
-            }
-          })
+              canGoBack: false,
+            },
+          }),
         },
         ));
     await flushTasks();

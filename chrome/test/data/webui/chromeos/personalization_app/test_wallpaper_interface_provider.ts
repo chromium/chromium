@@ -46,20 +46,20 @@ export class TestWallpaperProvider extends
       {
         id: 'id_0',
         name: 'zero',
-        previews: [{url: 'https://collections.googleusercontent.com/0'}]
+        previews: [{url: 'https://collections.googleusercontent.com/0'}],
       },
       {
         id: 'id_1',
         name: 'one',
-        previews: [{url: 'https://collections.googleusercontent.com/1'}]
+        previews: [{url: 'https://collections.googleusercontent.com/1'}],
       },
       {
         id: 'id_2',
         name: 'dark-light',
         previews: [
           {url: 'https://collections.googleusercontent.com/2'},
-          {url: 'https://collections.googleusercontent.com/3'}
-        ]
+          {url: 'https://collections.googleusercontent.com/3'},
+        ],
       },
     ];
 

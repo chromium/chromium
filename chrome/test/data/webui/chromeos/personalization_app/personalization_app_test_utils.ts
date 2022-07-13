@@ -69,7 +69,7 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
     themeProvider,
     userProvider,
     wallpaperProvider,
-    personalizationStore
+    personalizationStore,
   };
 }
 

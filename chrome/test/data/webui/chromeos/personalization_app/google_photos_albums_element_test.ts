@@ -53,20 +53,20 @@ suite('GooglePhotosAlbumsTest', function() {
         id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
         title: 'Album 0',
         photoCount: 0,
-        preview: {url: 'foo.com'}
+        preview: {url: 'foo.com'},
       },
       {
         id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
         title: 'Album 1',
         photoCount: 1,
-        preview: {url: 'bar.com'}
+        preview: {url: 'bar.com'},
       },
       {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
         title: 'Album 2',
         photoCount: 2,
-        preview: {url: 'baz.com'}
-      }
+        preview: {url: 'baz.com'},
+      },
     ];
 
     // Set values returned by |wallpaperProvider|.
@@ -245,7 +245,7 @@ suite('GooglePhotosAlbumsTest', function() {
             id: `id-${nextAlbumId}`,
             title: `title-${nextAlbumId}`,
             photoCount: 1,
-            preview: {url: `url-${nextAlbumId++}`}
+            preview: {url: `url-${nextAlbumId++}`},
           };
         }));
 
@@ -271,7 +271,7 @@ suite('GooglePhotosAlbumsTest', function() {
             id: `id-${nextAlbumId}`,
             title: `title-${nextAlbumId}`,
             photoCount: 1,
-            preview: {url: `url-${nextAlbumId++}`}
+            preview: {url: `url-${nextAlbumId++}`},
           };
         }));
 
