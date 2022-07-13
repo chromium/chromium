@@ -9,15 +9,32 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/view_tracker.h"
 
-class Browser;
+class PrefService;
+
+class HomePageUndoBubbleCoordinator {
+ public:
+  HomePageUndoBubbleCoordinator(views::View* anchor_view, PrefService* prefs);
+  HomePageUndoBubbleCoordinator(const HomePageUndoBubbleCoordinator&) = delete;
+  HomePageUndoBubbleCoordinator& operator=(
+      const HomePageUndoBubbleCoordinator&) = delete;
+  ~HomePageUndoBubbleCoordinator();
+
+  void Show(const GURL& undo_url, bool undo_value_is_ntp);
+
+ private:
+  const raw_ptr<views::View> anchor_view_;
+  const raw_ptr<PrefService> prefs_;
+  views::ViewTracker tracker_;
+};
 
 class HomeButton : public ToolbarButton {
  public:
   METADATA_HEADER(HomeButton);
 
   explicit HomeButton(PressedCallback callback = PressedCallback(),
-                      Browser* browser = nullptr);
+                      PrefService* prefs = nullptr);
   HomeButton(const HomeButton&) = delete;
   HomeButton& operator=(const HomeButton&) = delete;
   ~HomeButton() override;
@@ -34,7 +51,8 @@ class HomeButton : public ToolbarButton {
   void UpdateHomePage(const ui::DropTargetEvent& event,
                       ui::mojom::DragOperation& output_drag_op);
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<PrefService> prefs_;
+  HomePageUndoBubbleCoordinator coordinator_;
 
   base::WeakPtrFactory<HomeButton> weak_ptr_factory_{this};
 };

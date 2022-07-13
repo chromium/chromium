@@ -28,77 +28,46 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
-// HomePageUndoBubble --------------------------------------------------------
+// HomePageUndoBubble ---------------------------------------------------------
 
 namespace {
 
 class HomePageUndoBubble : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(HomePageUndoBubble);
+  HomePageUndoBubble(views::View* anchor_view,
+                     PrefService* prefs,
+                     const GURL& undo_url,
+                     bool undo_value_is_ntp);
   HomePageUndoBubble(const HomePageUndoBubble&) = delete;
   HomePageUndoBubble& operator=(const HomePageUndoBubble&) = delete;
-
-  static void ShowBubble(Browser* browser,
-                         bool undo_value_is_ntp,
-                         const GURL& undo_url,
-                         views::View* anchor_view);
-  static void HideBubble();
+  ~HomePageUndoBubble() override = default;
 
  private:
-  HomePageUndoBubble(Browser* browser, bool undo_value_is_ntp,
-                     const GURL& undo_url, views::View* anchor_view);
-  ~HomePageUndoBubble() override;
-
   // views::BubbleDialogDelegateView:
   void Init() override;
-  void WindowClosing() override;
 
   // Called when the "undo" link is clicked.
   void UndoClicked();
 
-  static HomePageUndoBubble* home_page_undo_bubble_;
-
-  raw_ptr<Browser> browser_;
-  bool undo_value_is_ntp_;
+  raw_ptr<PrefService> prefs_;
   GURL undo_url_;
+  bool undo_value_is_ntp_;
 };
 
-// static
-HomePageUndoBubble* HomePageUndoBubble::home_page_undo_bubble_ = nullptr;
-
-void HomePageUndoBubble::ShowBubble(Browser* browser,
-                                    bool undo_value_is_ntp,
-                                    const GURL& undo_url,
-                                    views::View* anchor_view) {
-  HideBubble();
-  home_page_undo_bubble_ = new HomePageUndoBubble(browser,
-                                                  undo_value_is_ntp,
-                                                  undo_url,
-                                                  anchor_view);
-  views::BubbleDialogDelegateView::CreateBubble(home_page_undo_bubble_)->Show();
-}
-
-void HomePageUndoBubble::HideBubble() {
-  if (home_page_undo_bubble_)
-    home_page_undo_bubble_->GetWidget()->Close();
-}
-
-HomePageUndoBubble::HomePageUndoBubble(
-    Browser* browser,
-    bool undo_value_is_ntp,
-    const GURL& undo_url,
-    views::View* anchor_view)
+HomePageUndoBubble::HomePageUndoBubble(views::View* anchor_view,
+                                       PrefService* prefs,
+                                       const GURL& undo_url,
+                                       bool undo_value_is_ntp)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_LEFT),
-      browser_(browser),
-      undo_value_is_ntp_(undo_value_is_ntp),
-      undo_url_(undo_url) {
-  DCHECK(browser_);
+      prefs_(prefs),
+      undo_url_(undo_url),
+      undo_value_is_ntp_(undo_value_is_ntp) {
+  DCHECK(prefs_);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_margins(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
 }
-
-HomePageUndoBubble::~HomePageUndoBubble() = default;
 
 void HomePageUndoBubble::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -123,21 +92,10 @@ void HomePageUndoBubble::Init() {
 }
 
 void HomePageUndoBubble::UndoClicked() {
-  PrefService* prefs = user_prefs::UserPrefs::Get(browser_->profile());
-  prefs->SetBoolean(prefs::kHomePageIsNewTabPage, undo_value_is_ntp_);
-  prefs->SetString(prefs::kHomePage, undo_url_.spec());
+  prefs_->SetString(prefs::kHomePage, undo_url_.spec());
+  prefs_->SetBoolean(prefs::kHomePageIsNewTabPage, undo_value_is_ntp_);
 
-  HideBubble();
-}
-
-void HomePageUndoBubble::WindowClosing() {
-  // We have to reset |home_page_undo_bubble_| here, not in our destructor,
-  // because we'll be hidden first, then destroyed asynchronously.  If we wait
-  // to reset this, and the user triggers a call to ShowBubble() while the
-  // window is hidden but not destroyed, GetWidget()->Close() would be
-  // called twice.
-  DCHECK_EQ(this, home_page_undo_bubble_);
-  home_page_undo_bubble_ = nullptr;
+  GetWidget()->Close();
 }
 
 BEGIN_METADATA(HomePageUndoBubble, views::BubbleDialogDelegateView)
@@ -145,11 +103,32 @@ END_METADATA
 
 }  // namespace
 
+// HomePageUndoBubbleCoordinator ----------------------------------------------
 
-// HomeButton -----------------------------------------------------------
+HomePageUndoBubbleCoordinator::HomePageUndoBubbleCoordinator(
+    views::View* anchor_view,
+    PrefService* prefs)
+    : anchor_view_(anchor_view), prefs_(prefs) {}
 
-HomeButton::HomeButton(PressedCallback callback, Browser* browser)
-    : ToolbarButton(std::move(callback)), browser_(browser) {
+HomePageUndoBubbleCoordinator::~HomePageUndoBubbleCoordinator() = default;
+
+void HomePageUndoBubbleCoordinator::Show(const GURL& undo_url,
+                                         bool undo_value_is_ntp) {
+  if (tracker_.view())
+    tracker_.view()->GetWidget()->Close();
+
+  auto undo_bubble = std::make_unique<HomePageUndoBubble>(
+      anchor_view_, prefs_, undo_url, undo_value_is_ntp);
+  tracker_.SetView(undo_bubble.get());
+  views::BubbleDialogDelegateView::CreateBubble(std::move(undo_bubble))->Show();
+}
+
+// HomeButton -----------------------------------------------------------------
+
+HomeButton::HomeButton(PressedCallback callback, PrefService* prefs)
+    : ToolbarButton(std::move(callback)),
+      prefs_(prefs),
+      coordinator_(this, prefs) {
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   SetVectorIcons(kNavigateHomeIcon, kNavigateHomeTouchIcon);
@@ -159,8 +138,7 @@ HomeButton::HomeButton(PressedCallback callback, Browser* browser)
   SizeToPreferredSize();
 }
 
-HomeButton::~HomeButton() {
-}
+HomeButton::~HomeButton() = default;
 
 bool HomeButton::GetDropFormats(
     int* formats,
@@ -189,15 +167,14 @@ void HomeButton::UpdateHomePage(const ui::DropTargetEvent& event,
   std::u16string title;
   if (event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
                                   &new_homepage_url, &title) &&
-      new_homepage_url.is_valid()) {
-    PrefService* prefs = browser_->profile()->GetPrefs();
-    bool old_is_ntp = prefs->GetBoolean(prefs::kHomePageIsNewTabPage);
-    GURL old_homepage(prefs->GetString(prefs::kHomePage));
+      new_homepage_url.is_valid() && prefs_) {
+    GURL old_homepage(prefs_->GetString(prefs::kHomePage));
+    bool old_is_ntp = prefs_->GetBoolean(prefs::kHomePageIsNewTabPage);
 
-    prefs->SetBoolean(prefs::kHomePageIsNewTabPage, false);
-    prefs->SetString(prefs::kHomePage, new_homepage_url.spec());
+    prefs_->SetString(prefs::kHomePage, new_homepage_url.spec());
+    prefs_->SetBoolean(prefs::kHomePageIsNewTabPage, false);
 
-    HomePageUndoBubble::ShowBubble(browser_, old_is_ntp, old_homepage, this);
+    coordinator_.Show(old_homepage, old_is_ntp);
   }
   output_drag_op = ui::mojom::DragOperation::kNone;
 }

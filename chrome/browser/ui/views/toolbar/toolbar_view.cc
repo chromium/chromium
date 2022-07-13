@@ -244,8 +244,9 @@ void ToolbarView::Init() {
   std::unique_ptr<ReloadButton> reload =
       std::make_unique<ReloadButton>(browser_->command_controller());
 
+  PrefService* const prefs = browser_->profile()->GetPrefs();
   std::unique_ptr<HomeButton> home = std::make_unique<HomeButton>(
-      base::BindRepeating(callback, browser_, IDC_HOME), browser_);
+      base::BindRepeating(callback, browser_, IDC_HOME), prefs);
 
   std::unique_ptr<ExtensionsToolbarContainer> extensions_container;
 
@@ -332,8 +333,7 @@ void ToolbarView::Init() {
           browser_view_, chrome_labs_model_.get()));
 
       show_chrome_labs_button_.Init(
-          chrome_labs_prefs::kBrowserLabsEnabled,
-          browser_->profile()->GetPrefs(),
+          chrome_labs_prefs::kBrowserLabsEnabled, prefs,
           base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
                               base::Unretained(this)));
       // Set the visibility for the button based on initial enterprise policy
@@ -394,7 +394,7 @@ void ToolbarView::Init() {
   location_bar_->Init();
 
   show_home_button_.Init(
-      prefs::kShowHomeButton, browser_->profile()->GetPrefs(),
+      prefs::kShowHomeButton, prefs,
       base::BindRepeating(&ToolbarView::OnShowHomeButtonChanged,
                           base::Unretained(this)));
 
