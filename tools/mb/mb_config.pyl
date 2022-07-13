@@ -314,10 +314,6 @@
 
     'chromium.fyi': {
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot',
-      # TODO(b/234807316): Remove after renaming the builders.
-      'Build Perf Android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
-      'Build Perf Linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      'Build Perf Windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'CFI Linux CF (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient',
       'Comparison Android (reclient)': {
         'goma': 'android_webview_google_debug_static_bot_arm64',
