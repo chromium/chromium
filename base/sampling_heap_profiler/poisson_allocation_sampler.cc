@@ -9,9 +9,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/dispatcher/dispatcher.h"
+#include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
@@ -19,65 +19,11 @@
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-#include <pthread.h>
-#endif
-
 namespace base {
-
-using allocator::AllocatorDispatch;
 
 namespace {
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-
-// The macOS implementation of libmalloc sometimes calls malloc recursively,
-// delegating allocations between zones. That causes our hooks being called
-// twice. The scoped guard allows us to detect that.
-//
-// Besides that the implementations of thread_local on macOS and Android
-// seem to allocate memory lazily on the first access to thread_local variables.
-// Make use of pthread TLS instead of C++ thread_local there.
-class ReentryGuard {
- public:
-  ReentryGuard() : allowed_(!pthread_getspecific(entered_key_)) {
-    pthread_setspecific(entered_key_, reinterpret_cast<void*>(true));
-  }
-
-  ~ReentryGuard() {
-    if (LIKELY(allowed_))
-      pthread_setspecific(entered_key_, nullptr);
-  }
-
-  operator bool() { return allowed_; }
-
-  // This function must be called in very early of the process start-up in
-  // order to acquire a low TLS slot number because glibc TLS implementation
-  // will require a malloc call to allocate storage for a higher slot number
-  // (>= PTHREAD_KEY_2NDLEVEL_SIZE == 32).  c.f. heap_profiling::InitTLSSlot.
-  static void Init() {
-    int error = pthread_key_create(&entered_key_, nullptr);
-    CHECK(!error);
-  }
-
- private:
-  bool allowed_;
-  static pthread_key_t entered_key_;
-};
-
-pthread_key_t ReentryGuard::entered_key_;
-
-#else
-
-// Use [[maybe_unused]] as this lightweight stand-in for the more heavyweight
-// ReentryGuard above will otherwise trigger the "unused code" warnings.
-class [[maybe_unused]] ReentryGuard {
- public:
-  operator bool() { return true; }
-  static void Init() {}
-};
-
-#endif
+using ::base::allocator::dispatcher::ReentryGuard;
 
 const size_t kDefaultSamplingIntervalBytes = 128 * 1024;
 
@@ -146,219 +92,6 @@ void (*g_hooks_install_callback)() = nullptr;
 // true, knows that the other function has already run so it's time to invoke
 // the callback.
 std::atomic_bool g_hooks_installed{false};
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-
-void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
-  ReentryGuard guard;
-  void* address = self->next->alloc_function(self->next, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void* AllocUncheckedFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void* context) {
-  ReentryGuard guard;
-  void* address =
-      self->next->alloc_unchecked_function(self->next, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void* AllocZeroInitializedFn(const AllocatorDispatch* self,
-                             size_t n,
-                             size_t size,
-                             void* context) {
-  ReentryGuard guard;
-  void* address =
-      self->next->alloc_zero_initialized_function(self->next, n, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, n * size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void* AllocAlignedFn(const AllocatorDispatch* self,
-                     size_t alignment,
-                     size_t size,
-                     void* context) {
-  ReentryGuard guard;
-  void* address =
-      self->next->alloc_aligned_function(self->next, alignment, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void* ReallocFn(const AllocatorDispatch* self,
-                void* address,
-                size_t size,
-                void* context) {
-  ReentryGuard guard;
-  // Note: size == 0 actually performs free.
-  PoissonAllocationSampler::RecordFree(address);
-  address = self->next->realloc_function(self->next, address, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
-  // Note: The RecordFree should be called before free_function
-  // (here and in other places).
-  // That is because we need to remove the recorded allocation sample before
-  // free_function, as once the latter is executed the address becomes available
-  // and can be allocated by another thread. That would be racy otherwise.
-  PoissonAllocationSampler::RecordFree(address);
-  self->next->free_function(self->next, address, context);
-}
-
-size_t GetSizeEstimateFn(const AllocatorDispatch* self,
-                         void* address,
-                         void* context) {
-  return self->next->get_size_estimate_function(self->next, address, context);
-}
-
-unsigned BatchMallocFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void** results,
-                       unsigned num_requested,
-                       void* context) {
-  ReentryGuard guard;
-  unsigned num_allocated = self->next->batch_malloc_function(
-      self->next, size, results, num_requested, context);
-  if (LIKELY(guard)) {
-    for (unsigned i = 0; i < num_allocated; ++i) {
-      PoissonAllocationSampler::RecordAlloc(
-          results[i], size, PoissonAllocationSampler::kMalloc, nullptr);
-    }
-  }
-  return num_allocated;
-}
-
-void BatchFreeFn(const AllocatorDispatch* self,
-                 void** to_be_freed,
-                 unsigned num_to_be_freed,
-                 void* context) {
-  for (unsigned i = 0; i < num_to_be_freed; ++i)
-    PoissonAllocationSampler::RecordFree(to_be_freed[i]);
-  self->next->batch_free_function(self->next, to_be_freed, num_to_be_freed,
-                                  context);
-}
-
-void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                        void* address,
-                        size_t size,
-                        void* context) {
-  PoissonAllocationSampler::RecordFree(address);
-  self->next->free_definite_size_function(self->next, address, size, context);
-}
-
-static void* AlignedMallocFn(const AllocatorDispatch* self,
-                             size_t size,
-                             size_t alignment,
-                             void* context) {
-  ReentryGuard guard;
-  void* address =
-      self->next->aligned_malloc_function(self->next, size, alignment, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-static void* AlignedReallocFn(const AllocatorDispatch* self,
-                              void* address,
-                              size_t size,
-                              size_t alignment,
-                              void* context) {
-  ReentryGuard guard;
-  // Note: size == 0 actually performs free.
-  PoissonAllocationSampler::RecordFree(address);
-  address = self->next->aligned_realloc_function(self->next, address, size,
-                                                 alignment, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-static void AlignedFreeFn(const AllocatorDispatch* self,
-                          void* address,
-                          void* context) {
-  PoissonAllocationSampler::RecordFree(address);
-  self->next->aligned_free_function(self->next, address, context);
-}
-
-AllocatorDispatch g_allocator_dispatch = {&AllocFn,
-                                          &AllocUncheckedFn,
-                                          &AllocZeroInitializedFn,
-                                          &AllocAlignedFn,
-                                          &ReallocFn,
-                                          &FreeFn,
-                                          &GetSizeEstimateFn,
-                                          &BatchMallocFn,
-                                          &BatchFreeFn,
-                                          &FreeDefiniteSizeFn,
-                                          &AlignedMallocFn,
-                                          &AlignedReallocFn,
-                                          &AlignedFreeFn,
-                                          nullptr};
-
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
-
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
-
-void PartitionAllocHook(void* address, size_t size, const char* type) {
-  PoissonAllocationSampler::RecordAlloc(
-      address, size, PoissonAllocationSampler::kPartitionAlloc, type);
-}
-
-void PartitionFreeHook(void* address) {
-  PoissonAllocationSampler::RecordFree(address);
-}
-
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
-
-void InstallStandardAllocatorHooks() {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator::InsertAllocatorDispatch(&g_allocator_dispatch);
-#else
-  // If the allocator shim isn't available, then we don't install any hooks.
-  // There's no point in printing an error message, since this can regularly
-  // happen for tests.
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
-
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
-  partition_alloc::PartitionAllocHooks::SetObserverHooks(&PartitionAllocHook,
-                                                         &PartitionFreeHook);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
-}
-
-void RemoveStandardAllocatorHooksForTesting() {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator::RemoveAllocatorDispatchForTesting(
-      &g_allocator_dispatch);  // IN-TEST
-#endif
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
-  partition_alloc::PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
-#endif
-}
-
 }  // namespace
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
@@ -426,7 +159,7 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   // Reinstall Hooks.
   PoissonAllocationSampler::Get()->InstallAllocatorHooksOnce();
 
-  RemoveStandardAllocatorHooksForTesting();  // IN-TEST
+  allocator::dispatcher::RemoveStandardAllocatorHooksForTesting();  // IN-TEST
 
   // Reset the accumulated bytes to 0 on this thread.
   accumulated_bytes_snapshot_ = g_tls_accumulated_bytes;
@@ -438,7 +171,9 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   DCHECK(g_mute_hooked_samples);
   // Restore the allocator hooks and accumulated bytes.
   g_tls_accumulated_bytes = accumulated_bytes_snapshot_;
-  InstallStandardAllocatorHooks();
+
+  allocator::dispatcher::InstallStandardAllocatorHooks();
+
   g_mute_hooked_samples = false;
 }
 
@@ -462,7 +197,8 @@ void PoissonAllocationSampler::Init() {
 
 void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
   [[maybe_unused]] static bool hook_installed = [] {
-    InstallStandardAllocatorHooks();
+    allocator::dispatcher::InstallStandardAllocatorHooks();
+
     bool expected = false;
     if (!g_hooks_installed.compare_exchange_strong(expected, true)) {
       // SetHooksInstallCallback already ran, so run the callback now.
