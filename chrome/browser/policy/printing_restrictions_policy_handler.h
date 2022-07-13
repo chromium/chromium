@@ -92,6 +92,7 @@ class PrintingPinDefaultPolicyHandler
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class PrintingAllowedBackgroundGraphicsModesPolicyHandler
     : public PrintingEnumPolicyHandler<
           printing::BackgroundGraphicsModeRestriction> {
@@ -127,8 +128,6 @@ class PrintingPaperSizeDefaultPolicyHandler : public TypeCheckingPolicyHandler {
                 PolicyErrorMap* errors,
                 const base::Value** result);
 };
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 class PrintPdfAsImageDefaultPolicyHandler : public TypeCheckingPolicyHandler {
  public:

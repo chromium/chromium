@@ -504,7 +504,7 @@ def _GetSupportedChromeUserPolicies(policies, protobuf_type):
 # Ensure only windows supported policies are returned when building for windows.
 # Eventually only supported policies on every platforms will be returned.
 def _GetSupportedPolicies(policies, target_platform):
-  if target_platform in ['win', 'linux', 'mac', 'ios']:
+  if target_platform in ['win', 'linux', 'mac', 'ios', 'android']:
     return [policy for policy in policies if policy.is_supported]
 
   return [

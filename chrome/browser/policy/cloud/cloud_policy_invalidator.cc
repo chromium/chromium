@@ -475,6 +475,7 @@ void CloudPolicyInvalidator::Unregister() {
 }
 
 void CloudPolicyInvalidator::UpdateMaxFetchDelay(const PolicyMap& policy_map) {
+#if !BUILDFLAG(IS_ANDROID)
   // Try reading the delay from the policy.
   const base::Value* delay_policy_value = policy_map.GetValue(
       key::kMaxInvalidationFetchDelay, base::Value::Type::INTEGER);
@@ -482,6 +483,7 @@ void CloudPolicyInvalidator::UpdateMaxFetchDelay(const PolicyMap& policy_map) {
     set_max_fetch_delay(delay_policy_value->GetInt());
     return;
   }
+#endif
 
   set_max_fetch_delay(kMaxFetchDelayDefault);
 }

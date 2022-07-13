@@ -144,6 +144,7 @@ PrintingPinDefaultPolicyHandler::PrintingPinDefaultPolicyHandler()
 PrintingPinDefaultPolicyHandler::~PrintingPinDefaultPolicyHandler() = default;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 PrintingAllowedBackgroundGraphicsModesPolicyHandler::
     PrintingAllowedBackgroundGraphicsModesPolicyHandler()
     : PrintingEnumPolicyHandler<printing::BackgroundGraphicsModeRestriction>(
@@ -279,8 +280,6 @@ void PrintingPaperSizeDefaultPolicyHandler::ApplyPolicySettings(
     prefs->SetValue(prefs::kPrintingPaperSizeDefault, value->Clone());
   }
 }
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 PrintPdfAsImageDefaultPolicyHandler::PrintPdfAsImageDefaultPolicyHandler()
     : TypeCheckingPolicyHandler(key::kPrintPdfAsImageDefault,
