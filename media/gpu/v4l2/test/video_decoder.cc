@@ -33,23 +33,24 @@ void UnpackUVPlane(std::vector<char>& dest_u,
 // 4:2:0 subsampled, but UV are interlaced). This function converts a single
 // MM21 plane into its equivalent NV12 plane.
 void DetilePlane(std::vector<char>& dest,
+                 gfx::Size dest_size,
                  char* src,
-                 gfx::Size size,
+                 gfx::Size src_size,
                  gfx::Size tile_size) {
   // Tile size in bytes.
   const int tile_len = tile_size.GetArea();
   // |width| rounded down to the nearest multiple of |tile_width|.
-  const int aligned_width =
-      base::bits::AlignDown(size.width(), tile_size.width());
-  // |width| rounded up to the nearest multiple of |tile_width|.
-  const int padded_width = base::bits::AlignUp(size.width(), tile_size.width());
+  const int aligned_dst_width =
+      base::bits::AlignDown(dest_size.width(), tile_size.width());
+  // number of pixels more than a full tile width
+  const int last_tile_partial_width = dest_size.width() - aligned_dst_width;
   // |height| rounded up to the nearest multiple of |tile_height|.
-  const int padded_height =
-      base::bits::AlignUp(size.height(), tile_size.height());
+  const int padded_dst_height =
+      base::bits::AlignUp(dest_size.height(), tile_size.height());
   // Size of one row of tiles in bytes.
-  const int src_row_size = padded_width * tile_size.height();
+  const int src_row_size = src_size.width() * tile_size.height();
   // Size of the entire coded image.
-  const int coded_image_num_pixels = padded_width * padded_height;
+  const int coded_image_num_pixels = src_size.width() * padded_dst_height;
 
   // Index in bytes to the start of the current tile row.
   int src_tile_row_start = 0;
@@ -61,8 +62,8 @@ void DetilePlane(std::vector<char>& dest,
     // Maximum relative y-axis value that we should process for the given tile
     // row. Important for cropping.
     const int max_in_tile_row_index =
-        size.height() - y_offset < tile_size.height()
-            ? (size.height() - y_offset)
+        dest_size.height() - y_offset < tile_size.height()
+            ? (dest_size.height() - y_offset)
             : tile_size.height();
 
     // Offset in bytes into the current tile row to start reading data for the
@@ -75,7 +76,7 @@ void DetilePlane(std::vector<char>& dest,
       int src_index = src_tile_row_start + src_row_start;
 
       // Iterates over each pixel in the row of pixels.
-      for (int col_index = 0; col_index < aligned_width;
+      for (int col_index = 0; col_index < aligned_dst_width;
            col_index += tile_size.width()) {
         dest.insert(dest.end(), src + src_index,
                     src + src_index + tile_size.width());
@@ -83,7 +84,7 @@ void DetilePlane(std::vector<char>& dest,
       }
       // Finish last partial tile in the row.
       dest.insert(dest.end(), src + src_index,
-                  src + src_index + size.width() - aligned_width);
+                  src + src_index + last_tile_partial_width);
 
       // Shift to the next pixel row in the tile row.
       src_row_start += tile_size.width();
@@ -178,25 +179,31 @@ void VideoDecoder::Initialize() {
 void VideoDecoder::ConvertMM21ToYUV(std::vector<char>& dest_y,
                                     std::vector<char>& dest_u,
                                     std::vector<char>& dest_v,
+                                    gfx::Size dest_size,
                                     char* src_y,
                                     char* src_uv,
-                                    gfx::Size size) {
+                                    gfx::Size src_size) {
   // Detile MM21's luma plane.
   constexpr int kMM21TileWidth = 16;
   constexpr int kMM21TileHeight = 32;
+
+  LOG_ASSERT(src_size.width() % kMM21TileWidth == 0)
+      << "Source buffer width (" << src_size.width()
+      << ") must be a multiple of " << kMM21TileWidth;
   constexpr gfx::Size kYTileSize(kMM21TileWidth, kMM21TileHeight);
-  dest_y.reserve(size.GetArea());
-  DetilePlane(dest_y, src_y, size, kYTileSize);
+  dest_y.reserve(dest_size.GetArea());
+  DetilePlane(dest_y, dest_size, src_y, src_size, kYTileSize);
 
   // Detile MM21's chroma plane in a temporary |detiled_uv|.
   std::vector<char> detiled_uv;
-  const gfx::Size uv_size(size.width(), size.height() / 2);
+  const gfx::Size dest_uv_size(dest_size.width(), dest_size.height() / 2);
+  const gfx::Size src_uv_size(src_size.width(), src_size.height() / 2);
   constexpr gfx::Size kUVTileSize(kMM21TileWidth, kMM21TileHeight / 2);
-  detiled_uv.reserve(size.GetArea() / 2);
-  DetilePlane(detiled_uv, src_uv, uv_size, kUVTileSize);
+  detiled_uv.reserve(dest_size.GetArea() / 2);
+  DetilePlane(detiled_uv, dest_uv_size, src_uv, src_uv_size, kUVTileSize);
 
   // Unpack NV12's UV plane into separate U and V planes.
-  UnpackUVPlane(dest_u, dest_v, detiled_uv, size);
+  UnpackUVPlane(dest_u, dest_v, detiled_uv, dest_size);
 }
 
 }  // namespace v4l2_test

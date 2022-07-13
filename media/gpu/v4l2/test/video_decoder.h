@@ -54,9 +54,10 @@ class VideoDecoder {
   static void ConvertMM21ToYUV(std::vector<char>& dest_y,
                                std::vector<char>& dest_u,
                                std::vector<char>& dest_v,
+                               gfx::Size dest_size,
                                char* src_y,
                                char* src_uv,
-                               gfx::Size size);
+                               gfx::Size src_size);
 
   // Wrapper for V4L2 ioctl requests.
   const std::unique_ptr<V4L2IoctlShim> v4l2_ioctl_;
