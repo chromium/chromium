@@ -37,7 +37,8 @@ bool CanTrack(int fd) {
 }
 
 void UpdateAndCheckFdOwnership(int fd, bool owned) {
-  if (CanTrack(fd) && g_is_fd_owned[fd].exchange(owned) == owned &&
+  if (CanTrack(fd) &&
+      g_is_fd_owned[static_cast<size_t>(fd)].exchange(owned) == owned &&
       g_is_ownership_enforced) {
     CrashOnFdOwnershipViolation();
   }
@@ -73,7 +74,7 @@ void ResetFDOwnership() {
 }  // namespace subtle
 
 bool IsFDOwned(int fd) {
-  return CanTrack(fd) && g_is_fd_owned[fd];
+  return CanTrack(fd) && g_is_fd_owned[static_cast<size_t>(fd)];
 }
 
 }  // namespace base
