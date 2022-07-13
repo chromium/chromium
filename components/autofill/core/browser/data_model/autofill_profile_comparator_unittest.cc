@@ -32,9 +32,9 @@ using autofill::ADDRESS_HOME_SORTING_CODE;
 using autofill::ADDRESS_HOME_STATE;
 using autofill::ADDRESS_HOME_STREET_ADDRESS;
 using autofill::ADDRESS_HOME_ZIP;
+using autofill::BIRTHDATE_4_DIGIT_YEAR;
 using autofill::BIRTHDATE_DAY;
 using autofill::BIRTHDATE_MONTH;
-using autofill::BIRTHDATE_YEAR_4_DIGITS;
 using autofill::COMPANY_NAME;
 using autofill::EMAIL_ADDRESS;
 using autofill::NAME_FIRST;
@@ -193,7 +193,7 @@ class AutofillProfileComparatorTest
     AutofillProfile profile(base::GenerateGUID(), "http://www.example.com/");
     profile.SetRawInfo(BIRTHDATE_DAY, base::UTF8ToUTF16(day));
     profile.SetRawInfo(BIRTHDATE_MONTH, base::UTF8ToUTF16(month));
-    profile.SetRawInfo(BIRTHDATE_YEAR_4_DIGITS, base::UTF8ToUTF16(year));
+    profile.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, base::UTF8ToUTF16(year));
     return profile;
   }
 
@@ -1374,7 +1374,7 @@ TEST_P(AutofillProfileComparatorTest, MergeBirthdates) {
   Birthdate expected;
   expected.SetRawInfo(BIRTHDATE_DAY, u"14");
   expected.SetRawInfo(BIRTHDATE_MONTH, u"3");
-  expected.SetRawInfo(BIRTHDATE_YEAR_4_DIGITS, u"1997");
+  expected.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, u"1997");
 
   Birthdate actual;
   EXPECT_TRUE(comparator_.MergeBirthdates(profile1, profile2, actual));

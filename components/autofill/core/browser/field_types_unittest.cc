@@ -90,7 +90,7 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
       NAME_FULL_WITH_HONORIFIC_PREFIX,
       BIRTHDATE_DAY,
       BIRTHDATE_MONTH,
-      BIRTHDATE_YEAR_4_DIGITS,
+      BIRTHDATE_4_DIGIT_YEAR,
   };
   ServerFieldType kInvalidValue = static_cast<ServerFieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));

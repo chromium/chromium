@@ -65,12 +65,12 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(BirthdateFieldTest, ParseDMY) {
   AddSelectOneFormFieldData("", "", GetDays(), BIRTHDATE_DAY);
   AddSelectOneFormFieldData("", "", GetMonths(), BIRTHDATE_MONTH);
-  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_YEAR_4_DIGITS);
+  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_4_DIGIT_YEAR);
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_P(BirthdateFieldTest, ParseYMD) {
-  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_YEAR_4_DIGITS);
+  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_4_DIGIT_YEAR);
   AddSelectOneFormFieldData("", "", GetMonths(), BIRTHDATE_MONTH);
   AddSelectOneFormFieldData("", "", GetDays(), BIRTHDATE_DAY);
   ClassifyAndVerify(ParseResult::PARSED);
@@ -85,7 +85,7 @@ TEST_P(BirthdateFieldTest, DefaultOptions) {
   years.insert(years.begin(), {u"", u"Year"});
   AddSelectOneFormFieldData("", "", days, BIRTHDATE_DAY);
   AddSelectOneFormFieldData("", "", months, BIRTHDATE_MONTH);
-  AddSelectOneFormFieldData("", "", years, BIRTHDATE_YEAR_4_DIGITS);
+  AddSelectOneFormFieldData("", "", years, BIRTHDATE_4_DIGIT_YEAR);
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
@@ -99,7 +99,7 @@ TEST_P(BirthdateFieldTest, LeadingZeros) {
   }
   AddSelectOneFormFieldData("", "", days, BIRTHDATE_DAY);
   AddSelectOneFormFieldData("", "", GetMonths(), BIRTHDATE_MONTH);
-  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_YEAR_4_DIGITS);
+  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_4_DIGIT_YEAR);
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
@@ -110,7 +110,7 @@ TEST_P(BirthdateFieldTest, TooManyOptions) {
   EXPECT_GT(days.size(), 13u);  // Too many options for a day selector.
   AddSelectOneFormFieldData("", "", days, BIRTHDATE_DAY);
   AddSelectOneFormFieldData("", "", GetMonths(), BIRTHDATE_MONTH);
-  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_YEAR_4_DIGITS);
+  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_4_DIGIT_YEAR);
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
@@ -125,7 +125,7 @@ TEST_P(BirthdateFieldTest, IncompleteMonth) {
   months.resize(5);
   AddSelectOneFormFieldData("", "", GetDays(), BIRTHDATE_DAY);
   AddSelectOneFormFieldData("", "", months, BIRTHDATE_MONTH);
-  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_YEAR_4_DIGITS);
+  AddSelectOneFormFieldData("", "", GetYears(), BIRTHDATE_4_DIGIT_YEAR);
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 

@@ -142,7 +142,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case SEARCH_TERM:
     case BIRTHDATE_DAY:
     case BIRTHDATE_MONTH:
-    case BIRTHDATE_YEAR_4_DIGITS:
+    case BIRTHDATE_4_DIGIT_YEAR:
     case UNKNOWN_TYPE:
     case MAX_VALID_FIELD_TYPE:
       return false;
@@ -231,7 +231,7 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "BIRTHDATE_DAY";
     case BIRTHDATE_MONTH:
       return "BIRTHDATE_MONTH";
-    case BIRTHDATE_YEAR_4_DIGITS:
+    case BIRTHDATE_4_DIGIT_YEAR:
       return "BIRTHDATE_YEAR_4_DIGITS";
     case CREDIT_CARD_NAME_FULL:
       return "CREDIT_CARD_NAME_FULL";

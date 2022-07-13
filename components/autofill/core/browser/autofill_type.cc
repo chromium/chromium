@@ -110,7 +110,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
 
     case BIRTHDATE_DAY:
     case BIRTHDATE_MONTH:
-    case BIRTHDATE_YEAR_4_DIGITS:
+    case BIRTHDATE_4_DIGIT_YEAR:
       return FieldTypeGroup::kBirthdateField;
 
     case PRICE:

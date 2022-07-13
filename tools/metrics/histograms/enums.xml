@@ -6687,8 +6687,8 @@ others/histograms.xml -->
   <int value="1889" label="BIRTHDATE_DAY: accepted"/>
   <int value="1904" label="BIRTHDATE_MONTH: edited"/>
   <int value="1905" label="BIRTHDATE_MONTH: accepted"/>
-  <int value="1920" label="BIRTHDATE_YEAR_4_DIGITS: edited"/>
-  <int value="1921" label="BIRTHDATE_YEAR_4_DIGITS: accepted"/>
+  <int value="1920" label="BIRTHDATE_4_DIGIT_YEAR: edited"/>
+  <int value="1921" label="BIRTHDATE_4_DIGIT_YEAR: accepted"/>
   <int value="1936" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: edited"/>
   <int value="1937" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: accepted"/>
   <int value="1952"
@@ -8967,20 +8967,20 @@ others/histograms.xml -->
       label="BIRTHDATE_MONTH - Predictions different - Value agrees with both
              predictions"/>
   <int value="721"
-      label="BIRTHDATE_YEAR_4_DIGITS - Predictions equal - Value agrees"/>
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions equal - Value agrees"/>
   <int value="722"
-      label="BIRTHDATE_YEAR_4_DIGITS - Predictions equal - Value disagrees"/>
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions equal - Value disagrees"/>
   <int value="723"
-      label="BIRTHDATE_YEAR_4_DIGITS - Predictions different - Value agrees
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
              with old prediction"/>
   <int value="724"
-      label="BIRTHDATE_YEAR_4_DIGITS - Predictions different - Value agrees
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
              with new prediction"/>
   <int value="725"
-      label="BIRTHDATE_YEAR_4_DIGITS - Predictions different - Value agrees
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
              with neither prediction"/>
   <int value="726"
-      label="BIRTHDATE_YEAR_4_DIGITS - Predictions different - Value agrees
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
              with both predictions"/>
   <int value="727"
       label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions equal -
@@ -9336,7 +9336,7 @@ others/histograms.xml -->
   <int value="117" label="NAME_FULL_WITH_HONORIFIC_PREFIX"/>
   <int value="118" label="BIRTHDATE_DAY"/>
   <int value="119" label="BIRTHDATE_MONTH"/>
-  <int value="120" label="BIRTHDATE_YEAR_4_DIGITS"/>
+  <int value="120" label="BIRTHDATE_4_DIGIT_YEAR"/>
   <int value="121" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX"/>
   <int value="122" label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
 </enum>

@@ -16,7 +16,7 @@ Birthdate CreateBirthdate(const std::u16string& day,
   Birthdate birthdate;
   birthdate.SetRawInfo(BIRTHDATE_DAY, day);
   birthdate.SetRawInfo(BIRTHDATE_MONTH, month);
-  birthdate.SetRawInfo(BIRTHDATE_YEAR_4_DIGITS, year);
+  birthdate.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, year);
   return birthdate;
 }
 
@@ -26,7 +26,7 @@ void VerifyValues(const Birthdate& birthdate,
                   const std::u16string& year) {
   EXPECT_EQ(birthdate.GetRawInfo(BIRTHDATE_DAY), day);
   EXPECT_EQ(birthdate.GetRawInfo(BIRTHDATE_MONTH), month);
-  EXPECT_EQ(birthdate.GetRawInfo(BIRTHDATE_YEAR_4_DIGITS), year);
+  EXPECT_EQ(birthdate.GetRawInfo(BIRTHDATE_4_DIGIT_YEAR), year);
 }
 
 // Expect that setting |field| to |value| clears the |field|. This is used to
@@ -61,8 +61,8 @@ TEST(BirthdateTest, Validation) {
   SetFieldAndExpectEmpty(BIRTHDATE_DAY, u"NaN");
   SetFieldAndExpectEmpty(BIRTHDATE_MONTH, u"13");
   SetFieldAndExpectEmpty(BIRTHDATE_MONTH, u"a");
-  SetFieldAndExpectEmpty(BIRTHDATE_YEAR_4_DIGITS, u"12345");
-  SetFieldAndExpectEmpty(BIRTHDATE_YEAR_4_DIGITS, u"1234");
+  SetFieldAndExpectEmpty(BIRTHDATE_4_DIGIT_YEAR, u"12345");
+  SetFieldAndExpectEmpty(BIRTHDATE_4_DIGIT_YEAR, u"1234");
 }
 
 // Tests that empty values clear the corresponding fields.

@@ -22,7 +22,7 @@ std::u16string Birthdate::GetRawInfo(ServerFieldType type) const {
   switch (type) {
     case BIRTHDATE_DAY:
     case BIRTHDATE_MONTH:
-    case BIRTHDATE_YEAR_4_DIGITS: {
+    case BIRTHDATE_4_DIGIT_YEAR: {
       int value = GetRawInfoAsInt(type);
       return value != 0 ? base::NumberToString16(value) : std::u16string();
     }
@@ -38,7 +38,7 @@ int Birthdate::GetRawInfoAsInt(ServerFieldType type) const {
       return day_;
     case BIRTHDATE_MONTH:
       return month_;
-    case BIRTHDATE_YEAR_4_DIGITS:
+    case BIRTHDATE_4_DIGIT_YEAR:
       return year_;
     default:
       NOTREACHED();
@@ -54,7 +54,7 @@ void Birthdate::SetRawInfoWithVerificationStatus(ServerFieldType type,
   switch (type) {
     case BIRTHDATE_DAY:
     case BIRTHDATE_MONTH:
-    case BIRTHDATE_YEAR_4_DIGITS: {
+    case BIRTHDATE_4_DIGIT_YEAR: {
       // If |value| is not a number, |StringToInt()| sets it to 0, which will
       // clear the field.
       int int_value;
@@ -83,7 +83,7 @@ void Birthdate::SetRawInfoAsIntWithVerificationStatus(
     case BIRTHDATE_MONTH:
       month_ = ValueIfInRangeOrZero(1, 12);
       break;
-    case BIRTHDATE_YEAR_4_DIGITS:
+    case BIRTHDATE_4_DIGIT_YEAR:
       year_ = ValueIfInRangeOrZero(1900, 9999);
       break;
     default:
@@ -94,7 +94,7 @@ void Birthdate::SetRawInfoAsIntWithVerificationStatus(
 void Birthdate::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   supported_types->insert(BIRTHDATE_DAY);
   supported_types->insert(BIRTHDATE_MONTH);
-  supported_types->insert(BIRTHDATE_YEAR_4_DIGITS);
+  supported_types->insert(BIRTHDATE_4_DIGIT_YEAR);
 }
 
 }  // namespace autofill

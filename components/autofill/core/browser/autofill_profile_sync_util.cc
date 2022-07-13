@@ -242,7 +242,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     specifics->set_birthdate_day(entry.GetRawInfoAsInt(BIRTHDATE_DAY));
     specifics->set_birthdate_month(entry.GetRawInfoAsInt(BIRTHDATE_MONTH));
     specifics->set_birthdate_year(
-        entry.GetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS));
+        entry.GetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR));
   }
 
   return entity_data;
@@ -472,7 +472,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           features::kAutofillEnableCompatibilitySupportForBirthdates)) {
     profile->SetRawInfoAsInt(BIRTHDATE_DAY, specifics.birthdate_day());
     profile->SetRawInfoAsInt(BIRTHDATE_MONTH, specifics.birthdate_month());
-    profile->SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS,
+    profile->SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR,
                              specifics.birthdate_year());
   }
 

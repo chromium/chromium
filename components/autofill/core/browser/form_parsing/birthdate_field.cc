@@ -111,7 +111,7 @@ void BirthdateField::AddClassifications(
                     field_candidates);
   AddClassification(month_, BIRTHDATE_MONTH, kBaseBirthdateParserScore,
                     field_candidates);
-  AddClassification(year_, BIRTHDATE_YEAR_4_DIGITS, kBaseBirthdateParserScore,
+  AddClassification(year_, BIRTHDATE_4_DIGIT_YEAR, kBaseBirthdateParserScore,
                     field_candidates);
 }
 

@@ -25,7 +25,7 @@ class Birthdate : public FormGroup {
 
   // Convenience accessor to the day, month and 4 digit year components.
   static ServerFieldTypeSet GetRawComponents() {
-    return {BIRTHDATE_DAY, BIRTHDATE_MONTH, BIRTHDATE_YEAR_4_DIGITS};
+    return {BIRTHDATE_DAY, BIRTHDATE_MONTH, BIRTHDATE_4_DIGIT_YEAR};
   }
 
   // FormGroup:

@@ -881,7 +881,7 @@ bool AddAutofillProfileBirthdateToProfile(sql::Database* db,
     DCHECK_EQ(profile->guid(), s.ColumnString(0));
     profile->SetRawInfoAsInt(BIRTHDATE_DAY, s.ColumnInt(1));
     profile->SetRawInfoAsInt(BIRTHDATE_MONTH, s.ColumnInt(2));
-    profile->SetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS, s.ColumnInt(3));
+    profile->SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, s.ColumnInt(3));
   }
   return s.Succeeded();
 }
@@ -922,7 +922,7 @@ bool AddAutofillProfileBirthdate(const AutofillProfile& profile,
   s.BindString(0, profile.guid());
   s.BindInt(1, profile.GetRawInfoAsInt(BIRTHDATE_DAY));
   s.BindInt(2, profile.GetRawInfoAsInt(BIRTHDATE_MONTH));
-  s.BindInt(3, profile.GetRawInfoAsInt(BIRTHDATE_YEAR_4_DIGITS));
+  s.BindInt(3, profile.GetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR));
 
   return s.Run();
 }
