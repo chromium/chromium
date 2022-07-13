@@ -1,6 +1,13 @@
 (async function(testRunner) {
   var {page, session, dp} = await testRunner.startBlank('Tests that isolation status is reported correctly');
 
+  const protocolMessages = [];
+  const originalDispatchMessage = DevToolsAPI.dispatchMessage;
+  DevToolsAPI.dispatchMessage = (message) => {
+    protocolMessages.push(message);
+    originalDispatchMessage(message);
+  }
+
   await dp.Page.enable();
 
   const results = new Map();
@@ -39,13 +46,20 @@
 
   await frameNavigatedPromise;
 
+  dumpProtocolMessages = false;
   for (const key of Array.from(results.keys()).sort()) {
+    if (key == 'chrome-error://chromewebdata/') {
+      dumpProtocolMessages = true;
+    }
     testRunner.log(key);
     testRunner.log(`COEP status`);
     const {coep, coop} = results.get(key);
     testRunner.log(coep);
     testRunner.log(`COOP status`);
     testRunner.log(coop);
+  }
+  if (dumpProtocolMessages) {
+    testRunner.log(protocolMessages);
   }
 
   testRunner.completeTest();
