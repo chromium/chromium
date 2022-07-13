@@ -51,18 +51,15 @@ class GrpcWebUIController : public content::WebUIController {
  private:
   content::WebContents* const web_contents_;
   content::BrowserContext* const browser_context_;
-  void AddWebviewSupport();
-  void OnWebUIReady(const base::ListValue* args);
-  void InvokeCallback(const std::string& message, const base::ListValue* args);
   void RegisterMessageCallbacks();
 
   // Callbacks from javascript
-  void StartPingNotify(const base::ListValue* args);
-  void StopPingNotify(const base::ListValue* args);
-  void SetOobeFinished(const base::ListValue* args);
-  void RecordAction(const base::ListValue* args);
-  void LaunchTutorial(const base::ListValue* args);
-  void GetQRCode(const base::ListValue* args);
+  void StartPingNotify(const base::Value::List& args);
+  void StopPingNotify(const base::Value::List& args);
+  void SetOobeFinished(const base::Value::List& args);
+  void RecordAction(const base::Value::List& args);
+  void LaunchTutorial(const base::Value::List& args);
+  void GetQRCode(const base::Value::List& args);
   void CallJavascriptFunction(const std::string& function,
                               std::vector<base::Value> args);
 
