@@ -235,6 +235,7 @@ bool InitPulse(pa_threaded_mainloop** mainloop, pa_context** context) {
     VLOG(1) << "Failed to connect to the context.  Error: "
             << pa_strerror(pa_context_errno(pa_context));
     DestroyContext(pa_context);
+    data = {nullptr, nullptr};
     pa_threaded_mainloop_free(pa_mainloop);
     return false;
   }
@@ -247,6 +248,7 @@ bool InitPulse(pa_threaded_mainloop** mainloop, pa_context** context) {
   if (pa_threaded_mainloop_start(pa_mainloop)) {
     DestroyContext(pa_context);
     mainloop_lock.reset();
+    data = {nullptr, nullptr};
     DestroyMainloop(pa_mainloop);
     return false;
   }
@@ -276,6 +278,7 @@ bool InitPulse(pa_threaded_mainloop** mainloop, pa_context** context) {
       VLOG(1) << "Failed to connect to PulseAudio: " << context_state;
     DestroyContext(pa_context);
     mainloop_lock.reset();
+    data = {nullptr, nullptr};
     DestroyMainloop(pa_mainloop);
     return false;
   }
