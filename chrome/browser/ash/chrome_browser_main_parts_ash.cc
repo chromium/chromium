@@ -198,6 +198,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -633,8 +634,9 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
         switches::kLoginUser,
         cryptohome::Identification(user_manager::StubAccountId()).id());
     if (!command_line->HasSwitch(switches::kLoginProfile)) {
-      command_line->AppendSwitchASCII(switches::kLoginProfile,
-                                      chrome::kTestUserProfileDir);
+      command_line->AppendSwitchASCII(
+          switches::kLoginProfile,
+          ash::BrowserContextHelper::kTestUserBrowserContextDirName);
     }
     LOG(WARNING)
         << "Running as stub user with profile dir: "

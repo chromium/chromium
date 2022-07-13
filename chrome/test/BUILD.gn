@@ -8934,6 +8934,7 @@ if (!is_android) {
         "//ash/services/device_sync:test_support",
         "//chrome/browser/ash",
         "//chrome/browser/ash/system_web_apps/test_support",
+        "//chromeos/ash/components/browser_context_helper",
       ]
     } else {
       sources += [
@@ -9999,6 +10000,7 @@ if (!is_android) {
         "../browser/sync/test/integration/two_client_printers_sync_test.cc",
       ]
       deps += [
+        "//chromeos/ash/components/browser_context_helper",
         "//chromeos/components/sync_wifi",
         "//chromeos/components/sync_wifi:test_support",
         "//chromeos/dbus/shill",

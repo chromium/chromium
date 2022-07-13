@@ -11,6 +11,7 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//chromeos/ash/components/browser_context_helper:unit_tests",
     "//chromeos/ash/components/dbus:unit_tests",
     "//chromeos/ash/components/human_presence:unit_tests",
     "//chromeos/ash/components/local_search_service:unit_tests",

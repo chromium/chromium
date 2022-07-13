@@ -248,6 +248,7 @@ source_set("chromeos") {
     "//chrome/services/wilco_dtc_supportd/public/mojom",
     "//chromeos:chromeos_export",
     "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/anomaly_detector",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",

@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -35,17 +36,6 @@ namespace {
 
 // As defined in /chromeos/dbus/cryptohome/cryptohome_client.cc.
 static const char kUserIdHashSuffix[] = "-hash";
-
-bool ShouldAddProfileDirPrefix(const std::string& user_id_hash) {
-  // Do not add profile dir prefix for legacy profile dir and test
-  // user profile. The reason of not adding prefix for test user profile
-  // is to keep the promise that TestingProfile::kTestUserProfileDir and
-  // chrome::kTestUserProfileDir are always in sync. Otherwise,
-  // TestingProfile::kTestUserProfileDir needs to be dynamically calculated
-  // based on whether multi profile is enabled or not.
-  return user_id_hash != chrome::kLegacyProfileDir &&
-         user_id_hash != chrome::kTestUserProfileDir;
-}
 
 class UsernameHashMatcher {
  public:
@@ -184,32 +174,15 @@ Profile* ProfileHelper::GetSigninProfile() {
 
 // static
 std::string ProfileHelper::GetUserIdHashFromProfile(const Profile* profile) {
-  if (!profile)
-    return std::string();
-
-  std::string profile_dir = profile->GetBaseName().value();
-
-  // Don't strip prefix if the dir is not supposed to be prefixed.
-  if (!ShouldAddProfileDirPrefix(profile_dir))
-    return profile_dir;
-
-  // Check that profile directory starts with the correct prefix.
-  std::string prefix(chrome::kProfileDirPrefix);
-  if (!base::StartsWith(profile_dir, prefix, base::CompareCase::SENSITIVE)) {
-    // This happens when creating a TestingProfile in browser tests.
-    return std::string();
-  }
-
-  return profile_dir.substr(prefix.length());
+  return BrowserContextHelper::GetUserIdHashFromBrowserContext(
+      const_cast<Profile*>(profile));
 }
 
 // static
 base::FilePath ProfileHelper::GetUserProfileDir(
     const std::string& user_id_hash) {
-  CHECK(!user_id_hash.empty());
-  return ShouldAddProfileDirPrefix(user_id_hash)
-             ? base::FilePath(chrome::kProfileDirPrefix + user_id_hash)
-             : base::FilePath(user_id_hash);
+  return base::FilePath(
+      BrowserContextHelper::GetUserBrowserContextDirName(user_id_hash));
 }
 
 // static

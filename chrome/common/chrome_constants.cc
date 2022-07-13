@@ -176,9 +176,6 @@ const wchar_t kUserDataDirname[] = L"User Data";
 const float kMaxShareOfExtensionProcesses = 0.30f;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kProfileDirPrefix[] = "u-";
-const char kLegacyProfileDir[] = "user";
-const char kTestUserProfileDir[] = "test-user";
 const char kLockScreenAppProfile[] = "LockScreenAppsProfile";
 const char kLockScreenProfile[] = "LockScreenProfile";
 #endif

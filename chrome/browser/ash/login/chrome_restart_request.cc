@@ -33,6 +33,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -371,8 +372,9 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
       switches::kLoginUser,
       cryptohome::Identification(user_manager::GuestAccountId()).id());
   if (!base::SysInfo::IsRunningOnChromeOS()) {
-    otr_switches.SetStringKey(switches::kLoginProfile,
-                              chrome::kLegacyProfileDir);
+    otr_switches.SetStringKey(
+        switches::kLoginProfile,
+        ash::BrowserContextHelper::kLegacyBrowserContextDirName);
   }
 
   // Override the home page.

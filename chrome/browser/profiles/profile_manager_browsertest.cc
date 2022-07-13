@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #endif
 
@@ -526,8 +527,9 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, ProfileFromProfileKey) {
 class ProfileManagerCrOSBrowserTest : public ProfileManagerBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Use a user hash other than the default chrome::kTestUserProfileDir
-    // so that the prefix case is tested.
+    // Use a user hash other than the default
+    // ash::BrowserContextHelper::kTestUserBrowserContextDirName so that
+    // the prefix case is tested.
     command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                     "test-user-hash");
   }
@@ -541,8 +543,9 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerCrOSBrowserTest, GetLastUsedProfile) {
   base::FilePath profile_path;
   base::PathService::Get(chrome::DIR_USER_DATA, &profile_path);
 
-  profile_path = profile_path.AppendASCII(
-      std::string(chrome::kProfileDirPrefix) + "test-user-hash");
+  profile_path = profile_path.Append(
+      ash::BrowserContextHelper::GetUserBrowserContextDirName(
+          "test-user-hash"));
   EXPECT_EQ(profile_path.value(), last_used_profile->GetPath().value());
 }
 

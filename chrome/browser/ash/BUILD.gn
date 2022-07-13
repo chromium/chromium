@@ -1563,6 +1563,7 @@ source_set("ash") {
     "//chrome/services/file_util/public/cpp",
     "//chrome/services/keymaster/public/mojom",
     "//chrome/services/printing/public/mojom",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/anomaly_detector",
     "//chromeos/ash/components/dbus/anomaly_detector:proto",
     "//chromeos/ash/components/dbus/attestation",

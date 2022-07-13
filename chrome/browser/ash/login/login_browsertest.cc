@@ -47,6 +47,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -280,9 +281,9 @@ void TestSystemTrayIsVisible() {
 // This profile should NOT be an OTR profile.
 IN_PROC_BROWSER_TEST_F(LoginUserTest, UserPassed) {
   Profile* profile = browser()->profile();
-  std::string profile_base_path("hash");
-  profile_base_path.insert(0, chrome::kProfileDirPrefix);
-  EXPECT_EQ(profile_base_path, profile->GetBaseName().value());
+  std::string profile_base_name =
+      ash::BrowserContextHelper::GetUserBrowserContextDirName("hash");
+  EXPECT_EQ(profile_base_name, profile->GetBaseName().value());
   EXPECT_FALSE(profile->IsOffTheRecord());
 
   TestSystemTrayIsVisible();
