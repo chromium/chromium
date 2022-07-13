@@ -136,8 +136,7 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-// TODO(crbug.com/1341434): Re-enable this test
-IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, DISABLED_PolicyToPrefsMapping) {
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
