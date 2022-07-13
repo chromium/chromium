@@ -14,6 +14,7 @@ _HERE_DIR = os.path.dirname(__file__)
 
 class HtmlToWrapperTest(unittest.TestCase):
   def setUp(self):
+    self.maxDiff = None
     self._out_folder = None
 
   def tearDown(self):
@@ -30,7 +31,8 @@ class HtmlToWrapperTest(unittest.TestCase):
                 wrapper_file,
                 wrapper_file_expected,
                 template=None,
-                minify=False):
+                minify=False,
+                use_js=False):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
     args = [
@@ -44,6 +46,9 @@ class HtmlToWrapperTest(unittest.TestCase):
 
     if minify:
       args.append('--minify')
+
+    if use_js:
+      args.append('--use_js')
 
     html_to_wrapper.main(args)
 
@@ -69,11 +74,16 @@ class HtmlToWrapperTest(unittest.TestCase):
                    'html_to_wrapper/icons_expected.html.ts')
 
   def testHtmlToWrapperMinify(self):
-    self.maxDiff = None
     self._run_test('html_to_wrapper/foo.html',
                    'html_to_wrapper/foo.html.ts',
                    'html_to_wrapper/foo_expected.min.html.ts',
                    minify=True)
+
+  def testHtmlToWrapperUseJs(self):
+    self._run_test('html_to_wrapper/foo.html',
+                   'html_to_wrapper/foo.html.js',
+                   'html_to_wrapper/foo_expected.html.ts',
+                   use_js=True)
 
 
 if __name__ == '__main__':

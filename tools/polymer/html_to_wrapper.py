@@ -58,6 +58,7 @@ def main(argv):
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--in_files', required=True, nargs="*")
   parser.add_argument('--minify', action='store_true')
+  parser.add_argument('--use_js', action='store_true')
   parser.add_argument('--template',
                       choices=['polymer', 'native'],
                       default='polymer')
@@ -66,7 +67,7 @@ def main(argv):
 
   in_folder = path.normpath(path.join(_CWD, args.in_folder))
   out_folder = path.normpath(path.join(_CWD, args.out_folder))
-  extension = '.ts'
+  extension = '.js' if args.use_js else '.ts'
 
   results = []
 

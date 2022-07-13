@@ -50,8 +50,10 @@ in_folder: Specifies the input folder where files are located. If not specified,
            the current directory (of the BUILD.gn file) is used.
 out_folder: Specifies the location to write the wrapped files. If not specified,
             |target_gen_dir| is used.
-minify: html_to_wrapper only. Whether to minify HTML/CSS with
+minify: Whether to minify HTML/CSS with
         third_party/node/node_modules/html-minifier. Defaults to false.
+use_js: html_to_wrapper only. Whether to output .js files instead of .ts files.
+        Defaults to false.
 ```
 
 #### **Example**
