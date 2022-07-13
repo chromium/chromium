@@ -256,7 +256,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
 
   void SetIetfConnectionMigrationFlagsAndConnectionOptions() {
     FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2 = true;
-    quic_params_->connection_options.push_back(quic::kRVCM);
   }
 
   void InitializeConnectionMigrationV2Test(
@@ -12919,6 +12918,8 @@ TEST_P(QuicStreamFactoryTest, ConfigConnectionOptions) {
 
   Initialize();
 
+  // RVCM will be default enabled as a connection option.
+  quic_params_->connection_options.push_back(quic::kRVCM);
   const quic::QuicConfig* config =
       QuicStreamFactoryPeer::GetConfig(factory_.get());
   EXPECT_EQ(quic_params_->connection_options, config->SendConnectionOptions());

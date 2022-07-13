@@ -6,6 +6,7 @@
 
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_connection_helper.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 
@@ -51,7 +52,12 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
   config.set_max_idle_time_before_crypto_handshake(
       quic::QuicTime::Delta::FromMicroseconds(
           params.max_idle_time_before_crypto_handshake.InMicroseconds()));
-  config.SetConnectionOptionsToSend(params.connection_options);
+  quic::QuicTagVector copt_to_send = params.connection_options;
+  if (std::find(copt_to_send.begin(), copt_to_send.end(), quic::kRVCM) ==
+      copt_to_send.end()) {
+    copt_to_send.push_back(quic::kRVCM);
+  }
+  config.SetConnectionOptionsToSend(copt_to_send);
   config.SetClientConnectionOptions(params.client_connection_options);
   config.set_max_undecryptable_packets(kMaxUndecryptablePackets);
   config.SetInitialSessionFlowControlWindowToSend(

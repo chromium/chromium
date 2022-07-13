@@ -3237,6 +3237,9 @@ TEST_P(QuicNetworkTransactionTest,
 TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmed) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->idle_connection_timeout = base::Seconds(5);
+  // Turn off port migration to avoid dealing with unnecessary complexity in
+  // this test.
+  context_.params()->allow_port_migration = false;
 
   // The request will initially go out over QUIC.
   MockQuicData quic_data(version_);
@@ -3436,6 +3439,9 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
     return;
   }
   context_.params()->idle_connection_timeout = base::Seconds(5);
+  // Turn off port migration to avoid dealing with unnecessary complexity in
+  // this test.
+  context_.params()->allow_port_migration = false;
 
   // The request will initially go out over QUIC.
   MockQuicData quic_data(version_);
