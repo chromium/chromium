@@ -2233,16 +2233,20 @@ bool Animation::AtScrollTimelineBoundary() {
       start_time_.value_or(AnimationTimeDelta());
   // 3.  Let effective timeline time be (animation's current time / animation's
   // playback rate) + effective start time
+  // TODO(crbug.com/1329159): Spec needs updating since a finished animation
+  // sets it's hold time which effectively caps current time at end time.
   AnimationTimeDelta effective_timeline_time =
-      (CurrentTimeInternal().value_or(AnimationTimeDelta()) / playback_rate_) +
+      (UnlimitedCurrentTime().value_or(AnimationTimeDelta()) / playback_rate_) +
       effective_start_time;
+
   // 4.  Let effective timeline progress be (effective timeline time / timeline
   // duration)
   // 5.  If effective timeline progress is 0 or 1, return true,
   // We avoid the division here but it is effectively the same as 4 & 5 above.
-  return effective_timeline_time.is_zero() ||
-         IsWithinAnimationTimeTolerance(effective_timeline_time,
-                                        timeline_duration.value());
+  bool result = effective_timeline_time.is_zero() ||
+                IsWithinAnimationTimeTolerance(effective_timeline_time,
+                                               timeline_duration.value());
+  return result;
 
   // Issue: This procedure is not strictly correct for a paused
   // animation if the animation's current time is explicitly set, as this can

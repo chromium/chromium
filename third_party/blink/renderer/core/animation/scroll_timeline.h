@@ -36,9 +36,9 @@ class WorkletAnimationBase;
 class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   DEFINE_WRAPPERTYPEINFO();
 
+ public:
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
 
- public:
   enum ScrollDirection {
     kBlock,
     kInline,
@@ -58,6 +58,13 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
                                 ScrollTimelineOptions*,
                                 ExceptionState&);
 
+  static ScrollTimeline* Create(Document* document,
+                                Element* source,
+                                ScrollDirection orientation);
+
+  // Construct ScrollTimeline objects through one of the Create methods, which
+  // perform initial snapshots, as it can't be done during the constructor due
+  // to possibly depending on overloaded functions.
   ScrollTimeline(Document*,
                  ReferenceType reference_type,
                  Element* reference,
@@ -166,10 +173,11 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
   // Scroll offsets corresponding to 0% and 100% progress. By default, these
   // correspond to the scroll range of the container.
-  virtual double GetStartOffset(PaintLayerScrollableArea* scrollable_area,
-                                ScrollOrientation physical_orientation) const;
-  virtual double GetEndOffset(PaintLayerScrollableArea* scrollable_area,
-                              ScrollOrientation physical_orientation) const;
+  virtual absl::optional<ScrollOffsets> CalculateOffsets(
+      PaintLayerScrollableArea* scrollable_area,
+      ScrollOrientation physical_orientation) const;
+
+  void SnapshotState();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
@@ -177,14 +185,13 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
   // Snapshots scroll timeline current time and phase.
   // Called once per animation frame.
-  void SnapshotState();
   bool ComputeIsActive() const;
   PhaseAndTime ComputeCurrentPhaseAndTime() const;
 
   struct TimelineState {
     // TODO(crbug.com/1338167): Remove phase as it can be inferred from
     // current_time.
-    TimelinePhase phase;
+    TimelinePhase phase = TimelinePhase::kInactive;
     absl::optional<base::TimeDelta> current_time;
     absl::optional<ScrollOffsets> scroll_offsets;
 

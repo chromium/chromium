@@ -74,9 +74,8 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullSource) {
   // source. The alternative approach would require us to remove the
   // documentElement from the document.
   Element* source = nullptr;
-  ScrollTimeline* timeline = MakeGarbageCollected<ScrollTimeline>(
-      &GetDocument(), ScrollTimeline::ReferenceType::kSource, source,
-      ScrollTimeline::kBlock);
+  ScrollTimeline* timeline =
+      ScrollTimeline::Create(&GetDocument(), source, ScrollTimeline::kBlock);
 
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);

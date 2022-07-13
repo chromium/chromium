@@ -264,10 +264,17 @@ void AnimationEffect::UpdateInheritedTime(
       (inherited_playback_rate < 0) ? Timing::AnimationDirection::kBackwards
                                     : Timing::AnimationDirection::kForwards;
 
-  bool needs_update = needs_update_ || last_update_time_ != inherited_time ||
-                      (owner_ && owner_->EffectSuppressed());
+  bool needs_update =
+      needs_update_ || last_update_time_ != inherited_time ||
+      last_at_progress_timeline_boundary_ != at_progress_timeline_boundary ||
+      (owner_ && owner_->EffectSuppressed());
   needs_update_ = false;
   last_update_time_ = inherited_time;
+  // A finished animation saturates inherited time at 0 or effect end.
+  // If we hit a progress timeline boundary and then enter the after phase
+  // timeline time doesn't change. Thus, we need to track boundary transitions
+  // as well since this can affect the phase (active vs after).
+  last_at_progress_timeline_boundary_ = at_progress_timeline_boundary;
 
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(

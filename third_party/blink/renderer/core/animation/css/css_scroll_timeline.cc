@@ -128,6 +128,7 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
           options.direction_),
       rule_(options.rule_) {
   DCHECK(rule_);
+  SnapshotState();
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {

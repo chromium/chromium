@@ -35,6 +35,11 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   // IDL API implementation.
   Element* subject() const { return ReferenceElement(); }
+
+ protected:
+  absl::optional<ScrollOffsets> CalculateOffsets(
+      PaintLayerScrollableArea* scrollable_area,
+      ScrollOrientation physical_orientation) const override;
 };
 
 template <>

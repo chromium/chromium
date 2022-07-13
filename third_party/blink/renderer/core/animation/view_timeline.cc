@@ -12,6 +12,24 @@
 
 namespace blink {
 
+namespace {
+
+double ComputeOffset(LayoutBox* subject,
+                     LayoutBox* source,
+                     ScrollOrientation physical_orientation) {
+  Element* source_element = DynamicTo<Element>(source->GetNode());
+  MapCoordinatesFlags flags = kIgnoreScrollOffset;
+  gfx::PointF point = gfx::PointF(
+      subject->LocalToAncestorPoint(PhysicalOffset(), source, flags));
+
+  if (physical_orientation == kHorizontalScroll)
+    return point.x() - source_element->clientLeft();
+  else
+    return point.y() - source_element->clientTop();
+}
+
+}  // end namespace
+
 ViewTimeline* ViewTimeline::Create(Document& document,
                                    ViewTimelineOptions* options,
                                    ExceptionState& exception_state) {
@@ -23,8 +41,10 @@ ViewTimeline* ViewTimeline::Create(Document& document,
                                       "Invalid axis");
     return nullptr;
   }
-
-  return MakeGarbageCollected<ViewTimeline>(&document, subject, orientation);
+  ViewTimeline* view_timeline =
+      MakeGarbageCollected<ViewTimeline>(&document, subject, orientation);
+  view_timeline->SnapshotState();
+  return view_timeline;
 }
 
 ViewTimeline::ViewTimeline(Document* document,
@@ -33,6 +53,47 @@ ViewTimeline::ViewTimeline(Document* document,
     : ScrollTimeline(document,
                      ReferenceType::kNearestAncestor,
                      subject,
-                     orientation) {}
+                     orientation) {
+  // Ensure that the timeline stays alive as long as the subject.
+  if (subject)
+    subject->RegisterScrollTimeline(this);
+}
+
+absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
+    PaintLayerScrollableArea* scrollable_area,
+    ScrollOrientation physical_orientation) const {
+  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
+                                   scrollable_area->MinimumScrollOffset();
+
+  DCHECK(subject());
+  LayoutBox* layout_box = subject()->GetLayoutBox();
+  DCHECK(layout_box);
+  Element* source = SourceInternal();
+  DCHECK(source);
+  LayoutBox* source_layout = source->GetLayoutBox();
+  DCHECK(source_layout);
+
+  double target_offset =
+      ComputeOffset(layout_box, source_layout, physical_orientation);
+  double target_size = 0;
+  double viewport_size = 0;
+  double max_offset = 0;
+  if (physical_orientation == kHorizontalScroll) {
+    target_size = layout_box->Size().Width().ToDouble();
+    viewport_size = scrollable_area->VisibleScrollSnapportRect().Width();
+    max_offset = scroll_dimensions.x();
+  } else {
+    target_size = layout_box->Size().Height().ToDouble();
+    viewport_size = scrollable_area->VisibleScrollSnapportRect().Height();
+    max_offset = scroll_dimensions.y();
+  }
+
+  // Clamping the offsets to the scrollable range. It is unclear if this is the
+  // desired behavior as it also makes sense not to clamp.
+  // TODO(crbug.com/1329159): Revisit once clarified in the spec.
+  double start_offset = std::max<double>(target_offset - viewport_size, 0);
+  double end_offset = std::min<double>(target_offset + target_size, max_offset);
+  return absl::make_optional<ScrollOffsets>(start_offset, end_offset);
+}
 
 }  // namespace blink

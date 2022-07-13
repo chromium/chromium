@@ -189,6 +189,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   mutable absl::optional<Timing::NormalizedTiming> normalized_;
   mutable bool needs_update_;
   mutable absl::optional<AnimationTimeDelta> last_update_time_;
+  mutable bool last_at_progress_timeline_boundary_ = false;
   AnimationTimeDelta cancel_time_;
   const Timing::CalculatedTiming& EnsureCalculated() const;
   void EnsureNormalizedTiming() const;
