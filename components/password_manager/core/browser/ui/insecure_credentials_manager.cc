@@ -359,7 +359,7 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
     // If a flag is set to return every credential as compromised, ensure that
     // all credentials contain a "leak" password issue.
     for (auto& credential : credentials) {
-      if (!credential.IsLeaked() && credential.IsPhished()) {
+      if (!credential.IsLeaked() && !credential.IsPhished()) {
         credential.password_issues[InsecureType::kLeaked] =
             InsecurityMetadata();
       }
