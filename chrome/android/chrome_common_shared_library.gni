@@ -10,6 +10,14 @@ import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
+declare_args() {
+  # Compile libmonochrome.so with RELR relocations, which are smaller and more
+  # efficient, but supported only on API 28+.
+  # This is not permanently enabled for Trichrome because it shares its native
+  # library with Monochrome.
+  use_relr_relocations = false
+}
+
 # TODO(cjgrant): Remove these variables once downstream stops using them.
 bundle_library_suffix = ""
 apk_pak_asset_type = "_apk"
@@ -138,8 +146,10 @@ template("chrome_common_shared_library") {
     }
 
     # Compress relocations if needed.
-    if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
-        use_lld) {
+    if (use_relr_relocations) {
+      configs += [ "//build/config/android:lld_relr_relocations" ]
+    } else if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
+               use_lld) {
       configs += [ "//build/config/android:lld_pack_relocations" ]
     }
 

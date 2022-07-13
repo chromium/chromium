@@ -229,6 +229,10 @@ if (is_android) {
         libs += invoker.libs
       }
 
+      if (defined(invoker.configs)) {
+        configs += invoker.configs
+      }
+
       # This is not Chromium code.
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -261,7 +265,7 @@ if (is_android) {
 
   crazy_linker_test_library("crazy_linker_tests_libfoo_with_relro_and_relr") {
     sources = [ "src/tests/foo_with_relro.cpp" ]
-    ldflags = [ "-Wl,--pack-dyn-relocs=relr,--use-android-relr-tags" ]
+    configs = [ "//build/config/android:lld_relr_relocations" ]
   }
 
   crazy_linker_test_library(

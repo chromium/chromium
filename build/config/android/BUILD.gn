@@ -129,6 +129,12 @@ config("lld_pack_relocations") {
   ldflags = [ "-Wl,--pack-dyn-relocs=android" ]
 }
 
+config("lld_relr_relocations") {
+  # RELR supported API 30+, but supported 28+ with --use-android-relr-tags.
+  # https://android.googlesource.com/platform/bionic/+/master/android-changes-for-ndk-developers.md#relative-relocations-relr
+  ldflags = [ "-Wl,--pack-dyn-relocs=relr,--use-android-relr-tags" ]
+}
+
 config("lld_branch_target_hardening") {
   # Config opts a shared library into BTI linker hardening. This
   # is an opt-in config (rather than default-enabled) to avoid
