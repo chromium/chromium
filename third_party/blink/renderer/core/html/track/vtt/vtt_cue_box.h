@@ -48,6 +48,8 @@ class VTTCueBox final : public HTMLDivElement {
 
   void ApplyCSSProperties(const VTTDisplayParameters&);
 
+  float SnapToLinesPosition() const { return snap_to_lines_position_; }
+
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   InsertionNotificationRequest InsertedInto(

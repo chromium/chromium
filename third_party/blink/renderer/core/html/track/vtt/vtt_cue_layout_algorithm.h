@@ -22,6 +22,13 @@ class VttCueLayoutAlgorithm {
   explicit VttCueLayoutAlgorithm(VTTCueBox& cue);
 
   void Layout();
+
+ private:
+  void AdjustPositionWithSnapToLines();
+  void AdjustPositionWithoutSnapToLines();
+
+  VTTCueBox& cue_;
+  float snap_to_lines_position_;
 };
 
 }  // namespace blink
