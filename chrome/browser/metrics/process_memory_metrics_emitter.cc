@@ -207,8 +207,10 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetCommandBuffer},
     {"gpu/gr_shader_cache", "Gpu.GrShaderCache", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
-    {"gpu/shared_images", "gpu::SharedImageStub", MetricSize::kSmall,
-     kEffectiveSize, EmitTo::kIgnored, nullptr},
+    // Not effective size, to account for the total footprint, a large fraction
+    // of it being claimed by renderers.
+    {"gpu/shared_images", "SharedImages", MetricSize::kLarge, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/transfer_cache", "ServiceTransferCache", MetricSize::kCustom, kSize,
      EmitTo::kSizeInUmaOnly, nullptr, ImageSizeMetricRange},
     {"gpu/transfer_cache", "ServiceTransferCache.AvgImageSize",

@@ -7968,6 +7968,10 @@ chromium-metrics-reviews@google.com.
       label="Amount of memory that is wasted in the Layout partition due to
              fragmentation, in bytes. Only recorded for renderers older than
              24 hour."/>
+  <suffix name="SharedImages"
+      label="All SharedImages memory. Typically accounted for in other
+             processes, e.g. renderers, this is the total Chrome-wide memory
+             used by SharedImages."/>
   <suffix name="SiteStorage"
       label="Only counting memory used by Web storage API."/>
   <suffix name="SiteStorage.BlobStorage"
