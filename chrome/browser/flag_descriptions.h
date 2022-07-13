@@ -214,6 +214,9 @@ extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 extern const char kAutofillEnableRankingFormulaName[];
 extern const char kAutofillEnableRankingFormulaDescription[];
 
+extern const char kAutofillEnableRemadeDownstreamMetricsName[];
+extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
+
 extern const char kAutofillEnableSendingBcnInGetUploadDetailsName[];
 extern const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[];
 

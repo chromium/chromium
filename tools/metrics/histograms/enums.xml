@@ -58475,6 +58475,8 @@ from previous Chrome versions.
   <int value="-86243376" label="LayoutNG:enabled"/>
   <int value="-85706353" label="VirtualDesksGestures:enabled"/>
   <int value="-82530769" label="WebXRPlaneDetection:enabled"/>
+  <int value="-82328138"
+      label="AutofillEnableRemadeDownstreamMetrics:disabled"/>
   <int value="-82266557" label="SafeBrowsingSecuritySectionUIAndroid:disabled"/>
   <int value="-81940476"
       label="OverrideSimilarLanguagesForHrefTranslate:disabled"/>
@@ -58605,6 +58607,7 @@ from previous Chrome versions.
   <int value="-9701088" label="ScanAppMediaLink:disabled"/>
   <int value="-9599490" label="KernelnextVMs:disabled"/>
   <int value="-9322265" label="ShowBluetoothDebugLogToggle:enabled"/>
+  <int value="-8063095" label="AutofillEnableRemadeDownstreamMetrics:enabled"/>
   <int value="-5492723" label="CCTIncognito:enabled"/>
   <int value="-5305648" label="OmniboxClosePopupWithEscape:enabled"/>
   <int value="-5052940" label="enable-simplified-fullscreen"/>

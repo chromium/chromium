@@ -30,6 +30,11 @@ extern const char kAutofillEnableNewCardUnmaskPromptViewDescription[];
 extern const char kAutofillEnableRankingFormulaName[];
 extern const char kAutofillEnableRankingFormulaDescription[];
 
+// Title and description for the flag that controls whether the remade Autofill
+// Downstream metrics are enabled.
+extern const char kAutofillEnableRemadeDownstreamMetricsName[];
+extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
+
 // Title and description for the flag enable sending billing customer number in
 // GetUploadDetails preflight call.
 extern const char kAutofillEnableSendingBcnInGetUploadDetailsName[];

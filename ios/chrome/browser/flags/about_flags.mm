@@ -1035,6 +1035,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMetrickitNonCrashReportName,
      flag_descriptions::kMetrickitNonCrashReportDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kMetrickitNonCrashReport)},
+    {"autofill-enable-remade-downstream-metrics",
+     flag_descriptions::kAutofillEnableRemadeDownstreamMetricsName,
+     flag_descriptions::kAutofillEnableRemadeDownstreamMetricsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableRemadeDownstreamMetrics)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

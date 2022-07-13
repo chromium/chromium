@@ -27,6 +27,7 @@ extern const base::Feature kAutofillEnableFIDOProgressDialog;
 extern const base::Feature kAutofillEnableManualFallbackForVirtualCards;
 extern const base::Feature kAutofillEnableOfferNotificationForPromoCodes;
 extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
+extern const base::Feature kAutofillEnableRemadeDownstreamMetrics;
 extern const base::Feature kAutofillEnableSendingBcnInGetUploadDetails;
 extern const base::Feature kAutofillEnableStickyManualFallbackForCards;
 extern const base::Feature kAutofillEnableToolbarStatusChip;

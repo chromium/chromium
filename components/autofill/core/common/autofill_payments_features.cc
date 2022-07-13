@@ -85,6 +85,10 @@ const base::Feature kAutofillEnableOffersInClankKeyboardAccessory{
     "AutofillEnableOffersInClankKeyboardAccessory",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, some extra metrics logging for Autofill Downstream will start.
+const base::Feature kAutofillEnableRemadeDownstreamMetrics{
+    "AutofillEnableRemadeDownstreamMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether we send billing customer number in GetUploadDetails
 // preflight call.
 const base::Feature kAutofillEnableSendingBcnInGetUploadDetails{
