@@ -226,15 +226,15 @@ int ProcessMetrics::GetOpenFdCount() const {
   if (rv < 0)
     return -1;
 
-  std::unique_ptr<char[]> buffer(new char[rv]);
+  std::unique_ptr<char[]> buffer(new char[static_cast<size_t>(rv)]);
   rv = proc_pidinfo(process_, PROC_PIDLISTFDS, 0, buffer.get(), rv);
   if (rv < 0)
     return -1;
-  return rv / PROC_PIDLISTFD_SIZE;
+  return static_cast<int>(static_cast<unsigned long>(rv) / PROC_PIDLISTFD_SIZE);
 }
 
 int ProcessMetrics::GetOpenFdSoftLimit() const {
-  return GetMaxFds();
+  return checked_cast<int>(GetMaxFds());
 }
 
 bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {

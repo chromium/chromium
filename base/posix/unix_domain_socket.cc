@@ -15,6 +15,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
@@ -76,11 +77,12 @@ bool UnixDomainSocket::SendMsg(int fd,
 
     struct cmsghdr* cmsg;
     msg.msg_control = control_buffer;
-    msg.msg_controllen = control_len;
+    msg.msg_controllen = checked_cast<socklen_t>(control_len);
     cmsg = CMSG_FIRSTHDR(&msg);
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
-    cmsg->cmsg_len = CMSG_LEN(sizeof(int) * fds.size());
+    cmsg->cmsg_len =
+        checked_cast<socklen_t>(CMSG_LEN(sizeof(int) * fds.size()));
     memcpy(CMSG_DATA(cmsg), &fds[0], sizeof(int) * fds.size());
     msg.msg_controllen = cmsg->cmsg_len;
   }

@@ -11,6 +11,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -36,7 +37,7 @@ StringType CFStringToStringWithEncodingT(CFStringRef cfstring,
                                        /*isExternalRepresentation=*/false,
                                        /*buffer=*/nullptr,
                                        /*maxBufLen=*/0, &out_size);
-  if (converted == 0 || out_size == 0)
+  if (converted == 0 || out_size <= 0)
     return StringType();
 
   // `out_size` is the number of UInt8-sized units needed in the destination.
@@ -44,8 +45,9 @@ StringType CFStringToStringWithEncodingT(CFStringRef cfstring,
   // contain elements of StringType::value_type.  Use a container for the
   // proper value_type, and convert `out_size` by figuring the number of
   // value_type elements per UInt8.  Leave room for a NUL terminator.
-  typename StringType::size_type elements =
-      out_size * sizeof(UInt8) / sizeof(typename StringType::value_type) + 1;
+  size_t elements = static_cast<size_t>(out_size) * sizeof(UInt8) /
+                        sizeof(typename StringType::value_type) +
+                    1;
 
   std::vector<typename StringType::value_type> out_buffer(elements);
   converted =
@@ -76,7 +78,9 @@ OutStringType StringToStringWithEncodingsT(const InStringType& in,
 
   base::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytesNoCopy(
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(in.data()),
-      in_length * sizeof(typename InStringType::value_type), in_encoding,
+      checked_cast<CFIndex>(in_length *
+                            sizeof(typename InStringType::value_type)),
+      in_encoding,
       /*isExternalRepresentation=*/false, kCFAllocatorNull));
   if (!cfstring)
     return OutStringType();
@@ -96,7 +100,7 @@ ScopedCFTypeRef<CFStringRef> StringPieceToCFStringWithEncodingsT(
 
   return ScopedCFTypeRef<CFStringRef>(CFStringCreateWithBytes(
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(in.data()),
-      in_length * sizeof(CharT), in_encoding, false));
+      checked_cast<CFIndex>(in_length * sizeof(CharT)), in_encoding, false));
 }
 
 }  // namespace

@@ -1204,14 +1204,15 @@ const UInt16 lower_case_table[] = {
 // position indicated by index, or zero if there are no more.
 // The passed-in index is automatically advanced as the characters in the input
 // HFS-decomposed UTF-8 strings are read.
-inline int HFSReadNextNonIgnorableCodepoint(const char* string,
-                                            int length,
-                                            int* index) {
-  int codepoint = 0;
+inline base_icu::UChar32 HFSReadNextNonIgnorableCodepoint(const char* string,
+                                                          size_t length,
+                                                          size_t* index) {
+  base_icu::UChar32 codepoint = 0;
   while (*index < length && codepoint == 0) {
     // CBU8_NEXT returns a value < 0 in error cases. For purposes of string
     // comparison, we just use that value and flag it with DCHECK.
-    CBU8_NEXT(string, *index, length, codepoint);
+    CBU8_NEXT(reinterpret_cast<const uint8_t*>(string), *index, length,
+              codepoint);
     DCHECK_GT(codepoint, 0);
     if (codepoint > 0) {
       // Check if there is a subtable for this upper byte.
@@ -1232,18 +1233,16 @@ inline int HFSReadNextNonIgnorableCodepoint(const char* string,
 // The input strings must be in the special HFS decomposed form.
 int FilePath::HFSFastUnicodeCompare(StringPieceType string1,
                                     StringPieceType string2) {
-  int length1 = string1.length();
-  int length2 = string2.length();
-  int index1 = 0;
-  int index2 = 0;
+  size_t length1 = string1.length();
+  size_t length2 = string2.length();
+  size_t index1 = 0;
+  size_t index2 = 0;
 
   for (;;) {
-    int codepoint1 = HFSReadNextNonIgnorableCodepoint(string1.data(),
-                                                      length1,
-                                                      &index1);
-    int codepoint2 = HFSReadNextNonIgnorableCodepoint(string2.data(),
-                                                      length2,
-                                                      &index2);
+    base_icu::UChar32 codepoint1 =
+        HFSReadNextNonIgnorableCodepoint(string1.data(), length1, &index1);
+    base_icu::UChar32 codepoint2 =
+        HFSReadNextNonIgnorableCodepoint(string2.data(), length2, &index2);
     if (codepoint1 != codepoint2)
       return (codepoint1 < codepoint2) ? -1 : 1;
     if (codepoint1 == 0) {
@@ -1256,14 +1255,10 @@ int FilePath::HFSFastUnicodeCompare(StringPieceType string1,
 
 StringType FilePath::GetHFSDecomposedForm(StringPieceType string) {
   StringType result;
-  ScopedCFTypeRef<CFStringRef> cfstring(
-      CFStringCreateWithBytesNoCopy(
-          NULL,
-          reinterpret_cast<const UInt8*>(string.data()),
-          string.length(),
-          kCFStringEncodingUTF8,
-          false,
-          kCFAllocatorNull));
+  ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytesNoCopy(
+      NULL, reinterpret_cast<const UInt8*>(string.data()),
+      checked_cast<CFIndex>(string.length()), kCFStringEncodingUTF8, false,
+      kCFAllocatorNull));
   if (cfstring) {
     // Query the maximum length needed to store the result. In most cases this
     // will overestimate the required space. The return value also already
@@ -1273,8 +1268,8 @@ StringType FilePath::GetHFSDecomposedForm(StringPieceType string) {
     // Reserve enough space for CFStringGetFileSystemRepresentation to write
     // into. Also set the length to the maximum so that we can shrink it later.
     // (Increasing rather than decreasing it would clobber the string contents!)
-    result.reserve(length);
-    result.resize(length - 1);
+    result.reserve(static_cast<size_t>(length));
+    result.resize(static_cast<size_t>(length) - 1);
     Boolean success = CFStringGetFileSystemRepresentation(cfstring,
                                                           &result[0],
                                                           length);
@@ -1303,22 +1298,14 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
 
   // GetHFSDecomposedForm() returns an empty string in an error case.
   if (hfs1.empty() || hfs2.empty()) {
-    ScopedCFTypeRef<CFStringRef> cfstring1(
-        CFStringCreateWithBytesNoCopy(
-            NULL,
-            reinterpret_cast<const UInt8*>(string1.data()),
-            string1.length(),
-            kCFStringEncodingUTF8,
-            false,
-            kCFAllocatorNull));
-    ScopedCFTypeRef<CFStringRef> cfstring2(
-        CFStringCreateWithBytesNoCopy(
-            NULL,
-            reinterpret_cast<const UInt8*>(string2.data()),
-            string2.length(),
-            kCFStringEncodingUTF8,
-            false,
-            kCFAllocatorNull));
+    ScopedCFTypeRef<CFStringRef> cfstring1(CFStringCreateWithBytesNoCopy(
+        NULL, reinterpret_cast<const UInt8*>(string1.data()),
+        checked_cast<CFIndex>(string1.length()), kCFStringEncodingUTF8, false,
+        kCFAllocatorNull));
+    ScopedCFTypeRef<CFStringRef> cfstring2(CFStringCreateWithBytesNoCopy(
+        NULL, reinterpret_cast<const UInt8*>(string2.data()),
+        checked_cast<CFIndex>(string2.length()), kCFStringEncodingUTF8, false,
+        kCFAllocatorNull));
     // If neither GetHFSDecomposedForm nor CFStringCreateWithBytesNoCopy
     // succeed, fall back to strcmp. This can occur when the input string is
     // invalid UTF-8.
@@ -1332,9 +1319,8 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
       return 0;
     }
 
-    return CFStringCompare(cfstring1,
-                           cfstring2,
-                           kCFCompareCaseInsensitive);
+    return static_cast<int>(
+        CFStringCompare(cfstring1, cfstring2, kCFCompareCaseInsensitive));
   }
 
   return HFSFastUnicodeCompare(hfs1, hfs2);

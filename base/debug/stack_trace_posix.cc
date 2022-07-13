@@ -219,9 +219,9 @@ void ProcessBacktrace(void* const* trace,
 
   // Below part is async-signal unsafe (uses malloc), so execute it only
   // when we are not executing the signal handler.
-  if (in_signal_handler == 0) {
+  if (in_signal_handler == 0 && IsValueInRangeForNumericType<int>(size)) {
     std::unique_ptr<char*, FreeDeleter> trace_symbols(
-        backtrace_symbols(trace, size));
+        backtrace_symbols(trace, static_cast<int>(size)));
     if (trace_symbols.get()) {
       for (size_t i = 0; i < size; ++i) {
         std::string trace_symbol = trace_symbols.get()[i];

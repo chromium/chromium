@@ -1172,7 +1172,9 @@ HangWatchState::HangWatchState(HangWatcher::ThreadType thread_type)
 // provided by PlatformThread. Make sure to use the same for correct
 // attribution.
 #if BUILDFLAG(IS_MAC)
-  pthread_threadid_np(pthread_self(), &thread_id_);
+  uint64_t thread_id;
+  pthread_threadid_np(pthread_self(), &thread_id);
+  thread_id_ = checked_cast<PlatformThreadId>(thread_id);
 #else
   thread_id_ = PlatformThread::CurrentId();
 #endif

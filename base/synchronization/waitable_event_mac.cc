@@ -7,6 +7,7 @@
 #include <mach/mach.h>
 #include <sys/event.h>
 
+#include <limits>
 #include <memory>
 
 #include "base/debug/activity_tracker.h"
@@ -108,21 +109,23 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
   // Fake |kr| value to boostrap the for loop.
   kern_return_t kr = MACH_RCV_INTERRUPTED;
-  for (mach_msg_timeout_t timeout = wait_delta.is_max()
-                                        ? MACH_MSG_TIMEOUT_NONE
-                                        : wait_delta.InMillisecondsRoundedUp();
+  for (mach_msg_timeout_t timeout =
+           wait_delta.is_max() ? MACH_MSG_TIMEOUT_NONE
+                               : saturated_cast<mach_msg_timeout_t>(
+                                     wait_delta.InMillisecondsRoundedUp());
        // If the thread is interrupted during mach_msg(), the system call will
        // be restarted. However, the libsyscall wrapper does not adjust the
        // timeout by the amount of time already waited. Using MACH_RCV_INTERRUPT
        // will instead return from mach_msg(), so that the call can be retried
        // with an adjusted timeout.
        kr == MACH_RCV_INTERRUPTED;
-       timeout =
-           end_time.is_max()
-               ? MACH_MSG_TIMEOUT_NONE
-               : std::max<int64_t>(
-                     0, (end_time - subtle::TimeTicksNowIgnoringOverride())
-                            .InMillisecondsRoundedUp())) {
+       timeout = end_time.is_max()
+                     ? MACH_MSG_TIMEOUT_NONE
+                     : std::max(mach_msg_timeout_t{0},
+                                saturated_cast<mach_msg_timeout_t>(
+                                    (end_time -
+                                     subtle::TimeTicksNowIgnoringOverride())
+                                        .InMillisecondsRoundedUp()))) {
     kr = mach_msg(&msg.header, options, 0, rcv_size, receive_right_->Name(),
                   timeout, MACH_PORT_NULL);
   }
@@ -169,11 +172,12 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
     ScopedFD wait_many(kqueue());
     PCHECK(wait_many.is_valid()) << "kqueue";
 
-    int rv = HANDLE_EINTR(kevent64(wait_many.get(), events.data(), count,
-                                   out_events.data(), count, 0, nullptr));
+    const int count_int = checked_cast<int>(count);
+    int rv = HANDLE_EINTR(kevent64(wait_many.get(), events.data(), count_int,
+                                   out_events.data(), count_int, 0, nullptr));
     PCHECK(rv > 0) << "kevent64";
 
-    size_t triggered = -1;
+    size_t triggered = std::numeric_limits<size_t>::max();
     for (size_t i = 0; i < static_cast<size_t>(rv); ++i) {
       // WaitMany should return the lowest index in |raw_waitables| that was
       // triggered.

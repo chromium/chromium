@@ -1760,7 +1760,8 @@ TraceEventHandle TraceLog::AddTraceEventWithProcessId(
   return AddTraceEventWithThreadIdAndTimestamp(
       phase, category_group_enabled, name, scope, id,
       trace_event_internal::kNoId,  // bind_id
-      process_id, now, args, flags | TRACE_EVENT_FLAG_HAS_PROCESS_ID);
+      static_cast<PlatformThreadId>(process_id), now, args,
+      flags | TRACE_EVENT_FLAG_HAS_PROCESS_ID);
 }
 
 // Handle legacy calls to AddTraceEventWithThreadIdAndTimestamp

@@ -57,9 +57,9 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* bugfix_version) {
   NSOperatingSystemVersion version =
       [[NSProcessInfo processInfo] operatingSystemVersion];
-  *major_version = version.majorVersion;
-  *minor_version = version.minorVersion;
-  *bugfix_version = version.patchVersion;
+  *major_version = static_cast<int32_t>(version.majorVersion);
+  *minor_version = static_cast<int32_t>(version.minorVersion);
+  *bugfix_version = static_cast<int32_t>(version.patchVersion);
 }
 
 // static
