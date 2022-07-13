@@ -237,6 +237,7 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
   const loadTimeDataOverride = {};
   loadTimeDataOverride['EnableCompanyName'] = true;
   loadTimeDataOverride['showHonorific'] = true;
+  loadTimeDataOverride['EnableExtendedAddressFormat'] = true;
   loadTimeData.overrideValues(loadTimeDataOverride);
   mocha.run();
 });
