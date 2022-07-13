@@ -2932,6 +2932,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.HasAcceleratedVideoDecode.{CodecType}"
+    enum="BooleanSupported" expires_after="2023-12-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Tracks accelerated video decoding support for a given codec. Recorded once
+    per GPU process after an attempt to use accelerated video decoding.
+  </summary>
+  <token key="CodecType">
+    <variant name="AV1"/>
+    <variant name="H264"/>
+    <variant name="H265"/>
+    <variant name="VP9"/>
+  </token>
+</histogram>
+
 <histogram name="Media.HasEverPlayed" enum="BooleanHasPlayed"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->

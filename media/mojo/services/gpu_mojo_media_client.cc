@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -145,6 +146,41 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_) {
     supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
         gpu_preferences_, gpu_workarounds_, gpu_info_);
+
+    // Once per GPU process record accelerator information. Profile support is
+    // often just manufactured and not tested, so just record the base codec.
+    bool has_accelerated_h264 = false;
+    bool has_accelerated_h265 = false;
+    bool has_accelerated_vp9 = false;
+    bool has_accelerated_av1 = false;
+    if (supported_config_cache_) {
+      for (const auto& config : *supported_config_cache_) {
+        if (config.profile_min >= H264PROFILE_MIN &&
+            config.profile_max <= H264PROFILE_MAX) {
+          has_accelerated_h264 = true;
+        } else if (config.profile_min >= VP9PROFILE_MIN &&
+                   config.profile_max <= VP9PROFILE_MAX) {
+          has_accelerated_vp9 = true;
+        } else if (config.profile_min >= AV1PROFILE_MIN &&
+                   config.profile_max <= AV1PROFILE_MAX) {
+          has_accelerated_av1 = true;
+        } else if ((config.profile_min >= HEVCPROFILE_MIN &&
+                    config.profile_max <= HEVCPROFILE_MAX) ||
+                   (config.profile_min >= HEVCPROFILE_EXT_MIN &&
+                    config.profile_max <= HEVCPROFILE_EXT_MAX)) {
+          has_accelerated_h265 = true;
+        }
+      }
+    }
+
+    base::UmaHistogramBoolean("Media.HasAcceleratedVideoDecode.H264",
+                              has_accelerated_h264);
+    base::UmaHistogramBoolean("Media.HasAcceleratedVideoDecode.H265",
+                              has_accelerated_h265);
+    base::UmaHistogramBoolean("Media.HasAcceleratedVideoDecode.VP9",
+                              has_accelerated_vp9);
+    base::UmaHistogramBoolean("Media.HasAcceleratedVideoDecode.AV1",
+                              has_accelerated_av1);
   }
   return supported_config_cache_.value_or(SupportedVideoDecoderConfigs{});
 }
