@@ -1203,22 +1203,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption.LoadSodaErrorMacOsVersion"
-    units="version" expires_after="2022-12-26">
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    The MacOS operating system version of the client that failed to load the
-    Speech On-Device API (SODA). Logs the the system's MacOS major and minor
-    version numbers combined into an integer value. For example, for MacOS
-    Sierra this returns 1012, and for MacOS Big Sur it returns 1100. Note that
-    the accuracy returned by this function is as granular as the major version
-    number of Darwin. This is logged once for each media stream if the SODA
-    binary failed to load on MacOS.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.LiveCaption.LoadSodaResult"
     enum="LoadSodaResult" expires_after="2022-11-27">
   <owner>abigailbklein@google.com</owner>
