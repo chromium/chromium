@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL VTTCue(), initial values assert_equals: expected (string) "start" but got (undefined) undefined
+PASS VTTCue(), bad start time
+PASS VTTCue(), bad end time
+PASS VTTCue(), text formatting
+Harness: the test ran to completion.
+

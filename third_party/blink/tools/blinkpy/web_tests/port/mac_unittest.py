@@ -39,9 +39,11 @@ class MacPortTest(port_testcase.PortTestCase):
     full_port_name = 'mac-mac10.12'
     port_maker = mac.MacPort
 
-    def assert_name(self, port_name, os_version_string, expected):
-        port = self.make_port(
-            os_version=os_version_string, port_name=port_name)
+    def assert_name(self, port_name, os_version_string, expected,
+                    machine=None):
+        port = self.make_port(os_version=os_version_string,
+                              port_name=port_name,
+                              machine=machine)
         self.assertEqual(expected, port.name())
 
     def test_operating_system(self):
@@ -51,6 +53,21 @@ class MacPortTest(port_testcase.PortTestCase):
         port = self.make_port()
         self.assertEqual(port.get_platform_tags(),
                          {'mac', 'mac10.12', 'x86', 'release'})
+
+    def test_versions(self):
+        # Workarounds where we need to bump up the version.
+        self.assert_name(None, 'mac10.16', 'mac-mac11')
+        self.assert_name('mac', 'mac10.16', 'mac-mac11')
+
+        self.assert_name(None, 'mac11', 'mac-mac11')
+        self.assert_name(None, 'mac12', 'mac-mac12')
+        self.assert_name('mac', 'mac11', 'mac-mac11')
+        self.assert_name('mac', 'mac12', 'mac-mac12')
+
+        self.assert_name(None, 'mac11', 'mac-mac11-arm64', 'arm64')
+        self.assert_name(None, 'mac12', 'mac-mac12-arm64', 'arm64')
+        self.assert_name('mac', 'mac11', 'mac-mac11-arm64', 'arm64')
+        self.assert_name('mac', 'mac12', 'mac-mac12-arm64', 'arm64')
 
     def test_driver_name_option(self):
         self.assertTrue(

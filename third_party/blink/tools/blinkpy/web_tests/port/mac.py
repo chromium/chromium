@@ -36,12 +36,15 @@ _log = logging.getLogger(__name__)
 
 class MacPort(base.Port):
     SUPPORTED_VERSIONS = ('mac10.12', 'mac10.13', 'mac10.14', 'mac10.15',
-                          'mac11', 'mac11-arm64')
+                          'mac11', 'mac11-arm64', 'mac12', 'mac12-arm64')
     port_name = 'mac'
 
     FALLBACK_PATHS = {}
 
-    FALLBACK_PATHS['mac11'] = ['mac']
+    FALLBACK_PATHS['mac12'] = ['mac']
+    FALLBACK_PATHS['mac12-arm64'] = ['mac-mac12-arm64'
+                                     ] + FALLBACK_PATHS['mac12']
+    FALLBACK_PATHS['mac11'] = ['mac-mac11'] + FALLBACK_PATHS['mac12']
     FALLBACK_PATHS['mac11-arm64'] = ['mac-mac11-arm64'
                                      ] + FALLBACK_PATHS['mac11']
     FALLBACK_PATHS['mac10.15'] = ['mac-mac10.15'] + FALLBACK_PATHS['mac11']
@@ -56,17 +59,11 @@ class MacPort(base.Port):
     @classmethod
     def determine_full_port_name(cls, host, options, port_name):
         if port_name.endswith('mac'):
-            # TODO(crbug.com/1253659): verify this under native arm.
-            if (host.platform.get_machine() == 'arm64'
-                    or host.platform.is_running_rosetta()):
-                # TODO(crbug.com/1197679): When running under py3, change this
-                # to `version = host.platform.os_version + '-arm64'`. This
-                # must be done before macOS 12 capability for this script.
-                version = 'mac11-arm64'
+            parts = [port_name]
             # TODO(crbug.com/1114885): This is to workaround the failure of
             # blink_python_tests on mac10.10 and 10.11 waterfall bots. Remove this
             # when we remove the step from the bots.
-            elif (host.platform.os_version == 'mac10.10'
+            if (host.platform.os_version == 'mac10.10'
                   or host.platform.os_version == 'mac10.11'):
                 version = 'mac10.12'
             # TODO(crbug.com/1126062): Workaround for Big sur using 10.16 version,
@@ -76,7 +73,15 @@ class MacPort(base.Port):
                 version = 'mac11'
             else:
                 version = host.platform.os_version
-            return port_name + '-' + version
+            parts.append(version)
+            # Maybe add an architecture suffix.
+            # In this context, 'arm64' refers to Apple M1.
+            # No suffix is appended for Intel-based ports.
+            if (host.platform.get_machine() == 'arm64'
+                    or host.platform.is_running_rosetta()):
+                # TODO(crbug.com/1253659): verify this under native arm.
+                parts.append('arm64')
+            return '-'.join(parts)
         return port_name
 
     def __init__(self, host, port_name, **kwargs):
