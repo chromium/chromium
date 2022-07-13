@@ -658,8 +658,8 @@ ThroughputTracker Compositor::RequestNewThroughputTracker() {
                            weak_ptr_factory_.GetWeakPtr());
 }
 
-uint32_t Compositor::GetAverageThroughput() const {
-  return host_->GetAverageThroughput();
+double Compositor::GetPercentDroppedFrames() const {
+  return host_->GetPercentDroppedFrames();
 }
 
 std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor>

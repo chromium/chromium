@@ -803,9 +803,9 @@ void ProxyMain::SetRenderFrameObserver(
                      base::Unretained(proxy_impl_.get()), std::move(observer)));
 }
 
-uint32_t ProxyMain::GetAverageThroughput() const {
+double ProxyMain::GetPercentDroppedFrames() const {
   NOTIMPLEMENTED();
-  return 0u;
+  return 0.0;
 }
 
 }  // namespace cc

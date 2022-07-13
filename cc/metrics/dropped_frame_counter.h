@@ -161,6 +161,10 @@ class CC_EXPORT DroppedFrameCounter {
     return &sliding_window_histogram_[strategy];
   }
 
+  double sliding_window_current_percent_dropped() const {
+    return sliding_window_current_percent_dropped_;
+  }
+
  private:
   void NotifyFrameResult(const viz::BeginFrameArgs& args,
                          const FrameInfo& frame_info);

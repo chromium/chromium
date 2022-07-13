@@ -1964,9 +1964,9 @@ LayerTreeHost::TakeDocumentTransitionCallbacksForTesting() {
   return result;
 }
 
-uint32_t LayerTreeHost::GetAverageThroughput() const {
+double LayerTreeHost::GetPercentDroppedFrames() const {
   DCHECK(IsMainThread());
-  return proxy_->GetAverageThroughput();
+  return proxy_->GetPercentDroppedFrames();
 }
 
 void LayerTreeHost::IncrementVisualUpdateDuration(

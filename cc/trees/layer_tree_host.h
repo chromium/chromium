@@ -839,8 +839,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   std::vector<base::OnceClosure> TakeDocumentTransitionCallbacksForTesting();
 
-  // Returns a percentage representing average throughput of last X seconds.
-  uint32_t GetAverageThroughput() const;
+  // Returns a percentage of dropped frames of the last second.
+  double GetPercentDroppedFrames() const;
 
   // TODO(szager): Remove these once threaded compositing is enabled for all
   // web_tests.

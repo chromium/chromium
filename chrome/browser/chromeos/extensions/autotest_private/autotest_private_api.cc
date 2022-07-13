@@ -940,7 +940,7 @@ class DisplaySmoothnessTracker {
     DCHECK_EQ(windows.size(), 1u);
     auto* root_window = windows[0];
     throughput_.push_back(
-        root_window->GetHost()->compositor()->GetAverageThroughput());
+        100 - root_window->GetHost()->compositor()->GetPercentDroppedFrames());
   }
 
   aura::WindowTracker root_window_tracker_;
@@ -5735,7 +5735,7 @@ AutotestPrivateGetDisplaySmoothnessFunction::Run() {
 
   auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id);
   const uint32_t smoothness =
-      root_window->GetHost()->compositor()->GetAverageThroughput();
+      100 - root_window->GetHost()->compositor()->GetPercentDroppedFrames();
   return RespondNow(
       ArgumentList(api::autotest_private::GetDisplaySmoothness::Results::Create(
           smoothness)));

@@ -101,9 +101,9 @@ class CC_EXPORT Proxy {
   virtual void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) = 0;
 
-  // Returns a percentage representing average throughput of last X seconds.
+  // Returns a percentage of dropped frames of the last second.
   // Only implemenented for single threaded proxy.
-  virtual uint32_t GetAverageThroughput() const = 0;
+  virtual double GetPercentDroppedFrames() const = 0;
 };
 
 }  // namespace cc

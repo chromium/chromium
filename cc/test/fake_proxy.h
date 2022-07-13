@@ -56,7 +56,7 @@ class FakeProxy : public Proxy {
       base::WritableSharedMemoryMapping ukm_smoothness_data) override {}
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}
-  uint32_t GetAverageThroughput() const override;
+  double GetPercentDroppedFrames() const override;
 
  private:
   raw_ptr<LayerTreeHost> layer_tree_host_;

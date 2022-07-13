@@ -337,8 +337,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // Creates a ThroughputTracker for tracking this Compositor.
   ThroughputTracker RequestNewThroughputTracker();
 
-  // Returns a percentage representing average throughput of last X seconds.
-  uint32_t GetAverageThroughput() const;
+  // Returns a percentage of dropped frames of the last second.
+  double GetPercentDroppedFrames() const;
 
   // Activates a scoped monitor for the current event to track its metrics.
   // `done_callback` is called when the monitor goes out of scope.
