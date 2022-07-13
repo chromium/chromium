@@ -2829,6 +2829,9 @@ extern const char kEnablePalmOnToolTypePalmDescription[];
 extern const char kEnablePalmSuppressionName[];
 extern const char kEnablePalmSuppressionDescription[];
 
+extern const char kEnableSeamlessRefreshRateSwitchingName[];
+extern const char kEnableSeamlessRefreshRateSwitchingDescription[];
+
 extern const char kEnableTouchpadsInDiagnosticsAppName[];
 extern const char kEnableTouchpadsInDiagnosticsAppDescription[];
 

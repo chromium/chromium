@@ -57421,6 +57421,7 @@ from previous Chrome versions.
   <int value="-822712881"
       label="ContextualSearchThinWebViewImplementation:enabled"/>
   <int value="-822237807" label="UnifiedSidePanel:enabled"/>
+  <int value="-822103041" label="SeamlessRefreshRateSwitching:disabled"/>
   <int value="-821635312" label="EyeDropper:enabled"/>
   <int value="-820676825" label="MessagesPreinstall:enabled"/>
   <int value="-820041355" label="enable-transition-compositing"/>
@@ -57521,6 +57522,7 @@ from previous Chrome versions.
   <int value="-754726495" label="WebUITabStripContextMenuAfterTap:enabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
+  <int value="-749550261" label="SeamlessRefreshRateSwitching:enabled"/>
   <int value="-749048160" label="enable-panels"/>
   <int value="-748571227"
       label="AssistantEnableMediaSessionIntegration:enabled"/>

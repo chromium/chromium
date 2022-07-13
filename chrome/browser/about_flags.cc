@@ -8862,6 +8862,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableRemadeDownstreamMetrics)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-seamless-refresh-rate-switching",
+     flag_descriptions::kEnableSeamlessRefreshRateSwitchingName,
+     flag_descriptions::kEnableSeamlessRefreshRateSwitchingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSeamlessRefreshRateSwitching)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

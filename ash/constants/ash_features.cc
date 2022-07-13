@@ -1317,6 +1317,10 @@ const base::Feature kRgbKeyboard = {"RgbKeyboard",
 const base::Feature kScalableStatusArea{"ScalableStatusArea",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the system tray to show more information in larger screen.
+const base::Feature kSeamlessRefreshRateSwitching{
+    "SeamlessRefreshRateSwitching", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable kSecondaryGoogleAccountUsage policy.
 const base::Feature kSecondaryGoogleAccountUsage{
     "SecondaryGoogleAccountUsage", base::FEATURE_ENABLED_BY_DEFAULT};

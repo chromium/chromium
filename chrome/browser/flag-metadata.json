@@ -2736,6 +2736,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "enable-seamless-refresh-rate-switching",
+    "owners": [ "ddavenport", "chromeos-gfx-display@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-search-resumption-module",
     "owners": ["clank-start","hanxi","spdonghao", "andrewheard"],
     "expiry_milestone": 110
