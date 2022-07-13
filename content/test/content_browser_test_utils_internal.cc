@@ -778,8 +778,6 @@ void FrameNavigateParamsCapturer::DidFinishNavigation(
   }
 
   --navigations_remaining_;
-  LOG(ERROR) << " DidFinishNavigation -- " << navigation_handle->GetURL()
-             << " transition is " << navigation_handle->GetPageTransition();
   transitions_.push_back(navigation_handle->GetPageTransition());
   urls_.push_back(navigation_handle->GetURL());
   navigation_types_.push_back(
