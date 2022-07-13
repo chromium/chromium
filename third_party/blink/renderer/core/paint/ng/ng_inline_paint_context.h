@@ -29,10 +29,8 @@ class CORE_EXPORT NGInlinePaintContext {
   template <class... Args>
   void PushDecoratingBox(Args&&... args) {
     decorating_boxes_.emplace_back(std::forward<Args>(args)...);
-    UpdateLastDecorations();
   }
   void PushDecoratingBoxAncestors(const NGInlineCursor& inline_box);
-  void PopDecoratingBox();
   void PopDecoratingBox(wtf_size_t size);
   void ClearDecoratingBoxes(
       DecoratingBoxList* saved_decorating_boxes = nullptr);
@@ -45,18 +43,6 @@ class CORE_EXPORT NGInlinePaintContext {
     paint_offset_ = paint_offset;
   }
 
-  class ScopedBatchChanges {
-    STACK_ALLOCATED();
-
-   public:
-    explicit ScopedBatchChanges(NGInlinePaintContext* inline_context);
-    ~ScopedBatchChanges();
-
-   private:
-    NGInlinePaintContext* inline_context_ = nullptr;
-    bool saved_is_in_batch_changes_;
-  };
-
   // Pushes a decorating box if the item is a decorating box.
   class ScopedInlineItem {
     STACK_ALLOCATED();
@@ -68,6 +54,7 @@ class CORE_EXPORT NGInlinePaintContext {
 
    private:
     NGInlinePaintContext* inline_context_ = nullptr;
+    const Vector<AppliedTextDecoration>* last_decorations_ = nullptr;
     DecoratingBoxList saved_decorating_boxes_;
     wtf_size_t push_count_ = 0;
   };
@@ -112,9 +99,6 @@ class CORE_EXPORT NGInlinePaintContext {
   };
 
  private:
-  void UpdateLastDecorations();
-  void SetIsInBatchChanges(bool value);
-
   wtf_size_t SyncDecoratingBox(
       const NGFragmentItem& item,
       DecoratingBoxList* saved_decorating_boxes = nullptr);
@@ -125,36 +109,19 @@ class CORE_EXPORT NGInlinePaintContext {
   const Vector<AppliedTextDecoration>* line_decorations_ = nullptr;
   absl::optional<NGInlineCursor> line_cursor_;
   PhysicalOffset paint_offset_;
-  bool is_in_batch_changes_ = false;
 };
-
-inline void NGInlinePaintContext::UpdateLastDecorations() {
-  if (is_in_batch_changes_)
-    return;
-  DCHECK(line_decorations_);
-  if (decorating_boxes_.IsEmpty())
-    last_decorations_ = line_decorations_;
-  else
-    last_decorations_ = decorating_boxes_.back().AppliedTextDecorations();
-}
-
-inline void NGInlinePaintContext::PopDecoratingBox() {
-  decorating_boxes_.pop_back();
-  UpdateLastDecorations();
-}
 
 inline void NGInlinePaintContext::PopDecoratingBox(wtf_size_t size) {
   DCHECK_LE(size, decorating_boxes_.size());
   decorating_boxes_.Shrink(decorating_boxes_.size() - size);
-  UpdateLastDecorations();
 }
 
 inline NGInlinePaintContext::ScopedInlineItem::~ScopedInlineItem() {
   if (!inline_context_)
     return;
+  inline_context_->last_decorations_ = last_decorations_;
   if (!saved_decorating_boxes_.IsEmpty()) {
     inline_context_->decorating_boxes_.swap(saved_decorating_boxes_);
-    inline_context_->UpdateLastDecorations();
     return;
   }
   if (push_count_)

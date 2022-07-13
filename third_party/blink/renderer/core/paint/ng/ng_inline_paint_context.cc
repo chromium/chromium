@@ -17,25 +17,6 @@ void NGInlinePaintContext::ClearDecoratingBoxes(
   } else {
     decorating_boxes_.Shrink(0);
   }
-  UpdateLastDecorations();
-}
-
-void NGInlinePaintContext::SetIsInBatchChanges(bool value) {
-  if (value == is_in_batch_changes_)
-    return;
-  is_in_batch_changes_ = value;
-  UpdateLastDecorations();
-}
-
-NGInlinePaintContext::ScopedBatchChanges::ScopedBatchChanges(
-    NGInlinePaintContext* inline_context)
-    : inline_context_(inline_context),
-      saved_is_in_batch_changes_(inline_context->is_in_batch_changes_) {
-  inline_context->SetIsInBatchChanges(true);
-}
-
-NGInlinePaintContext::ScopedBatchChanges::~ScopedBatchChanges() {
-  inline_context_->SetIsInBatchChanges(saved_is_in_batch_changes_);
 }
 
 NGInlinePaintContext::ScopedInlineItem::ScopedInlineItem(
@@ -45,6 +26,7 @@ NGInlinePaintContext::ScopedInlineItem::ScopedInlineItem(
     return;
   DCHECK(inline_context);
   inline_context_ = inline_context;
+  last_decorations_ = inline_context->last_decorations_;
   push_count_ =
       inline_context->SyncDecoratingBox(item, &saved_decorating_boxes_);
   DCHECK_EQ(inline_context->decorating_boxes_.size(),
@@ -143,7 +125,6 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
           // the parent's, this node stopped the propagation. Reset the
           // decorating boxes. In this case, this node has 0 or 1 decorations.
           if (decorations->size() <= 1) {
-            ScopedBatchChanges scoped_batch_changes(inline_context_);
             inline_context_->ClearDecoratingBoxes(saved_decorating_boxes_);
             if (decorations->IsEmpty())
               return 0;
@@ -215,9 +196,12 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
     NGStyleVariant style_variant_;
   };
 
-  return DecorationBoxSynchronizer(this, item, last_decorations_,
-                                   saved_decorating_boxes)
-      .Sync(&item, item.GetLayoutObject(), style, decorations);
+  const wtf_size_t push_count =
+      DecorationBoxSynchronizer(this, item, last_decorations_,
+                                saved_decorating_boxes)
+          .Sync(&item, item.GetLayoutObject(), style, decorations);
+  last_decorations_ = decorations;
+  return push_count;
 }
 
 NGInlinePaintContext::ScopedInlineBoxAncestors::ScopedInlineBoxAncestors(
@@ -275,11 +259,9 @@ void NGInlinePaintContext::SetLineBox(const NGInlineCursor& line_cursor) {
   const ComputedStyle& style = line_item.Style();
   const Vector<AppliedTextDecoration>& applied_text_decorations =
       style.AppliedTextDecorations();
-  line_decorations_ = &applied_text_decorations;
-  if (applied_text_decorations.IsEmpty()) {
-    UpdateLastDecorations();
+  line_decorations_ = last_decorations_ = &applied_text_decorations;
+  if (applied_text_decorations.IsEmpty())
     return;
-  }
 
   // The decorating box of a block container is an anonymous inline box that
   // wraps all children of the block container.
@@ -299,8 +281,6 @@ void NGInlinePaintContext::SetLineBox(const NGInlineCursor& line_cursor) {
   // the spec, and crbug.com/855589.
   for (wtf_size_t i = 0; i < applied_text_decorations.size(); ++i)
     decorating_boxes_.emplace_back(offset, style, &applied_text_decorations);
-
-  UpdateLastDecorations();
 }
 
 void NGInlinePaintContext::ClearLineBox() {

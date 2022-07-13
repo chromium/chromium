@@ -204,4 +204,21 @@ TEST_F(NGInlinePaintContextTest, NestedBlocks) {
               testing::ElementsAre(20.f, 20.f, 10.f));
 }
 
+TEST_F(NGInlinePaintContextTest, StopPropagateTextDecorations) {
+  // The `<rt>` element produces an inline box that stops propagations.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .ul {
+      text-decoration: underline;
+    }
+    </style>
+    <div class="ul">
+      <rt>
+        <u></u>
+      </rt>
+    </div>
+  )HTML");
+  // Test pass if no DCHECK failures.
+}
+
 }  // namespace blink
