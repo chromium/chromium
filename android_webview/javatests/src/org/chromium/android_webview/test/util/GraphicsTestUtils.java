@@ -9,11 +9,16 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.View;
 
+import org.junit.Assert;
+
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.android_webview.test.AwTestContainerView;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.display.DisplayAndroid;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Graphics-related test utils.
@@ -100,5 +105,43 @@ public class GraphicsTestUtils {
         }
         awContents.onDraw(canvas);
         return bitmap;
+    }
+
+    public static void pollForQuadrantColors(
+            AwTestContainerView testView, int[] expectedQuadrantColors) throws Throwable {
+        int[] lastQuadrantColors = null;
+        // Poll for 10s in case raster is slow.
+        for (int i = 0; i < 100; ++i) {
+            final CallbackHelper callbackHelper = new CallbackHelper();
+            final Object[] resultHolder = new Object[1];
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                testView.readbackQuadrantColors((int[] result) -> {
+                    resultHolder[0] = result;
+                    callbackHelper.notifyCalled();
+                });
+            });
+            try {
+                callbackHelper.waitForFirst();
+            } catch (TimeoutException e) {
+                continue;
+            }
+            int[] quadrantColors = (int[]) resultHolder[0];
+            lastQuadrantColors = quadrantColors;
+            if (quadrantColors != null && expectedQuadrantColors[0] == quadrantColors[0]
+                    && expectedQuadrantColors[1] == quadrantColors[1]
+                    && expectedQuadrantColors[2] == quadrantColors[2]
+                    && expectedQuadrantColors[3] == quadrantColors[3]) {
+                return;
+            }
+            Thread.sleep(100);
+        }
+        Assert.assertNotNull(lastQuadrantColors);
+        // If this test is failing for your CL, then chances are your change is breaking Android
+        // WebView hardware rendering. Please build the "real" webview and check if this is the
+        // case and if so, fix your CL.
+        Assert.assertEquals(expectedQuadrantColors[0], lastQuadrantColors[0]);
+        Assert.assertEquals(expectedQuadrantColors[1], lastQuadrantColors[1]);
+        Assert.assertEquals(expectedQuadrantColors[2], lastQuadrantColors[2]);
+        Assert.assertEquals(expectedQuadrantColors[3], lastQuadrantColors[3]);
     }
 }

@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
+import android.graphics.Color;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 import android.webkit.JavascriptInterface;
@@ -23,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JavascriptEventObserver;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -159,7 +161,7 @@ public class FencedFrameTest {
     }
 
     /**
-     * Test that a java object is mirrored in a fenced frame.
+     * Test that a hit test in a fenced frame produces the correct results on the WebView API.
      **/
     @Test
     @SmallTest
@@ -194,5 +196,38 @@ public class FencedFrameTest {
             return HitTestResult.SRC_ANCHOR_TYPE == data.hitTestResultType
                     && "http://foo/".equals(data.hitTestResultExtraData);
         });
+    }
+
+    /**
+     * Test that a fenced frame is rastered correctly.
+     **/
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    public void fencedFrameDrawingSmokeTest() throws Throwable {
+        String fencedFrameSource = "<html>"
+                + "  <body style=\""
+                + "       padding: 0;"
+                + "       margin: 0;"
+                + "       display: grid;"
+                + "       display: grid;"
+                + "       grid-template-columns: 50% 50%;"
+                + "       grid-template-rows: 50% 50%;\">"
+                + "   <div style=\"background-color: rgb(255, 0, 0);\"></div>"
+                + "   <div style=\"background-color: rgb(0, 255, 0);\"></div>"
+                + "   <div style=\"background-color: rgb(0, 0, 255);\"></div>"
+                + "   <div style=\"background-color: rgb(128, 128, 128);\"></div>"
+                + "  </body>"
+                + "</html>";
+        String mainUrl = generateFencedFrame(fencedFrameSource);
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mainUrl);
+        mActivityTestRule.waitForVisualStateCallback(mAwContents);
+
+        int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
+                Color.rgb(0, 0, 255), Color.rgb(128, 128, 128)};
+
+        GraphicsTestUtils.pollForQuadrantColors(mTestView, expectedQuadrantColors);
     }
 }

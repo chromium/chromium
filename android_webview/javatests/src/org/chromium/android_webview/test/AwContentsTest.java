@@ -43,6 +43,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -68,7 +69,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -952,45 +952,6 @@ public class AwContentsTest {
         Assert.assertEquals("chrome://safe-browsing/", awContents.getLastCommittedUrl());
     }
 
-    private void pollForQuadrantColors(AwTestContainerView testView, int[] expectedQuadrantColors)
-            throws Throwable {
-        int[] lastQuadrantColors = null;
-        // Poll for 10s in case raster is slow.
-        for (int i = 0; i < 100; ++i) {
-            final CallbackHelper callbackHelper = new CallbackHelper();
-            final Object[] resultHolder = new Object[1];
-            mActivityTestRule.runOnUiThread(() -> {
-                testView.readbackQuadrantColors((int[] result) -> {
-                    resultHolder[0] = result;
-                    callbackHelper.notifyCalled();
-                });
-            });
-            try {
-                callbackHelper.waitForFirst();
-            } catch (TimeoutException e) {
-                Log.w(TAG, "Timeout", e);
-                continue;
-            }
-            int[] quadrantColors = (int[]) resultHolder[0];
-            lastQuadrantColors = quadrantColors;
-            if (quadrantColors != null && expectedQuadrantColors[0] == quadrantColors[0]
-                    && expectedQuadrantColors[1] == quadrantColors[1]
-                    && expectedQuadrantColors[2] == quadrantColors[2]
-                    && expectedQuadrantColors[3] == quadrantColors[3]) {
-                return;
-            }
-            Thread.sleep(100);
-        }
-        Assert.assertNotNull(lastQuadrantColors);
-        // If this test is failing for your CL, then chances are your change is breaking Android
-        // WebView hardware rendering. Please build the "real" webview and check if this is the
-        // case and if so, fix your CL.
-        Assert.assertEquals(expectedQuadrantColors[0], lastQuadrantColors[0]);
-        Assert.assertEquals(expectedQuadrantColors[1], lastQuadrantColors[1]);
-        Assert.assertEquals(expectedQuadrantColors[2], lastQuadrantColors[2]);
-        Assert.assertEquals(expectedQuadrantColors[3], lastQuadrantColors[3]);
-    }
-
     private void doHardwareRenderingSmokeTest() throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -1016,7 +977,7 @@ public class AwContentsTest {
         int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
                 Color.rgb(0, 0, 255), Color.rgb(128, 128, 128)};
 
-        pollForQuadrantColors(testView, expectedQuadrantColors);
+        GraphicsTestUtils.pollForQuadrantColors(testView, expectedQuadrantColors);
     }
 
     @Test
@@ -1448,7 +1409,7 @@ public class AwContentsTest {
                     Color.rgb(255, 0, 0),
                     Color.rgb(255, 0, 0),
             };
-            pollForQuadrantColors(testView, expectedQuadrantColors);
+            GraphicsTestUtils.pollForQuadrantColors(testView, expectedQuadrantColors);
             assertThat(RenderProcessHostUtils.getCurrentRenderProcessCount(), greaterThan(1));
 
             // Click iframe to navigate. This exercises hit testing code paths.
@@ -1465,7 +1426,7 @@ public class AwContentsTest {
                     Color.rgb(0, 0, 255),
                     Color.rgb(0, 0, 255),
             };
-            pollForQuadrantColors(testView, expectedQuadrantColors);
+            GraphicsTestUtils.pollForQuadrantColors(testView, expectedQuadrantColors);
             assertThat(RenderProcessHostUtils.getCurrentRenderProcessCount(), greaterThan(1));
         } finally {
             webServer.shutdown();
