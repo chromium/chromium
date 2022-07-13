@@ -1501,7 +1501,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // Now test leaving
   // Test that we can't leave an interest group from a site not allowedlisted
   // for the API.
-  // Inject an interest group into the DB for that for that site so we can try
+  // Inject an interest group into the DB for that site so we can try
   // to remove it.
   manager_->JoinInterestGroup(
       blink::InterestGroup(
@@ -2929,7 +2929,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionDisabledInterestGroup) {
-  // Inject an interest group into the DB for that for a disabled site so we can
+  // Inject an interest group into the DB for a disabled site so we can
   // try to remove it.
   GURL disabled_domain = https_server_->GetURL("d.test", "/");
   url::Origin disabled_origin = url::Origin::Create(disabled_domain);
