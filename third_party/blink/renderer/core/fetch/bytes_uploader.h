@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -25,15 +26,25 @@ namespace blink {
 class CORE_EXPORT BytesUploader
     : public GarbageCollected<BytesUploader>,
       public BytesConsumer::Client,
-      public network::mojom::blink::ChunkedDataPipeGetter {
+      public network::mojom::blink::ChunkedDataPipeGetter,
+      public ExecutionContextLifecycleObserver {
   USING_PRE_FINALIZER(BytesUploader, Dispose);
 
  public:
+  class Client : public GarbageCollectedMixin {
+   public:
+    virtual ~Client() = default;
+    virtual void OnComplete() = 0;
+    virtual void OnError() = 0;
+  };
+
   BytesUploader(
+      ExecutionContext* execution_context,
       BytesConsumer* consumer,
       mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>
           pending_receiver,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      Client* client);
   ~BytesUploader() override;
   BytesUploader(const BytesUploader&) = delete;
   BytesUploader& operator=(const BytesUploader&) = delete;
@@ -49,6 +60,9 @@ class CORE_EXPORT BytesUploader
   void GetSize(GetSizeCallback get_size_callback) override;
   void StartReading(mojo::ScopedDataPipeProducerHandle upload_pipe) override;
 
+  // ExecutionContextLifecycleObserver implementation:
+  void ContextDestroyed() override;
+
   void OnPipeWriteable(MojoResult unused);
   void WriteDataOnPipe();
 
@@ -59,6 +73,7 @@ class CORE_EXPORT BytesUploader
   void Dispose();
 
   Member<BytesConsumer> consumer_;
+  Member<Client> client_;
   mojo::Receiver<network::mojom::blink::ChunkedDataPipeGetter> receiver_;
   mojo::ScopedDataPipeProducerHandle upload_pipe_;
   mojo::SimpleWatcher upload_pipe_watcher_;

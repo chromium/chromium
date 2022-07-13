@@ -54,7 +54,7 @@ void AbortPaymentRespondWithObserver::OnResponseFulfilled(
       ->RespondToAbortPaymentEvent(event_id_, response);
 }
 
-void AbortPaymentRespondWithObserver::OnNoResponse() {
+void AbortPaymentRespondWithObserver::OnNoResponse(ScriptState*) {
   DCHECK(GetExecutionContext());
   To<ServiceWorkerGlobalScope>(GetExecutionContext())
       ->RespondToAbortPaymentEvent(event_id_, false);

@@ -214,14 +214,15 @@ scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData() {
 void BodyStreamBuffer::DrainAsChunkedDataPipeGetter(
     ScriptState* script_state,
     mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>
-        pending_receiver) {
+        pending_receiver,
+    BytesUploader::Client* client) {
   DCHECK(!IsStreamLocked());
   auto* consumer =
       MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream_);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   stream_uploader_ = MakeGarbageCollected<BytesUploader>(
-      consumer, std::move(pending_receiver),
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(TaskType::kNetworking));
+      execution_context, consumer, std::move(pending_receiver),
+      execution_context->GetTaskRunner(TaskType::kNetworking), client);
 }
 
 void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,

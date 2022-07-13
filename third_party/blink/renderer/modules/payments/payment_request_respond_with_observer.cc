@@ -159,7 +159,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
           selected_shipping_option_id);
 }
 
-void PaymentRequestRespondWithObserver::OnNoResponse() {
+void PaymentRequestRespondWithObserver::OnNoResponse(ScriptState*) {
   BlankResponseWithError(PaymentEventResponseType::PAYMENT_EVENT_NO_RESPONSE);
 }
 

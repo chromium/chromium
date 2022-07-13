@@ -221,6 +221,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       int fetch_event_id,
       const KURL& request_url,
       bool range_request,
+      absl::optional<network::DataElementChunkedDataPipe> request_body,
       base::TimeTicks event_dispatch_time,
       base::TimeTicks respond_with_settled_time);
   // Responds to the fetch event with |response|.

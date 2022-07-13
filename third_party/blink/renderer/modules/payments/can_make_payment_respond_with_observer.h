@@ -30,7 +30,7 @@ class MODULES_EXPORT CanMakePaymentRespondWithObserver final
   void OnResponseFulfilled(ScriptState*,
                            const ScriptValue&,
                            const ExceptionContext&) override;
-  void OnNoResponse() override;
+  void OnNoResponse(ScriptState*) override;
 
   void Trace(Visitor*) const override;
 

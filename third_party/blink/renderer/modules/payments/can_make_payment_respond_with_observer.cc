@@ -56,7 +56,7 @@ void CanMakePaymentRespondWithObserver::OnResponseFulfilled(
   Respond(ResponseType::SUCCESS, can_make_payment);
 }
 
-void CanMakePaymentRespondWithObserver::OnNoResponse() {
+void CanMakePaymentRespondWithObserver::OnNoResponse(ScriptState*) {
   GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kWarning,

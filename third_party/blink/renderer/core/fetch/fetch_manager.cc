@@ -788,7 +788,8 @@ void FetchManager::Loader::PerformHTTPFetch() {
             pending_remote;
         fetch_request_data_->Buffer()->DrainAsChunkedDataPipeGetter(
             resolver_->GetScriptState(),
-            pending_remote.InitWithNewPipeAndPassReceiver());
+            pending_remote.InitWithNewPipeAndPassReceiver(),
+            /*client=*/nullptr);
         request.MutableBody().SetStreamBody(std::move(pending_remote));
       }
     }

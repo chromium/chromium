@@ -401,6 +401,7 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
                    FetchEventResult::kGotResponse, std::move(timing));
   }
   void OnFallback(
+      absl::optional<network::DataElementChunkedDataPipe> request_body,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override {
     HandleResponse(fetch_dispatcher_, version_, fetch_event_id_,
                    blink::mojom::FetchAPIResponse::New(),

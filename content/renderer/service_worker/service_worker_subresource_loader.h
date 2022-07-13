@@ -110,6 +110,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
   void OnFallback(
+      absl::optional<network::DataElementChunkedDataPipe> request_body,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
 
   void UpdateResponseTiming(

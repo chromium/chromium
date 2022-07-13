@@ -290,7 +290,8 @@ class FetchEventServiceWorker : public FakeServiceWorker {
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
       case ResponseMode::kFallbackResponse:
-        response_callback->OnFallback(std::move(timing));
+        response_callback->OnFallback(/*request_body=*/absl::nullopt,
+                                      std::move(timing));
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;

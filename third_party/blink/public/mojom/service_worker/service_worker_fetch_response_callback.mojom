@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_response.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom";
+import "services/network/public/mojom/url_request.mojom";
 
 // This struct contains timing information recorded in the context of a
 // controller service worker.
@@ -34,5 +35,8 @@ interface ServiceWorkerFetchResponseCallback {
                    ServiceWorkerFetchEventTiming timing);
   // Provides no response to the request. The callee should fall back to the
   // network.
-  OnFallback(ServiceWorkerFetchEventTiming timing);
+  // `request_body` is the original request body. It's provided only when the
+  // request body is a streaming body.
+  OnFallback(network.mojom.DataElementChunkedDataPipe? request_body,
+             ServiceWorkerFetchEventTiming timing);
 };

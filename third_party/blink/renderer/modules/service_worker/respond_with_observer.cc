@@ -23,12 +23,13 @@ void RespondWithObserver::WillDispatchEvent() {
 }
 
 void RespondWithObserver::DidDispatchEvent(
+    ScriptState* script_state,
     DispatchEventResult dispatch_result) {
   if (state_ != kInitial)
     return;
 
   if (dispatch_result == DispatchEventResult::kNotCanceled) {
-    OnNoResponse();
+    OnNoResponse(script_state);
   } else {
     OnResponseRejected(ServiceWorkerResponseError::kDefaultPrevented);
   }
@@ -91,6 +92,12 @@ void RespondWithObserver::ResponseWasFulfilled(
     const ScriptValue& value) {
   OnResponseFulfilled(script_state, value, exception_context);
   state_ = kDone;
+}
+
+bool RespondWithObserver::WaitUntil(ScriptState* script_state,
+                                    ScriptPromise promise,
+                                    ExceptionState& exception_state) {
+  return observer_->WaitUntil(script_state, promise, exception_state);
 }
 
 RespondWithObserver::RespondWithObserver(ExecutionContext* context,

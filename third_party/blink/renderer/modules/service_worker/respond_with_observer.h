@@ -32,7 +32,7 @@ class MODULES_EXPORT RespondWithObserver
   virtual ~RespondWithObserver() = default;
 
   void WillDispatchEvent();
-  void DidDispatchEvent(DispatchEventResult dispatch_result);
+  void DidDispatchEvent(ScriptState*, DispatchEventResult dispatch_result);
 
   // Observes the given promise and calls OnResponseRejected() or
   // OnResponseFulfilled() when it settles. It also keeps the event alive by
@@ -49,12 +49,15 @@ class MODULES_EXPORT RespondWithObserver
                                    const ExceptionContext&) = 0;
 
   // Called when the event handler finished without calling respondWith().
-  virtual void OnNoResponse() = 0;
+  virtual void OnNoResponse(ScriptState*) = 0;
 
   void Trace(Visitor*) const override;
 
  protected:
   RespondWithObserver(ExecutionContext*, int event_id, WaitUntilObserver*);
+
+  bool WaitUntil(ScriptState*, ScriptPromise, ExceptionState&);
+
   const int event_id_;
   base::TimeTicks event_dispatch_time_;
 

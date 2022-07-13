@@ -193,6 +193,27 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
   std::unique_ptr<ServiceWorkerEventQueue::StayAwakeToken> token_;
 };
 
+class UploadingCompletionObserver
+    : public GarbageCollected<UploadingCompletionObserver>,
+      public BytesUploader::Client {
+ public:
+  explicit UploadingCompletionObserver(ScriptPromiseResolver* resolver)
+      : resolver_(resolver) {}
+  ~UploadingCompletionObserver() override = default;
+
+  void OnComplete() override { resolver_->Resolve(); }
+
+  void OnError() override { resolver_->Reject(); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(resolver_);
+    BytesUploader::Client::Trace(visitor);
+  }
+
+ private:
+  const Member<ScriptPromiseResolver> resolver_;
+};
+
 }  // namespace
 
 // This function may be called when an exception is scheduled. Thus, it must
@@ -370,37 +391,55 @@ void FetchRespondWithObserver::OnResponseFulfilled(
   event_->ResolveHandledPromise();
 }
 
-void FetchRespondWithObserver::OnNoResponse() {
+void FetchRespondWithObserver::OnNoResponse(ScriptState* script_state) {
   DCHECK(GetExecutionContext());
-  if (request_body_stream_ && (request_body_stream_->IsLocked() ||
-                               request_body_stream_->IsDisturbed())) {
+  if (original_request_body_stream_ &&
+      (original_request_body_stream_->IsLocked() ||
+       original_request_body_stream_->IsDisturbed())) {
     GetExecutionContext()->CountUse(
         WebFeature::kFetchRespondWithNoResponseWithUsedRequestBody);
-    if (!request_body_has_source_) {
+  }
+
+  auto* body_buffer = event_->request()->BodyBuffer();
+  absl::optional<network::DataElementChunkedDataPipe> request_body_to_pass;
+  if (body_buffer && !request_body_has_source_) {
+    auto* body_stream = body_buffer->Stream();
+    if (body_stream->IsLocked() || body_stream->IsDisturbed()) {
       OnResponseRejected(
           mojom::blink::ServiceWorkerResponseError::kRequestBodyUnusable);
       return;
     }
+
+    // Keep the service worker alive as long as we are reading from the request
+    // body.
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    WaitUntil(script_state, resolver->Promise(), ASSERT_NO_EXCEPTION);
+    auto* observer =
+        MakeGarbageCollected<UploadingCompletionObserver>(resolver);
+    mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter> remote;
+    body_buffer->DrainAsChunkedDataPipeGetter(
+        script_state, remote.InitWithNewPipeAndPassReceiver(), observer);
+    request_body_to_pass.emplace(
+        ToCrossVariantMojoType(std::move(remote)),
+        network::DataElementChunkedDataPipe::ReadOnlyOnce(true));
   }
-  if (request_body_stream_ && !request_body_has_source_) {
-    // TODO(crbug.com/1165690): Cancel `request_body_stream_`.
-  }
+
   ServiceWorkerGlobalScope* service_worker_global_scope =
       To<ServiceWorkerGlobalScope>(GetExecutionContext());
   service_worker_global_scope->RespondToFetchEventWithNoResponse(
-      event_id_, request_url_, range_request_, event_dispatch_time_,
-      base::TimeTicks::Now());
+      event_id_, request_url_, range_request_, std::move(request_body_to_pass),
+      event_dispatch_time_, base::TimeTicks::Now());
   event_->ResolveHandledPromise();
 }
 
 void FetchRespondWithObserver::SetEvent(FetchEvent* event) {
   DCHECK(!event_);
-  DCHECK(!request_body_stream_);
+  DCHECK(!original_request_body_stream_);
   event_ = event;
   // We don't use Body::body() in order to avoid accidental CountUse calls.
   BodyStreamBuffer* body_buffer = event_->request()->BodyBuffer();
   if (body_buffer) {
-    request_body_stream_ = body_buffer->Stream();
+    original_request_body_stream_ = body_buffer->Stream();
   }
 }
 
@@ -423,7 +462,7 @@ FetchRespondWithObserver::FetchRespondWithObserver(
 
 void FetchRespondWithObserver::Trace(Visitor* visitor) const {
   visitor->Trace(event_);
-  visitor->Trace(request_body_stream_);
+  visitor->Trace(original_request_body_stream_);
   RespondWithObserver::Trace(visitor);
 }
 

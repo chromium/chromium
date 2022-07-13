@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -21,7 +22,6 @@
 
 namespace blink {
 
-class BytesUploader;
 class EncodedFormData;
 class ExceptionState;
 class ReadableStream;
@@ -69,7 +69,8 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   scoped_refptr<EncodedFormData> DrainAsFormData();
   void DrainAsChunkedDataPipeGetter(
       ScriptState*,
-      mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>);
+      mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>,
+      BytesUploader::Client* client);
   // While loading is in progress, a SelfKeepAlive is used to prevent this
   // object from being garbage collected. If the context is destroyed, the
   // SelfKeepAlive is cleared. See https://crbug.com/1292744 for details.

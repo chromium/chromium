@@ -62,8 +62,9 @@ bool IsExcludedHeaderForServiceWorkerFetchEvent(const String& header_name) {
   return false;
 }
 
-void SignalError(
-    Persistent<DataPipeBytesConsumer::CompletionNotifier> notifier) {
+void SignalError(Persistent<DataPipeBytesConsumer::CompletionNotifier> notifier,
+                 uint32_t reason,
+                 const std::string& description) {
   notifier->SignalError(BytesConsumer::Error());
 }
 
@@ -144,7 +145,7 @@ FetchRequestData* FetchRequestData::Create(
       auto body_remote = std::make_unique<
           mojo::Remote<network::mojom::blink::ChunkedDataPipeGetter>>(
           fetch_api_request->body.TakeStreamBody());
-      body_remote->set_disconnect_handler(
+      body_remote->set_disconnect_with_reason_handler(
           WTF::Bind(SignalError, WrapPersistent(completion_notifier)));
       auto* body_remote_raw = body_remote.get();
       (*body_remote_raw)

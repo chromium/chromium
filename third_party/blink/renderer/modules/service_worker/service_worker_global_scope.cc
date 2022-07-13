@@ -734,7 +734,8 @@ void ServiceWorkerGlobalScope::DispatchExtendableEventWithRespondWith(
   wait_until_observer->WillDispatchEvent();
   respond_with_observer->WillDispatchEvent();
   DispatchEventResult dispatch_result = DispatchEvent(*event);
-  respond_with_observer->DidDispatchEvent(dispatch_result);
+  respond_with_observer->DidDispatchEvent(ScriptController()->GetScriptState(),
+                                          dispatch_result);
   // false is okay because waitUntil() for events with respondWith() doesn't
   // care about the promise rejection or an uncaught runtime script error.
   wait_until_observer->DidDispatchEvent(false /* event_dispatch_failed */);
@@ -946,6 +947,7 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
     int fetch_event_id,
     const KURL& request_url,
     bool range_request,
+    absl::optional<network::DataElementChunkedDataPipe> request_body,
     base::TimeTicks event_dispatch_time,
     base::TimeTicks respond_with_settled_time) {
   DCHECK(IsContextThread());
@@ -968,7 +970,7 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
 
   NoteRespondedToFetchEvent(request_url, range_request);
 
-  response_callback->OnFallback(std::move(timing));
+  response_callback->OnFallback(std::move(request_body), std::move(timing));
 }
 
 void ServiceWorkerGlobalScope::RespondToFetchEvent(
