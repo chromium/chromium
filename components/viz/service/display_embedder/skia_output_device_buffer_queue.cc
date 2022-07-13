@@ -435,7 +435,7 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
       pending_overlay_mailboxes_.emplace_back(mailbox);
     }
 
-    gfx::GpuFenceHandle acquire_fence;
+    std::unique_ptr<gfx::GpuFence> acquire_fence;
     if (context_state_->GrContextIsGL() && access &&
         (access->representation()->usage() &
          gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
@@ -451,12 +451,11 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
 
       // Dup the fence - it must be inserted into each shared image before
       // ScopedReadAccess is created.
-      acquire_fence = current_frame_fence->GetGpuFenceHandle().Clone();
+      acquire_fence = std::make_unique<gfx::GpuFence>(
+          current_frame_fence->GetGpuFenceHandle().Clone());
     }
 
-    presenter_->ScheduleOverlayPlane(
-        overlay, access,
-        std::make_unique<gfx::GpuFence>(std::move(acquire_fence)));
+    presenter_->ScheduleOverlayPlane(overlay, access, std::move(acquire_fence));
   }
 }
 

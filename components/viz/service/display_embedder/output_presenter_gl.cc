@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -427,10 +428,18 @@ void OutputPresenterGL::ScheduleOverlayPlane(
     absl::optional<SkColor> overlay_plane_data_color;
     if (overlay_plane_candidate.color)
       overlay_plane_data_color = overlay_plane_candidate.color->toSkColor();
+
+    // Access fence takes priority over composite fence iff it exists.
+    if (access) {
+      auto access_fence = TakeGpuFence(access->TakeAcquireFence());
+      if (access_fence) {
+        DCHECK(!acquire_fence);
+        acquire_fence = std::move(access_fence);
+      }
+    }
+
     gl_surface_->ScheduleOverlayPlane(
-        gl_image,
-        (access ? TakeGpuFence(access->TakeAcquireFence())
-                : std::move(acquire_fence)),
+        gl_image, std::move(acquire_fence),
         gfx::OverlayPlaneData(
             overlay_plane_candidate.plane_z_order,
             overlay_plane_candidate.transform,
