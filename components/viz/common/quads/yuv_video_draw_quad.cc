@@ -68,7 +68,7 @@ void YUVVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                               float multiplier,
                               uint32_t bits,
                               gfx::ProtectedVideoType video_type,
-                              gfx::HDRMetadata metadata) {
+                              absl::optional<gfx::HDRMetadata> metadata) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kYuvVideoContent,
                    rect, visible_rect, needs_blending);
   ya_tex_coord_rect = ya_rect;

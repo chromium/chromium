@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
 
 namespace viz {
@@ -73,6 +74,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // True if this quad contains a video frame from VideoResourceUpdater instead
   // of canvas or webgl content.
   bool is_video_frame : 1;
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   // kClear if the contents do not require any special protection. See enum of a
   // list of protected content types. Protected contents cannot be displayed via

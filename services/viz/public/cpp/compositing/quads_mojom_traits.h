@@ -485,6 +485,13 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     return quad->is_video_frame;
   }
 
+  static const absl::optional<gfx::HDRMetadata> hdr_metadata(
+      const viz::DrawQuad& input) {
+    const viz::TextureDrawQuad* quad =
+        viz::TextureDrawQuad::MaterialCast(&input);
+    return quad->hdr_metadata;
+  }
+
   static gfx::ProtectedVideoType protected_video_type(
       const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
@@ -624,7 +631,8 @@ struct StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad> {
     return quad->protected_video_type;
   }
 
-  static const gfx::HDRMetadata& hdr_metadata(const viz::DrawQuad& input) {
+  static const absl::optional<gfx::HDRMetadata> hdr_metadata(
+      const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->hdr_metadata;

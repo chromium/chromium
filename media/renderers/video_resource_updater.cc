@@ -652,8 +652,7 @@ void VideoResourceUpdater::AppendQuads(
                                       : viz::kInvalidResourceId,
           frame->ColorSpace(), frame_resource_offset_,
           frame_resource_multiplier_, frame_bits_per_channel_);
-      if (frame->hdr_metadata().has_value())
-        yuv_video_quad->hdr_metadata = frame->hdr_metadata().value();
+      yuv_video_quad->hdr_metadata = frame->hdr_metadata();
       yuv_video_quad->protected_video_type =
           ProtectedVideoTypeFromMetadata(frame->metadata());
 
@@ -685,6 +684,7 @@ void VideoResourceUpdater::AppendQuads(
                            nearest_neighbor, false, protected_video_type);
       texture_quad->set_resource_size_in_pixels(coded_size);
       texture_quad->is_video_frame = true;
+      texture_quad->hdr_metadata = frame->hdr_metadata();
       for (viz::ResourceId resource_id : texture_quad->resources) {
         resource_provider_->ValidateResource(resource_id);
       }

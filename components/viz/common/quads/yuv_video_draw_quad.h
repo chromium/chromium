@@ -71,7 +71,7 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
               float multiplier,
               uint32_t bits,
               gfx::ProtectedVideoType video_type,
-              gfx::HDRMetadata metadata);
+              absl::optional<gfx::HDRMetadata> metadata);
 
   gfx::RectF ya_tex_coord_rect;
   gfx::RectF uv_tex_coord_rect;
@@ -84,7 +84,7 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
   gfx::ColorSpace video_color_space;
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
-  gfx::HDRMetadata hdr_metadata;
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   // This optional damage is in target render pass coordinate space.
   absl::optional<gfx::Rect> damage_rect;

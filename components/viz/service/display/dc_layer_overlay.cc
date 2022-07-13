@@ -169,7 +169,7 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
   }
   dc_layer->color_space = quad->video_color_space;
   dc_layer->protected_video_type = quad->protected_video_type;
-  dc_layer->hdr_metadata = quad->hdr_metadata;
+  dc_layer->hdr_metadata = quad->hdr_metadata.value_or(gfx::HDRMetadata());
 }
 
 void FromStreamVideoQuad(const StreamVideoDrawQuad* quad,

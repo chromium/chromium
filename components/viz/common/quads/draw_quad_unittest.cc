@@ -441,7 +441,7 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   EXPECT_EQ(resource_multiplier, copy_quad->resource_multiplier);
   EXPECT_EQ(bits_per_channel, copy_quad->bits_per_channel);
   EXPECT_EQ(gfx::ProtectedVideoType::kClear, copy_quad->protected_video_type);
-  EXPECT_EQ(gfx::HDRMetadata(), copy_quad->hdr_metadata);
+  EXPECT_EQ(absl::nullopt, copy_quad->hdr_metadata);
 
   CREATE_QUAD_ALL(YUVVideoDrawQuad, ya_tex_coord_rect, uv_tex_coord_rect,
                   ya_tex_size, uv_tex_size, y_plane_resource_id,

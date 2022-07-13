@@ -2372,8 +2372,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     const gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
     DCHECK(SkColorSpace::Equals(image->colorSpace(),
                                 CurrentRenderPassSkColorSpace().get()));
-    sk_sp<SkColorFilter> color_filter =
-        GetColorSpaceConversionFilter(src_color_space, dst_color_space);
+    sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
+        src_color_space, quad->hdr_metadata, dst_color_space);
     paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
   }
 
@@ -2507,8 +2507,8 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
       quad->ya_tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
 
   sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
-      src_color_space, dst_color_space, quad->resource_offset,
-      quad->resource_multiplier);
+      src_color_space, quad->hdr_metadata, dst_color_space,
+      quad->resource_offset, quad->resource_multiplier);
 
   auto content_color_filter = GetContentColorFilter();
   if (content_color_filter)
@@ -2658,9 +2658,12 @@ void SkiaRenderer::ScheduleOverlays() {
 
 sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     const gfx::ColorSpace& src,
+    absl::optional<gfx::HDRMetadata> src_hdr_metadata,
     const gfx::ColorSpace& dst,
     float resource_offset,
     float resource_multiplier) {
+  // TODO(https://crbug.com/1325384): Use `src_hdr_metadata` in the color
+  // filter.
   return color_filter_cache_.Get(
       src, dst, resource_offset, resource_multiplier,
       current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
