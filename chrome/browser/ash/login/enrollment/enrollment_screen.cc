@@ -195,7 +195,7 @@ void EnrollmentScreen::SetConfig() {
             : policy::EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK;
   } else if (current_auth_ == AUTH_ATTESTATION &&
              !enrollment_config_.is_mode_attestation()) {
-    config_.mode = config_.is_attestation_forced()
+    config_.mode = config_.is_attestation_auth_forced()
                        ? policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED
                        : policy::EnrollmentConfig::MODE_ATTESTATION;
   }

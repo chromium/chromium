@@ -299,8 +299,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, AttestationEnrollmentScreenData) {
 
   EXPECT_FALSE(test::OobeJS().GetAttributeBool("isManualEnrollment_",
                                                {"enterprise-enrollment"}));
-  // TODO(b/238175743) This should be true.
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       test::OobeJS().GetAttributeBool("isForced_", {"enterprise-enrollment"}));
   EXPECT_TRUE(test::OobeJS().GetAttributeBool("isAutoEnroll_",
                                               {"enterprise-enrollment"}));
