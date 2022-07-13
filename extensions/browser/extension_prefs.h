@@ -497,6 +497,16 @@ class ExtensionPrefs : public KeyedService {
   void SetDesiredActivePermissions(const std::string& extension_id,
                                    const PermissionSet& permissions);
 
+  // Adds `permissions` to the set of permissions the extension desires to be
+  // active.
+  void AddDesiredActivePermissions(const ExtensionId& extension_id,
+                                   const PermissionSet& permissions);
+
+  // Removes `permissions` to the set of permissions the extension desires to be
+  // active.
+  void RemoveDesiredActivePermissions(const ExtensionId& extension_id,
+                                      const PermissionSet& permissions);
+
   // Sets/Gets the value indicating if an extension should be granted all the
   // requested host permissions without requiring explicit runtime-granted
   // permissions from the user.

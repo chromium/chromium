@@ -204,11 +204,9 @@ class PermissionsUpdater {
       const URLPatternSet default_runtime_allowed_hosts);
 
   // Sets the |extension|'s active permissions to |active|, and calculates and
-  // sets the |extension|'s new withheld permissions. If |update_prefs| is true,
-  // also updates the set of active permissions in the extension preferences.
+  // sets the |extension|'s new withheld permissions.
   void SetPermissions(const Extension* extension,
-                      std::unique_ptr<const PermissionSet> active,
-                      bool update_prefs);
+                      std::unique_ptr<const PermissionSet> active);
 
   // Adds the given |active_permissions_to_add| to |extension|'s current
   // active permissions (i.e., the permissions associated with the |extension|

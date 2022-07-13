@@ -1225,6 +1225,20 @@ void ExtensionPrefs::SetDesiredActivePermissions(
                                 permissions);
 }
 
+void ExtensionPrefs::AddDesiredActivePermissions(
+    const ExtensionId& extension_id,
+    const PermissionSet& permissions) {
+  AddToPrefPermissionSet(extension_id, permissions,
+                         kPrefDesiredActivePermissions);
+}
+
+void ExtensionPrefs::RemoveDesiredActivePermissions(
+    const ExtensionId& extension_id,
+    const PermissionSet& permissions) {
+  RemoveFromPrefPermissionSet(extension_id, permissions,
+                              kPrefDesiredActivePermissions);
+}
+
 void ExtensionPrefs::SetWithholdingPermissions(const ExtensionId& extension_id,
                                                bool should_withhold) {
   UpdateExtensionPref(extension_id, kPrefWithholdingPermissions,

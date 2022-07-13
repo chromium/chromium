@@ -801,4 +801,57 @@ TEST_F(PermissionsUpdaterTest, GrantingBroadRuntimePermissions) {
   }
 }
 
+// Validates that we don't overwrite an extension's desired active permissions
+// based on its current active permissions during an optional permissions grant.
+// Regression test for https://crbug.com/1343643.
+TEST_F(PermissionsUpdaterTest,
+       DontOverwriteDesiredActivePermissionsOnOptionalPermissionsGrant) {
+  InitializeEmptyExtensionService();
+
+  scoped_refptr<const Extension> extension =
+      CreateExtensionWithOptionalPermissions(
+          /*optional=*/ListBuilder().Append("tabs").Build(),
+          /*required=*/ListBuilder().Append("https://example.com/*").Build(),
+          "optional grant");
+  ASSERT_TRUE(extension);
+
+  {
+    // Grant the active permissions, as if the extension had just been
+    // installed.
+    PermissionsUpdater updater(profile());
+    updater.InitializePermissions(extension.get());
+    updater.GrantActivePermissions(extension.get());
+  }
+
+  // Withhold host permissions. This shouldn't affect the extension's
+  // desired active permissions.
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  GURL example_com("https://example.com");
+  EXPECT_FALSE(extension->permissions_data()->HasHostPermission(example_com));
+  EXPECT_TRUE(prefs->GetDesiredActivePermissions(extension->id())
+                  ->effective_hosts()
+                  .MatchesURL(example_com));
+
+  {
+    // Grant an optional permission.
+    APIPermissionSet apis;
+    apis.insert(APIPermissionID::kTab);
+    permissions_test_util::GrantOptionalPermissionsAndWaitForCompletion(
+        profile(), *extension,
+        PermissionSet(std::move(apis), ManifestPermissionSet(), URLPatternSet(),
+                      URLPatternSet()));
+  }
+
+  // Verify the desired active permissions. The extension should still have
+  // example.com as a desired host.
+  EXPECT_FALSE(extension->permissions_data()->HasHostPermission(example_com));
+  EXPECT_TRUE(prefs->GetDesiredActivePermissions(extension->id())
+                  ->effective_hosts()
+                  .MatchesURL(example_com));
+}
+
 }  // namespace extensions

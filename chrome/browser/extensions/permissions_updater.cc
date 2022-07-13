@@ -436,8 +436,10 @@ void PermissionsUpdater::RemovePermissionsUnsafe(
   // by enterprise policy, we should not update the active permissions set in
   // preferences. That way, if the enterprise policy is changed, the removed
   // permissions would be re-added.
-  constexpr bool update_active_prefs = true;
-  SetPermissions(extension, std::move(total), update_active_prefs);
+  ExtensionPrefs::Get(browser_context_)
+      ->SetDesiredActivePermissions(extension->id(), *total);
+
+  SetPermissions(extension, std::move(total));
   NetworkPermissionsUpdateHelper::UpdatePermissions(
       browser_context_, REMOVED, extension, *successfully_removed,
       base::DoNothing());
@@ -500,9 +502,17 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
   if (GetDelegate())
     GetDelegate()->InitializePermissions(extension, &granted_permissions);
 
-  bool update_active_permissions = false;
   if ((init_flag_ & INIT_FLAG_TRANSIENT) == 0) {
-    update_active_permissions = true;
+    // Set the active permissions in prefs to the newly-determined active
+    // permissions.
+    // TODO(devlin): This seems wrong. Active permissions in prefs should be
+    // the extension's most recent desired permissions, so shouldn't be
+    // affected by the set that's actually granted. Instead, we should
+    // initialize the set of active permissions to the required set on
+    // installation (and update it on extension update), and otherwise respect
+    // the set stored in preferences.
+    ExtensionPrefs::Get(browser_context_)
+        ->SetDesiredActivePermissions(extension->id(), *granted_permissions);
 
     extension->permissions_data()->SetContextId(
         util::GetBrowserContextId(browser_context_));
@@ -511,8 +521,7 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
     ApplyPolicyHostRestrictions(*extension);
   }
 
-  SetPermissions(extension, std::move(granted_permissions),
-                 update_active_permissions);
+  SetPermissions(extension, std::move(granted_permissions));
 }
 
 void PermissionsUpdater::AddPermissionsForTesting(
@@ -524,8 +533,7 @@ void PermissionsUpdater::AddPermissionsForTesting(
 
 void PermissionsUpdater::SetPermissions(
     const Extension* extension,
-    std::unique_ptr<const PermissionSet> new_active,
-    bool update_prefs) {
+    std::unique_ptr<const PermissionSet> new_active) {
   // Calculate the withheld permissions as any permissions that were required,
   // but are not in the active set.
   const PermissionSet& required =
@@ -550,13 +558,6 @@ void PermissionsUpdater::SetPermissions(
 
   extension->permissions_data()->SetPermissions(std::move(new_active),
                                                 std::move(new_withheld));
-
-  if (update_prefs) {
-    ExtensionPrefs::Get(browser_context_)
-        ->SetDesiredActivePermissions(
-            extension->id(),
-            extension->permissions_data()->active_permissions());
-  }
 }
 
 // static
@@ -676,10 +677,13 @@ void PermissionsUpdater::AddPermissionsImpl(
       active_permissions_to_add,
       extension.permissions_data()->active_permissions());
 
-  bool update_active_prefs = (permissions_store_mask & kActivePermissions) != 0;
-  SetPermissions(&extension, std::move(new_active), update_active_prefs);
+  SetPermissions(&extension, std::move(new_active));
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  if ((permissions_store_mask & kActivePermissions) != 0) {
+    prefs->AddDesiredActivePermissions(extension.id(),
+                                       prefs_permissions_to_add);
+  }
 
   if ((permissions_store_mask & kGrantedPermissions) != 0) {
     prefs->AddGrantedPermissions(extension.id(), prefs_permissions_to_add);
@@ -706,10 +710,14 @@ void PermissionsUpdater::RemovePermissionsImpl(
           extension.permissions_data()->active_permissions(),
           active_permissions_to_remove);
 
-  bool update_active_prefs = (permissions_store_mask & kActivePermissions) != 0;
-  SetPermissions(&extension, std::move(new_active), update_active_prefs);
+  SetPermissions(&extension, std::move(new_active));
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  if ((permissions_store_mask & kActivePermissions) != 0) {
+    prefs->RemoveDesiredActivePermissions(extension.id(),
+                                          prefs_permissions_to_remove);
+  }
+
   // NOTE: Currently, this code path is only reached in unit tests. See comment
   // above REMOVE_HARD in the header file.
   if ((permissions_store_mask & kGrantedPermissions) != 0) {
