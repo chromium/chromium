@@ -160,35 +160,41 @@ constexpr double kFakeBatteryCurrentNow =
 constexpr char kFakeBatteryTechnology[] = "fake_battery_technology";
 constexpr char kFakeBatteryStatus[] = "fake_battery_status";
 // System test values:
-constexpr char kFakeDmiInfoBiosVendor[] = "DMI Bios Vendor";
-constexpr char kFakeDmiInfoBiosVersion[] = "Google_BoardName.12200.68.0";
-constexpr char kFakeDmiInfoBoardName[] = "DMI Board Name";
-constexpr char kFakeDmiInfoBoardVendor[] = "DMI Board Vendor";
-constexpr char kFakeDmiInfoBoardVersion[] = "rev1234";
-constexpr uint64_t kFakeDmiInfoChassisType = 9;
-constexpr char kFakeDmiInfoChassisVendor[] = "DMI Chassis Vendor";
-constexpr char kFakeDmiInfoProductFamily[] = "DMI Product Family";
-constexpr char kFakeDmiInfoProductName[] = "DMI Product Name";
-constexpr char kFakeDmiInfoProductVersion[] = "DMI Product Version";
-constexpr char kFakeDmiInfoSysVendor[] = "DMI System Vendor";
-constexpr em::BootInfo::BootMethod kFakeOsInfoBootMethod =
-    em::BootInfo::CROS_SECURE;
+const char kFakeFirstPowerDate[] = "2020-40";
+const char kFakeManufactureDate[] = "2019-01-01";
+const char kFakeSkuNumber[] = "ABCD&^A";
+const char kFakeSerialNumber[] = "8607G03EDF";
+constexpr char kFakeSystemModelName[] = "XX ModelName 007 XY";
+constexpr char kFakeMarketingName[] = "Latitude 1234 Chromebook Enterprise";
+constexpr char kFakeBiosVersion[] = "Google_BoardName.12200.68.0";
+constexpr char kFakeBoardName[] = "BoardName";
+constexpr char kFakeBoardVersion[] = "rev1234";
+constexpr uint64_t kFakeChassisType = 9;
+constexpr char kFakeProductName[] = "ProductName";
+constexpr char kFakeVersionMilestone[] = "87";
+constexpr char kFakeVersionBuildNumber[] = "13544";
+constexpr char kFakeVersionPatchNumber[] = "59.0";
+constexpr char kFakeVersionReleaseChannel[] = "stable-channel";
+// System V2 test values:
+constexpr char kFakeOsInfoCodeName[] = "OsInfo Code Name";
+constexpr char kFakeOSInfoMarketingName[] = "OsInfo Marketing Name";
+constexpr char kFakeOSInfoOemName[] = "OsInfo OEM Name";
 constexpr cros_healthd::BootMode kFakeOsInfoBootMode =
     cros_healthd::BootMode::kCrosSecure;
-constexpr char kFakeOsInfoMarketingName[] =
-    "Latitude 1234 Chromebook Enterprise";
-constexpr char kFakeOsInfoOemName[] = "OsInfo OEM Name";
-constexpr char kFakeOsInfoProductName[] = "OsInfo Code Name";
-constexpr char kFakeOsVersionBuildNumber[] = "13544";
-constexpr char kFakeOsVersionMilestone[] = "87";
-constexpr char kFakeOsVersionPatchNumber[] = "59.0";
-constexpr char kFakeOsVersionReleaseChannel[] = "stable-channel";
-constexpr char kFakeVpdInfoFirstPowerDate[] = "2020-40";
-constexpr char kFakeVpdInfoManufactureDate[] = "2019-01-01";
+constexpr em::BootInfo::BootMethod kFakeOsInfoBootMethod =
+    em::BootInfo::CROS_SECURE;
 constexpr char kFakeVpdInfoRegion[] = "VpdInfo Region";
-constexpr char kFakeVpdInfoSerialNumber[] = "8607G03EDF";
-constexpr char kFakeVpdInfoSkuNumber[] = "ABCD&^A";
-constexpr char kFakeVpdInfoSystemModelName[] = "XX ModelName 007 XY";
+constexpr char kFakeDmiInfoBiosVendor[] = "DMI Bios Vendor";
+constexpr char kFakeDmiInfoBiosVersion[] = "DMI Bios Version";
+constexpr char kFakeDmiInfoBoardName[] = "DMI Board Name";
+constexpr char kFakeDmiInfoBoardVendor[] = "DMI Board Vendor";
+constexpr char kFakeDmiInfoBoardVersion[] = "DMI Board Version";
+constexpr char kFakeDmiInfoChassisVendor[] = "DMI Chassis Vendor";
+constexpr uint64_t kFakeDmiInfoChassisType = 9;
+constexpr char kFakeDmiInfoProductFamily[] = "DMI Product Family";
+constexpr char kFakeDmiInfoSysVendor[] = "DMI System Vendor";
+constexpr char kFakeDmiInfoProductName[] = "DMI Product Name";
+constexpr char kFakeDmiInfoProductVersion[] = "DMI Product Version";
 // CPU test values:
 constexpr uint32_t kFakeNumTotalThreads = 8;
 constexpr char kFakeModelName[] = "fake_cpu_model_name";
@@ -564,19 +570,30 @@ cros_healthd::NonRemovableBlockDeviceResultPtr CreateBlockDeviceResult() {
       std::move(storage_vector));
 }
 
+cros_healthd::SystemResultPtr CreateSystemResult() {
+  return cros_healthd::SystemResult::NewSystemInfo(
+      cros_healthd::SystemInfo::New(
+          kFakeFirstPowerDate, kFakeManufactureDate, kFakeSkuNumber,
+          kFakeSerialNumber, kFakeSystemModelName, kFakeMarketingName,
+          kFakeBiosVersion, kFakeBoardName, kFakeBoardVersion,
+          cros_healthd::NullableUint64::New(kFakeChassisType), kFakeProductName,
+          cros_healthd::OsVersion::New(
+              kFakeVersionMilestone, kFakeVersionBuildNumber,
+              kFakeVersionPatchNumber, kFakeVersionReleaseChannel)));
+}
+
 cros_healthd::SystemResultV2Ptr CreateSystemResultV2() {
   return cros_healthd::SystemResultV2::NewSystemInfoV2(
       cros_healthd::SystemInfoV2::New(
           cros_healthd::OsInfo::New(
-              kFakeOsInfoProductName, kFakeOsInfoMarketingName,
+              kFakeOsInfoCodeName, kFakeOSInfoMarketingName,
               cros_healthd::OsVersion::New(
-                  kFakeOsVersionMilestone, kFakeOsVersionBuildNumber,
-                  kFakeOsVersionPatchNumber, kFakeOsVersionReleaseChannel),
-              kFakeOsInfoBootMode, kFakeOsInfoOemName),
-          cros_healthd::VpdInfo::New(
-              kFakeVpdInfoSerialNumber, kFakeVpdInfoRegion,
-              kFakeVpdInfoManufactureDate, kFakeVpdInfoFirstPowerDate,
-              kFakeVpdInfoSkuNumber, kFakeVpdInfoSystemModelName),
+                  kFakeVersionMilestone, kFakeVersionBuildNumber,
+                  kFakeVersionPatchNumber, kFakeVersionReleaseChannel),
+              kFakeOsInfoBootMode, kFakeOSInfoOemName),
+          cros_healthd::VpdInfo::New(kFakeSerialNumber, kFakeVpdInfoRegion,
+                                     kFakeManufactureDate, kFakeFirstPowerDate,
+                                     kFakeSkuNumber, kFakeModelName),
           cros_healthd::DmiInfo::New(
               kFakeDmiInfoBiosVendor, kFakeDmiInfoBiosVersion,
               kFakeDmiInfoBoardName, kFakeDmiInfoBoardVendor,
@@ -752,6 +769,9 @@ void SetFakeCrosHealthdData() {
     telemetry_info->battery_result = CreateBatteryResult();
   if (SettingEnabled(ash::kReportDeviceStorageStatus))
     telemetry_info->block_device_result = CreateBlockDeviceResult();
+  if (SettingEnabled(ash::kReportDeviceSystemInfo) ||
+      SettingEnabled(ash::kReportDeviceVpdInfo))
+    telemetry_info->system_result = CreateSystemResult();
   if (SettingEnabled(ash::kReportDeviceCpuInfo))
     telemetry_info->cpu_result = CreateCpuResult();
   if (SettingEnabled(ash::kReportDeviceTimezoneInfo))
@@ -3629,13 +3649,12 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   // Verify the only vpd info is populated.
   ASSERT_TRUE(device_status_.has_system_status());
   EXPECT_EQ(device_status_.system_status().first_power_date(),
-            kFakeVpdInfoFirstPowerDate);
+            kFakeFirstPowerDate);
   EXPECT_EQ(device_status_.system_status().manufacture_date(),
-            kFakeVpdInfoManufactureDate);
-  EXPECT_EQ(device_status_.system_status().vpd_sku_number(),
-            kFakeVpdInfoSkuNumber);
+            kFakeManufactureDate);
+  EXPECT_EQ(device_status_.system_status().vpd_sku_number(), kFakeSkuNumber);
   EXPECT_EQ(device_status_.system_status().vpd_serial_number(),
-            kFakeVpdInfoSerialNumber);
+            kFakeSerialNumber);
   ASSERT_FALSE(device_status_.system_status().has_marketing_name());
   ASSERT_FALSE(device_status_.system_status().has_bios_version());
   ASSERT_FALSE(device_status_.system_status().has_board_name());
@@ -3668,16 +3687,12 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   ASSERT_FALSE(device_status_.system_status().has_manufacture_date());
   ASSERT_FALSE(device_status_.system_status().has_vpd_sku_number());
   EXPECT_EQ(device_status_.system_status().marketing_name(),
-            kFakeOsInfoMarketingName);
-  EXPECT_EQ(device_status_.system_status().bios_version(),
-            kFakeDmiInfoBiosVersion);
-  EXPECT_EQ(device_status_.system_status().board_name(), kFakeDmiInfoBoardName);
-  EXPECT_EQ(device_status_.system_status().board_version(),
-            kFakeDmiInfoBoardVersion);
-  EXPECT_EQ(device_status_.system_status().chassis_type(),
-            kFakeDmiInfoChassisType);
-  EXPECT_EQ(device_status_.system_status().product_name(),
-            kFakeOsInfoProductName);
+            kFakeMarketingName);
+  EXPECT_EQ(device_status_.system_status().bios_version(), kFakeBiosVersion);
+  EXPECT_EQ(device_status_.system_status().board_name(), kFakeBoardName);
+  EXPECT_EQ(device_status_.system_status().board_version(), kFakeBoardVersion);
+  EXPECT_EQ(device_status_.system_status().chassis_type(), kFakeChassisType);
+  EXPECT_EQ(device_status_.system_status().product_name(), kFakeProductName);
 
   // Verify system info V2 exists too.
   ASSERT_TRUE(device_status_.has_smbios_info());
