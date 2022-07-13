@@ -136,6 +136,8 @@ source_set("omnibox_internal") {
     "omnibox_view_ios.mm",
     "web_omnibox_edit_controller_impl.h",
     "web_omnibox_edit_controller_impl.mm",
+    "zero_suggest_prefetch_helper.h",
+    "zero_suggest_prefetch_helper.mm",
   ]
   deps = [
     ":features",
@@ -277,6 +279,7 @@ source_set("unit_tests") {
     "omnibox_text_field_ios_experimental_unittest.mm",
     "omnibox_text_field_ios_unittest.mm",
     "omnibox_view_ios_unittest.mm",
+    "zero_suggest_prefetch_helper_unittest.mm",
   ]
   deps = [
     ":omnibox",
@@ -284,11 +287,18 @@ source_set("unit_tests") {
     ":resources_unit_tests",
     "//base",
     "//base/test:test_support",
+    "//components/omnibox/browser:test_support",
+    "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
     "//ios/web/common:uikit",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
