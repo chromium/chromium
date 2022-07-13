@@ -9,31 +9,48 @@
   }
 
   const NETWORK_REQUEST_EVENTS = [
-    'RequestWillBeSent',
-    'RequestWillBeSentExtraInfo',
-    'ResponseReceived',
-    'ResponseReceivedExtraInfo',
+    'Network.requestWillBeSent',
+    'Network.requestWillBeSentExtraInfo',
+    'Network.responseReceived',
+    'Network.responseReceivedExtraInfo',
   ];
 
-  function getEventName(event) {
-    const name = event.method.split('.')[1];
-    return name.charAt(0).toUpperCase() + name.slice(1);
-  }
-
-  function networkRequestEvents(network, label, expected) {
-    return new Promise((resolve) => {
-      for (const eventName of NETWORK_REQUEST_EVENTS) {
-        network['on' + eventName]((event) => {
-          const eventName = getEventName(event);
-          let index = expected.indexOf(eventName);
-          if (index == -1)  {
-            testRunner.log(`Unexpected ${label} event: ${eventName}`);
-          } else {
-            expected.splice(index, 1);
-            if (!expected.length) resolve();
-          }
-        });
+  const originalDispatch = DevToolsAPI.dispatchMessage;
+  const networkListeners = new Set();
+  const eventsByRequestId = {};
+  DevToolsAPI.dispatchMessage = function(message) {
+    const obj = JSON.parse(message);
+    if (!NETWORK_REQUEST_EVENTS.includes(obj.method)) {
+      originalDispatch(message);
+      return;
+    }
+    const requestId = obj.params.requestId;
+    eventsByRequestId[requestId] = eventsByRequestId[requestId] || [];
+    for (const existingEvent of eventsByRequestId[requestId]) {
+      if (existingEvent.sessionId !== obj.sessionId) {
+        testRunner.log(`Session ID mismatch between ${
+            JSON.stringify(existingEvent)} and ${message}`);
       }
+    }
+    eventsByRequestId[requestId].push(obj);
+    for (const listener of networkListeners) listener(obj);
+  };
+
+  function networkRequestEvents(numRequests) {
+    let numPendingRequests = numRequests;
+    return new Promise((resolve) => {
+      const listener = (event) => {
+        if (eventsByRequestId[event.params.requestId].length ==
+            NETWORK_REQUEST_EVENTS.length) {
+          delete eventsByRequestId[event.params.requestId];
+          --numPendingRequests;
+          if (numPendingRequests == 0) {
+            networkListeners.delete(listener);
+            resolve();
+          }
+        }
+      };
+      networkListeners.add(listener);
     });
   }
 
@@ -41,8 +58,6 @@
   await enableNetwork(dp.Network);
   await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
-  const expectedIframeEvents = [];
-  let iframeEvents = null;
 
   session.navigate('resources/page-out.html');
   await Promise.all([
@@ -51,25 +66,23 @@
       await dp2.Page.enable();
       await enableNetwork(dp2.Network);
       await dp2.Runtime.runIfWaitingForDebugger();
-      iframeEvents =
-          networkRequestEvents(dp2.Network, 'iframe', expectedIframeEvents);
     }),
-    networkRequestEvents(
-        dp.Network, 'main',
-        [
-          ...NETWORK_REQUEST_EVENTS,  // main frame
-          ...NETWORK_REQUEST_EVENTS   // iframe
-        ])
+    networkRequestEvents(2),  // One request for the main frame and one for the iframe
   ]);
 
   testRunner.log(
       'Loaded page-out with OOPIF, setting iframe src to in-process URL.');
 
-  expectedIframeEvents.push(...NETWORK_REQUEST_EVENTS);
   session.evaluate(`document.getElementById('page-iframe').src =
       'http://127.0.0.1:8000/inspector-protocol/network/resources/inner-iframe.html'`);
-  await iframeEvents;
+  await networkRequestEvents(1);
   testRunner.log('Got expected iframe events');
+
+  for (const events in Object.values(eventsByRequestId)) {
+    for (const event of events) {
+      testRunner.log(event, 'Unexpected event');
+    }
+  }
 
   testRunner.completeTest();
 })
