@@ -33,14 +33,6 @@ PrefService* GetUserPrefService(const AccountId& account_id) {
       account_id);
 }
 
-// Determines whether to use the |kDefaultColor| instead of |color|.
-bool ShouldUseDefaultColor(SkColor color) {
-  color_utils::HSL hsl;
-  color_utils::SkColorToHSL(color, &hsl);
-  // Determines if the color is nearly black or white.
-  return hsl.l >= 0.9 || hsl.l <= 0.08;
-}
-
 }  // namespace
 
 KeyboardBacklightColorController::KeyboardBacklightColorController()
@@ -108,14 +100,11 @@ void KeyboardBacklightColorController::DisplayBacklightColor(
       base::UmaHistogramBoolean(
           "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid",
           valid_color);
-      // Default to |kDefaultColor| if |color| is invalid or
-      // |ShouldUseDefaultColor| is true.
-      if (!valid_color || ShouldUseDefaultColor(color)) {
+      // Default to |kDefaultColor| if |color| is invalid.
+      if (!valid_color)
         color = kDefaultColor;
-      }
       rgb_keyboard_manager->SetStaticBackgroundColor(
           SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
-      displayed_color_for_testing_ = color;
       break;
     }
     case personalization_app::mojom::BacklightColor::kWhite:
@@ -128,7 +117,6 @@ void KeyboardBacklightColorController::DisplayBacklightColor(
       SkColor color = ConvertBacklightColorToSkColor(backlight_color);
       rgb_keyboard_manager->SetStaticBackgroundColor(
           SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
-      displayed_color_for_testing_ = color;
       break;
     }
     case personalization_app::mojom::BacklightColor::kRainbow:

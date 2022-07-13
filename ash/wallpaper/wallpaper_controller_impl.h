@@ -380,7 +380,6 @@ class ASH_EXPORT WallpaperControllerImpl
                            WallpaperMovementDuringUnlock);
   friend class WallpaperControllerTest;
   friend class WallpaperControllerTestApi;
-  friend class KeyboardBacklightColorControllerTest;
 
   enum WallpaperMode { WALLPAPER_NONE, WALLPAPER_IMAGE };
 

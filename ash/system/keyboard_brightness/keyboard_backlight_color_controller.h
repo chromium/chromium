@@ -11,7 +11,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/scoped_observation.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 class PrefRegistrySimple;
 
@@ -56,8 +55,6 @@ class ASH_EXPORT KeyboardBacklightColorController
   };
 
  private:
-  friend class KeyboardBacklightColorControllerTest;
-
   // Displays the |backlight_color| on the keyboard.
   void DisplayBacklightColor(
       personalization_app::mojom::BacklightColor backlight_color);
@@ -66,8 +63,6 @@ class ASH_EXPORT KeyboardBacklightColorController
   void SetBacklightColorPref(
       personalization_app::mojom::BacklightColor backlight_color,
       const AccountId& account_id);
-
-  SkColor displayed_color_for_testing_ = SK_ColorTRANSPARENT;
 
   ScopedSessionObserver scoped_session_observer_{this};
 
