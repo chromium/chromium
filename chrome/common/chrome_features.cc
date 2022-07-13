@@ -84,12 +84,6 @@ const base::Feature kAppShimNewCloseBehavior{"AppShimNewCloseBehavior",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Controls whether ARC ghost window will be applied on ARC P version.
-const base::Feature kArcPiGhostWindow{"ArcPiGhostWindow",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Enables the built-in DNS resolver.
 const base::Feature kAsyncDns {
   "AsyncDns",

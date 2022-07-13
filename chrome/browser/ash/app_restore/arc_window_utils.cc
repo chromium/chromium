@@ -47,12 +47,6 @@ bool IsArcGhostWindowEnabled() {
     return false;
   }
 
-  // Returens false if the feature not enabled on ARC P specifically.
-  if (!arc::IsArcVmEnabled() &&
-      !base::FeatureList::IsEnabled(features::kArcPiGhostWindow)) {
-    return false;
-  }
-
   auto* user_manager = user_manager::UserManager::Get();
   // Check `user_manager`, which might be null for test cases.
   if (!user_manager || !user_manager->GetPrimaryUser())
