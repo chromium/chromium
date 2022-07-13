@@ -243,6 +243,7 @@ extern const wchar_t kUninstallArgumentsField[];
 extern const wchar_t kUninstallDisplayNameField[];
 extern const wchar_t kUninstallInstallationDate[];
 extern const wchar_t kUninstallStringField[];
+extern const wchar_t kWerDll[];
 
 // Elevation Service constants.
 extern const base::FilePath::CharType kElevationServiceExe[];

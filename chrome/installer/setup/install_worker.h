@@ -65,12 +65,18 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
 void AddInstallWorkItems(const InstallParams& install_params,
                          WorkItemList* install_list);
 
-// Adds work items to |list| to register a COM server with the OS after deleting
+// Adds work items to `list` to register a COM server with the OS after deleting
 // the old ones, which is used to handle the toast notification activation.
 void AddNativeNotificationWorkItems(
     HKEY root,
     const base::FilePath& notification_helper_path,
     WorkItemList* list);
+
+// Adds work items to `list` to register a WER runtime exception helper module
+// in the registry. The wer module should be located at `wer_helper_path`.
+void AddWerHelperRegistration(HKEY root,
+                              const base::FilePath& wer_helper_path,
+                              WorkItemList* list);
 
 void AddSetMsiMarkerWorkItem(const InstallerState& installer_state,
                              bool set,
@@ -92,7 +98,7 @@ void AppendUninstallCommandLineFlags(const InstallerState& installer_state,
 
 // Adds work items to add or remove the "on-os-upgrade" command to Chrome's
 // version key on the basis of the current operation (represented in
-// |installer_state|).  |new_version| is the version currently being installed
+// `installer_state`).  `new_version` is the version currently being installed
 // -- can be empty on uninstall.
 void AddOsUpgradeWorkItems(const InstallerState& installer_state,
                            const base::FilePath& setup_path,

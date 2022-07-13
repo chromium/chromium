@@ -162,6 +162,13 @@ bool DeleteDMToken();
 base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,
                                          const base::Version& version);
 
+// Returns the file path to chrome_wer.dll (in `version` directory).
+base::FilePath GetWerHelperPath(const base::FilePath& target_path,
+                                const base::Version& version);
+
+// Returns the WER runtime exception helper module registry path.
+std::wstring GetWerHelperRegistryPath();
+
 // Returns the file path to elevation_service.exe (in |version| directory).
 base::FilePath GetElevationServicePath(const base::FilePath& target_path,
                                        const base::Version& version);

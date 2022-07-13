@@ -234,6 +234,7 @@ const wchar_t kInstallTempDir[] = L"Temp";
 const wchar_t kLnkExt[] = L".lnk";
 const wchar_t kNaClExe[] = L"nacl64.exe";
 const wchar_t kNotificationHelperExe[] = L"notification_helper.exe";
+const wchar_t kWerDll[] = L"chrome_wer.dll";
 
 // DowngradeVersion holds the version from which Chrome was downgraded. In case
 // of multiple downgrades (e.g., 75->74->73), it retains the highest version

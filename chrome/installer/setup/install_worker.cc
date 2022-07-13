@@ -920,6 +920,22 @@ void AddNativeNotificationWorkItems(
                                notification_helper_path.value(), true);
 }
 
+void AddWerHelperRegistration(HKEY root,
+                              const base::FilePath& wer_helper_path,
+                              WorkItemList* list) {
+  DCHECK(!wer_helper_path.empty());
+
+  std::wstring wer_registry_path = GetWerHelperRegistryPath();
+
+  list->AddCreateRegKeyWorkItem(root, wer_registry_path,
+                                WorkItem::kWow64Default);
+
+  // The DWORD value is not important.
+  list->AddSetRegValueWorkItem(root, wer_registry_path, WorkItem::kWow64Default,
+                               wer_helper_path.value().c_str(), DWORD{0},
+                               /*overwrite=*/true);
+}
+
 void AddSetMsiMarkerWorkItem(const InstallerState& installer_state,
                              bool set,
                              WorkItemList* work_item_list) {
@@ -1077,6 +1093,10 @@ void AddFinalizeUpdateWorkItems(const base::Version& new_version,
   // Cleanup for breaking downgrade first in the post install to avoid
   // overwriting any of the following post-install tasks.
   AddDowngradeCleanupItems(new_version, list);
+
+  AddWerHelperRegistration(
+      installer_state.root_key(),
+      GetWerHelperPath(installer_state.target_path(), new_version), list);
 
   const std::wstring client_state_key = install_static::GetClientStateKeyPath();
 

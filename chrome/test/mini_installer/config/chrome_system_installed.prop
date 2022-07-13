@@ -7,6 +7,8 @@
         {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\chrome_elf.dll":
         {"exists": true},
+    "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll":
+        {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\elevation_service.exe": {
       "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
       "exists": true
@@ -118,6 +120,14 @@
         }
       },
       "wow_key": "KEY_WOW64_32KEY"
+    },
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\RuntimeExceptionHelperModules": {
+      "exists": "required",
+      "values": {
+        "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll": {
+          "type": "DWORD"
+        }
+      }
     },
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID\\$CHROME_TOAST_ACTIVATOR_CLSID\\LocalServer32": {
       "exists": "required",

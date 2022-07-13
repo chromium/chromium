@@ -734,6 +734,11 @@ TEST(SetupUtilTest, DeleteDMTokenFromRegistryWhenKeyNotFound) {
   ASSERT_FALSE(key.Valid());
 }
 
+TEST(SetupUtilTest, WerHelperRegPath) {
+  // Must return a valid regpath, never an empty string.
+  ASSERT_FALSE(installer::GetWerHelperRegistryPath().empty());
+}
+
 namespace installer {
 
 class DeleteRegistryKeyPartialTest : public ::testing::Test {

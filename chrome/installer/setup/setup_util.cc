@@ -799,6 +799,16 @@ base::FilePath GetNotificationHelperPath(const base::FilePath& target_path,
       .Append(kNotificationHelperExe);
 }
 
+base::FilePath GetWerHelperPath(const base::FilePath& target_path,
+                                const base::Version& version) {
+  return target_path.AppendASCII(version.GetString()).Append(kWerDll);
+}
+
+std::wstring GetWerHelperRegistryPath() {
+  return L"Software\\Microsoft\\Windows\\Windows Error Reporting"
+         L"\\RuntimeExceptionHelperModules";
+}
+
 base::FilePath GetElevationServicePath(const base::FilePath& target_path,
                                        const base::Version& version) {
   return target_path.AppendASCII(version.GetString())
