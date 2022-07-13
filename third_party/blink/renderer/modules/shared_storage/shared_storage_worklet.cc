@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage.h"
+#include "third_party/blink/renderer/modules/shared_storage/util.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -29,16 +30,18 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "A browsing context is required.");
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state))
     return ScriptPromise();
-  }
 
   KURL script_source_url = execution_context->CompleteURL(module_url);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
+                                           *resolver)) {
+    return promise;
+  }
 
   if (!script_source_url.IsValid()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(

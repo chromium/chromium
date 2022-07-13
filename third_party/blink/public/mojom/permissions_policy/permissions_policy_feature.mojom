@@ -214,6 +214,10 @@ enum PermissionsPolicyFeature {
   // Controls use of FedCM API.
   kFederatedCredentials = 102,
 
+  // "shared-storage" permissions policy that controls the use of Shared Storage
+  // API.
+  kSharedStorage = 103,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

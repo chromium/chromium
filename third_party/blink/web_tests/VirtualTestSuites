@@ -1123,7 +1123,8 @@
     "prefix": "shared-storage-fenced-frame-mparch",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "wpt_internal/shared_storage"
+      "wpt_internal/shared_storage",
+      "external/wpt/shared-storage"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride"]
   },
@@ -1131,7 +1132,8 @@
     "prefix": "shared-storage-fenced-frame-shadow-dom",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "wpt_internal/shared_storage"
+      "wpt_internal/shared_storage",
+      "external/wpt/shared-storage"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride"]
   },

@@ -10,6 +10,8 @@ blink_modules_sources("shared_storage") {
     "shared_storage.h",
     "shared_storage_worklet.cc",
     "shared_storage_worklet.h",
+    "util.cc",
+    "util.h",
     "window_shared_storage.cc",
     "window_shared_storage.h",
   ]

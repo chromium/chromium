@@ -342,6 +342,12 @@
       depends_on: ["SharedAutofill"],
     },
     {
+      name: "SharedStorage",
+      permissions_policy_name: "shared-storage",
+      feature_default: "EnableForAll",
+      depends_on: ["SharedStorageAPI"],
+    },
+    {
       name: "StorageAccessAPI",
       feature_default: "EnableForAll",
       permissions_policy_name: "storage-access-api",

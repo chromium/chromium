@@ -261,6 +261,7 @@ crbug.com/1322089 virtual/gpu/fast/canvas/OffscreenCanvas-MessageChannel-transfe
 # These tests require shared-storage and fenced-frames
 # Keep this in sync with VirtualTestSuites.
 crbug.com/1218540 wpt_internal/shared_storage/* [ Skip ]
+crbug.com/1218540 external/wpt/shared-storage/* [ Skip ]
 crbug.com/1218540 virtual/shared-storage-fenced-frame-mparch/* [ Pass ]
 crbug.com/1218540 virtual/shared-storage-fenced-frame-shadow-dom/* [ Pass ]
 
