@@ -773,7 +773,13 @@
     Google Drive was unable to sync "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>" right now. Google Drive will try again later.
   </message>
   <message name="IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE" desc="File Manager status message shown when the drive sync is failed because it runs out the space in Google Drive server.">
-    "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>" was not uploaded. There is not enough free space in your Google Drive.
+    There is not enough free space in your Google Drive to complete the upload.
+  </message>
+  <message name="IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION" desc="File Manager status message shown when the drive sync is failed because the user's organization runs out the space in Google Drive server.">
+    Your organization requires more storage to complete the upload.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_ORGANIZATION_STORAGE_FULL" desc="File Manager menu storage meter message indicating the user's organization has run out of quota.">
+    *Org storage full
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ERROR" desc="File Manager error message when sharing a file or a directory on Drive fails because of internet connection problems.">
     Sharing failed. Check your connection and try again later.
@@ -1171,8 +1177,14 @@
   <message name="IDS_FILE_BROWSER_DRIVE_VISIT_DRIVE_GOOGLE_COM" desc="Menu item, redirecting user to drive.google.com">
     Go to drive.google.com...
   </message>
-  <message name="IDS_FILE_BROWSER_DRIVE_SPACE_AVAILABLE_LONG" desc="Text showing space left on Google Drive">
-    Google Drive space left: <ph name="SPACE_AVAILABLE">$1<ex>400 MB</ex></ph>.
+  <message name="IDS_FILE_BROWSER_DRIVE_INDIVIDUAL_QUOTA_LOW" desc="Text showing individual space left on Google Drive">
+    Storage low <ph name="REMAINING_PERCENTAGE">$1<ex>12</ex></ph>% left of your <ph name="TOTAL_SPACE">$2<ex>10 TB</ex></ph> individual storage.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_INDIVIDUAL_QUOTA_OVER" desc="Text informing users that their Google Drive individual quota has been exceeded">
+    You’ve used all your individual Google Workspace storage.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_ORGANIZATION_QUOTA_OVER" desc="Text informing users that their Google Drive organization quota has been exceeded">
+    <ph name="ORGANIZATION_NAME">$1<ex>Jane's Flowers</ex></ph> has used all of its Google Workspace storage.
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_BUY_MORE_SPACE_LINK" desc="Text on the link, offering user to buy more space on Google Drive">
     Buy more storage
@@ -1464,6 +1476,9 @@
 
   <message name="IDS_FILE_BROWSER_SPACE_AVAILABLE" desc="Menu item showing space left for storage.">
     <ph name="SPACE_AVAILABLE">$1<ex>4.8 GB</ex></ph> available
+  </message>
+  <message name="IDS_FILE_BROWSER_SPACE_USED" desc="Menu item showing space used for storage.">
+    <ph name="SPACE_USED">$1<ex>4.8 GB</ex></ph> used
   </message>
   <message name="IDS_FILE_BROWSER_WAITING_FOR_SPACE_INFO" desc="Menu item, saying that FileBrowser is waiting for space information for storage. When actual data arrives, this item will be replaced with IDS_FILE_BROWSER_SPACE_AVAILABLE">
     Waiting for space info...

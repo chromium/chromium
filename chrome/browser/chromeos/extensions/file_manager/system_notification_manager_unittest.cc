@@ -1390,8 +1390,8 @@ TEST_F(SystemNotificationManagerTest, Errors) {
   // Check: the expected strings match.
   EXPECT_EQ(notification_strings.title, kGoogleDrive);
   EXPECT_EQ(notification_strings.message,
-            u"\"fake.txt\" was not uploaded. There is not enough free space in "
-            u"your Google Drive.");
+            u"There is not enough free space in your Google Drive to complete "
+            u"the upload.");
 
   // Setup for the no local space error.
   sync_error.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE;
