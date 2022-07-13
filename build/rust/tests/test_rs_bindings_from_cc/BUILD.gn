@@ -12,7 +12,7 @@ rust_executable("test_rs_bindings_from_cc") {
   build_native_rust_unit_tests = true
 }
 
-rs_bindings_from_cc("self_contained_target_rs_api") {
+rs_bindings_from_cc("self_contained_target") {
   # TODO(crbug.com/1297592): Is there something we can do (a convention?) to
   # avoid duplication/repetition across
   # 1a) `public_headers` here and 1b) `sources` in ":self_contained_target"
@@ -22,8 +22,6 @@ rs_bindings_from_cc("self_contained_target_rs_api") {
     "self_contained_target_header1.h",
     "self_contained_target_header2.h",
   ]
-
-  deps = [ ":self_contained_target" ]
 }
 
 source_set("self_contained_target") {

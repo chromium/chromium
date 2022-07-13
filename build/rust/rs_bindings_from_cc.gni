@@ -10,12 +10,13 @@ import("//build/rust/mixed_static_library.gni")
 # Template to generate and build Rust bindings for a set of C++ headers using
 # Crubit's `rs_bindings_from_cc` tool.
 #
-# This template expands to a `mixed_static_library` containing the Rust side of
-# the bindings (as well as internal C++ thunks needed to support the bindings).
+# This template expands to a `mixed_static_library` named "<target>_rs_api" and
+# containing the Rust side of the bindings (as well as internal C++ thunks
+# needed to support the bindings).
 #
-# The generated out/.../gen/.../<target>.rs is machine-generated, but should
-# be fairly readable (inspecting it might be useful to discover the imported
-# bindings and their shape).
+# The generated out/.../gen/.../<target>_rs_api.rs is machine-generated, but
+# should be fairly readable (inspecting it might be useful to discover the
+# imported bindings and their shape).
 #
 # Parameters:
 #
@@ -26,9 +27,12 @@ import("//build/rust/mixed_static_library.gni")
 #     target, because typically only a *subset* of headers provides the
 #     *public* API that bindings are needed for.
 #
-#   deps: TODO(crbug.com/1297592): Not tested.  Most likely broken.  Will
-#                                  require invoking `rs_bindings_from_cc` on
-#                                  the transitive dependencies.
+#   TODO(crbug.com/1297592): Support dependencies in the generated bindings.
+#   Tentative plan:
+#   1) introduce `bindings_target` and use it A) in regular `deps` of
+#      mixed_static_library and B) to build the crate name by appending
+#      "_rs_api" suffix.
+#   2) introduce `bindings_deps` and use it when gathering GN metadata.
 #
 # Usage example:
 #
@@ -44,9 +48,8 @@ import("//build/rust/mixed_static_library.gni")
 #
 #       # Crubit's convention is to append "_rs_api" suffix to the target name
 #       # when naming the generated Rust crate.
-#       rs_bindings_from_cc("cpp_lib_rs_api") {
+#       rs_bindings_from_cc("cpp_lib") {
 #         public_headers = ["cpp_lib.h"]
-#         deps = [ ":cpp_lib" ]
 #       }
 #
 #       source_set("cpp_lib") {
@@ -62,38 +65,95 @@ import("//build/rust/mixed_static_library.gni")
 #     }
 #
 template("rs_bindings_from_cc") {
+  # Mandatory parameter: public_headers.
   assert(defined(invoker.public_headers),
          "Must specify the public C headers to make bindings for.")
+  _rebased_public_headers = []
+  foreach(hdr, invoker.public_headers) {
+    _rebased_public_headers += [ rebase_path(hdr) ]
+  }
 
-  _target_name = target_name
-  _action_target_name = "${target_name}_run_rs_bindings_from_cc"
-
+  # Optional parameter: testonly.
   _testonly = false
   if (defined(invoker.testonly)) {
     _testonly = invoker.testonly
   }
+
+  # Optional parameter: visibility.
   if (defined(invoker.visibility)) {
     _visibility = invoker.visibility
   }
-  _deps = []
-  if (defined(invoker.deps)) {
-    _deps += invoker.deps
+
+  # Future parameters:
+  _bindings_target = ":${target_name}"
+  _bindings_deps = []
+
+  # Various names and paths that are shared across multiple targets defined
+  # in the template here.
+  _base_target_name = get_label_info(_bindings_target, "name")
+  _lib_target_name = "${_base_target_name}_rs_api"
+  _gen_bindings_target_name = "${_lib_target_name}_gen_bindings"
+  _gen_metadata_target_name = "${_lib_target_name}_gen_metadata"
+  _metadata_target_name = "${_lib_target_name}_metadata"
+  _metadata_path = "${target_gen_dir}/${_lib_target_name}_meta.json"
+  _rs_out_path = "${target_gen_dir}/${_lib_target_name}.rs"
+  _cc_out_path = "${target_gen_dir}/${_lib_target_name}_impl.cc"
+
+  # Calculating the --targets_and_headers snippet for the *current* target
+  # and putting it into GN's `metadata`.
+  group(_metadata_target_name) {
+    testonly = _testonly
+    visibility = [ ":${_gen_metadata_target_name}" ]
+    deps = []
+
+    metadata = {
+      # The data below corresponds to a single-target entry inside
+      # `--targets_and_headers` cmdline argument of `rs_bindings_from_cc`.
+      crubit_target_and_headers = [
+        {
+          t = _base_target_name
+          h = _rebased_public_headers
+        },
+      ]
+    }
   }
 
-  # Paths where Crubit's `rs_bindings_from_cc` output goes:
-  _rs_out_path = "${target_gen_dir}/${_target_name}.rs"
-  _cc_out_path = "${target_gen_dir}/${_target_name}_impl.cc"
+  # Gathering --targets-and-headers data from *all* transitive dependencies and
+  # putting them into the file at `_metadata_path`.
+  generated_file(_gen_metadata_target_name) {
+    testonly = _testonly
+    visibility = [ ":${_gen_bindings_target_name}" ]
 
-  mixed_static_library(_target_name) {
-    deps = _deps
+    deps = [ ":${_metadata_target_name}" ]
+    deps += _bindings_deps
+
+    testonly = _testonly
+    outputs = [ _metadata_path ]
+    output_conversion = "json"
+    data_keys = [ "crubit_target_and_headers" ]
+
+    # TODO(https://crbug.com/1329611): Use `walk_keys` to limit how deep the
+    # transitive dependency goes.  Crubit doesn't care about all the `public_deps`
+    # - for example if target1.h re-exports a function from target2.h that uses
+    # only built-in C types as parameter types and return type, then Crubit doesn't
+    # need to know about target2.h when generating bindings for target1.h.  Crubit
+    # only needs to know about target2.h if bindings for target1.h need to expose
+    # types that get their bindings from target2.h.
+  }
+
+  # Exposing the generated Rust bindings.
+  mixed_static_library(_lib_target_name) {
     testonly = _testonly
     if (defined(_visibility)) {
       visibility = _visibility
     }
 
     sources = [ _cc_out_path ]
+    deps = _bindings_deps
     deps += [
-      ":${_action_target_name}",
+      ":${_gen_bindings_target_name}",
+      _bindings_target,
+
       # TODO(crbug.com/1297592): Declare the dependencies (the generated
       # ..._rs_api_impl.cc file #includes headers like
       # "third_party/crubit/rs_bindings_from_cc/support/offsetof.h"
@@ -103,10 +163,11 @@ template("rs_bindings_from_cc") {
     ]
 
     rs_sources = [ _rs_out_path ]
-    rs_crate_name = _target_name
+    rs_crate_name = _lib_target_name
     rs_crate_root = _rs_out_path
-    rs_deps = [
-      ":${_action_target_name}",
+    rs_deps = _bindings_deps
+    rs_deps += [
+      ":${_gen_bindings_target_name}",
       # TODO(crbug.com/1297592): Add required dependencies (the generated bindings will
       # depend on these extra crates if the generated bindings cover a C++ struct).
       # See also `deps_for_generated_rs_file` in `crubit/rs_bindings_from_cc/BUILD`.
@@ -115,8 +176,8 @@ template("rs_bindings_from_cc") {
     ]
   }
 
-  action(_action_target_name) {
-    deps = _deps
+  # Invoking Crubit's `rs_bindings_from_cc` tool to generate Rust bindings.
+  action(_gen_bindings_target_name) {
     testonly = _testonly
     if (defined(_visibility)) {
       visibility = _visibility
@@ -130,28 +191,7 @@ template("rs_bindings_from_cc") {
       _cc_out_path,
     ]
 
-    # Several important compiler flags come from default_compiler_configs
-    configs = default_compiler_configs
-    if (defined(invoker.configs)) {
-      configs += invoker.configs
-    }
-
-    # Target-specific inputs for Crubit's `rs_bindings_from_cc`:
-    _rebased_public_headers = []
-    foreach(hdr, invoker.public_headers) {
-      _rebased_public_headers += [ rebase_path(hdr) ]
-    }
-    _quoted_public_headers = []
-    foreach(hdr, _rebased_public_headers) {
-      _quoted_public_headers += [ "\"${hdr}\"" ]
-    }
-    _public_headers_cmdline_arg = string_join(",", _rebased_public_headers)
-    _public_headers_map_snippet = string_join(",", _quoted_public_headers)
-
-    # TODO(crbug.com/1297592): Instead of hardcoding it, we should compute the
-    # targets=>headers map from the local, transitive BUILD.gn dependencies.
-    _targets_and_headers_cmdline_arg = "[{\"t\": \"${_target_name}\", \"h\": [${_public_headers_map_snippet}]}]"
-
+    deps = [ ":${_gen_metadata_target_name}" ]
     args = [
       # Target-specific outputs:
       "--rs_out",
@@ -161,19 +201,16 @@ template("rs_bindings_from_cc") {
 
       # Target-specific inputs:
       "--public_headers",
-      _public_headers_cmdline_arg,
-      "--targets_and_headers",
-      _targets_and_headers_cmdline_arg,
-
-      # Fixed config:
-      "--crubit_support_path",  # No rebasing - this is for textual inclusion.
-      "third_party/crubit/rs_bindings_from_cc/support",
-      "--rustfmt_exe_path",
-      rebase_path("//third_party/rust-toolchain/bin/rustfmt"),
-      "--rustfmt_config_path",
-      rebase_path("//.rustfmt.toml"),
+      string_join(",", _rebased_public_headers),
+      "--targets_and_headers_from_gn",
+      rebase_path(_metadata_path),
     ]
 
+    # Several important compiler flags come from default_compiler_configs
+    configs = default_compiler_configs
+    if (defined(invoker.configs)) {
+      configs += invoker.configs
+    }
     args += [
       "--",
       "{{defines}}",
