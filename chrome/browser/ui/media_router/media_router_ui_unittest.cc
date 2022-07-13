@@ -444,6 +444,7 @@ TEST_F(MediaRouterViewsUITest, DisconnectingState) {
   NotifyUiOnRoutesUpdated({});
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(MediaRouterViewsUITest, AddAndRemoveIssue) {
   MediaSink sink1{CreateCastSink("sink_id1", "Sink 1")};
   MediaSink sink2{CreateCastSink("sink_id2", "Sink 2")};
@@ -481,6 +482,7 @@ TEST_F(MediaRouterViewsUITest, AddAndRemoveIssue) {
       })));
   mock_router_->GetIssueManager()->ClearIssue(issue_id);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForTab) {
   StartCastingAndExpectTimeout(

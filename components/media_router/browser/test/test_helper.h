@@ -10,13 +10,16 @@
 
 #include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
-#include "components/media_router/browser/issue_manager.h"
-#include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/media_router/browser/issue_manager.h"
+#include "components/media_router/browser/issues_observer.h"
+#endif  // !BUILDFALG(IS_ANDROID)
 
 namespace media_router {
 
@@ -30,6 +33,7 @@ MATCHER_P(StateChangeInfoEquals, other, "") {
          arg.message == other.message;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class MockIssuesObserver : public IssuesObserver {
  public:
   explicit MockIssuesObserver(IssueManager* issue_manager);
@@ -38,6 +42,7 @@ class MockIssuesObserver : public IssuesObserver {
   MOCK_METHOD1(OnIssue, void(const Issue& issue));
   MOCK_METHOD0(OnIssuesCleared, void());
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class MockMediaSinksObserver : public MediaSinksObserver {
  public:

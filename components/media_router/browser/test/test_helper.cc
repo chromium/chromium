@@ -10,10 +10,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media_router {
-
+#if !BUILDFLAG(IS_ANDROID)
 MockIssuesObserver::MockIssuesObserver(IssueManager* issue_manager)
     : IssuesObserver(issue_manager) {}
 MockIssuesObserver::~MockIssuesObserver() = default;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 MockMediaSinksObserver::MockMediaSinksObserver(MediaRouter* router,
                                                const MediaSource& source,

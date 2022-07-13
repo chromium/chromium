@@ -2,14 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/1299869): IssueManager and IssuesObserver are not used on
-# Android; exclude them from Android builds.
 source_set("browser") {
   sources = [
-    "issue_manager.cc",
-    "issue_manager.h",
-    "issues_observer.cc",
-    "issues_observer.h",
     "media_router.h",
     "media_router_base.cc",
     "media_router_base.h",
@@ -85,6 +79,10 @@ source_set("browser") {
     deps += [ "android:jni_headers" ]
   } else {
     sources += [
+      "issue_manager.cc",
+      "issue_manager.h",
+      "issues_observer.cc",
+      "issues_observer.h",
       "logger_impl.cc",
       "logger_impl.h",
       "presentation/presentation_navigation_policy.cc",
@@ -115,7 +113,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "issue_manager_unittest.cc",
     "media_router_base_unittest.cc",
     "media_router_dialog_controller_unittest.cc",
     "media_router_metrics_unittest.cc",
@@ -140,6 +137,9 @@ source_set("unit_tests") {
     sources += [ "android/media_router_android_unittest.cc" ]
     deps += [ "android:test_jni_headers" ]
   } else {
-    sources += [ "logger_impl_unittest.cc" ]
+    sources += [
+      "issue_manager_unittest.cc",
+      "logger_impl_unittest.cc",
+    ]
   }
 }

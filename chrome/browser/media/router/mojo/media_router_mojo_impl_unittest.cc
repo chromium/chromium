@@ -483,6 +483,7 @@ TEST_F(MediaRouterMojoImplTest, TerminateRouteFails) {
                               mojom::RouteRequestResultCode::TIMED_OUT, 1);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(MediaRouterMojoImplTest, HandleIssue) {
   MockIssuesObserver issue_observer1(router()->GetIssueManager());
   MockIssuesObserver issue_observer2(router()->GetIssueManager());
@@ -505,6 +506,7 @@ TEST_F(MediaRouterMojoImplTest, HandleIssue) {
   EXPECT_EQ(issue_info, issue_from_observer1.info());
   EXPECT_EQ(issue_info, issue_from_observer2.info());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaSinksObserver) {
   MediaSource media_source(kSource);
