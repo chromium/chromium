@@ -164,8 +164,7 @@ gfx::Rect SystemNudge::CalculateWidgetBounds(const gfx::Rect& display_bounds,
     // status area is on the left side in RTL when shelf is at bottom.
     on_right_side = shelf->alignment() == ShelfAlignment::kRight;
   } else {
-    on_right_side = shelf->alignment() == ShelfAlignment::kRight ||
-                    shelf->alignment() == ShelfAlignment::kBottom;
+    on_right_side = shelf->alignment() != ShelfAlignment::kLeft;
   }
 
   int x;
