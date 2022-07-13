@@ -87,6 +87,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     // If present, this is the video's aspect ratio.
     private Rational mAspectRatio;
 
+    // Maximum pip width, in pixels, to prevent resizes that are too big.
+    private int mMaxWidth;
+
     private BroadcastReceiver mMediaSessionReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -186,6 +189,11 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
 
+        // Compute a somewhat arbitrary cut-off of 90% of the window's display width. The PiP
+        // window can't be anywhere near this big, so the exact value doesn't matter. We'll ignore
+        // resizes messages that are above it, since they're spurious.
+        mMaxWidth = (int) ((getWindowAndroid().getDisplay().getDisplayWidth()) * 0.9);
+
         mCompositorView = CompositorViewFactory.create(
                 this, getWindowAndroid(), new ThinWebViewConstraints());
         addContentView(mCompositorView.getView(),
@@ -200,8 +208,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 // We sometimes get an initial update of zero before getting something reasonable.
                 if (top == bottom || left == right) return;
 
+                // On close, sometimes we get a size update that's almost the entire display width.
+                // Pip window's can't be that big, so ignore it.
+                final int width = right - left;
+                if (width > mMaxWidth) return;
+
                 PictureInPictureActivityJni.get().onViewSizeChanged(
-                        sNativeOverlayWindowAndroid, right - left, bottom - top);
+                        sNativeOverlayWindowAndroid, width, bottom - top);
             }
         });
 
@@ -452,6 +465,11 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         LaunchIntoPipHelper original = sLaunchIntoPipHelper;
         sLaunchIntoPipHelper = helper;
         return original;
+    }
+
+    @VisibleForTesting
+    /* package */ View getViewForTesting() {
+        return mCompositorView.getView();
     }
 
     @NativeMethods

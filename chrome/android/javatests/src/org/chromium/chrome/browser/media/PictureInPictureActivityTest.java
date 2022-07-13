@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.media;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.util.Rational;
+import android.view.View;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
@@ -31,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -52,6 +55,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for PictureInPictureActivity.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RequiresApi(Build.VERSION_CODES.O)
 public class PictureInPictureActivityTest {
@@ -152,6 +156,25 @@ public class PictureInPictureActivityTest {
                         -> activity.onPictureInPictureModeChanged(
                                 /*isInPictureInPictureMode=*/false, newConfig));
         verify(mNativeMock, times(1)).onBackToTab(NATIVE_OVERLAY);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    public void testResize() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        // Resize to some reasonable size, and verify that native is told about it.
+        final int reasonableSize = 10;
+        View view = activity.getViewForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> view.layout(0, 0, reasonableSize, reasonableSize));
+        verify(mNativeMock, times(1))
+                .onViewSizeChanged(NATIVE_OVERLAY, reasonableSize, reasonableSize);
+        // An unreasonably large size should not generate a resize event.
+        final int unreasonableSize = activity.getWindowAndroid().getDisplay().getDisplayWidth();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> view.layout(0, 0, unreasonableSize, unreasonableSize));
+        verify(mNativeMock, times(0)).onViewSizeChanged(anyInt(), anyInt(), anyInt());
     }
 
     private WebContents getWebContents() {
