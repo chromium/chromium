@@ -299,17 +299,16 @@ void SearchEnginesHandler::HandleSearchEngineEditStarted(
   CHECK_EQ(1U, args.size());
   int index = args[0].GetInt();
 
-  // Allow -1, which means we are adding a new engine.
-  if (index < kNewSearchEngineIndex ||
-      static_cast<size_t>(index) >=
-          list_controller_.table_model()->RowCount()) {
+  TemplateURL* engine = nullptr;
+  if (index >= 0 && static_cast<size_t>(index) >=
+                        list_controller_.table_model()->RowCount()) {
+    engine = list_controller_.GetTemplateURL(index);
+  } else if (index != kNewSearchEngineIndex) {
     return;
   }
 
   edit_controller_ = std::make_unique<EditSearchEngineController>(
-      index == kNewSearchEngineIndex ? nullptr
-                                     : list_controller_.GetTemplateURL(index),
-      this, Profile::FromWebUI(web_ui()));
+      engine, this, Profile::FromWebUI(web_ui()));
 }
 
 void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
