@@ -202,7 +202,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager_;
 
   // This is owned by SignedExchangeLoader which is the owner of |this|.
-  raw_ptr<SignedExchangeReporter, DanglingUntriaged> reporter_;
+  raw_ptr<SignedExchangeReporter> reporter_;
 
   const int frame_tree_node_id_;
 

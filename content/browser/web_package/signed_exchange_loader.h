@@ -169,13 +169,16 @@ class CONTENT_EXPORT SignedExchangeLoader final
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
       pending_client_receiver_;
 
+  std::unique_ptr<SignedExchangeReporter> reporter_;
+
+  // `signed_exchange_handler_` borrows reference from `reporter_`, so it needs
+  // to be declared last, so that it is destroyed first.
   std::unique_ptr<SignedExchangeHandler> signed_exchange_handler_;
   std::unique_ptr<network::SourceStreamToDataPipe> body_data_pipe_adapter_;
 
   const uint32_t url_loader_options_;
   const bool should_redirect_on_failure_;
   std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
-  std::unique_ptr<SignedExchangeReporter> reporter_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   URLLoaderThrottlesGetter url_loader_throttles_getter_;
   const net::NetworkIsolationKey network_isolation_key_;
