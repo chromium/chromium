@@ -686,6 +686,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.TimeToCreatePersistentUser" units="ms"
+    expires_after="2023-05-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    AuthSession is a DBus API for various operations dealing with credential
+    storage, processing, and authentication. This metric records the amount of
+    time (ms) to create a persistent user. This is recorded when the AuthSession
+    is requested to create a persistent user in cryptohomed, through the DBUS
+    API.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.TimeToGenerateEccAuthValue" units="ms"
     expires_after="2022-12-04">
   <owner>yich@google.com</owner>
@@ -886,6 +899,65 @@ chromium-metrics-reviews@google.com.
   <token key="Action">
     <variant name="Create" summary="created"/>
     <variant name="Derive" summary="derived"/>
+  </token>
+</histogram>
+
+<histogram name="Cryptohome.{AuthSessionFunction}.{AuthBlockType}" units="ms"
+    expires_after="2023-05-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    AuthSession is a DBus API for various operations dealing with credential
+    storage, processing, and authentication. These metrics record the time an
+    {AuthSessionFunction} takes to complete. Each function is parameterized by
+    an {AuthBlockType}, or credential backend, which significantly influences
+    results. The metric is emitted when the respective {AuthSessionFunction} is
+    requested through the DBus API.
+  </summary>
+  <token key="AuthSessionFunction">
+    <variant name="TimeToAuthSessionAddAuthFactorUSS"/>
+    <variant name="TimeToAuthSessionAddAuthFactorVK"/>
+    <variant name="TimetoAuthSessionAddCredentials"/>
+    <variant name="TimeToAuthSessionAuthenticate"/>
+    <variant name="TimeToAuthSessionAuthenticateAuthFactorUSS"/>
+    <variant name="TimeToAuthSessionAuthenticateAuthFactorVK"/>
+    <variant name="TimeToAuthSessionRemoveAuthFactorUSS"/>
+    <variant name="TimeToAuthSessionRemoveAuthFactorVK"/>
+    <variant name="TimeToAuthSessionUpdateAuthFactorUSS"/>
+    <variant name="TimeToAuthSessionUpdateAuthFactorVK"/>
+    <variant name="TimeToAuthSessionUpdateCredentials"/>
+  </token>
+  <token key="AuthBlockType">
+    <variant name="ChallengeCredential"/>
+    <variant name="CryptohomeRecovery"/>
+    <variant name="DoubleWrappedCompat"/>
+    <variant name="LibScryptCompat"/>
+    <variant name="PinWeaver"/>
+    <variant name="Scrypt"/>
+    <variant name="TpmBoundToPcr"/>
+    <variant name="TpmEcc"/>
+    <variant name="TpmNotBoundToPcr"/>
+  </token>
+</histogram>
+
+<histogram name="Cryptohome.{AuthSessionLifetime}.{Type}" units="ms"
+    expires_after="2023-05-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The amount of time an AuthSession lives for after authentication and
+    overall. This is 5 minutes by default, but can be extended through the
+    ExtendAuthSession API call. This metric is emitted when the AuthSession is
+    destroyed, by either manually invalidating through the DBus API or through
+    an automatic timeout.
+  </summary>
+  <token key="AuthSessionLifetime">
+    <variant name="AuthSessionAuthenticatedLifetime"/>
+    <variant name="AuthSessionTotalLifetime"/>
+  </token>
+  <token key="Type">
+    <variant name="Ephemeral"/>
+    <variant name="Persistent"/>
   </token>
 </histogram>
 
