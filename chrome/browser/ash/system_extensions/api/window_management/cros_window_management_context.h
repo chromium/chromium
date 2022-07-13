@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_WINDOW_MANAGEMENT_CROS_WINDOW_MANAGEMENT_CONTEXT_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_WINDOW_MANAGEMENT_CROS_WINDOW_MANAGEMENT_CONTEXT_H_
 
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -22,7 +26,8 @@ namespace ash {
 // receivers and implementations for blink::mojom::CrosWindowManagement.
 class CrosWindowManagementContext
     : public KeyedService,
-      public blink::mojom::CrosWindowManagementFactory {
+      public blink::mojom::CrosWindowManagementFactory,
+      public SystemExtensionsInstallManager::Observer {
  public:
   // Returns the event dispatcher associated with `profile`. Should only be
   // called if System Extensions is enabled for the profile i.e. if
@@ -39,11 +44,16 @@ class CrosWindowManagementContext
       mojo::PendingReceiver<blink::mojom::CrosWindowManagementFactory>
           pending_receiver);
 
-  CrosWindowManagementContext();
+  explicit CrosWindowManagementContext(Profile* profile);
   CrosWindowManagementContext(const CrosWindowManagementContext&) = delete;
   CrosWindowManagementContext& operator=(const CrosWindowManagementContext&) =
       delete;
   ~CrosWindowManagementContext() override;
+
+  // SystemExtensionsInstallManager::Observer
+  void OnServiceWorkerRegistered(
+      const SystemExtensionId& system_extension_id,
+      blink::ServiceWorkerStatusCode status_code) override;
 
   // blink::mojom::CrosWindowManagementFactory
   void Create(
@@ -51,6 +61,24 @@ class CrosWindowManagementContext
           pending_receiver) override;
 
  private:
+  void DispatchWindowManagerStartEvent(
+      const SystemExtensionId& system_extension_id,
+      int64_t version_id,
+      int process_id,
+      int thread_id);
+
+  // This class is a BrowserContextKeyedService, so it's owned by Profile.
+  const raw_ref<Profile> profile_;
+
+  // Safe because this KeyedService is marked as depending on the
+  // SystemExtensionsProvider keyed service which owns
+  // SystemExtensionsInstallManager.
+  const raw_ref<SystemExtensionsInstallManager> install_manager_;
+
+  base::ScopedObservation<SystemExtensionsInstallManager,
+                          SystemExtensionsInstallManager::Observer>
+      install_manager_observation_{this};
+
   mojo::ReceiverSet<blink::mojom::CrosWindowManagementFactory,
                     content::ServiceWorkerVersionBaseInfo>
       factory_receivers_;
@@ -60,6 +88,8 @@ class CrosWindowManagementContext
   // the corresponding factory in factory_receivers_ gets destroyed.
   mojo::UniqueAssociatedReceiverSet<blink::mojom::CrosWindowManagement>
       cros_window_management_instances_;
+
+  base::WeakPtrFactory<CrosWindowManagementContext> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -6,8 +6,10 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -31,14 +33,16 @@ CrosWindowManagementContextFactory::GetInstance() {
 CrosWindowManagementContextFactory::CrosWindowManagementContextFactory()
     : BrowserContextKeyedServiceFactory(
           "CrosWindowManagementContextFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(&SystemExtensionsProviderFactory::GetInstance());
+}
 
 CrosWindowManagementContextFactory::~CrosWindowManagementContextFactory() =
     default;
 
 KeyedService* CrosWindowManagementContextFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new CrosWindowManagementContext();
+  return new CrosWindowManagementContext(Profile::FromBrowserContext(context));
 }
 
 bool CrosWindowManagementContextFactory::ServiceIsCreatedWithBrowserContext()
