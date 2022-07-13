@@ -15,7 +15,7 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     super(true /* isCommonClass */);
   }
 
-  /** Test cursors.Cursor. @const {string} */
+  /** Test Cursor. @const {string} */
   get CURSOR() {
     return 'cursor';
   }
@@ -31,27 +31,31 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     // Various aliases.
     window.BACKWARD = constants.Dir.BACKWARD;
     window.FORWARD = constants.Dir.FORWARD;
-    window.CHARACTER = cursors.Unit.CHARACTER;
-    window.WORD = cursors.Unit.WORD;
-    window.LINE = cursors.Unit.LINE;
-    window.NODE = cursors.Unit.NODE;
-    window.BOUND = cursors.Movement.BOUND;
-    window.DIRECTIONAL = cursors.Movement.DIRECTIONAL;
-    window.SYNC = cursors.Movement.SYNC;
   }
 
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('CursorRange', '/common/cursors/range.js');
+    await importModule(
+        ['Cursor', 'CursorMovement', 'CursorUnit', 'WrappingCursor'],
+        '/common/cursors/cursor.js');
+    // Various aliases
+    window.CHARACTER = CursorUnit.CHARACTER;
+    window.WORD = CursorUnit.WORD;
+    window.LINE = CursorUnit.LINE;
+    window.NODE = CursorUnit.NODE;
+    window.BOUND = CursorMovement.BOUND;
+    window.DIRECTIONAL = CursorMovement.DIRECTIONAL;
+    window.SYNC = CursorMovement.SYNC;
   }
 
   /**
    * Performs a series of operations on a cursor and asserts the result.
-   * @param {cursors.Cursor} cursor The starting cursor.
+   * @param {Cursor} cursor The starting cursor.
    * @param {!Array<Array<
-   *          cursors.Unit|
-   *          cursors.Movement|
+   *          CursorUnit|
+   *          CursorMovement|
    *          constants.Dir|
    *          {index: number, value: string}>>} moves An array of arrays. Each
    *     inner array contains 4 items: unit, movement, direction, and assertions
@@ -70,7 +74,7 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
    * Performs a series of operations on a range and asserts the result.
    * @param {CursorRange} range The starting range.
    * @param {!Array<Array<
-   *         cursors.Unit|
+   *         CursorUnit|
    *         constants.Dir|
    *         {index: number, value: string}>>} moves An array of arrays. Each
    *     inner array contains 4 items: unit, direction, start and end assertions
@@ -107,8 +111,8 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
    * Runs the specified moves on the |doc| and asserts expectations.
    * @param {function} doc
    * @param {!Array<Array<
-   *          cursors.Unit|
-   *          cursors.Movement|
+   *          CursorUnit|
+   *          CursorMovement|
    *          constants.Dir|
    *          {index: number, value: string}>>} moves An array of arrays. Each
    *     inner array contains 4 items: see |cursorMoveAndAssert| and
@@ -123,9 +127,9 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     start =
         AutomationUtil.findNodePost(root, FORWARD, AutomationPredicate.leaf);
 
-    const cursor = new cursors.Cursor(start, 0);
+    const cursor = new Cursor(start, 0);
     if (!opt_testType || opt_testType === this.CURSOR) {
-      const cursor = new cursors.Cursor(start, 0);
+      const cursor = new Cursor(start, 0);
       this.cursorMoveAndAssert(cursor, moves);
     } else if (opt_testType === this.RANGE) {
       const range = new CursorRange(cursor, cursor);
@@ -382,7 +386,7 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(this.multiInlineDoc);
       const para = root.firstChild;
       assertEquals('paragraph', para.role);
-      let cursor = new cursors.Cursor(para.firstChild, 0);
+      let cursor = new Cursor(para.firstChild, 0);
       cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
       assertEquals('staticText', cursor.node.role);
       assertEquals('end', cursor.node.name);
@@ -402,7 +406,7 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(this.multiInlineDoc);
       const first = root;
       const last = root.lastChild.firstChild;
-      let cursor = new cursors.WrappingCursor(first, -1);
+      let cursor = new WrappingCursor(first, -1);
 
       // Wrap from first node to last node.
       cursor = cursor.move(NODE, DIRECTIONAL, BACKWARD);
@@ -440,12 +444,11 @@ AX_TEST_F(
       const p1 = root.find({role: RoleType.PARAGRAPH});
       const p2 = p1.nextSibling;
 
-      const singleSel = new CursorRange(
-          new cursors.Cursor(link, 0), new cursors.Cursor(link, 1));
+      const singleSel =
+          new CursorRange(new Cursor(link, 0), new Cursor(link, 1));
 
       const multiSel = new CursorRange(
-          new cursors.Cursor(p1.firstChild, 2),
-          new cursors.Cursor(p2.firstChild, 4));
+          new Cursor(p1.firstChild, 2), new Cursor(p2.firstChild, 4));
 
       function verifySel() {
         if (root.selectionStartObject === link.firstChild) {
@@ -495,12 +498,12 @@ AX_TEST_F(
       assertEquals('test', testNode.name);
 
       const ofSelectionNode = root.lastChild.lastChild;
-      const cur = new cursors.Cursor(ofSelectionNode, 0);
+      const cur = new Cursor(ofSelectionNode, 0);
       assertEquals('of selection', cur.selectionNode.name);
       assertEquals(RoleType.STATIC_TEXT, cur.selectionNode.role);
       assertEquals(0, cur.selectionIndex);
 
-      const curIntoO = new cursors.Cursor(ofSelectionNode, 1);
+      const curIntoO = new Cursor(ofSelectionNode, 1);
       assertEquals('of selection', curIntoO.selectionNode.name);
       assertEquals(RoleType.STATIC_TEXT, curIntoO.selectionNode.role);
       assertEquals(1, curIntoO.selectionIndex);
@@ -548,31 +551,31 @@ AX_TEST_F(
   `);
       const textNode = root.find({role: RoleType.STATIC_TEXT});
 
-      let text = new cursors.Cursor(textNode, 2);
+      let text = new Cursor(textNode, 2);
       deep = text.deepEquivalent;
       assertEquals('this ', deep.node.name);
       assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
       assertEquals(2, deep.index);
 
-      text = new cursors.Cursor(textNode, 5);
+      text = new Cursor(textNode, 5);
       deep = text.deepEquivalent;
       assertEquals('is ', deep.node.name);
       assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
       assertEquals(0, deep.index);
 
-      text = new cursors.Cursor(textNode, 7);
+      text = new Cursor(textNode, 7);
       deep = text.deepEquivalent;
       assertEquals('is ', deep.node.name);
       assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
       assertEquals(2, deep.index);
 
-      text = new cursors.Cursor(textNode, 8);
+      text = new Cursor(textNode, 8);
       deep = text.deepEquivalent;
       assertEquals('a ', deep.node.name);
       assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
       assertEquals(0, deep.index);
 
-      text = new cursors.Cursor(textNode, 11);
+      text = new Cursor(textNode, 11);
       deep = text.deepEquivalent;
       assertEquals('test', deep.node.name);
       assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
@@ -580,14 +583,14 @@ AX_TEST_F(
 
       // This is the only selection that can be placed at the length of the
       // node's text. This only happens at the end of a line.
-      text = new cursors.Cursor(textNode, 14);
+      text = new Cursor(textNode, 14);
       deep = text.deepEquivalent;
       assertEquals('test', deep.node.name);
       assertEquals(RoleType.INLINE_TEXT_BOX, deep.node.role);
       assertEquals(4, deep.index);
 
       // However, any offset larger is invalid.
-      text = new cursors.Cursor(textNode, 15);
+      text = new Cursor(textNode, 15);
       deep = text.deepEquivalent;
       assertTrue(text.equals(deep));
     });
@@ -600,7 +603,7 @@ AX_TEST_F(
   `);
       const paragraph = root.find({role: RoleType.PARAGRAPH});
       assertEquals(1, paragraph.children.length);
-      const cursor = new cursors.Cursor(paragraph, 1);
+      const cursor = new Cursor(paragraph, 1);
 
       const deep = cursor.deepEquivalent;
       assertEquals(RoleType.STATIC_TEXT, deep.node.role);
@@ -669,8 +672,8 @@ TEST_F('AccessibilityExtensionCursorsTest', 'CopiedSelection', function() {
     assertEquals('hello', hello.name);
     assertEquals('world', world.name);
 
-    const range = new CursorRange(
-        cursors.Cursor.fromNode(hello), cursors.Cursor.fromNode(world));
+    const range =
+        new CursorRange(Cursor.fromNode(hello), Cursor.fromNode(world));
     range.select();
 
     // Wait for the selection to change.

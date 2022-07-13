@@ -7,6 +7,8 @@
  * the automation tree.
  */
 
+import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit, WrappingCursor} from '/common/cursors/cursor.js';
+
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
@@ -18,13 +20,13 @@ const StateType = chrome.automation.StateType;
  */
 export class CursorRange {
   /**
-   * @param {!cursors.Cursor} start
-   * @param {!cursors.Cursor} end
+   * @param {!Cursor} start
+   * @param {!Cursor} end
    */
   constructor(start, end) {
-    /** @type {!cursors.Cursor} @private */
+    /** @type {!Cursor} @private */
     this.start_ = start;
-    /** @type {!cursors.Cursor} @private */
+    /** @type {!Cursor} @private */
     this.end_ = end;
   }
 
@@ -34,7 +36,7 @@ export class CursorRange {
    * @return {!CursorRange}
    */
   static fromNode(node) {
-    const cursor = cursors.WrappingCursor.fromNode(node);
+    const cursor = WrappingCursor.fromNode(node);
     return new CursorRange(cursor, cursor);
   }
 
@@ -114,7 +116,7 @@ export class CursorRange {
    * @param {constants.Dir} dir Which endpoint cursor to return;
    *     constants.Dir.FORWARD for end,
    * constants.Dir.BACKWARD for start.
-   * @return {!cursors.Cursor}
+   * @return {!Cursor}
    */
   getBound(dir) {
     return dir === constants.Dir.FORWARD ? this.end_ : this.start_;
@@ -129,14 +131,14 @@ export class CursorRange {
   }
 
   /**
-   * @return {!cursors.Cursor}
+   * @return {!Cursor}
    */
   get start() {
     return this.start_;
   }
 
   /**
-   * @return {!cursors.Cursor}
+   * @return {!Cursor}
    */
   get end() {
     return this.end_;
@@ -168,7 +170,7 @@ export class CursorRange {
   /**
    * Makes a Range which has been moved from this range by the given unit and
    * direction.
-   * @param {cursors.Unit} unit
+   * @param {CursorUnit} unit
    * @param {constants.Dir} dir
    * @return {CursorRange}
    */
@@ -180,23 +182,26 @@ export class CursorRange {
 
     let newEnd;
     switch (unit) {
-      case cursors.Unit.CHARACTER:
-        newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
-        newEnd = newStart.move(unit, cursors.Movement.DIRECTIONAL, constants.Dir.FORWARD);
+      case CursorUnit.CHARACTER:
+        newStart = newStart.move(unit, CursorMovement.DIRECTIONAL, dir);
+        newEnd = newStart.move(
+            unit, CursorMovement.DIRECTIONAL, constants.Dir.FORWARD);
         // Character crossed a node; collapses to the end of the node.
         if (newStart.node !== newEnd.node) {
-          newEnd = new cursors.Cursor(newStart.node, newStart.index + 1);
+          newEnd = new Cursor(newStart.node, newStart.index + 1);
         }
         break;
-      case cursors.Unit.WORD:
-      case cursors.Unit.LINE:
-        newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
-        newStart = newStart.move(unit, cursors.Movement.BOUND, constants.Dir.BACKWARD);
-        newEnd = newStart.move(unit, cursors.Movement.BOUND, constants.Dir.FORWARD);
+      case CursorUnit.WORD:
+      case CursorUnit.LINE:
+        newStart = newStart.move(unit, CursorMovement.DIRECTIONAL, dir);
+        newStart =
+            newStart.move(unit, CursorMovement.BOUND, constants.Dir.BACKWARD);
+        newEnd =
+            newStart.move(unit, CursorMovement.BOUND, constants.Dir.FORWARD);
         break;
-      case cursors.Unit.NODE:
-      case cursors.Unit.GESTURE_NODE:
-        newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
+      case CursorUnit.NODE:
+      case CursorUnit.GESTURE_NODE:
+        newStart = newStart.move(unit, CursorMovement.DIRECTIONAL, dir);
         newEnd = newStart;
         break;
       default:
@@ -227,12 +232,12 @@ export class CursorRange {
       // We want to adjust to select the entire node for node offsets;
       // otherwise, use the plain character offset.
       const startIndex = start.selectionIndex;
-      let endIndex = end.index === cursors.NODE_INDEX ? end.selectionIndex + 1 :
-                                                        end.selectionIndex;
+      let endIndex = end.index === CURSOR_NODE_INDEX ? end.selectionIndex + 1 :
+                                                       end.selectionIndex;
 
       // If the range covers more than one node, ends on the node, and is over
       // text, then adjust the selection to cover the entire end node.
-      if (start.node !== end.node && end.index === cursors.NODE_INDEX &&
+      if (start.node !== end.node && end.index === CURSOR_NODE_INDEX &&
           AutomationPredicate.text(end.node)) {
         endIndex = end.getText().length;
       }
@@ -259,14 +264,14 @@ export class CursorRange {
    * current range. If no matching range is found, then null is returned.
    * Note that there is a chance that new range's end spans beyond the current
    * end when the given unit is larger than the current range.
-   * @param {cursors.Unit} unit
+   * @param {CursorUnit} unit
    * @param {constants.Dir} dir
    * @return {CursorRange}
    */
   sync(unit, dir) {
     switch (unit) {
-      case cursors.Unit.CHARACTER:
-      case cursors.Unit.WORD:
+      case CursorUnit.CHARACTER:
+      case CursorUnit.WORD:
         let startCursor = this.start;
         if (!AutomationPredicate.leafWithWordStop(startCursor.node)) {
           let startNode = startCursor.node;
@@ -281,21 +286,21 @@ export class CursorRange {
           if (!startNode) {
             return null;
           }
-          startCursor = cursors.WrappingCursor.fromNode(startNode);
+          startCursor = WrappingCursor.fromNode(startNode);
         }
 
-        const start = startCursor.move(unit, cursors.Movement.SYNC, dir);
+        const start = startCursor.move(unit, CursorMovement.SYNC, dir);
         if (!start) {
           return null;
         }
-        let end = start.move(unit, cursors.Movement.BOUND, constants.Dir.FORWARD);
+        let end = start.move(unit, CursorMovement.BOUND, constants.Dir.FORWARD);
         if (start.node !== end.node || start.equals(end)) {
           // Character crossed a node or reached the end.
           // Collapses to the end of the node.
-          end = new cursors.WrappingCursor(start.node, start.getText().length);
+          end = new WrappingCursor(start.node, start.getText().length);
         }
         return new CursorRange(start, end);
-      case cursors.Unit.LINE:
+      case CursorUnit.LINE:
         let newNode;
         if (dir === constants.Dir.FORWARD) {
           newNode = AutomationUtil.findNodeUntil(
@@ -308,10 +313,10 @@ export class CursorRange {
           return null;
         }
         return CursorRange.fromNode(newNode);
-      case cursors.Unit.TEXT:
-      case cursors.Unit.NODE:
-      case cursors.Unit.GESTURE_NODE:
-        const pred = cursors.Cursor.getLeafPredForUnit(unit);
+      case CursorUnit.TEXT:
+      case CursorUnit.NODE:
+      case CursorUnit.GESTURE_NODE:
+        const pred = Cursor.getLeafPredForUnit(unit);
         let node;
         if (dir === constants.Dir.FORWARD) {
           node = AutomationUtil.findNextNode(

@@ -7,7 +7,9 @@
  */
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
+import {CursorUnit} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
+
 
 // setTimeout and its clean-up are referencing each other. So, we need to set
 // "ignoreReadBeforeAssign" in this file. ESLint doesn't support per-line rule
@@ -53,7 +55,7 @@ export class AutoScrollHandler {
    *     before scrolling.
    * @param {constants.Dir} dir The direction to navigate.
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
-   * @param {?cursors.Unit} unit The unit to navigate by.
+   * @param {?CursorUnit} unit The unit to navigate by.
    * @param {?Object} speechProps The optional speech properties given to
    *     |navigateToRange| to provide feedback of the current command.
    * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
@@ -82,7 +84,7 @@ export class AutoScrollHandler {
     // At the beginning or the end of the document, there is a case where the
     // range stays there. It's worth trying scrolling the containing scrollable.
     if (!scrollable && target.equals(rangeBeforeScroll) &&
-        (unit === cursors.Unit.WORD || unit === cursors.Unit.CHARACTER)) {
+        (unit === CursorUnit.WORD || unit === CursorUnit.CHARACTER)) {
       scrollable =
           this.tryFindingContainingScrollableIfAtEdge_(target, dir, scrollable);
     }
@@ -150,7 +152,7 @@ export class AutoScrollHandler {
    *     before scrolling.
    * @param {constants.Dir} dir The direction to navigate.
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
-   * @param {?cursors.Unit} unit The unit to navigate by.
+   * @param {?CursorUnit} unit The unit to navigate by.
    * @param {?Object} speechProps The optional speech properties given to
    *     |navigateToRange| to provide feedback of the current command.
    * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
@@ -273,7 +275,7 @@ export class AutoScrollHandler {
    * range in the scrollable.
    *
    * @param {?AutomationPredicate.Unary} pred The predicate to match.
-   * @param {?cursors.Unit} unit The unit to navigate by.
+   * @param {?CursorUnit} unit The unit to navigate by.
    * @param {constants.Dir} dir The direction to navigate.
    * @param {AutomationPredicate.Unary} rootPred The predicate that expresses
    *     the current navigation root.
@@ -285,7 +287,7 @@ export class AutoScrollHandler {
     let nextRange = null;
     if (!pred && unit) {
       nextRange = CursorRange.fromNode(scrollable).sync(unit, dir);
-      if (unit === cursors.Unit.NODE) {
+      if (unit === CursorUnit.NODE) {
         nextRange = CommandHandlerInterface.instance.skipLabelOrDescriptionFor(
             nextRange, dir);
       }

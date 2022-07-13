@@ -12,13 +12,10 @@ import {OutputRoleInfo} from '/chromevox/background/output/output_role_info.js';
 import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationIntent = chrome.automation.AutomationIntent;
-const Cursor = cursors.Cursor;
 const Dir = constants.Dir;
 const IntentCommandType = chrome.automation.IntentCommandType;
 const IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
-const Movement = cursors.Movement;
 const RoleType = chrome.automation.RoleType;
-const Unit = cursors.Unit;
 
 /**
  * A stateless class that turns intents into speech.

@@ -22,7 +22,6 @@ chromevox_modules = [
   "../common/automation_predicate.js",
   "../common/automation_util.js",
   "../common/constants.js",
-  "../common/cursors/cursor.js",
   "../common/cursors/recovery_strategy.js",
   "../common/key_code.js",
   "../common/string_util.js",
@@ -59,6 +58,7 @@ chromevox_modules = [
 
 # ES6 modules.
 chromevox_es6_modules = [
+  "../common/cursors/cursor.js",
   "../common/cursors/range.js",
   "../common/event_generator.js",
   "../common/instance_checker.js",

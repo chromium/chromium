@@ -104,6 +104,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'OutputRoleInfo', '/chromevox/background/output/output_role_info.js');
     await importModule('CursorRange', '/common/cursors/range.js');
+    await importModule('Cursor', '/common/cursors/cursor.js');
 
     window.Dir = AutomationUtil.Dir;
     this.forceContextualLastOutput();
@@ -791,8 +792,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'BraileWhitespace', async function() {
   `);
   const start = root.firstChild.firstChild;
   const end = root.firstChild.lastChild;
-  const range = new CursorRange(
-      cursors.Cursor.fromNode(start), cursors.Cursor.fromNode(end));
+  const range = new CursorRange(Cursor.fromNode(start), Cursor.fromNode(end));
   const o = new Output().withBraille(range, null, 'navigate');
   checkBrailleOutput(
       'this is a test of emphasized text',

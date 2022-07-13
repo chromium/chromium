@@ -16,20 +16,20 @@ import {IntentHandler} from '/chromevox/background/editing/intent_handler.js';
 import {Output} from '/chromevox/background/output/output.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
 import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
+import {Cursor, CursorMovement, CursorUnit} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationIntent = chrome.automation.AutomationIntent;
 const AutomationNode = chrome.automation.AutomationNode;
-const Cursor = cursors.Cursor;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const FormType = LibLouis.FormType;
 const Range = CursorRange;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
-const Movement = cursors.Movement;
-const Unit = cursors.Unit;
+const Movement = CursorMovement;
+const Unit = CursorUnit;
 
 /**
  * A handler for automation events in a focused text field or editable root

@@ -10,7 +10,9 @@
 // below block). These requires represent a dependency graph sourced from
 // loader.js via a script node in our top level html. Once done, that script can
 // itself be type="module".
+
 goog.require('AbstractEarcons');
+goog.require('AncestryRecoveryStrategy');
 goog.require('AutomationPredicate');
 goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
@@ -40,6 +42,7 @@ goog.require('PanelBridge');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');
 goog.require('QueueMode');
+goog.require('RecoveryStrategy');
 goog.require('Spannable');
 goog.require('SpeechLog');
 goog.require('StringUtil');
@@ -50,12 +53,9 @@ goog.require('TtsCategory');
 goog.require('TtsInterface');
 
 goog.require('constants');
-goog.require('cursors.Cursor');
-goog.require('cursors.Unit');
 goog.require('goog.i18n.MessageFormat');
 
 goog.require('ALL_NODE_MENU_DATA');
-
 // ChromeVox ES6 module(s).
 //
 // During the transition to ES6 modules, this top level module will import all

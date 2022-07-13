@@ -54,6 +54,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         '/chromevox/background/page_load_sound_handler.js');
     await importModule(
         'PointerHandler', '/chromevox/background/pointer_handler.js');
+    await importModule('Cursor', '/common/cursors/cursor.js');
 
     this.forceContextualLastOutput();
   }
@@ -1360,8 +1361,8 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NodeVsSubnode', async function() {
   function outputLinkRange(start, end) {
     return function() {
       new Output()
-          .withSpeech(new CursorRange(
-              new cursors.Cursor(link, start), new cursors.Cursor(link, end)))
+          .withSpeech(
+              new CursorRange(new Cursor(link, start), new Cursor(link, end)))
           .go();
     };
   }

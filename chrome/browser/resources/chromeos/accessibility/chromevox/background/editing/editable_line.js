@@ -9,6 +9,7 @@
  * of a line get saved.
  */
 import {Output} from '/chromevox/background/output/output.js';
+import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
@@ -18,8 +19,8 @@ const EventType = chrome.automation.EventType;
 const FormType = LibLouis.FormType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
-const Movement = cursors.Movement;
-const Unit = cursors.Unit;
+const Movement = CursorMovement;
+const Unit = CursorUnit;
 
 export class EditableLine {
   /**
@@ -32,25 +33,25 @@ export class EditableLine {
    * automatically truncated up to either the line start or end.
    */
   constructor(startNode, startIndex, endNode, endIndex, opt_baseLineOnStart) {
-    /** @private {!cursors.Cursor} */
-    this.start_ = new cursors.Cursor(startNode, startIndex);
+    /** @private {!Cursor} */
+    this.start_ = new Cursor(startNode, startIndex);
     this.start_ = this.start_.deepEquivalent || this.start_;
-    /** @private {!cursors.Cursor} */
-    this.end_ = new cursors.Cursor(endNode, endIndex);
+    /** @private {!Cursor} */
+    this.end_ = new Cursor(endNode, endIndex);
     this.end_ = this.end_.deepEquivalent || this.end_;
 
     /** @private {AutomationNode|undefined} */
     this.endContainer_;
 
     // Update |startIndex| and |endIndex| if the calls above to
-    // cursors.Cursor.deepEquivalent results in cursors to different container
+    // Cursor.deepEquivalent results in cursors to different container
     // nodes. The cursors can point directly to inline text boxes, in which case
     // we should not adjust the container start or end index.
     if (!AutomationPredicate.text(startNode) ||
         (this.start_.node !== startNode &&
          this.start_.node.parent !== startNode)) {
       startIndex =
-          (this.start_.index === cursors.NODE_INDEX && this.start_.node.name) ?
+          (this.start_.index === CURSOR_NODE_INDEX && this.start_.node.name) ?
           this.start_.node.name.length :
           this.start_.index;
     }
@@ -58,7 +59,7 @@ export class EditableLine {
     if (!AutomationPredicate.text(endNode) ||
         (this.end_.node !== endNode && this.end_.node.parent !== endNode)) {
       endIndex =
-          (this.end_.index === cursors.NODE_INDEX && this.end_.node.name) ?
+          (this.end_.index === CURSOR_NODE_INDEX && this.end_.node.name) ?
           this.end_.node.name.length :
           this.end_.index;
     }
@@ -377,7 +378,7 @@ export class EditableLine {
     // (e.g. in a multi-line selection).
     try {
       return this.value_.getSpanStart(this.start_) +
-          (this.start_.index === cursors.NODE_INDEX ? 0 : this.start_.index);
+          (this.start_.index === CURSOR_NODE_INDEX ? 0 : this.start_.index);
     } catch (e) {
       // When that happens, fall back to the start of this line.
       return 0;
@@ -391,7 +392,7 @@ export class EditableLine {
   get endOffset() {
     try {
       return this.value_.getSpanStart(this.end_) +
-          (this.end_.index === cursors.NODE_INDEX ? 0 : this.end_.index);
+          (this.end_.index === CURSOR_NODE_INDEX ? 0 : this.end_.index);
     } catch (e) {
       return this.value_.length;
     }
@@ -462,12 +463,12 @@ export class EditableLine {
     return this.value_;
   }
 
-  /** @return {!cursors.Cursor} */
+  /** @return {!Cursor} */
   get start() {
     return this.start_;
   }
 
-  /** @return {!cursors.Cursor} */
+  /** @return {!Cursor} */
   get end() {
     return this.end_;
   }
@@ -568,9 +569,9 @@ export class EditableLine {
       return false;
     }
 
-    const start = new cursors.Cursor(
+    const start = new Cursor(
         this.lineStartContainer_, this.localLineStartContainerOffset_);
-    const end = new cursors.Cursor(
+    const end = new Cursor(
         this.lineEndContainer_, this.localLineEndContainerOffset_ - 1);
     const localStart = start.deepEquivalent || start;
     const localEnd = end.deepEquivalent || end;
@@ -688,7 +689,7 @@ export class EditableLine {
         // When |start| and |end| are equal, that means we've reached
         // the end of the document. This is a node boundary as well.
         start.equals(end)) {
-      end = new cursors.Cursor(start.node, start.index + 1);
+      end = new Cursor(start.node, start.index + 1);
     }
     return new CursorRange(start, end);
   }

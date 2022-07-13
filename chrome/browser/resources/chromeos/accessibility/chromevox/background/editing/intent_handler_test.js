@@ -23,8 +23,6 @@ ChromeVoxIntentHandlerTest = class extends ChromeVoxNextE2ETest {
 
     window.Dir = constants.Dir;
     window.IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
-    window.Movement = cursors.Movement;
-    window.Unit = cursors.Unit;
   }
 };
 

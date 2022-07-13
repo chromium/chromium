@@ -20,6 +20,7 @@ ChromeVoxISearchTest = class extends ChromeVoxNextE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('ISearch', '/chromevox/background/panel/i_search.js');
+    await importModule('Cursor', '/common/cursors/cursor.js');
   }
 
   get linksAndHeadingsDoc() {
@@ -78,7 +79,7 @@ class FakeISearchHandler {
 AX_TEST_F('ChromeVoxISearchTest', 'Simple', async function() {
   const rootNode = await this.runWithLoadedTree(this.linksAndHeadingsDoc);
   const handler = new FakeISearchHandler(this);
-  const search = new ISearch(new cursors.Cursor(rootNode, 0));
+  const search = new ISearch(new Cursor(rootNode, 0));
   search.handler = handler;
 
   // Simple forward search.

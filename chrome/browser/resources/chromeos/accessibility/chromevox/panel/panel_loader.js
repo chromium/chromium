@@ -6,6 +6,8 @@
  * @fileoverview Loads the panel script.
  */
 
+goog.require('AncestryRecoveryStrategy');
+goog.require('AutomationPredicate');
 goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
 goog.require('BackgroundBridge');
@@ -26,13 +28,13 @@ goog.require('OutputSpeechProperties');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');
 goog.require('QueueMode');
+goog.require('RecoveryStrategy');
 goog.require('Spannable');
+goog.require('StringUtil');
 goog.require('TextLog');
 goog.require('TtsCategory');
 
 goog.require('constants');
-goog.require('cursors.Cursor');
-goog.require('cursors.Unit');
 goog.require('goog.i18n.MessageFormat');
 
 goog.require('ALL_NODE_MENU_DATA');
