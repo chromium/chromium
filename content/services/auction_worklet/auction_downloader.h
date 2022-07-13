@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/unguessable_token.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -57,9 +58,19 @@ class AuctionDownloader {
   void OnRedirect(const net::RedirectInfo& redirect_info,
                   const network::mojom::URLResponseHead& response_head,
                   std::vector<std::string>* removed_headers);
+  void OnResponseStarted(const GURL& final_url,
+                         const network::mojom::URLResponseHead& response_head);
+  std::string GetRequestId();
+  void TraceResult(bool failure,
+                   base::TimeTicks completion_time,
+                   int64_t encoded_data_length,
+                   int64_t decoded_body_length);
 
   const GURL source_url_;
   const MimeType mime_type_;
+  // Filled in lazily if tracing is actually used.
+  absl::optional<base::UnguessableToken> request_id_;
+
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   AuctionDownloaderCallback auction_downloader_callback_;
 };

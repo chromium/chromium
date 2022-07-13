@@ -106,6 +106,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.redirect_mode = network::mojom::RedirectMode::kError;
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
+  new_request.enable_load_timing = url_request.enable_load_timing;
 
   // CORS is not needed.
   //
