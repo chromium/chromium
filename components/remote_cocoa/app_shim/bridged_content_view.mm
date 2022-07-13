@@ -1378,11 +1378,13 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // On TouchBar Macs, the IME subsystem sometimes sends an invalid range with a
   // non-zero length. This will cause a DCHECK in gfx::Range, so repair it here.
   // See https://crbug.com/888782.
-  if (range.location == NSNotFound)
+  if (range.location == NSNotFound) {
     range.length = 0;
-  // Clamp lengths to avoid overflow, which will cause a checkfailure.
-  range.length = std::min(
-      range.length, std::numeric_limits<uint32_t>::max() - range.location);
+  } else {
+    // Clamp lengths to avoid overflow, which will cause a checkfailure.
+    range.length = std::min(
+        range.length, std::numeric_limits<uint32_t>::max() - range.location);
+  }
 
   std::u16string substring;
   gfx::Range actual_range = gfx::Range::InvalidRange();
