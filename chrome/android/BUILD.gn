@@ -1407,6 +1407,7 @@ android_library("chrome_unit_test_java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/tabpersistence:java",
     "//chrome/browser/ui/android/omnibox:java",
+    "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",

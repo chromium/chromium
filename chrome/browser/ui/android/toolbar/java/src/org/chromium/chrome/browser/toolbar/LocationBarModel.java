@@ -686,6 +686,40 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         final @BrandedColorScheme int brandedColorScheme =
                 OmniboxResourceProvider.getBrandedColorScheme(mContext, isIncognito(), color);
 
+        // Assign red color to security icon if the page shows security warning.
+        return getSecurityIconColorWithSecurityLevel(
+                getSecurityLevel(), brandedColorScheme, isIncognito());
+    }
+
+    /**
+     * Get the color for the security icon for different security levels.
+     * If we are using dark background (dark mode or incognito mode), we should return light red.
+     * If we are using light background (light mode, but not LIGHT_BRANDED_THEME), we should return
+     * dark red. The default brand color will be returned if no change is needed.
+     *
+     * @param connectionSecurityLevel The connection security level for the current website.
+     * @param brandedColorScheme The branded color scheme for the omnibox.
+     * @param isIncognito Whether the tab is in Incognito mode.
+     * @return The color resource for the security icon, returns -1 if doe snot need to change
+     *         color.
+     */
+    @VisibleForTesting
+    protected @ColorRes int getSecurityIconColorWithSecurityLevel(
+            @ConnectionSecurityLevel int connectionSecurityLevel,
+            @BrandedColorScheme int brandedColorScheme, boolean isIncognito) {
+        // Return regular color scheme if the website does not show warning.
+        if (connectionSecurityLevel == ConnectionSecurityLevel.DANGEROUS) {
+            // Assign red color only on light or dark background including Incognito mode.
+            // We will not change the security icon to red when BrandedColorScheme is
+            // LIGHT_BRANDED_THEME for the purpose of improving contrast.
+            if (isIncognito) {
+                // Use light red for Incognito mode.
+                return R.color.baseline_error_200;
+            } else if (brandedColorScheme == BrandedColorScheme.APP_DEFAULT) {
+                // Use adaptive red for light and dark background.
+                return R.color.default_red;
+            }
+        }
         return ThemeUtils.getThemedToolbarIconTintRes(brandedColorScheme);
     }
 
