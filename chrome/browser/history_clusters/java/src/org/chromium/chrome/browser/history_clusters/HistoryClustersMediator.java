@@ -268,6 +268,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             Drawable journeysDrawable =
                     AppCompatResources.getDrawable(mContext, R.drawable.ic_journeys);
             clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
+            clusterModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, isQueryLess);
             ListItem clusterItem = new ListItem(ItemType.CLUSTER, clusterModel);
             mModelList.add(clusterItem);
             if (isQueryLess) {

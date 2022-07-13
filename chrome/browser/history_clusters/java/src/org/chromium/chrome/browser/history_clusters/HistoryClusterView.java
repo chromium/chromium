@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -15,6 +17,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 
 class HistoryClusterView extends SelectableItemView<HistoryCluster> {
+    private View mDividerView;
     /**
      * Constructor for inflating from XML.
      */
@@ -25,6 +28,13 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mDividerView = new View(getContext(), null, 0, R.style.HorizontalDivider);
+        setDividerVisibility(false);
+        LayoutParams dividerLayoutParams = generateDefaultLayoutParams();
+        dividerLayoutParams.gravity = Gravity.BOTTOM;
+        dividerLayoutParams.width = LayoutParams.MATCH_PARENT;
+        dividerLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.divider_height);
+        addView(mDividerView, dividerLayoutParams);
         mEndButtonView.setVisibility(GONE);
     }
 
@@ -52,6 +62,10 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
     void setEndButtonDrawable(Drawable drawable) {
         mEndButtonView.setVisibility(VISIBLE);
         mEndButtonView.setImageDrawable(drawable);
+    }
+
+    void setDividerVisibility(boolean visible) {
+        mDividerView.setVisibility(visible ? VISIBLE : GONE);
     }
 
     public void setEndButtonClickListener(OnClickListener clickListener) {

@@ -66,6 +66,9 @@ class HistoryClustersViewBinder {
             OnClickListener clickListener = model.get(HistoryClustersItemProperties.CLICK_HANDLER);
             clusterView.setOnClickListener(clickListener);
             clusterView.setEndButtonClickListener(clickListener);
+        } else if (key == HistoryClustersItemProperties.DIVIDER_VISIBLE) {
+            clusterView.setDividerVisibility(
+                    model.get(HistoryClustersItemProperties.DIVIDER_VISIBLE));
         } else if (key == HistoryClustersItemProperties.END_BUTTON_DRAWABLE) {
             clusterView.setEndButtonDrawable(
                     model.get(HistoryClustersItemProperties.END_BUTTON_DRAWABLE));
