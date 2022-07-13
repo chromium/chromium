@@ -302,8 +302,6 @@ static_library("renderer") {
       "extensions/chrome_extensions_renderer_client.h",
       "extensions/extension_hooks_delegate.cc",
       "extensions/extension_hooks_delegate.h",
-      "extensions/identity_hooks_delegate.cc",
-      "extensions/identity_hooks_delegate.h",
       "extensions/media_galleries_custom_bindings.cc",
       "extensions/media_galleries_custom_bindings.h",
       "extensions/notifications_native_handler.cc",
