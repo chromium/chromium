@@ -363,7 +363,8 @@ NSInteger kFeedSymbolPointSize = 17;
     [menuButton setImage:DefaultSymbolTemplateWithPointSize(
                              kEllipsisFeedSymbol, kFeedSymbolPointSize)
                 forState:UIControlStateNormal];
-    menuButton.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    menuButton.backgroundColor =
+        [[UIColor colorNamed:kGrey200Color] colorWithAlphaComponent:0.8];
     menuButton.layer.cornerRadius = kButtonSize / 2;
     menuButton.clipsToBounds = YES;
   } else {
@@ -438,7 +439,6 @@ NSInteger kFeedSymbolPointSize = 17;
       [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
   [segmentedControl setTitleTextAttributes:attributes
                                   forState:UIControlStateNormal];
-  segmentedControl.backgroundColor = [UIColor colorNamed:kGrey100Color];
 
   // Set selected feed and tap action.
   segmentedControl.selectedSegmentIndex =
