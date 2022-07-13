@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
-#include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
@@ -62,9 +61,7 @@ class TaskModuleHandler;
 class CartHandler;
 class DriveHandler;
 class PhotosHandler;
-namespace ntp {
-class FeedHandler;
-}
+
 class NewTabPageUI
     : public ui::MojoWebUIController,
       public new_tab_page::mojom::PageHandlerFactory,
@@ -136,11 +133,6 @@ class NewTabPageUI
   // passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<photos::mojom::PhotosHandler> pending_receiver);
-
-  // Instantiates the implementor of ntp::feed::mojom::FeedHandler mojo
-  // interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<ntp::feed::mojom::FeedHandler> pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
   // Instantiates the implementor of the foo::mojom::FooHandler mojo interface
@@ -243,7 +235,6 @@ class NewTabPageUI
   std::unique_ptr<TaskModuleHandler> task_module_handler_;
   std::unique_ptr<DriveHandler> drive_handler_;
   std::unique_ptr<PhotosHandler> photos_handler_;
-  std::unique_ptr<ntp::FeedHandler> feed_handler_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

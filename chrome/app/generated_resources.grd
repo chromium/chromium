@@ -6846,9 +6846,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_TOAST" desc="Opt out toast for Modular NTP Desktop v1 First Run Experience.">
        You won't see cards on this page again
       </message>
-      <message name="IDS_NTP_MODULES_FEED_TITLE" desc="Title shown in the header of the Following feed NTP module on the new tab page showing updates from sites followed by the user.">
-        Following
-      </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">

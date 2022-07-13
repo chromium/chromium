@@ -48,7 +48,6 @@ copy("copy_mojom") {
   deps = [
     "//chrome/browser/cart:mojo_bindings_js__generator",
     "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js__generator",
-    "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_js__generator",
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js__generator",
     "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js__generator",
@@ -57,7 +56,6 @@ copy("copy_mojom") {
   sources = [
     "$root_gen_dir/mojom-webui/chrome/browser/cart/chrome_cart.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/task_module/task_module.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.js",
@@ -96,7 +94,6 @@ grit("resources") {
     ":build_grd",
     "//chrome/browser/cart:mojo_bindings_js",
     "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js",
-    "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_js",
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js",
     "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
@@ -207,7 +204,6 @@ generate_grd("build_grd") {
   grdp_files = [
     "$target_gen_dir/icons/resources.grdp",
     "$target_gen_dir/modules/cart/icons/resources.grdp",
-    "$target_gen_dir/modules/feed/icons/resources.grdp",
     "$target_gen_dir/modules/photos/icons/resources.grdp",
     "$target_gen_dir/modules/photos/images/resources.grdp",
     "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
@@ -217,7 +213,6 @@ generate_grd("build_grd") {
   deps = [
     "icons:build_grdp",
     "modules/cart/icons:build_grdp",
-    "modules/feed/icons:build_grdp",
     "modules/photos/icons:build_grdp",
     "modules/photos/images:build_grdp",
     "modules/recipes_v2/icons:build_grdp",
