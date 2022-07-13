@@ -13,6 +13,7 @@
 
 #include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
 #include "base/i18n/base_i18n_switches.h"
@@ -685,6 +686,23 @@ const base::Feature kNetworkServiceCodeIntegrity{
 
 #endif  // BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) &&
         // !defined(ADDRESS_SANITIZER)
+
+// A small ChromeBrowserMainExtraParts that invokes a callback when threads are
+// ready. Used to initialize ChromeContentBrowserClient data that needs the UI
+// thread.
+class ChromeBrowserMainExtraPartsThreadNotifier final
+    : public ChromeBrowserMainExtraParts {
+ public:
+  explicit ChromeBrowserMainExtraPartsThreadNotifier(
+      base::OnceClosure threads_ready_closure)
+      : threads_ready_closure_(std::move(threads_ready_closure)) {}
+
+  // ChromeBrowserMainExtraParts:
+  void PostCreateThreads() final { std::move(threads_ready_closure_).Run(); }
+
+ private:
+  base::OnceClosure threads_ready_closure_;
+};
 
 bool IsSSLErrorOverrideAllowedForOrigin(const GURL& request_url,
                                         PrefService* prefs) {
@@ -1441,9 +1459,14 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
       is_integration_test, &startup_data_);
 #else
   NOTREACHED();
-  main_parts = std::make_unique<ChromeBrowserManiParts>(is_integration_test,
+  main_parts = std::make_unique<ChromeBrowserMainParts>(is_integration_test,
                                                         &startup_data_);
 #endif
+
+  main_parts->AddParts(
+      std::make_unique<ChromeBrowserMainExtraPartsThreadNotifier>(
+          base::BindOnce(&ChromeContentBrowserClient::InitOnUIThread,
+                         weak_factory_.GetWeakPtr())));
 
   bool add_profiles_extra_parts = true;
 #if BUILDFLAG(IS_ANDROID)
@@ -1516,11 +1539,6 @@ void ChromeContentBrowserClient::PostAfterStartupTask(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::OnceClosure task) {
   AfterStartupTaskUtils::PostTask(from_here, task_runner, std::move(task));
-
-  InitNetworkContextsParentDirectory();
-
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  safe_browsing_service_ = g_browser_process->safe_browsing_service();
 }
 
 bool ChromeContentBrowserClient::IsBrowserStartupComplete() {
@@ -4697,7 +4715,12 @@ void ChromeContentBrowserClient::OverridePageVisibilityState(
   }
 }
 
-void ChromeContentBrowserClient::InitNetworkContextsParentDirectory() {
+void ChromeContentBrowserClient::InitOnUIThread() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  safe_browsing_service_ = g_browser_process->safe_browsing_service();
+
+  // Initialize `network_contexts_parent_directory_`.
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(!user_data_dir.empty());

@@ -831,8 +831,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   friend class DisableWebRtcEncryptionFlagTest;
   friend class InProcessBrowserTest;
 
-  // Initializes |network_contexts_parent_directory_| on the UI thread.
-  void InitNetworkContextsParentDirectory();
+  // Initializes `network_contexts_parent_directory_` and
+  // `safe_browsing_service_` on the UI thread.
+  void InitOnUIThread();
 
   // Copies disable WebRTC encryption switch depending on the channel.
   static void MaybeCopyDisableWebRtcEncryptionSwitch(
