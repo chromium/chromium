@@ -406,6 +406,10 @@ bookmarks::BookmarkModel* GetBookmarkModelForWebState(
 
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
+// Presenter used to display accessories over the toolbar (e.g. Find In Page).
+@property(nonatomic, strong)
+    ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
+
 // Command handler for text zoom commands
 @property(nonatomic, weak) id<TextZoomCommands> textZoomHandler;
 
@@ -501,6 +505,7 @@ bookmarks::BookmarkModel* GetBookmarkModelForWebState(
     [_sideSwipeController setSwipeDelegate:self];
     _bookmarkInteractionController = dependencies.bookmarkInteractionController;
     self.bubblePresenter = dependencies.bubblePresenter;
+    self.toolbarAccessoryPresenter = dependencies.toolbarAccessoryPresenter;
     self.ntpCoordinator = dependencies.ntpCoordinator;
     self.popupMenuCoordinator = dependencies.popupMenuCoordinator;
     self.primaryToolbarCoordinator = dependencies.primaryToolbarCoordinator;
@@ -3846,19 +3851,6 @@ bookmarks::BookmarkModel* GetBookmarkModelForWebState(
     (FindBarCoordinator*)findBarCoordinator {
   [self setFramesForHeaders:[self headerViews]
                    atOffset:[self currentHeaderOffset]];
-}
-
-#pragma mark - Toolbar Accessory Methods
-
-- (ToolbarAccessoryPresenter*)toolbarAccessoryPresenter {
-  if (_toolbarAccessoryPresenter) {
-    return _toolbarAccessoryPresenter;
-  }
-
-  _toolbarAccessoryPresenter =
-      [[ToolbarAccessoryPresenter alloc] initWithIsIncognito:_isOffTheRecord];
-  _toolbarAccessoryPresenter.baseViewController = self;
-  return _toolbarAccessoryPresenter;
 }
 
 #pragma mark - NewTabPageTabHelperDelegate

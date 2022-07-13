@@ -61,6 +61,7 @@ class PrerenderService;
 typedef struct {
   PrerenderService* prerenderService;
   BubblePresenter* bubblePresenter;
+  ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
   PopupMenuCoordinator* popupMenuCoordinator;
   DownloadManagerCoordinator* downloadManagerCoordinator;
   NewTabPageCoordinator* ntpCoordinator;
@@ -137,10 +138,6 @@ typedef struct {
 // TODO(crbug.com/1272491): Refactor snapshotting to remove the need for this
 // property.
 @property(nonatomic, strong) UIViewController* sadTabViewController;
-
-// Presenter used to display accessories over the toolbar (e.g. Find In Page).
-@property(nonatomic, strong)
-    ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
 
 // Positioner for activity services attached to the toolbar.
 @property(nonatomic, readonly) id<ActivityServicePositioner>

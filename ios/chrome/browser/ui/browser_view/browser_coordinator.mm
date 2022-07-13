@@ -353,6 +353,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   KeyCommandsProvider* _keyCommandsProvider;
   PrerenderService* _prerenderService;
   BubblePresenter* _bubblePresenter;
+  ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   NewTabPageCoordinator* _ntpCoordinator;
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
   PrimaryToolbarCoordinator* _primaryToolbarCoordinator;
@@ -614,6 +615,9 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [_dispatcher startDispatchingToTarget:_bubblePresenter
                             forProtocol:@protocol(HelpCommands)];
 
+  _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
+      initWithIsIncognito:self.browser->GetBrowserState()->IsOffTheRecord()];
+
   _sideSwipeController =
       [[SideSwipeController alloc] initWithBrowser:self.browser];
   [_sideSwipeController setSnapshotDelegate:self];
@@ -683,6 +687,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   _viewControllerDependencies.prerenderService = _prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
+  _viewControllerDependencies.toolbarAccessoryPresenter =
+      _toolbarAccessoryPresenter;
   _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
   _viewControllerDependencies.downloadManagerCoordinator =
       self.downloadManagerCoordinator;
@@ -714,6 +720,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   _bubblePresenter.delegate = self.viewController;
   _bubblePresenter.rootViewController = self.viewController;
 
+  _toolbarAccessoryPresenter.baseViewController = self.viewController;
+
   self.qrScannerCoordinator.baseViewController = self.viewController;
   [self.qrScannerCoordinator start];
 
@@ -735,6 +743,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 - (void)destroyViewControllerDependencies {
   _viewControllerDependencies.prerenderService = nil;
   _viewControllerDependencies.bubblePresenter = nil;
+  _viewControllerDependencies.toolbarAccessoryPresenter = nil;
   _viewControllerDependencies.popupMenuCoordinator = nil;
   _viewControllerDependencies.downloadManagerCoordinator = nil;
   _viewControllerDependencies.ntpCoordinator = nil;
@@ -762,6 +771,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [_dispatcher stopDispatchingToTarget:_bubblePresenter];
   [_bubblePresenter stop];
   _bubblePresenter = nil;
+  _toolbarAccessoryPresenter = nil;
 
   _prerenderService = nil;
   _fullscreenController = nullptr;
@@ -1280,12 +1290,11 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   self.findBarCoordinator =
       [[FindBarCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser];
-  self.findBarCoordinator.presenter =
-      self.viewController.toolbarAccessoryPresenter;
+  self.findBarCoordinator.presenter = _toolbarAccessoryPresenter;
   self.findBarCoordinator.delegate = self;
   self.findBarCoordinator.presentationDelegate = self.viewController;
 
-  if (self.viewController.toolbarAccessoryPresenter.isPresenting) {
+  if (_toolbarAccessoryPresenter.isPresenting) {
     self.nextToolbarCoordinator = self.findBarCoordinator;
     [self closeTextZoom];
     return;
@@ -1453,11 +1462,10 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   self.textZoomCoordinator = [[TextZoomCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-  self.textZoomCoordinator.presenter =
-      self.viewController.toolbarAccessoryPresenter;
+  self.textZoomCoordinator.presenter = _toolbarAccessoryPresenter;
   self.textZoomCoordinator.delegate = self;
 
-  if (self.viewController.toolbarAccessoryPresenter.isPresenting) {
+  if (_toolbarAccessoryPresenter.isPresenting) {
     self.nextToolbarCoordinator = self.textZoomCoordinator;
     [self closeFindInPage];
     return;
