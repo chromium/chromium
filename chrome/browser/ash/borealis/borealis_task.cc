@@ -134,6 +134,11 @@ void CreateDiskImage::RunInternal(BorealisContext* context) {
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   request.set_disk_size(0);
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisStorageBallooning)) {
+    request.set_filesystem_type(vm_tools::concierge::EXT4);
+    request.set_storage_ballooning(true);
+  }
 
   ash::ConciergeClient::Get()->CreateDiskImage(
       std::move(request), base::BindOnce(&CreateDiskImage::OnCreateDiskImage,
