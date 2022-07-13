@@ -33,16 +33,14 @@ const CGFloat kPreferredMaxWidth = 73;
 
 @implementation ContentSuggestionsTileView
 
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame placeholder:(BOOL)isPlaceholder {
   self = [super initWithFrame:frame];
   if (self) {
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
-    _titleLabel.preferredMaxLayoutWidth =
-        IsContentSuggestionsUIModuleRefreshEnabled() ? kIconSize
-                                                     : kPreferredMaxWidth;
+    _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
     _titleLabel.numberOfLines = kLabelNumLines;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       _titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -76,7 +74,7 @@ const CGFloat kPreferredMaxWidth = 73;
     AddSameCenterConstraints(_imageContainerView, backgroundView);
     UIView* containerView = backgroundView;
 
-    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+    if (IsContentSuggestionsUIModuleRefreshEnabled() && isPlaceholder) {
       ApplyVisualConstraintsWithMetrics(
           @[ @"V:|[container]-(space)-[title]-(>=0)-|" ],
           @{@"container" : containerView, @"title" : _titleLabel},

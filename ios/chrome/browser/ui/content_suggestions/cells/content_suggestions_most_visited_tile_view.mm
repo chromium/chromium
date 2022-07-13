@@ -30,8 +30,8 @@
 
 @implementation ContentSuggestionsMostVisitedTileView
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
+- (instancetype)initWithFrame:(CGRect)frame placeholder:(BOOL)isPlaceholder {
+  self = [super initWithFrame:frame placeholder:isPlaceholder];
   if (self) {
     _faviconView = [[FaviconView alloc] init];
     _faviconView.font = [UIFont systemFontOfSize:22];
@@ -50,7 +50,7 @@
 
 - (instancetype)initWithConfiguration:
     (ContentSuggestionsMostVisitedItem*)config {
-  self = [self initWithFrame:CGRectZero];
+  self = [self initWithFrame:CGRectZero placeholder:!config];
   if (self) {
     if (!config) {
       // If there is no config, then this is a placeholder tile.
