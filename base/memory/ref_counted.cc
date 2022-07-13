@@ -68,7 +68,7 @@ void RefCountedBase::ReleaseImpl() const {
 }
 #endif
 
-#if !defined(ARCH_CPU_X86_FAMILY)
+#if !(defined(ARCH_CPU_X86_FAMILY) || defined(__ARM_FEATURE_ATOMICS))
 bool RefCountedThreadSafeBase::Release() const {
   return ReleaseImpl();
 }

@@ -171,9 +171,15 @@ class BASE_EXPORT RefCountedThreadSafeBase {
 #endif
 
 // Release and AddRef are suitable for inlining on X86 because they generate
-// very small code sequences. On other platforms (ARM), it causes a size
-// regression and is probably not worth it.
-#if defined(ARCH_CPU_X86_FAMILY)
+// very small code sequences.
+//
+// ARM64 devices supporting ARMv8.1-A atomic instructions generate very little
+// code, e.g. fetch_add() with acquire ordering is a single instruction (ldadd),
+// vs LL/SC in previous ARM architectures. Inline it there as well.
+//
+// On other platforms (e.g. ARM), it causes a size regression and is probably
+// not worth it.
+#if defined(ARCH_CPU_X86_FAMILY) || defined(__ARM_FEATURE_ATOMICS)
   // Returns true if the object should self-delete.
   bool Release() const { return ReleaseImpl(); }
   void AddRef() const { AddRefImpl(); }
