@@ -551,7 +551,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "EC3DE21E048B67319893889529354DFBFA96FD23"  // Smart Card Connector
     ]
