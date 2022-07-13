@@ -90,6 +90,9 @@ div[slot='panel'] {
 
 #cert-field-value {
   flex: 1;
+  /* The export button may not always be visible, so put the margin here so
+   * that the cert-field-value section always has margin after it. */
+  margin-block-end: 10px;
   /* Minimum height enough for 3 lines of text. */
   min-height: 48px;
 }
@@ -113,6 +116,5 @@ html {
   float: right;
   margin-bottom: 20px;
   margin-inline-start: 1px;
-  margin-top: 10px;
 }
 
