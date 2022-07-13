@@ -8584,47 +8584,6 @@ TEST_F(FormStructureTestImpl,
   EXPECT_EQ("-shipping-default", form_structure.field(2)->section);
 }
 
-// Tests if the autocomplete section name other than 'shipping' and 'billing'
-// are ignored.
-TEST_F(FormStructureTestImpl, IgnoreAribtraryAutocompleteSectionName) {
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillUseNewSectioningMethod);
-
-  FormData form;
-  form.url = GURL("http://foo.com");
-  FormFieldData field;
-  field.form_control_type = "text";
-  field.max_length = 10000;
-
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "section-red ship name";
-  field.unique_renderer_id = MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Country";
-  field.name = u"country";
-  field.autocomplete_attribute = "section-blue shipping country";
-  field.unique_renderer_id = MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  FormStructure form_structure(form);
-
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, ADDRESS_HOME_COUNTRY);
-
-  std::vector<FormStructure*> forms;
-  forms.push_back(&form_structure);
-
-  form_structure.identify_sections_for_testing();
-
-  // Assert the correct number of fields.
-  ASSERT_EQ(2U, form_structure.field_count());
-
-  EXPECT_EQ("blue-shipping-default", form_structure.field(0)->section);
-  EXPECT_EQ("blue-shipping-default", form_structure.field(1)->section);
-}
-
 TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
   FormData form;
   form.url = GURL("http://foo.com");

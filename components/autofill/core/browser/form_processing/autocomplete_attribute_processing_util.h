@@ -31,6 +31,7 @@ struct AutocompleteParsingResult {
   HtmlFieldMode mode;
   // Type hints are parsed and validated, but otherwise unused.
   HtmlFieldType field_type;
+  // webauthn is parsed, but otherwise unused.
 };
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     const AutofillField& field);
