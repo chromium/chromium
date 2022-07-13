@@ -35,7 +35,6 @@
 #include "ipc/ipc_logging.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
@@ -97,10 +96,8 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
       child_base_name += kMacHelperSuffix_renderer;
     } else if (flags == CHILD_GPU) {
       child_base_name += kMacHelperSuffix_gpu;
-#if BUILDFLAG(ENABLE_PLUGINS)
     } else if (flags == CHILD_PLUGIN) {
       child_base_name += kMacHelperSuffix_plugin;
-#endif  // ENABLE_PLUGINS
     } else if (flags > CHILD_EMBEDDER_FIRST) {
       return GetContentClient()->GetChildProcessPath(flags, child_path);
     } else {
