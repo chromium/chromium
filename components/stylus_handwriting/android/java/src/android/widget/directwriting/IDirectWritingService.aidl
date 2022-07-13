@@ -145,7 +145,40 @@ interface IDirectWritingService {
     boolean onStopRecognition(in Bundle bundle) = 11;
 
     /**
-    * Gets configuration from Remote service after service connected
+    * When current editing element bounds are changed in view, notify the service.
+    *
+    * @param bundle is KEY_BUNDLE_EDIT_RECT, KEY_BUNDLE_ROOT_VIEW_RECT
+    *                  KEY_BUNDLE_SERVICE_HOST_SOURCE for browser
+    * @returns true if onBoundedEditTextChanged successful
+    */
+    boolean onBoundedEditTextChanged(in Bundle bundle) = 12;
+
+    /**
+    * When window lost focus, notify the service
+    *
+    * @param packageName which is currently bound to service.
+    */
+    void onWindowFocusLost(String packageName) = 13;
+
+    /**
+    * Dispatch Motion Event to service for drawing
+    *
+    * @param bundle is KEY_BUNDLE_EVENT, KEY_BUNDLE_ROOT_VIEW_RECT
+    */
+    void onDispatchEvent(in Bundle bundle) = 14;
+
+    /**
+    * Notify to Direct Writing service when current Editing element's paste popup is shown to hide
+    * the direct writing service floating toolbar. This API can be used for any use case where we
+    * wish to hide this toolbar ex: changed focus to another tab, tap with finger instead of stylus,
+    * and so on.
+    *
+    * @param bundle is KEY_BUNDLE_SERVICE_HOST_SOURCE for browser
+    */
+    void onEditTextActionModeStarted(in Bundle bundle) = 15;
+
+    /**
+    * Gets configuration from Remote service after service is connected.
     *
     * @param bundle is for configuration
     *        KEY_BUNDLE_CONFIG_HIDE_DELAY,
@@ -155,4 +188,33 @@ interface IDirectWritingService {
     *        KEY_BUNDLE_CONFIG_TRIGGER_HORIZONTAL_SPACE_DEFAULT
     */
     void getConfiguration(inout Bundle bundle) = 16;
+
+    /**
+    * Notify to Direct Writing service when Edit field updates ImeOptions
+    *
+    * @param imeOptions is ImeOptions
+    */
+    void onUpdateImeOptions(int imeOptions) = 17;
+
+    // { Common Extra
+    /**
+    * Extra Command for future use.
+    * Note: This API is unused by Chromium for now. It is defined as per aidl from Samsung platform.
+    *
+    * @param action is for future use
+    * @param bundle is for future use
+    */
+    void onExtraCommand(String action, inout Bundle bundle) = 900;
+    // Common Extra }
+
+    // { TextView
+    /**
+    * TextView Extra Command for future use.
+    * Note: This API is unused by Chromium for now. It is defined as per aidl from Samsung platform.
+    *
+    * @param action is for future use
+    * @param bundle is for future use
+    */
+    void onTextViewExtraCommand(String action, inout Bundle bundle) = 901;
+    // TextView }
 }

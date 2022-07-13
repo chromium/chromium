@@ -46,6 +46,14 @@ interface IDirectWritingServiceCallback {
 
     // { EditText Text and Selection Setter
     /**
+    * Sets text and cursor in bounded edit text
+    * Should run on main looper
+    *
+    * @param text to set in edit text
+    * @param index to set cursor position in edit text
+    */
+    void setTextSelection(CharSequence text, int index) = 20;
+    /**
     * Same method with EditText
     * Should run on main looper
     */
@@ -61,7 +69,19 @@ interface IDirectWritingServiceCallback {
     /**
     * Same method with EditText
     */
+    int getSelectionStart() = 30;
+    /**
+    * Same method with EditText
+    */
+    int getSelectionEnd() = 31;
+    /**
+    * Same method with EditText
+    */
     int getOffsetForPosition(float x, float y) = 32;
+    /**
+    * Same method with EditText
+    */
+    CharSequence getText() = 33;
     /**
     * Same method with EditText
     */
@@ -97,6 +117,22 @@ interface IDirectWritingServiceCallback {
     * Same method with EditText
     */
     int getPaddingEnd() = 46;
+    /**
+    * Same method with EditText
+    */
+    int getRight() = 47;
+    /**
+    * Same method with EditText
+    */
+    int getLeft() = 48;
+    /**
+    * Same method with EditText
+    */
+    int getTop() = 49;
+    /**
+    * Same method with EditText
+    */
+    int getBottom() = 50;
     /**
     * Same method with EditText
     */
@@ -174,13 +210,67 @@ interface IDirectWritingServiceCallback {
     Rect getTextAreaRect(int line) = 84;
     // EditText layout Getter }
 
+    // { VI
+    /**
+    * Gets location of cursor for VI
+    */
+    PointF getCursorLocation(int selectionStart) = 90;
+    // VI }
+
+    // { EditText EditInfo Getter
+    /**
+    * Same method with EditText
+    */
+    String getPrivateImeOptions() = 100;
+    /**
+    * Same method with EditText
+    */
+    int getImeOptions() = 101;
+    /**
+    * Same method with EditText
+    */
+    int getInputType() = 102;
+    // EditText EditInfo Getter }
+
+    // { InputMethod
+    /**
+    * Same method with EditText
+    * Should run on main looper
+    */
+    void onEditorAction(int actionCode) = 110;
+    /**
+    * Executes INPUT_METHOD_SERVICE sendAppPrivateCommand to send command to Keyboard
+    *
+    * @param action to send to keyboard
+    * @param bundle to send to keyboard
+    */
+    void onAppPrivateCommand(String action, in Bundle bundle) = 111;
+    /**
+    * Hides keyboard forcely if it is showing for current input.
+    */
+    void semForceHideSoftInput() = 112;
+    // InputMethod }
+
     // { Common Extra
     /**
-    * Extra Command for furture use
+    * Extra Command for future use
     *
-    * @param action is for furture use
-    * @param bundle is for furture use
+    * @param action is for future use
+    * @param bundle is for future use
     */
     void onExtraCommand(String action, inout Bundle bundle) = 900;
     // Common Extra }
+
+    // { TextView
+    /**
+    * TextView Extra Command for future use.
+    * Note: This Callback API receives the stylus writing Gesture recognized by service along with
+    * gesture data bundle containing gesture coordinates, text to insert and alternate text to be
+    * inserted in case gesture is not done over a valid text position in input.
+    *
+    * @param action is for future use
+    * @param bundle is for future use
+    */
+    void onTextViewExtraCommand(String action, inout Bundle bundle) = 901;
+    // TextView }
 }

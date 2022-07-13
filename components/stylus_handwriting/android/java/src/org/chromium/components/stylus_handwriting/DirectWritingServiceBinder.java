@@ -208,15 +208,35 @@ class DirectWritingServiceBinder {
         }, "onStopRecognition");
     }
 
-    // TODO(mahesh.ma): Add implementations to below stub APIs when the direct writing service aidl
-    // interface is added.
-    void updateEditorInfo(EditorInfo editorInfo) {}
+    void updateEditorInfo(EditorInfo editorInfo) {
+        tryRunOnService((remoteDwService) -> {
+            remoteDwService.onUpdateImeOptions(editorInfo.imeOptions);
+        }, "updateEditorInfo");
+    }
 
-    void updateEditableBounds(Rect editableBounds, View rootView) {}
+    void updateEditableBounds(Rect editableBounds, View rootView) {
+        tryRunOnService((remoteDwService) -> {
+            remoteDwService.onBoundedEditTextChanged(
+                    DirectWritingBundleUtil.buildBundle(editableBounds, rootView));
+        }, "updateEditableBounds");
+    }
 
-    void onDispatchEvent(MotionEvent me, View rootView) {}
+    void onDispatchEvent(MotionEvent me, View rootView) {
+        tryRunOnService((remoteDwService) -> {
+            remoteDwService.onDispatchEvent(DirectWritingBundleUtil.buildBundle(me, rootView));
+        }, "onDispatchEvent");
+    }
 
-    private void onWindowFocusLost(String packageName) {}
+    private void onWindowFocusLost(String packageName) {
+        tryRunOnService((remoteDwService) -> {
+            remoteDwService.onWindowFocusLost(packageName);
+        }, "onWindowFocusLost");
+    }
 
-    void hideDWToolbar() {}
+    void hideDWToolbar() {
+        tryRunOnService((remoteDwService) -> {
+            Bundle bundle = DirectWritingBundleUtil.buildBundle();
+            remoteDwService.onEditTextActionModeStarted(bundle);
+        }, "hideDWToolbar");
+    }
 }
