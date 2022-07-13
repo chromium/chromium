@@ -7203,3 +7203,5 @@ crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure Pass ]
 crbug.com/1344210 [ Linux Debug ] http/tests/devtools/elements/styles-2/page-reload-update-sidebar.js [ Failure Pass ]
 crbug.com/1344175 [ Mac12 ] external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-root.html [ Failure Pass ]
+# Flaking on WebKit Linux MSAN
+crbug.com/1344277 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Crash Failure Pass ]
