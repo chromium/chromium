@@ -17,6 +17,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
 import android.text.TextUtils;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -133,8 +135,6 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_xhr_callback_parent_frame.html";
     private static final String NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE =
             BASE_PATH + "navigation_from_xhr_callback_and_short_timeout.html";
-    private static final String NAVIGATION_FROM_XHR_CALLBACK_AND_LONG_TIMEOUT_PAGE =
-            BASE_PATH + "navigation_from_xhr_callback_and_long_timeout.html";
     private static final String NAVIGATION_WITH_FALLBACK_URL_PAGE =
             BASE_PATH + "navigation_with_fallback_url.html";
     private static final String NAVIGATION_WITH_FALLBACK_URL_PARENT_FRAME_PAGE =
@@ -170,6 +170,9 @@ public class UrlOverridingTest {
 
     @Mock
     private RedirectHandler mRedirectHandler;
+
+    @Spy
+    private RedirectHandler mSpyRedirectHandler;
 
     private static class TestTabObserver extends EmptyTabObserver {
         private final CallbackHelper mFinishCallback;
@@ -579,11 +582,30 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
-    public void testNavigationFromXHRCallbackAndLongTimeout() {
+    public void testNavigationFromXHRCallbackAndLongTimeout() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        loadUrlAndWaitForIntentUrl(
-                mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_LONG_TIMEOUT_PAGE), true,
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> RedirectHandlerTabHelper.swapHandlerFor(tab, mSpyRedirectHandler));
+
+        // This is a little fragile to code changes, but better than waiting 15 real seconds.
+        Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
+                .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
+                .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
+                .doReturn(SystemClock.elapsedRealtime()
+                        + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
+                .when(mSpyRedirectHandler)
+                .currentRealtime();
+
+        @OverrideUrlLoadingResultType
+        int result = loadUrlAndWaitForIntentUrl(
+                mTestServer.getURL(NAVIGATION_FROM_XHR_CALLBACK_AND_SHORT_TIMEOUT_PAGE), true,
                 false);
+
+        Assert.assertEquals(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, result);
+
+        assertMessagePresent();
     }
 
     @Test

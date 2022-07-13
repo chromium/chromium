@@ -931,6 +931,24 @@ public class ExternalNavigationHandler {
     }
 
     /**
+     * See RedirectHandler#NAVIGATION_CHAIN_TIMEOUT_MILLIS for details. We don't want an unattended
+     * page to redirect to an app.
+     */
+    private boolean isNavigationChainExpired(ExternalNavigationParams params) {
+        if (params.getRedirectHandler() != null
+                && params.getRedirectHandler().isNavigationChainExpired()) {
+            if (DEBUG) {
+                Log.i(TAG,
+                        "Navigation chain expired "
+                                + "(a page waited more than %d seconds to redirect).",
+                        RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * If the intent can't be resolved, we should fall back to the browserFallbackUrl, or try to
      * find the app on the market if no fallback is provided.
      */
@@ -1471,18 +1489,13 @@ public class ExternalNavigationHandler {
         QueryIntentActivitiesSupplier resolvingInfos =
                 new QueryIntentActivitiesSupplier(targetIntent);
 
-        boolean requiresPromptForExternalIntent = false;
-
-        if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent, resolvingInfos)) {
-            requiresPromptForExternalIntent = true;
-        }
-
         boolean intentMatchesNonDefaultWebApk =
                 intentMatchesNonDefaultWebApk(params, resolvingInfos);
-        if (!preferToShowIntentPicker(params, isExternalProtocol, incomingIntentRedirect,
-                    intentMatchesNonDefaultWebApk)) {
-            requiresPromptForExternalIntent = true;
-        }
+
+        boolean requiresPromptForExternalIntent = isNavigationChainExpired(params)
+                || redirectShouldStayInApp(params, isExternalProtocol, targetIntent, resolvingInfos)
+                || !preferToShowIntentPicker(params, isExternalProtocol, incomingIntentRedirect,
+                        intentMatchesNonDefaultWebApk);
 
         // Short-circuit expensive quertyIntentActivities calls below since we won't prompt anyways
         // for protocols the browser can handle.

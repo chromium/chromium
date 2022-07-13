@@ -24,6 +24,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ConsoleMessageLevel;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -103,8 +104,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     @Override
-    public boolean shouldIgnoreNavigation(
-            NavigationHandle navigationHandle, GURL escapedUrl, boolean applyUserGestureCarryover) {
+    public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
         mClient.onNavigationStarted(navigationHandle);
 
         GURL url = escapedUrl;
@@ -135,12 +135,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             return false;
         }
 
-        // Temporarily apply User Gesture Carryover exception for resource requests to the
-        // NavigationHandle.
-        if (applyUserGestureCarryover) {
-            assert !navigationHandle.hasUserGesture();
-            navigationHandle.setUserGestureForCarryover(true);
-        }
         redirectHandler.updateNewUrlLoading(navigationHandle.pageTransition(),
                 navigationHandle.isRedirect(), navigationHandle.hasUserGesture(),
                 lastUserInteractionTime, getLastCommittedEntryIndex(), isInitialNavigation());
@@ -154,10 +148,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         }
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
-
-        if (applyUserGestureCarryover) {
-            navigationHandle.setUserGestureForCarryover(false);
-        }
 
         boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
         String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
@@ -184,6 +174,16 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 }
                 return false;
         }
+    }
+
+    @Override
+    public void onResourceRequestWithGesture() {
+        // LINK is the default transition type, and is generally used for everything coming from a
+        // renderer that isn't a form submission (or subframe).
+        @PageTransition
+        int transition = PageTransition.LINK;
+        mClient.getOrCreateRedirectHandler().updateNewUrlLoading(transition, false, true,
+                mClient.getLastUserInteractionTime(), getLastCommittedEntryIndex(), false);
     }
 
     /**

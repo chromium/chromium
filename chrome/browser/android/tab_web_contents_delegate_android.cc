@@ -439,7 +439,7 @@ void TabWebContentsDelegateAndroid::UpdateUserGestureCarryoverInfo(
   auto* intercept_navigation_delegate =
       navigation_interception::InterceptNavigationDelegate::Get(web_contents);
   if (intercept_navigation_delegate)
-    intercept_navigation_delegate->UpdateLastUserGestureCarryoverTimestamp();
+    intercept_navigation_delegate->OnResourceRequestWithGesture();
 }
 
 content::PictureInPictureResult

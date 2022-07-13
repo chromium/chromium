@@ -67,6 +67,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 /**
@@ -2541,6 +2542,36 @@ public class ExternalNavigationHandlerTest {
                 .withIsRendererInitiated(false)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
+    }
+
+    @Test
+    @SmallTest
+    public void testExpiredNavigationChain() {
+        mDelegate.add(new IntentActivity(YOUTUBE_MOBILE_URL, YOUTUBE_PACKAGE_NAME));
+
+        AtomicBoolean isExpired = new AtomicBoolean(false);
+        RedirectHandler redirectHandler = new RedirectHandler() {
+            @Override
+            public boolean isNavigationChainExpired() {
+                return isExpired.get();
+            }
+        };
+
+        // User clicks a link.
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false);
+
+        // Redirects to youtube with javascript simulated link click.
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, false, 0, 1, false);
+        checkUrl(YOUTUBE_MOBILE_URL)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+
+        // Page takes > 15 seconds to redirect.
+        isExpired.set(true);
+        checkUrl(YOUTUBE_MOBILE_URL)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
     }
 
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {

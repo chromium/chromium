@@ -304,14 +304,6 @@ public class NavigationHandle {
     }
 
     /**
-     * TODO(https://crbug.com/1310013): This is a hack, restoring M99 Chrome behavior for gesture
-     * carryover on resource requests. To be deleted as soon as a better alternative is agreed upon.
-     */
-    public void setUserGestureForCarryover(boolean hasUserGesture) {
-        mHasUserGesture = hasUserGesture;
-    }
-
-    /**
      * Whether this navigation was initiated by a page reload.
      */
     public boolean isReload() {

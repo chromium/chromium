@@ -11,6 +11,8 @@ import android.os.SystemClock;
 import android.provider.Browser;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
@@ -39,6 +41,14 @@ public class RedirectHandler {
     private static final int NAVIGATION_TYPE_FROM_RELOAD = 4;
     private static final int NAVIGATION_TYPE_OTHER = 5;
 
+    // Analogous to Transient User Activation in blink (See
+    // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation). We don't
+    // want an "unattended" page to redirect to an app as the user is likely not expecting that.
+    // However, historically there was no timeout like this for external navigation (and instead
+    // touching the screen reset the navigation chain), so this timeout is very generous and should
+    // allow for redirect chains.
+    public static final long NAVIGATION_CHAIN_TIMEOUT_MILLIS = 15000;
+
     private static class IntentState {
         final Intent mInitialIntent;
         final boolean mIsCustomTabIntent;
@@ -57,12 +67,14 @@ public class RedirectHandler {
         }
     }
 
-    private static class NavigationState {
+    private class NavigationState {
         final int mInitialNavigationType;
         final boolean mHasUserStartedNonInitialNavigation;
         boolean mIsOnEffectiveRedirectChain;
         boolean mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
         boolean mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
+        // TODO(https://crbug.com/1286053): Plumb through the user activation time from blink.
+        final long mNavigationChainStartTime = currentRealtime();
 
         NavigationState(int initialNavigationType, boolean hasUserStartedNonInitialNavigation) {
             mInitialNavigationType = initialNavigationType;
@@ -350,6 +362,16 @@ public class RedirectHandler {
         return mIntentState != null ? mIntentState.mInitialIntent : null;
     }
 
+    /**
+     * @return whether the navigation chain has expired, meaning
+     * {@link #NAVIGATION_CHAIN_TIMEOUT_MILLIS} milliseconds passed since a navigation initiated by
+     * the user was started.
+     */
+    public boolean isNavigationChainExpired() {
+        return currentRealtime() - mNavigationState.mNavigationChainStartTime
+                > NAVIGATION_CHAIN_TIMEOUT_MILLIS;
+    }
+
     public void maybeLogExternalRedirectBlockedWithMissingGesture() {
         if (mNavigationState.mInitialNavigationType
                 == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE) {
@@ -361,5 +383,11 @@ public class RedirectHandler {
             RecordHistogram.recordTimesHistogram(
                     "Android.Intent.BlockedExternalNavLastGestureTime", millisSinceLastGesture);
         }
+    }
+
+    // Facilitates simulated waiting in tests.
+    @VisibleForTesting
+    public long currentRealtime() {
+        return SystemClock.elapsedRealtime();
     }
 }

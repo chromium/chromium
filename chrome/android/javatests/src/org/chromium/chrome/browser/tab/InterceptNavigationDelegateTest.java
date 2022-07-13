@@ -111,11 +111,10 @@ public class InterceptNavigationDelegateTest {
                     new InterceptNavigationDelegateClientImpl(tab);
             InterceptNavigationDelegateImpl delegate = new InterceptNavigationDelegateImpl(client) {
                 @Override
-                public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle,
-                        GURL escapedUrl, boolean applyUserGestureCarryover) {
+                public boolean shouldIgnoreNavigation(
+                        NavigationHandle navigationHandle, GURL escapedUrl) {
                     mNavParamHistory.add(navigationHandle);
-                    return super.shouldIgnoreNavigation(
-                            navigationHandle, escapedUrl, applyUserGestureCarryover);
+                    return super.shouldIgnoreNavigation(navigationHandle, escapedUrl);
                 }
             };
             client.initializeWithDelegate(delegate);

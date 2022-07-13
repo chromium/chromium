@@ -23,7 +23,7 @@ public abstract class InterceptNavigationDelegate {
      */
     @CalledByNative
     public abstract boolean shouldIgnoreNavigation(
-            NavigationHandle navigationHandle, GURL escapedUrl, boolean applyUserGestureCarryover);
+            NavigationHandle navigationHandle, GURL escapedUrl);
 
     /**
      * This method is called for navigations to external protocols, which on Android are handled in
@@ -50,6 +50,14 @@ public abstract class InterceptNavigationDelegate {
                 true /* isExternalProtocol */,
                 0 /* navigationId - doesn't correspond to a native NavigationHandle*/,
                 false /* isPageActivation */, false /* isReload */);
-        shouldIgnoreNavigation(navigationHandle, escapedUrl, false);
+        shouldIgnoreNavigation(navigationHandle, escapedUrl);
     }
+
+    /**
+     * This method is called when a main frame requests a resource with a user gesture (eg. xhr,
+     * fetch, etc.). The page may wish to redirect to an app after the resource requests completes,
+     * which may be after blink user activation has expired.
+     */
+    @CalledByNative
+    protected void onResourceRequestWithGesture() {}
 }
