@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   void StartJob(const std::string& job,
                 const std::vector<std::string>& upstart_env,
                 VoidDBusMethodCallback callback) override;
+  void StartJobWithErrorDetails(
+      const std::string& job,
+      const std::vector<std::string>& upstart_env,
+      StartJobWithErrorDetailsCallback callback) override;
   void StopJob(const std::string& job,
                const std::vector<std::string>& upstart_env,
                VoidDBusMethodCallback callback) override;

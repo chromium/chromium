@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -23,6 +24,10 @@ namespace ash {
 // initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
  public:
+  // Error name returned by Upstart when it fails to start a job because it's
+  // already started.
+  static const char kAlreadyStartedError[];
+
   UpstartClient(const UpstartClient&) = delete;
   UpstartClient& operator=(const UpstartClient&) = delete;
 
@@ -48,6 +53,23 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
   virtual void StartJob(const std::string& job,
                         const std::vector<std::string>& upstart_env,
                         VoidDBusMethodCallback callback) = 0;
+
+  // Does the same thing as StartJob(), but the callback is run with error
+  // details on failures.
+  // See https://dbus.freedesktop.org/doc/dbus-specification.html to see what
+  // error name and error message are.
+  //
+  // NOTE: Any of error_name and error_message can be null even if success ==
+  // false. D-Bus method calls can fail without returning an error response
+  // (e.g. when the D-Bus connection itself is disconnected).
+  using StartJobWithErrorDetailsCallback =
+      base::OnceCallback<void(bool success,
+                              absl::optional<std::string> error_name,
+                              absl::optional<std::string> error_message)>;
+  virtual void StartJobWithErrorDetails(
+      const std::string& job,
+      const std::vector<std::string>& upstart_env,
+      StartJobWithErrorDetailsCallback callback) = 0;
 
   // Stops an Upstart job.
   // |job|: Name of Upstart job.

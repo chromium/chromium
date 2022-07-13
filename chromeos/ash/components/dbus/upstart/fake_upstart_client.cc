@@ -43,6 +43,17 @@ void FakeUpstartClient::StartJob(const std::string& job,
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
+void FakeUpstartClient::StartJobWithErrorDetails(
+    const std::string& job,
+    const std::vector<std::string>& upstart_env,
+    StartJobWithErrorDetailsCallback callback) {
+  const bool result =
+      start_job_cb_ ? start_job_cb_.Run(job, upstart_env) : true;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result, absl::nullopt,
+                                absl::nullopt));
+}
+
 void FakeUpstartClient::StopJob(const std::string& job,
                                 const std::vector<std::string>& upstart_env,
                                 VoidDBusMethodCallback callback) {
