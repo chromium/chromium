@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "reclient",
-              "builder": "Linux Builder reclient staging untrusted",
+              "builder": "Win x64 Builder reclient gVisor cross test",
               "project": "chromium"
             },
             "builder_spec": {
@@ -19,13 +19,14 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 64
+                "target_bits": 64,
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
                   "use_clang_coverage",
                   "enable_reclient",
-                  "reclient_staging"
+                  "reclient_test"
                 ],
                 "config": "chromium"
               }
@@ -36,14 +37,14 @@
       "builder_ids": [
         {
           "bucket": "reclient",
-          "builder": "Linux Builder reclient staging untrusted",
+          "builder": "Win x64 Builder reclient gVisor cross test",
           "project": "chromium"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
+    "instance": "rbe-chromium-untrusted-test",
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
