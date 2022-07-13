@@ -130,6 +130,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // Enables the Prerender2 feature: https://crbug.com/1126305
 // But see comments in the .cc file also.
 BLINK_COMMON_EXPORT extern const base::Feature kPrerender2;
+// The number of prerenderings that can run concurrently. This only applies for
+// prerenderings triggered by speculation rules.
+BLINK_COMMON_EXPORT extern const char
+    kPrerender2MaxNumOfRunningPrerendersForSpeculationRules[];
 // Enables restrictions on how much memory is required on a device to use
 // Prerender2. This is a separate feature from kPrerender2 so that the
 // restrictions can be disabled entirely to allow bots to run the tests without
@@ -138,8 +142,13 @@ BLINK_COMMON_EXPORT extern const base::Feature kPrerender2;
 BLINK_COMMON_EXPORT extern const base::Feature kPrerender2MemoryControls;
 // A field trial param that controls how much physical memory is required on a
 // device to use Prerender2. If the device's physical memory does not exceed
-// this value, pages will not be prerendered even when kPrerender2 is enabled.
+// this value, prerenderings are cancelled.
 BLINK_COMMON_EXPORT extern const char kPrerender2MemoryThresholdParamName[];
+// A field trial param that controls how much physical memory is allowed to be
+// used by Chrome. If the current memory usage in Chrome exceeds this percent,
+// pages will not be prerendered even when kPrerender2 is enabled.
+BLINK_COMMON_EXPORT extern const char
+    kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[];
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 

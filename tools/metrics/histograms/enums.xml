@@ -78011,6 +78011,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="33" label="kEmbedderTriggeredAndSameOriginRedirected"/>
   <int value="34" label="kEmbedderTriggeredAndCrossOriginRedirected"/>
   <int value="35" label="kEmbedderTriggeredAndDestroyed"/>
+  <int value="36" label="kMemoryLimitExceeded"/>
+  <int value="37" label="kFailToGetMemoryUsage"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">
