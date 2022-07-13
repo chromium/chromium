@@ -36,10 +36,6 @@ if (enable_offline_pages_harness) {
   chrome_test_java_sources += [ "javatests/src/org/chromium/chrome/browser/offlinepages/OfflinePageSavePageLaterEvaluationTest.java" ]
 }
 
-if (enable_supervised_users) {
-  chrome_java_sources += [ "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java" ]
-}
-
 chrome_junit_test_java_sources += feed_junit_test_java_sources
 chrome_test_java_sources += feed_test_java_sources
 chrome_test_java_sources += start_surface_test_java_sources
