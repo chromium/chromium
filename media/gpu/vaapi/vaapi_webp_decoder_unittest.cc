@@ -28,7 +28,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/parsers/vp8_parser.h"
 #include "media/parsers/webp_parser.h"
-#include "third_party/libwebp/src/webp/decode.h"
+#include "third_party/libwebp/src/src/webp/decode.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"

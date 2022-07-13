@@ -6,17 +6,25 @@ CPEPrefix: cpe:/a:webmproject:libwebp:1.2.2
 License: BSD
 License File: LICENSE
 Security Critical: Yes
+Source: https://chromium.googlesource.com/webm/libwebp
 
 Description:
-Source archive:
-  https://chromium.googlesource.com/webm/libwebp/+archive/20ef03ee351d4ff03fc5ff3ec4804a879d1b9d5c.tar.gz
-
 WebP is an image format that does both lossy and lossless compression of
 digital photographic images. WebP consists of a codec based on VP8, that Google
 open-sourced in May 2010 and a container based on RIFF. Website managers, web
 developers and browser developers can use WebP to compress, archive and
 distribute digital images more efficiently.
 
-Local changes:
- * Removed documentation and build related files
- * Merged COPYING/PATENTS to LICENSE
+Please follow these steps to update libwebp source code:
+1. Update the code:
+  roll_dep.py \
+  -r <libwebp OWNER> \
+  --log-limit 20 \
+  --roll-to <libwebp hash> \
+  src/third_party/libwebp/src
+
+  Use the generated commit message for the roll.
+
+2. Update 'Version:' in this file.
+
+3. Update BUILD.gn as needed.

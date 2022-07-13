@@ -160,6 +160,7 @@
 /libunwindstack
 /libvpx/source/libvpx
 /libwebm/source
+/libwebp/src
 /libyuv
 /lighttpd
 /llvm

@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "third_party/libwebp/src/webp/decode.h"
+#include "third_party/libwebp/src/src/webp/decode.h"
 
 @class NSData;
 

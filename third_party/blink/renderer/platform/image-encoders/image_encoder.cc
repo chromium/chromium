@@ -14,7 +14,7 @@
 
 #include "jpeglib.h"  // for JPEG_MAX_DIMENSION
 
-#include "third_party/libwebp/src/webp/encode.h"  // for WEBP_MAX_DIMENSION
+#include "third_party/libwebp/src/src/webp/encode.h"  // for WEBP_MAX_DIMENSION
 
 namespace blink {
 
