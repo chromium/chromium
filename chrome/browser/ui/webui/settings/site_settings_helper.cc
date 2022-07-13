@@ -500,7 +500,7 @@ base::Value GetValueForManagedState(const site_settings::ManagedState& state) {
 // the web extent of a hosted |app|.
 void AddExceptionForHostedApp(const std::string& url_pattern,
                               const extensions::Extension& app,
-                              base::ListValue* exceptions) {
+                              base::Value::List* exceptions) {
   base::Value::Dict exception;
 
   std::string setting_string =
@@ -516,7 +516,7 @@ void AddExceptionForHostedApp(const std::string& url_pattern,
   exception.Set(kIncognito, false);
   exception.Set(kAppName, app.name());
   exception.Set(kAppId, app.id());
-  exceptions->Append(base::Value(std::move(exception)));
+  exceptions->Append(std::move(exception));
 }
 
 // Create a DictionaryValue* that will act as a data source for a single row
@@ -608,7 +608,7 @@ void GetExceptionsForContentType(
     const extensions::ExtensionRegistry* extension_registry,
     content::WebUI* web_ui,
     bool incognito,
-    base::ListValue* exceptions) {
+    base::Value::List* exceptions) {
   ContentSettingsForOneType all_settings;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);

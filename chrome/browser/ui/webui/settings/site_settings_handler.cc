@@ -141,7 +141,7 @@ APIPermissionID APIPermissionFromGroupName(std::string type) {
 // adds their web extent and launch URL to the |exceptions| list.
 void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
                                       APIPermissionID permission,
-                                      base::ListValue* exceptions) {
+                                      base::Value::List* exceptions) {
   const extensions::ExtensionSet& extensions =
       extensions::ExtensionRegistry::Get(context)->enabled_extensions();
   for (extensions::ExtensionSet::const_iterator extension = extensions.begin();
@@ -1118,14 +1118,14 @@ void SiteSettingsHandler::HandleGetExceptionList(
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
 
-  std::unique_ptr<base::ListValue> exceptions(new base::ListValue);
+  base::Value::List exceptions;
 
   const auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
   AddExceptionsGrantedByHostedApps(profile_, APIPermissionFromGroupName(type),
-                                   exceptions.get());
-  site_settings::GetExceptionsForContentType(
-      content_type, profile_, extension_registry, web_ui(), /*incognito=*/false,
-      exceptions.get());
+                                   &exceptions);
+  site_settings::GetExceptionsForContentType(content_type, profile_,
+                                             extension_registry, web_ui(),
+                                             /*incognito=*/false, &exceptions);
 
   Profile* incognito =
       profile_->HasPrimaryOTRProfile()
@@ -1135,12 +1135,12 @@ void SiteSettingsHandler::HandleGetExceptionList(
   // so do not fetch an extra copy of the same exceptions.
   if (incognito && incognito != profile_) {
     extension_registry = extensions::ExtensionRegistry::Get(incognito);
-    site_settings::GetExceptionsForContentType(
-        content_type, incognito, extension_registry, web_ui(),
-        /*incognito=*/true, exceptions.get());
+    site_settings::GetExceptionsForContentType(content_type, incognito,
+                                               extension_registry, web_ui(),
+                                               /*incognito=*/true, &exceptions);
   }
 
-  ResolveJavascriptCallback(callback_id, *exceptions.get());
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(exceptions)));
 }
 
 void SiteSettingsHandler::HandleGetChooserExceptionList(

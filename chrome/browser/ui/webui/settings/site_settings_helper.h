@@ -138,7 +138,7 @@ std::unique_ptr<base::DictionaryValue> GetExceptionForPage(
 // Helper function to construct a dictionary for a hosted app exception.
 void AddExceptionForHostedApp(const std::string& url_pattern,
                               const extensions::Extension& app,
-                              base::ListValue* exceptions);
+                              base::Value::List* exceptions);
 
 // Fills in |exceptions| with Values for the given |type| from |profile|.
 void GetExceptionsForContentType(
@@ -147,7 +147,7 @@ void GetExceptionsForContentType(
     const extensions::ExtensionRegistry* extension_registry,
     content::WebUI* web_ui,
     bool incognito,
-    base::ListValue* exceptions);
+    base::Value::List* exceptions);
 
 // Fills in object saying what the current settings is for the category (such as
 // enabled or blocked) and the source of that setting (such preference, policy,

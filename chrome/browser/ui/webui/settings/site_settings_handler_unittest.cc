@@ -1242,14 +1242,14 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
 
   // Check there are 2 blocked origins.
   {
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
 
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
-    ASSERT_EQ(2U, exceptions.GetList().size());
+    ASSERT_EQ(2U, exceptions.size());
   }
 
   {
@@ -1262,12 +1262,12 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     handler()->HandleResetCategoryPermissionForPattern(reset_args);
 
     // Check there is 1 blocked origin.
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetList().size());
+    ASSERT_EQ(1U, exceptions.size());
   }
 
   {
@@ -1280,12 +1280,12 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     handler()->HandleResetCategoryPermissionForPattern(reset_args);
 
     // Check that there are no blocked or embargoed origins.
-    base::ListValue exceptions;
+    base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
-    ASSERT_TRUE(exceptions.GetList().empty());
+    ASSERT_TRUE(exceptions.empty());
   }
 }
 
@@ -1598,11 +1598,11 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
                   .SetID("ahfgeienlihckogmohjhadlkjgocpleb")
                   .Build();
 
-  base::ListValue exceptions;
+  base::Value::List exceptions;
   site_settings::AddExceptionForHostedApp("[*.]google.com", *extension.get(),
                                           &exceptions);
 
-  const base::Value& dictionary = exceptions.GetList()[0];
+  const base::Value& dictionary = exceptions[0];
   CHECK(dictionary.is_dict());
   CHECK(dictionary.FindStringKey(site_settings::kOrigin));
   CHECK(dictionary.FindStringKey(site_settings::kDisplayName));
