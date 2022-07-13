@@ -20,9 +20,8 @@ namespace {
 
 const char* const chunks[] = {"{\"a\": 1,", "\"b\": 2}"};
 
-std::unique_ptr<base::Value> GetSnapshotAsValue() {
-  std::string str_snapshot = "{\"a\": 1,\"b\": 2}";
-  return std::make_unique<base::Value>(std::move(str_snapshot));;
+base::Value GetSnapshotAsValue() {
+  return base::Value("{\"a\": 1,\"b\": 2}");
 }
 
 class DummyDevToolsClient : public StubDevToolsClient {
@@ -83,7 +82,7 @@ TEST(HeapSnapshotTaker, SuccessfulCase) {
   std::unique_ptr<base::Value> snapshot;
   Status status = taker.TakeSnapshot(&snapshot);
   ASSERT_EQ(kOk, status.code());
-  ASSERT_TRUE(GetSnapshotAsValue()->Equals(snapshot.get()));
+  ASSERT_EQ(GetSnapshotAsValue(), *snapshot);
   ASSERT_TRUE(client.IsDisabled());
 }
 

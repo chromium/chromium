@@ -52,13 +52,17 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
   Status TriggerEvent(const std::string& method) {
-    base::DictionaryValue empty_params;
-    return listener_->OnEvent(this, method, empty_params);
+    base::Value::Dict empty_params;
+    return listener_->OnEvent(
+        this, method,
+        base::Value::AsDictionaryValue(base::Value(std::move(empty_params))));
   }
 
   Status TriggerEvent(const std::string& method,
-                      const base::DictionaryValue& params) {
-    return listener_->OnEvent(this, method, params);
+                      const base::Value::Dict& params) {
+    return listener_->OnEvent(
+        this, method,
+        base::Value::AsDictionaryValue(base::Value(params.Clone())));
   }
 
   // Overridden from DevToolsClient:
@@ -131,48 +135,50 @@ bool FakeLog::Emptied() const {
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> ParseDictionary(
-    const std::string& json) {
+absl::optional<base::Value::Dict> ParseDictionary(const std::string& json) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
   if (!parsed_json.has_value()) {
     SCOPED_TRACE(json.c_str());
     SCOPED_TRACE(parsed_json.error().message.c_str());
     ADD_FAILURE();
-    return nullptr;
+    return absl::nullopt;
   }
-  base::DictionaryValue* dict = nullptr;
-  if (!parsed_json->GetAsDictionary(&dict)) {
+
+  base::Value::Dict* dict = parsed_json->GetIfDict();
+  if (!dict) {
     SCOPED_TRACE("JSON object is not a dictionary");
     ADD_FAILURE();
-    return nullptr;
+    return absl::nullopt;
   }
-  return std::unique_ptr<base::DictionaryValue>(dict->DeepCopy());
+
+  return std::move(*dict);
 }
 
-void ValidateLogEntry(const LogEntry *entry,
+void ValidateLogEntry(const LogEntry* entry,
                       const std::string& expected_webview,
                       const std::string& expected_method,
-                      const base::DictionaryValue& expected_params) {
+                      const base::Value::Dict& expected_params) {
   EXPECT_EQ(Log::kInfo, entry->level);
   EXPECT_LT(0, entry->timestamp.ToTimeT());
 
-  std::unique_ptr<base::DictionaryValue> message(
-      ParseDictionary(entry->message));
-  std::string webview;
-  EXPECT_TRUE(message->GetString("webview", &webview));
-  EXPECT_EQ(expected_webview, webview);
-  std::string method;
-  EXPECT_TRUE(message->GetString("message.method", &method));
-  EXPECT_EQ(expected_method, method);
-  base::DictionaryValue* params;
-  EXPECT_TRUE(message->GetDictionary("message.params", &params));
-  EXPECT_TRUE(params->Equals(&expected_params));
+  absl::optional<base::Value::Dict> message = ParseDictionary(entry->message);
+  ASSERT_TRUE(message);
+  const std::string* webview = message->FindString("webview");
+  ASSERT_TRUE(webview);
+  EXPECT_EQ(expected_webview, *webview);
+  const std::string* method = message->FindStringByDottedPath("message.method");
+  ASSERT_TRUE(method);
+  EXPECT_EQ(expected_method, *method);
+
+  base::Value::Dict* params = message->FindDictByDottedPath("message.params");
+  ASSERT_TRUE(params);
+  EXPECT_EQ(expected_params, *params);
 }
 
 void ValidateLogEntry(const LogEntry *entry,
                       const std::string& expected_webview,
                       const std::string& expected_method) {
-  base::DictionaryValue empty_params;
+  base::Value::Dict empty_params;
   ValidateLogEntry(entry, expected_webview, expected_method, empty_params);
 }
 
@@ -327,24 +333,24 @@ TEST(PerformanceLogger, RecordTraceEvents) {
 
   client.AddListener(&logger);
   logger.OnConnected(&client);
-  base::DictionaryValue params;
-  base::ListValue trace_events;
-  auto event1 = std::make_unique<base::DictionaryValue>();
-  event1->SetString("cat", "foo");
-  trace_events.Append(event1->Clone());
-  auto event2 = std::make_unique<base::DictionaryValue>();
-  event2->SetString("cat", "bar");
-  trace_events.Append(event2->Clone());
-  params.SetKey("value", std::move(trace_events));
+  base::Value::Dict params;
+  base::Value::List trace_events;
+  base::Value::Dict event1;
+  event1.Set("cat", "foo");
+  trace_events.Append(event1.Clone());
+  base::Value::Dict event2;
+  event2.Set("cat", "bar");
+  trace_events.Append(event2.Clone());
+  params.Set("value", std::move(trace_events));
   ASSERT_EQ(kOk, client.TriggerEvent("Tracing.dataCollected", params).code());
 
   ASSERT_EQ(2u, log.GetEntries().size());
   ValidateLogEntry(log.GetEntries()[0].get(),
                    DevToolsClientImpl::kBrowserwideDevToolsClientId,
-                   "Tracing.dataCollected", *event1);
+                   "Tracing.dataCollected", event1);
   ValidateLogEntry(log.GetEntries()[1].get(),
                    DevToolsClientImpl::kBrowserwideDevToolsClientId,
-                   "Tracing.dataCollected", *event2);
+                   "Tracing.dataCollected", event2);
 }
 
 TEST(PerformanceLogger, ShouldRequestTraceEvents) {
@@ -378,23 +384,24 @@ TEST(PerformanceLogger, WarnWhenTraceBufferFull) {
 
   client.AddListener(&logger);
   logger.OnConnected(&client);
-  base::DictionaryValue params;
-  params.SetDoubleKey("percentFull", 1.0);
+  base::Value::Dict params;
+  params.Set("percentFull", 1.0);
   ASSERT_EQ(kOk, client.TriggerEvent("Tracing.bufferUsage", params).code());
 
   ASSERT_EQ(1u, log.GetEntries().size());
   LogEntry* entry = log.GetEntries()[0].get();
   EXPECT_EQ(Log::kWarning, entry->level);
   EXPECT_LT(0, entry->timestamp.ToTimeT());
-  std::unique_ptr<base::DictionaryValue> message(
-      ParseDictionary(entry->message));
-  std::string webview;
-  EXPECT_TRUE(message->GetString("webview", &webview));
-  EXPECT_EQ(DevToolsClientImpl::kBrowserwideDevToolsClientId, webview);
-  std::string method;
-  EXPECT_TRUE(message->GetString("message.method", &method));
-  EXPECT_EQ("Tracing.bufferUsage", method);
-  base::DictionaryValue* actual_params;
-  EXPECT_TRUE(message->GetDictionary("message.params", &actual_params));
-  EXPECT_TRUE(actual_params->FindKey("error"));
+  absl::optional<base::Value::Dict> message = ParseDictionary(entry->message);
+  ASSERT_TRUE(message);
+  const std::string* webview = message->FindString("webview");
+  ASSERT_TRUE(webview);
+  EXPECT_EQ(DevToolsClientImpl::kBrowserwideDevToolsClientId, *webview);
+  const std::string* method = message->FindStringByDottedPath("message.method");
+  ASSERT_TRUE(method);
+  EXPECT_EQ("Tracing.bufferUsage", *method);
+  const base::Value::Dict* actual_params =
+      message->FindDictByDottedPath("message.params");
+  ASSERT_TRUE(actual_params);
+  EXPECT_TRUE(actual_params->contains("error"));
 }
