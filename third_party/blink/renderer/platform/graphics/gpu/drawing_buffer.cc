@@ -1016,10 +1016,9 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   return true;
 }
 
-template <typename CopyFunction>
 bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
                                            SourceDrawingBuffer src_buffer,
-                                           const CopyFunction& copy_function) {
+                                           CopyFunctionRef copy_function) {
   ScopedStateRestorer scoped_state_restorer(this);
 
   gpu::gles2::GLES2Interface* src_gl = gl_;
