@@ -36,6 +36,8 @@ const char kPasswordsPrefWithNewLabelUsed[] =
 
 const char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
     "unenrolled_from_google_mobile_services_due_to_errors";
+const char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
+    "unenrolled_from_google_mobile_services_after_api_error_code";
 #endif
 
 #if BUILDFLAG(IS_WIN)

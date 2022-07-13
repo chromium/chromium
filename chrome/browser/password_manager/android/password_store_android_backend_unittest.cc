@@ -173,6 +173,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterIntegerPref(
+        prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
+    prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
     prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                           20.22);
@@ -654,6 +656,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
   EXPECT_EQ(prefs()->GetInteger(
+                prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode),
+            kInternalErrorCode);
+  EXPECT_EQ(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
   EXPECT_EQ(prefs()->GetDouble(prefs::kTimeOfLastMigrationAttempt), 0.0);
@@ -692,6 +697,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+  EXPECT_EQ(prefs()->GetInteger(
+                prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode),
+            0);
   EXPECT_NE(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
@@ -730,6 +738,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+  EXPECT_EQ(prefs()->GetInteger(
+                prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode),
+            0);
   EXPECT_NE(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
@@ -768,6 +779,9 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+  EXPECT_EQ(prefs()->GetInteger(
+                prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode),
+            kPassphraseRequiredErrorCode);
   EXPECT_EQ(prefs()->GetInteger(
                 prefs::kCurrentMigrationVersionToGoogleMobileServices),
             0);
@@ -1170,6 +1184,9 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordInactiveStatusUnenrolled) {
       false, {syncer::UserSelectableType::kPasswords});
   prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                       true);
+  prefs()->SetInteger(
+      prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode,
+      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError));
   backend().OnSyncServiceInitialized(sync_service());
   histogram_tester.ExpectUniqueSample(
       kUPMActiveHistogram,

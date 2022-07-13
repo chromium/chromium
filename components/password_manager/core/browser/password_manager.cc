@@ -286,6 +286,8 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPasswordsPrefWithNewLabelUsed, false);
   registry->RegisterBooleanPref(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
+  registry->RegisterIntegerPref(
+      prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
 #endif
   // Preferences for |PasswordChangeSuccessTracker|.
   registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);

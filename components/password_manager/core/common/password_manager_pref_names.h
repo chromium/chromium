@@ -81,6 +81,11 @@ extern const char kPasswordsPrefWithNewLabelUsed[];
 // of user-unresolvable errors received on communication with Google Mobile
 // Services.
 extern const char kUnenrolledFromGoogleMobileServicesDueToErrors[];
+
+// Integer value indicating the Google Mobile Services API error code that
+// caused the last unenrollment from the UPM experience. Only set if
+// |kUnenrolledFromGoogleMobileServicesDueToErrors| is true.
+extern const char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

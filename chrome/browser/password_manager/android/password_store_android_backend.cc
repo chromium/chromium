@@ -697,6 +697,9 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
             "PasswordManager.UnenrolledFromUPMDueToErrors", true);
         prefs_->SetBoolean(
             prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, true);
+        prefs_->SetInteger(
+            prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode,
+            api_error);
         LOG(ERROR) << "Unenrolled from UPM due to error with code: "
                    << api_error;
       }
