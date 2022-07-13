@@ -14,7 +14,95 @@ they can be shared by non-web-based platforms.
 The tests here cover how the browser will handle various series of sources and
 triggers with different configurations, but does not rely on any blink APIs.
 
-Note that currently only event-level reports are covered.
+The vendor-specific parameters can be configured for testing. The default
+configuration is specified in `default_config.json` that is contained in this
+directory. Each test file can optionally specify the parameters in the
+"api_config" field.
+
+# Configuration format
+
+The JSON schema is as follows. All the fields are required in "default_config.json"
+and optional in "api_config" field.
+
+```jsonc
+{
+  // Positive integer that controls how many sources can be in the storage per
+  // source origin. Formatted as a base-10 string.
+  "max_sources_per_origin": "1024",
+
+  // Non-negative integer that controls the valid range of source event ID. No
+  // limit if zero. Formatted as a base-10 string.
+  "source_event_id_cardinality": "0",
+
+  // Positive integer that controls the maximum number of distinct destinations
+  // covered by pending sources for a given (source site, reporting origin).
+  // Formatted as a base-10 string.
+  "max_destinations_per_source_site_reporting_origin": "100",
+
+  // Positive integer that controls the rate-limiting time window in days for
+  // attribution. Formatted as a base-10 string.
+  "rate_limit_time_window": "30",
+
+  // Positive integer that controls the maximum number of distinct reporting
+  // origins that can register sources for a given (source site, destination site)
+  // per rate-limit window. Formatted as a base-10 string.
+  "rate_limit_max_source_registration_reporting_origins": "100",
+
+  // Positive integer that controls the maximum number of distinct reporting
+  // origins that can create attributions for a given (source site, destination site)
+  // per rate-limit window. Formatted as a base-10 string.
+  "rate_limit_max_attribution_reporting_origins": "10",
+
+  // Positive integer that controls the maximum number of attributions for a
+  // given (source site, destination site, reporting origin) per rate-limit window.
+  // Formatted as a base-10 string.
+  "rate_limit_max_attributions": "100",
+
+  // Positive integer that controls the valid range of trigger data for triggers
+  // that are attributed to a navigation source. Formatted as a base-10 string.
+  "navigation_source_trigger_data_cardinality": "8",
+
+  // Positive integer that controls the valid range of trigger data for triggers
+  // that are attributed to an event source. Formatted as a base-10 string.
+  "event_source_trigger_data_cardinality": "2",
+
+  // A double between 0 and 1 that controls the randomized response probability
+  // of a navigation source.
+  "navigation_source_randomized_response_rate": 0.0024,
+
+  // A double between 0 and 1 that controls the randomized response probabiity
+  // of an event source.
+  "event_source_randomized_response_rate": 0.0000025,
+
+  // Positive integer that controls how many event-level reports can be in the
+  // storage per destination. Formatted as a base-10 string.
+  "max_event_level_reports_per_destination": "1024",
+
+  // Positive integer that controls how many times a navigation source can create
+  // an event-level report. Formatted as a base-10 string.
+  "max_attributions_per_navigation_source": "3",
+
+  // Positive integer that controls how many times an event source can create
+  // an event-level report. Formatted as a base-10 string.
+  "max_attributions_per_event_source": "1",
+
+  // Positive integer that controls how many aggregatable reports can be in the
+  // storage per destination. Formatted as a base-10 string.
+  "max_aggregatable_reports_per_destination": "1024",
+
+  // Positive integer that controls the maximum sum of the contributions across
+  // all buckets per source. Formatted as a base-10 string.
+  "aggregatable_budget_per_source": "65536",
+
+  // Non-negative integer that controls the minimum delay in minutes to deliver
+  // an aggregatable report. Formatted as a base-10 string.
+  "aggregatable_report_min_delay": "10",
+
+  // Non-negative integer that controls the span in minutes to deliver an
+  // aggregatable report. Formatted as a base-10 string.
+  "aggregatable_report_delay_span": "50",
+}
+```
 
 # Test case format
 
@@ -23,6 +111,9 @@ The JSON schema is as follows.
 ```jsonc
 {
   "description": "description",
+
+  // Optional configuration.
+  "api_config": {},
 
   // Required input.
   "input": {
@@ -240,17 +331,14 @@ The JSON schema is as follows.
     // Optional list of aggregatable results. Omitted if empty.
     "aggregatable_results": [
       {
-        // Time at which the report would have been sent in milliseconds since
-        // the UNIX epoch.
+        // Upper bound time at which the report would have been sent in
+        // milliseconds since the UNIX epoch.
         "report_time": "123",
 
         // URL to which the report would have been sent.
         "report_url": "https://reporting.example/.well-known/attribution-reporting/report-aggregate-attribution",
 
         "payload": {
-          // The source site on which the source was registered.
-          "source_site": "https://source.example",
-
           // The attribution destination on which the trigger was registered.
           "attribution_destination": "https://destination.example",
 

@@ -115,8 +115,8 @@ class AttributionSimulatorInputParser {
 
   std::vector<AttributionSimulationEventAndValue> events_;
 
-  [[nodiscard]] AttributionParserErrorManager::ScopedContext PushContext(
-      AttributionParserErrorManager::Context context) {
+  [[nodiscard]] std::unique_ptr<AttributionParserErrorManager::ScopedContext>
+  PushContext(AttributionParserErrorManager::Context context) {
     return error_manager_.PushContext(context);
   }
 

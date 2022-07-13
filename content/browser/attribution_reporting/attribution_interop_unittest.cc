@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/public/browser/attribution_reporting.h"
+#include "content/public/test/attribution_config.h"
 #include "content/public/test/attribution_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,17 +28,23 @@ namespace {
 
 using ::testing::Optional;
 
+constexpr char kDefaultConfigFileName[] = "default_config.json";
+
 base::Value ReadJsonFromFile(const base::FilePath& path) {
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(path, &contents));
   return base::test::ParseJson(contents);
 }
 
-std::vector<base::FilePath> GetInputs() {
+base::FilePath GetInputDir() {
   base::FilePath input_dir;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &input_dir);
-  input_dir =
-      input_dir.AppendASCII("content/test/data/attribution_reporting/interop");
+  return input_dir.AppendASCII(
+      "content/test/data/attribution_reporting/interop");
+}
+
+std::vector<base::FilePath> GetInputs() {
+  base::FilePath input_dir = GetInputDir();
 
   std::vector<base::FilePath> input_paths;
 
@@ -46,6 +53,9 @@ std::vector<base::FilePath> GetInputs() {
                          FILE_PATH_LITERAL("*.json"));
 
   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
+    if (name.BaseName().MaybeAsASCII() == kDefaultConfigFileName)
+      continue;
+
     input_paths.push_back(std::move(name));
   }
 
@@ -62,8 +72,27 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   AttributionInteropParser parser(error_stream);
 
+  AttributionConfig config;
+
+  base::Value config_value =
+      ReadJsonFromFile(GetInputDir().AppendASCII(kDefaultConfigFileName));
+
+  bool is_config_valid =
+      parser.ParseConfig(config_value, config, /*required=*/true);
+  EXPECT_TRUE(is_config_valid) << error_stream.str();
+  error_stream.str("");
+
   base::Value value = ReadJsonFromFile(GetParam());
   base::Value::Dict& dict = value.GetDict();
+
+  static constexpr char kKeyApiConfig[] = "api_config";
+  if (const base::Value* api_config = dict.Find(kKeyApiConfig)) {
+    bool success = parser.ParseConfig(*api_config, config, /*required=*/false,
+                                      kKeyApiConfig);
+    is_config_valid &= success;
+    EXPECT_TRUE(success) << error_stream.str();
+    error_stream.str("");
+  }
 
   absl::optional<base::Value> input =
       parser.SimulatorInputFromInteropInput(dict);
@@ -72,10 +101,11 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   base::Value* expected_output = dict.Find("output");
   EXPECT_TRUE(expected_output);
 
-  ASSERT_TRUE(input);
+  ASSERT_TRUE(is_config_valid && input);
 
   AttributionSimulationOptions options{
       .noise_mode = AttributionNoiseMode::kNone,
+      .config = config,
       .delay_mode = AttributionDelayMode::kDefault,
       .remove_report_ids = true,
       .report_time_format =

@@ -56,6 +56,10 @@ struct CONTENT_EXPORT AttributionRateLimitConfig {
   // Maximum number of attributions for a given <source site, destination
   // site, reporting origin> in `time_window`.
   int64_t max_attributions = std::numeric_limits<int64_t>::max();
+
+  // When adding new members, the corresponding `Validate()` definition and
+  // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+  // should also be updated.
 };
 
 }  // namespace content

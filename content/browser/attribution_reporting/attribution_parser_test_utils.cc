@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 
+#include <memory>
 #include <ostream>
 
 #include "base/strings/string_piece.h"
@@ -46,9 +47,9 @@ void AttributionParserErrorManager::ErrorWriter::operator()(size_t index) {
   stream_ << '[' << index << ']';
 }
 
-AttributionParserErrorManager::ScopedContext
+std::unique_ptr<AttributionParserErrorManager::ScopedContext>
 AttributionParserErrorManager::PushContext(Context context) {
-  return ScopedContext(context_path_, context);
+  return std::make_unique<ScopedContext>(context_path_, context);
 }
 
 AttributionParserErrorManager::ErrorWriter

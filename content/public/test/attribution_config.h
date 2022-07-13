@@ -44,6 +44,10 @@ struct AttributionConfig {
     int max_attributions_per_navigation_source =
         std::numeric_limits<int>::max();
     int max_attributions_per_event_source = std::numeric_limits<int>::max();
+
+    // When adding new members, the corresponding `Validate()` definition and
+    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    // should also be updated.
   };
 
   struct AggregateLimit {
@@ -62,6 +66,10 @@ struct AttributionConfig {
     // Controls the report delivery time.
     base::TimeDelta min_delay;
     base::TimeDelta delay_span;
+
+    // When adding new members, the corresponding `Validate()` definition and
+    // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+    // should also be updated.
   };
 
   static const AttributionConfig kDefault;
@@ -84,6 +92,10 @@ struct AttributionConfig {
   AttributionRateLimitConfig rate_limit;
   EventLevelLimit event_level_limit;
   AggregateLimit aggregate_limit;
+
+  // When adding new members, the corresponding `Validate()` definition and
+  // `operator==()` definition in `attribution_interop_parser_unittest.cc`
+  // should also be updated.
 };
 
 }  // namespace content

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <iosfwd>
+#include <memory>
 #include <vector>
 
 #include "base/strings/string_piece_forward.h"
@@ -70,11 +71,13 @@ class AttributionParserErrorManager {
     std::ostream& stream_;
   };
 
-  [[nodiscard]] ScopedContext PushContext(Context context);
+  [[nodiscard]] std::unique_ptr<ScopedContext> PushContext(Context context);
 
   ErrorWriter Error();
 
   bool has_error() const { return has_error_; }
+
+  void ResetErrorState() { has_error_ = false; }
 
  private:
   std::ostream& error_stream_;

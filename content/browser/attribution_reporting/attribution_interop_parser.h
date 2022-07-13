@@ -6,8 +6,10 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTEROP_PARSER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
-#include <iosfwd>
+#include <memory>
+#include <ostream>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -17,6 +19,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+struct AttributionConfig;
 
 // Parser for the interop test.
 // See //content/test/data/attribution_reporting/simulator/README.md and
@@ -33,19 +37,28 @@ class AttributionInteropParser {
   AttributionInteropParser& operator=(const AttributionInteropParser&) = delete;
   AttributionInteropParser& operator=(AttributionInteropParser&&) = delete;
 
-  // Converts interop test input to simulator input format.
+  // Converts interop test input to simulator input format. The error state from
+  // the previous parsing will be reset.
   absl::optional<base::Value> SimulatorInputFromInteropInput(
       base::Value::Dict& input);
 
-  // Converts simulator output to interop test output format.
+  // Converts simulator output to interop test output format. The error state
+  // from the previous parsing will be reset.
   absl::optional<base::Value> InteropOutputFromSimulatorOutput(
       base::Value output);
+
+  // Parses the configuration. The error state from the previous parsing will be
+  // reset.
+  bool ParseConfig(const base::Value& value,
+                   AttributionConfig& config,
+                   bool required,
+                   base::StringPiece key = "");
 
  private:
   bool has_error() const;
 
-  [[nodiscard]] AttributionParserErrorManager::ScopedContext PushContext(
-      AttributionParserErrorManager::Context context);
+  [[nodiscard]] std::unique_ptr<AttributionParserErrorManager::ScopedContext>
+  PushContext(AttributionParserErrorManager::Context context);
 
   AttributionParserErrorManager::ErrorWriter Error();
 
@@ -78,6 +91,60 @@ class AttributionInteropParser {
   base::Value::List ParseEventLevelReports(base::Value::Dict& output);
 
   base::Value::List ParseAggregatableReports(base::Value::Dict& output);
+
+  // Returns true if `key` is present in `dict` and the integer is parsed
+  // successfully.
+  template <typename T>
+  bool ParseInteger(const base::Value::Dict& dict,
+                    base::StringPiece key,
+                    T& result,
+                    bool (*convert_func)(base::StringPiece, T*),
+                    bool required,
+                    bool allow_zero) {
+    auto context = PushContext(key);
+
+    const base::Value* value = dict.Find(key);
+    if (value) {
+      const std::string* s = value->GetIfString();
+      if (s && convert_func(*s, &result) &&
+          (result > 0 || (result == 0 && allow_zero))) {
+        return true;
+      }
+    } else if (!required) {
+      return false;
+    }
+
+    if (allow_zero) {
+      *Error() << "must be a non-negative integer formatted as base-10 string";
+    } else {
+      *Error() << "must be a positive integer formatted as base-10 string";
+    }
+
+    return false;
+  }
+
+  bool ParseInt(const base::Value::Dict& dict,
+                base::StringPiece key,
+                int& result,
+                bool required,
+                bool allow_zero = false);
+
+  bool ParseUint64(const base::Value::Dict& dict,
+                   base::StringPiece key,
+                   uint64_t& result,
+                   bool required,
+                   bool allow_zero = false);
+
+  bool ParseInt64(const base::Value::Dict& dict,
+                  base::StringPiece key,
+                  int64_t& result,
+                  bool required,
+                  bool allow_zero = false);
+
+  void ParseRandomizedResponseRate(const base::Value::Dict& dict,
+                                   base::StringPiece key,
+                                   double& result,
+                                   bool required);
 
   AttributionParserErrorManager error_manager_;
 };
