@@ -86,6 +86,15 @@ void FollowTabHelper::DidRedirectNavigation(
 void FollowTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
+  // TODO(crbug.com/1340154): move the checking to follow_iph_presenter_
+  // (FollowIPHCoordinator), so this class won't need to access browser_state
+  // anymore, which brings convinience to testing.
+
+  // Do not show follow IPH when browsing in incognito.
+  if (web_state->GetBrowserState()->IsOffTheRecord()) {
+    return;
+  }
+
   // Do not show follow IPH when browsing Chrome URLs, such as NTP, flags,
   // version, sad tab, etc.
   if (UrlHasChromeScheme(web_state->GetVisibleURL())) {
