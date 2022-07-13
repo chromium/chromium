@@ -4499,14 +4499,9 @@ if (!is_android) {
       sources -= [
         "../../apps/app_restore_service_browsertest.cc",
         "../../apps/load_and_launch_browsertest.cc",
-        "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
-        "../browser/apps/platform_apps/api/media_galleries/media_galleries_watch_apitest.cc",
-        "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
-        "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
         "../browser/apps/platform_apps/app_browsertest.cc",
         "../browser/apps/platform_apps/app_speech_recognition_browsertest.cc",
         "../browser/apps/platform_apps/app_window_browsertest.cc",
-        "../browser/apps/platform_apps/audio_focus_web_contents_observer_browsertest.cc",
         "../browser/apps/platform_apps/event_page_browsertest.cc",
         "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
         "../browser/apps/platform_apps/service_worker_browsertest.cc",
@@ -4516,21 +4511,29 @@ if (!is_android) {
         "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
         "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
         "../browser/ui/views/web_apps/protocol_handler_launch_dialog_browsertest.cc",
-        "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
-        "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
-        "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
         "../browser/web_applications/alternative_error_page_override_info_browsertest.cc",
       ]
+      if (enable_extensions) {
+        sources -= [
+          # TODO(crbug.com/1278123): Enable once PWAs are supported.
+          "../browser/apps/platform_apps/api/browser/browser_apitest.cc",
+          "../browser/apps/platform_apps/api/media_galleries/media_galleries_watch_apitest.cc",
+          "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
+          "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
+          "../browser/apps/platform_apps/audio_focus_web_contents_observer_browsertest.cc",
+          "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
+          "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
+          "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
 
-      # Exclude tests which depend on native messaging.
-      # TODO(crbug.com/1293504): Reintroduce tests when native messaging
-      # enabled, or remove TODO if the lack of native messaging is WAI.
-      sources -= [
-        "../browser/extensions/api/messaging/native_messaging_apitest.cc",
-        "../browser/extensions/api/messaging/service_worker_messaging_apitest.cc",
-      ]
+          # Exclude tests that depend on native messaging.
+          # TODO(crbug.com/1293504): Reintroduce tests when native messaging
+          # enabled, or remove TODO if the lack of native messaging is WAI.
+          "../browser/extensions/api/messaging/native_messaging_apitest.cc",
+          "../browser/extensions/api/messaging/service_worker_messaging_apitest.cc",
+        ]
+      }
 
       # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
       deps -= [ "//components/crash/content/browser/error_reporting:mock_crash_endpoint" ]
