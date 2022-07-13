@@ -224,7 +224,6 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
 
 void IconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::ImageButton::GetAccessibleNodeData(node_data);
-  node_data->SetName(GetTooltipText(gfx::Point()));
   if (is_togglable_) {
     node_data->role = ax::mojom::Role::kToggleButton;
     node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
