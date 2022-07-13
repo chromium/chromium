@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import './omnibox_input.js';
+import './omnibox_output.js';
 
-import {OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote, OmniboxResponse} from '/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
+import {OmniboxPageCallbackRouter, OmniboxPageHandler, OmniboxPageHandlerRemote, OmniboxResponse} from './omnibox.mojom-webui.js';
 import {DisplayInputs, OmniboxInput, QueryInputs} from './omnibox_input.js';
 import {OmniboxOutput} from './omnibox_output.js';
 

@@ -2,10 +2,58 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/closure_args.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+# TODO(crbug.com/1323980): Migrate files listed below to TypeScript.
+ts_files = [
+  "omnibox_element.js",
+  "omnibox_input.js",
+  "omnibox.js",
+  "omnibox_output.js",
+]
+
+copy("copy_mojo") {
+  deps = [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_src") {
+  sources = ts_files
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files + [ "omnibox.mojom-webui.js" ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [
+    ":copy_mojo",
+    ":copy_src",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "omnibox"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "icon_tabs.svg",
+    "omnibox.css",
+    "omnibox.html",
+    "omnibox_input.css",
+    "omnibox_output_column_widths.css",
+    "output_results_group.css",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  deps = [ ":build_ts" ]
+}
 
 grit("resources") {
   enable_input_discovery_for_gn_analyze = false
@@ -19,74 +67,4 @@ grit("resources") {
     "omnibox_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "omnibox"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
-    "icon_tabs.svg",
-    "omnibox.css",
-    "omnibox_element.js",
-    "omnibox.html",
-    "omnibox_input.css",
-    "omnibox_input.js",
-    "omnibox.js",
-    "omnibox_output_column_widths.css",
-    "omnibox_output.js",
-    "output_results_group.css",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-  grdp_files = [ "$target_gen_dir/mojo_resources.grdp" ]
-  deps = [ ":build_mojo_grdp" ]
-}
-
-generate_grd("build_mojo_grdp") {
-  grd_prefix = "omnibox"
-  out_grd = "$target_gen_dir/mojo_resources.grdp"
-  deps = [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js" ]
-  input_files = [ "omnibox.mojom-webui.js" ]
-  input_files_base_dir =
-      rebase_path("${root_gen_dir}/mojom-webui/chrome/browser/ui/webui/omnibox",
-                  "$root_build_dir")
-  resource_path_rewrites = [ "omnibox.mojom-webui.js|chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js" ]
-}
-
-js_type_check("closure_compile") {
-  closure_flags = default_closure_args + mojom_js_args +
-                  [ "js_module_root=" + rebase_path(".", root_build_dir) ]
-  deps = [
-    ":omnibox",
-    ":omnibox_element",
-    ":omnibox_input",
-    ":omnibox_output",
-  ]
-}
-
-js_library("omnibox") {
-  deps = [
-    ":omnibox_input",
-    ":omnibox_output",
-    "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("omnibox_element") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
-}
-
-js_library("omnibox_input") {
-  deps = [ ":omnibox_element" ]
-}
-
-js_library("omnibox_output") {
-  deps = [
-    ":omnibox_element",
-    ":omnibox_input",
-    "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
 }

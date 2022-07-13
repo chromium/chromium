@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ACMatchClassification, AutocompleteMatch, OmniboxResponse} from '/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js';
-
+import {ACMatchClassification, AutocompleteMatch, OmniboxResponse} from './omnibox.mojom-webui.js';
 import {OmniboxElement} from './omnibox_element.js';
 import {DisplayInputs, OmniboxInput} from './omnibox_input.js';
 
