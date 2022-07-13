@@ -46,7 +46,7 @@ bool LoadableTextTrack::IsDefault() const {
   return track_element_->FastHasAttribute(html_names::kDefaultAttr);
 }
 
-void LoadableTextTrack::setMode(const AtomicString& mode) {
+void LoadableTextTrack::setMode(const V8TextTrackMode& mode) {
   TextTrack::setMode(mode);
   if (track_element_->getReadyState() == HTMLTrackElement::kNone)
     track_element_->ScheduleLoad();

@@ -1114,7 +1114,7 @@ void HTMLMediaElement::LoadInternal() {
   if (text_tracks_) {
     for (unsigned i = 0; i < text_tracks_->length(); ++i) {
       TextTrack* track = text_tracks_->AnonymousIndexedGetter(i);
-      if (track->mode() != TextTrack::DisabledKeyword())
+      if (track->mode() != TextTrackMode::kDisabled)
         text_tracks_when_resource_selection_began_.push_back(track);
     }
   }
@@ -3306,7 +3306,7 @@ TextTrack* HTMLMediaElement::addTextTrack(const AtomicString& kind,
   // wrong. (The 'change' event shouldn't be fired at all in this case...)
 
   // ..., its text track mode to the text track hidden mode, ...
-  text_track->setMode(TextTrack::HiddenKeyword());
+  text_track->SetModeEnum(TextTrackMode::kHidden);
 
   // 5. Return the new TextTrack object.
   return text_track;

@@ -129,7 +129,7 @@ Element* MediaControlTextTrackListElement::CreateTextTrackListItem(
   } else {
     // If there are multiple text tracks set to showing, they must all have
     // checkmarks displayed.
-    if (track && track->mode() == TextTrack::ShowingKeyword()) {
+    if (track && track->mode() == TextTrackMode::kShowing) {
       track_item_input->SetChecked(true);
       track_item->setAttribute(html_names::kAriaCheckedAttr, "true");
     } else {

@@ -123,7 +123,7 @@ unsigned TextTrackCue::CueIndex() {
 
 DispatchEventResult TextTrackCue::DispatchEventInternal(Event& event) {
   // When a TextTrack's mode is disabled: no cues are active, no events fired.
-  if (!track() || track()->mode() == TextTrack::DisabledKeyword())
+  if (!track() || track()->mode() == TextTrackMode::kDisabled)
     return DispatchEventResult::kCanceledBeforeDispatch;
 
   return EventTarget::DispatchEventInternal(event);

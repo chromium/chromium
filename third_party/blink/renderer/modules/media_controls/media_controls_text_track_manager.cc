@@ -42,15 +42,15 @@ void MediaControlsTextTrackManager::ShowTextTrackAtIndex(
     return;
   TextTrack* track = track_list->AnonymousIndexedGetter(index_to_enable);
   if (track && track->CanBeRendered())
-    track->setMode(TextTrack::ShowingKeyword());
+    track->SetModeEnum(TextTrackMode::kShowing);
 }
 
 void MediaControlsTextTrackManager::DisableShowingTextTracks() {
   TextTrackList* track_list = media_element_->textTracks();
   for (unsigned i = 0; i < track_list->length(); ++i) {
     TextTrack* track = track_list->AnonymousIndexedGetter(i);
-    if (track->mode() == TextTrack::ShowingKeyword())
-      track->setMode(TextTrack::DisabledKeyword());
+    if (track->mode() == TextTrackMode::kShowing)
+      track->SetModeEnum(TextTrackMode::kDisabled);
   }
 }
 

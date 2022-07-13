@@ -91,7 +91,7 @@ MediaControlToggleClosedCaptionsButtonElement::GetOverflowMenuSubtitleString()
   TextTrackList* track_list = MediaElement().textTracks();
   for (unsigned i = 0; i < track_list->length(); i++) {
     TextTrack* track = track_list->AnonymousIndexedGetter(i);
-    if (track && track->mode() == TextTrack::ShowingKeyword())
+    if (track && track->mode() == TextTrackMode::kShowing)
       return GetMediaControls().GetTextTrackManager().GetTextTrackLabel(track);
   }
 
