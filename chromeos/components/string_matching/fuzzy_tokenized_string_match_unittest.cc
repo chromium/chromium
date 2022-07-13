@@ -21,22 +21,68 @@ constexpr bool kUseWeightedRatio = false;
 constexpr bool kUseEditDistance = false;
 constexpr double kPartialMatchPenaltyRate = 0.9;
 
-double CalculateRelevance(std::u16string query, std::u16string text) {
+void ExpectIncreasing(const std::vector<double>& scores,
+                      int start_index,
+                      int end_index,
+                      double epsilon = 0.0) {
+  if (!end_index) {
+    end_index = scores.size();
+  }
+
+  for (int i = start_index; i < end_index - 1; ++i) {
+    EXPECT_LT(scores[i], scores[i + 1] + epsilon);
+  }
+}
+
+// Check that values between `scores[start_index]` (inclusive) and
+// `scores[end_index]` (exclusive) are mostly increasing. Allow wiggle room of
+// `epsilon` in the definition of "increasing".
+//
+// Why this is useful:
+//
+// When the text is long, and depending on the exact input params to
+// FuzzyTokenizedStringMatch, we can get variable and sometimes unexpected
+// sequences of relevance scores. Scores may or may not be influenced by, e.g.:
+// (1) space characters and (2) partial tokens.
+void ExpectMostlyIncreasing(const std::vector<double>& scores,
+                            double epsilon,
+                            int start_index = 0,
+                            int end_index = 0) {
+  ExpectIncreasing(scores, start_index, end_index, epsilon);
+}
+
+// Check that values between `scores[start_index]` (inclusive) and
+// `scores[end_index]` (exclusive) are strictly increasing.
+void ExpectStrictlyIncreasing(const std::vector<double>& scores,
+                              int start_index = 0,
+                              int end_index = 0) {
+  ExpectIncreasing(scores, start_index, end_index, /*epsilon*/ 0.0);
+}
+
+double CalculateRelevance(const std::u16string& query,
+                          const std::u16string& text) {
   FuzzyTokenizedStringMatch match;
   return match.Relevance(TokenizedString(query), TokenizedString(text),
                          kUseWeightedRatio, kUseEditDistance,
                          kPartialMatchPenaltyRate);
 }
 
-std::string FormatRelevanceResult(std::u16string text,
-                                  std::u16string query,
-                                  double relevance) {
-  // Display text before query. Series of tests will tend to use the same
-  // text repeatedly while varying the query, so displaying the text first is
-  // more visually useful.
-  return base::StringPrintf("text: %s, query: %s, relevance: %f",
-                            base::UTF16ToUTF8(text).data(),
-                            base::UTF16ToUTF8(query).data(), relevance);
+// Return a string formatted for displaying query-text relevance score details.
+// Allow specification of query-first/text-first ordering because different
+// series of tests will favor different visual display.
+std::string FormatRelevanceResult(const std::u16string& query,
+                                  const std::u16string& text,
+                                  double relevance,
+                                  bool query_first = true) {
+  if (query_first) {
+    return base::StringPrintf("query: %s, text: %s, relevance: %f",
+                              base::UTF16ToUTF8(query).data(),
+                              base::UTF16ToUTF8(text).data(), relevance);
+  } else {
+    return base::StringPrintf("text: %s, query: %s, relevance: %f",
+                              base::UTF16ToUTF8(text).data(),
+                              base::UTF16ToUTF8(query).data(), relevance);
+  }
 }
 
 }  // namespace
@@ -50,16 +96,113 @@ class FuzzyTokenizedStringMatchTest : public testing::Test {};
 // relevance scores. See the README for details.
 // TODO(crbug.com/1336160): Expand benchmarking tests.
 
-TEST_F(FuzzyTokenizedStringMatchTest, Benchmark_Chrome) {
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkChromeMultiBlock) {
+  std::u16string text = u"Chrome";
+  // N.B. "c", "ch", "chr", are not multiblock matches to "Chrome", but are
+  // included for comparison.
+  std::vector<std::u16string> queries = {u"c",   u"ch",  u"chr", u"co",  u"com",
+                                         u"cho", u"che", u"cr",  u"cro", u"cre",
+                                         u"ho",  u"hom", u"hoe", u"roe"};
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkChromePrefix) {
   std::vector<std::u16string> texts = {u"Chrome", u"Google Chrome"};
   std::vector<std::u16string> queries = {u"c",    u"ch",    u"chr",
                                          u"chro", u"chrom", u"chrome"};
+  for (const auto& text : texts) {
+    std::vector<double> scores;
 
-  for (auto text : texts) {
-    for (auto query : queries) {
-      double relevance = CalculateRelevance(query, text);
-      VLOG(1) << FormatRelevanceResult(text, query, relevance);
+    for (const auto& query : queries) {
+      const double relevance = CalculateRelevance(query, text);
+      scores.push_back(relevance);
+      VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                       /*query_first*/ false);
     }
+    ExpectStrictlyIncreasing(scores);
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkChromeTransposition) {
+  std::u16string text = u"Chrome";
+  // Single character-pair transpositions.
+  std::vector<std::u16string> queries = {u"chrome", u"hcrome", u"crhome",
+                                         u"chorme", u"chroem"};
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkGamesAssassinsCreed) {
+  std::u16string text = {u"Assassin's Creed"};
+  // Variations on punctuation and spelling
+  std::vector<std::u16string> queries = {
+      u"assassin", u"assassin'", u"assassin's", u"assassins",
+      u"assasin",  u"assasin's", u"assasins"};
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsScreenshot) {
+  std::u16string query = u"screenshot";
+  std::vector<std::u16string> texts = {u"Take fullscreen screenshot",
+                                       u"Take partial screenshot/recording",
+                                       u"Take screenshot/recording"};
+  for (const auto& text : texts) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ true);
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsDesk) {
+  std::u16string text = u"Create a new desk";
+  std::u16string text_lower = u"create a new desk";
+  std::vector<std::u16string> queries_strict_prefix = {u"crea",
+                                                       u"creat",
+                                                       u"create",
+                                                       u"create ",
+                                                       u"create a",
+                                                       u"create a ",
+                                                       u"create a n",
+                                                       u"create a ne",
+                                                       u"create a new",
+                                                       u"create a new ",
+                                                       u"create a new d",
+                                                       u"create a new de",
+                                                       u"create a new des",
+                                                       u"create a new desk"};
+  std::vector<std::u16string> queries_missing_words = {
+      u"create a d",   u"create a de",   u"create a des",   u"create a desk",
+      u"create d",     u"create de",     u"create des",     u"create desk",
+      u"create n",     u"create ne",     u"create new",     u"create new ",
+      u"create new d", u"create new de", u"create new des", u"create new desk",
+      u"new ",         u"new d",         u"new de",         u"new des",
+      u"new desk",     u"desk"};
+
+  std::vector<double> scores;
+  for (const auto& query : queries_strict_prefix) {
+    const double relevance = CalculateRelevance(query, text);
+    scores.push_back(relevance);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+  // Allow a flexible (rather than strict) increase in scores.
+  ExpectMostlyIncreasing(scores, /*epsilon*/ 0.005);
+
+  for (const auto& query : queries_missing_words) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
   }
 }
 
