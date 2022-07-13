@@ -56,6 +56,8 @@ constexpr char kMojoDisconnectionsAccountManagerRemote[] =
     "AccountManager.MojoDisconnections.AccountManagerRemote";
 constexpr char kMojoDisconnectionsAccountManagerObserverReceiver[] =
     "AccountManager.MojoDisconnections.AccountManagerObserverReceiver";
+constexpr char kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote[] =
+    "AccountManager.MojoDisconnections.AccessTokenFetcherRemote";
 
 void AccessTokenFetchSuccess(
     base::OnceCallback<void(crosapi::mojom::AccessTokenResultPtr)> callback) {
@@ -88,6 +90,8 @@ class MockAccessTokenFetcher : public crosapi::mojom::AccessTokenFetcher {
       mojo::PendingReceiver<crosapi::mojom::AccessTokenFetcher> receiver) {
     receiver_.Bind(std::move(receiver));
   }
+
+  void ResetReceiver() { receiver_.reset(); }
 
   // crosapi::mojom::AccessTokenFetcher override.
   MOCK_METHOD(void,
@@ -795,6 +799,85 @@ TEST_F(AccountManagerFacadeImplTest,
   // Expect 1 disconnection.
   EXPECT_EQ(1, histogram_tester().GetTotalSum(
                    kMojoDisconnectionsAccountManagerObserverReceiver));
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       HistogramsForZeroAccountManagerAccessTokenFetcherRemoteDisconnections) {
+  account_manager().SetIsInitialized(true);
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  const Account account = CreateTestGaiaAccount(kTestAccountEmail);
+
+  auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
+  EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
+      .WillOnce(WithArgs<1>(Invoke(&AccessTokenFetchSuccess)));
+  account_manager().SetMockAccessTokenFetcher(
+      std::move(mock_access_token_fetcher));
+
+  MockOAuthConsumer consumer;
+  EXPECT_CALL(consumer,
+              OnGetTokenSuccess(
+                  Field(&OAuth2AccessTokenConsumer::TokenResponse::access_token,
+                        Eq(kFakeAccessToken))));
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager_facade->CreateAccessTokenFetcher(
+          account.key, kFakeOAuthConsumerName, &consumer);
+  // Expect 0 disconnections in the default state.
+  EXPECT_EQ(0, histogram_tester().GetTotalSum(
+                   kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote));
+
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  // Flush all pending Mojo messages.
+  base::RunLoop().RunUntilIdle();
+  // Reset the fetcher so that histograms get logged.
+  access_token_fetcher.reset();
+
+  // Expect 1 log - at the end of `account_manager_facade` destruction.
+  histogram_tester().ExpectTotalCount(
+      kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote, 1);
+  // Expect 0 disconnections.
+  EXPECT_EQ(0, histogram_tester().GetTotalSum(
+                   kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote));
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       HistogramsForAccountManagerAccessTokenFetcherRemoteDisconnections) {
+  account_manager().SetIsInitialized(true);
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  const Account account = CreateTestGaiaAccount(kTestAccountEmail);
+
+  // Create a mock access token fetcher that closes its receiver end of the Mojo
+  // pipe as soon as its `Start()` method is called with any parameters.
+  auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
+  EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
+      .WillOnce(Invoke(mock_access_token_fetcher.get(),
+                       &MockAccessTokenFetcher::ResetReceiver));
+  account_manager().SetMockAccessTokenFetcher(
+      std::move(mock_access_token_fetcher));
+
+  MockOAuthConsumer consumer;
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager_facade->CreateAccessTokenFetcher(
+          account.key, kFakeOAuthConsumerName, &consumer);
+  // Expect 0 disconnections in the default state.
+  EXPECT_EQ(0, histogram_tester().GetTotalSum(
+                   kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote));
+
+  // Calling `Start` will reset the Mojo connection from the receiver side. This
+  // should notify the remote side, and result in a histogram log.
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  // Flush all pending Mojo messages.
+  base::RunLoop().RunUntilIdle();
+  // Reset the fetcher so that histograms get logged.
+  access_token_fetcher.reset();
+
+  // Expect 1 log - at the end of `account_manager_facade` destruction.
+  histogram_tester().ExpectTotalCount(
+      kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote, 1);
+  // Expect 1 disconnection.
+  EXPECT_EQ(1, histogram_tester().GetTotalSum(
+                   kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote));
 }
 
 }  // namespace account_manager

@@ -44,6 +44,8 @@ const char kMojoDisconnectionsAccountManagerRemote[] =
     "AccountManager.MojoDisconnections.AccountManagerRemote";
 const char kMojoDisconnectionsAccountManagerObserverReceiver[] =
     "AccountManager.MojoDisconnections.AccountManagerObserverReceiver";
+const char kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote[] =
+    "AccountManager.MojoDisconnections.AccessTokenFetcherRemote";
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback,
@@ -149,7 +151,11 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
   AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
 
-  ~AccessTokenFetcher() override = default;
+  ~AccessTokenFetcher() override {
+    base::UmaHistogramCounts100(
+        kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote,
+        num_remote_disconnections_);
+  }
 
   // Returns a closure, which marks `this` instance as ready for use. This
   // happens when `AccountManagerFacadeImpl`'s initialization sequence is
@@ -160,10 +166,11 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
   }
 
   // Returns a closure which handles Mojo connection errors tied to Account
-  // Manager.
-  base::OnceClosure MojoDisconnectionClosure() {
-    return base::BindOnce(&AccessTokenFetcher::OnMojoError,
-                          weak_factory_.GetWeakPtr());
+  // Manager remote.
+  base::OnceClosure AccountManagerRemoteDisconnectionClosure() {
+    return base::BindOnce(
+        &AccessTokenFetcher::OnAccountManagerRemoteDisconnection,
+        weak_factory_.GetWeakPtr());
   }
 
   // OAuth2AccessTokenFetcher override:
@@ -206,13 +213,16 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
                            weak_factory_.GetWeakPtr()));
 
     if (!is_remote_connected) {
-      OnMojoError();
+      OnAccountManagerRemoteDisconnection();
     }
   }
 
   void FetchAccessToken(
       mojo::PendingRemote<crosapi::mojom::AccessTokenFetcher> pending_remote) {
     access_token_fetcher_.Bind(std::move(pending_remote));
+    access_token_fetcher_.set_disconnect_handler(base::BindOnce(
+        &AccessTokenFetcher::OnAccessTokenFetcherRemoteDisconnection,
+        weak_factory_.GetWeakPtr()));
     access_token_fetcher_->Start(
         scopes_, base::BindOnce(&AccessTokenFetcher::OnAccessTokenFetchComplete,
                                 weak_factory_.GetWeakPtr()));
@@ -246,13 +256,22 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
             .build());
   }
 
-  void OnMojoError() {
+  void OnAccountManagerRemoteDisconnection() {
+    FailPendingRequestWithServiceError("Mojo pipe disconnected");
+  }
+
+  void OnAccessTokenFetcherRemoteDisconnection() {
+    num_remote_disconnections_++;
+    LOG(ERROR) << "Access token fetcher remote disconnected";
+    FailPendingRequestWithServiceError("Access token Mojo pipe disconnected");
+  }
+
+  void FailPendingRequestWithServiceError(const std::string& message) {
     if (!is_request_pending_)
       return;
 
     CancelRequest();
-    FireOnGetTokenFailure(
-        GoogleServiceAuthError::FromServiceError("Mojo pipe disconnected"));
+    FireOnGetTokenFailure(GoogleServiceAuthError::FromServiceError(message));
   }
 
   const raw_ptr<AccountManagerFacadeImpl> account_manager_facade_impl_;
@@ -261,6 +280,8 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
 
   bool are_token_requests_allowed_ = false;
   bool is_request_pending_ = false;
+  // Number of Mojo pipe disconnections seen by `access_token_fetcher_`.
+  int num_remote_disconnections_ = 0;
   std::vector<std::string> scopes_;
   mojo::Remote<crosapi::mojom::AccessTokenFetcher> access_token_fetcher_;
 
@@ -437,7 +458,8 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
       /*account_manager_facade_impl=*/this, account, oauth_consumer_name,
       consumer);
   RunAfterInitializationSequence(access_token_fetcher->UnblockTokenRequest());
-  RunOnMojoDisconnection(access_token_fetcher->MojoDisconnectionClosure());
+  RunOnAccountManagerRemoteDisconnection(
+      access_token_fetcher->AccountManagerRemoteDisconnectionClosure());
   return std::move(access_token_fetcher);
 }
 
@@ -577,13 +599,14 @@ void AccountManagerFacadeImpl::RunAfterInitializationSequence(
   }
 }
 
-void AccountManagerFacadeImpl::RunOnMojoDisconnection(
+void AccountManagerFacadeImpl::RunOnAccountManagerRemoteDisconnection(
     base::OnceClosure closure) {
   if (!account_manager_remote_) {
     std::move(closure).Run();
     return;
   }
-  mojo_disconnection_handlers_.emplace_back(std::move(closure));
+  account_manager_remote_disconnection_handlers_.emplace_back(
+      std::move(closure));
 }
 
 void AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected() {
@@ -591,10 +614,10 @@ void AccountManagerFacadeImpl::OnAccountManagerRemoteDisconnected() {
   LogMojoConnectionStats("Account Manager disconnected",
                          num_remote_disconnections_,
                          num_receiver_disconnections_);
-  for (auto& cb : mojo_disconnection_handlers_) {
+  for (auto& cb : account_manager_remote_disconnection_handlers_) {
     std::move(cb).Run();
   }
-  mojo_disconnection_handlers_.clear();
+  account_manager_remote_disconnection_handlers_.clear();
   account_manager_remote_.reset();
 }
 
