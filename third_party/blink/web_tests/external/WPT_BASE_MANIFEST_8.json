@@ -226314,6 +226314,19 @@
        {}
       ]
      ],
+     "svg-image-root-filter.html": [
+      "6df6eb23b9a1443c8c35fe8343a291dd079a03af",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/svg-image-root-filter-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "svg-multiple-filter-functions.html": [
       "d1b182a1c603b8f03c21bc16e9ec0c687a619e9b",
       [
@@ -249281,6 +249294,10 @@
     ],
     "attribution-reporting": {
      "debug": {
+      "report-aggregate-attribution": [
+       "9a5de3bdf5791bebff2aa30d6b39b43c16b13680",
+       []
+      ],
       "report-event-attribution": [
        "605d7589e099f89eee357d3c11377b08ad719286",
        []
@@ -250557,7 +250574,7 @@
       []
      ],
      "reports.py": [
-      "4af2b6a808ec84a964ba57c38db08da6b753c292",
+      "59593430578702e21d13b1e070e389ef136e0950",
       []
      ]
     }
@@ -296900,6 +296917,10 @@
        []
       ]
      },
+     "svg-image-root-filter-ref.html": [
+      "a11aaf36f8c098fa34d9ce8daadd4e6c9ff81c73",
+      []
+     ],
      "svg-unknown-input-ref.html": [
       "1fff2a6175cfe1956ff2c451aece45ec73345d81",
       []
