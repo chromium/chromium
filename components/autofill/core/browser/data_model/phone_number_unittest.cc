@@ -370,6 +370,13 @@ TEST(PhoneNumberTest, TrunkPrefix) {
                u"3381234567");
     TestNumber(u"338 1234567", u"338", u"338", u"3381234567", u"3381234567");
   }
+
+  // RU: An 8 is used as a trunk prefix.
+  {
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"RU");
+    TestNumber(u"+7 495 123 45 67", u"8495", u"495", u"84951234567",
+               u"4951234567");
+  }
 }
 
 // Tests that PHONE_HOME_NUMBER_PREFIX and PHONE_HOME_NUMBER_PREFIX are
