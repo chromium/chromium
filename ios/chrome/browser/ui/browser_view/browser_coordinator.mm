@@ -379,6 +379,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   DCHECK(!self.viewController);
 
   [self addWebStateObserver];
+  [self addWebStateListObserver];
   [self createViewControllerDependencies];
   [self createViewController];
   [self updateViewControllerDependencies];
@@ -390,7 +391,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   // Browser delegates can have dependencies on coordinators.
   [self installDelegatesForBrowser];
   [self installDelegatesForBrowserState];
-  [self addWebStateListObserver];
   [super start];
   self.started = YES;
 }
@@ -401,7 +401,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [super stop];
 
   self.active = NO;
-  [self removeWebStateListObserver];
   [self uninstallDelegatesForBrowserState];
   [self uninstallDelegatesForBrowser];
   [self uninstallDelegatesForAllWebStates];
@@ -411,6 +410,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
   [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
+  [self removeWebStateListObserver];
   [self removeWebStateObserver];
   self.started = NO;
 }
