@@ -916,8 +916,8 @@
   'CROS_ATLAS_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '105.0.5140.0',
-      'cros_img': 'atlas-release/R105-14943.0.0',
+      'cros_chrome_version': '105.0.5161.0',
+      'cros_img': 'atlas-release/R105-14961.0.0',
     },
     'enabled': False,
     'identifier': 'ATLAS_RELEASE_DEV',
@@ -952,10 +952,10 @@
   'CROS_EVE_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '104.0.5112.23',
-      'cros_img': 'eve-release/R104-14909.26.0',
+      'cros_chrome_version': '105.0.5161.0',
+      'cros_img': 'eve-release/R105-14961.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'EVE_RELEASE_DEV',
   },
   'CROS_EVE_RELEASE_BETA': {
@@ -997,8 +997,8 @@
   'CROS_HANA_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '105.0.5140.0',
-      'cros_img': 'hana-release/R105-14943.0.0',
+      'cros_chrome_version': '105.0.5161.0',
+      'cros_img': 'hana-release/R105-14961.0.0',
     },
     'enabled': False,
     'identifier': 'HANA_RELEASE_DEV',
@@ -1069,8 +1069,8 @@
   'CROS_OCTOPUS_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '105.0.5140.0',
-      'cros_img': 'octopus-release/R105-14943.0.0',
+      'cros_chrome_version': '105.0.5161.0',
+      'cros_img': 'octopus-release/R105-14961.0.0',
     },
     'enabled': False,
     'identifier': 'OCTOPUS_RELEASE_DEV',
@@ -1105,8 +1105,8 @@
   'CROS_STRONGBAD_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '105.0.5140.0',
-      'cros_img': 'strongbad-release/R105-14943.0.0',
+      'cros_chrome_version': '105.0.5161.0',
+      'cros_img': 'strongbad-release/R105-14961.0.0',
     },
     'enabled': False,
     'identifier': 'strongbad_RELEASE_DEV',
