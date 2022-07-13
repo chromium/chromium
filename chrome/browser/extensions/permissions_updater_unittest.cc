@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -34,6 +35,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/test/permissions_manager_waiter.h"
+#include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extension_test_util::LoadManifest;
@@ -852,6 +854,134 @@ TEST_F(PermissionsUpdaterTest,
   EXPECT_TRUE(prefs->GetDesiredActivePermissions(extension->id())
                   ->effective_hosts()
                   .MatchesURL(example_com));
+}
+
+// Validates that we don't overwrite an extension's desired active permissions
+// based on its initial effective active permissions on load (which could be
+// different, in the case of withheld host permissions).
+// Regression test for https://crbug.com/1343643.
+TEST_F(PermissionsUpdaterTest,
+       DontOverwriteDesiredActivePermissionsOnExtensionLoad) {
+  InitializeEmptyExtensionService();
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "host_permissions": ["<all_urls>"]
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+
+  scoped_refptr<const Extension> extension =
+      ChromeTestExtensionLoader(profile()).LoadExtension(
+          test_dir.UnpackedPath());
+
+  const ExtensionId id = extension->id();
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(id));
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  // The extension's desired active permissions should include <all_urls>.
+  EXPECT_TRUE(prefs->GetDesiredActivePermissions(id)
+                  ->effective_hosts()
+                  .MatchesAllURLs());
+
+  // Withhold host permissions. This shouldn't affect the extension's desired
+  // active permissions, which should still include <all_urls>.
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+  EXPECT_TRUE(prefs->GetDesiredActivePermissions(extension->id())
+                  ->effective_hosts()
+                  .MatchesAllURLs());
+  EXPECT_FALSE(extension->permissions_data()
+                   ->active_permissions()
+                   .effective_hosts()
+                   .MatchesAllURLs());
+
+  // Reload extensions.
+  service()->ReloadExtensionsForTest();
+  extension = registry()->enabled_extensions().GetByID(id);
+  ASSERT_TRUE(extension);
+
+  // The extension's desired active permissions should remain unchanged, and
+  // should include <all_urls>.
+  EXPECT_TRUE(prefs->GetDesiredActivePermissions(id)
+                  ->effective_hosts()
+                  .MatchesAllURLs());
+  EXPECT_FALSE(extension->permissions_data()
+                   ->active_permissions()
+                   .effective_hosts()
+                   .MatchesAllURLs());
+}
+
+// Validates that extension desired active permissions are restored to a sane
+// state on extension load (including all required permissions).
+TEST_F(PermissionsUpdaterTest, DesiredActivePermissionsAreFixedOnLoad) {
+  InitializeEmptyExtensionService();
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["tabs"],
+           "host_permissions": ["https://requested.example/*"]
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+
+  scoped_refptr<const Extension> extension =
+      ChromeTestExtensionLoader(profile()).LoadExtension(
+          test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const ExtensionId id = extension->id();
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(id));
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  const GURL requested_url("https://requested.example");
+  const GURL unrequested_url("https://unrequested.example");
+
+  // The extension's desired active permissions should include example.com and
+  // tabs.
+  {
+    std::unique_ptr<const PermissionSet> desired =
+        prefs->GetDesiredActivePermissions(id);
+    EXPECT_TRUE(desired->effective_hosts().MatchesURL(requested_url));
+    EXPECT_FALSE(desired->effective_hosts().MatchesURL(unrequested_url));
+    EXPECT_TRUE(desired->HasAPIPermission(APIPermissionID::kTab));
+    EXPECT_FALSE(desired->HasAPIPermission(APIPermissionID::kBookmark));
+  }
+
+  // Mangle the desired permissions in prefs (a la pref corruption, bugs, etc).
+  {
+    APIPermissionSet apis;
+    apis.insert(APIPermissionID::kBookmark);
+    URLPatternSet patterns;
+    patterns.AddOrigin(Extension::kValidHostPermissionSchemes, unrequested_url);
+    prefs->SetDesiredActivePermissions(
+        id, PermissionSet(std::move(apis), ManifestPermissionSet(),
+                          std::move(patterns), URLPatternSet()));
+  }
+
+  // Reload extensions.
+  service()->ReloadExtensionsForTest();
+  extension = registry()->enabled_extensions().GetByID(id);
+  ASSERT_TRUE(extension);
+
+  // The extension's desired active permissions should have been restored to
+  // their sane state of example.com and tabs.
+  {
+    std::unique_ptr<const PermissionSet> desired =
+        prefs->GetDesiredActivePermissions(id);
+    EXPECT_TRUE(desired->effective_hosts().MatchesURL(requested_url));
+    EXPECT_FALSE(desired->effective_hosts().MatchesURL(unrequested_url));
+    EXPECT_TRUE(desired->HasAPIPermission(APIPermissionID::kTab));
+    EXPECT_FALSE(desired->HasAPIPermission(APIPermissionID::kBookmark));
+  }
 }
 
 }  // namespace extensions

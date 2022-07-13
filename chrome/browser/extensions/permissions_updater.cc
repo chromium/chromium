@@ -491,7 +491,7 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
   } else {
     desired_permissions_wrapper =
         PermissionsManager::Get(browser_context_)
-            ->GetExtensionDesiredPermissionsFromPrefs(*extension);
+            ->GetBoundedExtensionDesiredPermissions(*extension);
     desired_permissions = desired_permissions_wrapper.get();
   }
 
@@ -503,16 +503,17 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
     GetDelegate()->InitializePermissions(extension, &granted_permissions);
 
   if ((init_flag_ & INIT_FLAG_TRANSIENT) == 0) {
-    // Set the active permissions in prefs to the newly-determined active
-    // permissions.
-    // TODO(devlin): This seems wrong. Active permissions in prefs should be
-    // the extension's most recent desired permissions, so shouldn't be
-    // affected by the set that's actually granted. Instead, we should
-    // initialize the set of active permissions to the required set on
-    // installation (and update it on extension update), and otherwise respect
-    // the set stored in preferences.
+    // Set the desired permissions in prefs.
+    // - For new installs, this initializes the desired active permissions.
+    // - For updates, this ensures the desired active permissions contain any
+    //   newly-added permissions and removes any no-longer-requested
+    //   permissions.
+    // - For pref corruption, this resets the prefs to a sane state.
+    // - This also resets prefs from https://crbug.com/1343643, in which
+    //   desired active permissions may not have included all required
+    //   permissions.
     ExtensionPrefs::Get(browser_context_)
-        ->SetDesiredActivePermissions(extension->id(), *granted_permissions);
+        ->SetDesiredActivePermissions(extension->id(), *desired_permissions);
 
     extension->permissions_data()->SetContextId(
         util::GetBrowserContextId(browser_context_));

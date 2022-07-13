@@ -246,31 +246,20 @@ void PermissionsManager::UpdatePermissionsWithUserSettings(
       PermissionSet::CreateUnion(user_permitted_set,
                                  *GetRuntimePermissionsFromPrefs(extension));
 
-  // 2) Calculate the set of all permissions the extension requests. This is the
-  //    union of optional and required permissions in the extension's manifest.
-  const PermissionSet& required_permissions =
-      PermissionsParser::GetRequiredPermissions(&extension);
-  std::unique_ptr<const PermissionSet> requested_permissions =
-      PermissionSet::CreateUnion(
-          required_permissions,
-          PermissionsParser::GetOptionalPermissions(&extension));
-
-  // 3) Determine the active permissions, within the bounds of requested
-  //    permissions. "Active permissions" here are the permissions the extension
-  //    most recently set for itself, as extensions can revoke their own
-  //    permissions via chrome.permissions.remove() (which removes the
+  // 2) Calculate the set of extension-desired permissions, which is the set of
+  //    permissions the extension most recently set for itself (this may be
+  //    different than granted, as extensions can remove permissions from
+  //    themselves via chrome.permissions.remove() (which removes the
   //    permission from the active set, but not the granted set).
-  std::unique_ptr<const PermissionSet> stored_desired_active_permissions =
-      extension_prefs_->GetDesiredActivePermissions(extension.id());
-  std::unique_ptr<const PermissionSet> bounded_active =
-      PermissionSet::CreateIntersection(*stored_desired_active_permissions,
-                                        *requested_permissions);
-  // Since we don't allow withholding of API and manifest permissions, the
-  // allowed set always contains all (bounded) requested API and manifest
-  // permissions.
+  std::unique_ptr<const PermissionSet> bounded_desired =
+      GetBoundedExtensionDesiredPermissions(extension);
+
+  // 3) Finalize the allowed set. Since we don't allow withholding of API and
+  // manifest permissions, the allowed set always contains all (bounded)
+  // requested API and manifest permissions.
   allowed_permissions = std::make_unique<const PermissionSet>(
-      bounded_active->apis().Clone(),
-      bounded_active->manifest_permissions().Clone(),
+      bounded_desired->apis().Clone(),
+      bounded_desired->manifest_permissions().Clone(),
       allowed_permissions->explicit_hosts().Clone(),
       allowed_permissions->scriptable_hosts().Clone());
 
@@ -283,10 +272,11 @@ void PermissionsManager::UpdatePermissionsWithUserSettings(
   //    new active set.
   std::unique_ptr<const PermissionSet> new_active =
       PermissionSet::CreateIntersection(
-          *allowed_permissions, *bounded_active,
+          *allowed_permissions, *bounded_desired,
           URLPatternSet::IntersectionBehavior::kDetailed);
   std::unique_ptr<const PermissionSet> new_withheld =
-      PermissionSet::CreateDifference(required_permissions, *new_active);
+      PermissionSet::CreateDifference(
+          PermissionsParser::GetRequiredPermissions(&extension), *new_active);
 
   // Set the new permissions on the extension.
   extension.permissions_data()->SetPermissions(std::move(new_active),
@@ -452,7 +442,7 @@ PermissionsManager::GetRuntimePermissionsFromPrefs(
 }
 
 std::unique_ptr<const PermissionSet>
-PermissionsManager::GetExtensionDesiredPermissionsFromPrefs(
+PermissionsManager::GetBoundedExtensionDesiredPermissions(
     const Extension& extension) const {
   // Determine the extension's "required" permissions (though even these can
   // be withheld).

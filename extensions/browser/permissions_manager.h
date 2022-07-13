@@ -176,10 +176,7 @@ class PermissionsManager : public KeyedService {
   // Returns the set of permissions that the `extension` wants to have active at
   // this time. This does *not* take into account user-granted or runtime-
   // withheld permissions.
-  // TODO(https://crbug.com/1268198): This should be a private method once we
-  // refactor a bit more and have PermissionsManager handle more of permission
-  // initialization.
-  std::unique_ptr<const PermissionSet> GetExtensionDesiredPermissionsFromPrefs(
+  std::unique_ptr<const PermissionSet> GetBoundedExtensionDesiredPermissions(
       const Extension& extension) const;
 
   // Returns the set of permissions that should be granted to the given
