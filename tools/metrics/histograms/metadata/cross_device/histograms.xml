@@ -1112,15 +1112,18 @@ chromium-metrics-reviews@google.com.
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Upon a successful Smart Lock unlock or signin, records whether the user's
-    phone was locked during any point while the lock screen was up. This can be
-    used to get a sense for whether users are using Smart Lock for Chromebook
-    without something like Smart Lock for Android to keep their phones unlocked.
+    Upon a successful Smart Lock unlock, records whether the user's phone was
+    locked during any point while the lock screen was up. This can be used to
+    get a sense for whether users are using Smart Lock for Chromebook without
+    something like Smart Lock for Android to keep their phones unlocked.
   </summary>
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.SignIn" enum="EasyUnlockAuthEvent"
     expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1133,6 +1136,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EasyUnlock.AuthEvent.SignIn.Duration" units="ms"
     expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2083,6 +2089,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.AuthMethodChoice.SignIn"
     enum="SmartLockAuthMethodChoice" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Records the user's sign in method choice.</summary>
@@ -2090,6 +2099,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.AuthMethodChoice.SignIn.PasswordState"
     enum="SmartLockAuthEventPasswordState" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2127,6 +2139,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.AuthResult.SignIn" enum="BooleanSuccess"
     expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2137,6 +2152,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.AuthResult.SignIn.Failure"
     enum="SmartLockAuthResultFailureReason" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2147,6 +2165,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.AuthResult.SignIn.Failure.UserControllerAuth"
     enum="LoginFailureReason" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2201,6 +2222,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.FindAndConnectToHostResult.SignIn"
     enum="SmartLockFindAndConnectToHostResult" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2232,6 +2256,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.GetRemoteStatus.SignIn" enum="BooleanSuccess"
     expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2243,6 +2270,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="SmartLock.GetRemoteStatus.SignIn.Failure"
     enum="SmartLockGetRemoteStatusResultFailureReason"
     expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
