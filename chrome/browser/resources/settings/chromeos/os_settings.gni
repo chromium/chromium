@@ -20,6 +20,9 @@ mojom_webui_closure_flags = [
   "js_module_root=" + rebase_path(
           "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/chromeos/constants",
           root_build_dir),
+  "js_module_root=" + rebase_path(
+          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash",
+          root_build_dir),
   "browser_resolver_prefix_replacements=\"../../../mojom-webui/=../../../\"",
   "browser_resolver_prefix_replacements=\"../../mojom-webui/=../../\"",
   "browser_resolver_prefix_replacements=\"../mojom-webui/=../\"",

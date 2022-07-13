@@ -18,4 +18,6 @@ mojom("mojo_bindings") {
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
     "//mojo/public/mojom/base",
   ]
+
+  webui_module_path = "/search"
 }
