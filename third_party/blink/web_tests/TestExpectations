@@ -3475,6 +3475,8 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected.html [ Failure ]
+crbug.com/626703 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-038.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-039.html [ Failure ]
@@ -7184,11 +7186,11 @@ crbug.com/1343698 [ Release Win10.20h2 ] external/wpt/webmessaging/postMessage_a
 # Tests that are exercising the tentative feature COOP: restrict-properties.
 # These are tests which are implemented before the feature is complete and
 # flakily crash.
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?1-2 [ Failure Crash ]
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?3-4 [ Failure Crash ]
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?5-6 [ Failure Crash ]
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?7-8 [ Failure Crash ]
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?9-last [ Failure Crash ]
+crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?1-2 [ Crash Failure ]
+crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?3-4 [ Crash Failure ]
+crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?5-6 [ Crash Failure ]
+crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?7-8 [ Crash Failure ]
+crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?9-last [ Crash Failure ]
 
 # Sheriff 2022-07-13
 crbug.com/1344128 [ Mac10.14 ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure ]

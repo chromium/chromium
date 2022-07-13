@@ -15749,6 +15749,35 @@
      ]
     },
     "printing": {
+     "background-image-print.html": [
+      "8d294107406e902bae7b368a8e34100221cea2d2",
+      [
+       null,
+       [
+        [
+         "/css/printing/background-image-print-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            3
+           ],
+           [
+            0,
+            400
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "emoji-print.html": [
       "689c337acba6f84d088b3e8ed5cffe9c3ef6dd5c",
       [
@@ -143980,6 +144009,19 @@
        {}
       ]
      ],
+     "nested-oofs-in-relative-multicol.html": [
+      "2130e72e6fe5275af732c18209f5861180b6984d",
+      [
+       null,
+       [
+        [
+         "/css/css-multicol/reference/nested-oofs-in-relative-multicol-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nested-past-fragmentation-line.html": [
       "77f91f4a23d802bdfe1d94072825cf25b5aeb10f",
       [
@@ -144052,19 +144094,6 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "oof-in-nested-multicol.html": [
-      "44c28696b3002af9887c3d6ad6c161069f7db911",
-      [
-       null,
-       [
-        [
-         "/css/css-multicol/reference/oof-in-nested-multicol-ref.html",
          "=="
         ]
        ],
@@ -231920,6 +231949,35 @@
         }
        },
        "drawing-text-to-the-canvas": {
+        "canvas.2d.disconnected.html": [
+         "a1715f6663c96289adac6db909035020b6640d1c",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               23
+              ],
+              [
+               0,
+               829
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
         "canvas.2d.fontStretch.condensed.html": [
          "2bda32082e3577757ca58dd460d0f0a478a7d647",
          [
@@ -281040,8 +281098,8 @@
        "d19ec1b93a14cc030c5b97de775438d8cebb94c9",
        []
       ],
-      "oof-in-nested-multicol-ref.html": [
-       "5d8208e167aec63290a1eef697ab61cfccefcd83",
+      "nested-oofs-in-relative-multicol-ref.html": [
+       "01956bf492c825d73271d528d74f4a6053764e0a",
        []
       ]
      },
@@ -297073,6 +297131,10 @@
      ]
     },
     "printing": {
+     "background-image-print-ref.html": [
+      "305aa2fce2f490ef161c803558cc7a17bf7aa117",
+      []
+     ],
      "fragmented-inline-block-002-print-ref.html": [
       "dcfa3a1385628a90cb2d1be17e8bf6da09cde20e",
       []
@@ -306600,6 +306662,10 @@
         }
        },
        "drawing-text-to-the-canvas": {
+        "canvas.2d.disconnected-ref.html": [
+         "b36d29b97f5e3b0065ea13ca008ce0054835efdc",
+         []
+        ],
         "canvas.2d.fontStretch-ref.html": [
          "4b3b28baf9dcb1dea96611bfdbfbce0a0aba7c3c",
          []
@@ -308101,7 +308167,7 @@
        []
       ],
       "iframe-test.js": [
-       "3d887449840351c8f91a9f9845bcaa639f194d1f",
+       "84b065fab7676be7f3de3061c143ef7dd83de449",
        []
       ],
       "popup-test.js": [
@@ -308137,6 +308203,26 @@
       "restrict-properties": {
        "README.md": [
         "b3c24c3f82d2dbf07eefa9fa2e88fcf3817473d2",
+        []
+       ],
+       "iframe-popup-to-so.https.html.headers": [
+        "d5c99062d2bb8f9660b68c172754867b598ed43f",
+        []
+       ],
+       "iframe-popup-to-soap.https.html.headers": [
+        "d5c99062d2bb8f9660b68c172754867b598ed43f",
+        []
+       ],
+       "iframe-popup-to-un.https.html.headers": [
+        "d5c99062d2bb8f9660b68c172754867b598ed43f",
+        []
+       ],
+       "iframe-popup.https.html.headers": [
+        "d5c99062d2bb8f9660b68c172754867b598ed43f",
+        []
+       ],
+       "named_targeting.https.html.headers": [
+        "d5c99062d2bb8f9660b68c172754867b598ed43f",
         []
        ],
        "popup-so.https.html.headers": [
@@ -327316,7 +327402,13 @@
       []
      ],
      "testcommon.js": [
-      "0eadb54a2feedf9d1a2677fc7e44a428b00927b9",
+      "97e81f494cc6f0d40b293ade0db8e65cc53424e6",
+      []
+     ]
+    },
+    "view-timelines": {
+     "testcommon.js": [
+      "c49caf1583058051071087c008efd8b06d390c59",
       []
      ]
     }
@@ -329021,7 +329113,7 @@
        []
       ],
       "fetch-event-test-worker.js": [
-       "bb59bc928651acd5274431e6d31711c4288523ba",
+       "813f79d1b07ba9bb9e21acb5a2274cfd4029c62b",
        []
       ],
       "fetch-event-within-sw-worker.js": [
@@ -464372,6 +464464,145 @@
      ],
      "tentative": {
       "restrict-properties": {
+       "iframe-popup-to-so.https.html": [
+        "740ff2595aa5891cfaf99a04cd281e71e4d4bc74",
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-so.https.html?1-2",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-so.https.html?3-4",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-so.https.html?5-6",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-so.https.html?7-8",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-so.https.html?9-last",
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "iframe-popup-to-soap.https.html": [
+        "f3af3ca7db1bad6506fef6b519c8f244d2080d0e",
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html?1-2",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html?3-4",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html?5-6",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html?7-8",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-soap.https.html?9-last",
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "iframe-popup-to-un.https.html": [
+        "560dfd90511dca11a8b5f4fb30d88beb093c538a",
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?1-2",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?3-4",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?5-6",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?7-8",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?9-last",
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "iframe-popup.https.html": [
+        "2c6f0b62822f61bc4aac8a9bdd50cdbd724c07eb",
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup.https.html?1-2",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup.https.html?3-4",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup.https.html?5-6",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup.https.html?7-8",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup.https.html?9-last",
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "named_targeting.https.html": [
+        "00eb6506e9b9b18bfb385bc4a0dd64dcd48a8b38",
+        [
+         null,
+         {}
+        ]
+       ],
        "popup-so.https.html": [
         "e5313a6e222d5b7671747516b8d056fda7e9db8b",
         [
@@ -521238,6 +521469,34 @@
      ]
     },
     "view-timelines": {
+     "block-view-timeline-current-time-vertical-rl.tentative.html": [
+      "2c2e02be6bb98a274bcb53bd65d9138c4e49a4f9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "block-view-timeline-current-time.tentative.html": [
+      "6e60db2768b6a9cb2801d3beb51eb907b0e48c11",
+      [
+       null,
+       {}
+      ]
+     ],
+     "block-view-timeline-nested-subject.tentative.html": [
+      "720b33aad0d29c7771720280345af532144fb7c9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inline-view-timeline-current-time.tentative.html": [
+      "4cd6394e33f19f1995ae29560ee6c4248988f20a",
+      [
+       null,
+       {}
+      ]
+     ],
      "view-timeline-source.tentative.html": [
       "15fbdb5785543e739e5c0b1ff44cc6396cfb09ca",
       [
@@ -524148,8 +524407,17 @@
        }
       ]
      ],
+     "fetch-event.https.h2.html": [
+      "5cd381ec98dbee28586f4da68f3656706b81b03a",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "fetch-event.https.html": [
-      "59a0988b490f6e7378baecc98a0b44dd20315e5d",
+      "ce53f3c9bff3f7b4bc1377891adfdfd6a322f2d5",
       [
        null,
        {
