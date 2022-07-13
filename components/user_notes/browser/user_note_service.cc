@@ -320,9 +320,10 @@ void UserNoteService::OnNoteModelsFetched(
     const auto& creation_entry_it = creation_map_.find(id);
     const auto& model_entry_it = model_map_.find(id);
 
-    if (new_note_it == new_notes.end()) {
-      // This note was modified; simply update the existing model in the model
-      // map.
+    if (new_note_it == new_notes.end() || model_entry_it != model_map_.end()) {
+      // Either this note was updated or the URL it is attached to was already
+      // loaded in another tab. Either way, its model already exists in the
+      // model map, so simply update it with the latest model.
       DCHECK(creation_entry_it == creation_map_.end());
       DCHECK(model_entry_it != model_map_.end());
       model_entry_it->second.model->Update(std::move(note));
