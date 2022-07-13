@@ -8,27 +8,18 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "chrome/common/pref_names.h"
-#include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/protocol/user_consent_types.pb.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 ApcOnboardingCoordinatorImpl::ApcOnboardingCoordinatorImpl(
     content::WebContents* web_contents)
@@ -94,52 +85,11 @@ void ApcOnboardingCoordinatorImpl::OpenOnboardingDialog() {
           base::Unretained(this)));
 }
 
-void ApcOnboardingCoordinatorImpl::OnControllerResponseReceived(
-    bool success,
-    absl::optional<int> confirmation_grd_id,
-    const std::vector<int>& description_grd_ids) {
+void ApcOnboardingCoordinatorImpl::OnControllerResponseReceived(bool success) {
   if (success) {
     GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopEnabled, true);
-    CHECK(confirmation_grd_id.has_value());
-    RecordConsentGiven(confirmation_grd_id.value(), description_grd_ids);
   }
   std::move(callback_).Run(success);
-}
-
-void ApcOnboardingCoordinatorImpl::RecordConsentGiven(
-    int confirmation_grd_id,
-    const std::vector<int>& description_grd_ids) {
-  sync_pb::UserConsentTypes::AutofillAssistantConsent consent;
-
-  // The only accepted resource ids are those contained in the model. Otherwise,
-  // something is going seriously wrong and we should stop Chrome from sending
-  // incorrect consent data.
-  const AssistantOnboardingInformation model = CreateOnboardingInformation();
-  CHECK_EQ(confirmation_grd_id, model.button_accept_text_id);
-  consent.set_confirmation_grd_id(confirmation_grd_id);
-
-  const base::flat_set<int> acceptable_ids = {
-      model.title_id, model.description_id, model.consent_text_id,
-      model.learn_more_title_id};
-  CHECK_EQ(acceptable_ids.size(), description_grd_ids.size());
-  for (int id : description_grd_ids) {
-    CHECK(acceptable_ids.contains(id));
-    consent.add_description_grd_ids(id);
-  }
-  consent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
-                         UserConsentTypes_ConsentStatus_GIVEN);
-
-  WriteToConsentAuditor(consent);
-}
-
-void ApcOnboardingCoordinatorImpl::WriteToConsentAuditor(
-    const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  ConsentAuditorFactory::GetForProfile(profile)->RecordAutofillAssistantConsent(
-      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountId(
-          signin::ConsentLevel::kSignin),
-      consent);
 }
 
 PrefService* ApcOnboardingCoordinatorImpl::GetPrefs() {

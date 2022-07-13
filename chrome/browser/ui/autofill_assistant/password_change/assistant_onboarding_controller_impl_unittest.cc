@@ -11,15 +11,8 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_onboarding_prompt.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::StrictMock;
-
-namespace {
-constexpr int kConfirmationId = 123;
-constexpr int kDescriptionId1 = 37;
-constexpr int kDescriptionId2 = 43;
-}  // namespace
 
 class AssistantOnboardingControllerImplTest : public ::testing::Test {
  public:
@@ -44,10 +37,8 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndAccept) {
   controller_->Show(prompt.GetWeakPtr(), callback.Get());
 
   // Simulate click on accept.
-  EXPECT_CALL(callback,
-              Run(true, absl::optional<int>(kConfirmationId),
-                  std::vector<int>({kDescriptionId1, kDescriptionId2})));
-  controller_->OnAccept(kConfirmationId, {kDescriptionId1, kDescriptionId2});
+  EXPECT_CALL(callback, Run(true));
+  controller_->OnAccept();
 }
 
 TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndCancel) {
@@ -58,7 +49,7 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndCancel) {
   controller_->Show(prompt.GetWeakPtr(), callback.Get());
 
   // Simulate click on cancel.
-  EXPECT_CALL(callback, Run(false, absl::optional<int>(), std::vector<int>()));
+  EXPECT_CALL(callback, Run(false));
   controller_->OnCancel();
 }
 
@@ -70,7 +61,7 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndClose) {
   controller_->Show(prompt.GetWeakPtr(), callback.Get());
 
   // Simulate click on cancel.
-  EXPECT_CALL(callback, Run(false, absl::optional<int>(), std::vector<int>()));
+  EXPECT_CALL(callback, Run(false));
   controller_->OnClose();
 
   // A second call does not do anything.
@@ -89,15 +80,13 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowTwoPromptsAndAcceptSecond) {
 
   // The second prompt closes the first.
   EXPECT_CALL(first_prompt, OnControllerGone);
-  EXPECT_CALL(first_callback,
-              Run(false, absl::optional<int>(), std::vector<int>()));
+  EXPECT_CALL(first_callback, Run(false));
   EXPECT_CALL(second_prompt, Show);
   controller_->Show(second_prompt.GetWeakPtr(), second_callback.Get());
 
   // Simulate click on accept.
-  EXPECT_CALL(second_callback, Run(true, absl::optional<int>(kConfirmationId),
-                                   std::vector<int>({kDescriptionId1})));
-  controller_->OnAccept(kConfirmationId, {kDescriptionId1});
+  EXPECT_CALL(second_callback, Run(true));
+  controller_->OnAccept();
 }
 
 TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndRemoveController) {
@@ -109,6 +98,6 @@ TEST_F(AssistantOnboardingControllerImplTest, ShowPromptAndRemoveController) {
 
   // Destroying the controller should notify the prompt and run the callback.
   EXPECT_CALL(prompt, OnControllerGone);
-  EXPECT_CALL(callback, Run(false, absl::optional<int>(), std::vector<int>()));
+  EXPECT_CALL(callback, Run(false));
   controller_.reset();
 }

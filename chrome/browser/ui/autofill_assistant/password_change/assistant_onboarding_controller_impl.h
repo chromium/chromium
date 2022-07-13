@@ -7,8 +7,6 @@
 
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -33,8 +31,7 @@ class AssistantOnboardingControllerImpl : public AssistantOnboardingController {
             Callback callback) override;
   // For the below `On*` methods, the controller does not take care of closing
   // the view - this is done by the view itself.
-  void OnAccept(int confirmation_grd_id,
-                const std::vector<int>& description_grd_ids) override;
+  void OnAccept() override;
   void OnCancel() override;
   void OnClose() override;
   void OnLearnMoreClicked() override;

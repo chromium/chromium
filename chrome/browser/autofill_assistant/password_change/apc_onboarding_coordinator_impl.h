@@ -12,13 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
-#include "components/sync/protocol/user_consent_types.pb.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-class AssistantOnboardingController;
-struct AssistantOnboardingInformation;
-class AssistantOnboardingPrompt;
 class PrefService;
 
 // Implementation of the `ApcOnboardingCoordinator` interface that takes care
@@ -67,21 +64,7 @@ class ApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinator {
   void OpenOnboardingDialog();
 
   // Handles the response from the UI controller prompting the user for consent.
-  void OnControllerResponseReceived(
-      bool success,
-      absl::optional<int> confirmation_grd_id,
-      const std::vector<int>& description_grd_ids);
-
-  // Records that consent was given using a dialog with a confirmation button
-  // with label `confirmation_grd_id` and other elements with text contents
-  // `description_grd_ids`.
-  void RecordConsentGiven(int confirmation_grd_id,
-                          const std::vector<int>& description_grd_ids);
-
-  // Writes `consent` to the `ConsentAuditor` instance of this profile, which
-  // sends it to the backend via Chrome's sync server.
-  void WriteToConsentAuditor(
-      const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent);
+  void OnControllerResponseReceived(bool success);
 
   // Returns the pref service needed to check whether onboarding was previously
   // accepted.

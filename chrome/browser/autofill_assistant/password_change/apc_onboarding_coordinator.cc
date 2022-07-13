@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator_impl.h"
-#include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "url/gurl.h"
 

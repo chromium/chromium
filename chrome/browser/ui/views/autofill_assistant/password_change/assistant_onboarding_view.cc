@@ -94,8 +94,8 @@ void AssistantOnboardingView::InitDelegate() {
   set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
 
-  SetAcceptCallback(base::BindOnce(&AssistantOnboardingView::OnAccept,
-                                   weak_ptr_factory_.GetWeakPtr()));
+  SetAcceptCallback(
+      base::BindOnce(&AssistantOnboardingController::OnAccept, controller_));
   SetCancelCallback(
       base::BindOnce(&AssistantOnboardingController::OnCancel, controller_));
   SetCloseCallback(
@@ -103,9 +103,6 @@ void AssistantOnboardingView::InitDelegate() {
 }
 
 void AssistantOnboardingView::InitDialog() {
-  // IMPORTANT: If any additional text elements are added, the resource ids
-  // of the strings must be included in the data filled in `OnAccept()`.
-
   // The dialog is not expected to be resized, so for our purposes, a
   // `BoxLayout` is sufficient.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -209,18 +206,6 @@ void AssistantOnboardingView::InitDialog() {
           .AddStyleRange(gfx::Range(offset, offset + learn_more_title.length()),
                          link_style)
           .Build());
-}
-
-void AssistantOnboardingView::OnAccept() {
-  // IMPORTANT: If any additional text elements are added, then these must be
-  // included here to ensure that the audit record is complete.
-  if (controller_) {
-    const AssistantOnboardingInformation& model =
-        controller_->GetOnboardingInformation();
-    controller_->OnAccept(model.button_accept_text_id,
-                          {model.title_id, model.description_id,
-                           model.consent_text_id, model.learn_more_title_id});
-  }
 }
 
 base::WeakPtr<AssistantOnboardingView> AssistantOnboardingView::GetWeakPtr() {
