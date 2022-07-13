@@ -273,6 +273,8 @@ ci.builder(
 ci.builder(
     name = "Android arm64 Builder All Targets (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = False,
+    cores = None,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
