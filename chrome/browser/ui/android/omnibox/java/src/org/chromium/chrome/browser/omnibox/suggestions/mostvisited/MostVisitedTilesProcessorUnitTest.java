@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -38,11 +39,15 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher.FaviconFetchCompleteListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
@@ -68,6 +73,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     private static final int DESIRED_FAVICON_SIZE_PX = 100;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     private Activity mActivity;
     private PropertyModel mPropertyModel;
@@ -271,5 +277,31 @@ public final class MostVisitedTilesProcessorUnitTest {
                 mActivity.getString(R.string.accessibility_omnibox_most_visited_tile_navigate,
                         "title", NAV_URL.getHost());
         assertEquals(expectedDescription, tileModel.get(TileViewProperties.CONTENT_DESCRIPTION));
+    }
+
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND)
+    @Test
+    public void testDescriptionWrapping_singleLine() {
+        mProcessor.onNativeInitialized();
+        List<ListItem> tileList =
+                populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
+
+        assertEquals(1, tileList.size());
+        ListItem tileItem = tileList.get(0);
+        PropertyModel tileModel = tileItem.model;
+        assertEquals(1, tileModel.get(TileViewProperties.TITLE_LINES));
+    }
+
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND)
+    @Test
+    public void testDescriptionWrapping_wrappingLine() {
+        mProcessor.onNativeInitialized();
+        List<ListItem> tileList =
+                populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
+
+        assertEquals(1, tileList.size());
+        ListItem tileItem = tileList.get(0);
+        PropertyModel tileModel = tileItem.model;
+        assertEquals(2, tileModel.get(TileViewProperties.TITLE_LINES));
     }
 }

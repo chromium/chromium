@@ -5045,14 +5045,20 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxAssistantVoiceSearch,
                                     kOmniboxAssistantVoiceSearchVariations,
                                     "OmniboxAssistantVoiceSearch")},
-    {"omnibox-most-visited-tiles",
-     flag_descriptions::kOmniboxMostVisitedTilesName,
-     flag_descriptions::kOmniboxMostVisitedTilesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},
     {"omnibox-modernize-visual-update",
      flag_descriptions::kOmniboxModernizeVisualUpdateName,
      flag_descriptions::kOmniboxModernizeVisualUpdateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOmniboxModernizeVisualUpdate)},
+
+    {"omnibox-most-visited-tiles",
+     flag_descriptions::kOmniboxMostVisitedTilesName,
+     flag_descriptions::kOmniboxMostVisitedTilesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},
+
+    {"omnibox-most-visited-tiles-title-wrap-around",
+     flag_descriptions::kOmniboxMostVisitedTilesTitleWrapAroundName,
+     flag_descriptions::kOmniboxMostVisitedTilesTitleWrapAroundDescription,
+     kOsAndroid, FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesTitleWrapAround)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"omnibox-on-focus-suggestions-contextual-web",

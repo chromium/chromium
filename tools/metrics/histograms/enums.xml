@@ -56021,6 +56021,8 @@ from previous Chrome versions.
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
   <int value="-1643227464"
       label="AutofillEnableUpdateVirtualCardEnrollment:disabled"/>
+  <int value="-1643224308"
+      label="OmniboxMostVisitedTilesTitleWrapAround:disabled"/>
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
   <int value="-1641656402"
       label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
@@ -56540,6 +56542,8 @@ from previous Chrome versions.
   <int value="-1341092934" label="enable-accelerated-overflow-scroll"/>
   <int value="-1340460869" label="ShutdownSupportForKeepalive:enabled"/>
   <int value="-1340055960" label="enable-streamlined-hosted-apps"/>
+  <int value="-1338701593"
+      label="OmniboxMostVisitedTilesTitleWrapAround:enabled"/>
   <int value="-1338306372" label="BrowserTouchBar:enabled"/>
   <int value="-1338237485" label="HardwareSecureDecryptionExperiment:disabled"/>
   <int value="-1337185440" label="enable-webvr"/>

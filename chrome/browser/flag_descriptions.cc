@@ -1900,6 +1900,12 @@ const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frequently visited pages from history as a single row "
     "with a carousel instead of one URL per line.";
 
+const char kOmniboxMostVisitedTilesTitleWrapAroundName[] =
+    "Omnibox Most Visited Tiles Title wrap around";
+const char kOmniboxMostVisitedTilesTitleWrapAroundDescription[] =
+    "Permits longer MV Tiles titles to wrap around to the second line "
+    "to reduce ellipsizing longer titles.";
+
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPName[] =
     "Omnibox Trending Zero Prefix Suggestions";
 const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription[] =
