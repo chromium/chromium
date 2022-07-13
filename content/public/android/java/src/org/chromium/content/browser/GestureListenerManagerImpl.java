@@ -37,7 +37,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
  */
 @JNINamespace("content")
 public class GestureListenerManagerImpl
-        implements GestureListenerManager, WindowEventObserver, UserData {
+        implements GestureListenerManager, WindowEventObserver, UserData,
+                   ViewAndroidDelegate.VerticalScrollDirectionChangeListener {
     private static final class UserDataFactoryLazyHolder {
         private static final UserDataFactory<GestureListenerManagerImpl> INSTANCE =
                 GestureListenerManagerImpl::new;
@@ -81,6 +82,7 @@ public class GestureListenerManagerImpl
         mListeners = new ObserverList<GestureStateListener>();
         mIterator = mListeners.rewindableIterator();
         mViewDelegate = mWebContents.getViewAndroidDelegate();
+        mViewDelegate.addVerticalScrollDirectionChangeListener(this);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
         mNativeGestureListenerManager = GestureListenerManagerImplJni.get().init(
                 GestureListenerManagerImpl.this, mWebContents);
@@ -116,6 +118,11 @@ public class GestureListenerManagerImpl
             GestureListenerManagerImplJni.get().setHasListenersAttached(
                     mNativeGestureListenerManager, false);
         }
+    }
+
+    @Override
+    public boolean hasListener(GestureStateListener listener) {
+        return mListeners.hasObserver(listener);
     }
 
     private boolean hasGestureStateListenerWithScroll() {
@@ -197,6 +204,13 @@ public class GestureListenerManagerImpl
     public void updateOnScaleLimitsChanged(float minScale, float maxScale) {
         for (mIterator.rewind(); mIterator.hasNext();) {
             mIterator.next().onScaleLimitsChanged(minScale, maxScale);
+        }
+    }
+
+    @Override
+    public void onVerticalScrollDirectionChanged(boolean directionUp, float currentScrollRatio) {
+        for (mIterator.rewind(); mIterator.hasNext();) {
+            mIterator.next().onVerticalScrollDirectionChanged(directionUp, currentScrollRatio);
         }
     }
 
@@ -306,6 +320,7 @@ public class GestureListenerManagerImpl
     private void onNativeDestroyed() {
         for (mIterator.rewind(); mIterator.hasNext();) mIterator.next().onDestroyed();
         mListeners.clear();
+        mViewDelegate.removeVerticalScrollDirectionChangeListener(this);
         mNativeGestureListenerManager = 0;
     }
 

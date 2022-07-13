@@ -227,6 +227,7 @@ public final class TabImpl extends ITab.Stub {
         @Override
         protected void onVerticalScrollDirectionChanged(
                 boolean directionUp, float currentScrollRatio) {
+            super.onVerticalScrollDirectionChanged(directionUp, currentScrollRatio);
             try {
                 mClient.onScrollNotification(directionUp
                                 ? ScrollNotificationType.DIRECTION_CHANGED_UP

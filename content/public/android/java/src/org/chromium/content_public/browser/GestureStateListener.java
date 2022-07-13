@@ -43,6 +43,13 @@ public abstract class GestureStateListener {
     public void onScrollStarted(int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {}
 
     /**
+     * Called when the scroll direction changes.
+     * @param directionUp Whether the scroll direction is up, i.e. swiping down.
+     * @param currentScrollRatio The current scroll ratio of the page.
+     */
+    public void onVerticalScrollDirectionChanged(boolean directionUp, float currentScrollRatio) {}
+
+    /**
      * Called when a scroll gesture has stopped.
      */
     public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {}

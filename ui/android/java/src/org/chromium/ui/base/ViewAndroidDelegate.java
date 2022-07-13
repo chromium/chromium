@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.InputConnection;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -56,6 +57,21 @@ public class ViewAndroidDelegate {
     private ObserverList<ContainerViewObserver> mContainerViewObservers = new ObserverList<>();
 
     /**
+     * Notifies the listener of vertical scroll direction changes.
+     */
+    public interface VerticalScrollDirectionChangeListener {
+        /**
+         * Called when the vertical scroll direction changes.
+         * @param directionUp Whether the scroll direction is up, i.e. swiping down.
+         * @param currentScrollRatio The current scroll ratio of the page.
+         */
+        void onVerticalScrollDirectionChanged(boolean directionUp, float currentScrollRatio);
+    }
+
+    private final ObserverList<VerticalScrollDirectionChangeListener>
+            mVerticalScrollDirectionChangeListeners = new ObserverList<>();
+
+    /**
      * Create and return a basic implementation of {@link ViewAndroidDelegate}.
      * @param containerView {@link ViewGroup} to be used as a container view.
      * @return a new instance of {@link ViewAndroidDelegate}.
@@ -78,6 +94,18 @@ public class ViewAndroidDelegate {
      */
     public final void addObserver(ContainerViewObserver observer) {
         mContainerViewObservers.addObserver(observer);
+    }
+
+    /** Adds the provided {@link VerticalScrollDirectionChangeListener}. */
+    public final void addVerticalScrollDirectionChangeListener(
+            VerticalScrollDirectionChangeListener listener) {
+        mVerticalScrollDirectionChangeListeners.addObserver(listener);
+    }
+
+    /** Removes the provided {@link VerticalScrollDirectionChangeListener}. */
+    public final void removeVerticalScrollDirectionChangeListener(
+            VerticalScrollDirectionChangeListener listener) {
+        mVerticalScrollDirectionChangeListeners.removeObserver(listener);
     }
 
     /**
@@ -394,7 +422,9 @@ public class ViewAndroidDelegate {
      * if page is not scrollable, though this should not be called in that case.
      */
     @CalledByNative
+    @CallSuper
     protected void onVerticalScrollDirectionChanged(boolean directionUp, float currentScrollRatio) {
+        notifyVerticalScrollDirectionChangeListeners(directionUp, currentScrollRatio);
     }
 
     /**
@@ -511,6 +541,14 @@ public class ViewAndroidDelegate {
     @CalledByNative
     protected int[] getDisplayFeature() {
         return null;
+    }
+
+    private void notifyVerticalScrollDirectionChangeListeners(
+            boolean directionUp, float currentScrollRatio) {
+        for (VerticalScrollDirectionChangeListener listener :
+                mVerticalScrollDirectionChangeListeners) {
+            listener.onVerticalScrollDirectionChanged(directionUp, currentScrollRatio);
+        }
     }
 
     /** Destroy and clean up dependencies (e.g. drag state tracker if set). */

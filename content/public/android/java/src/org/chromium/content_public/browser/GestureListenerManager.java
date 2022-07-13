@@ -36,6 +36,9 @@ public interface GestureListenerManager {
      */
     void removeListener(GestureStateListener listener);
 
+    /** Returns whether the provided listener has been added. */
+    boolean hasListener(GestureStateListener listener);
+
     /**
      * @return Whether a scroll targeting web content is in progress.
      */
