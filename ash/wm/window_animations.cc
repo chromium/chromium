@@ -456,6 +456,12 @@ void AddLayerAnimationsForMinimize(aura::Window* window, bool show) {
 void AnimateShowWindow_Minimize(aura::Window* window) {
   window->layer()->SetOpacity(kWindowAnimation_HideOpacity);
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
+  ui::AnimationThroughputReporter reporter(
+      settings.GetAnimator(),
+      metrics_util::ForSmoothness(
+          base::BindRepeating(static_cast<void (*)(const char*, int)>(
+                                  &base::UmaHistogramPercentage),
+                              "Ash.Window.AnimationSmoothness.Unminimize")));
   base::TimeDelta duration =
       base::Milliseconds(kLayerAnimationsForMinimizeDurationMS);
   settings.SetTransitionDuration(duration);
@@ -470,6 +476,14 @@ void AnimateShowWindow_Minimize(aura::Window* window) {
 void AnimateHideWindow_Minimize(aura::Window* window) {
   // Property sets within this scope will be implicitly animated.
   ::wm::ScopedHidingAnimationSettings hiding_settings(window);
+  // Report animation smoothness for animations created within this scope.
+  ui::AnimationThroughputReporter reporter(
+      hiding_settings.layer_animation_settings()->GetAnimator(),
+      metrics_util::ForSmoothness(
+          base::BindRepeating(static_cast<void (*)(const char*, int)>(
+                                  &base::UmaHistogramPercentage),
+                              "Ash.Window.AnimationSmoothness.Minimize")));
+
   base::TimeDelta duration =
       base::Milliseconds(kLayerAnimationsForMinimizeDurationMS);
   hiding_settings.layer_animation_settings()->SetTransitionDuration(duration);

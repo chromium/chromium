@@ -4824,6 +4824,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Window.AnimationSmoothness.Minimize" units="%"
+    expires_after="2023-02-10">
+  <owner>amusbach@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Relative smoothness of minimizing window animation. 100% represents ideally
+    smooth 60 frames per second. 50% represents when only 30 frames per second
+    is achieved during the animations. 0% should not happen. This metric is
+    recorded exactly once when AnimateHideWindow_Minimize is called, such as
+    when window is minimized.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Window.AnimationSmoothness.Snap" units="%"
     expires_after="2023-01-10">
   <owner>oshima@chromium.org</owner>
@@ -4835,6 +4849,20 @@ chromium-metrics-reviews@google.com.
     recorded exactly once when a window is snapped to the left or right in
     clamshell mode using the alt + [ or ] accelerator, but only if the size of
     the window's bounds change.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Window.AnimationSmoothness.Unminimize" units="%"
+    expires_after="2023-02-10">
+  <owner>amusbach@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Relative smoothness of unminimizing window animation. 100% represents
+    ideally smooth 60 frames per second. 50% represents when only 30 frames per
+    second is achieved during the animations. 0% should not happen. This metric
+    is recorded exactly once when AnimateShowWindow_Minimize is called, such as
+    when window is unminimized.
   </summary>
 </histogram>
 
