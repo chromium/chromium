@@ -53,14 +53,14 @@ class SiteSettingsHelperTest : public testing::Test {
                      const ContentSetting setting) {
     const base::Value& value = exceptions[index];
     EXPECT_TRUE(value.is_dict());
-    const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-    const std::string* actual_pattern = dict.FindStringKey("origin");
+    const base::Value::Dict& dict = value.GetDict();
+    const std::string* actual_pattern = dict.FindString("origin");
     ASSERT_TRUE(actual_pattern);
     EXPECT_EQ(pattern, *actual_pattern);
-    const std::string* actual_display_name = dict.FindStringKey(kDisplayName);
+    const std::string* actual_display_name = dict.FindString(kDisplayName);
     ASSERT_TRUE(actual_display_name);
     EXPECT_EQ(pattern_display_name, *actual_display_name);
-    const std::string* actual_setting = dict.FindStringKey(kSetting);
+    const std::string* actual_setting = dict.FindString(kSetting);
     ASSERT_TRUE(actual_setting);
     EXPECT_EQ(content_settings::ContentSettingToString(setting),
               *actual_setting);
@@ -269,15 +269,14 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
     ASSERT_EQ(2U, exceptions.size());
 
     // Fetch and check the first origin.
-    const base::DictionaryValue* dictionary;
     const base::Value* value = &exceptions[0];
     ASSERT_TRUE(value->is_dict());
-    dictionary = &base::Value::AsDictionaryValue(*value);
+    const base::Value::Dict* dictionary = &value->GetDict();
     const std::string* primary_pattern =
-        dictionary->FindStringKey(site_settings::kOrigin);
+        dictionary->FindString(site_settings::kOrigin);
     ASSERT_TRUE(primary_pattern);
     const std::string* display_name =
-        dictionary->FindStringKey(site_settings::kDisplayName);
+        dictionary->FindString(site_settings::kDisplayName);
     ASSERT_TRUE(display_name);
 
     EXPECT_EQ(kOriginToBlock, *primary_pattern);
@@ -286,11 +285,11 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
     // Fetch and check the second origin.
     value = &exceptions[1];
     ASSERT_TRUE(value->is_dict());
-    dictionary = &base::Value::AsDictionaryValue(*value);
+    dictionary = &value->GetDict();
 
-    primary_pattern = dictionary->FindStringKey(site_settings::kOrigin);
+    primary_pattern = dictionary->FindString(site_settings::kOrigin);
     ASSERT_TRUE(primary_pattern);
-    display_name = dictionary->FindStringKey(site_settings::kDisplayName);
+    display_name = dictionary->FindString(site_settings::kDisplayName);
     ASSERT_TRUE(display_name);
 
     EXPECT_EQ(kOriginToEmbargo, *primary_pattern);
@@ -501,28 +500,28 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
 namespace {
 
 void ExpectValidChooserExceptionObject(
-    const base::Value& actual_exception_object,
-    const std::string& chooser_type,
-    const std::u16string& display_name,
-    const base::Value& chooser_object) {
-  const base::Value* chooser_type_value = actual_exception_object.FindKeyOfType(
-      kChooserType, base::Value::Type::STRING);
-  ASSERT_TRUE(chooser_type_value);
-  EXPECT_EQ(chooser_type_value->GetString(), chooser_type);
+    const base::Value::Dict& actual_exception_object,
+    const std::string& expected_chooser_type,
+    const std::u16string& expected_display_name,
+    const base::Value::Dict& expected_chooser_object) {
+  const std::string* actual_chooser_type =
+      actual_exception_object.FindString(kChooserType);
+  ASSERT_TRUE(actual_chooser_type);
+  EXPECT_EQ(*actual_chooser_type, expected_chooser_type);
 
-  const base::Value* display_name_value = actual_exception_object.FindKeyOfType(
-      kDisplayName, base::Value::Type::STRING);
-  ASSERT_TRUE(display_name_value);
-  EXPECT_EQ(base::UTF8ToUTF16(display_name_value->GetString()), display_name);
+  const std::string* actual_display_name =
+      actual_exception_object.FindString(kDisplayName);
+  ASSERT_TRUE(actual_display_name);
+  EXPECT_EQ(base::UTF8ToUTF16(*actual_display_name), expected_display_name);
 
-  const base::Value* object_value = actual_exception_object.FindKeyOfType(
-      kObject, base::Value::Type::DICTIONARY);
-  ASSERT_TRUE(object_value);
-  EXPECT_EQ(*object_value, chooser_object);
+  const base::Value::Dict* actual_chooser_object =
+      actual_exception_object.FindDict(kObject);
+  ASSERT_TRUE(actual_chooser_object);
+  EXPECT_EQ(*actual_chooser_object, expected_chooser_object);
 
-  const base::Value* sites_value =
-      actual_exception_object.FindKeyOfType(kSites, base::Value::Type::LIST);
-  ASSERT_TRUE(sites_value);
+  const base::Value::List* sites_list =
+      actual_exception_object.FindList(kSites);
+  ASSERT_TRUE(sites_list);
 }
 
 void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
@@ -573,8 +572,8 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   ChooserExceptionDetails exception_details;
 
   // Create a chooser object for testing.
-  auto chooser_object = std::make_unique<base::DictionaryValue>();
-  chooser_object->SetKey("name", base::Value(kObjectName));
+  base::Value::Dict chooser_object;
+  chooser_object.Set("name", base::Value(kObjectName));
 
   // Add a user permission for a requesting origin of |kGoogleUrl| and an
   // embedding origin of chromium.org.
@@ -588,14 +587,14 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   {
     auto exception = CreateChooserExceptionObject(
         /*display_name=*/kObjectName,
-        /*object=*/*chooser_object,
+        /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
         /*chooser_exception_details=*/exception_details);
     ExpectValidChooserExceptionObject(
         exception, /*chooser_type=*/kUsbChooserGroupName,
-        /*display_name=*/kObjectName, *chooser_object);
+        /*display_name=*/kObjectName, chooser_object);
 
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/kGoogleUrl,
                                    /*source=*/kPreferenceSource,
@@ -613,17 +612,17 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   {
     auto exception = CreateChooserExceptionObject(
         /*display_name=*/kObjectName,
-        /*object=*/*chooser_object,
+        /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
         /*chooser_exception_details=*/exception_details);
     ExpectValidChooserExceptionObject(exception,
                                       /*chooser_type=*/kUsbChooserGroupName,
                                       /*display_name=*/kObjectName,
-                                      *chooser_object);
+                                      chooser_object);
 
     // The map sorts the sites by requesting origin, so |kAndroidUrl| should
     // be first, followed by the origin pair (kGoogleOrigin, kChromiumOrigin).
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/kAndroidUrl,
                                    /*source=*/kPreferenceSource,
@@ -642,19 +641,19 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   {
     auto exception = CreateChooserExceptionObject(
         /*display_name=*/kObjectName,
-        /*object=*/*chooser_object,
+        /*object=*/base::Value(chooser_object.Clone()),
         /*chooser_type=*/kUsbChooserGroupName,
         /*chooser_exception_details=*/exception_details);
     ExpectValidChooserExceptionObject(exception,
                                       /*chooser_type=*/kUsbChooserGroupName,
                                       /*display_name=*/kObjectName,
-                                      *chooser_object);
+                                      chooser_object);
 
     // The map sorts the sites by requesting origin, but the
     // CreateChooserExceptionObject method sorts the sites further by the
     // source. Therefore, policy granted sites are listed before user granted
     // sites.
-    const auto& sites_list = exception.FindKey(kSites)->GetList();
+    const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(/*actual_site_object=*/sites_list[0],
                                    /*origin=*/kGoogleUrl,
                                    /*source=*/kPolicySource,
@@ -773,9 +772,8 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
   // origin and the embedding origin. User granted permissions that are also
   // granted by policy are combined with the policy so that duplicate
   // permissions are not displayed.
-  base::Value exceptions =
+  base::Value::List exceptions_list =
       GetChooserExceptionListFromProfile(profile(), *chooser_type);
-  const base::Value::List& exceptions_list = exceptions.GetList();
   ASSERT_EQ(exceptions_list.size(), 4u);
 
   // This exception should describe the permissions for any device with the

@@ -1562,27 +1562,26 @@ TEST_F(SiteSettingsHandlerTest, GetAndSetForInvalidURLs) {
 TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromString("[*.]google.com");
-  std::unique_ptr<base::DictionaryValue> exception =
-      site_settings::GetExceptionForPage(
-          ContentSettingsType::NOTIFICATIONS, /*profile=*/nullptr, pattern,
-          ContentSettingsPattern::Wildcard(), pattern.ToString(),
-          CONTENT_SETTING_BLOCK,
-          site_settings::SiteSettingSourceToString(
-              site_settings::SiteSettingSource::kPreference),
-          false);
+  base::Value::Dict exception = site_settings::GetExceptionForPage(
+      ContentSettingsType::NOTIFICATIONS, /*profile=*/nullptr, pattern,
+      ContentSettingsPattern::Wildcard(), pattern.ToString(),
+      CONTENT_SETTING_BLOCK,
+      site_settings::SiteSettingSourceToString(
+          site_settings::SiteSettingSource::kPreference),
+      false);
 
-  CHECK(exception->FindStringKey(site_settings::kOrigin));
-  CHECK(exception->FindStringKey(site_settings::kDisplayName));
-  CHECK(exception->FindStringKey(site_settings::kEmbeddingOrigin));
-  CHECK(exception->FindStringKey(site_settings::kSetting));
-  CHECK(exception->FindBoolKey(site_settings::kIncognito).has_value());
+  CHECK(exception.FindString(site_settings::kOrigin));
+  CHECK(exception.FindString(site_settings::kDisplayName));
+  CHECK(exception.FindString(site_settings::kEmbeddingOrigin));
+  CHECK(exception.FindString(site_settings::kSetting));
+  CHECK(exception.FindBool(site_settings::kIncognito).has_value());
 
   base::Value::List args;
-  args.Append(*exception->FindStringKey(site_settings::kOrigin));
-  args.Append(*exception->FindStringKey(site_settings::kEmbeddingOrigin));
+  args.Append(*exception.FindString(site_settings::kOrigin));
+  args.Append(*exception.FindString(site_settings::kEmbeddingOrigin));
   args.Append(kNotifications);  // Chosen arbitrarily.
-  args.Append(*exception->FindStringKey(site_settings::kSetting));
-  args.Append(*exception->FindBoolKey(site_settings::kIncognito));
+  args.Append(*exception.FindString(site_settings::kSetting));
+  args.Append(*exception.FindBool(site_settings::kIncognito));
 
   // We don't need to check the results. This is just to make sure it doesn't
   // crash on the input.

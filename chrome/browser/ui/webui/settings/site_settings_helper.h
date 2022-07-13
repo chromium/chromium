@@ -124,7 +124,7 @@ std::string SiteSettingSourceToString(const SiteSettingSource source);
 base::Value GetValueForManagedState(const ManagedState& state);
 
 // Helper function to construct a dictionary for an exception.
-std::unique_ptr<base::DictionaryValue> GetExceptionForPage(
+base::Value::Dict GetExceptionForPage(
     ContentSettingsType content_type,
     Profile* profile,
     const ContentSettingsPattern& pattern,
@@ -173,7 +173,7 @@ ContentSetting GetContentSettingForOrigin(
 // for the content settings |type| mic or camera.
 void GetPolicyAllowedUrls(
     ContentSettingsType type,
-    std::vector<std::unique_ptr<base::DictionaryValue>>* exceptions,
+    std::vector<base::Value::Dict>* exceptions,
     const extensions::ExtensionRegistry* extension_registry,
     content::WebUI* web_ui,
     bool incognito);
@@ -206,14 +206,14 @@ const ChooserTypeNameEntry* ChooserTypeFromGroupName(const std::string& name);
 // * sites: Array<SiteException>
 // The structure of the SiteException objects is the same as the objects
 // returned by GetExceptionForPage().
-base::Value CreateChooserExceptionObject(
+base::Value::Dict CreateChooserExceptionObject(
     const std::u16string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
     const ChooserExceptionDetails& chooser_exception_details);
 
 // Returns an array of chooser exception objects.
-base::Value GetChooserExceptionListFromProfile(
+base::Value::List GetChooserExceptionListFromProfile(
     Profile* profile,
     const ChooserTypeNameEntry& chooser_type);
 

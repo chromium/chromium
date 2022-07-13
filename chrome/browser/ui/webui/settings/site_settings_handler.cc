@@ -1154,9 +1154,10 @@ void SiteSettingsHandler::HandleGetChooserExceptionList(
       site_settings::ChooserTypeFromGroupName(type);
   CHECK(chooser_type);
 
-  base::Value exceptions = site_settings::GetChooserExceptionListFromProfile(
-      profile_, *chooser_type);
-  ResolveJavascriptCallback(callback_id, std::move(exceptions));
+  base::Value::List exceptions =
+      site_settings::GetChooserExceptionListFromProfile(profile_,
+                                                        *chooser_type);
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(exceptions)));
 }
 
 void SiteSettingsHandler::HandleGetOriginPermissions(
