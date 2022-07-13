@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SPEECH_AUDIO_ENCODER_H_
 #define CONTENT_BROWSER_SPEECH_AUDIO_ENCODER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -14,6 +15,13 @@
 
 namespace content{
 class AudioChunk;
+
+class FlacStreamEncoderDeleter {
+ public:
+  void operator()(FLAC__StreamEncoder* ptr) {
+    FLAC__stream_encoder_delete(ptr);
+  }
+};
 
 // Provides a simple interface to encode raw audio using FLAC codec.
 class AudioEncoder {
@@ -42,7 +50,7 @@ class AudioEncoder {
  private:
   AudioBuffer encoded_audio_buffer_;
 
-  raw_ptr<FLAC__StreamEncoder, DanglingUntriaged> encoder_;
+  std::unique_ptr<FLAC__StreamEncoder, FlacStreamEncoderDeleter> encoder_;
   bool is_encoder_initialized_;
 };
 

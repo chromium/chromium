@@ -37,25 +37,24 @@ AudioEncoder::AudioEncoder(int sampling_rate, int bits_per_sample)
     : encoded_audio_buffer_(1), /* Byte granularity of encoded samples. */
       encoder_(FLAC__stream_encoder_new()),
       is_encoder_initialized_(false) {
-  FLAC__stream_encoder_set_channels(encoder_, 1);
-  FLAC__stream_encoder_set_bits_per_sample(encoder_, bits_per_sample);
-  FLAC__stream_encoder_set_sample_rate(encoder_, sampling_rate);
-  FLAC__stream_encoder_set_compression_level(encoder_, kFLACCompressionLevel);
+  FLAC__stream_encoder_set_channels(encoder_.get(), 1);
+  FLAC__stream_encoder_set_bits_per_sample(encoder_.get(), bits_per_sample);
+  FLAC__stream_encoder_set_sample_rate(encoder_.get(), sampling_rate);
+  FLAC__stream_encoder_set_compression_level(encoder_.get(),
+                                             kFLACCompressionLevel);
 
   // Initializing the encoder will cause sync bytes to be written to
   // its output stream, so we wait until the first call to Encode()
   // before doing so.
 }
 
-AudioEncoder::~AudioEncoder() {
-  FLAC__stream_encoder_delete(encoder_);
-}
+AudioEncoder::~AudioEncoder() = default;
 
 void AudioEncoder::Encode(const AudioChunk& raw_audio) {
   DCHECK_EQ(raw_audio.bytes_per_sample(), 2);
   if (!is_encoder_initialized_) {
     const FLAC__StreamEncoderInitStatus encoder_status =
-        FLAC__stream_encoder_init_stream(encoder_, WriteCallback, nullptr,
+        FLAC__stream_encoder_init_stream(encoder_.get(), WriteCallback, nullptr,
                                          nullptr, nullptr,
                                          &encoded_audio_buffer_);
     DCHECK_EQ(encoder_status, FLAC__STREAM_ENCODER_INIT_STATUS_OK);
@@ -69,11 +68,11 @@ void AudioEncoder::Encode(const AudioChunk& raw_audio) {
   for (int i = 0; i < num_samples; ++i)
     flac_samples_ptr[i] = static_cast<FLAC__int32>(raw_audio.GetSample16(i));
 
-  FLAC__stream_encoder_process(encoder_, &flac_samples_ptr, num_samples);
+  FLAC__stream_encoder_process(encoder_.get(), &flac_samples_ptr, num_samples);
 }
 
 void AudioEncoder::Flush() {
-  FLAC__stream_encoder_finish(encoder_);
+  FLAC__stream_encoder_finish(encoder_.get());
 }
 
 scoped_refptr<AudioChunk> AudioEncoder::GetEncodedDataAndClear() {
@@ -82,11 +81,12 @@ scoped_refptr<AudioChunk> AudioEncoder::GetEncodedDataAndClear() {
 
 std::string AudioEncoder::GetMimeType() {
   return std::string(kContentTypeFLAC) +
-         base::NumberToString(FLAC__stream_encoder_get_sample_rate(encoder_));
+         base::NumberToString(
+             FLAC__stream_encoder_get_sample_rate(encoder_.get()));
 }
 
 int AudioEncoder::GetBitsPerSample() {
-  return FLAC__stream_encoder_get_bits_per_sample(encoder_);
+  return FLAC__stream_encoder_get_bits_per_sample(encoder_.get());
 }
 
 }  // namespace content
