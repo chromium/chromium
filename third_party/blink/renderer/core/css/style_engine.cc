@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -140,13 +141,22 @@ StyleEngine::StyleEngine(Document& document)
     font_selector_->RegisterForInvalidationCallbacks(this);
     if (const auto* owner = document.GetFrame()->Owner())
       owner_color_scheme_ = owner->GetColorScheme();
-  }
-  if (document.IsInMainFrame())
-    viewport_resolver_ = MakeGarbageCollected<ViewportStyleResolver>(document);
-  if (auto* settings = GetDocument().GetSettings()) {
-    preferred_color_scheme_ = settings->GetPreferredColorScheme();
+
+    // Viewport styles are only processed in the main frame of a page with an
+    // active viewport. That is, a pages that their own independently zoomable
+    // viewport: the outermost main frame and portals.
+    DCHECK(document.GetPage());
+    VisualViewport& viewport = document.GetPage()->GetVisualViewport();
+    if (document.IsInMainFrame() && viewport.IsActiveViewport()) {
+      viewport_resolver_ =
+          MakeGarbageCollected<ViewportStyleResolver>(document);
+    }
+
+    DCHECK(document.GetSettings());
+    preferred_color_scheme_ = document.GetSettings()->GetPreferredColorScheme();
     UpdateColorSchemeMetrics();
   }
+
   forced_colors_ =
       WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors();
   UpdateForcedBackgroundColor();
