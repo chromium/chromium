@@ -29,6 +29,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -199,7 +200,12 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
     PerformHeaderChecks(children[0], kTitleSignIn);
 
-    views::View* multiple_account_chooser = children[2];
+    views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
+    ASSERT_FALSE(scroller->children().empty());
+    views::View* wrapper = scroller->children()[0];
+    ASSERT_FALSE(wrapper->children().empty());
+    views::View* multiple_account_chooser = wrapper->children()[0];
+
     std::vector<views::View*> accounts = multiple_account_chooser->children();
     ASSERT_EQ(accounts.size(), num_expected_accounts);
     for (views::View* account : accounts)
@@ -328,13 +334,18 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSignIn);
 
-  views::View* multiple_account_chooser = children[2];
-  views::BoxLayout* layout_manager = static_cast<views::BoxLayout*>(
-      multiple_account_chooser->GetLayoutManager());
+  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
+  ASSERT_FALSE(scroller->children().empty());
+  views::View* wrapper = scroller->children()[0];
+  ASSERT_FALSE(wrapper->children().empty());
+  views::View* contents = wrapper->children()[0];
+
+  views::BoxLayout* layout_manager =
+      static_cast<views::BoxLayout*>(contents->GetLayoutManager());
   EXPECT_TRUE(layout_manager);
   EXPECT_EQ(layout_manager->GetOrientation(),
             views::BoxLayout::Orientation::kVertical);
-  std::vector<views::View*> accounts = multiple_account_chooser->children();
+  std::vector<views::View*> accounts = contents->children();
   ASSERT_EQ(accounts.size(), 3u);
 
   // Check the text shown.

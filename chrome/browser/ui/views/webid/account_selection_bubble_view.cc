@@ -37,6 +37,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -72,6 +73,10 @@ constexpr int kRightMargin = 40;
 // The size of the space between the top boundary of the WebContents and the top
 // boundary of the bubble.
 constexpr int kTopMargin = 16;
+// The maximum height that the multi-account-picker can have. This value was
+// chosen so that if there are more than two accounts, the picker will show up
+// as a scrollbar.
+constexpr int kMaxScrollViewHeight = 150;
 
 constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
@@ -550,13 +555,17 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateMultipleAccountChooser(
     base::span<const content::IdentityRequestAccount> accounts) {
-  auto row = std::make_unique<views::View>();
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view->ClipHeightTo(0, kMaxScrollViewHeight);
+  views::View* row = scroll_view->SetContents(std::make_unique<views::View>());
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   for (const auto& account : accounts) {
     row->AddChildView(CreateAccountRow(account, /*should_hover=*/true));
   }
-  return row;
+  return scroll_view;
 }
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
