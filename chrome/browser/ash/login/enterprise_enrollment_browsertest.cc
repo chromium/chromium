@@ -413,48 +413,6 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
   MockAuthPolicyClient* mock_authpolicy_client_ = nullptr;
 };
 
-// Shows the enrollment screen and simulates an enrollment complete event. We
-// verify that the enrollment helper receives the correct auth code.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       TestAuthCodeGetsProperlyReceivedFromGaia) {
-  ShowEnrollmentScreen();
-  enrollment_helper_.ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_MANUAL);
-  enrollment_helper_.ExpectEnrollmentCredentials();
-  enrollment_helper_.SetupClearAuth();
-
-  SubmitEnrollmentCredentials();
-}
-
-// Shows the enrollment screen and simulates an enrollment failure. Verifies
-// that the error screen is displayed.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       TestProperPageGetsLoadedOnEnrollmentFailure) {
-  ShowEnrollmentScreen();
-
-  enrollment_screen()->OnEnrollmentError(policy::EnrollmentStatus::ForStatus(
-      policy::EnrollmentStatus::REGISTRATION_FAILED));
-  ExecutePendingJavaScript();
-
-  // Verify that the error page is displayed.
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
-}
-
-// Shows the enrollment screen and simulates a successful enrollment. Verifies
-// that the success screen is then displayed.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       TestProperPageGetsLoadedOnEnrollmentSuccess) {
-  ShowEnrollmentScreen();
-  enrollment_helper_.ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_MANUAL);
-  enrollment_helper_.DisableAttributePromptUpdate();
-  enrollment_helper_.ExpectSuccessfulOAuthEnrollment();
-  SubmitEnrollmentCredentials();
-
-  // Verify that the success page is displayed.
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-}
-
 // Shows the enrollment screen and mocks the enrollment helper to request an
 // attribute prompt screen. Verifies the attribute prompt screen is displayed.
 // Verifies that the data the user enters into the attribute prompt screen is

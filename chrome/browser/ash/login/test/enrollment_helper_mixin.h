@@ -49,6 +49,9 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   // Configures and sets expectations for successful auth-token based flow
   // without license selection.
   void ExpectSuccessfulOAuthEnrollment();
+  // Configures and sets expectations for an error during auth-token based
+  // flow.
+  void ExpectOAuthEnrollmentError(policy::EnrollmentStatus status);
 
   // Configures and sets expectations for successful attestation-based flow.
   void ExpectAttestationEnrollmentSuccess();

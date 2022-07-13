@@ -81,6 +81,14 @@ void EnrollmentHelperMixin::ExpectSuccessfulOAuthEnrollment() {
           [this]() { mock_->status_consumer()->OnDeviceEnrolled(); }));
 }
 
+void EnrollmentHelperMixin::ExpectOAuthEnrollmentError(
+    policy::EnrollmentStatus status) {
+  EXPECT_CALL(*mock_, EnrollUsingAuthCode(kTestAuthCode))
+      .WillOnce(InvokeWithoutArgs([this, status]() {
+        mock_->status_consumer()->OnEnrollmentError(status);
+      }));
+}
+
 void EnrollmentHelperMixin::ExpectAttestationEnrollmentSuccess() {
   EXPECT_CALL(*mock_, EnrollUsingAttestation())
       .WillOnce(InvokeWithoutArgs(

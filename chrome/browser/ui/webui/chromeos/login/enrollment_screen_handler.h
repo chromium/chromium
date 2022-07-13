@@ -159,11 +159,23 @@ class EnrollmentScreenHandler
   // Display the given i18n string as a progress message.
   void ShowWorking(int message_id);
 
-  // Shows the screen.
+  // Shows the screen. Asynchronous for oauth-based enrollment.
   void DoShow();
 
-  // Shows the screen.
+  // Shows oauth-based enrollment screen using the given sign-in partition name.
   void DoShowWithPartition(const std::string& partition_name);
+
+  // Shows the screen with the given data dictionary.
+  void DoShowWithData(base::Value::Dict screen_data);
+
+  // Screen data to be passed to web ui for attestation enrollment.
+  base::Value::Dict ScreenDataForAttestationEnrollment();
+
+  // Screen data to be passed to web ui for gaia oauth-based enrollment.
+  base::Value::Dict ScreenDataForOAuthEnrollment();
+
+  // Screen data to be passed to web ui for all enrollment modes.
+  base::Value::Dict ScreenDataCommon();
 
   // Returns true if current visible screen is the enrollment sign-in page.
   bool IsOnEnrollmentScreen();
