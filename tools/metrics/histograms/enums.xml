@@ -40737,6 +40737,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4296" label="ParentOfDisabledFormControlRespondsToMouseEvents"/>
   <int value="4297" label="UnhandledExceptionCountInMainThread"/>
   <int value="4298" label="UnhandledExceptionCountInWorker"/>
+  <int value="4299" label="WebCodecsImageDecoderPremultiplyAlphaDeprecation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -147,6 +147,14 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   if (init->premultiplyAlpha() == kNoneOption)
     alpha_option = ImageDecoder::kAlphaNotPremultiplied;
 
+  // TODO(crbug.com/1340190): We want to deprecate premultiplied alpha, so
+  // record whenever a client has explicitly required that.
+  if (init->premultiplyAlpha() == "premultiply") {
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kWebCodecsImageDecoderPremultiplyAlphaDeprecation);
+  }
+
   auto desired_size = SkISize::MakeEmpty();
   if (init->hasDesiredWidth() && init->hasDesiredHeight())
     desired_size = SkISize::Make(init->desiredWidth(), init->desiredHeight());
