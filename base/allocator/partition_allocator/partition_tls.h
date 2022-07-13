@@ -34,7 +34,7 @@ using PartitionTlsKey = pthread_key_t;
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 namespace {
 
-PA_ALWAYS_INLINE void* FastTlsGet(intptr_t index) {
+PA_ALWAYS_INLINE void* FastTlsGet(PartitionTlsKey index) {
   // On macOS, pthread_getspecific() is in libSystem, so a call to it has to go
   // through PLT. However, and contrary to some other platforms, *all* TLS keys
   // are in a static array in the thread structure. So they are *always* at a
@@ -53,7 +53,10 @@ PA_ALWAYS_INLINE void* FastTlsGet(intptr_t index) {
   // This function is essentially inlining the content of pthread_getspecific()
   // here.
   intptr_t result;
-  asm("movq %%gs:(,%1,8), %0;" : "=r"(result) : "r"(index));
+  static_assert(sizeof index <= sizeof(intptr_t));
+  asm("movq %%gs:(,%1,8), %0;"
+      : "=r"(result)
+      : "r"(static_cast<intptr_t>(index)));
 
   return reinterpret_cast<void*>(result);
 }

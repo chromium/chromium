@@ -276,9 +276,9 @@ namespace internal {
 
 namespace {
 #if BUILDFLAG(IS_APPLE)
-int g_alloc_flags = 0;
+unsigned int g_alloc_flags = 0;
 #else
-constexpr int g_alloc_flags = 0;
+constexpr unsigned int g_alloc_flags = 0;
 #endif
 }  // namespace
 
@@ -301,7 +301,7 @@ void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value) {
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
   ScopedDisallowAllocations guard{};
   return Allocator()->AllocWithFlagsNoHooks(
-      0 | g_alloc_flags, MaybeAdjustSize(size),
+      g_alloc_flags, MaybeAdjustSize(size),
       partition_alloc::PartitionPageSize());
 }
 

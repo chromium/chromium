@@ -27,35 +27,30 @@ namespace partition_alloc {
 // Bit flag constants used as `flag` argument of PartitionRoot::AllocWithFlags,
 // AlignedAllocWithFlags, etc.
 struct AllocFlags {
-  // In order to support bit operations like `flag_a | flag_b`, the old-
-  // fashioned enum (+ surrounding named struct) is used instead of enum class.
-  enum : unsigned int {
-    kReturnNull = 1 << 0,
-    kZeroFill = 1 << 1,
-    // Don't allow allocation override hooks. Override hooks are expected to
-    // check for the presence of this flag and return false if it is active.
-    kNoOverrideHooks = 1 << 2,
-    // Never let a memory tool like ASan (if active) perform the allocation.
-    kNoMemoryToolOverride = 1 << 3,
-    // Don't allow any hooks (override or observers).
-    kNoHooks = 1 << 4,  // Internal only.
-    // If the allocation requires a "slow path" (such as allocating/committing a
-    // new slot span), return nullptr instead. Note this makes all large
-    // allocations return nullptr, such as direct-mapped ones, and even for
-    // smaller ones, a nullptr value is common.
-    kFastPathOrReturnNull = 1 << 5,  // Internal only.
+  static constexpr unsigned int kReturnNull = 1 << 0;
+  static constexpr unsigned int kZeroFill = 1 << 1;
+  // Don't allow allocation override hooks. Override hooks are expected to
+  // check for the presence of this flag and return false if it is active.
+  static constexpr unsigned int kNoOverrideHooks = 1 << 2;
+  // Never let a memory tool like ASan (if active) perform the allocation.
+  static constexpr unsigned int kNoMemoryToolOverride = 1 << 3;
+  // Don't allow any hooks (override or observers).
+  static constexpr unsigned int kNoHooks = 1 << 4;  // Internal.
+  // If the allocation requires a "slow path" (such as allocating/committing a
+  // new slot span), return nullptr instead. Note this makes all large
+  // allocations return nullptr, such as direct-mapped ones, and even for
+  // smaller ones, a nullptr value is common.
+  static constexpr unsigned int kFastPathOrReturnNull = 1 << 5;  // Internal.
 
-    kLastFlag = kFastPathOrReturnNull
-  };
+  static constexpr unsigned int kLastFlag = kFastPathOrReturnNull;
 };
 
 // Bit flag constants used as `flag` argument of PartitionRoot::FreeWithFlags.
 struct FreeFlags {
-  enum : unsigned int {
-    kNoMemoryToolOverride = 1 << 0,  // See AllocFlags::kNoMemoryToolOverride.
+  // See AllocFlags::kNoMemoryToolOverride.
+  static constexpr unsigned int kNoMemoryToolOverride = 1 << 0;
 
-    kLastFlag = kNoMemoryToolOverride
-  };
+  static constexpr unsigned int kLastFlag = kNoMemoryToolOverride;
 };
 
 namespace internal {

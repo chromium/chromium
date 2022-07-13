@@ -78,7 +78,7 @@ PageAllocationGranularityShift() {
 #elif defined(_MIPS_ARCH_LOONGSON)
   return 14;  // 16kB
 #elif BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
-  return vm_page_shift;
+  return static_cast<size_t>(vm_page_shift);
 #elif BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
   // arm64 supports 4kb (shift = 12), 16kb (shift = 14), and 64kb (shift = 16)
   // page sizes. Retrieve from or initialize cache.

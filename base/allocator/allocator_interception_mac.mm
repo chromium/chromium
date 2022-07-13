@@ -257,7 +257,7 @@ void* oom_killer_cfallocator_system_default(CFIndex alloc_size,
                                             void* info) {
   void* result = g_old_cfallocator_system_default(alloc_size, hint, info);
   if (!result)
-    TerminateBecauseOutOfMemory(alloc_size);
+    TerminateBecauseOutOfMemory(static_cast<size_t>(alloc_size));
   return result;
 }
 
@@ -266,7 +266,7 @@ void* oom_killer_cfallocator_malloc(CFIndex alloc_size,
                                     void* info) {
   void* result = g_old_cfallocator_malloc(alloc_size, hint, info);
   if (!result)
-    TerminateBecauseOutOfMemory(alloc_size);
+    TerminateBecauseOutOfMemory(static_cast<size_t>(alloc_size));
   return result;
 }
 
@@ -275,7 +275,7 @@ void* oom_killer_cfallocator_malloc_zone(CFIndex alloc_size,
                                          void* info) {
   void* result = g_old_cfallocator_malloc_zone(alloc_size, hint, info);
   if (!result)
-    TerminateBecauseOutOfMemory(alloc_size);
+    TerminateBecauseOutOfMemory(static_cast<size_t>(alloc_size));
   return result;
 }
 
