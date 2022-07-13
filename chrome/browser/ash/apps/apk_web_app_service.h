@@ -133,7 +133,7 @@ class ApkWebAppService : public KeyedService,
 
   Profile* profile_;
   ArcAppListPrefs* arc_app_list_prefs_;
-  web_app::WebAppProvider* provider_;
+  web_app::WebAppProvider* provider_{nullptr};
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
