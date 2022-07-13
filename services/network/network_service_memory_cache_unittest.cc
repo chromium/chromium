@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/features.h"
+#include "net/base/mime_sniffer.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -96,6 +97,32 @@ std::unique_ptr<net::test_server::HttpResponse> CacheableResponseHandler(
   return response;
 }
 
+// Used for cross origin read blocking check.
+std::unique_ptr<net::test_server::HttpResponse> CorbCheckHandler(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path_piece() == "/corb_nosniff") {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->AddCustomHeader("cache-control", "max-age=60");
+    response->AddCustomHeader("x-content-type-options", "nosniff");
+    response->AddCustomHeader("content-type", "text/javascript");
+    response->set_content("{\"key\": true}");
+    return response;
+  }
+
+  if (request.GetURL().path_piece() == "/corb_sniff") {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->AddCustomHeader("cache-control", "max-age=60");
+    response->AddCustomHeader("content-type", "text/html");
+    // Set a html content of which size is larger than net::kMaxBytestosniff.
+    std::string content("<html>sniffed content");
+    content.append(std::string(net::kMaxBytesToSniff, ' '));
+    response->set_content(content);
+    return response;
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 class NetworkServiceMemoryCacheTest : public testing::Test {
@@ -116,6 +143,7 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
     test_server_.AddDefaultHandlers();
     test_server_.RegisterRequestHandler(
         base::BindRepeating(&CacheableResponseHandler));
+    test_server_.RegisterRequestHandler(base::BindRepeating(&CorbCheckHandler));
     ASSERT_TRUE(test_server_.Start());
 
     network_service_ = NetworkService::CreateForTesting();
@@ -443,6 +471,38 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_CorpBlocked) {
 
   ASSERT_FALSE(CanServeFromMemoryCache(request, network_isolation_key,
                                        cross_origin_embedder_policy));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_CorbBlockedNoSniff) {
+  ResourceRequest request = CreateRequest("/corb_nosniff");
+  StoreResponseToMemoryCache(request);
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+
+  const auto other_origin =
+      url::Origin::Create(GURL("https://other-origin.test"));
+  net::SchemefulSite other_site(other_origin);
+  net::NetworkIsolationKey network_isolation_key(
+      /*top_frame_site=*/other_site, /*frame_site=*/other_site);
+
+  request.request_initiator = other_origin;
+
+  ASSERT_FALSE(CanServeFromMemoryCache(request, network_isolation_key));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_CorbBlockedSniff) {
+  ResourceRequest request = CreateRequest("/corb_sniff");
+  StoreResponseToMemoryCache(request);
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+
+  const auto other_origin =
+      url::Origin::Create(GURL("https://other-origin.test"));
+  net::SchemefulSite other_site(other_origin);
+  net::NetworkIsolationKey network_isolation_key(
+      /*top_frame_site=*/other_site, /*frame_site=*/other_site);
+
+  request.request_initiator = other_origin;
+
+  ASSERT_FALSE(CanServeFromMemoryCache(request, network_isolation_key));
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_VaryHeaderAcceptEncoding) {

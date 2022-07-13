@@ -4,13 +4,18 @@
 
 #include "services/network/network_service_memory_cache.h"
 
+#include <algorithm>
+
+#include "base/bit_cast.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "net/base/load_flags.h"
+#include "net/base/mime_sniffer.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_info.h"
@@ -23,6 +28,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service_memory_cache_url_loader.h"
 #include "services/network/network_service_memory_cache_writer.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -66,6 +72,36 @@ std::string GenerateCacheKeyForResourceRequest(
       resource_request.url, resource_request.load_flags, network_isolation_key,
       /*upload_data_identifier=*/0, is_subframe_document_resource,
       /*use_single_keyed_cache=*/false, /*single_key_checksum=*/"");
+}
+
+bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
+                                  const mojom::URLResponseHead& response,
+                                  const base::RefCountedBytes& content) {
+  // Using an empty per-URLLoaderFactory state may result in blocking the stored
+  // response unnecessarily. Such a false-positive result is fine because when
+  // the stored response is blocked, CorsURLLoader falls back to a URLLoader and
+  // the URLLoader performs appropriate Opaque Resource Blocking checks.
+  //
+  // TODO(https://crbug.com/1339708): Consider moving CORB/ORB handling from
+  // URLLoader to CorsURLLoader. It will eliminate the need for CORB/ORB checks
+  // here.
+  corb::PerFactoryState state;
+  auto analyzer = corb::ResponseAnalyzer::Create(state);
+  corb::ResponseAnalyzer::Decision decision =
+      analyzer->Init(resource_request.url, resource_request.request_initiator,
+                     resource_request.mode, response);
+
+  if (decision == corb::ResponseAnalyzer::Decision::kSniffMore) {
+    const size_t size =
+        std::min(static_cast<size_t>(net::kMaxBytesToSniff), content.size());
+    decision = analyzer->Sniff(
+        base::StringPiece(base::bit_cast<const char*>(content.front()), size));
+    if (decision == corb::ResponseAnalyzer::Decision::kSniffMore)
+      decision = analyzer->HandleEndOfSniffableResponseBody();
+    DCHECK_NE(decision, corb::ResponseAnalyzer::Decision::kSniffMore);
+  }
+
+  return decision == corb::ResponseAnalyzer::Decision::kAllow;
 }
 
 bool MatchVaryHeader(const ResourceRequest& resource_request,
@@ -288,6 +324,11 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
           /*reporter=*/nullptr);
   if (blocked_reason.has_value())
     return absl::nullopt;
+
+  if (!CheckCrossOriginReadBlocking(resource_request, *response,
+                                    *it->second->content)) {
+    return absl::nullopt;
+  }
 
   if (!MatchVaryHeader(
           resource_request, it->second->vary_data, *response->headers,
