@@ -223,7 +223,11 @@ Value::Value(const std::vector<char>& value)
     : data_(absl::in_place_type_t<BlobStorage>(), value.begin(), value.end()) {}
 
 Value::Value(base::span<const uint8_t> value)
-    : data_(absl::in_place_type_t<BlobStorage>(), value.begin(), value.end()) {}
+    : data_(absl::in_place_type_t<BlobStorage>(), value.size()) {
+  // This is 100x faster than using the "range" constructor for a 512k blob:
+  // crbug.com/1343636
+  std::copy(value.begin(), value.end(), absl::get<BlobStorage>(data_).data());
+}
 
 Value::Value(BlobStorage&& value) noexcept : data_(std::move(value)) {}
 
