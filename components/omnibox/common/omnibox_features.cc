@@ -269,6 +269,11 @@ const base::Feature kNtpRealboxTailSuggest{"NtpRealboxTailSuggest",
 const base::Feature kOmniboxFuzzyUrlSuggestions{
     "OmniboxFuzzyUrlSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature to enable memoizing URLs when replacing search terms in
+// `AutocompleteMatch::GURLToStrippedGURL()`.
+const base::Feature kStrippedGurlOptimization{
+    "OmniboxStrippedGurlOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 const base::Feature kOmniboxAssistantVoiceSearch{

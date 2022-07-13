@@ -382,6 +382,20 @@ struct AutocompleteMatch {
                                  const TemplateURLService* template_url_service,
                                  const std::u16string& keyword);
 
+  // One of these 2 helpers are called by `GURLToStrippedGURL()` depending on
+  // whether optimizations (i.e., caching search term replacements) are enabled.
+  // They will be removed after experiments end.
+  static GURL GURLToStrippedGURLControl(
+      const GURL& url,
+      const AutocompleteInput& input,
+      const TemplateURLService* template_url_service,
+      const std::u16string& keyword);
+  static GURL GURLToStrippedGURLOptimized(
+      const GURL& url,
+      const AutocompleteInput& input,
+      const TemplateURLService* template_url_service,
+      const std::u16string& keyword);
+
   // Sets the |match_in_scheme| and |match_in_subdomain| flags based on the
   // provided |url| and list of substring |match_positions|. |match_positions|
   // is the [begin, end) positions of a match within the unstripped URL spec.
