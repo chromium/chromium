@@ -19,7 +19,7 @@ KeyboardBacklightColorMetricsProvider::
 
 void KeyboardBacklightColorMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto_unused) {
-  if (!ash::features::IsRgbKeyboardEnabled() || !ash::Shell::Get() ||
+  if (!ash::features::IsRgbKeyboardEnabled() || !ash::Shell::HasInstance() ||
       !ash::Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
     return;
   }
