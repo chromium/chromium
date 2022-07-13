@@ -25,10 +25,6 @@ declare_args() {
 # There is one notable exception: for historical reasons, chrome_sandbox is
 # the setuid sandbox and is its own target.
 
-# TODO(crbug.com/1343928): Placeholder to fix downstream
-group("sandbox_linux_unittests") {
-}
-
 group("sandbox") {
   public_deps = [ ":sandbox_services" ]
   if (compile_suid_client) {
