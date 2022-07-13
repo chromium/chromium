@@ -107,7 +107,7 @@ ApkWebAppService::ApkWebAppService(Profile* profile)
     arc_app_list_prefs_observer_.Observe(arc_app_list_prefs_);
 
   if (!web_app::IsWebAppsCrosapiEnabled()) {
-    provider_ = web_app::WebAppProvider::GetDeprecated(profile);
+    provider_ = web_app::WebAppProvider::GetForWebApps(profile);
     DCHECK(provider_);
     install_manager_observer_.Observe(&provider_->install_manager());
   }
