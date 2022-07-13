@@ -64,11 +64,9 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
 };
 
 WaitForURLsDeletedObserver::WaitForURLsDeletedObserver(base::RunLoop* runner)
-    : runner_(runner) {
-}
+    : runner_(runner) {}
 
-WaitForURLsDeletedObserver::~WaitForURLsDeletedObserver() {
-}
+WaitForURLsDeletedObserver::~WaitForURLsDeletedObserver() = default;
 
 void WaitForURLsDeletedObserver::OnURLsDeleted(
     history::HistoryService* service,
@@ -91,9 +89,7 @@ void WaitForURLsDeletedNotification(history::HistoryService* history_service) {
 class GetURLTask : public history::HistoryDBTask {
  public:
   GetURLTask(const GURL& url, bool* result_storage)
-      : result_storage_(result_storage),
-        url_(url) {
-  }
+      : result_storage_(result_storage), url_(url) {}
   GetURLTask(const GetURLTask&) = delete;
   GetURLTask& operator=(const GetURLTask&) = delete;
 
@@ -108,7 +104,7 @@ class GetURLTask : public history::HistoryDBTask {
   }
 
  private:
-  ~GetURLTask() override {}
+  ~GetURLTask() override = default;
 
   raw_ptr<bool> result_storage_;
   const GURL url_;
@@ -187,6 +183,11 @@ class HistoryQuickProviderTest : public testing::Test {
   FakeAutocompleteProviderClient& client() { return *client_; }
   ACMatches& ac_matches() { return ac_matches_; }
   HistoryQuickProvider& provider() { return *provider_; }
+
+  AutocompleteMatch QuickMatchToACMatch(const ScoredHistoryMatch& history_match,
+                                        int score) {
+    return provider_->QuickMatchToACMatch(history_match, score);
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -314,8 +315,8 @@ void HistoryQuickProviderTest::FillData() {
 
 HistoryQuickProviderTest::SetShouldContain::SetShouldContain(
     const ACMatches& matched_urls) {
-  for (auto iter = matched_urls.begin(); iter != matched_urls.end(); ++iter)
-    matches_.insert(iter->destination_url.spec());
+  for (const auto& matched_url : matched_urls)
+    matches_.insert(matched_url.destination_url.spec());
 }
 
 void HistoryQuickProviderTest::SetShouldContain::operator()(
@@ -383,8 +384,8 @@ void HistoryQuickProviderTest::RunTestWithCursor(
                     .LeftOvers();
   }
   EXPECT_EQ(0U, leftovers.size()) << "There were " << leftovers.size()
-      << " unexpected results, one of which was: '"
-      << *(leftovers.begin()) << "'.";
+                                  << " unexpected results, one of which was: '"
+                                  << *(leftovers.begin()) << "'.";
 
   if (expected_urls.empty())
     return;
@@ -401,8 +402,8 @@ void HistoryQuickProviderTest::RunTestWithCursor(
         << "For result #" << i << " we got '" << actual->destination_url.spec()
         << "' but expected '" << *expected << "'.";
     EXPECT_LT(actual->relevance, best_score)
-      << "At result #" << i << " (url=" << actual->destination_url.spec()
-      << "), we noticed scores are not monotonically decreasing.";
+        << "At result #" << i << " (url=" << actual->destination_url.spec()
+        << "), we noticed scores are not monotonically decreasing.";
     best_score = actual->relevance;
   }
 
@@ -585,8 +586,8 @@ TEST_F(HistoryQuickProviderTest, ContentsClass) {
   // Verify that contents_class divides the string in the right places.
   // [22, 24) is the "第二".  All the other pairs are the "e3".
   ACMatchClassifications contents_class(ac_matches()[0].contents_class);
-  size_t expected_offsets[] = { 0, 22, 24, 31, 33, 40, 42, 49, 51, 58, 60, 67,
-                                69, 76, 78 };
+  size_t expected_offsets[] = {0,  22, 24, 31, 33, 40, 42, 49,
+                               51, 58, 60, 67, 69, 76, 78};
   // ScoredHistoryMatch may not highlight all the occurrences of these terms
   // because it only highlights terms at word breaks, and it only stores word
   // breaks up to some specified number of characters (50 at the time of this
@@ -844,7 +845,7 @@ TEST_F(HistoryQuickProviderTest, DoTrimHttpScheme) {
   ScoredHistoryMatch history_match =
       BuildScoredHistoryMatch("http://www.facebook.com", u"face");
 
-  AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
+  AutocompleteMatch match = QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"facebook.com", match.contents);
 }
 
@@ -857,7 +858,7 @@ TEST_F(HistoryQuickProviderTest, DontTrimHttpSchemeIfInputHasScheme) {
   ScoredHistoryMatch history_match =
       BuildScoredHistoryMatch("http://www.facebook.com", u"http://face");
 
-  AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
+  AutocompleteMatch match = QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"http://facebook.com", match.contents);
 }
 
@@ -871,7 +872,7 @@ TEST_F(HistoryQuickProviderTest, DontTrimHttpSchemeIfInputMatches) {
       BuildScoredHistoryMatch("http://www.facebook.com", u"ht");
   history_match.match_in_scheme = true;
 
-  AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
+  AutocompleteMatch match = QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"http://facebook.com", match.contents);
 }
 
@@ -884,7 +885,7 @@ TEST_F(HistoryQuickProviderTest, DontTrimHttpsSchemeIfInputHasScheme) {
   ScoredHistoryMatch history_match =
       BuildScoredHistoryMatch("https://www.facebook.com", u"https://face");
 
-  AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
+  AutocompleteMatch match = QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"https://facebook.com", match.contents);
 }
 
@@ -896,19 +897,20 @@ TEST_F(HistoryQuickProviderTest, DoTrimHttpsScheme) {
   ScoredHistoryMatch history_match =
       BuildScoredHistoryMatch("https://www.facebook.com", u"face");
 
-  AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
+  AutocompleteMatch match = QuickMatchToACMatch(history_match, 100);
   EXPECT_EQ(u"facebook.com", match.contents);
 }
 
 TEST_F(HistoryQuickProviderTest, CorrectAutocompleteWithTrailingSlash) {
-  provider().autocomplete_input_ = AutocompleteInput(
-      u"cr/", metrics::OmniboxEventProto::OTHER, TestSchemeClassifier());
+  AutocompleteInput input(u"cr/", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider().Start(input, false);
   RowWordStarts word_starts;
   word_starts.url_word_starts_ = {0};
   ScoredHistoryMatch sh_match(history::URLRow(GURL("http://cr/")),
                               VisitInfoVector(), u"cr/", {u"cr"}, {0},
                               word_starts, false, 0, base::Time());
-  AutocompleteMatch ac_match(provider().QuickMatchToACMatch(sh_match, 0));
+  AutocompleteMatch ac_match(QuickMatchToACMatch(sh_match, 0));
   EXPECT_EQ(u"cr/", ac_match.fill_into_edit);
   EXPECT_EQ(u"", ac_match.inline_autocompletion);
   EXPECT_TRUE(ac_match.allowed_to_be_default_match);
@@ -970,7 +972,7 @@ TEST_F(HistoryQuickProviderTest,
       "https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit",
       u"doc");
 
-  AutocompleteMatch match = provider().QuickMatchToACMatch(history_match, 100);
+  AutocompleteMatch match = QuickMatchToACMatch(history_match, 100);
   EXPECT_TRUE(match.contents.empty());
 }
 
