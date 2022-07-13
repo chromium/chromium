@@ -391,7 +391,6 @@ const char kOsUIInvalidationsURL[] = "os://invalidations";
 const char kOsUILockScreenNetworkURL[] = "os://lock-network";
 const char kOsUINetworkURL[] = "os://network";
 const char kOsUIRestartURL[] = "os://restart";
-const char kOsUIScanningAppURL[] = "os://scanning";
 const char kOsUISettingsURL[] = "os://settings";
 const char kOsUISignInInternalsURL[] = "os://signin-internals";
 const char kOsUISyncInternalsURL[] = "os://sync-internals";
@@ -452,8 +451,14 @@ const char kChromeUIOSSettingsHost[] = "os-settings";
 const char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
 const char kOsUIAboutURL[] = "os://about";
 const char kOsUIComponentsURL[] = "os://components";
+const char kOsUIConnectivityDiagnosticsAppURL[] =
+    "os://connectivity-diagnostics";
+const char kOsUIDiagnosticsAppURL[] = "os://diagnostics";
+const char kOsUIFirmwareUpdaterAppURL[] = "os://accessory-update";
 const char kOsUIFlagsURL[] = "os://flags";
 const char kOsUIHelpAppURL[] = "os://help-app";
+const char kOsUIPrintManagementAppURL[] = "os://print-management";
+const char kOsUIScanningAppURL[] = "os://scanning";
 const char kOsUIVersionURL[] = "os://version";
 #endif
 

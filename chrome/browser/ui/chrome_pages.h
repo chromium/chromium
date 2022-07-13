@@ -183,6 +183,9 @@ void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point);
 
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 void ShowPrintManagementApp(Profile* profile);
 
 void ShowConnectivityDiagnosticsApp(Profile* profile);
@@ -192,7 +195,6 @@ void ShowScanningApp(Profile* profile);
 void ShowDiagnosticsApp(Profile* profile);
 
 void ShowFirmwareUpdatesApp(Profile* profile);
-
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

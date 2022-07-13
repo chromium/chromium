@@ -365,7 +365,6 @@ extern const char kOsUIInvalidationsURL[];
 extern const char kOsUILockScreenNetworkURL[];
 extern const char kOsUINetworkURL[];
 extern const char kOsUIRestartURL[];
-extern const char kOsUIScanningAppURL[];
 extern const char kOsUISettingsURL[];
 extern const char kOsUISignInInternalsURL[];
 extern const char kOsUISyncInternalsURL[];
@@ -386,8 +385,13 @@ extern const char kChromeUIOSSettingsHost[];
 extern const char kChromeUIOSSettingsURL[];
 extern const char kOsUIAboutURL[];
 extern const char kOsUIComponentsURL[];
+extern const char kOsUIConnectivityDiagnosticsAppURL[];
+extern const char kOsUIDiagnosticsAppURL[];
+extern const char kOsUIFirmwareUpdaterAppURL[];
 extern const char kOsUIFlagsURL[];
 extern const char kOsUIHelpAppURL[];
+extern const char kOsUIPrintManagementAppURL[];
+extern const char kOsUIScanningAppURL[];
 extern const char kOsUIVersionURL[];
 #endif
 

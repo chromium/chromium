@@ -228,6 +228,20 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   Navigate(&params);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ShowSystemAppInternal(Profile* profile, const ash::SystemWebAppType type) {
+  ash::SystemAppLaunchParams params;
+  params.launch_source = apps::mojom::LaunchSource::kUnknown;
+  ash::LaunchSystemWebAppAsync(profile, type, params);
+}
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+void ShowSystemAppInternal(Profile* profile, const GURL& url) {
+  std::unique_ptr<ScopedTabbedBrowserDisplayer> displayer =
+      std::make_unique<ScopedTabbedBrowserDisplayer>(profile);
+  ShowSingletonTab(displayer->browser(), url);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 void ShowBookmarkManager(Browser* browser) {
@@ -504,30 +518,6 @@ void ShowAppManagementPage(Profile* profile,
                                                                sub_page);
 }
 
-void ShowPrintManagementApp(Profile* profile) {
-  ash::LaunchSystemWebAppAsync(profile,
-                               ash::SystemWebAppType::PRINT_MANAGEMENT);
-}
-
-void ShowConnectivityDiagnosticsApp(Profile* profile) {
-  ash::LaunchSystemWebAppAsync(profile,
-                               ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
-}
-
-void ShowScanningApp(Profile* profile) {
-  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::SCANNING);
-}
-
-void ShowDiagnosticsApp(Profile* profile) {
-  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DIAGNOSTICS);
-}
-
-void ShowFirmwareUpdatesApp(Profile* profile) {
-  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
-
-  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FIRMWARE_UPDATE);
-}
-
 GURL GetOSSettingsUrl(const std::string& sub_page) {
   DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
       << sub_page;
@@ -535,6 +525,48 @@ GURL GetOSSettingsUrl(const std::string& sub_page) {
   return GURL(url + sub_page);
 }
 #endif
+
+void ShowPrintManagementApp(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowSystemAppInternal(profile, ash::SystemWebAppType::PRINT_MANAGEMENT);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowSystemAppInternal(profile, GURL(kOsUIPrintManagementAppURL));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ShowConnectivityDiagnosticsApp(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowSystemAppInternal(profile,
+                        ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowSystemAppInternal(profile, GURL(kOsUIConnectivityDiagnosticsAppURL));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ShowScanningApp(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowSystemAppInternal(profile, ash::SystemWebAppType::SCANNING);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowSystemAppInternal(profile, GURL(kOsUIScanningAppURL));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ShowDiagnosticsApp(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowSystemAppInternal(profile, ash::SystemWebAppType::DIAGNOSTICS);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowSystemAppInternal(profile, GURL(kOsUIDiagnosticsAppURL));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ShowFirmwareUpdatesApp(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+  ShowSystemAppInternal(profile, ash::SystemWebAppType::FIRMWARE_UPDATE);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowSystemAppInternal(profile, GURL(kOsUIFirmwareUpdaterAppURL));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // SigninViewController::ShowSignin is only available with DICE
