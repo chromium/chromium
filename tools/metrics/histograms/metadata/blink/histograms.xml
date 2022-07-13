@@ -2746,7 +2746,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.Extensions.Features" enum="FeatureObserver"
-    expires_after="2021-10-10">
+    expires_after="never">
+<!-- expires-never: While this histogram is not used by the Chrome Platform
+     Status dashboard, being able to measure usage of feature in
+     chrome-extension:// URLs can still be vitally important when making
+     decisions around web platform features, per the documentation at
+     https://chromium.googlesource.com/chromium/src/+/HEAD/docs/use_counter_wiki.md#uma-timeline-with-formula. -->
+
   <owner>chasej@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -2757,6 +2763,9 @@ chromium-metrics-reviews@google.com.
 
     Warning: This histogram represents pre-renderer metrics and so is flawed
     under OOPIF.
+
+    Warning: this histogram was expired from 2021-10-10 to 2022-07-12; data may
+    be missing.
   </summary>
 </histogram>
 
