@@ -929,8 +929,14 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareRGBAFrame) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
+  gfx::HDRMetadata hdr_metadata;
+  hdr_metadata.max_content_light_level = 5000;
+  hdr_metadata.max_frame_average_light_level = 1000;
+
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   software_frame->metadata().end_of_stream = true;
+  software_frame->set_hdr_metadata(hdr_metadata);
+
   base::TimeTicks kTestReferenceTime =
       base::Milliseconds(12345) + base::TimeTicks();
   software_frame->metadata().reference_time = kTestReferenceTime;
@@ -942,6 +948,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_TRUE(frame->metadata().end_of_stream);
+  EXPECT_EQ(hdr_metadata, frame->hdr_metadata());
   EXPECT_EQ(kTestReferenceTime, *frame->metadata().reference_time);
 }
 

@@ -1192,6 +1192,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
   bool new_allow_overlay = frame->metadata().allow_overlay;
   bool new_read_lock_fences_enabled =
       frame->metadata().read_lock_fences_enabled;
+  frame->set_hdr_metadata(video_frame->hdr_metadata());
   frame->metadata().MergeMetadataFrom(video_frame->metadata());
   frame->metadata().allow_overlay = new_allow_overlay;
   frame->metadata().read_lock_fences_enabled = new_read_lock_fences_enabled;
