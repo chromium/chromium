@@ -167,6 +167,9 @@ static_library("shopping_service") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:prefs",
+    "//components/resources:components_resources_grit",
+    "//services/data_decoder/public/cpp",
+    "//ui/base",
     "//url:url",
   ]
 
@@ -197,15 +200,18 @@ source_set("shopping_service_test_support") {
     "shopping_service_test_base.h",
   ]
 
-  deps = [
+  # Expose all deps for test support.
+  public_deps = [
     ":feature_list",
     ":shopping_service",
+    "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/commerce/core:proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
     "//url:url",
   ]
@@ -220,16 +226,8 @@ source_set("shopping_service_unit_tests") {
   ]
 
   deps = [
-    ":feature_list",
     ":metrics",
-    ":shopping_service",
     ":shopping_service_test_support",
-    "//base/test:test_support",
-    "//components/commerce/core:proto",
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//testing/gtest",
-    "//url:url",
   ]
 }
 

@@ -161,6 +161,10 @@ void ShoppingServiceTestBase::DidNavigatePrimaryMainFrame(WebWrapper* web) {
   shopping_service_->DidNavigatePrimaryMainFrame(web);
 }
 
+void ShoppingServiceTestBase::DidFinishLoad(WebWrapper* web) {
+  shopping_service_->DidFinishLoad(web);
+}
+
 void ShoppingServiceTestBase::DidNavigateAway(WebWrapper* web,
                                               const GURL& url) {
   shopping_service_->DidNavigateAway(web, url);
