@@ -43,12 +43,6 @@ if (!limit_android_deps) {
       ":org_robolectric_utils_java",
       ":org_robolectric_utils_reflector_java",
     ]
-
-    # Temporarily keep compiling against robolectric until every target is
-    # migarated to robolectric_library. See https://crbug.com/1296632
-    input_jars_paths = [
-      "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar",
-    ]
   }
 
   java_group("material_design_java") {
