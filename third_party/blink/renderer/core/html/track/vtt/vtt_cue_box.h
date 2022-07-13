@@ -44,6 +44,7 @@ class VTTCueBox final : public HTMLDivElement {
  public:
   explicit VTTCueBox(Document&);
   void Trace(Visitor* visitor) const override;
+  bool IsVTTCueBox() const override { return true; }
 
   void ApplyCSSProperties(const VTTDisplayParameters&);
 
@@ -58,6 +59,13 @@ class VTTCueBox final : public HTMLDivElement {
   // non-snap-to-lines layout where no adjustment should take place.
   // This is set in applyCSSProperties and propagated to LayoutVTTCue.
   float snap_to_lines_position_;
+};
+
+template <>
+struct DowncastTraits<VTTCueBox> {
+  static bool AllowFrom(const Node& node) {
+    return node.IsElementNode() && To<Element>(node).IsVTTCueBox();
+  }
 };
 
 }  // namespace blink

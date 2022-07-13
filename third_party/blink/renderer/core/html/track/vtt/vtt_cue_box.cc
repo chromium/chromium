@@ -32,9 +32,11 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
+#include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -46,7 +48,7 @@ class VttCueBoxResizeDelegate final : public ResizeObserver::Delegate {
   void OnResize(
       const HeapVector<Member<ResizeObserverEntry>>& entries) override {
     DCHECK_EQ(entries.size(), 1u);
-    // TODO(crbug.com/1335309): Do adjustment here.
+    VttCueLayoutAlgorithm(*To<VTTCueBox>(entries[0]->target())).Layout();
   }
 };
 
