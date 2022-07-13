@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/i18n/rtl.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "components/exo/seat_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -16,13 +17,14 @@
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/ime/virtual_keyboard_controller_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
 namespace ui {
 class InputMethod;
-}
+}  // namespace ui
 
 namespace exo {
 class Surface;
@@ -242,6 +244,10 @@ class TextInput : public ui::TextInputClient,
   // focused client. Otherwise, it is null and the TextInput is not attached
   // to any InputMethod, so the TextInputClient overrides will not be called.
   ui::InputMethod* input_method_ = nullptr;
+
+  base::ScopedObservation<ui::VirtualKeyboardController,
+                          ui::VirtualKeyboardControllerObserver>
+      virtual_keyboard_observation_{this};
 
   // Cache of the current caret bounding box, sent from the client.
   gfx::Rect caret_bounds_;

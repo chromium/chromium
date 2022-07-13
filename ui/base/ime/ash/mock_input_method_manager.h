@@ -6,10 +6,12 @@
 #define UI_BASE_IME_ASH_MOCK_INPUT_METHOD_MANAGER_H_
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 
 namespace ash {
 namespace input_method {
@@ -95,6 +97,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
 
   ~MockInputMethodManager() override;
 
+  void SetVirtualKeyboardEnabled(bool enabled) {
+    virtual_keyboard_enabled_ = enabled;
+  }
+
   // InputMethodManager:
   void AddObserver(InputMethodManager::Observer* observer) override;
   void AddCandidateWindowObserver(
@@ -146,6 +152,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
  private:
   scoped_refptr<State> state_;
   uint32_t features_enabled_state_;
+  bool virtual_keyboard_enabled_ = true;
+  base::ObserverList<ui::VirtualKeyboardControllerObserver>::Unchecked
+      observer_list_;
 };
 
 }  // namespace input_method

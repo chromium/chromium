@@ -319,11 +319,10 @@ void TextInput::OnInputMethodChanged() {
   if (input_method == input_method_)
     return;
   input_method_->DetachTextInputClient(this);
-  if (auto* controller = input_method_->GetVirtualKeyboardController())
-    controller->RemoveObserver(this);
+  virtual_keyboard_observation_.Reset();
   input_method_ = input_method;
   if (auto* controller = input_method_->GetVirtualKeyboardController())
-    controller->AddObserver(this);
+    virtual_keyboard_observation_.Observe(controller);
   input_method_->SetFocusedTextInputClient(this);
 }
 
@@ -464,7 +463,7 @@ void TextInput::AttachInputMethod() {
   input_mode_ = ui::TEXT_INPUT_MODE_TEXT;
   input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
   if (auto* controller = input_method_->GetVirtualKeyboardController())
-    controller->AddObserver(this);
+    virtual_keyboard_observation_.Observe(controller);
   input_method_->SetFocusedTextInputClient(this);
   delegate_->Activated();
 
@@ -480,8 +479,7 @@ void TextInput::DetachInputMethod() {
   input_mode_ = ui::TEXT_INPUT_MODE_DEFAULT;
   input_type_ = ui::TEXT_INPUT_TYPE_NONE;
   input_method_->DetachTextInputClient(this);
-  if (auto* controller = input_method_->GetVirtualKeyboardController())
-    controller->RemoveObserver(this);
+  virtual_keyboard_observation_.Reset();
   input_method_ = nullptr;
   delegate_->Deactivated();
 }

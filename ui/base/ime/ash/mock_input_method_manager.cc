@@ -236,7 +236,7 @@ void MockInputMethodManager::NotifyObserversImeExtraInputStateChange() {}
 
 ui::VirtualKeyboardController*
 MockInputMethodManager::GetVirtualKeyboardController() {
-  return this;
+  return virtual_keyboard_enabled_ ? this : nullptr;
 }
 
 void MockInputMethodManager::NotifyInputMethodExtensionAdded(
@@ -249,13 +249,20 @@ bool MockInputMethodManager::DisplayVirtualKeyboard() {
   return false;
 }
 
-void MockInputMethodManager::DismissVirtualKeyboard() {}
+void MockInputMethodManager::DismissVirtualKeyboard() {
+  for (auto& observer : observer_list_)
+    observer.OnKeyboardHidden();
+}
 
 void MockInputMethodManager::AddObserver(
-    ui::VirtualKeyboardControllerObserver* observer) {}
+    ui::VirtualKeyboardControllerObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
 
 void MockInputMethodManager::RemoveObserver(
-    ui::VirtualKeyboardControllerObserver* observer) {}
+    ui::VirtualKeyboardControllerObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
 
 bool MockInputMethodManager::IsKeyboardVisible() {
   return false;

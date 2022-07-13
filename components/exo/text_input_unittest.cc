@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/buffer.h"
 #include "components/exo/seat.h"
@@ -17,6 +18,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -146,6 +149,7 @@ class TextInputTest : public test::ExoTestBase {
 
  protected:
   TextInput* text_input() { return text_input_.get(); }
+  void DestroyTextInput() { text_input_.reset(); }
   MockTextInputDelegate* delegate() {
     return static_cast<MockTextInputDelegate*>(text_input_->delegate());
   }
@@ -336,6 +340,40 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
+}
+
+TEST_F(TextInputTest, VirtualKeyboardObserver) {
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, text_input()->GetTextInputType());
+  EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
+
+  EXPECT_CALL(*delegate(), Activated).Times(1);
+  text_input()->Activate(seat(), surface());
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // Disable virtual keyboard so that GetVirtualKeyboardController() starts
+  // to return nullptr.
+  auto* input_method_manager =
+      static_cast<ash::input_method::MockInputMethodManager*>(
+          ash::input_method::InputMethodManager::Get());
+  input_method_manager->SetVirtualKeyboardEnabled(false);
+
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, text_input()->GetTextInputType());
+  EXPECT_EQ(ui::TEXT_INPUT_MODE_TEXT, text_input()->GetTextInputMode());
+  EXPECT_EQ(0, text_input()->GetTextInputFlags());
+
+  EXPECT_CALL(*delegate(), Deactivated).Times(1);
+  text_input()->Deactivate();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, text_input()->GetTextInputType());
+  EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
+
+  // Destroy the text_input.
+  // Because text_input used not to be removed from VirtualKeyboardController
+  // as its observer, this used to cause a dangling pointer problem, so
+  // caused the crash in the following DismissVirtualKeyboard.
+  DestroyTextInput();
+  input_method_manager->DismissVirtualKeyboard();
 }
 
 TEST_F(TextInputTest, SetTypeModeFlag) {
