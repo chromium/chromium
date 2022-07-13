@@ -99,6 +99,13 @@ class NodeLink : public msg::NodeMessageListener {
   // Retrieves only the Router currently bound to `sublink` on this NodeLink.
   Ref<Router> GetRouter(SublinkId sublink);
 
+  // Sends a new driver memory object to the remote endpoint to be associated
+  // with BufferId within the peer NodeLink's associated NodeLinkMemory, and to
+  // be used to dynamically allocate blocks of `block_size` bytes. The BufferId
+  // must have already been reserved locally by this NodeLink using
+  // AllocateNewBufferId().
+  void AddBlockBuffer(BufferId id, uint32_t block_size, DriverMemory memory);
+
   // Permanently deactivates this NodeLink. Once this call returns the NodeLink
   // will no longer receive transport messages. It may still be used to transmit
   // outgoing messages, but it cannot be reactivated. Transmissions over a
@@ -125,6 +132,7 @@ class NodeLink : public msg::NodeMessageListener {
   SequenceNumber GenerateOutgoingSequenceNumber();
 
   // NodeMessageListener overrides:
+  bool OnAddBlockBuffer(msg::AddBlockBuffer& add) override;
   bool OnAcceptParcel(msg::AcceptParcel& accept) override;
   bool OnRouteClosed(msg::RouteClosed& route_closed) override;
   bool OnFlushRouter(msg::FlushRouter& flush) override;

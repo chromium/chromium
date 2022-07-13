@@ -18,24 +18,6 @@ BufferPool::BufferPool() = default;
 
 BufferPool::~BufferPool() = default;
 
-bool BufferPool::AddBuffer(BufferId id, DriverMemoryMapping mapping) {
-  ABSL_ASSERT(mapping.is_valid());
-
-  absl::MutexLock lock(&mutex_);
-  auto [it, inserted] = mappings_.insert({id, std::move(mapping)});
-  return inserted;
-}
-
-absl::Span<uint8_t> BufferPool::GetBufferMemory(BufferId id) {
-  absl::MutexLock lock(&mutex_);
-  auto it = mappings_.find(id);
-  if (it == mappings_.end()) {
-    return {};
-  }
-
-  return it->second.bytes();
-}
-
 Fragment BufferPool::GetFragment(const FragmentDescriptor& descriptor) {
   if (descriptor.is_null()) {
     return {};
@@ -55,33 +37,74 @@ Fragment BufferPool::GetFragment(const FragmentDescriptor& descriptor) {
   return Fragment(descriptor, mapping.address_at(descriptor.offset()));
 }
 
-bool BufferPool::RegisterBlockAllocator(BufferId buffer_id,
-                                        const BlockAllocator& allocator) {
-  const size_t block_size = allocator.block_size();
+bool BufferPool::AddBlockBuffer(
+    BufferId id,
+    DriverMemoryMapping mapping,
+    absl::Span<const BlockAllocator> block_allocators) {
+  ABSL_ASSERT(mapping.is_valid());
 
-  absl::MutexLock lock(&mutex_);
-  auto mapping_it = mappings_.find(buffer_id);
-  if (mapping_it == mappings_.end()) {
-    return false;
+  // Basic consistency checks before we change any pool state: ensure that each
+  // given allocator actually lives within the memory mapped by `mapping`, and
+  // that each has a unique power-of-2 block size.
+  size_t block_sizes_present = 0;
+  for (const auto& allocator : block_allocators) {
+    if (&allocator.region().front() < &mapping.bytes().front() ||
+        &allocator.region().back() > &mapping.bytes().back()) {
+      // Not a valid allocator region for this mapping.
+      return false;
+    }
+
+    const size_t block_size = allocator.block_size();
+    ABSL_ASSERT(block_size >= 8 && block_size <= (1 << 30));
+    if (!absl::has_single_bit(block_size)) {
+      // Not a power of two.
+      return false;
+    }
+
+    if (block_sizes_present & block_size) {
+      // Duplicate allocator block size for this buffer.
+      return false;
+    }
+
+    block_sizes_present |= block_size;
   }
 
-  auto& mapping = mapping_it->second;
-  if (&allocator.region().front() < &mapping.bytes().front() ||
-      &allocator.region().back() > &mapping.bytes().back()) {
-    return false;
+  std::vector<WaitForBufferCallback> callbacks;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto [it, inserted] = mappings_.insert({id, std::move(mapping)});
+    if (!inserted) {
+      ABSL_ASSERT(buffer_callbacks_.empty());
+      return false;
+    }
+
+    auto callbacks_it = buffer_callbacks_.find(id);
+    if (callbacks_it != buffer_callbacks_.end()) {
+      callbacks = std::move(callbacks_it->second);
+      buffer_callbacks_.erase(callbacks_it);
+    }
+
+    auto& inserted_mapping = it->second;
+    for (const auto& allocator : block_allocators) {
+      const size_t block_size = allocator.block_size();
+      auto [pool_it, pool_inserted] =
+          block_allocator_pools_.insert({block_size, nullptr});
+      auto& pool = pool_it->second;
+      if (pool_inserted) {
+        pool = std::make_unique<BlockAllocatorPool>();
+      }
+      pool->Add(id, inserted_mapping.bytes(), allocator);
+    }
   }
 
-  auto [it, inserted] = block_allocator_pools_.insert({block_size, nullptr});
-  auto& pool = it->second;
-  if (inserted) {
-    pool = std::make_unique<BlockAllocatorPool>();
+  for (auto& callback : callbacks) {
+    callback();
   }
 
-  pool->Add(buffer_id, mapping.bytes(), allocator);
   return true;
 }
 
-size_t BufferPool::GetTotalBlockAllocatorCapacity(size_t block_size) {
+size_t BufferPool::GetTotalBlockCapacity(size_t block_size) {
   BlockAllocatorPool* pool;
   {
     absl::MutexLock lock(&mutex_);
@@ -96,8 +119,9 @@ size_t BufferPool::GetTotalBlockAllocatorCapacity(size_t block_size) {
   return pool->GetCapacity();
 }
 
-Fragment BufferPool::AllocateFragment(size_t num_bytes) {
-  const size_t block_size = absl::bit_ceil(num_bytes);
+Fragment BufferPool::AllocateBlock(size_t block_size) {
+  ABSL_ASSERT(absl::has_single_bit(block_size));
+
   BlockAllocatorPool* pool;
   {
     absl::MutexLock lock(&mutex_);
@@ -108,14 +132,16 @@ Fragment BufferPool::AllocateFragment(size_t num_bytes) {
 
     // NOTE: BlockAllocatorPools live as long as this BufferPool once added, and
     // they are thread-safe objects; so retaining this pointer through the
-    // extent of AllocateFragment() is safe.
+    // extent of AllocateBlock() is safe.
     pool = it->second.get();
   }
 
   return pool->Allocate();
 }
 
-Fragment BufferPool::AllocatePartialFragment(size_t preferred_num_bytes) {
+Fragment BufferPool::AllocateBlockBestEffort(size_t preferred_block_size) {
+  ABSL_ASSERT(absl::has_single_bit(preferred_block_size));
+
   // Limit the number of attempts we make to scale down the requested size in
   // search of an available fragment. This value was chosen arbitrarily.
   constexpr size_t kMaxAttempts = 3;
@@ -128,7 +154,7 @@ Fragment BufferPool::AllocatePartialFragment(size_t preferred_num_bytes) {
       return {};
     }
 
-    pool_iter = block_allocator_pools_.lower_bound(preferred_num_bytes);
+    pool_iter = block_allocator_pools_.lower_bound(preferred_block_size);
     if (pool_iter == block_allocator_pools_.end()) {
       --pool_iter;
     }
@@ -154,7 +180,7 @@ Fragment BufferPool::AllocatePartialFragment(size_t preferred_num_bytes) {
   return {};
 }
 
-bool BufferPool::FreeFragment(const Fragment& fragment) {
+bool BufferPool::FreeBlock(const Fragment& fragment) {
   BlockAllocatorPool* pool;
   {
     absl::MutexLock lock(&mutex_);
@@ -167,6 +193,20 @@ bool BufferPool::FreeFragment(const Fragment& fragment) {
   }
 
   return pool->Free(fragment);
+}
+
+void BufferPool::WaitForBufferAsync(BufferId id,
+                                    WaitForBufferCallback callback) {
+  {
+    absl::MutexLock lock(&mutex_);
+    auto it = mappings_.find(id);
+    if (it == mappings_.end()) {
+      buffer_callbacks_[id].push_back(std::move(callback));
+      return;
+    }
+  }
+
+  callback();
 }
 
 }  // namespace ipcz

@@ -54,6 +54,21 @@ IPCZ_MSG_BEGIN(ConnectFromNonBrokerToBroker,
   IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
 IPCZ_MSG_END()
 
+// Shares a new buffer to support allocation of blocks of `block_size` bytes.
+// The sender must initialize an appropriate BlockAllocator within the buffer's
+// memory before sending this message.
+IPCZ_MSG_BEGIN(AddBlockBuffer, IPCZ_MSG_ID(14), IPCZ_MSG_VERSION(0))
+  // The ID of the new buffer as allocated by the NodeLinkMemory on the NodeLink
+  // transmitting this message.
+  IPCZ_MSG_PARAM(BufferId, id)
+
+  // The size of blocks which can be allocated from within this buffer.
+  IPCZ_MSG_PARAM(uint32_t, block_size)
+
+  // A handle to the driver-managed, read-write-mappable buffer.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(buffer)
+IPCZ_MSG_END()
+
 // Conveys the contents of a parcel.
 IPCZ_MSG_BEGIN(AcceptParcel, IPCZ_MSG_ID(20), IPCZ_MSG_VERSION(0))
   // The SublinkId linking the source and destination Routers along the

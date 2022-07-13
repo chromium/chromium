@@ -58,6 +58,7 @@ NodeLink::NodeLink(Ref<Node> node,
       transport_(std::move(transport)),
       memory_(std::move(memory)) {
   transport_->set_listener(WrapRefCounted(this));
+  memory_->SetNodeLink(WrapRefCounted(this));
 }
 
 NodeLink::~NodeLink() {
@@ -114,6 +115,16 @@ Ref<Router> NodeLink::GetRouter(SublinkId sublink) {
   return it->second.receiver;
 }
 
+void NodeLink::AddBlockBuffer(BufferId id,
+                              uint32_t block_size,
+                              DriverMemory memory) {
+  msg::AddBlockBuffer add;
+  add.params().id = id;
+  add.params().block_size = block_size;
+  add.params().buffer = add.AppendDriverObject(memory.TakeDriverObject());
+  Transmit(add);
+}
+
 void NodeLink::Deactivate() {
   {
     absl::MutexLock lock(&mutex_);
@@ -125,6 +136,7 @@ void NodeLink::Deactivate() {
 
   OnTransportError();
   transport_->Deactivate();
+  memory_->SetNodeLink(nullptr);
 }
 
 void NodeLink::Transmit(Message& message) {
@@ -144,6 +156,15 @@ void NodeLink::Transmit(Message& message) {
 SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {
   return SequenceNumber(next_outgoing_sequence_number_generator_.fetch_add(
       1, std::memory_order_relaxed));
+}
+
+bool NodeLink::OnAddBlockBuffer(msg::AddBlockBuffer& add) {
+  DriverMemory buffer(add.TakeDriverObject(add.params().buffer));
+  if (!buffer.is_valid()) {
+    return false;
+  }
+  return memory().AddBlockBuffer(add.params().id, add.params().block_size,
+                                 buffer.Map());
 }
 
 bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {

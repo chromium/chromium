@@ -167,8 +167,7 @@ TEST_F(RefCountedFragmentTest, Free) {
   // and so will the test.
   constexpr size_t kNumAllocations = 100000;
   for (size_t i = 0; i < kNumAllocations; ++i) {
-    Fragment fragment =
-        memory->buffer_pool().AllocateFragment(sizeof(TestObject));
+    Fragment fragment = memory->AllocateFragment(sizeof(TestObject));
     EXPECT_TRUE(fragment.is_addressable());
     FragmentRef<TestObject> ref(RefCountedFragment::kAdoptExistingRef, memory,
                                 fragment);

@@ -109,6 +109,14 @@ NodeName Node::GenerateRandomName() const {
   return name;
 }
 
+void Node::AllocateSharedMemory(size_t size,
+                                AllocateSharedMemoryCallback callback) {
+  // TODO: Implement delegated allocation when this Node is connected to another
+  // with the IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE flag set. For now we
+  // assume all nodes can perform direct allocation.
+  callback(DriverMemory(driver_, size));
+}
+
 void Node::ShutDown() {
   NodeLinkMap node_links;
   {

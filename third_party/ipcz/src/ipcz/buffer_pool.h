@@ -16,6 +16,7 @@
 #include "ipcz/fragment_descriptor.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
+#include "third_party/abseil-cpp/absl/types/span.h"
 
 namespace ipcz {
 
@@ -33,20 +34,6 @@ class BufferPool {
   BufferPool();
   ~BufferPool();
 
-  // Registers `mapping` under `id` within this pool.
-  //
-  // Returns true if the mapping was successfully added, or false if the pool
-  // already had a buffer registered under the given `id`.
-  bool AddBuffer(BufferId id, DriverMemoryMapping mapping);
-
-  // Returns the full span of memory mapped by the identified buffer, or an
-  // empty span if no such buffer is registered with this BufferPool.
-  //
-  // Note that because buffers remain mapped indefinitely by the BufferPool
-  // once added, this span is safe to retain as long as the BufferPool itself
-  // remains alive.
-  absl::Span<uint8_t> GetBufferMemory(BufferId id);
-
   // Resolves `descriptor` to a concrete Fragment. If the descriptor is null or
   // describes a region of memory which exceeds the bounds of the identified
   // buffer, this returns a null Fragment.
@@ -59,44 +46,47 @@ class BufferPool {
   // span of mapped memory.
   Fragment GetFragment(const FragmentDescriptor& descriptor);
 
-  // Registers a BlockAllocator with this pool to support subsequent
-  // AllocateFragment() calls. If successful, the allocator may be used to
-  // fulfill fragment allocation requests for any size up to and including
-  // `block_size`.
+  // Registers `mapping` under `id` within this pool, along with a collection of
+  // BlockAllocators that have already been initialized within the mapped
+  // memory, to support block allocation by the pool.
   //
-  // `buffer_id` must identify a buffer mapping which has already been
-  // registered to this pool via AddBuffer(), and `allocator` must be
-  // constructed over a span of memory which falls entirely within that mapping.
+  // Returns true if the mapping and BlockAllocators were successfully added to
+  // the pool, or false if the pool already had a buffer registered under the
+  // given `id` or if any allocator within `allocators` is not contained by
+  // `mapping` or is otherwise invalid.
   //
-  // Returns true on success and false on failure. Failure implies that either
-  // `buffer_id` was unknown or `allocator` does not manage memory within the
-  // identified buffer.
-  bool RegisterBlockAllocator(BufferId buffer_id,
-                              const BlockAllocator& allocator);
+  // Note that every allocator in `block_allocators` must have a unique
+  // power-of-2 block size, as each buffer only supports at most one allocator
+  // per block size.
+  bool AddBlockBuffer(BufferId id,
+                      DriverMemoryMapping mapping,
+                      absl::Span<const BlockAllocator> block_allocators);
 
   // Returns the total size in bytes of capacity available across all registered
   // BlockAllocators for the given `block_size`.
-  size_t GetTotalBlockAllocatorCapacity(size_t block_size);
+  size_t GetTotalBlockCapacity(size_t block_size);
 
-  // Attempts to allocate an unused fragment from the pool with a size of at
-  // least `num_bytes`. For most allocations, this prefers to use a
-  // BlockAllocator for the smallest available block size which still fits
-  // `num_bytes`.
-  //
-  // If the BufferPool cannot accommodate the allocation request, this returns
-  // a null Fragment.
-  Fragment AllocateFragment(size_t num_bytes);
+  // Attempts to allocate an unused block of at least `block_size` bytes from
+  // any available block allocation buffer in the pool, preferring the smaller
+  // blocks over larger ones. If the BufferPool cannot accommodate the
+  // allocation request, this returns a null Fragment.
+  Fragment AllocateBlock(size_t block_size);
 
   // Similar to AllocateFragment(), but this may allocate less space than
   // requested if that's all that's available. May still return a null Fragment
   // if the BufferPool has trouble finding available memory.
-  Fragment AllocatePartialFragment(size_t preferred_num_bytes);
+  Fragment AllocateBlockBestEffort(size_t preferred_block_size);
 
-  // Frees a Fragment previously allocated from this pool via AllocateFragment()
-  // or AllocatePartialFragment(). Returns true if successful, or false if
-  // `fragment` does not identify a fragment allocated from a buffer managed by
-  // this pool.
-  bool FreeFragment(const Fragment& fragment);
+  // Frees a block previously allocated from this pool via AllocateBlock() or
+  // AllocateBlockBestEffort(). Returns true if successful, or false if
+  // `fragment` was not allocated from one of this pool's block buffers.
+  bool FreeBlock(const Fragment& fragment);
+
+  // Runs `callback` as soon as the identified buffer is added to the underlying
+  // BufferPool. If the buffer is already present here, `callback` is run
+  // immediately.
+  using WaitForBufferCallback = std::function<void()>;
+  void WaitForBufferAsync(BufferId id, WaitForBufferCallback callback);
 
  private:
   absl::Mutex mutex_;
@@ -109,6 +99,10 @@ class BufferPool {
   using BlockAllocatorPoolMap =
       std::map<size_t, std::unique_ptr<BlockAllocatorPool>>;
   BlockAllocatorPoolMap block_allocator_pools_ ABSL_GUARDED_BY(mutex_);
+
+  // Callbacks to be invoked when an identified buffer becomes available.
+  absl::flat_hash_map<BufferId, std::vector<WaitForBufferCallback>>
+      buffer_callbacks_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz

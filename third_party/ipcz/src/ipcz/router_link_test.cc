@@ -61,9 +61,8 @@ class RouterLinkTest : public testing::Test,
         broker_->AddLink(kTestNonBrokerName, broker_node_link_);
         non_broker_->AddLink(kTestBrokerName, non_broker_node_link_);
 
-        auto fragment =
-            broker_node_link_->memory().buffer_pool().AllocateFragment(
-                sizeof(RouterLinkState));
+        auto fragment = broker_node_link_->memory().AllocateFragment(
+            sizeof(RouterLinkState));
         auto link_state = FragmentRef<RouterLinkState>(
             RefCountedFragment::kAdoptExistingRef,
             WrapRefCounted(&broker_node_link_->memory()), fragment);

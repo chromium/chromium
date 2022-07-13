@@ -31,73 +31,118 @@ class BufferPoolTest : public testing::Test {
                            IPCZ_INVALID_DRIVER_HANDLE)};
 };
 
-TEST_F(BufferPoolTest, AddBuffer) {
-  constexpr size_t kSize = 4096;
-  DriverMemoryMapping mapping = AllocateDriverMemory(kSize);
-  absl::Span<uint8_t> bytes = mapping.bytes();
-
+TEST_F(BufferPoolTest, AddBlockBuffer) {
+  constexpr size_t kBufferSize = 4096;
+  constexpr size_t kBlockSize = 64;
+  DriverMemoryMapping mapping = AllocateDriverMemory(kBufferSize);
+  const absl::Span<uint8_t> bytes = mapping.bytes();
+  const BlockAllocator allocators[] = {{bytes, kBlockSize}};
+  constexpr BufferId id(0);
   BufferPool pool;
-  EXPECT_TRUE(pool.AddBuffer(BufferId{0}, std::move(mapping)));
+  EXPECT_TRUE(pool.AddBlockBuffer(id, std::move(mapping), allocators));
 
-  auto memory = pool.GetBufferMemory(BufferId{0});
-  EXPECT_EQ(bytes.data(), memory.data());
-  EXPECT_EQ(bytes.size(), memory.size());
+  Fragment fragment = pool.GetFragment({id, 0, kBufferSize});
+  EXPECT_TRUE(fragment.is_addressable());
+  EXPECT_EQ(bytes.data(), fragment.bytes().data());
+  EXPECT_EQ(bytes.size(), fragment.bytes().size());
+}
 
-  // No duplicates.
-  DriverMemoryMapping another_mapping = AllocateDriverMemory(kSize);
-  EXPECT_FALSE(pool.AddBuffer(BufferId{0}, std::move(another_mapping)));
+TEST_F(BufferPoolTest, AddBlockBufferNoDuplicateBufferId) {
+  constexpr size_t kBufferSize = 4096;
+  constexpr size_t kBlockSize = 64;
+  DriverMemoryMapping mapping = AllocateDriverMemory(kBufferSize);
+  const absl::Span<uint8_t> bytes = mapping.bytes();
+  const BlockAllocator allocators[] = {{bytes, kBlockSize}};
+  constexpr BufferId id(0);
+  BufferPool pool;
+  EXPECT_TRUE(pool.AddBlockBuffer(id, std::move(mapping), allocators));
 
-  // BufferId 0 is still the original buffer.
-  memory = pool.GetBufferMemory(BufferId{0});
-  EXPECT_EQ(bytes.data(), memory.data());
-  EXPECT_EQ(bytes.size(), memory.size());
+  // Adding another buffer with the same ID as above must fail.
+  DriverMemoryMapping another_mapping = AllocateDriverMemory(kBufferSize);
+  const BlockAllocator another_allocator(another_mapping.bytes(), kBlockSize);
+  EXPECT_FALSE(pool.AddBlockBuffer(id, std::move(another_mapping),
+                                   {&another_allocator, 1}));
 
-  DriverMemoryMapping yet_another_mapping = AllocateDriverMemory(kSize);
-  absl::Span<uint8_t> other_bytes = yet_another_mapping.bytes();
-  EXPECT_TRUE(pool.AddBuffer(BufferId{1}, std::move(yet_another_mapping)));
+  // Fragment resolution against buffer 0 should still map to the first buffer.
+  Fragment fragment = pool.GetFragment({id, 0, kBufferSize});
+  EXPECT_TRUE(fragment.is_addressable());
+  EXPECT_EQ(bytes.data(), fragment.bytes().data());
+  EXPECT_EQ(bytes.size(), fragment.bytes().size());
+}
 
-  // BufferId 0 is still the original buffer.
-  memory = pool.GetBufferMemory(BufferId{0});
-  EXPECT_EQ(bytes.data(), memory.data());
-  EXPECT_EQ(bytes.size(), memory.size());
+TEST_F(BufferPoolTest, AddBlockBufferNoDuplicateAllocatorBlockSizes) {
+  constexpr size_t kBufferSize = 4096;
+  constexpr size_t kBlockSize = 64;
+  DriverMemoryMapping mapping = AllocateDriverMemory(kBufferSize);
+  const absl::Span<uint8_t> bytes = mapping.bytes();
 
-  // BufferId 1 is available now too.
-  memory = pool.GetBufferMemory(BufferId{1});
-  EXPECT_EQ(other_bytes.data(), memory.data());
-  EXPECT_EQ(other_bytes.size(), memory.size());
+  // Carve up the buffer into two separate allocators for the same block size,
+  // and try to register them both. This is unsupported.
+  const BlockAllocator allocators[] = {
+      {bytes.subspan(0, kBlockSize * 2), kBlockSize},
+      {bytes.subspan(kBlockSize * 2), kBlockSize},
+  };
+
+  constexpr BufferId id(0);
+  BufferPool pool;
+  EXPECT_FALSE(pool.AddBlockBuffer(id, std::move(mapping), allocators));
+
+  // No buffer is registered to resolve this fragment.
+  Fragment fragment = pool.GetFragment({id, 0, 8});
+  EXPECT_TRUE(fragment.is_pending());
+}
+
+TEST_F(BufferPoolTest, AddBlockBufferRequireBlockSizePowerOfTwo) {
+  constexpr size_t kBufferSize = 4096;
+  constexpr size_t kBadBlockSize = 80;
+  DriverMemoryMapping mapping = AllocateDriverMemory(kBufferSize);
+  const BlockAllocator bad_allocator(mapping.bytes(), kBadBlockSize);
+
+  constexpr BufferId id(0);
+  BufferPool pool;
+  EXPECT_FALSE(
+      pool.AddBlockBuffer(id, std::move(mapping), {&bad_allocator, 1}));
+
+  // No buffer is registered to resolve this fragment.
+  Fragment fragment = pool.GetFragment({id, 0, 8});
+  EXPECT_TRUE(fragment.is_pending());
 }
 
 TEST_F(BufferPoolTest, GetFragment) {
-  constexpr size_t kSize1 = 4096;
-  constexpr size_t kSize2 = 2048;
-  DriverMemoryMapping mapping1 = AllocateDriverMemory(kSize1);
-  DriverMemoryMapping mapping2 = AllocateDriverMemory(kSize2);
+  constexpr size_t kBufferSize1 = 4096;
+  constexpr size_t kBufferSize2 = 2048;
+  constexpr size_t kBlockSize = 64;
+  DriverMemoryMapping mapping1 = AllocateDriverMemory(kBufferSize1);
+  DriverMemoryMapping mapping2 = AllocateDriverMemory(kBufferSize2);
   absl::Span<uint8_t> bytes1 = mapping1.bytes();
   absl::Span<uint8_t> bytes2 = mapping2.bytes();
+  BlockAllocator allocators1[] = {{bytes1, kBlockSize}};
+  BlockAllocator allocators2[] = {{bytes2, kBlockSize}};
 
   BufferPool pool;
-  EXPECT_TRUE(pool.AddBuffer(BufferId{1}, std::move(mapping1)));
-  EXPECT_TRUE(pool.AddBuffer(BufferId{2}, std::move(mapping2)));
+  constexpr BufferId id1(1);
+  constexpr BufferId id2(2);
+  EXPECT_TRUE(pool.AddBlockBuffer(id1, std::move(mapping1), allocators1));
+  EXPECT_TRUE(pool.AddBlockBuffer(id2, std::move(mapping2), allocators2));
 
   // We can resolve fragments covering entire buffers.
-  Fragment fragment =
-      pool.GetFragment(FragmentDescriptor{BufferId{1}, 0, kSize1});
+  Fragment fragment = pool.GetFragment({id1, /*offset=*/0, kBufferSize1});
   EXPECT_FALSE(fragment.is_null());
   EXPECT_TRUE(fragment.is_addressable());
   EXPECT_EQ(bytes1.data(), fragment.bytes().data());
-  EXPECT_EQ(kSize1, fragment.bytes().size());
+  EXPECT_EQ(kBufferSize1, fragment.bytes().size());
 
-  fragment = pool.GetFragment(FragmentDescriptor{BufferId{2}, 0, kSize2});
+  fragment = pool.GetFragment({id2, /*offset=*/0, kBufferSize2});
   EXPECT_FALSE(fragment.is_null());
   EXPECT_TRUE(fragment.is_addressable());
   EXPECT_EQ(bytes2.data(), fragment.bytes().data());
-  EXPECT_EQ(kSize2, fragment.bytes().size());
+  EXPECT_EQ(kBufferSize2, fragment.bytes().size());
 
   // We can resolve fragments covering a subspan of a buffer.
   constexpr size_t kPartialFragmentOffset = 4;
-  constexpr size_t kPartialFragmentSize = kSize2 / 2;
-  fragment = pool.GetFragment(FragmentDescriptor{
-      BufferId{2}, kPartialFragmentOffset, kPartialFragmentSize});
+  constexpr size_t kPartialFragmentSize = kBufferSize2 / 2;
+  fragment =
+      pool.GetFragment({id2, kPartialFragmentOffset, kPartialFragmentSize});
   EXPECT_FALSE(fragment.is_null());
   EXPECT_TRUE(fragment.is_addressable());
   EXPECT_EQ(bytes2.subspan(kPartialFragmentOffset).data(),
@@ -110,6 +155,7 @@ TEST_F(BufferPoolTest, GetFragment) {
   EXPECT_FALSE(fragment.is_null());
   EXPECT_FALSE(fragment.is_addressable());
   EXPECT_TRUE(fragment.is_pending());
+  EXPECT_EQ(nullptr, fragment.address());
   EXPECT_EQ(descriptor.buffer_id(), fragment.buffer_id());
   EXPECT_EQ(descriptor.offset(), fragment.offset());
   EXPECT_EQ(descriptor.size(), fragment.size());
@@ -119,153 +165,147 @@ TEST_F(BufferPoolTest, GetFragment) {
   EXPECT_TRUE(fragment.is_null());
 
   // Out-of-bounds descriptors resolve to null fragments too.
-  fragment = pool.GetFragment(FragmentDescriptor{BufferId{1}, 0, kSize1 + 1});
+  fragment = pool.GetFragment(FragmentDescriptor{id1, 0, kBufferSize1 + 1});
   EXPECT_TRUE(fragment.is_null());
 }
 
 TEST_F(BufferPoolTest, BasicBlockAllocation) {
-  BufferPool pool;
-  pool.AddBuffer(BufferId{0}, AllocateDriverMemory(4096));
-  pool.AddBuffer(BufferId{1}, AllocateDriverMemory(4096));
-
+  constexpr size_t kBufferSize = 4096;
   constexpr size_t kBlockSize = 64;
-  BlockAllocator allocator1(pool.GetBufferMemory(BufferId{0}), kBlockSize);
+
+  auto mapping0 = AllocateDriverMemory(kBufferSize);
+  auto mapping1 = AllocateDriverMemory(kBufferSize);
+  auto bytes0 = mapping0.bytes();
+  auto bytes1 = mapping1.bytes();
+
+  BlockAllocator allocator0(bytes0, kBlockSize);
+  allocator0.InitializeRegion();
+
+  BlockAllocator allocator1(bytes1, kBlockSize);
   allocator1.InitializeRegion();
 
-  BlockAllocator allocator2(pool.GetBufferMemory(BufferId{1}), kBlockSize);
-  allocator2.InitializeRegion();
+  BufferPool pool;
+  constexpr BufferId id0(0);
+  constexpr BufferId id1(1);
+  EXPECT_TRUE(pool.AddBlockBuffer(id0, std::move(mapping0), {&allocator0, 1}));
+  EXPECT_TRUE(pool.AddBlockBuffer(id1, std::move(mapping1), {&allocator1, 1}));
 
-  EXPECT_TRUE(pool.RegisterBlockAllocator(BufferId{0}, allocator1));
-
-  // No duplicates.
-  EXPECT_FALSE(pool.RegisterBlockAllocator(BufferId{0}, allocator2));
-
-  EXPECT_TRUE(pool.RegisterBlockAllocator(BufferId{1}, allocator2));
-
-  EXPECT_EQ(kBlockSize * (allocator1.capacity() + allocator2.capacity()),
-            pool.GetTotalBlockAllocatorCapacity(kBlockSize));
+  EXPECT_EQ(kBlockSize * (allocator0.capacity() + allocator1.capacity()),
+            pool.GetTotalBlockCapacity(kBlockSize));
 
   // We can't free something that isn't a valid allocation.
-  EXPECT_FALSE(pool.FreeFragment(Fragment{{}, nullptr}));
-  EXPECT_FALSE(pool.FreeFragment(Fragment{{BufferId{1000}, 0, 1}, nullptr}));
-  EXPECT_FALSE(pool.FreeFragment(
-      Fragment{{BufferId{0}, 0, 1}, pool.GetBufferMemory(BufferId{0}).data()}));
+  EXPECT_FALSE(pool.FreeBlock(Fragment{{}, nullptr}));
+  EXPECT_FALSE(pool.FreeBlock(Fragment{{BufferId{1000}, 0, 1}, nullptr}));
+  EXPECT_FALSE(pool.FreeBlock(Fragment{{BufferId{0}, 0, 1}, bytes0.data()}));
 
   // Allocate all available capacity.
   std::vector<Fragment> fragments;
   for (;;) {
-    Fragment fragment = pool.AllocateFragment(kBlockSize);
+    Fragment fragment = pool.AllocateBlock(kBlockSize);
     if (fragment.is_null()) {
       break;
     }
     fragments.push_back(fragment);
   }
 
-  EXPECT_EQ(allocator1.capacity() + allocator2.capacity(), fragments.size());
+  EXPECT_EQ(allocator0.capacity() + allocator1.capacity(), fragments.size());
   for (const Fragment& fragment : fragments) {
-    EXPECT_TRUE(pool.FreeFragment(fragment));
+    EXPECT_TRUE(pool.FreeBlock(fragment));
   }
 }
 
 TEST_F(BufferPoolTest, BlockAllocationSizing) {
-  BufferPool pool;
-  EXPECT_TRUE(pool.AddBuffer(BufferId{1}, AllocateDriverMemory(4096)));
-  EXPECT_TRUE(pool.AddBuffer(BufferId{2}, AllocateDriverMemory(4096)));
+  constexpr size_t kBufferSize = 4096;
+  DriverMemoryMapping mapping1 = AllocateDriverMemory(kBufferSize);
+  DriverMemoryMapping mapping2 = AllocateDriverMemory(kBufferSize);
 
   constexpr size_t kBuffer1BlockSize = 64;
-  BlockAllocator allocator1(pool.GetBufferMemory(BufferId{1}),
-                            kBuffer1BlockSize);
+  BlockAllocator allocator1(mapping1.bytes(), kBuffer1BlockSize);
   allocator1.InitializeRegion();
 
-  constexpr size_t kBuffer2BlockSize = 128;
-  BlockAllocator allocator2(pool.GetBufferMemory(BufferId{2}),
-                            kBuffer2BlockSize);
+  constexpr size_t kBuffer2BlockSize = kBuffer1BlockSize * 4;
+  BlockAllocator allocator2(mapping2.bytes(), kBuffer2BlockSize);
   allocator2.InitializeRegion();
 
-  EXPECT_TRUE(pool.RegisterBlockAllocator(BufferId{1}, allocator1));
-  EXPECT_TRUE(pool.RegisterBlockAllocator(BufferId{2}, allocator2));
+  BufferPool pool;
+  constexpr BufferId id1(1);
+  constexpr BufferId id2(2);
+  EXPECT_TRUE(pool.AddBlockBuffer(id1, std::move(mapping1), {&allocator1, 1}));
+  EXPECT_TRUE(pool.AddBlockBuffer(id2, std::move(mapping2), {&allocator2, 1}));
 
   // Allocations not larger than 64 bytes should be drawn from buffer 1.
 
-  Fragment fragment = pool.AllocateFragment(1);
+  Fragment fragment = pool.AllocateBlock(1);
   EXPECT_TRUE(fragment.is_addressable());
-  EXPECT_EQ(BufferId{1}, fragment.buffer_id());
+  EXPECT_EQ(id1, fragment.buffer_id());
   EXPECT_EQ(kBuffer1BlockSize, fragment.size());
 
-  fragment = pool.AllocateFragment(kBuffer1BlockSize / 2);
+  fragment = pool.AllocateBlock(kBuffer1BlockSize / 2);
   EXPECT_TRUE(fragment.is_addressable());
-  EXPECT_EQ(BufferId{1}, fragment.buffer_id());
+  EXPECT_EQ(id1, fragment.buffer_id());
   EXPECT_EQ(kBuffer1BlockSize, fragment.size());
 
-  fragment = pool.AllocateFragment(kBuffer1BlockSize);
+  fragment = pool.AllocateBlock(kBuffer1BlockSize);
   EXPECT_TRUE(fragment.is_addressable());
-  EXPECT_EQ(BufferId{1}, fragment.buffer_id());
+  EXPECT_EQ(id1, fragment.buffer_id());
   EXPECT_EQ(kBuffer1BlockSize, fragment.size());
 
-  // Larger allocations which are still no larger than 128 bytes should be drawn
-  // from buffer 2.
+  // Larger allocations which are still no larger than kBuffer2BlockSize bytes
+  // should be drawn from buffer 2.
 
-  fragment = pool.AllocateFragment(kBuffer1BlockSize + 1);
+  fragment = pool.AllocateBlock(kBuffer1BlockSize * 2);
   EXPECT_TRUE(fragment.is_addressable());
-  EXPECT_EQ(BufferId{2}, fragment.buffer_id());
+  EXPECT_EQ(id2, fragment.buffer_id());
   EXPECT_EQ(kBuffer2BlockSize, fragment.size());
 
-  fragment = pool.AllocateFragment(kBuffer2BlockSize);
+  fragment = pool.AllocateBlock(kBuffer2BlockSize);
   EXPECT_TRUE(fragment.is_addressable());
-  EXPECT_EQ(BufferId{2}, fragment.buffer_id());
+  EXPECT_EQ(id2, fragment.buffer_id());
   EXPECT_EQ(kBuffer2BlockSize, fragment.size());
 
   // Anything larger than kBuffer2BlockSize should fail to allocate.
 
-  fragment = pool.AllocateFragment(kBuffer2BlockSize + 1);
+  fragment = pool.AllocateBlock(kBuffer2BlockSize * 2);
   EXPECT_TRUE(fragment.is_null());
 }
 
-TEST_F(BufferPoolTest, PartialBlockAllocation) {
-  BufferPool pool;
-  EXPECT_TRUE(pool.AddBuffer(BufferId{1}, AllocateDriverMemory(4096)));
-  EXPECT_TRUE(pool.AddBuffer(BufferId{2}, AllocateDriverMemory(4096)));
+TEST_F(BufferPoolTest, BestEffortBlockAllocation) {
+  constexpr size_t kBufferSize = 4096;
+  auto mapping1 = AllocateDriverMemory(kBufferSize);
+  auto mapping2 = AllocateDriverMemory(kBufferSize);
 
   constexpr size_t kBuffer1BlockSize = 64;
-  BlockAllocator allocator1(pool.GetBufferMemory(BufferId{1}),
-                            kBuffer1BlockSize);
+  BlockAllocator allocator1(mapping1.bytes(), kBuffer1BlockSize);
   allocator1.InitializeRegion();
 
   constexpr size_t kBuffer2BlockSize = 128;
-  BlockAllocator allocator2(pool.GetBufferMemory(BufferId{2}),
-                            kBuffer2BlockSize);
+  BlockAllocator allocator2(mapping2.bytes(), kBuffer2BlockSize);
   allocator2.InitializeRegion();
 
-  EXPECT_TRUE(pool.RegisterBlockAllocator(BufferId{1}, allocator1));
-  EXPECT_TRUE(pool.RegisterBlockAllocator(BufferId{2}, allocator2));
+  BufferPool pool;
+  constexpr BufferId id1(1);
+  constexpr BufferId id2(2);
+  EXPECT_TRUE(pool.AddBlockBuffer(id1, std::move(mapping1), {&allocator1, 1}));
+  EXPECT_TRUE(pool.AddBlockBuffer(id2, std::move(mapping2), {&allocator2, 1}));
 
-  // Oversized partial allocations can succceed.
+  // Oversized best-effort allocations can succceed.
 
   Fragment partial_fragment =
-      pool.AllocatePartialFragment(kBuffer2BlockSize + 1);
+      pool.AllocateBlockBestEffort(kBuffer2BlockSize * 2);
   EXPECT_TRUE(partial_fragment.is_addressable());
-  EXPECT_EQ(BufferId{2}, partial_fragment.buffer_id());
+  EXPECT_EQ(id2, partial_fragment.buffer_id());
   EXPECT_EQ(kBuffer2BlockSize, partial_fragment.size());
 
   // If we exhaust a sufficient block size, we should fall back onto smaller
-  // block sizes.
-
-  // First allocate all available capacity for kBuffer2BlockSize.
-  std::vector<Fragment> fragments;
-  for (;;) {
-    Fragment fragment = pool.AllocateFragment(kBuffer2BlockSize);
-    if (fragment.is_null()) {
-      break;
-    }
-    fragments.push_back(fragment);
+  // block sizes. First allocate all available capacity for kBuffer2BlockSize,
+  // and then a partial allocation of kBuffer2BlockSize should succeed with a
+  // a smaller size (kBuffer1BlockSize).
+  while (!pool.AllocateBlock(kBuffer2BlockSize).is_null()) {
   }
 
-  // A partial allocation of kBuffer2BlockSize should still succeed, albeit for
-  // a smaller size (kBuffer1BlockSize).
-
-  partial_fragment = pool.AllocatePartialFragment(kBuffer2BlockSize);
+  partial_fragment = pool.AllocateBlockBestEffort(kBuffer2BlockSize);
   EXPECT_TRUE(partial_fragment.is_addressable());
-  EXPECT_EQ(BufferId{1}, partial_fragment.buffer_id());
+  EXPECT_EQ(id1, partial_fragment.buffer_id());
   EXPECT_EQ(kBuffer1BlockSize, partial_fragment.size());
 }
 

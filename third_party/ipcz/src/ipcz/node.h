@@ -5,7 +5,10 @@
 #ifndef IPCZ_SRC_IPCZ_NODE_H_
 #define IPCZ_SRC_IPCZ_NODE_H_
 
+#include <functional>
+
 #include "ipcz/api_object.h"
+#include "ipcz/driver_memory.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node_name.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -86,6 +89,14 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // Generates a new random NodeName using this node's driver as a source of
   // randomness.
   NodeName GenerateRandomName() const;
+
+  // Requests allocation of a new shared memory object of the given size.
+  // `callback` is invoked with the new object when allocation is complete.
+  // This operation is asynchronous if allocation is delegated to another node,
+  // but if this node can allocate directly through the driver, `callback` is
+  // invoked with the result before this method returns.
+  using AllocateSharedMemoryCallback = std::function<void(DriverMemory)>;
+  void AllocateSharedMemory(size_t size, AllocateSharedMemoryCallback callback);
 
  private:
   ~Node() override;

@@ -41,7 +41,7 @@ void GenericFragmentRef::reset() {
     return;
   }
 
-  memory->buffer_pool().FreeFragment(fragment);
+  memory->FreeFragment(fragment);
 }
 
 Fragment GenericFragmentRef::release() {
