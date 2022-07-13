@@ -193,6 +193,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetryMultipleEntries) {
   constexpr uint16_t kProductId = 1;
   constexpr char kVendorName[] = "VendorName";
   constexpr char kProductName[] = "ProductName";
+  constexpr char kFirmwareVersion[] = "FirmwareVersion";
 
   constexpr uint8_t kClassIdSecond = 1;
   constexpr uint8_t kSubclassIdSecond = 255;
@@ -211,11 +212,14 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetryMultipleEntries) {
       cros_healthd::BusInfo::NewUsbBusInfo(cros_healthd::UsbBusInfo::New(
           kClassId, kSubclassId, /*protocol_id=*/0, kVendorId, kProductId,
           /*interfaces = */
-          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>()));
+          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>(),
+          cros_healthd::FwupdFirmwareVersionInfo::New(
+              kFirmwareVersion, cros_healthd::FwupdVersionFormat::kPlain)));
 
   cros_healthd::BusDevicePtr usb_device_second = cros_healthd::BusDevice::New();
   usb_device_second->vendor_name = kVendorNameSecond;
   usb_device_second->product_name = kProductNameSecond;
+  // Omit firmware version this time since it's an optional mojo field
   usb_device_second->bus_info =
       cros_healthd::BusInfo::NewUsbBusInfo(cros_healthd::UsbBusInfo::New(
           kClassIdSecond, kSubclassIdSecond, /*protocol_id=*/0, kVendorIdSecond,
@@ -254,6 +258,8 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetryMultipleEntries) {
   EXPECT_EQ(usb_telemetry_first.pid(), kProductId);
   EXPECT_EQ(usb_telemetry_first.name(), kProductName);
   EXPECT_EQ(usb_telemetry_first.vendor(), kVendorName);
+  EXPECT_TRUE(usb_telemetry_first.has_firmware_version());
+  EXPECT_EQ(usb_telemetry_first.firmware_version(), kFirmwareVersion);
 
   EXPECT_EQ(usb_telemetry_second.class_id(), kClassIdSecond);
   EXPECT_EQ(usb_telemetry_second.subclass_id(), kSubclassIdSecond);
@@ -261,6 +267,9 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetryMultipleEntries) {
   EXPECT_EQ(usb_telemetry_second.pid(), kProductIdSecond);
   EXPECT_EQ(usb_telemetry_second.name(), kProductNameSecond);
   EXPECT_EQ(usb_telemetry_second.vendor(), kVendorNameSecond);
+  // Firmware version shouldn't exist in telemetry when it doesn't exist in bus
+  // result
+  EXPECT_FALSE(usb_telemetry_second.has_firmware_version());
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
@@ -272,6 +281,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
   constexpr uint16_t kProductId = 1;
   constexpr char kVendorName[] = "VendorName";
   constexpr char kProductName[] = "ProductName";
+  constexpr char kFirmwareVersion[] = "FirmwareVersion";
   constexpr int kExpectedUsbTelemetrySize = 1;
   constexpr int kIndexOfUsbTelemetry = 0;
 
@@ -282,7 +292,9 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
       cros_healthd::BusInfo::NewUsbBusInfo(cros_healthd::UsbBusInfo::New(
           kClassId, kSubclassId, /*protocol_id=*/0, kVendorId, kProductId,
           /*interfaces = */
-          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>()));
+          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>(),
+          cros_healthd::FwupdFirmwareVersionInfo::New(
+              kFirmwareVersion, cros_healthd::FwupdVersionFormat::kPlain)));
 
   std::vector<cros_healthd::BusDevicePtr> usb_devices;
   usb_devices.push_back(std::move(usb_device));
@@ -310,6 +322,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
   EXPECT_EQ(usb_telemetry.pid(), kProductId);
   EXPECT_EQ(usb_telemetry.name(), kProductName);
   EXPECT_EQ(usb_telemetry.vendor(), kVendorName);
+  EXPECT_EQ(usb_telemetry.firmware_version(), kFirmwareVersion);
 }
 
 TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,

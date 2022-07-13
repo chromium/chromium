@@ -113,6 +113,11 @@ void HandleBusResult(OptionalMetricCallback callback,
                   bus_info->get_usb_bus_info()->subclass_id);
               usb_telemetry_out->set_vendor(bus_device->vendor_name);
               usb_telemetry_out->set_name(bus_device->product_name);
+              if (bus_info->get_usb_bus_info()->fwupd_firmware_version_info) {
+                usb_telemetry_out->set_firmware_version(
+                    bus_info->get_usb_bus_info()
+                        ->fwupd_firmware_version_info->version);
+              }
             }
           }
         }

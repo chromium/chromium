@@ -357,6 +357,8 @@ message UsbTelemetry {
   // Subclass ID
   // https://www.usb.org/defined-class-codes
   optional int32 subclass_id = 7;
+  // Firmware version
+  optional string firmware_version = 8;
 }
 
 // Indicates one of the following conditions occurred on the device, data
