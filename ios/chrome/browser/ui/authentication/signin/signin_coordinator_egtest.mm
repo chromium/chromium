@@ -183,12 +183,14 @@ void ExpectSyncConsentHistogram(
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to keep the browsing data separate during the switch.
+// Flaky, crbug.com/1279995.
 - (void)DISABLED_testSignInSwitchAccountsAndKeepDataSeparate {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataKeepSeparateButton());
 }
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to import the browsing data during the switch.
+// Flaky, crbug.com/1279995.
 - (void)DISABLED_testSignInSwitchAccountsAndImportData {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataImportButton());
 }
@@ -984,6 +986,7 @@ void ExpectSyncConsentHistogram(
 }
 
 // Tests to sign-in with one user, and then turn on syncn with a second account.
+// Flaky, crbug.com/1279995.
 - (void)DISABLED_testSignInWithOneAccountStartSyncWithAnotherAccount {
   FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
@@ -1012,7 +1015,8 @@ void ExpectSyncConsentHistogram(
 // Tests that when the syncTypesListDisabled policy is enabled, the signin promo
 // description is updated and when opening the sign-in screen a policy warning
 // is displayed with a link that opens the policy management page.
-- (void)DISABLED_testSynTypesDisabledPolicy {
+// Flaky, crbug.com/1279995.
+- (void)DISABLED_testSyncTypesDisabledPolicy {
   // Set policy.
   std::vector<base::Value> values;
   values.push_back(base::Value("tabs"));
