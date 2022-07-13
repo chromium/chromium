@@ -14,12 +14,26 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "net/base/url_util.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
 
 namespace net {
+
+namespace {
+
+bool SupportsStreamType(
+    const absl::optional<base::flat_set<SourceStream::SourceType>>&
+        accepted_stream_types,
+    SourceStream::SourceType type) {
+  if (!accepted_stream_types)
+    return true;
+  return accepted_stream_types->contains(type);
+}
+
+}  // namespace
 
 const char HttpRequestHeaders::kConnectMethod[] = "CONNECT";
 const char HttpRequestHeaders::kDeleteMethod[] = "DELETE";
@@ -209,6 +223,50 @@ base::Value HttpRequestHeaders::NetLogParams(
   }
   dict.Set("headers", std::move(headers));
   return base::Value(std::move(dict));
+}
+
+void HttpRequestHeaders::SetAcceptEncodingIfMissing(
+    const GURL& url,
+    const absl::optional<base::flat_set<SourceStream::SourceType>>&
+        accepted_stream_types,
+    bool enable_brotli) {
+  if (HasHeader(kAcceptEncoding))
+    return;
+
+  // If a range is specifically requested, set the "Accepted Encoding" header to
+  // "identity".
+  if (HasHeader(kRange)) {
+    SetHeader(kAcceptEncoding, "identity");
+    return;
+  }
+
+  // Supply Accept-Encoding headers first so that it is more likely that they
+  // will be in the first transmitted packet. This can sometimes make it easier
+  // to filter and analyze the streams to assure that a proxy has not damaged
+  // these headers. Some proxies deliberately corrupt Accept-Encoding headers.
+  std::vector<std::string> advertised_encoding_names;
+  if (SupportsStreamType(accepted_stream_types,
+                         SourceStream::SourceType::TYPE_GZIP)) {
+    advertised_encoding_names.push_back("gzip");
+  }
+  if (SupportsStreamType(accepted_stream_types,
+                         SourceStream::SourceType::TYPE_DEFLATE)) {
+    advertised_encoding_names.push_back("deflate");
+  }
+  // Advertise "br" encoding only if transferred data is opaque to proxy.
+  if (enable_brotli &&
+      SupportsStreamType(accepted_stream_types,
+                         SourceStream::SourceType::TYPE_BROTLI)) {
+    if (url.SchemeIsCryptographic() || IsLocalhost(url)) {
+      advertised_encoding_names.push_back("br");
+    }
+  }
+  if (!advertised_encoding_names.empty()) {
+    // Tell the server what compression formats are supported.
+    SetHeader(
+        kAcceptEncoding,
+        base::JoinString(base::make_span(advertised_encoding_names), ", "));
+  }
 }
 
 HttpRequestHeaders::HeaderVector::iterator HttpRequestHeaders::FindHeader(

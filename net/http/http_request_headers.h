@@ -14,9 +14,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "net/filter/source_stream.h"
 #include "net/log/net_log_capture_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace base {
 class Value;
@@ -185,6 +189,14 @@ class NET_EXPORT HttpRequestHeaders {
                            NetLogCaptureMode capture_mode) const;
 
   const HeaderVector& GetHeaderVector() const { return headers_; }
+
+  // Sets Accept-Encoding header based on `url` and `accepted_stream_types`, if
+  // it does not exist. "br" is appended only when `enable_brotli` is true.
+  void SetAcceptEncodingIfMissing(
+      const GURL& url,
+      const absl::optional<base::flat_set<SourceStream::SourceType>>&
+          accepted_stream_types,
+      bool enable_brotli);
 
  private:
   HeaderVector::iterator FindHeader(const base::StringPiece& key);

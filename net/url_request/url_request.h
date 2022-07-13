@@ -715,12 +715,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return traffic_annotation_;
   }
 
-  bool Supports(const net::SourceStream::SourceType& type) const {
-    if (!accepted_stream_types_)
-      return true;
-    return accepted_stream_types_->contains(type);
-  }
-
   const absl::optional<base::flat_set<net::SourceStream::SourceType>>&
   accepted_stream_types() const {
     return accepted_stream_types_;
