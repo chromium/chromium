@@ -81,11 +81,14 @@ void AnimationDelegateViews::UpdateAnimationRunner(
 }
 
 void AnimationDelegateViews::ClearAnimationRunner() {
+  // `compositor_animation_runner_` holds a pointer owned by `container_`, so
+  // we need to release it before `container_` actually releases the memory it
+  // points to.
+  compositor_animation_runner_ = nullptr;
   // TODO(https://crbug.com/960621): make sure the container has a correct
   // compositor-assisted runner.
   if (container_)
     container_->SetAnimationRunner(nullptr);
-  compositor_animation_runner_ = nullptr;
 }
 
 }  // namespace views
