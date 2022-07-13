@@ -7,30 +7,27 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/feature_list.h"
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "content/public/browser/web_contents_view_delegate.h"
 #include "url/gurl.h"
 
 class Profile;
+
+namespace content {
+class WebContent;
+}  // namespace content
 
 namespace enterprise_connectors {
 
