@@ -8,6 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
@@ -55,7 +56,6 @@ namespace reporting {
 //   "attachEncryptionSettings": true,
 //   "requestId": "SomeString"
 // }
-// TODO(b/159361496): Periodically add memory and disk space usage.
 //
 // This payload is added to the common payload of all reporting jobs, which
 // includes other sub-fields such as "device" and "browser" (See note "ERP
@@ -83,9 +83,13 @@ class UploadEncryptedReportingRequestBuilder {
       bool attach_encryption_settings = false);
   ~UploadEncryptedReportingRequestBuilder();
 
-  UploadEncryptedReportingRequestBuilder& AddRecord(EncryptedRecord record);
+  // Adds record, converts it into base::Value::Dict, updates reservation to
+  // reflect it (fails if unable to reserve).
+  UploadEncryptedReportingRequestBuilder& AddRecord(
+      EncryptedRecord record,
+      ScopedReservation& reservation);
 
-  // Set the requestId field.
+  // Sets the requestId field.
   UploadEncryptedReportingRequestBuilder& SetRequestId(
       base::StringPiece request_id);
 
@@ -96,15 +100,15 @@ class UploadEncryptedReportingRequestBuilder {
   static base::StringPiece GetEncryptedRecordListPath();
   static base::StringPiece GetAttachEncryptionSettingsPath();
 
-  static const char kEncryptedRecordListKey_[];
-
   absl::optional<base::Value::Dict> result_;
 };
 
 // Builds a |base::Value::Dict| from a |EncryptedRecord| proto.
 class EncryptedRecordDictionaryBuilder {
  public:
-  explicit EncryptedRecordDictionaryBuilder(EncryptedRecord record);
+  explicit EncryptedRecordDictionaryBuilder(
+      EncryptedRecord record,
+      ScopedReservation& scoped_reservation);
   ~EncryptedRecordDictionaryBuilder();
 
   absl::optional<base::Value::Dict> Build();

@@ -99,7 +99,7 @@ Status FakeUploadClient::EnqueueUpload(
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   UploadEncryptedReportingRequestBuilder builder;
   for (auto record : records) {
-    builder.AddRecord((std::move(record)));
+    builder.AddRecord(std::move(record), scoped_reservation);
   }
   auto request_result = builder.Build();
   if (!request_result.has_value()) {

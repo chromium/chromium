@@ -14,6 +14,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -32,6 +33,7 @@ class RecordHandlerImpl : public DmServerUploadService::RecordHandler {
   // Base class RecordHandler method implementation.
   void HandleRecords(bool need_encryption_key,
                      std::vector<EncryptedRecord> record,
+                     ScopedReservation scoped_reservation,
                      DmServerUploadService::CompletionCallback upload_complete,
                      DmServerUploadService::EncryptionKeyAttachedCallback
                          encryption_key_attached_cb) override;

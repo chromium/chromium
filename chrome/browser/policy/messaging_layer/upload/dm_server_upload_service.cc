@@ -110,10 +110,6 @@ void DmServerUploader::OnStart() {
   HandleRecords();
 }
 
-void DmServerUploader::OnCompletion() {
-  ScopedReservation release(std::move(scoped_reservation_));
-}
-
 void DmServerUploader::ProcessRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status process_status;
@@ -149,6 +145,7 @@ void DmServerUploader::HandleRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   handler_->HandleRecords(
       need_encryption_key_, std::move(encrypted_records_),
+      std::move(scoped_reservation_),
       base::BindOnce(&DmServerUploader::Complete, base::Unretained(this)),
       std::move(encryption_key_attached_cb_));
 }

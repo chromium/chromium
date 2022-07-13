@@ -27,6 +27,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -74,6 +75,7 @@ class RecordHandlerImpl::ReportUploader
   ReportUploader(
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
+      ScopedReservation scoped_reservation,
       policy::CloudPolicyClient* client,
       DmServerUploadService::CompletionCallback upload_complete_cb,
       DmServerUploadService::EncryptionKeyAttachedCallback
@@ -84,6 +86,7 @@ class RecordHandlerImpl::ReportUploader
   ~ReportUploader() override;
 
   void OnStart() override;
+  void OnCompletion() override;
 
   void StartUpload();
   void OnUploadComplete(absl::optional<base::Value::Dict> response);
@@ -109,6 +112,7 @@ class RecordHandlerImpl::ReportUploader
 
   bool need_encryption_key_;
   std::vector<EncryptedRecord> records_;
+  ScopedReservation scoped_reservation_;
   raw_ptr<policy::CloudPolicyClient> client_;
 
   // Encryption key delivery callback.
@@ -135,6 +139,7 @@ class RecordHandlerImpl::ReportUploader
 RecordHandlerImpl::ReportUploader::ReportUploader(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
+    ScopedReservation scoped_reservation,
     policy::CloudPolicyClient* client,
     DmServerUploadService::CompletionCallback client_cb,
     DmServerUploadService::EncryptionKeyAttachedCallback
@@ -145,6 +150,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
           sequenced_task_runner),
       need_encryption_key_(need_encryption_key),
       records_(std::move(records)),
+      scoped_reservation_(std::move(scoped_reservation)),
       client_(client),
       encryption_key_attached_cb_(std::move(encryption_key_attached_cb)) {}
 
@@ -176,7 +182,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 
   UploadEncryptedReportingRequestBuilder request_builder{need_encryption_key_};
   for (auto record : records_) {
-    request_builder.AddRecord(std::move(record));
+    request_builder.AddRecord(std::move(record), scoped_reservation_);
   }
 
   // Assign random UUID as the request id for server side log correlation
@@ -206,8 +212,17 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
           client_, std::move(request_result.value()), std::move(response_cb)));
 }
 
+void RecordHandlerImpl::ReportUploader::OnCompletion() {
+  // In case |OnUploadComplete| was skipped for whatever reason.
+  ScopedReservation release(std::move(scoped_reservation_));
+}
+
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
     absl::optional<base::Value::Dict> response) {
+  // Release reservation right away, since we no londer keep
+  // |base::Value::Dict request| it was referring to.
+  scoped_reservation_.Reduce(0uL);
+
   if (!response.has_value()) {
     Schedule(&RecordHandlerImpl::ReportUploader::HandleFailedUpload,
              base::Unretained(this));
@@ -439,13 +454,14 @@ RecordHandlerImpl::~RecordHandlerImpl() = default;
 void RecordHandlerImpl::HandleRecords(
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
+    ScopedReservation scoped_reservation,
     DmServerUploadService::CompletionCallback upload_complete_cb,
     DmServerUploadService::EncryptionKeyAttachedCallback
         encryption_key_attached_cb) {
   Start<RecordHandlerImpl::ReportUploader>(
-      need_encryption_key, std::move(records), GetClient(),
-      std::move(upload_complete_cb), std::move(encryption_key_attached_cb),
-      sequenced_task_runner_);
+      need_encryption_key, std::move(records), std::move(scoped_reservation),
+      GetClient(), std::move(upload_complete_cb),
+      std::move(encryption_key_attached_cb), sequenced_task_runner_);
 }
 
 }  // namespace reporting

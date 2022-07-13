@@ -76,7 +76,9 @@ UploadEncryptedReportingRequestBuilder::
     ~UploadEncryptedReportingRequestBuilder() = default;
 
 UploadEncryptedReportingRequestBuilder&
-UploadEncryptedReportingRequestBuilder::AddRecord(EncryptedRecord record) {
+UploadEncryptedReportingRequestBuilder::AddRecord(
+    EncryptedRecord record,
+    ScopedReservation& scoped_reservation) {
   if (!result_.has_value()) {
     // Some errors were already detected.
     return *this;
@@ -90,7 +92,8 @@ UploadEncryptedReportingRequestBuilder::AddRecord(EncryptedRecord record) {
   }
 
   auto record_result =
-      EncryptedRecordDictionaryBuilder(std::move(record)).Build();
+      EncryptedRecordDictionaryBuilder(std::move(record), scoped_reservation)
+          .Build();
   if (!record_result.has_value()) {
     // Record has errors. Stop here.
     result_ = absl::nullopt;
@@ -143,7 +146,8 @@ UploadEncryptedReportingRequestBuilder::GetAttachEncryptionSettingsPath() {
 }
 
 EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
-    EncryptedRecord record) {
+    EncryptedRecord record,
+    ScopedReservation& scoped_reservation) {
   base::Value::Dict record_dictionary;
 
   // A record without sequence information cannot be uploaded - deny it.
@@ -174,8 +178,8 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
                           std::move(encryption_info_result.value()));
   }
 
-  // TODO (b/189130411) Compression information can be missing until we set up
-  // compression as mandatory.
+  // Compression information can be missing until we set up compression as
+  // mandatory.
   if (record.has_compression_information()) {
     auto compression_information_result =
         CompressionInformationDictionaryBuilder(
@@ -193,7 +197,17 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
   if (record.has_encrypted_wrapped_record()) {
     std::string base64_encode;
     base::Base64Encode(record.encrypted_wrapped_record(), &base64_encode);
-    record_dictionary.Set(GetEncryptedWrappedRecordPath(), base64_encode);
+    ScopedReservation base64_encode_reservation(base64_encode.size(),
+                                                scoped_reservation);
+    if (!base64_encode_reservation.reserved()) {
+      // Insufficient memory
+      return;
+    }
+    record_dictionary.Set(GetEncryptedWrappedRecordPath(),
+                          std::move(base64_encode));
+    // Replace record reservation with base64_encode.
+    scoped_reservation.Reduce(0uL);
+    scoped_reservation.HandOver(base64_encode_reservation);
   }
 
   // Result complete.

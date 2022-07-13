@@ -60,10 +60,12 @@ class TestRecordHandler : public DmServerUploadService::RecordHandler {
 
   void HandleRecords(bool need_encryption_key,
                      std::vector<EncryptedRecord> records,
+                     ScopedReservation scoped_reservation,
                      DmServerUploadService::CompletionCallback upload_complete,
                      DmServerUploadService::EncryptionKeyAttachedCallback
                          encryption_key_attached_cb) override {
-    HandleRecords_(need_encryption_key, records, std::move(upload_complete),
+    HandleRecords_(need_encryption_key, records, std::move(scoped_reservation),
+                   std::move(upload_complete),
                    std::move(encryption_key_attached_cb));
   }
 
@@ -71,6 +73,7 @@ class TestRecordHandler : public DmServerUploadService::RecordHandler {
               HandleRecords_,
               (bool,
                std::vector<EncryptedRecord>&,
+               ScopedReservation scoped_reservation,
                DmServerUploadService::CompletionCallback,
                DmServerUploadService::EncryptionKeyAttachedCallback));
 };
@@ -125,8 +128,8 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
   EXPECT_TRUE(record_reservation.reserved());
 
   const bool force_confirm_flag = force_confirm();
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
-      .WillOnce(WithArgs<0, 2, 3>(
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
+      .WillOnce(WithArgs<0, 3, 4>(
           Invoke([&force_confirm_flag](
                      bool need_encryption_key,
                      DmServerUploadService::CompletionCallback callback,
@@ -186,8 +189,8 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
   EXPECT_TRUE(records_reservation.reserved());
 
   const bool force_confirm_flag = force_confirm();
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
-      .WillOnce(WithArgs<0, 2, 3>(
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
+      .WillOnce(WithArgs<0, 3, 4>(
           Invoke([&force_confirm_flag](
                      bool need_encryption_key,
                      DmServerUploadService::CompletionCallback callback,
@@ -230,8 +233,8 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
 
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
-      .WillOnce(WithArgs<2>(
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
+      .WillOnce(WithArgs<3>(
           Invoke([](DmServerUploadService::CompletionCallback callback) {
             std::move(callback).Run(
                 Status(error::FAILED_PRECONDITION, "Fail for test"));
@@ -277,8 +280,8 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
 
   const bool force_confirm_flag = force_confirm();
   if (need_encryption_key()) {
-    EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
-        .WillOnce(WithArgs<0, 2, 3>(
+    EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
+        .WillOnce(WithArgs<0, 3, 4>(
             Invoke([&force_confirm_flag](
                        bool need_encryption_key,
                        DmServerUploadService::CompletionCallback callback,
@@ -293,7 +296,7 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
                       .force_confirm = force_confirm_flag});
             })));
   } else {
-    EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _)).Times(0);
+    EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _)).Times(0);
   }
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
@@ -321,8 +324,8 @@ TEST_P(DmServerFailureTest, ReportsFailureToUpload) {
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
 
-  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
-      .WillOnce(WithArgs<2>(Invoke(
+  EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _))
+      .WillOnce(WithArgs<3>(Invoke(
           [error_code](DmServerUploadService::CompletionCallback callback) {
             std::move(callback).Run(Status(error_code, "Failing for test"));
           })));

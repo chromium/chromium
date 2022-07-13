@@ -78,6 +78,7 @@ class DmServerUploadService {
     virtual void HandleRecords(
         bool need_encryption_key,
         std::vector<EncryptedRecord> records,
+        ScopedReservation scoped_reservation,
         DmServerUploadService::CompletionCallback upload_complete,
         DmServerUploadService::EncryptionKeyAttachedCallback
             encryption_key_attached_cb) = 0;
@@ -111,10 +112,6 @@ class DmServerUploadService {
     // OnStart checks to ensure that our record set isn't empty, and requests
     // handler size status from |handlers_|.
     void OnStart() override;
-
-    // OnComplete finalizes the uploader, releasing resources that are no longer
-    // used.
-    void OnCompletion() override;
 
     // ProcessRecords verifies that the records provided are parseable and sets
     // the |Record|s up for handling by the |RecordHandlers|s. On
