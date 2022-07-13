@@ -7,18 +7,12 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "chrome/browser/ash/policy/reporting/extension_install_event_log_manager.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class PrefRegistrySimple;
 class Profile;
-
-namespace content {
-class NotificationDetails;
-class NotificationSource;
-}  // namespace content
 
 namespace policy {
 
@@ -28,12 +22,11 @@ namespace policy {
 // |ExtensionInstallEventLogManager|, if any, and clears all data related to the
 // extension install event log. Ensures correct sequencing of I/O operations by
 // using one |InstallEventLogManager::LogTaskRunnerWrapper| for all accesses to
-// the log file. NotificationObserver is used to delete the ThreadTaskRunner
-// when the last browser window has been shut down.
-class ExtensionInstallEventLogManagerWrapper
-    : public content::NotificationObserver {
+// the log file. An AppTerminatingCallback is used to delete the
+// ThreadTaskRunner when the last browser window has been shut down.
+class ExtensionInstallEventLogManagerWrapper {
  public:
-  ~ExtensionInstallEventLogManagerWrapper() override;
+  virtual ~ExtensionInstallEventLogManagerWrapper();
 
   // Creates a new |ExtensionInstallEventLogManager| to handle extension install
   // event logging for |profile|. The object returned manages its own lifetime
@@ -43,11 +36,6 @@ class ExtensionInstallEventLogManagerWrapper
       Profile* profile);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
  protected:
   explicit ExtensionInstallEventLogManagerWrapper(Profile* profile);
@@ -73,6 +61,8 @@ class ExtensionInstallEventLogManagerWrapper
   // clears all data related to the extension install event log.
   void EvaluatePref();
 
+  void OnAppTerminating();
+
   // The profile whose extension install events are being logged.
   Profile* const profile_;
 
@@ -82,9 +72,7 @@ class ExtensionInstallEventLogManagerWrapper
   // Pref change observer.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Notification observer, used to destroy the |log_manager_| when the user is
-  // logging out, giving it an opportunity to log the event.
-  content::NotificationRegistrar notification_registrar_;
+  base::CallbackListSubscription app_terminating_subscription_;
 };
 
 }  // namespace policy

@@ -9,12 +9,11 @@
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_service.h"
 
 namespace policy {
 
@@ -39,13 +38,6 @@ void ExtensionInstallEventLogManagerWrapper::RegisterProfilePrefs(
                                 true);
 }
 
-void ExtensionInstallEventLogManagerWrapper::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
-}
-
 ExtensionInstallEventLogManagerWrapper::ExtensionInstallEventLogManagerWrapper(
     Profile* profile)
     : profile_(profile) {
@@ -57,8 +49,9 @@ ExtensionInstallEventLogManagerWrapper::ExtensionInstallEventLogManagerWrapper(
       prefs::kExtensionInstallEventLoggingEnabled,
       base::BindRepeating(&ExtensionInstallEventLogManagerWrapper::EvaluatePref,
                           base::Unretained(this)));
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                              content::NotificationService::AllSources());
+  app_terminating_subscription_ = browser_shutdown::AddAppTerminatingCallback(
+      base::BindOnce(&ExtensionInstallEventLogManagerWrapper::OnAppTerminating,
+                     base::Unretained(this)));
 }
 
 void ExtensionInstallEventLogManagerWrapper::Init() {
@@ -87,6 +80,10 @@ void ExtensionInstallEventLogManagerWrapper::EvaluatePref() {
     DestroyManager();
     ExtensionInstallEventLogManager::Clear(log_task_runner_.get(), profile_);
   }
+}
+
+void ExtensionInstallEventLogManagerWrapper::OnAppTerminating() {
+  base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
 }
 
 }  // namespace policy
