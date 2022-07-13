@@ -34,7 +34,7 @@ function backdropReducer(
       }
       return {
         ...state,
-        images: {...state.images, [action.collectionId]: action.images}
+        images: {...state.images, [action.collectionId]: action.images},
       };
     default:
       return state;
@@ -53,12 +53,12 @@ function loadingReducer(
               result[id] = true;
               return result;
             },
-            {} as Record<WallpaperCollection['id'], boolean>)
+            {} as Record<WallpaperCollection['id'], boolean>),
       };
     case WallpaperActionName.BEGIN_LOAD_LOCAL_IMAGE_DATA:
       return {
         ...state,
-        local: {...state.local, data: {...state.local.data, [action.id]: true}}
+        local: {...state.local, data: {...state.local.data, [action.id]: true}},
       };
     case WallpaperActionName.BEGIN_LOAD_SELECTED_IMAGE:
       return {...state, selected: true};
@@ -241,7 +241,7 @@ function localReducer(
         return {
           images: [
             kDefaultImageSymbol,
-            ...(state.images || []).filter(img => isFilePath(img))
+            ...(state.images || []).filter(img => isFilePath(img)),
           ],
           data: {
             ...state.data,
@@ -293,7 +293,7 @@ function localReducer(
         data: {
           ...state.data,
           [action.id]: action.data,
-        }
+        },
       };
     default:
       return state;

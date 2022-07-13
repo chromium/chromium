@@ -77,7 +77,7 @@ export function appendGooglePhotosAlbumAction(
     albumId,
     photos,
     resumeToken,
-    name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM
+    name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM,
   };
 }
 
@@ -97,7 +97,7 @@ export function appendGooglePhotosAlbumsAction(
   return {
     albums,
     resumeToken,
-    name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUMS
+    name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUMS,
   };
 }
 
@@ -117,7 +117,7 @@ export function appendGooglePhotosPhotosAction(
   return {
     photos,
     resumeToken,
-    name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_PHOTOS
+    name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_PHOTOS,
   };
 }
 

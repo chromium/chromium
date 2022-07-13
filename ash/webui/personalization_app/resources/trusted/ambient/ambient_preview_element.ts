@@ -75,7 +75,7 @@ export class AmbientPreview extends WithPersonalizationStore {
         type: Array,
         computed:
             'computeCollageImages_(topicSource_, previewAlbums_, googlePhotosAlbumsPreviews_)',
-      }
+      },
     };
   }
 

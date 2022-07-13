@@ -20,7 +20,7 @@ import {onMessageReceived} from '../trusted/wallpaper/untrusted_message_handler.
 export function selectCollection(collectionId: string) {
   const event: constants.SelectCollectionEvent = {
     type: constants.EventType.SELECT_COLLECTION,
-    collectionId
+    collectionId,
   };
   onMessageReceived(event);
 }
@@ -30,7 +30,7 @@ export function selectCollection(collectionId: string) {
  */
 export function selectGooglePhotosCollection() {
   const event: constants.SelectGooglePhotosCollectionEvent = {
-    type: constants.EventType.SELECT_GOOGLE_PHOTOS_COLLECTION
+    type: constants.EventType.SELECT_GOOGLE_PHOTOS_COLLECTION,
   };
   onMessageReceived(event);
 }
@@ -40,7 +40,7 @@ export function selectGooglePhotosCollection() {
  */
 export function selectLocalCollection() {
   const event: constants.SelectLocalCollectionEvent = {
-    type: constants.EventType.SELECT_LOCAL_COLLECTION
+    type: constants.EventType.SELECT_LOCAL_COLLECTION,
   };
   onMessageReceived(event);
 }

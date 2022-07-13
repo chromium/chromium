@@ -252,7 +252,7 @@ self.addEventListener('error', (event) => {
     url: window.location.href,
     product: 'ChromeOS_MediaAppMock',
     lineNumber: errorEvent.lineno,
-    columnNumber: errorEvent.colno
+    columnNumber: errorEvent.colno,
   });
 });
 self.addEventListener('unhandledrejection', (event) => {

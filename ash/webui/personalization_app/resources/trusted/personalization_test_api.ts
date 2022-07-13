@@ -34,5 +34,5 @@ declare global {
 
 window.personalizationTestApi = {
   enterFullscreen,
-  makeTransparent
+  makeTransparent,
 };

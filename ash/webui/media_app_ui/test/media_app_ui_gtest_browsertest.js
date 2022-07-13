@@ -52,7 +52,7 @@ var MediaAppUIWithDarkLightModeGtestBrowserTest =
       enabled: [
         ...super.featureList.enabled,
         'chromeos::features::kDarkLightMode',
-      ]
+      ],
     };
   }
 
@@ -75,7 +75,7 @@ var MediaAppUIWithDarkLightModeDarkGtestBrowserTest =
       enabled: [
         ...super.featureList.enabled,
         'chromeos::features::kDarkLightMode',
-      ]
+      ],
     };
   }
 

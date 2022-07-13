@@ -384,7 +384,7 @@ export async function getDailyRefreshState(
     store: PersonalizationStore): Promise<void> {
   const [{collectionId}, {albumId}] = await Promise.all([
     provider.getDailyRefreshCollectionId(),
-    provider.getGooglePhotosDailyRefreshAlbumId()
+    provider.getGooglePhotosDailyRefreshAlbumId(),
   ]);
 
   // Daily refresh should only be active for either Backdrop or Google Photos

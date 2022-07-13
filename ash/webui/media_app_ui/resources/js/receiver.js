@@ -434,7 +434,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // empty file list available.
 window.customLaunchData = {
   delegate: DELEGATE,
-  files: new ReceivedFileList({files: [], currentFileIndex: -1})
+  files: new ReceivedFileList({files: [], currentFileIndex: -1}),
 };
 
 // Attempting to show file pickers in the sandboxed <iframe> is guaranteed to

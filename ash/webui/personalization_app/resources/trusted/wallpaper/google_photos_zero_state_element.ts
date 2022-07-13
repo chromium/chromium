@@ -38,8 +38,8 @@ export class GooglePhotosZeroState extends WithPersonalizationStore {
   private getMessage_(): string {
     return this.i18nAdvanced('googlePhotosZeroStateMessage', {
       substitutions: [
-        '<a target="_blank" href="https://photos.google.com">photos.google.com</a>'
-      ]
+        '<a target="_blank" href="https://photos.google.com">photos.google.com</a>',
+      ],
     });
   }
 

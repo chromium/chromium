@@ -47,7 +47,7 @@ export const childPageReady = new Promise<ChildPageReadyResult>(resolve => {
         resolve({
           childPage: childPageRemote,
           parentPageReceiver:
-              new ParentTrustedPageImpl(parentPagePendingReceiver)
+              new ParentTrustedPageImpl(parentPagePendingReceiver),
         });
       });
 });

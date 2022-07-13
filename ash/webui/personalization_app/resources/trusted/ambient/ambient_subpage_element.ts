@@ -47,7 +47,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isAmbientModeAnimationEnabled');
-        }
+        },
       },
       albums_: {
         type: Array,

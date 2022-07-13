@@ -107,7 +107,7 @@ GUEST_TEST('GuestCanFilterInPlace', async () => {
       name: `${name}`,
       error: '',
       canDelete: true,
-      canRename: true
+      canRename: true,
     };
   }
   const message = {currentFileIndex: 0, files: [0, 1, 2].map(makeTestFile)};

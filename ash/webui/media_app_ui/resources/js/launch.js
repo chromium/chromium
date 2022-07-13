@@ -23,25 +23,37 @@ const AUDIO_EXTENSIONS =
 const IMAGE_EXTENSIONS = [
   '.jpg',  '.png', '.webp', '.gif', '.avif', '.bmp',   '.ico', '.svg',
   '.jpeg', '.jpe', '.jfif', '.jif', '.jfi',  '.pjpeg', '.pjp', '.arw',
-  '.cr2',  '.dng', '.nef',  '.nrw', '.orf',  '.raf',   '.rw2', '.svgz'
+  '.cr2',  '.dng', '.nef',  '.nrw', '.orf',  '.raf',   '.rw2', '.svgz',
 ];
 const VIDEO_EXTENSIONS = [
-  '.3gp', '.avi', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpeg4', '.mpg',
-  '.mpg4', '.ogv', '.ogx', '.ogm', '.webm'
+  '.3gp',
+  '.avi',
+  '.m4v',
+  '.mkv',
+  '.mov',
+  '.mp4',
+  '.mpeg',
+  '.mpeg4',
+  '.mpg',
+  '.mpg4',
+  '.ogv',
+  '.ogx',
+  '.ogm',
+  '.webm',
 ];
 const PDF_EXTENSIONS = ['.pdf'];
 const OPEN_ACCEPT_ARGS = {
   'AUDIO': {
     description: loadTimeData.getString('fileFilterAudio'),
-    accept: {'audio/*': AUDIO_EXTENSIONS}
+    accept: {'audio/*': AUDIO_EXTENSIONS},
   },
   'IMAGE': {
     description: loadTimeData.getString('fileFilterImage'),
-    accept: {'image/*': IMAGE_EXTENSIONS}
+    accept: {'image/*': IMAGE_EXTENSIONS},
   },
   'VIDEO': {
     description: loadTimeData.getString('fileFilterVideo'),
-    accept: {'video/*': VIDEO_EXTENSIONS}
+    accept: {'video/*': VIDEO_EXTENSIONS},
   },
   'PDF': {description: 'PDF', accept: {'application/pdf': PDF_EXTENSIONS}},
   // All supported file types, excluding text files (see b/183150750).
@@ -53,8 +65,8 @@ const OPEN_ACCEPT_ARGS = {
         ...IMAGE_EXTENSIONS,
         ...VIDEO_EXTENSIONS,
         ...PDF_EXTENSIONS,
-      ]
-    }
+      ],
+    },
   },
 };
 
@@ -370,7 +382,7 @@ guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
     token: renameMsg.token,
     file: null,
     handle: renamedFileHandle,
-    inCurrentDirectory: true
+    inCurrentDirectory: true,
   });
 
   return {renameResult: RenameResult.SUCCESS};
@@ -396,7 +408,7 @@ guestMessagePipe.registerHandler(Message.REQUEST_SAVE_FILE, async (message) => {
       error: '',
       canDelete: false,
       canRename: false,
-    }
+    },
   };
   return response;
 });
@@ -412,7 +424,7 @@ guestMessagePipe.registerHandler(Message.SAVE_AS, async (message) => {
     // dragged into the media app.
     token: oldFileToken || tokenGenerator.next().value,
     file: null,
-    handle: tokenMap.get(pickedFileToken)
+    handle: tokenMap.get(pickedFileToken),
   };
   const oldFileIndex = currentFiles.findIndex(fd => fd.token === oldFileToken);
   tokenMap.set(pickedFileDescriptor.token, pickedFileDescriptor.handle);
@@ -474,7 +486,7 @@ guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
       token: generateToken(handle),
       file: null,
       handle: handle,
-      inCurrentDirectory: false
+      inCurrentDirectory: false,
     });
   }
   if (newDescriptors.length === 0) {
@@ -831,7 +843,7 @@ async function sendSnapshotToGuest(
   const loadFilesMessage = {
     currentFileIndex: focusIndex,
     // Handle can't be passed through a message pipe.
-    files: snapshot.map(fileDescriptorToFileContext)
+    files: snapshot.map(fileDescriptorToFileContext),
   };
 
   // Clear handles to the open files in the privileged context so they are
@@ -868,7 +880,7 @@ function assertFileAndDirectoryMutable(editFileToken, operation) {
 
   return {
     handle: fileHandleForToken(editFileToken),
-    directory: currentDirectoryHandle
+    directory: currentDirectoryHandle,
   };
 }
 

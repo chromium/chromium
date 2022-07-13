@@ -351,7 +351,7 @@ MediaAppUIBrowserTest.ReLaunchableAfterFastLoad = async () => {
 MediaAppUIBrowserTest.MultipleFilesHaveTokens = async () => {
   const directory = await launchWithFiles([
     await createTestImageFile(1, 1, 'file1.png'),
-    await createTestImageFile(1, 1, 'file2.png')
+    await createTestImageFile(1, 1, 'file2.png'),
   ]);
 
   assertEquals(currentFiles.length, 2);
@@ -444,7 +444,7 @@ MediaAppUIBrowserTest.NotifyCurrentFileDark = async () => {
 MediaAppUIBrowserTest.NotifyCurrentFileAppIconDark = async () => {
   await sendTestMessage({
     simple: 'notifyCurrentFile',
-    simpleArgs: {name: undefined, type: undefined}
+    simpleArgs: {name: undefined, type: undefined},
   });
 
   assertEquals(getIcon().href.includes('app'), true);
@@ -1024,7 +1024,7 @@ MediaAppUIBrowserTest.NavigateOutOfSync = async () => {
 MediaAppUIBrowserTest.RenameOriginalIPC = async () => {
   const directory = await launchWithFiles([
     await createTestImageFile(1, 1, 'file1.png'),
-    await createTestImageFile(1, 1, 'file2.png')
+    await createTestImageFile(1, 1, 'file2.png'),
   ]);
 
   // Nothing should be deleted initially.

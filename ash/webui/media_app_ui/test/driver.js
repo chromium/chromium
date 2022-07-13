@@ -486,7 +486,7 @@ export function launchWithFocusFile(directory) {
   const focusFile = {
     /** @type {!FakeFileSystemFileHandle} */
     handle: directory.files[0],
-    file: directory.files[0].getFileSync()
+    file: directory.files[0].getFileSync(),
   };
   incrementLaunchNumber();
   setCurrentDirectory(directory, focusFile);

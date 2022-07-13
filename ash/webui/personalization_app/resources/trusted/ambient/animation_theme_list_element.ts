@@ -27,8 +27,9 @@ export class AnimationThemeList extends WithPersonalizationStore {
       animationThemes: {
         type: Array,
         value: [
-          AnimationTheme.kSlideshow, AnimationTheme.kFeelTheBreeze,
-          AnimationTheme.kFloatOnBy
+          AnimationTheme.kSlideshow,
+          AnimationTheme.kFeelTheBreeze,
+          AnimationTheme.kFloatOnBy,
         ],
       },
 

@@ -84,7 +84,7 @@ function flattenFile(file) {
     token,
     lastModified,
     hasDelete,
-    hasRename
+    hasRename,
   };
 }
 
@@ -200,7 +200,7 @@ async function runTestQuery(data) {
     }
     extraResultData = {
       receiverFileName: file.name,
-      receiverErrorName: file.error
+      receiverErrorName: file.error,
     };
   } else if (data.deleteLastFile) {
     // Simulate a user deleting the currently open file.

@@ -135,8 +135,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('fullScreenPreviewEnabled');
-        }
-      }
+        },
+      },
     };
   }
 
@@ -386,8 +386,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
     if (isNonEmptyArray(image.attribution)) {
       return isDailyRefreshActive ?
           [
-            this.i18n('currentlySet'), this.i18n('dailyRefresh'),
-            ...image.attribution
+            this.i18n('currentlySet'),
+            this.i18n('dailyRefresh'),
+            ...image.attribution,
           ].join(' ') :
           [this.i18n('currentlySet'), ...image.attribution].join(' ');
     }
@@ -396,8 +397,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
     if (isNonEmptyArray(attribution)) {
       return isDailyRefreshActive ?
           [
-            this.i18n('currentlySet'), this.i18n('dailyRefresh'),
-            ...image.attribution
+            this.i18n('currentlySet'),
+            this.i18n('dailyRefresh'),
+            ...image.attribution,
           ].join(' ') :
           [this.i18n('currentlySet'), ...attribution].join(' ');
     }

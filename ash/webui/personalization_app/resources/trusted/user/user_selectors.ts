@@ -46,7 +46,7 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
     }
 
     const result = {
-      url: URL.createObjectURL(new Blob([bytes], {type: 'image/png'}))
+      url: URL.createObjectURL(new Blob([bytes], {type: 'image/png'})),
     };
     objectUrlCache.set(value, result);
     return result;

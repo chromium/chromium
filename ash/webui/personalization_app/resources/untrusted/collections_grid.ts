@@ -178,7 +178,7 @@ export class CollectionsGrid extends PolymerElement {
           // Fill the view with loading tiles. Will be adjusted to the correct
           // number of tiles when collections are received.
           return getLoadingPlaceholders(() => ({type: TileType.LOADING}));
-        }
+        },
       },
     };
   }

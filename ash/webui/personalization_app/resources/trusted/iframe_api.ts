@@ -32,7 +32,7 @@ export class IFrameApi {
   sendCollections(target: CollectionsGrid, collections: WallpaperCollection[]) {
     const event: constants.SendCollectionsEvent = {
       type: constants.EventType.SEND_COLLECTIONS,
-      collections
+      collections,
     };
     target.onMessageReceived(event);
   }
@@ -45,7 +45,7 @@ export class IFrameApi {
       target: CollectionsGrid, enabled: GooglePhotosEnablementState) {
     const event: constants.SendGooglePhotosEnabledEvent = {
       type: constants.EventType.SEND_GOOGLE_PHOTOS_ENABLED,
-      enabled
+      enabled,
     };
     target.onMessageReceived(event);
   }
@@ -59,7 +59,7 @@ export class IFrameApi {
       target: CollectionsGrid, counts: {[key: string]: number|null}) {
     const event: constants.SendImageCountsEvent = {
       type: constants.EventType.SEND_IMAGE_COUNTS,
-      counts
+      counts,
     };
     target.onMessageReceived(event);
   }
@@ -72,7 +72,7 @@ export class IFrameApi {
   sendVisible(target: CollectionsGrid, visible: boolean) {
     const event: constants.SendVisibleEvent = {
       type: constants.EventType.SEND_VISIBLE,
-      visible
+      visible,
     };
     target.onMessageReceived(event);
   }
@@ -85,7 +85,7 @@ export class IFrameApi {
       images: Array<FilePath|constants.DefaultImageSymbol>) {
     const event: constants.SendLocalImagesEvent = {
       type: constants.EventType.SEND_LOCAL_IMAGES,
-      images
+      images,
     };
     target.onMessageReceived(event);
   }
@@ -98,7 +98,7 @@ export class IFrameApi {
       data: Record<string|constants.DefaultImageSymbol, string>) {
     const event: constants.SendLocalImageDataEvent = {
       type: constants.EventType.SEND_LOCAL_IMAGE_DATA,
-      data
+      data,
     };
     target.onMessageReceived(event);
   }

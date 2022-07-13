@@ -43,7 +43,7 @@ export function setBacklightColorAction(backlightColor: BacklightColor):
     SetBacklightColorAction {
   return {
     name: KeyboardBacklightActionName.SET_BACKLIGHT_COLOR,
-    backlightColor
+    backlightColor,
   };
 }
 
@@ -51,7 +51,7 @@ export function setShouldShowNudgeAction(shouldShowNudge: boolean):
     SetShouldShowNudgeAction {
   return {
     name: KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE,
-    shouldShowNudge
+    shouldShowNudge,
   };
 }
 
@@ -62,6 +62,6 @@ export function setWallpaperColorAction(wallpaperColor: SkColor):
     SetWallpaperColorAction {
   return {
     name: KeyboardBacklightActionName.SET_WALLPAPER_COLOR,
-    wallpaperColor
+    wallpaperColor,
   };
 }
