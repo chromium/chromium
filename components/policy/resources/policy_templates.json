@@ -4412,7 +4412,7 @@
 
       Allows the user to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
-      Setting this policy to Enabled will allows user to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+      Setting this policy to Enabled will allow the user to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
       Setting this policy to Disabled will prevent sign in. It also blocks apps and extensions that use the chrome.identity API from functioning. To avoid that, use <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> instead.
       ''',
     },
@@ -31528,7 +31528,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
           When the policy is set to Enabled, setTimeouts and setIntervals with an interval smaller than 4ms are not clamped as aggressively.
           This improves short horizon performance, but websites abusing the API will still eventually have their setTimeouts clamped.
 
-          When the policy is set to Disabled, setTimeouts and setIntervals with an interval smaller than 4ms will be clamed.
+          When the policy is set to Disabled, setTimeouts and setIntervals with an interval smaller than 4ms will be clamped.
 
           This may change task ordering on a web page, leading to unexpected behavior on sites that are dependent on a certain ordering in some way.
           It also may affect sites with a lot of setTimeout() with a timeout of 0ms usage, e.g. increasing CPU load.
