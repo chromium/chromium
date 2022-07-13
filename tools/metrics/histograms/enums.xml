@@ -40731,6 +40731,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4294" label="PseudoBeforeAfterForDateTimeInputElement"/>
   <int value="4295" label="V8PendingBeacon_IsPending_AttributeGetter"/>
   <int value="4296" label="ParentOfDisabledFormControlRespondsToMouseEvents"/>
+  <int value="4297" label="UnhandledExceptionCountInMainThread"/>
+  <int value="4298" label="UnhandledExceptionCountInWorker"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

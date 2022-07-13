@@ -31,7 +31,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/public/common/switches.h"
@@ -159,6 +159,10 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
     return;
 
   ExecutionContext* context = ExecutionContext::From(script_state);
+
+  UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInMainThread);
+  base::UmaHistogramBoolean("V8.UnhandledExceptionCountInMainThread", true);
+
   std::unique_ptr<SourceLocation> location =
       SourceLocation::FromMessage(isolate, message, context);
 
@@ -195,6 +199,10 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
     return;
 
   ExecutionContext* context = ExecutionContext::From(script_state);
+
+  UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInWorker);
+  base::UmaHistogramBoolean("V8.UnhandledExceptionCountInWorker", true);
+
   std::unique_ptr<SourceLocation> location =
       SourceLocation::FromMessage(isolate, message, context);
 

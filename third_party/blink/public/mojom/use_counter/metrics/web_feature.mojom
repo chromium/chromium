@@ -3615,6 +3615,8 @@ enum WebFeature {
   kPseudoBeforeAfterForDateTimeInputElement = 4294,
   kV8PendingBeacon_IsPending_AttributeGetter = 4295,
   kParentOfDisabledFormControlRespondsToMouseEvents = 4296,
+  kUnhandledExceptionCountInMainThread = 4297,
+  kUnhandledExceptionCountInWorker = 4298,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

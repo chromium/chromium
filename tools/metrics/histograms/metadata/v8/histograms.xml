@@ -1628,6 +1628,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.UnhandledExceptionCountInMainThread"
+    units="BooleanOccurred" expires_after="2022-12-31">
+  <owner>chikamune@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
+  <owner>hiroshige@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Report true when an unhandled exception is reported in the main thread,
+    which may happen when the code has no appropriate exception handling in the
+    main thread. The false value is never reported. This histogram is supposed
+    to be used in A/B testing to check if unhandled exception count is different
+    across experiment groups by counting the true values.
+  </summary>
+</histogram>
+
+<histogram name="V8.UnhandledExceptionCountInWorker" units="BooleanOccurred"
+    expires_after="2022-12-31">
+  <owner>chikamune@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
+  <owner>hiroshige@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Report true when an unhandled exception is reported in the worker, which may
+    happen when the code has no appropriate exception handling in the worker.
+    The false value is never reported. This histogram is supposed to be used in
+    A/B testing to check if unhandled exception count is different across
+    experiment groups by counting the true values.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmCacheCount" units="count" expires_after="2022-11-13">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
