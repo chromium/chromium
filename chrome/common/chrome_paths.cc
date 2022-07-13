@@ -108,10 +108,6 @@ bool GetInternalPluginsDirectory(base::FilePath* result) {
 // implementations should not be used if higher-versioned component-updated
 // implementations are available in DIR_USER_DATA.
 bool GetComponentDirectory(base::FilePath* result) {
-#if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1241871): Support bundled components.
-  return false;
-#else
 #if BUILDFLAG(IS_MAC)
   // If called from Chrome, return the framework's Libraries directory.
   if (base::mac::AmIBundled()) {
@@ -120,12 +116,11 @@ bool GetComponentDirectory(base::FilePath* result) {
     *result = result->Append("Libraries");
     return true;
   }
-// In tests, just look in the module directory (below).
+// In tests, just look in the assets directory (below).
 #endif
 
-  // The rest of the world expects components in the module directory.
-  return base::PathService::Get(base::DIR_MODULE, result);
-#endif
+  // The rest of the world expects components in the assets directory.
+  return base::PathService::Get(base::DIR_ASSETS, result);
 }
 
 }  // namespace
