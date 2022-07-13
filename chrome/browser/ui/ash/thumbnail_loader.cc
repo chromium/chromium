@@ -185,21 +185,21 @@ void HandleParsedThumbnailResponse(
     const std::string& request_id,
     ThumbnailDataCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    VLOG(2) << "Failed to parse request response " << result.error();
+  if (!result.value) {
+    VLOG(2) << "Failed to parse request response " << *result.error;
     std::move(callback).Run("");
     return;
   }
 
-  if (!result->is_dict()) {
+  if (!result.value->is_dict()) {
     VLOG(2) << "Invalid response format";
     std::move(callback).Run("");
     return;
   }
 
   const std::string* received_request_id =
-      result->GetDict().FindString("taskId");
-  const std::string* data = result->GetDict().FindString("data");
+      result.value->GetDict().FindString("taskId");
+  const std::string* data = result.value->GetDict().FindString("data");
 
   if (!data || !received_request_id || *received_request_id != request_id) {
     std::move(callback).Run("");

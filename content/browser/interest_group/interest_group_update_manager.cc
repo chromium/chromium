@@ -200,10 +200,10 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
     const std::string& name,
     const data_decoder::DataDecoder::ValueOrError& result) {
   // TODO(crbug.com/1186444): Report to devtools.
-  if (!result.has_value()) {
+  if (result.error) {
     return absl::nullopt;
   }
-  const base::Value::Dict* dict = result->GetIfDict();
+  const base::Value::Dict* dict = result.value->GetIfDict();
   if (!dict) {
     return absl::nullopt;
   }

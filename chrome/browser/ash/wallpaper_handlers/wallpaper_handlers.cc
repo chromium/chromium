@@ -690,16 +690,14 @@ void GooglePhotosFetcher<T>::OnJsonReceived(
       *response_body,
       base::BindOnce(
           [](const GURL& service_url,
-             data_decoder::DataDecoder::ValueOrError result)
-              -> absl::optional<base::Value> {
-            if (!result.has_value()) {
+             data_decoder::DataDecoder::ValueOrError result) {
+            if (result.error.has_value()) {
               LOG(ERROR) << "Failed to parse JSON response from Google Photos "
                             "API request to "
                          << service_url.spec()
-                         << ". Error message: " << result.error();
-              return absl::nullopt;
+                         << ". Error message: " << result.error.value();
             }
-            return std::move(*result);
+            return std::move(result.value);
           },
           service_url)
           .Then(base::BindOnce(&GooglePhotosFetcher::OnResponseReady,

@@ -657,12 +657,12 @@ void PaymentManifestParser::OnPaymentMethodParse(
   std::vector<GURL> web_app_manifest_urls;
   std::vector<url::Origin> supported_origins;
 
-  if (result.has_value()) {
+  if (result.value) {
     ParsePaymentMethodManifestIntoVectors(
-        manifest_url, base::Value::ToUniquePtrValue(std::move(*result)), *log_,
-        &web_app_manifest_urls, &supported_origins);
+        manifest_url, base::Value::ToUniquePtrValue(std::move(*result.value)),
+        *log_, &web_app_manifest_urls, &supported_origins);
   } else {
-    log_->Error(result.error());
+    log_->Error(*result.error);
   }
 
   // Can trigger synchronous deletion of this object, so can't access any of
@@ -676,11 +676,12 @@ void PaymentManifestParser::OnWebAppParse(
   parse_webapp_callback_counter_--;
 
   std::vector<WebAppManifestSection> manifest;
-  if (result.has_value()) {
+  if (result.value) {
     ParseWebAppManifestIntoVector(
-        base::Value::ToUniquePtrValue(std::move(*result)), *log_, &manifest);
+        base::Value::ToUniquePtrValue(std::move(*result.value)), *log_,
+        &manifest);
   } else {
-    log_->Error(result.error());
+    log_->Error(*result.error);
   }
 
   // Can trigger synchronous deletion of this object, so can't access any of
@@ -694,17 +695,17 @@ void PaymentManifestParser::OnWebAppParseInstallationInfo(
   std::unique_ptr<WebAppInstallationInfo> installation_info;
   std::unique_ptr<std::vector<WebAppIcon>> icons;
 
-  if (result.has_value()) {
+  if (result.value) {
     installation_info = std::make_unique<WebAppInstallationInfo>();
     icons = std::make_unique<std::vector<WebAppIcon>>();
     if (!ParseWebAppInstallationInfoIntoStructs(
-            base::Value::ToUniquePtrValue(std::move(*result)), *log_,
+            base::Value::ToUniquePtrValue(std::move(*result.value)), *log_,
             installation_info.get(), icons.get())) {
       installation_info.reset();
       icons.reset();
     }
   } else {
-    log_->Error(result.error());
+    log_->Error(*result.error);
   }
 
   // Can trigger synchronous deletion of this object, so can't access any of

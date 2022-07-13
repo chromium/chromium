@@ -215,31 +215,28 @@ void VirtualAuthenticator::SetUserVerified(bool verified,
 
 void VirtualAuthenticator::OnLargeBlobUncompressed(
     GetLargeBlobCallback callback,
-    base::expected<mojo_base::BigBuffer, std::string> result) {
-  absl::optional<mojo_base::BigBuffer> value;
-  if (result.has_value())
-    value = std::move(*result);
-
-  std::move(callback).Run(device::fido_parsing_utils::MaterializeOrNull(value));
+    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
+  std::move(callback).Run(
+      device::fido_parsing_utils::MaterializeOrNull(result.value));
 }
 
 void VirtualAuthenticator::OnLargeBlobCompressed(
     base::span<const uint8_t> key_handle,
     uint64_t original_size,
     SetLargeBlobCallback callback,
-    base::expected<mojo_base::BigBuffer, std::string> result) {
+    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
   auto registration = state_->registrations.find(key_handle);
   if (registration == state_->registrations.end()) {
     std::move(callback).Run(false);
     return;
   }
-  if (!result.has_value()) {
+  if (!result.value) {
     std::move(callback).Run(false);
     return;
   }
   state_->InjectLargeBlob(
       &registration->second,
-      device::LargeBlob(device::fido_parsing_utils::Materialize(*result),
+      device::LargeBlob(device::fido_parsing_utils::Materialize(*result.value),
                         original_size));
   std::move(callback).Run(true);
 }

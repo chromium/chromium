@@ -189,20 +189,21 @@ void ParseIeFileVersionTwo(const base::Value& xml,
 void RawXmlParsed(ParsingMode parsing_mode,
                   base::OnceCallback<void(ParsedXml)> callback,
                   data_decoder::DataDecoder::ValueOrError xml) {
-  if (!xml.has_value()) {
+  if (!xml.value) {
     // Copies the string, but it should only be around 20 characters.
-    std::move(callback).Run(ParsedXml({}, {}, xml.error()));
+    std::move(callback).Run(ParsedXml({}, {}, *xml.error));
     return;
   }
   DCHECK(data_decoder::IsXmlElementOfType(
-      *xml, data_decoder::mojom::XmlParser::kElementType));
+      *xml.value, data_decoder::mojom::XmlParser::kElementType));
   ParsedXml result;
-  if (data_decoder::IsXmlElementNamed(*xml, kSchema1RulesElement)) {
+  if (data_decoder::IsXmlElementNamed(*xml.value, kSchema1RulesElement)) {
     // Enterprise Mode schema v.1 has <rules> element at its top level.
-    ParseIeFileVersionOne(*xml, parsing_mode, &result);
-  } else if (data_decoder::IsXmlElementNamed(*xml, kSchema2SiteListElement)) {
+    ParseIeFileVersionOne(*xml.value, parsing_mode, &result);
+  } else if (data_decoder::IsXmlElementNamed(*xml.value,
+                                             kSchema2SiteListElement)) {
     // Enterprise Mode schema v.2 has <site-list> element at its top level.
-    ParseIeFileVersionTwo(*xml, parsing_mode, &result);
+    ParseIeFileVersionTwo(*xml.value, parsing_mode, &result);
   } else {
     result.error = kInvalidRootElement;
   }

@@ -100,17 +100,17 @@ void NTPJsonFetcher::OnSimpleLoaderComplete(
 
 void NTPJsonFetcher::OnJsonParse(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    OnJsonParseError(result.error());
+  if (!result.value) {
+    OnJsonParseError(*result.error);
     return;
   }
 
-  if (!result->is_dict()) {
+  if (!result.value->is_dict()) {
     OnJsonParseError("Parsed JSON is not a dictionary.");
     return;
   }
 
-  std::move(callback_).Run(NTPCatalog::create(*result));
+  std::move(callback_).Run(NTPCatalog::create(*result.value));
 }
 
 void NTPJsonFetcher::OnJsonParseError(const std::string& error) {

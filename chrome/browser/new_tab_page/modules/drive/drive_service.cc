@@ -290,14 +290,14 @@ void DriveService::OnJsonReceived(const std::string& token,
 
 void DriveService::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
+  if (!result.value) {
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<drive::mojom::FilePtr>());
     }
     callbacks_.clear();
     return;
   }
-  auto* items = result->FindListPath("item");
+  auto* items = result.value->FindListPath("item");
   if (!items) {
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<drive::mojom::FilePtr>());

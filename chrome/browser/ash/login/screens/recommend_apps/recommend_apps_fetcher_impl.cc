@@ -629,21 +629,21 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
 void RecommendAppsFetcherImpl::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
-    if (!result.has_value()) {
+    if (!result.value) {
       delegate_->OnParseResponseError();
       return;
     }
-    delegate_->OnLoadSuccess(std::move(*result));
+    delegate_->OnLoadSuccess(std::move(*result.value));
     return;
   }
 
-  if (!result.has_value() || (!result->is_list() && !result->is_dict())) {
+  if (!result.value || (!result.value->is_list() && !result.value->is_dict())) {
     RecordUmaResponseParseResult(
         RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
     delegate_->OnParseResponseError();
     return;
   }
-  absl::optional<base::Value> output = ParseResponse(*result);
+  absl::optional<base::Value> output = ParseResponse(*result.value);
   if (!output.has_value()) {
     RecordUmaResponseAppCount(0);
     delegate_->OnParseResponseError();

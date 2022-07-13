@@ -719,9 +719,9 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   registrations.pending_source_data--;
 
   absl::optional<StorableSource> source;
-  if (result.has_value() && result->is_dict()) {
+  if (result.value && result.value->is_dict()) {
     source = ParseSourceRegistration(
-        std::move(result->GetDict()), /*source_time=*/base::Time::Now(),
+        std::move(result.value->GetDict()), /*source_time=*/base::Time::Now(),
         std::move(reporting_origin), registrations.source_origin,
         AttributionSourceType::kNavigation);
   }

@@ -703,7 +703,7 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
 void ArcPolicyBridge::OnReportComplianceParse(
     base::OnceCallback<void(const std::string&)> callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
+  if (!result.value) {
     // TODO(poromov@): Report to histogram.
     DLOG(ERROR) << "Can't parse policy compliance report";
     std::move(callback).Run(kPolicyCompliantJson);
@@ -716,10 +716,10 @@ void ArcPolicyBridge::OnReportComplianceParse(
       prefs::kArcPolicyComplianceReported, true);
 
   const base::DictionaryValue* dict = nullptr;
-  if (result->GetAsDictionary(&dict)) {
+  if (result.value->GetAsDictionary(&dict)) {
     UpdateComplianceReportMetrics(dict);
     for (Observer& observer : observers_) {
-      observer.OnComplianceReportReceived(&*result);
+      observer.OnComplianceReportReceived(&result.value.value());
     }
   }
 }

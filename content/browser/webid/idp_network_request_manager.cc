@@ -314,10 +314,10 @@ FetchStatus GetResponseError(std::string* response_body, int response_code) {
 
 FetchStatus GetParsingError(
     const data_decoder::DataDecoder::ValueOrError& result) {
-  if (!result.has_value())
+  if (!result.value)
     return FetchStatus::kInvalidResponseError;
 
-  auto& response = *result;
+  auto& response = *result.value;
   if (!response.is_dict())
     return FetchStatus::kInvalidResponseError;
 
@@ -375,7 +375,7 @@ void OnManifestListParsed(
     return;
   }
 
-  const base::Value::Dict* dict = result->GetIfDict();
+  const base::Value::Dict* dict = result.value->GetIfDict();
   if (!dict) {
     std::move(callback).Run(FetchStatus::kInvalidResponseError, urls);
     return;
@@ -649,7 +649,7 @@ void IdpNetworkRequestManager::OnManifestParsed(
     return;
   }
 
-  auto& response = *result;
+  auto& response = *result.value;
   auto ExtractEndpoint = [&](const char* key) {
     const base::Value* endpoint = response.FindKey(key);
     if (!endpoint || !endpoint->is_string()) {
@@ -687,7 +687,7 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
   }
 
   AccountList account_list;
-  auto& response = *result;
+  auto& response = *result.value;
   const base::Value* accounts = response.FindKey(kAccountsKey);
   bool accounts_present =
       accounts && ParseAccounts(accounts, account_list, client_id);
@@ -709,7 +709,7 @@ void IdpNetworkRequestManager::OnTokenRequestParsed(
     return;
   }
 
-  auto& response = *result;
+  auto& response = *result.value;
   const base::Value* token = response.FindKey(kTokenKey);
   bool token_present = token && token->is_string();
 
@@ -762,7 +762,7 @@ void IdpNetworkRequestManager::OnClientMetadataParsed(
     return;
   }
 
-  auto& response = *result;
+  auto& response = *result.value;
   auto ExtractUrl = [&](const char* key) {
     const base::Value* endpoint = response.FindKey(key);
     if (!endpoint || !endpoint->is_string()) {

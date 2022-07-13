@@ -186,15 +186,15 @@ void InterestGroupPermissionsChecker::OnRequestComplete(
 void InterestGroupPermissionsChecker::OnJsonParsed(
     ActiveRequestMap::iterator active_request,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_dict()) {
+  if (result.error || !result.value->is_dict()) {
     OnActiveRequestComplete(active_request, Permissions());
     return;
   }
 
   absl::optional<bool> can_join =
-      result->GetDict().FindBool("joinAdInterestGroup");
+      result.value->GetDict().FindBool("joinAdInterestGroup");
   absl::optional<bool> can_leave =
-      result->GetDict().FindBool("leaveAdInterestGroup");
+      result.value->GetDict().FindBool("leaveAdInterestGroup");
   Permissions permissions{/*can_join=*/can_join.value_or(false),
                           /*can_leave=*/can_leave.value_or(false)};
   OnActiveRequestComplete(active_request, permissions);

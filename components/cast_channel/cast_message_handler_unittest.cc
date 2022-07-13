@@ -60,7 +60,7 @@ constexpr int kMaxProtocolMessageSize = 64 * 1024;
 
 data_decoder::DataDecoder::ValueOrError ParseJsonLikeDataDecoder(
     base::StringPiece json) {
-  return ParseJson(json);
+  return data_decoder::DataDecoder::ValueOrError::Value(ParseJson(json));
 }
 
 absl::optional<base::Value::Dict> GetDictionaryFromCastMessage(

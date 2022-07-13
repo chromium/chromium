@@ -118,12 +118,12 @@ class VirtualAuthenticator : public blink::test::mojom::VirtualAuthenticator {
  private:
   void OnLargeBlobUncompressed(
       GetLargeBlobCallback callback,
-      base::expected<mojo_base::BigBuffer, std::string> result);
+      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
   void OnLargeBlobCompressed(
       base::span<const uint8_t> key_handle,
       uint64_t original_size,
       SetLargeBlobCallback callback,
-      base::expected<mojo_base::BigBuffer, std::string> result);
+      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
 
   const device::ProtocolVersion protocol_;
   const device::Ctap2Version ctap2_version_;

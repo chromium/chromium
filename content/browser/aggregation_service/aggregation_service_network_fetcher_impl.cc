@@ -224,13 +224,14 @@ void AggregationServiceNetworkFetcherImpl::OnJsonParse(
     base::Time fetch_time,
     base::Time expiry_time,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
+  if (!result.value) {
     OnError(url, std::move(callback), FetchStatus::kJsonParseError,
-            /*error_msg=*/result.error());
+            /*error_msg=*/*result.error);
     return;
   }
 
-  std::vector<PublicKey> keys = aggregation_service::GetPublicKeys(*result);
+  std::vector<PublicKey> keys =
+      aggregation_service::GetPublicKeys(result.value.value());
   if (keys.empty()) {
     OnError(url, std::move(callback), FetchStatus::kInvalidKeyError,
             /*error_msg=*/"Public key parsing failed");

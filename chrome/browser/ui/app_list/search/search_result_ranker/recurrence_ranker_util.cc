@@ -254,7 +254,7 @@ void JsonConfigConverter::OnJsonParsed(
     const std::string& model_identifier,
     data_decoder::DataDecoder::ValueOrError result) {
   RecurrenceRankerConfigProto proto;
-  if (result.has_value() && ConvertRecurrenceRanker(&*result, &proto)) {
+  if (result.value && ConvertRecurrenceRanker(&result.value.value(), &proto)) {
     std::move(callback).Run(std::move(proto));
   } else {
     std::move(callback).Run(absl::nullopt);
