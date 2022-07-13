@@ -306,6 +306,7 @@ cc_test(
 cc_test(
     name = "exponential_distribution_test",
     size = "small",
+    timeout = "moderate",
     srcs = ["exponential_distribution_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,

@@ -43,8 +43,8 @@ cmake_minimum_required(VERSION 3.8.2)
 project(my_app_project)
 
 # Pick the C++ standard to compile with.
-# Abseil currently supports C++11, C++14, and C++17.
-set(CMAKE_CXX_STANDARD 11)
+# Abseil currently supports C++14, C++17, and C++20.
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(abseil-cpp)
