@@ -1007,6 +1007,33 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       InnerWebContentsFocusPlaceholder) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <button>One</button>
+      <iframe></iframe>
+      )HTML");
+  auto* outer_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  RenderFrameHostImplWrapper child(ChildFrameAt(outer_contents, 0));
+  ASSERT_TRUE(child);
+  FrameTreeNode* root = outer_contents->GetPrimaryFrameTree().root();
+  FrameTreeNode* placeholder = root->child_at(0);
+
+  auto* inner_contents =
+      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(child.get()));
+  EnableAccessibilityForWebContents(inner_contents);
+
+  // Simulate focusing the placeholder for the inner contents. This involves
+  // multiple steps of setting the focused frame within a frame tree and setting
+  // which frame tree is focused. We should not send accessibility updates
+  // between these operations while focus in an inconsistent state.
+  outer_contents->SetFocusedFrame(
+      placeholder,
+      outer_contents->GetPrimaryMainFrame()->GetSiteInstance()->group());
+  // The test passes if this didn't DCHECK.
+}
+
 // Action::kScrollToMakeVisible does not seem reliable on Android and we are
 // currently only using it for desktop screen readers.
 #if !BUILDFLAG(IS_ANDROID)

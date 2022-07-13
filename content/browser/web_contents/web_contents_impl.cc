@@ -7793,6 +7793,10 @@ void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
   // Make sure the outer frame trees knows our frame is focused. Otherwise, the
   // outer renderer could have the element before or after the frame element
   // focused which would return early without actually advancing focus.
+  RenderFrameHostImpl::UpdateAXFocusDeferScope focus_defer_scope(
+      *frame_tree_to_focus->root()
+           ->current_frame_host()
+           ->GetOutermostMainFrameOrEmbedder());
   frame_tree_to_focus->FocusOuterFrameTrees();
 
   frame_tree_to_focus->root()
@@ -7806,6 +7810,12 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetFocusedFrame",
                         "frame_tree_node", node, "source_site_instance_group",
                         source);
+
+  // Focus will not be in a consistent state until the focused frame tree is
+  // also updated (if necessary).
+  RenderFrameHostImpl::UpdateAXFocusDeferScope focus_defer_scope(
+      *node->current_frame_host()->GetOutermostMainFrameOrEmbedder());
+
   node->frame_tree()->SetFocusedFrame(node, source);
 
   auto* inner_contents = node_.GetInnerWebContentsInFrame(node);

@@ -1189,6 +1189,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // a renderer.
   void UpdateAXTreeData();
 
+  // Updating focus in the presence of multiple frame trees requires multiple
+  // focus changes. The existence of this class will defer UpdateAXTreeData()
+  // until this process has finished and the focus states are consistent.
+  class UpdateAXFocusDeferScope {
+   public:
+    explicit UpdateAXFocusDeferScope(RenderFrameHostImpl& rfh);
+    ~UpdateAXFocusDeferScope();
+
+   private:
+    const base::SafeRef<RenderFrameHostImpl> rfh_;
+  };
+
   // Access the BrowserAccessibilityManager if it already exists.
   BrowserAccessibilityManager* browser_accessibility_manager() const {
     return browser_accessibility_manager_.get();
@@ -2013,6 +2025,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   GetWebAuthRequestSecurityChecker();
 
   base::WeakPtr<RenderFrameHostImpl> GetWeakPtr();
+  base::SafeRef<RenderFrameHostImpl> GetSafeRef() const;
 
   // blink::mojom::LocalFrameHost
   void EnterFullscreen(blink::mojom::FullscreenOptionsPtr options,
@@ -4255,6 +4268,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Used to avoid sending AXTreeData to the renderer if the renderer has not
   // been told root ID yet. See UpdateAXTreeData() for more details.
   bool needs_ax_root_id_ = true;
+  // Used with UpdateAXFocusDeferScope to prevent UpdateAXTreeData() while focus
+  // state changes are in progress.
+  int ax_defer_scope_count_ = 0;
+  bool ax_update_deferred_ = false;
 
   // The most recent page scale factor sent by the main frame's renderer.
   // Note that the renderer uses a different mechanism to persist its page

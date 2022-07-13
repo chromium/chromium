@@ -7195,6 +7195,10 @@ base::WeakPtr<RenderFrameHostImpl> RenderFrameHostImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+base::SafeRef<RenderFrameHostImpl> RenderFrameHostImpl::GetSafeRef() const {
+  return weak_ptr_factory_.GetSafeRef();
+}
+
 void RenderFrameHostImpl::CreateNewWindow(
     mojom::CreateNewWindowParamsPtr params,
     CreateNewWindowCallback callback) {
@@ -9592,6 +9596,11 @@ void RenderFrameHostImpl::UpdateAXTreeData() {
   if (needs_ax_root_id_)
     return;
 
+  if (ax_defer_scope_count_ > 0) {
+    ax_update_deferred_ = true;
+    return;
+  }
+
   AXEventNotificationDetails detail;
   detail.ax_tree_id = GetAXTreeID();
   detail.updates.resize(1);
@@ -9600,6 +9609,21 @@ void RenderFrameHostImpl::UpdateAXTreeData() {
 
   SendAccessibilityEventsToManager(detail);
   delegate_->AccessibilityEventReceived(detail);
+}
+
+RenderFrameHostImpl::UpdateAXFocusDeferScope::UpdateAXFocusDeferScope(
+    RenderFrameHostImpl& rfh)
+    : rfh_(rfh.GetSafeRef()) {
+  ++rfh_->ax_defer_scope_count_;
+}
+
+RenderFrameHostImpl::UpdateAXFocusDeferScope::~UpdateAXFocusDeferScope() {
+  DCHECK_GE(rfh_->ax_defer_scope_count_, 1);
+  --rfh_->ax_defer_scope_count_;
+  if (!rfh_->ax_defer_scope_count_ && rfh_->ax_update_deferred_) {
+    rfh_->ax_update_deferred_ = false;
+    rfh_->UpdateAXTreeData();
+  }
 }
 
 BrowserAccessibilityManager*
