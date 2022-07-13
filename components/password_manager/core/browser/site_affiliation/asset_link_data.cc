@@ -54,11 +54,11 @@ AssetLinkData::~AssetLinkData() = default;
 AssetLinkData& AssetLinkData::operator=(AssetLinkData&& other) = default;
 
 bool AssetLinkData::Parse(const std::string& data) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(data);
+  absl::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value || !value->is_list())
     return false;
   base::JSONValueConverter<Statement> converter;
-  for (const auto& item : value->GetListDeprecated()) {
+  for (const auto& item : value->GetList()) {
     Statement statement;
     if (converter.Convert(item, &statement)) {
       if (!statement.include.empty()) {

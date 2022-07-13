@@ -60,10 +60,10 @@ std::string EncryptString(const std::string& plain_text) {
 
 std::string GetAndDecryptField(const base::Value& dict,
                                const std::string& field_key) {
-  const base::Value* encrypted_field_value = dict.FindKey(field_key);
-  return encrypted_field_value
-             ? DecryptBase64String(encrypted_field_value->GetString())
-             : std::string();
+  const std::string* encrypted_field_value =
+      dict.GetDict().FindString(field_key);
+  return encrypted_field_value ? DecryptBase64String(*encrypted_field_value)
+                               : std::string();
 }
 
 bool IsGaiaPassword(const base::Value& dict) {
@@ -136,7 +136,7 @@ bool HashPasswordManager::SavePasswordHash(const std::string username,
   // unchanged, no need to save password hash again. Instead we update the last
   // sign in timestamp.
   ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  for (base::Value& password_hash_data : update.Get()->GetListDeprecated()) {
+  for (base::Value& password_hash_data : update.Get()->GetList()) {
     if (AreUsernamesSame(
             GetAndDecryptField(password_hash_data, kUsernameFieldKey),
             IsGaiaPassword(password_hash_data), username, is_gaia_password)) {
@@ -144,8 +144,8 @@ bool HashPasswordManager::SavePasswordHash(const std::string username,
           ConvertToPasswordHashData(password_hash_data);
       if (existing_password_hash && existing_password_hash->MatchesPassword(
                                         username, password, is_gaia_password)) {
-        password_hash_data.SetKey(kLastSignInTimeFieldKey,
-                                  base::Value(base::Time::Now().ToDoubleT()));
+        password_hash_data.GetDict().Set(kLastSignInTimeFieldKey,
+                                         base::Time::Now().ToDoubleT());
         return true;
       }
     }
@@ -243,7 +243,7 @@ absl::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
   }
 
   for (const base::Value& entry :
-       prefs_->GetList(prefs::kPasswordHashDataList)->GetListDeprecated()) {
+       prefs_->GetValueList(prefs::kPasswordHashDataList)) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return ConvertToPasswordHashData(entry);
@@ -261,7 +261,7 @@ bool HashPasswordManager::HasPasswordHash(const std::string& username,
   }
 
   for (const base::Value& entry :
-       prefs_->GetList(prefs::kPasswordHashDataList)->GetListDeprecated()) {
+       prefs_->GetValueList(prefs::kPasswordHashDataList)) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return true;
@@ -303,36 +303,33 @@ bool HashPasswordManager::EncryptAndSave(
   if (encrypted_is_gaia_value.empty())
     return false;
 
-  base::DictionaryValue encrypted_password_hash_entry;
-  encrypted_password_hash_entry.SetKey(kUsernameFieldKey,
-                                       base::Value(encrypted_username));
-  encrypted_password_hash_entry.SetKey(kHashFieldKey,
-                                       base::Value(encrypted_hash));
-  encrypted_password_hash_entry.SetKey(kLengthAndSaltFieldKey,
-                                       base::Value(encrypted_length_and_salt));
-  encrypted_password_hash_entry.SetKey(kIsGaiaFieldKey,
-                                       base::Value(encrypted_is_gaia_value));
-  encrypted_password_hash_entry.SetKey(
-      kLastSignInTimeFieldKey, base::Value(base::Time::Now().ToDoubleT()));
+  base::Value::Dict encrypted_password_hash_entry;
+  encrypted_password_hash_entry.Set(kUsernameFieldKey, encrypted_username);
+  encrypted_password_hash_entry.Set(kHashFieldKey, encrypted_hash);
+  encrypted_password_hash_entry.Set(kLengthAndSaltFieldKey,
+                                    encrypted_length_and_salt);
+  encrypted_password_hash_entry.Set(kIsGaiaFieldKey, encrypted_is_gaia_value);
+  encrypted_password_hash_entry.Set(kLastSignInTimeFieldKey,
+                                    base::Time::Now().ToDoubleT());
   ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  size_t num_erased = update->EraseListValueIf([&](const auto& dict) {
+  base::Value::List& update_list = update->GetList();
+  size_t num_erased = update_list.EraseIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), password_hash_data.username,
                             password_hash_data.is_gaia_password);
   });
 
-  if (num_erased == 0 &&
-      update->GetListDeprecated().size() >= kMaxPasswordHashDataDictSize) {
+  if (num_erased == 0 && update_list.size() >= kMaxPasswordHashDataDictSize) {
     // Erase the oldest sign-in password hash data.
     update->EraseListIter(std::min_element(
-        update->GetListDeprecated().begin(), update->GetListDeprecated().end(),
+        update_list.begin(), update_list.end(),
         [](const auto& lhs, const auto& rhs) {
-          return lhs.FindKey(kLastSignInTimeFieldKey)->GetDouble() <
-                 rhs.FindKey(kLastSignInTimeFieldKey)->GetDouble();
+          return *lhs.GetDict().FindDouble(kLastSignInTimeFieldKey) <
+                 *rhs.GetDict().FindDouble(kLastSignInTimeFieldKey);
         }));
   }
 
-  update->Append(std::move(encrypted_password_hash_entry));
+  update_list.Append(std::move(encrypted_password_hash_entry));
   return true;
 }
 

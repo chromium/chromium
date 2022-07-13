@@ -185,7 +185,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
 #pragma mark - Private methods
 
 - (BOOL)handleScriptCommand:(const base::Value&)JSONCommand {
-  const std::string* command = JSONCommand.FindStringKey("command");
+  const std::string* command = JSONCommand.GetDict().FindString("command");
   if (!command || *command != "passwordForm.submitButtonClick") {
     return NO;
   }

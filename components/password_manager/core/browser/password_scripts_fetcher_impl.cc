@@ -49,14 +49,15 @@ base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
   if (!script_config.is_dict())
     return {ParsingResult::kInvalidJson};
 
-  const base::Value* supported_domains_list =
-      script_config.FindListKey("domains");
-  if (!supported_domains_list || !supported_domains_list->is_list())
+  const base::Value::List* supported_domains_list =
+      script_config.GetDict().FindList("domains");
+  if (!supported_domains_list)
     return {ParsingResult::kInvalidJson};
 
   base::flat_set<ParsingResult> warnings;
 
-  const std::string* min_version = script_config.FindStringKey("min_version");
+  const std::string* min_version =
+      script_config.GetDict().FindString("min_version");
   base::Version version;
   if (!min_version) {
     return {ParsingResult::kInvalidJson};
@@ -67,8 +68,7 @@ base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
     }
   }
 
-  for (const base::Value& domain :
-       supported_domains_list->GetListDeprecated()) {
+  for (const base::Value& domain : *supported_domains_list) {
     if (!domain.is_string()) {
       warnings.insert(ParsingResult::kInvalidJson);
       continue;
