@@ -366,6 +366,7 @@ void ExtensionsTabbedMenuView::OnToolbarActionAdded(
 
   MaybeCreateAndInsertSiteAccessItem(action_id);
   UpdateSiteAccessTab();
+  SizeToContents();
 
   ConsistencyCheck();
 }
@@ -385,6 +386,7 @@ void ExtensionsTabbedMenuView::OnToolbarActionRemoved(
               GetSiteAccessMenuItem(has_access_.items, action_id));
 
   UpdateSiteAccessTab();
+  SizeToContents();
 
   ConsistencyCheck();
 }
@@ -395,6 +397,7 @@ void ExtensionsTabbedMenuView::OnToolbarActionUpdated(
   UpdateSiteAccessMenuItems({action_id});
 
   UpdateSiteAccessTab();
+  SizeToContents();
 
   ConsistencyCheck();
 }
@@ -404,6 +407,7 @@ void ExtensionsTabbedMenuView::OnToolbarModelInitialized() {
   DCHECK(requests_access_.items->children().empty());
   DCHECK(has_access_.items->children().empty());
   Populate();
+  SizeToContents();
 }
 
 void ExtensionsTabbedMenuView::OnToolbarPinnedActionsChanged() {
@@ -459,6 +463,7 @@ void ExtensionsTabbedMenuView::Update() {
   UpdateSiteAccessMenuItems(action_ids);
 
   UpdateSiteAccessTab();
+  SizeToContents();
 
   ConsistencyCheck();
 }
@@ -764,12 +769,6 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
         break;
     }
   }
-
-  // Site access tab updates can happen during the menu construction, and
-  // afterwards. The dialog bubble is created after constructing the menu,
-  // therefore we can only resize the contents when the dialog exists.
-  if (g_extensions_dialog)
-    SizeToContents();
 }
 
 void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility(
