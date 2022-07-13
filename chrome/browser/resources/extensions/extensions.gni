@@ -52,6 +52,7 @@ web_component_files = [
   "site_permissions_edit_permissions_dialog.ts",
   "site_permissions_edit_url_dialog.ts",
   "site_permissions_list.ts",
+  "site_permissions_site_group.ts",
   "toggle_row.ts",
   "toolbar.ts",
 ]

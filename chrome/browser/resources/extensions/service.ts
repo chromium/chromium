@@ -496,6 +496,13 @@ export class Service implements ServiceInterface {
     });
   }
 
+  getUserAndExtensionSitesByEtld():
+      Promise<chrome.developerPrivate.SiteGroup[]> {
+    return new Promise(function(resolve) {
+      chrome.developerPrivate.getUserAndExtensionSitesByEtld(resolve);
+    });
+  }
+
   getUserSiteSettingsChangedTarget() {
     return chrome.developerPrivate.onUserSiteSettingsChanged;
   }

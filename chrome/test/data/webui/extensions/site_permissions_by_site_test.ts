@@ -7,16 +7,46 @@ import 'chrome://extensions/extensions.js';
 
 import {ExtensionsSitePermissionsBySiteElement, navigation, Page} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestService} from './test_service.js';
 
 suite('SitePermissionsBySite', function() {
   let element: ExtensionsSitePermissionsBySiteElement;
+  let delegate: TestService;
   let listenerId: number = 0;
 
+  const siteGroups: chrome.developerPrivate.SiteGroup[] = [
+    {
+      etldPlusOne: 'google.ca',
+      sites: [
+        {
+          siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+          site: 'https://images.google.ca',
+        },
+        {
+          siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
+          site: 'http://google.ca',
+        },
+      ]
+    },
+    {
+      etldPlusOne: 'example.com',
+      sites: [{
+        siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+        site: 'http://example.com',
+      }]
+    }
+  ];
+
   setup(function() {
+    delegate = new TestService();
+    delegate.siteGroups = siteGroups;
+
     document.body.innerHTML = '';
     element = document.createElement('extensions-site-permissions-by-site');
+    element.delegate = delegate;
     document.body.appendChild(element);
   });
 
@@ -45,4 +75,14 @@ suite('SitePermissionsBySite', function() {
 
         assertDeepEquals(currentPage, {page: Page.SITE_PERMISSIONS});
       });
+
+  test('extension and user sites are present', async function() {
+    await delegate.whenCalled('getUserAndExtensionSitesByEtld');
+    flush();
+
+    const sitePermissionGroups =
+        element.shadowRoot!.querySelectorAll<HTMLElement>(
+            'site-permissions-site-group');
+    assertEquals(2, sitePermissionGroups.length);
+  });
 });

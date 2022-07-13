@@ -15,6 +15,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   acceptRuntimeHostPermission: boolean = true;
   testActivities?: chrome.activityLogPrivate.ActivityResultSet;
   userSiteSettings?: chrome.developerPrivate.UserSiteSettings;
+  siteGroups?: chrome.developerPrivate.SiteGroup[];
 
   private retryLoadUnpackedError_?: chrome.developerPrivate.LoadError;
   private forceReloadItemError_: boolean = false;
@@ -36,6 +37,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'getExtensionSize',
       'getFilteredExtensionActivityLog',
       'getProfileConfiguration',
+      'getUserAndExtensionSitesByEtld',
       'getUserSiteSettings',
       'getUserSiteSettingsChangedTarget',
       'inspectItemView',
@@ -336,5 +338,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       siteSet: chrome.developerPrivate.UserSiteSet, hosts: string[]) {
     this.methodCalled('removeUserSpecifiedSites', [siteSet, hosts]);
     return Promise.resolve();
+  }
+
+  getUserAndExtensionSitesByEtld() {
+    this.methodCalled('getUserAndExtensionSitesByEtld');
+    return Promise.resolve(this.siteGroups!);
   }
 }

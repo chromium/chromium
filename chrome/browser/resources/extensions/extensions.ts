@@ -42,6 +42,7 @@ export {ExtensionsSitePermissionsBySiteElement} from './site_permissions_by_site
 export {SitePermissionsEditPermissionsDialogElement} from './site_permissions_edit_permissions_dialog.js';
 export {getSitePermissionsPatternFromSite, SitePermissionsEditUrlDialogElement} from './site_permissions_edit_url_dialog.js';
 export {ExtensionsSitePermissionsListElement} from './site_permissions_list.js';
+export {SitePermissionsSiteGroupElement} from './site_permissions_site_group.js';
 export {SiteSettingsMixin} from './site_settings_mixin.js';
 export {ExtensionsToggleRowElement} from './toggle_row.js';
 export {ExtensionsToolbarElement} from './toolbar.js';

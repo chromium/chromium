@@ -961,3 +961,18 @@ var CrExtensionsSitePermissionsEditPermissionsDialog =
 TEST_F('CrExtensionsSitePermissionsEditPermissionsDialog', 'All', () => {
   mocha.run();
 });
+
+////////////////////////////////////////////////////////////////////////////////
+// SitePermissionsSiteGroup tests
+
+var CrExtensionsSitePermissionsSiteGroupTest =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_site_group_test.js';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsSiteGroupTest', 'All', () => {
+  mocha.run();
+});

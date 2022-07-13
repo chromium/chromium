@@ -47,6 +47,7 @@ non_preprocessed_files = [
   "site_permissions_edit_permissions_dialog_test.ts",
   "site_permissions_edit_url_dialog_test.ts",
   "site_permissions_list_test.ts",
+  "site_permissions_site_group_test.ts",
   "site_permissions_test.ts",
   "test_service.ts",
   "test_util.ts",

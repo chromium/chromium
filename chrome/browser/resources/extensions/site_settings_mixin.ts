@@ -23,6 +23,8 @@ export interface SiteSettingsDelegate {
   removeUserSpecifiedSites(
       siteSet: chrome.developerPrivate.UserSiteSet,
       hosts: string[]): Promise<void>;
+  getUserAndExtensionSitesByEtld():
+      Promise<chrome.developerPrivate.SiteGroup[]>;
   getUserSiteSettingsChangedTarget():
       ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
 }
