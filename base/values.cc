@@ -1229,10 +1229,6 @@ std::string* Value::FindStringPath(StringPiece path) {
   return GetDict().FindStringByDottedPath(path);
 }
 
-const Value::BlobStorage* Value::FindBlobPath(StringPiece path) const {
-  return GetDict().FindBlobByDottedPath(path);
-}
-
 const Value* Value::FindDictPath(StringPiece path) const {
   return FindPathOfType(path, Type::DICTIONARY);
 }

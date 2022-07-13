@@ -902,10 +902,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // dots.
   const std::string* FindStringPath(StringPiece path) const;
   std::string* FindStringPath(StringPiece path);
-  // DEPRECATED: Use `Value::Dict::FindBlobByDottedPath()`, or
-  // `Value::Dict::FindBlob()` if the path only has one component, i.e. has no
-  // dots.
-  const BlobStorage* FindBlobPath(StringPiece path) const;
   // DEPRECATED: Use `Value::Dict::FindDictByDottedPath()`, or
   // `Value::Dict::FindDict()` if the path only has one component, i.e. has no
   // dots.

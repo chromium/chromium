@@ -493,11 +493,11 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(utterance_id_value.is_int());
   int utterance_id = utterance_id_value.GetInt();
 
-  const base::DictionaryValue* audio = nullptr;
-  EXTENSION_FUNCTION_VALIDATE(args()[1].GetAsDictionary(&audio));
+  const base::Value::Dict* audio = args()[1].GetIfDict();
+  EXTENSION_FUNCTION_VALIDATE(audio);
 
   const std::vector<uint8_t>* audio_buffer_blob =
-      audio->FindBlobPath(tts_extension_api_constants::kAudioBufferKey);
+      audio->FindBlob(tts_extension_api_constants::kAudioBufferKey);
   if (!audio_buffer_blob)
     return RespondNow(Error("No audio buffer found."));
 
@@ -513,13 +513,13 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
 
   int char_index = 0;
   const base::Value* char_index_value =
-      audio->FindKey(tts_extension_api_constants::kCharIndexKey);
+      audio->Find(tts_extension_api_constants::kCharIndexKey);
   EXTENSION_FUNCTION_VALIDATE(char_index_value);
   EXTENSION_FUNCTION_VALIDATE(char_index_value->is_int());
   char_index = char_index_value->GetInt();
 
   absl::optional<bool> is_last_buffer =
-      audio->FindBoolPath(tts_extension_api_constants::kIsLastBufferKey);
+      audio->FindBool(tts_extension_api_constants::kIsLastBufferKey);
   EXTENSION_FUNCTION_VALIDATE(is_last_buffer);
 
   TtsExtensionEngine::GetInstance()->SendAudioBuffer(
