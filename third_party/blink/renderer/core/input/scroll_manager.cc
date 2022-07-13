@@ -269,15 +269,17 @@ bool ScrollManager::CanScroll(const ScrollState& scroll_state,
   if (scrolling_box->IsGlobalRootScroller() && !for_autoscroll)
     return true;
 
-  // If this is the main LayoutView, and it's not the root scroller, that means
-  // we have a non-default root scroller on the page. In this case, attempts to
-  // scroll the LayoutView should cause panning of the visual viewport as well
-  // so ensure it gets added to the scroll chain. See LTHI::ApplyScroll for the
-  // equivalent behavior in CC. Node::NativeApplyScroll contains a special
+  // If this is the main LayoutView of an active viewport (outermost main
+  // frame, portal), and it's not the root scroller, that means we have a
+  // non-default root scroller on the page.  In this case, attempts to scroll
+  // the LayoutView should cause panning of the visual viewport as well so
+  // ensure it gets added to the scroll chain.  See LTHI::ApplyScroll for the
+  // equivalent behavior in CC.  Node::NativeApplyScroll contains a special
   // handler for this case. If autoscrolling, ignore this condition because we
   // latch on to the deepest autoscrollable node.
   if (IsA<LayoutView>(scrolling_box) &&
-      current_node.GetDocument().GetFrame()->IsMainFrame() && !for_autoscroll) {
+      current_node.GetDocument().IsInMainFrame() &&
+      GetPage()->GetVisualViewport().IsActiveViewport() && !for_autoscroll) {
     return true;
   }
 
