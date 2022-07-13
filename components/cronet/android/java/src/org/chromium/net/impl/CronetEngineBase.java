@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
-import android.net.Network;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
@@ -28,6 +26,12 @@ import java.util.concurrent.Executor;
  * shared logic.
  */
 public abstract class CronetEngineBase extends ExperimentalCronetEngine {
+    /*
+     * Network handle representing the default network. To be used when a network has not been
+     * explicitly set.
+     */
+    protected static final long DEFAULT_NETWORK_HANDLE = -1;
+
     /**
      * Creates a {@link UrlRequest} object. All callbacks will
      * be called on {@code executor}'s thread. {@code executor} must not run
@@ -67,7 +71,7 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
             boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
             int trafficStatsUid, @Nullable RequestFinishedInfo.Listener requestFinishedListener,
-            @Idempotency int idempotency, @Nullable Network network);
+            @Idempotency int idempotency, long networkHandle);
 
     /**
      * Creates a {@link BidirectionalStream} object. {@code callback} methods will
@@ -102,7 +106,7 @@ public abstract class CronetEngineBase extends ExperimentalCronetEngine {
             List<Map.Entry<String, String>> requestHeaders, @StreamPriority int priority,
             boolean delayRequestHeadersUntilFirstFlush, Collection<Object> requestAnnotations,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, @Nullable Network network);
+            int trafficStatsUid, long networkHandle);
 
     @Override
     public ExperimentalUrlRequest.Builder newUrlRequestBuilder(

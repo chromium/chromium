@@ -7,10 +7,6 @@ package org.chromium.net.impl;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE;
 
-import android.net.Network;
-
-import androidx.annotation.Nullable;
-
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.NetworkQualityRttListener;
@@ -98,8 +94,8 @@ public final class JavaCronetEngine extends CronetEngineBase {
             boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
             int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
-            int idempotency, @Nullable Network network) {
-        if (network != null) {
+            int idempotency, long networkHandle) {
+        if (networkHandle != DEFAULT_NETWORK_HANDLE) {
             throw new UnsupportedOperationException(
                     "The multi-network API is not supported by the Java implementation "
                     + "of Cronet Engine");
@@ -115,7 +111,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
             List<Map.Entry<String, String>> requestHeaders, @StreamPriority int priority,
             boolean delayRequestHeadersUntilFirstFlush, Collection<Object> connectionAnnotations,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, @Nullable Network network) {
+            int trafficStatsUid, long networkHandle) {
         throw new UnsupportedOperationException(
                 "Can't create a bidi stream - httpurlconnection doesn't have those APIs");
     }
@@ -173,7 +169,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
     }
 
     @Override
-    public void bindToNetwork(@Nullable Network network) {
+    public void bindToNetwork(long networkHandle) {
         throw new UnsupportedOperationException(
                 "The multi-network API is not supported by the Java implementation "
                 + "of Cronet Engine");

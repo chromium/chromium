@@ -4,10 +4,8 @@
 
 package org.chromium.net.impl;
 
-import android.net.Network;
 import android.os.Build;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -55,12 +53,6 @@ import javax.annotation.concurrent.GuardedBy;
 @JNIAdditionalImport(VersionSafeCallbacks.class)
 @VisibleForTesting
 public final class CronetUrlRequest extends UrlRequestBase {
-    /*
-     * Network handle representing the default network. To be used when a network has not been
-     * explicitly set.
-     */
-    private static final long DEFAULT_NETWORK_HANDLE = -1;
-
     private final boolean mAllowDirectExecutor;
 
     /* Native adapter object, owned by UrlRequest. */
@@ -160,7 +152,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
             boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
             int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
-            int idempotency, @Nullable Network network) {
+            int idempotency, long networkHandle) {
         if (url == null) {
             throw new NullPointerException("URL is required");
         }
@@ -191,7 +183,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
                 ? new VersionSafeCallbacks.RequestFinishedInfoListener(requestFinishedListener)
                 : null;
         mIdempotency = convertIdempotency(idempotency);
-        mNetworkHandle = network != null ? network.getNetworkHandle() : DEFAULT_NETWORK_HANDLE;
+        mNetworkHandle = networkHandle;
     }
 
     @Override

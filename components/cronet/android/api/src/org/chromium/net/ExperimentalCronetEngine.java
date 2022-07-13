@@ -4,9 +4,7 @@
 package org.chromium.net;
 
 import android.content.Context;
-import android.net.Network;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
@@ -75,6 +73,11 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
      * @see #getEffectiveConnectionType
      */
     public static final int EFFECTIVE_CONNECTION_TYPE_4G = 5;
+
+    /**
+     * The value to be used to undo any previous network binding.
+     */
+    public static final long UNBIND_NETWORK_HANDLE = -1;
 
     /**
      * A version of {@link CronetEngine.Builder} that exposes experimental
@@ -414,12 +417,14 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
     }
 
     /**
-     * Binds the engine to the specified network. All requests created through this engine will use
-     * this network. If this network disconnects all requests will fail, the exact error will
-     * depend on the stage of request processing when the network disconnects.
+     * Binds the engine to the specified network handle. All requests created through this engine
+     * will use the network associated to this handle. If this network disconnects all requests will
+     * fail, the exact error will depend on the stage of request processing when the network
+     * disconnects. Network handles can be obtained through {@code Network#getNetworkHandle}.
      * Only available starting from Android Marshmallow.
      *
-     * @param network the network to bind the engine to. Specify {@code null} to unbind.
+     * @param networkHandle the network handle to bind the engine to. Specify
+     *        {@link #UNBIND_NETWORK_HANDLE} to unbind.
      */
-    public void bindToNetwork(@Nullable Network network) {}
+    public void bindToNetwork(long networkHandle) {}
 }

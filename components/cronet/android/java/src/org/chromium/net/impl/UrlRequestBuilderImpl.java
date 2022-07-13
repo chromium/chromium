@@ -4,12 +4,9 @@
 package org.chromium.net.impl;
 
 import android.annotation.SuppressLint;
-import android.net.Network;
 import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalUrlRequest;
@@ -63,7 +60,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     private boolean mTrafficStatsUidSet;
     private int mTrafficStatsUid;
     private RequestFinishedInfo.Listener mRequestFinishedListener;
-    private Network mNetwork;
+    private long mNetworkHandle = CronetEngineBase.DEFAULT_NETWORK_HANDLE;
     // Idempotency of the request.
     @CronetEngineBase.Idempotency
     private int mIdempotency = DEFAULT_IDEMPOTENCY;
@@ -209,12 +206,12 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     }
 
     @Override
-    public UrlRequestBuilderImpl bindToNetwork(@Nullable Network network) {
+    public UrlRequestBuilderImpl bindToNetwork(long networkHandle) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             throw new UnsupportedOperationException(
                     "The multi-network API is available starting from Android Marshmallow");
         }
-        mNetwork = network;
+        mNetworkHandle = networkHandle;
         return this;
     }
 
@@ -224,7 +221,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
         final UrlRequestBase request = mCronetEngine.createRequest(mUrl, mCallback, mExecutor,
                 mPriority, mRequestAnnotations, mDisableCache, mDisableConnectionMigration,
                 mAllowDirectExecutor, mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
-                mTrafficStatsUid, mRequestFinishedListener, mIdempotency, mNetwork);
+                mTrafficStatsUid, mRequestFinishedListener, mIdempotency, mNetworkHandle);
         if (mMethod != null) {
             request.setHttpMethod(mMethod);
         }

@@ -390,7 +390,7 @@ public class CronetUrlRequestContextTest {
         ExperimentalUrlRequest.Builder urlRequestBuilder =
                 (ExperimentalUrlRequest.Builder) testFramework.mCronetEngine.newUrlRequestBuilder(
                         mUrl, callback, callback.getExecutor());
-        urlRequestBuilder.bindToNetwork(defaultNetwork);
+        urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());
         UrlRequest urlRequest = urlRequestBuilder.build();
 
         assertFalse(
@@ -457,7 +457,7 @@ public class CronetUrlRequestContextTest {
             return;
         }
 
-        urlRequestBuilder.bindToNetwork(defaultNetwork);
+        urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());
         UrlRequest urlRequest = urlRequestBuilder.build();
 
         assertFalse(
