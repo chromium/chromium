@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RectUtil} from '/common/rect_util.js';
-import {SACache} from '/switch_access/cache.js';
-import {SAChildNode, SARootNode} from '/switch_access/nodes/switch_access_node.js';
+import {RectUtil} from '../common/rect_util.js';
+
+import {SACache} from './cache.js';
+import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const StateType = chrome.automation.StateType;

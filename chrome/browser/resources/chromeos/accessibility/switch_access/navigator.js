@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ItemScanManager} from '/switch_access/item_scan_manager.js';
-import {ItemNavigatorInterface, PointNavigatorInterface} from '/switch_access/navigator_interface.js';
-import {PointScanManager} from '/switch_access/point_scan_manager.js';
+import {ItemScanManager} from './item_scan_manager.js';
+import {ItemNavigatorInterface, PointNavigatorInterface} from './navigator_interface.js';
+import {PointScanManager} from './point_scan_manager.js';
 
 export class Navigator {
   /** @param {!chrome.automation.AutomationNode} desktop */

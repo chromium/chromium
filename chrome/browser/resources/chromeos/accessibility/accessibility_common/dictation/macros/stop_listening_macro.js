@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Macro} from '/accessibility_common/dictation/macros/macro.js';
-import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
+import {Macro} from './macro.js';
+import {MacroName} from './macro_names.js';
 
 /** Class that implements a macro to stop Dictation. */
 export class StopListeningMacro extends Macro {

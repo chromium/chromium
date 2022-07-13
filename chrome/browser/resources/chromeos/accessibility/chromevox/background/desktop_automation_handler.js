@@ -5,18 +5,19 @@
 /**
  * @fileoverview Handles automation from a desktop automation node.
  */
-import {AutoScrollHandler} from '/chromevox/background/auto_scroll_handler.js';
-import {AutomationObjectConstructorInstaller} from '/chromevox/background/automation_object_constructor_installer.js';
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
-import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
-import {TextEditHandler} from '/chromevox/background/editing/editing.js';
-import {EventSourceState} from '/chromevox/background/event_source.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
-import {EventSourceType} from '/chromevox/common/event_source_type.js';
-import {WrappingCursor} from '/common/cursors/cursor.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {WrappingCursor} from '../../common/cursors/cursor.js';
+import {CursorRange} from '../../common/cursors/range.js';
+import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
+import {EventSourceType} from '../common/event_source_type.js';
+
+import {AutoScrollHandler} from './auto_scroll_handler.js';
+import {AutomationObjectConstructorInstaller} from './automation_object_constructor_installer.js';
+import {ChromeVoxState} from './chromevox_state.js';
+import {CommandHandlerInterface} from './command_handler_interface.js';
+import {DesktopAutomationInterface} from './desktop_automation_interface.js';
+import {TextEditHandler} from './editing/editing.js';
+import {EventSourceState} from './event_source.js';
+import {Output} from './output/output.js';
 
 const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;

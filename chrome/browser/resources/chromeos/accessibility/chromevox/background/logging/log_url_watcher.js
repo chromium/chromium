@@ -6,7 +6,7 @@
  * @fileoverview Watches the currently focused URL to verify if logging should
  * occur.
  */
-import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chromevox_state.js';
+import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 
 /** @implements {ChromeVoxStateObserver} */
 export class LogUrlWatcher {

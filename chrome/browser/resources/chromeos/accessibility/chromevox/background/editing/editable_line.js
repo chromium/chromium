@@ -8,9 +8,9 @@
  * (e.g. start/end offsets) get saved. Line: nodes/offsets at the beginning/end
  * of a line get saved.
  */
-import {Output} from '/chromevox/background/output/output.js';
-import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit} from '/common/cursors/cursor.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit} from '../../../common/cursors/cursor.js';
+import {CursorRange} from '../../../common/cursors/range.js';
+import {Output} from '../output/output.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

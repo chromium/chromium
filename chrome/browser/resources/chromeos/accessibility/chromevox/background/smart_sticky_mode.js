@@ -7,9 +7,10 @@
  * when the current range is over an editable; restores sticky mode when not on
  * an editable.
  */
-import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chromevox_state.js';
-import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {CursorRange} from '../../common/cursors/range.js';
+
+import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
+import {ChromeVoxBackground} from './classic_background.js';
 
 /** @implements {ChromeVoxStateObserver} */
 export class SmartStickyMode {

@@ -6,7 +6,7 @@
  * @fileoverview Translates text to braille, optionally with some parts
  * uncontracted.
  */
-import {BrailleTextStyleSpan, ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from '/chromevox/background/braille/spans.js';
+import {BrailleTextStyleSpan, ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from './spans.js';
 
 /**
  * A wrapper around one or two braille translators that uses contracted

@@ -5,18 +5,19 @@
 /**
  * @fileoverview Provides output services for ChromeVox.
  */
-import {ValueSelectionSpan, ValueSpan} from '/chromevox/background/braille/spans.js';
-import {EventSourceState} from '/chromevox/background/event_source.js';
-import {OutputAncestryInfo} from '/chromevox/background/output/output_ancestry_info.js';
-import {OutputFormatParser, OutputFormatParserObserver} from '/chromevox/background/output/output_format_parser.js';
-import {OutputFormatTree} from '/chromevox/background/output/output_format_tree.js';
-import {OutputRulesStr} from '/chromevox/background/output/output_logger.js';
-import {OutputRoleInfo} from '/chromevox/background/output/output_role_info.js';
-import {PhoneticData} from '/chromevox/background/phonetic_data.js';
-import {EventSourceType} from '/chromevox/common/event_source_type.js';
-import {LocaleOutputHelper} from '/chromevox/common/locale_output_helper.js';
-import {Cursor, CURSOR_NODE_INDEX} from '/common/cursors/cursor.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
+import {CursorRange} from '../../../common/cursors/range.js';
+import {EventSourceType} from '../../common/event_source_type.js';
+import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
+import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
+import {EventSourceState} from '../event_source.js';
+import {PhoneticData} from '../phonetic_data.js';
+
+import {OutputAncestryInfo} from './output_ancestry_info.js';
+import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
+import {OutputFormatTree} from './output_format_tree.js';
+import {OutputRulesStr} from './output_logger.js';
+import {OutputRoleInfo} from './output_role_info.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;

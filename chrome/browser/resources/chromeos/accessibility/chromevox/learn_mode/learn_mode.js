@@ -6,12 +6,12 @@
  * @fileoverview Script for ChromeOS keyboard explorer.
  *
  */
-import {BrailleCommandData} from '/chromevox/common/braille/braille_command_data.js';
-import {CommandStore} from '/chromevox/common/command_store.js';
-import {GestureCommandData} from '/chromevox/common/gesture_command_data.js';
-import {KeyMap} from '/chromevox/common/key_map.js';
-import {KeyUtil} from '/chromevox/common/key_util.js';
-import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
+import {BrailleCommandData} from '../common/braille/braille_command_data.js';
+import {CommandStore} from '../common/command_store.js';
+import {GestureCommandData} from '../common/gesture_command_data.js';
+import {KeyMap} from '../common/key_map.js';
+import {KeyUtil} from '../common/key_util.js';
+import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 
 /**
  * Class to manage the keyboard explorer.

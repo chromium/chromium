@@ -6,12 +6,13 @@
  * @fileoverview Handles speech parsing for dictation.
  */
 
-import {InputController} from '/accessibility_common/dictation/input_controller.js';
-import {Macro} from '/accessibility_common/dictation/macros/macro.js';
-import {InputTextStrategy} from '/accessibility_common/dictation/parse/input_text_strategy.js';
-import {ParseStrategy} from '/accessibility_common/dictation/parse/parse_strategy.js';
-import {PumpkinParseStrategy} from '/accessibility_common/dictation/parse/pumpkin_parse_strategy.js';
-import {SimpleParseStrategy} from '/accessibility_common/dictation/parse/simple_parse_strategy.js';
+import {InputController} from '../input_controller.js';
+import {Macro} from '../macros/macro.js';
+
+import {InputTextStrategy} from './input_text_strategy.js';
+import {ParseStrategy} from './parse_strategy.js';
+import {PumpkinParseStrategy} from './pumpkin_parse_strategy.js';
+import {SimpleParseStrategy} from './simple_parse_strategy.js';
 
 /** SpeechParser handles parsing spoken transcripts into Macros. */
 export class SpeechParser {

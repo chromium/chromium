@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FocusHandler} from '/accessibility_common/dictation/focus_handler.js';
-import {InputController} from '/accessibility_common/dictation/input_controller.js';
-import {HiddenMacroManager} from '/accessibility_common/dictation/macros/hidden_macro_manager.js';
-import {Macro} from '/accessibility_common/dictation/macros/macro.js';
-import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
-import {MetricsUtils} from '/accessibility_common/dictation/metrics_utils.js';
-import {SpeechParser} from '/accessibility_common/dictation/parse/speech_parser.js';
-import {HintContext, UIController, UIState} from '/accessibility_common/dictation/ui_controller.js';
+import {FocusHandler} from './focus_handler.js';
+import {InputController} from './input_controller.js';
+import {HiddenMacroManager} from './macros/hidden_macro_manager.js';
+import {Macro} from './macros/macro.js';
+import {MacroName} from './macros/macro_names.js';
+import {MetricsUtils} from './metrics_utils.js';
+import {SpeechParser} from './parse/speech_parser.js';
+import {HintContext, UIController, UIState} from './ui_controller.js';
 
 const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
 const ResultEvent =

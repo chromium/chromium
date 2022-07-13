@@ -5,8 +5,9 @@
 /**
  * @fileoverview Keeps track of the current braille translators.
  */
-import {ExpandingBrailleTranslator} from '/chromevox/background/braille/expanding_braille_translator.js';
-import {BrailleTable} from '/chromevox/common/braille/braille_table.js';
+import {BrailleTable} from '../../common/braille/braille_table.js';
+
+import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 
 export class BrailleTranslatorManager {
   /**

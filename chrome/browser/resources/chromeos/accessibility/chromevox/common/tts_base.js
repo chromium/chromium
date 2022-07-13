@@ -6,7 +6,7 @@
  * @fileoverview A base class for Tts living on Chrome platforms.
  *
  */
-import {AbstractTts} from '/chromevox/common/abstract_tts.js';
+import {AbstractTts} from './abstract_tts.js';
 
 export class ChromeTtsBase extends AbstractTts {
   constructor() {

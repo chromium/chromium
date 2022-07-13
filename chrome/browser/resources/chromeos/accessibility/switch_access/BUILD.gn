@@ -186,7 +186,6 @@ js_type_check("closure_compile") {
     "../common:repeated_tree_change_handler",
     "../common:tree_walker",
   ]
-  closure_flags = [ "js_module_root=../" ]
 }
 
 js_library("action_manager") {

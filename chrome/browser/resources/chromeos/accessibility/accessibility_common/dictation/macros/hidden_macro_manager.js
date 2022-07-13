@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DeletePrevSentMacro} from '/accessibility_common/dictation/macros/delete_prev_sent_macro.js';
-import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
-import {NavNextSentMacro, NavPrevSentMacro} from '/accessibility_common/dictation/macros/nav_sent_macro.js';
-import {DeletePrevWordMacro, NavNextWordMacro, NavPrevWordMacro} from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
-import {SmartDeletePhraseMacro} from '/accessibility_common/dictation/macros/smart_delete_phrase_macro.js';
-import {SmartInsertBeforeMacro} from '/accessibility_common/dictation/macros/smart_insert_before_macro.js';
-import {SmartReplacePhraseMacro} from '/accessibility_common/dictation/macros/smart_replace_phrase_macro.js';
-import {SmartSelectBetweenMacro} from '/accessibility_common/dictation/macros/smart_select_between_macro.js';
-import {StopListeningMacro} from '/accessibility_common/dictation/macros/stop_listening_macro.js';
+import {DeletePrevSentMacro} from './delete_prev_sent_macro.js';
+import {MacroName} from './macro_names.js';
+import {NavNextSentMacro, NavPrevSentMacro} from './nav_sent_macro.js';
+import {DeletePrevWordMacro, NavNextWordMacro, NavPrevWordMacro} from './repeatable_key_press_macro.js';
+import {SmartDeletePhraseMacro} from './smart_delete_phrase_macro.js';
+import {SmartInsertBeforeMacro} from './smart_insert_before_macro.js';
+import {SmartReplacePhraseMacro} from './smart_replace_phrase_macro.js';
+import {SmartSelectBetweenMacro} from './smart_select_between_macro.js';
+import {StopListeningMacro} from './stop_listening_macro.js';
 
 /**
  * Class that manages "hidden" macros e.g. macros that have been fully

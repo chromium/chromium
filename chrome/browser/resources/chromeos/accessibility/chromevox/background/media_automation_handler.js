@@ -5,7 +5,7 @@
 /**
  * @fileoverview Handles media automation events.
  */
-import {BaseAutomationHandler} from '/chromevox/background/base_automation_handler.js';
+import {BaseAutomationHandler} from './base_automation_handler.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

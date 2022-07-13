@@ -6,7 +6,7 @@
  * @fileoverview Listens for download events and provides corresponding
  * notifications in ChromeVox.
  */
-import {Output} from '/chromevox/background/output/output.js';
+import {Output} from './output/output.js';
 
 export class DownloadHandler {}
 

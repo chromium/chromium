@@ -5,31 +5,32 @@
 /**
  * @fileoverview ChromeVox commands.
  */
-import {AutoScrollHandler} from '/chromevox/background/auto_scroll_handler.js';
-import {BrailleBackground} from '/chromevox/background/braille/braille_background.js';
-import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_captions_background.js';
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
-import {Color} from '/chromevox/background/color.js';
-import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
-import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
-import {TypingEcho} from '/chromevox/background/editing/editable_text_base.js';
-import {EventSourceState} from '/chromevox/background/event_source.js';
-import {GestureInterface} from '/chromevox/background/gesture_interface.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {PhoneticData} from '/chromevox/background/phonetic_data.js';
-import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
-import {SmartStickyMode} from '/chromevox/background/smart_sticky_mode.js';
-import {AbstractTts} from '/chromevox/common/abstract_tts.js';
-import {CommandStore} from '/chromevox/common/command_store.js';
-import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
-import {EventSourceType} from '/chromevox/common/event_source_type.js';
-import {GestureGranularity} from '/chromevox/common/gesture_command_data.js';
-import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
-import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
-import {Cursor, CursorUnit} from '/common/cursors/cursor.js';
-import {CursorRange} from '/common/cursors/range.js';
-import {EventGenerator} from '/common/event_generator.js';
+import {Cursor, CursorUnit} from '../../common/cursors/cursor.js';
+import {CursorRange} from '../../common/cursors/range.js';
+import {EventGenerator} from '../../common/event_generator.js';
+import {AbstractTts} from '../common/abstract_tts.js';
+import {CommandStore} from '../common/command_store.js';
+import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
+import {EventSourceType} from '../common/event_source_type.js';
+import {GestureGranularity} from '../common/gesture_command_data.js';
+import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
+import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+
+import {AutoScrollHandler} from './auto_scroll_handler.js';
+import {BrailleBackground} from './braille/braille_background.js';
+import {BrailleCaptionsBackground} from './braille/braille_captions_background.js';
+import {ChromeVoxState} from './chromevox_state.js';
+import {ChromeVoxBackground} from './classic_background.js';
+import {Color} from './color.js';
+import {CommandHandlerInterface} from './command_handler_interface.js';
+import {DesktopAutomationInterface} from './desktop_automation_interface.js';
+import {TypingEcho} from './editing/editable_text_base.js';
+import {EventSourceState} from './event_source.js';
+import {GestureInterface} from './gesture_interface.js';
+import {Output} from './output/output.js';
+import {PhoneticData} from './phonetic_data.js';
+import {ChromeVoxPrefs} from './prefs.js';
+import {SmartStickyMode} from './smart_sticky_mode.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;

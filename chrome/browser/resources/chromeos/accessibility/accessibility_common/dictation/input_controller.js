@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EditingUtil} from '/accessibility_common/dictation/editing_util.js';
+import {EditingUtil} from './editing_util.js';
 
 const EventType = chrome.automation.EventType;
 

@@ -7,9 +7,9 @@
  * the background context (background page or options page).
  *
  */
-import {ConsoleTts} from '/chromevox/background/console_tts.js';
-import {EventStreamLogger} from '/chromevox/background/logging/event_stream_logger.js';
-import {LogUrlWatcher} from '/chromevox/background/logging/log_url_watcher.js';
+import {ConsoleTts} from './console_tts.js';
+import {EventStreamLogger} from './logging/event_stream_logger.js';
+import {LogUrlWatcher} from './logging/log_url_watcher.js';
 
 /**
  * This object has default values of preferences and contains the common

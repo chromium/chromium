@@ -5,11 +5,12 @@
 /**
  * @fileoverview Handles automation events on the currently focused node.
  */
-import {BaseAutomationHandler} from '/chromevox/background/base_automation_handler.js';
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {CursorRange} from '../../common/cursors/range.js';
+import {ChromeVoxEvent} from '../common/custom_automation_event.js';
+
+import {BaseAutomationHandler} from './base_automation_handler.js';
+import {ChromeVoxState} from './chromevox_state.js';
+import {Output} from './output/output.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

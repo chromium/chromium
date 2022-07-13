@@ -6,10 +6,11 @@
  * @fileoverview Handles automation intents for speech feedback.
  * Braille is *not* handled in this module.
  */
-import {EditableLine} from '/chromevox/background/editing/editable_line.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {OutputRoleInfo} from '/chromevox/background/output/output_role_info.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {CursorRange} from '../../../common/cursors/range.js';
+import {Output} from '../output/output.js';
+import {OutputRoleInfo} from '../output/output_role_info.js';
+
+import {EditableLine} from './editable_line.js';
 
 const AutomationIntent = chrome.automation.AutomationIntent;
 const Dir = constants.Dir;

@@ -5,20 +5,21 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
-import {BrailleCommandData} from '/chromevox/common/braille/braille_command_data.js';
-import {CommandStore} from '/chromevox/common/command_store.js';
-import {EventSourceType} from '/chromevox/common/event_source_type.js';
-import {GestureCommandData} from '/chromevox/common/gesture_command_data.js';
-import {KeyMap} from '/chromevox/common/key_map.js';
-import {KeyUtil} from '/chromevox/common/key_util.js';
-import {LocaleOutputHelper} from '/chromevox/common/locale_output_helper.js';
-import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
-import {ISearchUI} from '/chromevox/panel/i_search_ui.js';
-import {PanelInterface} from '/chromevox/panel/panel_interface.js';
-import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from '/chromevox/panel/panel_menu.js';
-import {PanelMode, PanelModeInfo} from '/chromevox/panel/panel_mode.js';
-import {CursorRange} from '/common/cursors/range.js';
-import {EventGenerator} from '/common/event_generator.js';
+import {CursorRange} from '../../common/cursors/range.js';
+import {EventGenerator} from '../../common/event_generator.js';
+import {BrailleCommandData} from '../common/braille/braille_command_data.js';
+import {CommandStore} from '../common/command_store.js';
+import {EventSourceType} from '../common/event_source_type.js';
+import {GestureCommandData} from '../common/gesture_command_data.js';
+import {KeyMap} from '../common/key_map.js';
+import {KeyUtil} from '../common/key_util.js';
+import {LocaleOutputHelper} from '../common/locale_output_helper.js';
+import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+
+import {ISearchUI} from './i_search_ui.js';
+import {PanelInterface} from './panel_interface.js';
+import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
+import {PanelMode, PanelModeInfo} from './panel_mode.js';
 
 /**
  * Class to manage the panel.

@@ -5,10 +5,12 @@
 /**
  * @fileoverview Handles auto scrolling on navigation.
  */
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
-import {CursorUnit} from '/common/cursors/cursor.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {CursorUnit} from '../../common/cursors/cursor.js';
+import {CursorRange} from '../../common/cursors/range.js';
+
+import {ChromeVoxState} from './chromevox_state.js';
+import {CommandHandlerInterface} from './command_handler_interface.js';
+
 
 
 // setTimeout and its clean-up are referencing each other. So, we need to set

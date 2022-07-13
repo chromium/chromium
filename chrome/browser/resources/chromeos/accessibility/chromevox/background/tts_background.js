@@ -7,10 +7,11 @@
  * extension API.
  */
 
-import {PhoneticData} from '/chromevox/background/phonetic_data.js';
-import {AbstractTts} from '/chromevox/common/abstract_tts.js';
-import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
-import {ChromeTtsBase} from '/chromevox/common/tts_base.js';
+import {AbstractTts} from '../common/abstract_tts.js';
+import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {ChromeTtsBase} from '../common/tts_base.js';
+
+import {PhoneticData} from './phonetic_data.js';
 
 const Utterance = class {
   /**

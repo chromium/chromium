@@ -5,11 +5,12 @@
 /**
  * @fileoverview Sends Braille commands to the Braille API.
  */
-import {BrailleDisplayManager} from '/chromevox/background/braille/braille_display_manager.js';
-import {BrailleInputHandler} from '/chromevox/background/braille/braille_input_handler.js';
-import {BrailleKeyEventRewriter} from '/chromevox/background/braille/braille_key_event_rewriter.js';
-import {BrailleTranslatorManager} from '/chromevox/background/braille/braille_translator_manager.js';
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
+import {ChromeVoxState} from '../chromevox_state.js';
+
+import {BrailleDisplayManager} from './braille_display_manager.js';
+import {BrailleInputHandler} from './braille_input_handler.js';
+import {BrailleKeyEventRewriter} from './braille_key_event_rewriter.js';
+import {BrailleTranslatorManager} from './braille_translator_manager.js';
 
 /** @implements {BrailleInterface} */
 export class BrailleBackground {

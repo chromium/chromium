@@ -5,8 +5,8 @@
 /**
  * @fileoverview Interface to prevent circular dependencies.
  */
-import {BaseAutomationHandler} from '/chromevox/background/base_automation_handler.js';
-import {TextEditHandler} from '/chromevox/background/editing/editing.js';
+import {BaseAutomationHandler} from './base_automation_handler.js';
+import {TextEditHandler} from './editing/editing.js';
 
 export class DesktopAutomationInterface extends BaseAutomationHandler {
   /** @type {TextEditHandler} */

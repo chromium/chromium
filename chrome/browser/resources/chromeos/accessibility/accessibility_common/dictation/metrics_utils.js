@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Macro} from '/accessibility_common/dictation/macros/macro.js';
+import {Macro} from './macros/macro.js';
 
 const SpeechRecognitionType =
     chrome.speechRecognitionPrivate.SpeechRecognitionType;

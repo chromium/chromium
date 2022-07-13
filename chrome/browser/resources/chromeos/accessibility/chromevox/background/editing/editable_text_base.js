@@ -13,8 +13,8 @@
  * extended to override methods that extract lines for multiline fields
  * or to provide other customizations.
  */
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {AbstractTts} from '/chromevox/common/abstract_tts.js';
+import {AbstractTts} from '../../common/abstract_tts.js';
+import {ChromeVoxState} from '../chromevox_state.js';
 
 /**
  * A class containing the information needed to speak

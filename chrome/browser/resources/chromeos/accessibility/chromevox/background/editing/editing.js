@@ -6,18 +6,19 @@
  * @fileoverview Processes events related to editing text and emits the
  * appropriate spoken and braille feedback.
  */
-import {BrailleBackground} from '/chromevox/background/braille/braille_background.js';
-import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '/chromevox/background/braille/spans.js';
-import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chromevox_state.js';
-import {Color} from '/chromevox/background/color.js';
-import {EditableLine} from '/chromevox/background/editing/editable_line.js';
-import {ChromeVoxEditableTextBase, TextChangeEvent} from '/chromevox/background/editing/editable_text_base.js';
-import {IntentHandler} from '/chromevox/background/editing/intent_handler.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {AbstractTts} from '/chromevox/common/abstract_tts.js';
-import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
-import {Cursor, CursorMovement, CursorUnit} from '/common/cursors/cursor.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {Cursor, CursorMovement, CursorUnit} from '../../../common/cursors/cursor.js';
+import {CursorRange} from '../../../common/cursors/range.js';
+import {AbstractTts} from '../../common/abstract_tts.js';
+import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
+import {BrailleBackground} from '../braille/braille_background.js';
+import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
+import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
+import {Color} from '../color.js';
+import {Output} from '../output/output.js';
+
+import {EditableLine} from './editable_line.js';
+import {ChromeVoxEditableTextBase, TextChangeEvent} from './editable_text_base.js';
+import {IntentHandler} from './intent_handler.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationIntent = chrome.automation.AutomationIntent;

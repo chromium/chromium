@@ -6,9 +6,9 @@
  * @fileoverview Calculates the menu items for the node menus in the ChromeVox
  * panel.
  */
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {CursorRange} from '../../../common/cursors/range.js';
+import {ChromeVoxState} from '../chromevox_state.js';
+import {Output} from '../output/output.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 

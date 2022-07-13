@@ -5,7 +5,7 @@
 /**
  * @fileoverview Provides a push parser for Output format rules.
  */
-import {OutputFormatTree} from '/chromevox/background/output/output_format_tree.js';
+import {OutputFormatTree} from './output_format_tree.js';
 
 /**
  * Implemented by objects that wish to observe tokens from parsing Output format

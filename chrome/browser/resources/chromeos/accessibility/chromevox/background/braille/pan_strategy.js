@@ -6,7 +6,7 @@
  * @fileoverview Logic for panning a braille display within a line of braille
  * content that might not fit on a single display.
  */
-import {CURSOR_DOTS} from '/chromevox/background/braille/cursor_dots.js';
+import {CURSOR_DOTS} from './cursor_dots.js';
 
 export class PanStrategy {
   constructor() {

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Autoclick} from '/accessibility_common/autoclick/autoclick.js';
-import {Dictation} from '/accessibility_common/dictation/dictation.js';
-import {Magnifier} from '/accessibility_common/magnifier/magnifier.js';
-import {InstanceChecker} from '/common/instance_checker.js';
+import {InstanceChecker} from '../common/instance_checker.js';
+
+import {Autoclick} from './autoclick/autoclick.js';
+import {Dictation} from './dictation/dictation.js';
+import {Magnifier} from './magnifier/magnifier.js';
 
 /**
  * Class to manage loading resources depending on which Accessibility features

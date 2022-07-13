@@ -7,7 +7,7 @@
  * the automation tree.
  */
 
-import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit, WrappingCursor} from '/common/cursors/cursor.js';
+import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit, WrappingCursor} from './cursor.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;

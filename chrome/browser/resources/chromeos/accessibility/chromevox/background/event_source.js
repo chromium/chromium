@@ -5,7 +5,7 @@
 /**
  * @fileoverview Tracks event sources.
  */
-import {EventSourceType} from '/chromevox/common/event_source_type.js';
+import {EventSourceType} from '../common/event_source_type.js';
 
 export const EventSourceState = {};
 

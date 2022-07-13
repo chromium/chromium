@@ -6,7 +6,7 @@
  * @fileoverview Interface to prevent circular dependencies between
  * CommandHandler and GestureCommandHandler.
  */
-import {GestureGranularity} from '/chromevox/common/gesture_command_data.js';
+import {GestureGranularity} from '../common/gesture_command_data.js';
 
 export const GestureInterface = {};
 

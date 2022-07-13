@@ -5,9 +5,10 @@
 /**
  * @fileoverview Handles output for Chrome's built-in find.
  */
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {CursorRange} from '../../common/cursors/range.js';
+
+import {ChromeVoxState} from './chromevox_state.js';
+import {Output} from './output/output.js';
 
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 

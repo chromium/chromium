@@ -6,12 +6,13 @@
  * @fileoverview Handles logic for the ChromeVox panel that requires state from
  * the background context.
  */
-import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chromevox_state.js';
-import {ISearch} from '/chromevox/background/panel/i_search.js';
-import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
-import {PanelNodeMenuBackground} from '/chromevox/background/panel/panel_node_menu_background.js';
-import {PanelTabMenuBackground} from '/chromevox/background/panel/panel_tab_menu_background.js';
-import {CursorRange} from '/common/cursors/range.js';
+import {CursorRange} from '../../../common/cursors/range.js';
+import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
+
+import {ISearch} from './i_search.js';
+import {ISearchHandler} from './i_search_handler.js';
+import {PanelNodeMenuBackground} from './panel_node_menu_background.js';
+import {PanelTabMenuBackground} from './panel_tab_menu_background.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 

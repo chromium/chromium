@@ -19,7 +19,7 @@
  * To retrieve static data about user commands, see both CommandStore and
  * UserCommands.
  */
-import {KeySequence} from '/chromevox/common/key_sequence.js';
+import {KeySequence} from './key_sequence.js';
 
 export class KeyMap {
   /**

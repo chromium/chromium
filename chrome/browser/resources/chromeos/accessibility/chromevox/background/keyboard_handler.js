@@ -5,12 +5,13 @@
 /**
  * @fileoverview ChromeVox keyboard handler.
  */
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {EventSourceState} from '/chromevox/background/event_source.js';
-import {MathHandler} from '/chromevox/background/math_handler.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {EventSourceType} from '/chromevox/common/event_source_type.js';
-import {ChromeVoxKbHandler} from '/chromevox/common/keyboard_handler.js';
+import {EventSourceType} from '../common/event_source_type.js';
+import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
+
+import {ChromeVoxState} from './chromevox_state.js';
+import {EventSourceState} from './event_source.js';
+import {MathHandler} from './math_handler.js';
+import {Output} from './output/output.js';
 
 /**
  * @enum {string}

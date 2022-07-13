@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Navigator} from '/switch_access/navigator.js';
-import {SwitchAccess} from '/switch_access/switch_access.js';
-import {SAConstants} from '/switch_access/switch_access_constants.js';
+import {Navigator} from './navigator.js';
+import {SwitchAccess} from './switch_access.js';
+import {SAConstants} from './switch_access_constants.js';
 
 /**
  * Class to handle auto-scan behavior.

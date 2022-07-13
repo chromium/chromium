@@ -169,7 +169,6 @@ js_type_check("closure_compile") {
     "../common:rect_util",
     "../common:tree_walker",
   ]
-  closure_flags = [ "js_module_root=../" ]
 }
 
 js_library("select_to_speak") {

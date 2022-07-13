@@ -2,34 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrailleCommandHandler} from '/chromevox/background/braille/braille_command_handler.js';
-import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
-import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
-import {CommandHandler} from '/chromevox/background/command_handler.js';
-import {CommandHandlerInterface} from '/chromevox/background/command_handler_interface.js';
-import {ConsoleTts} from '/chromevox/background/console_tts.js';
-import {DesktopAutomationHandler} from '/chromevox/background/desktop_automation_handler.js';
-import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
-import {DownloadHandler} from '/chromevox/background/download_handler.js';
-import {Earcons} from '/chromevox/background/earcons.js';
-import {FindHandler} from '/chromevox/background/find_handler.js';
-import {FocusAutomationHandler} from '/chromevox/background/focus_automation_handler.js';
-import {GestureCommandHandler} from '/chromevox/background/gesture_command_handler.js';
-import {BackgroundKeyboardHandler} from '/chromevox/background/keyboard_handler.js';
-import {LiveRegions} from '/chromevox/background/live_regions.js';
-import {MathHandler} from '/chromevox/background/math_handler.js';
-import {MediaAutomationHandler} from '/chromevox/background/media_automation_handler.js';
-import {Output} from '/chromevox/background/output/output.js';
-import {PageLoadSoundHandler} from '/chromevox/background/page_load_sound_handler.js';
-import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
-import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
-import {RangeAutomationHandler} from '/chromevox/background/range_automation_handler.js';
-import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
-import {LocaleOutputHelper} from '/chromevox/common/locale_output_helper.js';
-import {PanelCommand, PanelCommandType} from '/chromevox/common/panel_command.js';
-import {JaPhoneticMap} from '/chromevox/third_party/tamachiyomi/ja_phonetic_map.js';
-import {CursorRange} from '/common/cursors/range.js';
-import {InstanceChecker} from '/common/instance_checker.js';
+import {CursorRange} from '../../common/cursors/range.js';
+import {InstanceChecker} from '../../common/instance_checker.js';
+import {ExtensionBridge} from '../common/extension_bridge.js';
+import {LocaleOutputHelper} from '../common/locale_output_helper.js';
+import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
+
+import {BrailleCommandHandler} from './braille/braille_command_handler.js';
+import {ChromeVoxState} from './chromevox_state.js';
+import {ChromeVoxBackground} from './classic_background.js';
+import {CommandHandler} from './command_handler.js';
+import {CommandHandlerInterface} from './command_handler_interface.js';
+import {ConsoleTts} from './console_tts.js';
+import {DesktopAutomationHandler} from './desktop_automation_handler.js';
+import {DesktopAutomationInterface} from './desktop_automation_interface.js';
+import {DownloadHandler} from './download_handler.js';
+import {Earcons} from './earcons.js';
+import {FindHandler} from './find_handler.js';
+import {FocusAutomationHandler} from './focus_automation_handler.js';
+import {GestureCommandHandler} from './gesture_command_handler.js';
+import {BackgroundKeyboardHandler} from './keyboard_handler.js';
+import {LiveRegions} from './live_regions.js';
+import {MathHandler} from './math_handler.js';
+import {MediaAutomationHandler} from './media_automation_handler.js';
+import {Output} from './output/output.js';
+import {PageLoadSoundHandler} from './page_load_sound_handler.js';
+import {PanelBackground} from './panel/panel_background.js';
+import {ChromeVoxPrefs} from './prefs.js';
+import {RangeAutomationHandler} from './range_automation_handler.js';
 
 
 /**

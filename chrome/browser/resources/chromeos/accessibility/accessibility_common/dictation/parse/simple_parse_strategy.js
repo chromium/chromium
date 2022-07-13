@@ -7,21 +7,22 @@
  * it into a Macro.
  */
 
-import {InputController} from '/accessibility_common/dictation/input_controller.js';
-import {DeletePrevSentMacro} from '/accessibility_common/dictation/macros/delete_prev_sent_macro.js';
-import {HiddenMacroManager} from '/accessibility_common/dictation/macros/hidden_macro_manager.js';
-import {InputTextViewMacro, NewLineMacro} from '/accessibility_common/dictation/macros/input_text_view_macro.js';
-import {ListCommandsMacro} from '/accessibility_common/dictation/macros/list_commands_macro.js';
-import {Macro} from '/accessibility_common/dictation/macros/macro.js';
-import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
-import {NavNextSentMacro, NavPrevSentMacro} from '/accessibility_common/dictation/macros/nav_sent_macro.js';
-import * as RepeatableKeyPress from '/accessibility_common/dictation/macros/repeatable_key_press_macro.js';
-import {SmartDeletePhraseMacro} from '/accessibility_common/dictation/macros/smart_delete_phrase_macro.js';
-import {SmartInsertBeforeMacro} from '/accessibility_common/dictation/macros/smart_insert_before_macro.js';
-import {SmartReplacePhraseMacro} from '/accessibility_common/dictation/macros/smart_replace_phrase_macro.js';
-import {SmartSelectBetweenMacro} from '/accessibility_common/dictation/macros/smart_select_between_macro.js';
-import {StopListeningMacro} from '/accessibility_common/dictation/macros/stop_listening_macro.js';
-import {ParseStrategy} from '/accessibility_common/dictation/parse/parse_strategy.js';
+import {InputController} from '../input_controller.js';
+import {DeletePrevSentMacro} from '../macros/delete_prev_sent_macro.js';
+import {HiddenMacroManager} from '../macros/hidden_macro_manager.js';
+import {InputTextViewMacro, NewLineMacro} from '../macros/input_text_view_macro.js';
+import {ListCommandsMacro} from '../macros/list_commands_macro.js';
+import {Macro} from '../macros/macro.js';
+import {MacroName} from '../macros/macro_names.js';
+import {NavNextSentMacro, NavPrevSentMacro} from '../macros/nav_sent_macro.js';
+import * as RepeatableKeyPress from '../macros/repeatable_key_press_macro.js';
+import {SmartDeletePhraseMacro} from '../macros/smart_delete_phrase_macro.js';
+import {SmartInsertBeforeMacro} from '../macros/smart_insert_before_macro.js';
+import {SmartReplacePhraseMacro} from '../macros/smart_replace_phrase_macro.js';
+import {SmartSelectBetweenMacro} from '../macros/smart_select_between_macro.js';
+import {StopListeningMacro} from '../macros/stop_listening_macro.js';
+
+import {ParseStrategy} from './parse_strategy.js';
 
 /**
  * @typedef {{
