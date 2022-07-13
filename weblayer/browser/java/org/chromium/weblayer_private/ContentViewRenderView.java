@@ -872,7 +872,11 @@ public class ContentViewRenderView
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        if (mWebContents == null) return;
         updateWebContentsSize();
+        Size viewportSize = getViewportSize();
+        ContentViewRenderViewJni.get().onViewportSizeChanged(
+                mNativeContentViewRenderView, viewportSize.getWidth(), viewportSize.getHeight());
     }
 
     /**
@@ -1093,6 +1097,7 @@ public class ContentViewRenderView
         void setCurrentWebContents(long nativeContentViewRenderView, WebContents webContents);
         void onPhysicalBackingSizeChanged(long nativeContentViewRenderView, WebContents webContents,
                 int width, int height, boolean forConfigChange);
+        void onViewportSizeChanged(long nativeContentViewRenderView, int width, int height);
         void surfaceCreated(long nativeContentViewRenderView);
         void surfaceDestroyed(long nativeContentViewRenderView, boolean cacheBackBuffer);
         void surfaceChanged(long nativeContentViewRenderView, boolean canBeUsedWithSurfaceControl,

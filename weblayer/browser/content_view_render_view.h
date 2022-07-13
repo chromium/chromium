@@ -40,9 +40,9 @@ class ContentViewRenderView : public content::CompositorClient {
     return root_container_layer_;
   }
 
-  // Height, in pixels.
-  int height() const { return height_; }
-  void SetHeightChangedListener(base::RepeatingClosure callback);
+  // Content Height, in pixels.
+  int content_height() const { return content_height_; }
+  void SetContentHeightChangedListener(base::RepeatingClosure callback);
 
   // Methods called from Java via JNI -----------------------------------------
   void Destroy(JNIEnv* env);
@@ -55,6 +55,7 @@ class ContentViewRenderView : public content::CompositorClient {
       jint width,
       jint height,
       jboolean for_config_change);
+  void OnViewportSizeChanged(JNIEnv* env, jint width, jint height);
   void SurfaceCreated(JNIEnv* env);
   void SurfaceDestroyed(JNIEnv* env, jboolean cache_back_buffer);
   void SurfaceChanged(JNIEnv* env,
@@ -94,8 +95,8 @@ class ContentViewRenderView : public content::CompositorClient {
   scoped_refptr<cc::Layer> root_container_layer_;
   scoped_refptr<cc::Layer> web_contents_layer_;
 
-  base::RepeatingClosure height_changed_listener_;
-  int height_ = 0;
+  base::RepeatingClosure content_height_changed_listener_;
+  int content_height_ = 0;
 };
 
 }  // namespace weblayer

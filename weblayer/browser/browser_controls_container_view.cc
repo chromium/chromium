@@ -36,7 +36,7 @@ BrowserControlsContainerView::BrowserControlsContainerView(
       is_top_(is_top) {
   DCHECK(content_view_render_view_);
   if (!is_top_) {
-    content_view_render_view_->SetHeightChangedListener(
+    content_view_render_view_->SetContentHeightChangedListener(
         base::BindRepeating(&BrowserControlsContainerView::ContentHeightChanged,
                             base::Unretained(this)));
   }
@@ -44,7 +44,7 @@ BrowserControlsContainerView::BrowserControlsContainerView(
 
 BrowserControlsContainerView::~BrowserControlsContainerView() {
   if (!is_top_) {
-    content_view_render_view_->SetHeightChangedListener(
+    content_view_render_view_->SetContentHeightChangedListener(
         base::RepeatingClosure());
   }
 }
@@ -75,7 +75,8 @@ int BrowserControlsContainerView::GetContentHeightDelta() {
   if (is_top_)
     return web_contents()->GetNativeView()->GetLayer()->position().y();
 
-  return content_view_render_view_->height() - controls_layer_->position().y();
+  return content_view_render_view_->content_height() -
+         controls_layer_->position().y();
 }
 
 bool BrowserControlsContainerView::IsFullyVisible() const {
@@ -175,8 +176,8 @@ void BrowserControlsContainerView::DoSetBottomControlsOffset() {
   if (!controls_layer_)
     return;
   controls_layer_->SetPosition(
-      gfx::PointF(0, content_view_render_view_->height() - GetControlsHeight() +
-                         GetControlsOffset()));
+      gfx::PointF(0, content_view_render_view_->content_height() -
+                         GetControlsHeight() + GetControlsOffset()));
 }
 
 static jlong
