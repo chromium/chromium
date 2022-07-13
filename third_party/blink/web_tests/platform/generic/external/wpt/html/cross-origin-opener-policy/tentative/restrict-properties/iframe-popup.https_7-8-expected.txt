@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with same origin iframe, cross origin popup with window_open assert_equals: Iframe has cross origin access to the popup? expected "false" but got "true"
+PASS COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with same origin iframe, cross origin popup with anchor
+PASS COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with same origin iframe, cross origin popup with form
+FAIL COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with same site iframe, cross origin popup with window_open assert_equals: Iframe has cross origin access to the popup? expected "false" but got "true"
+PASS COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with same site iframe, cross origin popup with anchor
+PASS COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with same site iframe, cross origin popup with form
+Harness: the test ran to completion.
+
