@@ -487,6 +487,7 @@ group("gn_all") {
       "//net:quic_client",
       "//net:quic_server",
       "//sandbox/linux:chrome_sandbox",
+      "//sandbox/linux:sandbox_linux_unittests",
     ]
     if (!is_clang) {
       deps += [ "//testing:empty_main" ]
@@ -999,8 +1000,8 @@ if (is_chromeos_ash) {
       "//components/exo/wayland:wayland_client_tests",
       "//media:media_unittests",
       "//media/capture:capture_unittests",
-      "//sandbox:sandbox_unittests",
       "//sandbox/linux:chrome_sandbox",
+      "//sandbox/linux:sandbox_linux_unittests",
       "//third_party/breakpad:minidump_stackwalk($host_toolchain)",
       "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
       "//third_party/dawn/src/dawn/tests:dawn_unittests",
