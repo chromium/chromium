@@ -46,12 +46,12 @@ class ProximityAuthWebUIHandler
   void OnNewDevicesSynced() override;
 
   // Message handler callbacks.
-  void OnWebContentsInitialized(const base::ListValue* args);
-  void GetLogMessages(const base::ListValue* args);
-  void ClearLogBuffer(const base::ListValue* args);
-  void GetLocalState(const base::ListValue* args);
-  void ForceEnrollment(const base::ListValue* args);
-  void ForceDeviceSync(const base::ListValue* args);
+  void OnWebContentsInitialized(const base::Value::List& args);
+  void GetLogMessages(const base::Value::List& args);
+  void ClearLogBuffer(const base::Value::List& args);
+  void GetLocalState(const base::Value::List& args);
+  void ForceEnrollment(const base::Value::List& args);
+  void ForceDeviceSync(const base::Value::List& args);
 
   base::Value::Dict RemoteDeviceToDictionary(
       const multidevice::RemoteDeviceRef& remote_device);

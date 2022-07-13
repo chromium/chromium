@@ -158,32 +158,32 @@ ProximityAuthWebUIHandler::~ProximityAuthWebUIHandler() {
 }
 
 void ProximityAuthWebUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "onWebContentsInitialized",
       base::BindRepeating(&ProximityAuthWebUIHandler::OnWebContentsInitialized,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearLogBuffer",
       base::BindRepeating(&ProximityAuthWebUIHandler::ClearLogBuffer,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getLogMessages",
       base::BindRepeating(&ProximityAuthWebUIHandler::GetLogMessages,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getLocalState",
       base::BindRepeating(&ProximityAuthWebUIHandler::GetLocalState,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "forceEnrollment",
       base::BindRepeating(&ProximityAuthWebUIHandler::ForceEnrollment,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "forceDeviceSync",
       base::BindRepeating(&ProximityAuthWebUIHandler::ForceDeviceSync,
                           base::Unretained(this)));
@@ -221,7 +221,7 @@ void ProximityAuthWebUIHandler::OnNewDevicesSynced() {
 }
 
 void ProximityAuthWebUIHandler::OnWebContentsInitialized(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (!web_contents_initialized_) {
     device_sync_client_->AddObserver(this);
     multidevice::LogBuffer::GetInstance()->AddObserver(this);
@@ -229,7 +229,7 @@ void ProximityAuthWebUIHandler::OnWebContentsInitialized(
   }
 }
 
-void ProximityAuthWebUIHandler::GetLogMessages(const base::ListValue* args) {
+void ProximityAuthWebUIHandler::GetLogMessages(const base::Value::List& args) {
   base::ListValue json_logs;
   for (const auto& log : *multidevice::LogBuffer::GetInstance()->logs()) {
     json_logs.Append(
@@ -239,25 +239,25 @@ void ProximityAuthWebUIHandler::GetLogMessages(const base::ListValue* args) {
                                          json_logs);
 }
 
-void ProximityAuthWebUIHandler::ClearLogBuffer(const base::ListValue* args) {
+void ProximityAuthWebUIHandler::ClearLogBuffer(const base::Value::List& args) {
   // The OnLogBufferCleared() observer function will be called after the buffer
   // is cleared.
   multidevice::LogBuffer::GetInstance()->Clear();
 }
 
-void ProximityAuthWebUIHandler::ForceEnrollment(const base::ListValue* args) {
+void ProximityAuthWebUIHandler::ForceEnrollment(const base::Value::List& args) {
   device_sync_client_->ForceEnrollmentNow(
       base::BindOnce(&ProximityAuthWebUIHandler::OnForceEnrollmentNow,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ProximityAuthWebUIHandler::ForceDeviceSync(const base::ListValue* args) {
+void ProximityAuthWebUIHandler::ForceDeviceSync(const base::Value::List& args) {
   device_sync_client_->ForceSyncNow(
       base::BindOnce(&ProximityAuthWebUIHandler::OnForceSyncNow,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ProximityAuthWebUIHandler::GetLocalState(const base::ListValue* args) {
+void ProximityAuthWebUIHandler::GetLocalState(const base::Value::List& args) {
   // OnGetDebugInfo() will call NotifyGotLocalState() with the enrollment and
   // device sync state info.
   get_local_state_update_waiting_for_debug_info_ = true;
