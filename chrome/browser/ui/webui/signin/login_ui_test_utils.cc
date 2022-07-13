@@ -396,7 +396,11 @@ class SigninViewControllerTestUtil {
     if (!IsElementReady(dialog_web_contents, button_selector))
       return false;
 
-    return content::ExecJs(dialog_web_contents, button_selector + ".click();");
+    // content::ExecJs() might return false because this JavaScript execution
+    // terminates the renderer as a side effect.
+    std::ignore =
+        content::ExecJs(dialog_web_contents, button_selector + ".click();");
+    return true;
 #endif
   }
 
