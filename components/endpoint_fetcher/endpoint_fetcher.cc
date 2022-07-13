@@ -246,6 +246,11 @@ void EndpointFetcher::PerformRequest(
 void EndpointFetcher::OnResponseFetched(
     EndpointFetcherCallback endpoint_fetcher_callback,
     std::unique_ptr<std::string> response_body) {
+  int net_error_code = simple_url_loader_->NetError();
+  // The EndpointFetcher and its members will be destroyed after
+  // any of the below callbacks. Do not access The EndpointFetcher
+  // or its members after the callbacks.
+  simple_url_loader_.reset();
   if (response_body) {
     if (sanitize_response_) {
       data_decoder::JsonSanitizer::Sanitize(
@@ -261,12 +266,11 @@ void EndpointFetcher::OnResponseFetched(
   } else {
     auto response = std::make_unique<EndpointResponse>();
     // TODO(crbug.com/993393) Add more detailed error messaging
-    std::string net_error = net::ErrorToString(simple_url_loader_->NetError());
+    std::string net_error = net::ErrorToString(net_error_code);
     VLOG(1) << __func__ << " with response error: " << net_error;
     response->response = "There was a response error";
     std::move(endpoint_fetcher_callback).Run(std::move(response));
   }
-  simple_url_loader_.reset();
 }
 
 void EndpointFetcher::OnSanitizationResult(
@@ -280,6 +284,9 @@ void EndpointFetcher::OnSanitizationResult(
         "There was a sanitization error: " + result.error.value();
   else
     response->response = "There was an unknown sanitization error";
+  // The EndpointFetcher and its members will be destroyed after
+  // any the below callback. Do not access The EndpointFetcher
+  // or its members after the callback.
   std::move(endpoint_fetcher_callback).Run(std::move(response));
 }
 
