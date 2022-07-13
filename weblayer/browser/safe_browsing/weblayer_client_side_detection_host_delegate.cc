@@ -12,6 +12,7 @@
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/verdict_cache_manager_factory.h"
 
 namespace weblayer {
 
@@ -59,5 +60,11 @@ void WebLayerClientSideDetectionHostDelegate::AddReferrerChain(
     safe_browsing::ClientPhishingRequest* verdict,
     GURL current_url,
     const content::GlobalRenderFrameHostId& current_outermost_main_frame_id) {}
+
+raw_ptr<safe_browsing::VerdictCacheManager>
+WebLayerClientSideDetectionHostDelegate::GetCacheManager() {
+  return VerdictCacheManagerFactory::GetForBrowserContext(
+      web_contents_->GetBrowserContext());
+}
 
 }  // namespace weblayer

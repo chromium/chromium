@@ -208,6 +208,7 @@ source_set("client_side_detection") {
     "//components/safe_browsing/content/browser/web_ui:web_ui",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:allowlist_checker_client",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",

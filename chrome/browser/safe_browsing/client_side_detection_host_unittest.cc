@@ -1274,6 +1274,30 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
                 .min);
 }
 
+TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  GURL url("http://phishing.example.com/");
+  ClientPhishingRequest verdict;
+  verdict.set_client_score(1.0);
+  verdict.set_is_phishing(true);
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
+                                &kFalse, &kFalse);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  std::unique_ptr<ClientPhishingRequest> verdict_sent;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(MoveArg<0>(&verdict_sent));
+  PhishingDetectionDone(verdict.SerializeAsString());
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+  ASSERT_EQ(1, verdict_sent->population().page_load_tokens_size());
+}
+
 class ClientSideDetectionHostDebugFeaturesTest
     : public ClientSideDetectionHostTest {
  public:

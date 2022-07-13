@@ -547,6 +547,20 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     if (!verdict->is_phishing())
       return;
 
+    raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
+    if (cache_manager) {
+      ChromeUserPopulation::PageLoadToken token =
+          cache_manager->GetPageLoadToken(current_url_);
+      // It's possible that the token is not found because real time URL check
+      // is not performed for this navigation. Create a new page load token in
+      // this case.
+      if (!token.has_token_value()) {
+        token = cache_manager->CreatePageLoadToken(current_url_);
+      }
+      verdict->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+          &token);
+    }
+
     if (CanGetAccessToken()) {
       token_fetcher_->Start(
           base::BindOnce(&ClientSideDetectionHost::OnGotAccessToken,

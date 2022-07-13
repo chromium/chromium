@@ -42,6 +42,7 @@ class ChromeClientSideDetectionHostDelegate
                         GURL current_url,
                         const content::GlobalRenderFrameHostId&
                             current_outermost_main_frame_id) override;
+  raw_ptr<VerdictCacheManager> GetCacheManager() override;
 
   void SetNavigationObserverManagerForTesting(
       SafeBrowsingNavigationObserverManager* navigation_observer_manager) {
