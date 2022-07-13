@@ -166,6 +166,10 @@ int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForSessionId(
   return handler ? handler->GetArcRestoreWindowIdForSessionId(session_id) : 0;
 }
 
+bool DeskTemplateReadHandler::IsKnownArcSessionId(int32_t session_id) const {
+  return session_id_to_launch_id_.contains(session_id);
+}
+
 void DeskTemplateReadHandler::OnWindowInitialized(aura::Window* window) {
   // If there isn't restore data for ARC apps, we don't need to handle ARC app
   // windows restoration.
@@ -221,6 +225,9 @@ void DeskTemplateReadHandler::OnTaskCreated(const std::string& app_id,
                                             int32_t task_id,
                                             int32_t session_id) {
   int32_t launch_id = GetLaunchIdForArcSessionId(session_id);
+  // If the task's `session_id` isn't one we are tracking, then this task has
+  // not been created from a desk template launch. When this is the case, we
+  // don't track the task id.
   if (launch_id == 0)
     return;
 

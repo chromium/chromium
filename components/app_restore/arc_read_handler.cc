@@ -15,6 +15,14 @@
 #include "ui/aura/window.h"
 
 namespace app_restore {
+namespace {
+
+bool IsValidRestoreWindowId(int32_t restore_window_id) {
+  return restore_window_id != 0 &&
+         restore_window_id != kParentToHiddenContainer;
+}
+
+}  // namespace
 
 ArcReadHandler::ArcReadHandler(const base::FilePath& profile_path,
                                Delegate* delegate)
@@ -105,7 +113,7 @@ std::unique_ptr<AppLaunchInfo> ArcReadHandler::GetArcAppLaunchInfo(
 
 std::unique_ptr<WindowInfo> ArcReadHandler::GetWindowInfo(
     int32_t restore_window_id) {
-  if (restore_window_id == 0 || restore_window_id == kParentToHiddenContainer)
+  if (!IsValidRestoreWindowId(restore_window_id))
     return nullptr;
 
   auto it = window_id_to_app_id_.find(restore_window_id);
@@ -167,7 +175,7 @@ void ArcReadHandler::SetArcSessionIdForWindowId(int32_t session_id,
 }
 
 void ArcReadHandler::RemoveAppRestoreData(int32_t window_id) {
-  if (window_id == 0 || window_id == kParentToHiddenContainer)
+  if (!IsValidRestoreWindowId(window_id))
     return;
 
   auto it = window_id_to_app_id_.find(window_id);
@@ -192,7 +200,7 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
 
   // If `restore_window_id` is valid, sets the window property
   // `kRestoreWindowIdKey` and `kWindowInfoKey`.
-  if (restore_window_id > 0) {
+  if (IsValidRestoreWindowId(restore_window_id)) {
     (*window_it)->SetProperty(kRestoreWindowIdKey, restore_window_id);
 
     // When the window was created, there was not any window info due to there

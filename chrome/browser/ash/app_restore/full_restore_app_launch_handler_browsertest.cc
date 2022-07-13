@@ -2197,6 +2197,108 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   arc_helper_.StopInstance();
 }
 
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
+                       DeskTemplateAfterFullRestoreArcApp) {
+  SetProfile();
+  arc_helper_.InstallTestApps(kTestAppPackage, false);
+
+  const std::string app_id = GetTestApp1Id(kTestAppPackage);
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  ::app_restore::AppRestoreInfo::GetInstance()->AddObserver(
+      test_app_restore_info_observer());
+
+  SaveAppLaunchInfo(app_id, session_id1);
+
+  // Create the window for app1. The task id needs to match the `window_app_id`
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  views::Widget* widget = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window = widget->GetNativeWindow();
+
+  // Simulate creating the task.
+  arc_helper_.CreateTask(app_id, kTaskId1, session_id1);
+
+  SaveWindowInfo(window);
+  WaitForAppLaunchInfoSaved();
+
+  // Simulate the system shutdown process, and the window is closed.
+  widget->CloseNow();
+
+  Restore();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+
+  int32_t session_id2 =
+      ::app_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
+
+  // Create some desks so we can test that the exo window is placed in the
+  // correct desk container after the task is created.
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+
+  ForceLaunchApp(app_id, kTaskId1);
+
+  // Create the window to simulate the restoration for the app. The task id
+  // needs to match the |window_app_id| arg of CreateExoWindow.
+  int32_t kTaskId2 = 200;
+  widget = CreateExoWindow("org.chromium.arc.200");
+  window = widget->GetNativeWindow();
+
+  // The task is not ready, so the window is currently in a hidden container.
+  EXPECT_EQ(ash::Shell::GetContainer(window->GetRootWindow(),
+                                     ash::kShellWindowId_UnparentedContainer),
+            window->parent());
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/1);
+  VerifyWindowProperty(window, kTaskId2,
+                       ::app_restore::kParentToHiddenContainer,
+                       /*hidden=*/true);
+
+  // Simulate creating the task for the restored window.
+  arc_helper_.CreateTask(app_id, kTaskId2, session_id2);
+
+  // Activate the most recently created desk.
+  ActivateDesk(/*index=*/2);
+
+  // Capture the active desk as a template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickSaveDeskAsTemplateButton();
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  // Destroy the task and close the window.
+  app_host()->OnTaskDestroyed(kTaskId2);
+  widget->CloseNow();
+
+  // Launch the template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickButton(ash::GetExpandedStateDesksTemplatesButton());
+  ClickTemplateItem(/*index=*/0);
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  content::RunAllTasksUntilIdle();
+
+  int32_t session_id3 =
+      ::app_restore::kArcSessionIdOffsetForRestoredLaunching + 2;
+  int32_t kTaskId3 = 300;
+
+  arc_helper_.CreateTask(app_id, kTaskId3, session_id3);
+
+  widget = CreateExoWindow("org.chromium.arc.300");
+  window = widget->GetNativeWindow();
+
+  content::RunAllTasksUntilIdle();
+
+  // Verify that the ARC window has a negative restore window ID (and lower than
+  // the special value -1).
+  EXPECT_LT(window->GetProperty(::app_restore::kRestoreWindowIdKey), -1);
+}
+
 class ArcAppLaunchHandlerArcAppBrowserTest
     : public FullRestoreAppLaunchHandlerArcAppBrowserTest {
  protected:

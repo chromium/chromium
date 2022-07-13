@@ -75,11 +75,16 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler
   // Same as above, but for `launch_id`.
   void SetLaunchIdForArcSessionId(int32_t arc_session_id, int32_t launch_id);
 
-  // Returns the restore window id for the ARC app's `task_id`.
+  // Returns the restore window id for the ARC app's `task_id`. Returns 0 if the
+  // task does not belong to a desk template launch.
   int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
 
-  // Returns the restore window id for the ARC app's `session_id`.
+  // Returns the restore window id for the ARC app's `session_id`. Returns 0 if
+  // the session does not belong to a desk template launch.
   int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
+
+  // Returns true if `session_id` is known to desk templates.
+  bool IsKnownArcSessionId(int32_t session_id) const;
 
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override;

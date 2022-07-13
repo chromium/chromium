@@ -23,13 +23,6 @@ const char kCrxAppPrefix[] = "_crx_";
 
 static int32_t session_id_counter = kArcSessionIdOffsetForRestoredLaunching;
 
-// Always use the full restore ARC data if ARC apps for desks templates is not
-// enabled.
-bool ShouldUseFullRestoreArcData() {
-  return full_restore::FullRestoreReadHandler::GetInstance()
-      ->IsFullRestoreRunning();
-}
-
 }  // namespace
 
 bool IsArcWindow(aura::Window* window) {
@@ -92,11 +85,14 @@ void ModifyWidgetParams(int32_t restore_window_id,
       full_restore::FullRestoreReadHandler::GetInstance();
   auto* desk_template_read_handler = DeskTemplateReadHandler::Get();
   if (is_arc_app) {
+    // This will return nullptr if `restore_window_id` doesn't belong to a desk
+    // template launch. In that case, we fall back on full restore.
     ArcReadHandler* arc_read_handler =
-        ShouldUseFullRestoreArcData()
-            ? full_restore_read_handler->arc_read_handler()
-            : DeskTemplateReadHandler::Get()->GetArcReadHandlerForWindow(
-                  restore_window_id);
+        desk_template_read_handler->GetArcReadHandlerForWindow(
+            restore_window_id);
+    if (!arc_read_handler)
+      arc_read_handler = full_restore_read_handler->arc_read_handler();
+
     window_info = arc_read_handler
                       ? arc_read_handler->GetWindowInfo(restore_window_id)
                       : nullptr;
@@ -167,12 +163,14 @@ int32_t CreateArcSessionId() {
 }
 
 void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id) {
-  if (ShouldUseFullRestoreArcData()) {
-    return full_restore::FullRestoreReadHandler::GetInstance()
+  auto* desk_template_read_handler = DeskTemplateReadHandler::Get();
+  if (desk_template_read_handler->IsKnownArcSessionId(arc_session_id)) {
+    desk_template_read_handler->SetArcSessionIdForWindowId(arc_session_id,
+                                                           window_id);
+  } else {
+    full_restore::FullRestoreReadHandler::GetInstance()
         ->SetArcSessionIdForWindowId(arc_session_id, window_id);
   }
-  return DeskTemplateReadHandler::Get()->SetArcSessionIdForWindowId(
-      arc_session_id, window_id);
 }
 
 void SetDeskTemplateLaunchIdForArcSessionId(int32_t arc_session_id,
@@ -182,21 +180,23 @@ void SetDeskTemplateLaunchIdForArcSessionId(int32_t arc_session_id,
 }
 
 int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id) {
-  if (ShouldUseFullRestoreArcData()) {
-    return full_restore::FullRestoreReadHandler::GetInstance()
-        ->GetArcRestoreWindowIdForTaskId(task_id);
+  if (int32_t restore_window_id =
+          DeskTemplateReadHandler::Get()->GetArcRestoreWindowIdForTaskId(
+              task_id)) {
+    return restore_window_id;
   }
-  return DeskTemplateReadHandler::Get()->GetArcRestoreWindowIdForTaskId(
-      task_id);
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->GetArcRestoreWindowIdForTaskId(task_id);
 }
 
 int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id) {
-  if (ShouldUseFullRestoreArcData()) {
-    return full_restore::FullRestoreReadHandler::GetInstance()
-        ->GetArcRestoreWindowIdForSessionId(session_id);
+  if (int32_t restore_window_id =
+          DeskTemplateReadHandler::Get()->GetArcRestoreWindowIdForSessionId(
+              session_id)) {
+    return restore_window_id;
   }
-  return DeskTemplateReadHandler::Get()->GetArcRestoreWindowIdForSessionId(
-      session_id);
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->GetArcRestoreWindowIdForSessionId(session_id);
 }
 
 std::string GetAppIdFromAppName(const std::string& app_name) {
