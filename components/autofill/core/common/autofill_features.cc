@@ -95,7 +95,7 @@ const base::Feature kAutofillInferCountryCallingCode{
 // determine the address requirements.
 // TODO(crbug.com/1297032): Cleanup when launched.
 const base::Feature kAutofillComplementCountryCodeOnImport{
-    "AutofillComplementCountryCodeOnImport", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillComplementCountryCodeOnImport", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, label inference considers strings entirely made up of  '(', ')'
 // and '-' as valid labels.
