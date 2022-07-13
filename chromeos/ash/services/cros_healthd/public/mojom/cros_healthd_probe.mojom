@@ -27,7 +27,7 @@ enum CpuArchitectureEnum {
 // An enumeration of each category of information that cros_healthd can report.
 //
 // NextMinVersion: 2, NextIndex: 21
-[Stable, Extensible]
+[Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
   kBattery = 0,
