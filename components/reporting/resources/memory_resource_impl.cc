@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "base/check_op.h"
-#include "base/no_destructor.h"
 
 namespace reporting {
 
