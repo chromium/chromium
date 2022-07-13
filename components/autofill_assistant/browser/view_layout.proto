@@ -263,7 +263,7 @@ message ImageViewProto {
 // A text input widget. Note: View identifier is mandatory!
 message TextInputViewProto {
   // This mirrors the type hints specified in
-  // https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorFieldModel.java
+  // https://cs.chromium.org/chromium/src/components/autofill/android/java/src/org/chromium/components/autofill/prefeditor/EditorFieldModel.java
   enum InputTypeHint {
     // No special formatting rules.
     NONE = 0;
@@ -275,6 +275,8 @@ message TextInputViewProto {
     // A region or administrative area, e.g., a state or a province.
     REGION = 5;
     ALPHA_NUMERIC = 6;
+    CREDIT_CARD = 7;
+    NUMERIC = 8;
   }
 
   // The hint to display when the input is empty.

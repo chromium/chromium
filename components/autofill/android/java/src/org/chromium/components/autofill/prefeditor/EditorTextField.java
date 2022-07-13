@@ -200,6 +200,10 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
                 // Show the keyboard with numbers and phone-related symbols.
                 mInput.setInputType(InputType.TYPE_CLASS_PHONE);
                 break;
+            case EditorFieldModel.INPUT_TYPE_HINT_NUMERIC:
+                // Show the keyboard with only numbers.
+                mInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+                break;
             case EditorFieldModel.INPUT_TYPE_HINT_EMAIL:
                 mInput.setInputType(
                         InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
