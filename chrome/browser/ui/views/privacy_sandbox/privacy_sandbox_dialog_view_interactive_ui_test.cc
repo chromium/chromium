@@ -47,8 +47,9 @@ class PrivacySandboxDialogViewInteractiveUiTest : public InProcessBrowserTest {
 #endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1315979): Flaky on ChromeOS and Wayland.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OZONE_PLATFORM_WAYLAND)
+// TODO(crbug.com/1315979): Flaky on most release builds.
+#if defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    defined(OZONE_PLATFORM_WAYLAND)
 #define MAYBE_EscapeClosesNotice DISABLED_EscapeClosesNotice
 #else
 #define MAYBE_EscapeClosesNotice EscapeClosesNotice
