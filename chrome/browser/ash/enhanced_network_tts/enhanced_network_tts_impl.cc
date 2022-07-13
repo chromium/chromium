@@ -196,16 +196,18 @@ void EnhancedNetworkTtsImpl::OnResponseJsonParsed(
     const bool is_last_request,
     data_decoder::DataDecoder::ValueOrError result) {
   // Extract results for the request.
-  if (result.value && result.value->is_list()) {
-    SendResponse(UnpackJsonResponse(result.value->GetList(), start_index,
-                                    is_last_request));
+  if (result.has_value() && result->is_list()) {
+    SendResponse(
+        UnpackJsonResponse(result->GetList(), start_index, is_last_request));
     // Only start the next request after finishing the current one. This method
     // will also reset the internal state if there is no more request.
     ProcessNextServerRequest();
   } else {
     ResetAndSendErrorResponse(mojom::TtsRequestError::kReceivedUnexpectedData);
     DVLOG(1) << "Parsing server response JSON failed with error: "
-             << result.error.value_or("No reason reported.");
+             << (!result.has_value() || result.error().empty()
+                     ? "No reason reported."
+                     : result.error());
   }
 }
 

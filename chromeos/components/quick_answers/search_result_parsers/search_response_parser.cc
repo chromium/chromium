@@ -49,14 +49,14 @@ void SearchResponseParser::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK(complete_callback_);
 
-  if (!result.value) {
-    LOG(ERROR) << "JSON parsing failed: " << *result.error;
+  if (!result.has_value()) {
+    LOG(ERROR) << "JSON parsing failed: " << result.error();
     std::move(complete_callback_).Run(nullptr);
     return;
   }
 
   // Get the first result.
-  const Value* entries = result.value->FindListPath("results");
+  const Value* entries = result->FindListPath("results");
   if (!entries) {
     std::move(complete_callback_).Run(nullptr);
     return;

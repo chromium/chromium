@@ -103,7 +103,7 @@ void SafeDialAppInfoParser::Parse(const std::string& xml_text,
 void SafeDialAppInfoParser::OnXmlParsingDone(
     SafeDialAppInfoParser::ParseCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value || !result.value->is_dict()) {
+  if (!result.has_value() || !result->is_dict()) {
     std::move(callback).Run(nullptr, ParsingResult::kInvalidXML);
     return;
   }
@@ -111,8 +111,8 @@ void SafeDialAppInfoParser::OnXmlParsingDone(
   // NOTE: enforce namespace check for <service> element in future. Namespace
   // value will be "urn:dial-multiscreen-org:schemas:dial".
   bool unique_service = true;
-  const base::Value* service_element = data_decoder::FindXmlElementPath(
-      *result.value, {"service"}, &unique_service);
+  const base::Value* service_element =
+      data_decoder::FindXmlElementPath(*result, {"service"}, &unique_service);
   if (!service_element || !unique_service) {
     std::move(callback).Run(nullptr, ParsingResult::kInvalidXML);
     return;

@@ -369,13 +369,13 @@ void OneGoogleBarLoaderImpl::LoadDone(
 
 void OneGoogleBarLoaderImpl::JsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
-    DVLOG(1) << "Parsing JSON failed: " << *result.error;
+  if (!result.has_value()) {
+    DVLOG(1) << "Parsing JSON failed: " << result.error();
     Respond(Status::FATAL_ERROR, absl::nullopt);
     return;
   }
 
-  absl::optional<OneGoogleBarData> data = JsonToOGBData(*result.value);
+  absl::optional<OneGoogleBarData> data = JsonToOGBData(*result);
   Respond(data.has_value() ? Status::OK : Status::FATAL_ERROR, data);
 }
 

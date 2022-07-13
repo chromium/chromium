@@ -187,7 +187,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // Callback which is called after the verified contents are uncompressed.
   void OnVerifiedContentsUncompressed(
       const base::FilePath& unzip_dir,
-      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+      base::expected<mojo_base::BigBuffer, std::string> result);
 
   // Verifies the decompressed verified contents fetched from the header of CRX
   // and stores them if the verification of these contents is successful.

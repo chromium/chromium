@@ -19,12 +19,12 @@ void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
       json,
       base::BindOnce(
           [](Callback callback, DataDecoder::ValueOrError parse_result) {
-            if (!parse_result.value) {
-              std::move(callback).Run(Result::Error(*parse_result.error));
+            if (!parse_result.has_value()) {
+              std::move(callback).Run(Result::Error(parse_result.error()));
               return;
             }
 
-            const base::Value::Type type = parse_result.value->type();
+            const base::Value::Type type = parse_result->type();
             if (type != base::Value::Type::DICTIONARY &&
                 type != base::Value::Type::LIST) {
               std::move(callback).Run(Result::Error("Invalid top-level type"));
@@ -32,7 +32,7 @@ void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
             }
 
             std::string safe_json;
-            if (!base::JSONWriter::Write(*parse_result.value, &safe_json)) {
+            if (!base::JSONWriter::Write(*parse_result, &safe_json)) {
               std::move(callback).Run(Result::Error("Encoding error"));
               return;
             }

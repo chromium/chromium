@@ -352,7 +352,7 @@ void ItemSuggestCache::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.value) {
+  if (!result.has_value()) {
     LogStatus(Status::kJsonParseFailure);
     return;
   }
@@ -360,7 +360,7 @@ void ItemSuggestCache::OnJsonParsed(
   // Convert the JSON value into a Results object. If the conversion fails, or
   // if the conversion contains no results, we shouldn't update the stored
   // results.
-  const auto& results = ConvertResults(&result.value.value());
+  const auto& results = ConvertResults(&*result);
   if (!results) {
     LogStatus(Status::kJsonConversionFailure);
   } else if (results->results.empty()) {

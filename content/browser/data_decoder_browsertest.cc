@@ -317,8 +317,9 @@ IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest,
       {{0x1, 0x1, 0x1, 0x1, 0x1, 0x1}},
       base::BindOnce(
           [](bool* got_callback, base::ScopedClosureRunner quit_closure_runner,
-             data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer>
-                 result) { *got_callback = true; },
+             base::expected<mojo_base::BigBuffer, std::string> result) {
+            *got_callback = true;
+          },
           // Pass the quit closure as a ScopedClosureRunner, so that the loop
           // is quit if the callback is destroyed un-run or after it runs.
           &got_callback, base::ScopedClosureRunner(run_loop.QuitClosure())));

@@ -89,13 +89,13 @@ void SystemExtensionsSandboxedUnpacker::GetSystemExtensionFromString(
 void SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestParsed(
     GetSystemExtensionFromCallback callback,
     data_decoder::DataDecoder::ValueOrError value_or_error) {
-  if (value_or_error.error.has_value()) {
+  if (!value_or_error.has_value()) {
     std::move(callback).Run(
         SystemExtensionsInstallStatus::kFailedJsonErrorParsingManifest);
     return;
   }
 
-  base::Value& parsed_manifest = value_or_error.value.value();
+  base::Value& parsed_manifest = *value_or_error;
 
   SystemExtension system_extension;
 

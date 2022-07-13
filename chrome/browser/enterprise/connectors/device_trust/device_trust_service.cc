@@ -24,13 +24,13 @@ namespace {
 // service after it is validated and decoded.
 void OnJsonParsed(DeviceTrustService::ParseJsonChallengeCallback callback,
                   data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     std::move(callback).Run(std::string());
     return;
   }
 
   // Check if json is malformed or it doesn't include the needed field.
-  const std::string* challenge = result.value->FindStringPath("challenge");
+  const std::string* challenge = result->FindStringPath("challenge");
   if (!challenge) {
     std::move(callback).Run(std::string());
     return;

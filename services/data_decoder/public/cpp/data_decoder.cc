@@ -72,11 +72,11 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
     if (!callback() || is_cancelled_->data)
       return;
 
-    DataDecoder::ResultOrError<V> result;
+    base::expected<V, std::string> result;
     if (value)
-      result.value = std::move(value);
+      result = std::move(*value);
     else
-      result.error = error.value_or("unknown error");
+      result = base::unexpected(error.value_or("unknown error"));
 
     // Copy the callback onto the stack before resetting the Remote, as that may
     // delete |this|.
@@ -102,8 +102,7 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
 
     if (callback()) {
       std::move(callback())
-          .Run(DataDecoder::ResultOrError<V>::Error(
-              "Data Decoder terminated unexpectedly"));
+          .Run(base::unexpected("Data Decoder terminated unexpectedly"));
     }
   }
 
@@ -138,11 +137,9 @@ void ParsingComplete(scoped_refptr<DataDecoder::CancellationFlag> is_cancelled,
     return;
 
   if (!value_with_error.has_value()) {
-    std::move(callback).Run(
-        DataDecoder::ValueOrError::Error(value_with_error.error().message));
+    std::move(callback).Run(base::unexpected(value_with_error.error().message));
   } else {
-    std::move(callback).Run(
-        DataDecoder::ValueOrError::Value(std::move(*value_with_error)));
+    std::move(callback).Run(std::move(*value_with_error));
   }
 }
 
@@ -209,7 +206,7 @@ void DataDecoder::ParseJson(const std::string& json,
                     return;
 
                   if (!result.value) {
-                    std::move(callback).Run(ValueOrError::Error(*result.error));
+                    std::move(callback).Run(base::unexpected(*result.error));
                     return;
                   }
 

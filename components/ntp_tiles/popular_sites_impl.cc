@@ -475,13 +475,13 @@ void PopularSitesImpl::OnSimpleLoaderComplete(
 
 void PopularSitesImpl::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
-    DLOG(WARNING) << "JSON parsing failed: " << *result.error;
+  if (!result.has_value()) {
+    DLOG(WARNING) << "JSON parsing failed: " << result.error();
     OnDownloadFailed();
     return;
   }
 
-  base::Value list = std::move(*result.value);
+  base::Value list = std::move(*result);
   if (!list.is_list()) {
     DLOG(WARNING) << "JSON is not a list";
     OnDownloadFailed();

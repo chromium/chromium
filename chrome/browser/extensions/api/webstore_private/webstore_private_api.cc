@@ -1294,7 +1294,7 @@ WebstorePrivateGetExtensionStatusFunction::BuildResponseWithoutManifest(
 void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
     const ExtensionId& extension_id,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value || !result.value->is_dict()) {
+  if (!result.has_value() || !result->is_dict()) {
     Respond(Error(kWebstoreInvalidManifestError));
     return;
   }
@@ -1307,7 +1307,7 @@ void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
   std::string error;
   auto dummy_extension =
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
-                        base::Value::AsDictionaryValue(*result.value),
+                        base::Value::AsDictionaryValue(*result),
                         Extension::FROM_WEBSTORE, extension_id, &error);
 
   if (!dummy_extension) {

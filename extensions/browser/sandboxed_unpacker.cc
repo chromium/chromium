@@ -384,9 +384,9 @@ void SandboxedUnpacker::UnzipDone(const base::FilePath& zip_file,
 
 void SandboxedUnpacker::OnVerifiedContentsUncompressed(
     const base::FilePath& unzip_dir,
-    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
+    base::expected<mojo_base::BigBuffer, std::string> result) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
-  if (!result.value) {
+  if (!result.has_value()) {
     ReportFailure(SandboxedUnpackerFailureReason::
                       CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE,
                   l10n_util::GetStringFUTF16(
@@ -396,9 +396,8 @@ void SandboxedUnpacker::OnVerifiedContentsUncompressed(
   }
   // Make a copy, since |result| may store data in shared memory, accessible by
   // some other processes.
-  std::vector<uint8_t> verified_contents(
-      result.value.value().data(),
-      result.value.value().data() + result.value.value().size());
+  std::vector<uint8_t> verified_contents(result->data(),
+                                         result->data() + result->size());
 
   client_->GetContentVerifierKey(
       base::BindOnce(&SandboxedUnpacker::StoreVerifiedContentsInExtensionDir,

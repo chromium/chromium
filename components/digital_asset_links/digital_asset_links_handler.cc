@@ -175,16 +175,16 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
     absl::optional<std::string> fingerprint,
     std::map<std::string, std::set<std::string>> target_values,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     AddMessageToConsole(
         web_contents_.get(),
         "Digital Asset Links response parsing failed with message: " +
-            *result.error);
+            result.error());
     std::move(callback_).Run(RelationshipCheckResult::kFailure);
     return;
   }
 
-  auto& statement_list = *result.value;
+  auto& statement_list = *result;
   if (!statement_list.is_list()) {
     std::move(callback_).Run(RelationshipCheckResult::kFailure);
     AddMessageToConsole(web_contents_.get(), "Statement List is not a list.");

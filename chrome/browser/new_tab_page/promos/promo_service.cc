@@ -201,8 +201,8 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
 
 void PromoService::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
-    DVLOG(1) << "Parsing JSON failed: " << *result.error;
+  if (!result.has_value()) {
+    DVLOG(1) << "Parsing JSON failed: " << result.error();
     PromoDataLoaded(Status::FATAL_ERROR, absl::nullopt);
     return;
   }
@@ -210,7 +210,7 @@ void PromoService::OnJsonParsed(
   absl::optional<PromoData> data;
   PromoService::Status status;
 
-  if (JsonToPromoData(*result.value, &data)) {
+  if (JsonToPromoData(*result, &data)) {
     bool is_blocked = IsBlockedAfterClearingExpired(data->promo_id);
     if (is_blocked)
       data = PromoData();

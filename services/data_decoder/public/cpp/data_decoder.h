@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -58,38 +59,12 @@ class DataDecoder {
 
   ~DataDecoder();
 
-  // The result of a service call that can return either a value of type T or an
-  // error string. Exactly one of either |value| or |error| will have a value
-  // when returned by either operation.
+  using ValueOrError = base::expected<base::Value, std::string>;
   template <typename T>
-  struct ResultOrError {
-    ResultOrError() = default;
-    ResultOrError(ResultOrError&&) = default;
-    ~ResultOrError() = default;
-
-    static ResultOrError Value(T value) {
-      ResultOrError<T> result;
-      result.value = std::move(value);
-      return result;
-    }
-    static ResultOrError Error(const std::string& error) {
-      ResultOrError<T> result;
-      result.error = error;
-      return result;
-    }
-
-    absl::optional<T> value;
-    absl::optional<std::string> error;
-  };
-
-  using ValueOrError = ResultOrError<base::Value>;
-
-  template <typename T>
-  using ResultCallback = base::OnceCallback<void(ResultOrError<T>)>;
-  using ValueParseCallback = base::OnceCallback<void(ValueOrError)>;
-  using GzipperCallback =
-      base::OnceCallback<void(ResultOrError<mojo_base::BigBuffer>)>;
-
+  using ResultCallback =
+      base::OnceCallback<void(base::expected<T, std::string>)>;
+  using ValueParseCallback = ResultCallback<base::Value>;
+  using GzipperCallback = ResultCallback<mojo_base::BigBuffer>;
   using CancellationFlag = base::RefCountedData<bool>;
 
   // Returns a raw interface to the service instance. This launches an instance

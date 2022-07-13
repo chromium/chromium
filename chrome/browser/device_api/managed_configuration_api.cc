@@ -296,7 +296,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
     const url::Origin& origin,
     const std::string& url_hash,
     const data_decoder::DataDecoder::ValueOrError decoding_result) {
-  if (!decoding_result.value || !decoding_result.value->is_dict()) {
+  if (!decoding_result.has_value() || !decoding_result->is_dict()) {
     VLOG(1) << "Could not fetch managed configuration for app with origin = "
             << origin.Serialize();
     PostStoreConfiguration(origin, base::Value::Dict());
@@ -308,7 +308,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
 
   // We need to transform each value into a string.
   base::Value::Dict result_dict;
-  for (auto item : decoding_result.value->DictItems()) {
+  for (auto item : decoding_result->GetDict()) {
     std::string result;
     JSONStringValueSerializer serializer(&result);
     serializer.Serialize(item.second);

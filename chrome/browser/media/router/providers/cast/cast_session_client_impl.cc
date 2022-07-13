@@ -145,19 +145,19 @@ void CastSessionClientImpl::SendErrorToClient(int sequence_number,
 
 void CastSessionClientImpl::HandleParsedClientMessage(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     ReportClientMessageParseError(activity_->route().media_route_id(),
-                                  *result.error);
+                                  result.error());
     return;
   }
 
   // NOTE(jrw): This step isn't part of the Cast protocol per se, but it's
   // required for backward compatibility.  There is one known case
   // (crbug.com/1129217) where not doing it breaks the Cast SDK.
-  RemoveNullFields(*result.value);
+  RemoveNullFields(*result);
 
   std::unique_ptr<CastInternalMessage> cast_message =
-      CastInternalMessage::From(std::move(*result.value));
+      CastInternalMessage::From(std::move(*result));
   if (!cast_message) {
     ReportClientMessageParseError(activity_->route().media_route_id(),
                                   "Not a Cast message");

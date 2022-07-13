@@ -347,8 +347,8 @@ ManagementGetPermissionWarningsByManifestFunction::Run() {
 }
 void ManagementGetPermissionWarningsByManifestFunction::OnParse(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
-    Respond(Error(*result.error));
+  if (!result.has_value()) {
+    Respond(Error(result.error()));
 
     // Matched with AddRef() in Run().
     Release();
@@ -356,7 +356,7 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
   }
 
   const base::DictionaryValue* parsed_manifest;
-  if (!result.value->GetAsDictionary(&parsed_manifest)) {
+  if (!result->GetAsDictionary(&parsed_manifest)) {
     Respond(Error(keys::kManifestParseError));
     Release();
     return;

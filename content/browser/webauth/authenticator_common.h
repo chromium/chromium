@@ -155,13 +155,13 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // start a request.
   void OnLargeBlobCompressed(
       uint64_t original_size,
-      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+      base::expected<mojo_base::BigBuffer, std::string> result);
 
   // Callback to handle the large blob being uncompressed before completing a
   // request.
   void OnLargeBlobUncompressed(
       device::AuthenticatorGetAssertionResponse response,
-      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+      base::expected<mojo_base::BigBuffer, std::string> result);
 
   // Callback to handle the async response from a U2fDevice.
   void OnRegisterResponse(

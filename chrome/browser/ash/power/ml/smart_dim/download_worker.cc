@@ -88,8 +88,8 @@ void DownloadWorker::OnJsonParsed(
     const std::string& model_flatbuffer,
     const data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!result.value || !result.value->is_dict() ||
-      !ParseMetaInfoFromJsonObject(result.value.value(), &metrics_model_name_,
+  if (!result.has_value() || !result->is_dict() ||
+      !ParseMetaInfoFromJsonObject(*result, &metrics_model_name_,
                                    &dim_threshold_, &expected_feature_size_,
                                    &inputs_, &outputs_)) {
     LogLoadComponentEvent(LoadComponentEvent::kLoadMetadataError);

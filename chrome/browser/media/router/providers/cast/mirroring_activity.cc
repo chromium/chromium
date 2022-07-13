@@ -385,29 +385,29 @@ void MirroringActivity::HandleParseJsonResult(
   CastSession* session = GetSession();
   DCHECK(session);
 
-  if (!result.value) {
+  if (!result.has_value()) {
     // TODO(crbug.com/905002): Record UMA metric for parse result.
     logger_->LogError(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
-        base::StrCat({"Failed to parse Cast client message:", *result.error}),
+        base::StrCat({"Failed to parse Cast client message:", result.error()}),
         route().media_sink_id(), route().media_source().id(),
         route().presentation_id());
     return;
   }
 
-  const std::string message_namespace = GetMirroringNamespace(*result.value);
+  const std::string message_namespace = GetMirroringNamespace(*result);
   if (message_namespace == mirroring::mojom::kWebRtcNamespace) {
     logger_->LogInfo(media_router::mojom::LogCategory::kMirroring,
                      kLoggerComponent,
                      base::StrCat({"WebRTC message received: ",
-                                   GetScrubbedLogMessage(*result.value)}),
+                                   GetScrubbedLogMessage(*result)}),
                      route().media_sink_id(), route().media_source().id(),
                      route().presentation_id());
   }
 
   cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
-      message_namespace, std::move(*result.value),
-      message_handler_->sender_id(), session->transport_id());
+      message_namespace, std::move(*result), message_handler_->sender_id(),
+      session->transport_id());
   if (message_handler_->SendCastMessage(cast_data_.cast_channel_id,
                                         cast_message) == Result::kFailed) {
     logger_->LogError(

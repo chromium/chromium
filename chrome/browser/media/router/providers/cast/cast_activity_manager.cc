@@ -114,11 +114,11 @@ void CastActivityManager::LaunchSessionParsed(
     bool off_the_record,
     mojom::MediaRouteProvider::CreateRouteCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!cast_source.app_params().empty() && result.error) {
-    logger_->LogError(
-        mojom::LogCategory::kRoute, kLoggerComponent,
-        base::StrCat({"Error parsing JSON data in appParams: ", *result.error}),
-        sink.id(), cast_source.source_id(), presentation_id);
+  if (!cast_source.app_params().empty() && !result.has_value()) {
+    logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
+                      base::StrCat({"Error parsing JSON data in appParams: ",
+                                    result.error()}),
+                      sink.id(), cast_source.source_id(), presentation_id);
     std::move(callback).Run(
         absl::nullopt, nullptr, std::string("Invalid JSON Format of appParams"),
         mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER);
@@ -144,8 +144,15 @@ void CastActivityManager::LaunchSessionParsed(
   route.set_media_sink_name(sink.sink().name());
   route.set_is_connecting(true);
 
+  // We either have a value, or an error, however `LaunchSession` calls this
+  // function is a default constructed `result`, which is supposed to be
+  // ignored.
+  absl::optional<base::Value> opt_result = absl::nullopt;
+  if (result.has_value() && !result->is_none())
+    opt_result = std::move(*result);
+
   DoLaunchSessionParams params(route, cast_source, sink, origin, tab_id,
-                               std::move(result.value), std::move(callback));
+                               std::move(opt_result), std::move(callback));
 
   // If there is currently a session on the sink, it must be terminated before
   // the new session can be launched.
@@ -656,17 +663,17 @@ void CastActivityManager::SendRouteJsonMessage(
     const std::string& media_route_id,
     const std::string& message,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (result.error) {
+  if (!result.has_value()) {
     logger_->LogError(
         mojom::LogCategory::kRoute, kLoggerComponent,
         "Error parsing JSON data when sending route JSON message: " +
-            *result.error,
+            result.error(),
         "", MediaRoute::GetMediaSourceIdFromMediaRouteId(media_route_id),
         MediaRoute::GetPresentationIdFromMediaRouteId(media_route_id));
     return;
   }
 
-  const std::string* client_id = result.value->FindStringKey("clientId");
+  const std::string* client_id = result->FindStringKey("clientId");
   if (!client_id) {
     logger_->LogError(
         mojom::LogCategory::kRoute, kLoggerComponent,
