@@ -94,8 +94,6 @@ void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
 
 void UserTiming::ClearMarks(const AtomicString& mark_name) {
   ClearPeformanceEntries(marks_map_, mark_name);
-  TRACE_EVENT_COPY_MARK1("blink.user_timing", "clearMarks", "name",
-                         mark_name.Utf8().c_str());
 }
 
 const PerformanceMark* UserTiming::FindExistingMark(
@@ -254,8 +252,6 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
 
 void UserTiming::ClearMeasures(const AtomicString& measure_name) {
   ClearPeformanceEntries(measures_map_, measure_name);
-  TRACE_EVENT_COPY_MARK1("blink.user_timing", "clearMeasures", "name",
-                         measure_name.Utf8().c_str());
 }
 
 static PerformanceEntryVector ConvertToEntrySequence(
