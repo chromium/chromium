@@ -249,11 +249,11 @@ export type FinishSearchAction = Action&{
   results: string[],
 };
 
-export function setSearchResults(ids: string[]): Action {
+export function setSearchResults(ids: string[]): FinishSearchAction {
   return {
     name: 'finish-search',
     results: ids,
-  } as Action;
+  };
 }
 
 export type SetPrefAction = Action&{

@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {fuzzySearch, FuzzySearchOptions, TabData, TabGroup, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {createTab} from './tab_search_test_data.js';
+import {createTab, sampleToken} from './tab_search_test_data.js';
 
 /**
  * Assert search results return in specific order.
@@ -97,7 +97,13 @@ suite('FuzzySearchTest', () => {
     const tabDataWithGroup = new TabData(
         createTab({title: 'Meet the cast'}), TabItemType.OPEN_TAB,
         'meet the cast');
-    tabDataWithGroup.tabGroup = {title: 'Glee TV show'} as TabGroup;
+
+    const tabGroup: TabGroup = {
+      title: 'Glee TV show',
+      color: 0,
+      id: sampleToken(1n, 1n),
+    };
+    tabDataWithGroup.tabGroup = tabGroup;
 
     const records = [
       new TabData(

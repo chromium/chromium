@@ -10,7 +10,7 @@ import {Time, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/ti
 
 import {PageHandler, PageHandlerRemote, WebUITopic} from './browsing_topics_internals.mojom-webui.js';
 
-let pageHandler = {} as PageHandlerRemote;
+let pageHandler: PageHandlerRemote|null = null;
 let hostsClassificationSequenceNumber = 0;
 
 function setElementVisible(id: string, visible: boolean) {
@@ -118,6 +118,7 @@ function fieldNameFromId(id: string) {
 }
 
 async function asyncGetBrowsingTopicsConfiguration() {
+  assert(pageHandler);
   const response = await pageHandler.getBrowsingTopicsConfiguration();
 
   const config = response.config;
@@ -171,6 +172,7 @@ async function asyncGetBrowsingTopicsState(calculateNow: boolean) {
   setButtonEnabled('refresh-topics-state-button', false);
   setButtonEnabled('calculate-now-button', false);
 
+  assert(pageHandler);
   const response = await pageHandler.getBrowsingTopicsState(calculateNow);
 
   setButtonEnabled('refresh-topics-state-button', true);
@@ -243,6 +245,7 @@ async function asyncClassifyHosts(hosts: string[], sequenceNumber: number) {
   let topicsForHosts = [] as WebUITopic[][];
 
   if (hosts.length > 0) {
+    assert(pageHandler);
     const response = await pageHandler.classifyHosts(hosts);
     topicsForHosts = response.topicsForHosts;
   }
@@ -283,6 +286,7 @@ function clearHostsClassificationResult() {
 }
 
 async function asyncGetModelInfo() {
+  assert(pageHandler);
   const response = await pageHandler.getModelInfo();
 
   setElementVisible('model-info-loader', false);

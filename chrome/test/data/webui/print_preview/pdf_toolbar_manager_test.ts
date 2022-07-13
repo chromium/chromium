@@ -101,7 +101,7 @@ function makeTapEvent(x: number, y: number): MouseEvent {
     movementX: 0,
     movementY: 0,
     sourceCapabilities: new InputDeviceCapabilities({firesTouchEvents: true}),
-  } as MouseEventInit);
+  });
   return e;
 }
 
