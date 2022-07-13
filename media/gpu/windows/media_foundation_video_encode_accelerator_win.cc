@@ -949,7 +949,7 @@ void MediaFoundationVideoEncodeAccelerator::EncodeTask(
 
   HRESULT hr = E_FAIL;
   if (state_ != kEncoding) {
-    DLOG(WARNING) << "Abandon input frame for video encoder.";
+    DVLOG(3) << "Abandon input frame for video encoder.";
     return;
   }
 
@@ -1340,6 +1340,13 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
     MediaEventType event_type) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
+
+  // Not necessary to acquire lock for destroy_initiated_ as
+  // only encoder thread updates it.
+  if (in_shutdown_) {
+    DVLOG(3) << "Ignoring events from MFT during shutdown.";
+    return;
+  }
   DCHECK(event_generator_);
 
   // |input_required_| needs to be reset to false on events except
@@ -1533,7 +1540,10 @@ void MediaFoundationVideoEncodeAccelerator::SetState(State state) {
 void MediaFoundationVideoEncodeAccelerator::DestroyTask() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
-
+  {
+    base::AutoLock lock(destroy_lock_);
+    in_shutdown_ = true;
+  }
   // Cancel all encoder thread callbacks.
   encoder_task_weak_factory_.InvalidateWeakPtrs();
 
@@ -1728,13 +1738,21 @@ HRESULT MediaFoundationVideoEncodeAccelerator::GetParameters(DWORD* pdwFlags,
 
 HRESULT MediaFoundationVideoEncodeAccelerator::Invoke(
     IMFAsyncResult* pAsyncResult) {
-  DCHECK(event_generator_);
-
   HRESULT hr = S_OK;
   Microsoft::WRL::ComPtr<IMFMediaEvent> media_event;
   MediaEventType event_type = MEUnknown;
 
-  hr = event_generator_->EndGetEvent(pAsyncResult, &media_event);
+  {
+    // Prevent event fetching on MFT shutdown.
+    base::AutoLock lock(destroy_lock_);
+    if (in_shutdown_) {
+      DVLOG(3) << "Ignoring events from MFT during shutdown.";
+      return S_OK;
+    }
+    DCHECK(event_generator_);
+    hr = event_generator_->EndGetEvent(pAsyncResult, &media_event);
+  }
+
   if (SUCCEEDED(hr)) {
     // Get event type.
     hr = media_event->GetType(&event_type);

@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/win/shlwapi.h"
@@ -271,6 +272,12 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // A buffer used as a scratch space for I420 to NV12 conversion
   std::vector<uint8_t> resize_buffer_;
+
+  // Lock to prevent calls to MFT from workqueue when it is in destroy process.
+  base::Lock destroy_lock_;
+
+  // Indicates whether DestroyTask has been invoked.
+  bool in_shutdown_ = false;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
