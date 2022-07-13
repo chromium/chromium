@@ -307,6 +307,7 @@ java_group("delegate_public_impl_java") {
     "//chrome/browser/partnercustomizations:delegate_public_impl_java",
     "//chrome/browser/password_manager/android:public_impl_java",
     "//chrome/browser/policy/android:delegate_public_impl_java",
+    "//chrome/browser/supervised_user:parent_auth_delegate_impl_java",
     "//chrome/browser/touch_to_fill/android/internal:resource_provider_public_impl_java",
     "//components/autofill_assistant/android:autofill_assistant_public_impl_java",
     "//components/externalauth/android:google_delegate_public_impl_java",
@@ -767,6 +768,10 @@ android_library("chrome_java") {
 
   if (password_manager_use_internal_android_resources) {
     deps += [ "//clank/components/password_manager:java_resources" ]
+  }
+
+  if (enable_supervised_users) {
+    deps += [ "//chrome/browser/supervised_user:website_parent_approval_java" ]
   }
 }
 
