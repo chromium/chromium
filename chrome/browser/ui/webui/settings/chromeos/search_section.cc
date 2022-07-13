@@ -41,16 +41,27 @@ bool ShouldShowQuickAnswersSettings() {
 }
 
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
-       ShouldShowQuickAnswersSettings() ? mojom::kSearchSubpagePath
-                                        : mojom::kSearchAndAssistantSectionPath,
-       mojom::SearchResultIcon::kMagnifyingGlass,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kPreferredSearchEngine}},
-  });
-  return *tags;
+  if (ShouldShowQuickAnswersSettings()) {
+    static const base::NoDestructor<std::vector<SearchConcept>> tags({
+        {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
+         mojom::kSearchSubpagePath,
+         mojom::SearchResultIcon::kMagnifyingGlass,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kPreferredSearchEngine}},
+    });
+    return *tags;
+  } else {
+    static const base::NoDestructor<std::vector<SearchConcept>> tags({
+        {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
+         mojom::kSearchAndAssistantSectionPath,
+         mojom::SearchResultIcon::kMagnifyingGlass,
+         mojom::SearchResultDefaultRank::kMedium,
+         mojom::SearchResultType::kSetting,
+         {.setting = mojom::Setting::kPreferredSearchEngine}},
+    });
+    return *tags;
+  }
 }
 
 const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
@@ -242,25 +253,6 @@ void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("voiceMatchDisabled", !IsVoiceMatchAllowed());
 }
 
-const std::vector<mojom::Setting>& GetSearchSettings() {
-  static const base::NoDestructor<std::vector<mojom::Setting>> settings([] {
-    std::vector<mojom::Setting> base_settings{
-        mojom::Setting::kQuickAnswersOnOff,
-        mojom::Setting::kQuickAnswersDefinition,
-        mojom::Setting::kQuickAnswersTranslation,
-        mojom::Setting::kQuickAnswersUnitConversion,
-    };
-
-    if (ShouldShowQuickAnswersSettings()) {
-      base_settings.insert(base_settings.end(),
-                           mojom::Setting::kPreferredSearchEngine);
-    }
-
-    return base_settings;
-  }());
-  return *settings;
-}
-
 }  // namespace
 
 SearchSection::SearchSection(Profile* profile,
@@ -354,6 +346,8 @@ bool SearchSection::LogMetric(mojom::Setting setting,
 }
 
 void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
+  // Register Preferred search engine as top level settings if Quick answers is
+  // not available.
   if (!ShouldShowQuickAnswersSettings())
     generator->RegisterTopLevelSetting(mojom::Setting::kPreferredSearchEngine);
 
@@ -362,8 +356,32 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_SETTINGS_SEARCH_SUBPAGE_TITLE, mojom::Subpage::kSearch,
       mojom::SearchResultIcon::kMagnifyingGlass,
       mojom::SearchResultDefaultRank::kMedium, mojom::kSearchSubpagePath);
-  RegisterNestedSettingBulk(mojom::Subpage::kSearch, GetSearchSettings(),
-                            generator);
+  // Register Preferred search engine under Search subpage if Quick answers is
+  // available.
+  if (ShouldShowQuickAnswersSettings()) {
+    static constexpr mojom::Setting kSearchSettingsWithPreferredSearchEngine[] =
+        {
+            mojom::Setting::kQuickAnswersOnOff,
+            mojom::Setting::kQuickAnswersDefinition,
+            mojom::Setting::kQuickAnswersTranslation,
+            mojom::Setting::kQuickAnswersUnitConversion,
+            mojom::Setting::kPreferredSearchEngine,
+        };
+    RegisterNestedSettingBulk(mojom::Subpage::kSearch,
+                              kSearchSettingsWithPreferredSearchEngine,
+                              generator);
+  } else {
+    static constexpr mojom::Setting
+        kSearchSettingsWithoutPreferredSearchEngine[] = {
+            mojom::Setting::kQuickAnswersOnOff,
+            mojom::Setting::kQuickAnswersDefinition,
+            mojom::Setting::kQuickAnswersTranslation,
+            mojom::Setting::kQuickAnswersUnitConversion,
+        };
+    RegisterNestedSettingBulk(mojom::Subpage::kSearch,
+                              kSearchSettingsWithoutPreferredSearchEngine,
+                              generator);
+  }
 
   // Assistant.
   generator->RegisterTopLevelSubpage(
