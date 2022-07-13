@@ -35,6 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
@@ -847,16 +848,8 @@ class BrowserActionInteractiveFencedFrameTest
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
-// TODO(crbug.com/1342975): Test is flaky on Linux TSan.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_BrowserActionPopupWithFencedFrame \
-  DISABLED_BrowserActionPopupWithFencedFrame
-#else
-#define MAYBE_BrowserActionPopupWithFencedFrame \
-  BrowserActionPopupWithFencedFrame
-#endif
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
-                       MAYBE_BrowserActionPopupWithFencedFrame) {
+                       BrowserActionPopupWithFencedFrame) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.ServeFilesFromSourceDirectory("chrome/test/data");
@@ -887,16 +880,16 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
   // the page has loaded.
   GURL foo_url(https_server.GetURL("a.test", "/popup_fencedframe.html"));
 
-  content::RenderFrameHost* fenced_frame_rfh =
-      fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(primary_rfh);
-  ASSERT_TRUE(fenced_frame_rfh);
-
-  RenderFrameChangedWatcher watcher(
-      content::WebContents::FromRenderFrameHost(fenced_frame_rfh));
+  content::TestNavigationObserver observer(
+      content::WebContents::FromRenderFrameHost(primary_rfh));
   std::string script =
       "document.querySelector('fencedframe').src = '" + foo_url.spec() + "'";
   EXPECT_TRUE(ExecuteScript(primary_rfh, script));
-  fenced_frame_rfh = watcher.WaitAndReturnNewFrame();
+  observer.WaitForNavigationFinished();
+
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(primary_rfh);
+  ASSERT_TRUE(fenced_frame_rfh);
 
   // Confirm that the new page (popup_fencedframe.html) is actually loaded.
   content::DOMMessageQueue dom_message_queue(fenced_frame_rfh);
