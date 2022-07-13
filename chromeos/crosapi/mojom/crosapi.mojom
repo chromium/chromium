@@ -670,7 +670,7 @@ struct DefaultPaths {
   // mounted. For example, /media/fuse/crostini_<hash>_termina_penguin.
   [MinVersion=31] mojo_base.mojom.FilePath? linux_files@6;
 
-  // The (non-coniggurable) directory for ash resources. For example,
+  // The (non-configurable) directory for ash resources. For example,
   // /opt/google/chrome.
   [MinVersion=32] mojo_base.mojom.FilePath? ash_resources@7;
 
