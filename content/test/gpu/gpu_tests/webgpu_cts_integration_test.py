@@ -43,6 +43,9 @@ HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
 JAVASCRIPT_DURATION = 'javascript_duration'
 
+# These are tests that, for whatever reason, don't like being run in parallel.
+SERIAL_TESTS = {}
+
 
 async def StartWebsocketServer() -> None:
   async def HandleWebsocketConnection(
@@ -120,9 +123,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def Name(cls) -> str:
     return 'webgpu_cts'
 
-  @classmethod
-  def CanRunInParallel(cls) -> bool:
-    return True
+  def CanRunInParallel(self) -> bool:
+    return self.shortName() not in SERIAL_TESTS
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
