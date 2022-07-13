@@ -62,6 +62,17 @@ ui::ColorId SeparatorIconColorId(session_manager::SessionState state) {
   return ui::kColorAshSystemUIMenuSeparator;
 }
 
+// Returns true if we should show the counter view (e.g. during quiet mode,
+// screen lock, etc.).
+bool ShouldShowCounterView() {
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  return !message_center::MessageCenter::Get()->IsQuietMode() &&
+         session_controller->ShouldShowNotificationTray() &&
+         (!session_controller->IsScreenLocked() ||
+          AshMessageCenterLockScreenController::IsEnabled());
+}
+
 class NumberIconImageSource : public gfx::CanvasImageSource {
  public:
   explicit NumberIconImageSource(size_t count)
@@ -116,7 +127,7 @@ NotificationCounterView::~NotificationCounterView() = default;
 
 void NotificationCounterView::Update() {
   if (message_center_utils::GetNotificationCount() == 0 ||
-      !controller_->ShouldShowNotificationItemsInTray()) {
+      !ShouldShowCounterView()) {
     SetVisible(false);
     return;
   }

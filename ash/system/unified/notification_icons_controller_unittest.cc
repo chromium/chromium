@@ -19,6 +19,7 @@
 namespace ash {
 
 namespace {
+const char kCapsLockNotifierId[] = "ash.caps-lock";
 const char kBatteryNotificationNotifierId[] = "ash.battery";
 const char kUsbNotificationNotifierId[] = "ash.power";
 }  // namespace
@@ -218,6 +219,37 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
   notification_icons_controller_->notification_counter_view()->Update();
   EXPECT_EQ(2, notification_icons_controller_->notification_counter_view()
                    ->count_for_display_for_testing());
+}
+
+TEST_P(NotificationIconsControllerTest, NotificationItemInQuietMode) {
+  UpdateDisplay("800x700");
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+
+  // Icons get added from RTL, so we check the end of the vector first. At
+  // first, no icons should be shown.
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
+
+  // In quiet mode, notification other than capslock notification should not
+  // show an item in the tray.
+  auto id1 = AddNotification(/*is_pinned=*/true, /*is_critical_warning=*/false);
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
+
+  auto id2 = AddNotification(/*is_pinned=*/true, /*is_critical_warning=*/false,
+                             kCapsLockNotifierId);
+  EXPECT_EQ(IsScalableStatusAreaEnabled(),
+            notification_icons_controller_->tray_items().back()->GetVisible());
+  if (IsScalableStatusAreaEnabled()) {
+    EXPECT_EQ(id2, notification_icons_controller_->tray_items()
+                       .back()
+                       ->GetNotificationId());
+  }
+
+  message_center::MessageCenter::Get()->RemoveNotification(id2,
+                                                           /*by_user=*/false);
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
 }
 
 }  // namespace ash
