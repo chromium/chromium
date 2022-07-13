@@ -120,9 +120,6 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories();
 // Converts a SiteSettingSource to its string identifier.
 std::string SiteSettingSourceToString(const SiteSettingSource source);
 
-// Converts a ManagedState to a base::Value suitable for sending to JavaScript.
-base::Value GetValueForManagedState(const ManagedState& state);
-
 // Helper function to construct a dictionary for an exception.
 base::Value::Dict GetExceptionForPage(
     ContentSettingsType content_type,
@@ -154,7 +151,7 @@ void GetExceptionsForContentType(
 // or extension).
 void GetContentCategorySetting(const HostContentSettingsMap* map,
                                ContentSettingsType content_type,
-                               base::DictionaryValue* object);
+                               base::Value::Dict* object);
 
 // Retrieves the current setting for a given origin, category pair, the source
 // of that setting, and its display name, which will be different if it's an

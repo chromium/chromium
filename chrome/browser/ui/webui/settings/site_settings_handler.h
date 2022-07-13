@@ -204,7 +204,7 @@ class SiteSettingsHandler
   // Returns a list of sites, grouped by their effective top level domain plus
   // 1, with their cookies number and data usage information. This method will
   // only be called after HandleGetAllSites is called.
-  base::Value PopulateCookiesAndUsageData(Profile* profile);
+  base::Value::List PopulateCookiesAndUsageData(Profile* profile);
 
   // Converts a given number of bytes into a human-readable format, with data
   // units.

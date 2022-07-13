@@ -63,17 +63,6 @@ constexpr char kAppId[] = "appId";
 
 namespace {
 
-// Maps from the UI string to the object it represents (for sorting purposes).
-typedef std::multimap<std::string, const base::DictionaryValue*> SortedObjects;
-
-// Maps from a secondary URL to the set of objects it has permission to access.
-typedef std::map<GURL, SortedObjects> OneOriginObjects;
-
-// Maps from a primary URL/source pair to a OneOriginObjects. All the mappings
-// in OneOriginObjects share the given primary URL and source.
-typedef std::map<std::pair<GURL, std::string>, OneOriginObjects>
-    AllOriginObjects;
-
 // Chooser data group names.
 const char kUsbChooserDataGroupType[] = "usb-devices-data";
 const char kSerialChooserDataGroupType[] = "serial-ports-data";
@@ -487,15 +476,6 @@ std::string SiteSettingSourceToString(const SiteSettingSource source) {
   return kSiteSettingSourceStringMapping[static_cast<int>(source)].source_str;
 }
 
-base::Value GetValueForManagedState(const site_settings::ManagedState& state) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(site_settings::kDisabled, base::Value(state.disabled));
-  value.SetKey(
-      site_settings::kPolicyIndicator,
-      base::Value(site_settings::PolicyIndicatorTypeToString(state.indicator)));
-  return value;
-}
-
 // Add an "Allow"-entry to the list of |exceptions| for a |url_pattern| from
 // the web extent of a hosted |app|.
 void AddExceptionForHostedApp(const std::string& url_pattern,
@@ -742,15 +722,15 @@ void GetExceptionsForContentType(
 
 void GetContentCategorySetting(const HostContentSettingsMap* map,
                                ContentSettingsType content_type,
-                               base::DictionaryValue* object) {
+                               base::Value::Dict* object) {
   std::string provider;
   std::string setting = content_settings::ContentSettingToString(
       map->GetDefaultContentSetting(content_type, &provider));
   DCHECK(!setting.empty());
 
-  object->SetStringKey(kSetting, setting);
+  object->Set(kSetting, setting);
   if (provider != SiteSettingSourceToString(SiteSettingSource::kDefault))
-    object->SetStringKey(kSource, provider);
+    object->Set(kSource, provider);
 }
 
 ContentSetting GetContentSettingForOrigin(
@@ -869,7 +849,7 @@ const ChooserTypeNameEntry* ChooserTypeFromGroupName(const std::string& name) {
   return nullptr;
 }
 
-// Create a DictionaryValue* that will act as a data source for a single row
+// Create a base::Value::Dict that will act as a data source for a single row
 // in a chooser permission exceptions table. The chooser permission will contain
 // a list of site exceptions that correspond to the exception.
 base::Value::Dict CreateChooserExceptionObject(
