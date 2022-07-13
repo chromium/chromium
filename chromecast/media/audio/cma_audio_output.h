@@ -53,6 +53,7 @@ class CmaAudioOutput {
 
   void PushBuffer(scoped_refptr<CastDecoderBufferImpl> decoder_buffer);
   CmaBackend::AudioDecoder::RenderingDelay GetRenderingDelay();
+  CmaBackend::AudioDecoder::AudioTrackTimestamp GetAudioTrackTimestamp();
   int64_t GetTotalFrames();
 
  private:

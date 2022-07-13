@@ -58,6 +58,7 @@ class AudioDecoderForMixer
   bool SetConfig(const AudioConfig& config) override;
   bool SetVolume(float multiplier) override;
   RenderingDelay GetRenderingDelay() override;
+  AudioTrackTimestamp GetAudioTrackTimestamp() override;
 
   // This allows for very small changes in the rate of audio playback that are
   // (supposedly) imperceptible.

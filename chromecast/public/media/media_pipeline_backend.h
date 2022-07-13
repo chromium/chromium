@@ -109,33 +109,13 @@ class MediaPipelineBackend {
     // delay measurement was taken. Both times in microseconds.
     struct RenderingDelay {
       RenderingDelay()
-          : delay_microseconds(0),
-            timestamp_microseconds(INT64_MIN),
-            audio_track_frame_position(0),
-            audio_track_nano_time(INT64_MIN) {}
+          : delay_microseconds(0), timestamp_microseconds(INT64_MIN) {}
       RenderingDelay(int64_t delay_microseconds_in,
                      int64_t timestamp_microseconds_in)
           : delay_microseconds(delay_microseconds_in),
-            timestamp_microseconds(timestamp_microseconds_in),
-            audio_track_frame_position(0),
-            audio_track_nano_time(INT64_MIN) {}
-      RenderingDelay(int64_t delay_microseconds_in,
-                     int64_t timestamp_microseconds_in,
-                     int64_t audio_track_frame_position_in,
-                     int64_t audio_track_nano_time_in)
-          : delay_microseconds(delay_microseconds_in),
-            timestamp_microseconds(timestamp_microseconds_in),
-            audio_track_frame_position(audio_track_frame_position_in),
-            audio_track_nano_time(audio_track_nano_time_in) {}
+            timestamp_microseconds(timestamp_microseconds_in) {}
       int64_t delay_microseconds;
       int64_t timestamp_microseconds;
-      // TODO(ziyangch): Create a new struct and add a new getter function for
-      // audio track timestamp.
-      // Position in frames relative to start of an assumed audio stream in the
-      // Android AudioTrack.
-      int64_t audio_track_frame_position;
-      // Time associated with the frame in the Android audio pipeline.
-      int64_t audio_track_nano_time;
     };
 
     // Statistics (computed since last call to backend Start).
@@ -143,6 +123,23 @@ class MediaPipelineBackend {
       // Reported as webkitAudioBytesDecoded.  Counts number of source bytes
       // decoded (not decoder output bytes).
       uint64_t decoded_bytes;
+    };
+
+    // Android AudioTrack timestamp information: amount of frames have been
+    // played, and timestamp of system clock (with a timebase of
+    // TIMEBASE_MONOTONIC) in nanoseconds associated with playback position.
+    struct AudioTrackTimestamp {
+      AudioTrackTimestamp()
+          : audio_track_frame_position(0), audio_track_nano_time(INT64_MIN) {}
+      AudioTrackTimestamp(int64_t audio_track_frame_position_in,
+                          int64_t audio_track_nano_time_in)
+          : audio_track_frame_position(audio_track_frame_position_in),
+            audio_track_nano_time(audio_track_nano_time_in) {}
+      // Position in frames relative to start of an assumed audio stream in the
+      // Android AudioTrack.
+      int64_t audio_track_frame_position;
+      // Time associated with the frame in the Android audio pipeline.
+      int64_t audio_track_nano_time;
     };
 
     // Provides the audio configuration.  Called once before the backend is
@@ -168,6 +165,11 @@ class MediaPipelineBackend {
     // called when playing or paused.
     virtual void GetStatistics(Statistics* statistics) = 0;
 
+    // Returns the Android AudioTrack timestamp information.
+    // Returns a AudioTrackTimestamp.audio_track_nano_time = INT64_MIN if the
+    // timestamp is not available.
+    virtual AudioTrackTimestamp GetAudioTrackTimestamp() = 0;
+
     // Returns the minimum amount of audio data buffered (in microseconds)
     // necessary to prevent underrun for the given |config|; ie, if the
     // rendering delay falls below this value, then underrun may occur.
@@ -188,7 +190,7 @@ class MediaPipelineBackend {
     // Statistics (computed since last call to backend Start).
     struct Statistics {
       // Counts number of source bytes decoded (not decoder output).
-      uint64_t decoded_bytes;  // Reported as webkitVideoBytesDecoded.
+      uint64_t decoded_bytes;   // Reported as webkitVideoBytesDecoded.
       uint64_t decoded_frames;  // Reported as webkitDecodedFrames.
       uint64_t dropped_frames;  // Reported as webkitDroppedFrames.
     };

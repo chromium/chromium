@@ -40,6 +40,7 @@ class MockCmaBackend : public CmaBackend {
     MOCK_METHOD1(SetVolume, bool(float));
     MOCK_METHOD0(GetRenderingDelay, RenderingDelay());
     MOCK_METHOD1(GetStatistics, void(Statistics*));
+    MOCK_METHOD0(GetAudioTrackTimestamp, AudioTrackTimestamp());
     MOCK_METHOD0(RequiresDecryption, bool());
     MOCK_METHOD1(SetObserver, void(Observer*));
   };

@@ -50,6 +50,7 @@ class ActiveAudioDecoderWrapper : public DestructableAudioDecoder {
   bool SetVolume(float multiplier) override;
   RenderingDelay GetRenderingDelay() override;
   void GetStatistics(Statistics* statistics) override;
+  AudioTrackTimestamp GetAudioTrackTimestamp() override;
   bool RequiresDecryption() override;
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 
@@ -91,6 +92,7 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
   bool SetVolume(float multiplier) override;
   RenderingDelay GetRenderingDelay() override;
   void GetStatistics(Statistics* statistics) override;
+  AudioTrackTimestamp GetAudioTrackTimestamp() override;
   bool RequiresDecryption() override;
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 

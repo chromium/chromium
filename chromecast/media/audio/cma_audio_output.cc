@@ -221,6 +221,13 @@ CmaBackend::AudioDecoder::RenderingDelay CmaAudioOutput::GetRenderingDelay() {
   return audio_decoder_->GetRenderingDelay();
 }
 
+CmaBackend::AudioDecoder::AudioTrackTimestamp
+CmaAudioOutput::GetAudioTrackTimestamp() {
+  DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
+  DCHECK(audio_decoder_);
+  return audio_decoder_->GetAudioTrackTimestamp();
+}
+
 int64_t CmaAudioOutput::GetTotalFrames() {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
   return timestamp_helper_.frame_count();

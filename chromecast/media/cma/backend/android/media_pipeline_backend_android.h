@@ -28,6 +28,7 @@ class VideoDecoderNull;
 class MediaPipelineBackendAndroid : public MediaPipelineBackend {
  public:
   using RenderingDelay = AudioDecoder::RenderingDelay;
+  using AudioTrackTimestamp = AudioDecoder::AudioTrackTimestamp;
 
   explicit MediaPipelineBackendAndroid(const MediaPipelineDeviceParams& params);
 

@@ -66,6 +66,8 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   void SetLimiterVolumeMultiplier(float multiplier) override;
   float EffectiveVolume() const override;
   MediaPipelineBackendAndroid::RenderingDelay GetRenderingDelay() override;
+  MediaPipelineBackendAndroid::AudioTrackTimestamp GetAudioTrackTimestamp()
+      override;
 
   // Getters
   int input_samples_per_second() const override;

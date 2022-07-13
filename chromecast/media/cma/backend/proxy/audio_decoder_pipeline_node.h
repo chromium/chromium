@@ -49,6 +49,7 @@ class AudioDecoderPipelineNode : public CmaBackend::Decoder::Delegate,
   bool SetVolume(float multiplier) override;
   CmaBackend::AudioDecoder::RenderingDelay GetRenderingDelay() override;
   void GetStatistics(CmaBackend::AudioDecoder::Statistics* statistics) override;
+  CmaBackend::AudioDecoder::AudioTrackTimestamp GetAudioTrackTimestamp() override;
   bool RequiresDecryption() override;
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override;
 

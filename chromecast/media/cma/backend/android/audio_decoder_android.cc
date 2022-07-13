@@ -371,6 +371,13 @@ AudioDecoderAndroid::RenderingDelay AudioDecoderAndroid::GetRenderingDelay() {
   return delay;
 }
 
+AudioDecoderAndroid::AudioTrackTimestamp
+AudioDecoderAndroid::GetAudioTrackTimestamp() {
+  TRACE_FUNCTION_ENTRY0();
+  return (sink_ ? sink_->GetAudioTrackTimestamp()
+                : AudioDecoderAndroid::AudioTrackTimestamp());
+}
+
 void AudioDecoderAndroid::OnBufferDecoded(
     uint64_t input_bytes,
     CastAudioDecoder::Status status,

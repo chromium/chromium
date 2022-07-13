@@ -133,6 +133,9 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
     return true;
   }
   RenderingDelay GetRenderingDelay() override { return rendering_delay_; }
+  AudioTrackTimestamp GetAudioTrackTimestamp() override {
+    return AudioTrackTimestamp();
+  }
   bool RequiresDecryption() override { return false; }
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 

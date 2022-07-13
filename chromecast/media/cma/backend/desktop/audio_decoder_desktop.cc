@@ -58,5 +58,9 @@ AudioDecoderDesktop::RenderingDelay AudioDecoderDesktop::GetRenderingDelay() {
   return RenderingDelay();
 }
 
+AudioDecoderDesktop::AudioTrackTimestamp AudioDecoderDesktop::GetAudioTrackTimestamp() {
+  return AudioTrackTimestamp();
+}
+
 }  // namespace media
 }  // namespace chromecast

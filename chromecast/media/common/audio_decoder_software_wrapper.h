@@ -25,6 +25,8 @@ class AudioDecoderSoftwareWrapper
   using DecoderDelegate = MediaPipelineBackend::Decoder::Delegate;
   using RenderingDelay = MediaPipelineBackend::AudioDecoder::RenderingDelay;
   using Statistics = MediaPipelineBackend::AudioDecoder::Statistics;
+  using AudioTrackTimestamp =
+      MediaPipelineBackend::AudioDecoder::AudioTrackTimestamp;
 
   AudioDecoderSoftwareWrapper(
       MediaPipelineBackend::AudioDecoder* backend_decoder);
@@ -41,6 +43,7 @@ class AudioDecoderSoftwareWrapper
   bool SetConfig(const AudioConfig& config);
   bool SetVolume(float multiplier);
   RenderingDelay GetRenderingDelay();
+  AudioTrackTimestamp GetAudioTrackTimestamp();
   bool IsUsingSoftwareDecoder();
 
  private:

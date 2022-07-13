@@ -48,6 +48,8 @@ class CmaBackend {
    public:
     using RenderingDelay = MediaPipelineBackend::AudioDecoder::RenderingDelay;
     using Statistics = MediaPipelineBackend::AudioDecoder::Statistics;
+    using AudioTrackTimestamp =
+        MediaPipelineBackend::AudioDecoder::AudioTrackTimestamp;
 
     class Observer : public base::CheckedObserver {
      public:
@@ -68,6 +70,7 @@ class CmaBackend {
     virtual bool SetVolume(float multiplier) = 0;
     virtual RenderingDelay GetRenderingDelay() = 0;
     virtual void GetStatistics(Statistics* statistics) = 0;
+    virtual AudioTrackTimestamp GetAudioTrackTimestamp() = 0;
 
     // Returns true if the audio decoder requires that encrypted buffers be
     // decrypted before being passed to PushBuffer(). The return value may

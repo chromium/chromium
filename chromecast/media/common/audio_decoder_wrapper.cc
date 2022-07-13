@@ -23,9 +23,11 @@ class RevokedAudioDecoderWrapper : public DestructableAudioDecoder {
  public:
   RevokedAudioDecoderWrapper(RenderingDelay rendering_delay,
                              Statistics statistics,
+                             AudioTrackTimestamp audio_track_timestamp,
                              bool requires_decryption)
       : rendering_delay_(rendering_delay),
         statistics_(statistics),
+        audio_track_timestamp_(audio_track_timestamp),
         requires_decryption_(requires_decryption) {}
 
   RevokedAudioDecoderWrapper(const RevokedAudioDecoderWrapper&) = delete;
@@ -47,11 +49,15 @@ class RevokedAudioDecoderWrapper : public DestructableAudioDecoder {
   void GetStatistics(Statistics* statistics) override {
     *statistics = statistics_;
   }
+  AudioTrackTimestamp GetAudioTrackTimestamp() override {
+    return audio_track_timestamp_;
+  }
   bool RequiresDecryption() override { return requires_decryption_; }
   void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 
   const RenderingDelay rendering_delay_;
   const Statistics statistics_;
+  const AudioTrackTimestamp audio_track_timestamp_;
   const bool requires_decryption_;
 };
 
@@ -143,6 +149,11 @@ void ActiveAudioDecoderWrapper::GetStatistics(Statistics* statistics) {
   decoder_.GetStatistics(statistics);
 }
 
+ActiveAudioDecoderWrapper::AudioTrackTimestamp
+ActiveAudioDecoderWrapper::GetAudioTrackTimestamp() {
+  return decoder_.GetAudioTrackTimestamp();
+}
+
 bool ActiveAudioDecoderWrapper::RequiresDecryption() {
   return (MediaPipelineBackend::AudioDecoder::RequiresDecryption &&
           MediaPipelineBackend::AudioDecoder::RequiresDecryption()) ||
@@ -161,7 +172,7 @@ AudioDecoderWrapper::AudioDecoderWrapper(
 AudioDecoderWrapper::AudioDecoderWrapper(AudioContentType type)
     : decoder_revoked_(true) {
   audio_decoder_ = std::make_unique<RevokedAudioDecoderWrapper>(
-      RenderingDelay(), Statistics(), false);
+      RenderingDelay(), Statistics(), AudioTrackTimestamp(), false);
 }
 
 AudioDecoderWrapper::~AudioDecoderWrapper() = default;
@@ -179,6 +190,7 @@ void AudioDecoderWrapper::Revoke() {
     audio_decoder_->GetStatistics(&statistics);
     audio_decoder_ = std::make_unique<RevokedAudioDecoderWrapper>(
         audio_decoder_->GetRenderingDelay(), statistics,
+        audio_decoder_->GetAudioTrackTimestamp(),
         audio_decoder_->RequiresDecryption());
   }
 }
@@ -206,6 +218,11 @@ AudioDecoderWrapper::RenderingDelay AudioDecoderWrapper::GetRenderingDelay() {
 
 void AudioDecoderWrapper::GetStatistics(Statistics* statistics) {
   audio_decoder_->GetStatistics(statistics);
+}
+
+AudioDecoderWrapper::AudioTrackTimestamp
+AudioDecoderWrapper::GetAudioTrackTimestamp() {
+  return audio_decoder_->GetAudioTrackTimestamp();
 }
 
 bool AudioDecoderWrapper::RequiresDecryption() {

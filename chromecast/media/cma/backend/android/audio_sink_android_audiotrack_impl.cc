@@ -138,15 +138,18 @@ AudioSinkAndroidAudioTrackImpl::GetRenderingDelay() {
   DVLOG(3) << __func__ << "(" << this << "): "
            << " delay=" << sink_rendering_delay_.delay_microseconds
            << " ts=" << sink_rendering_delay_.timestamp_microseconds;
+  return sink_rendering_delay_;
+}
+
+MediaPipelineBackendAndroid::AudioTrackTimestamp
+AudioSinkAndroidAudioTrackImpl::GetAudioTrackTimestamp() {
   // TODO(ziyangch): Add a rate limiter to avoid calling AudioTrack.getTimestamp
   // too frequent.
   Java_AudioSinkAudioTrackImpl_getAudioTrackTimestamp(
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_);
-  sink_rendering_delay_.audio_track_frame_position =
-      direct_audio_track_timestamp_address_[0];
-  sink_rendering_delay_.audio_track_nano_time =
-      direct_audio_track_timestamp_address_[1];
-  return sink_rendering_delay_;
+  return MediaPipelineBackendAndroid::AudioTrackTimestamp(
+      direct_audio_track_timestamp_address_[0],
+      direct_audio_track_timestamp_address_[1]);
 }
 
 void AudioSinkAndroidAudioTrackImpl::FinalizeOnFeederThread() {

@@ -60,6 +60,13 @@ void AudioDecoderPipelineNode::GetStatistics(
   return delegated_decoder_->GetStatistics(statistics);
 }
 
+CmaBackend::AudioDecoder::AudioTrackTimestamp
+AudioDecoderPipelineNode::GetAudioTrackTimestamp() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  return delegated_decoder_->GetAudioTrackTimestamp();
+}
+
 bool AudioDecoderPipelineNode::RequiresDecryption() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

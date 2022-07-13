@@ -114,6 +114,11 @@ AudioDecoderSoftwareWrapper::GetRenderingDelay() {
   return backend_decoder_->GetRenderingDelay();
 }
 
+AudioDecoderSoftwareWrapper::AudioTrackTimestamp
+AudioDecoderSoftwareWrapper::GetAudioTrackTimestamp() {
+  return backend_decoder_->GetAudioTrackTimestamp();
+}
+
 bool AudioDecoderSoftwareWrapper::IsUsingSoftwareDecoder() {
   return software_decoder_.get() != nullptr;
 }

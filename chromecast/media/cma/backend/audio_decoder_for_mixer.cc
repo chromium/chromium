@@ -448,6 +448,11 @@ AudioDecoderForMixer::RenderingDelay AudioDecoderForMixer::GetRenderingDelay() {
   return delay;
 }
 
+AudioDecoderForMixer::AudioTrackTimestamp
+AudioDecoderForMixer::GetAudioTrackTimestamp() {
+  return AudioTrackTimestamp();
+}
+
 void AudioDecoderForMixer::OnBufferDecoded(
     uint64_t input_bytes,
     bool has_config,
