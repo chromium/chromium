@@ -6761,6 +6761,7 @@ test("unit_tests") {
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
       "../browser/webauthn/cablev2_devices_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
+      "../browser/webauthn/local_credential_management_unittest.cc",
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
       "../renderer/media/webrtc_logging_agent_impl_unittest.cc",

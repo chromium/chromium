@@ -295,7 +295,7 @@ HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
         .pbCredentialID = credential.credential_id.data(),
         .pRpInformation = &credential.rp,
         .pUserInformation = &credential.user,
-        .bRemovable = false,
+        .bRemovable = true,
     };
   }
 

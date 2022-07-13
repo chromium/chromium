@@ -34,6 +34,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) DiscoverableCredentialMetadata {
   std::string rp_id;
   std::vector<uint8_t> cred_id;
   PublicKeyCredentialUserEntity user;
+  // system_created is set to true for credentials that were created
+  // automatically by the system. This can happen on Windows where (at least) a
+  // credential for login.microsoft.com can be auto-created for users.
+  bool system_created = false;
 };
 
 }  // namespace device

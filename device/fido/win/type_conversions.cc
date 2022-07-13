@@ -324,6 +324,7 @@ WinCredentialDetailsListToCredentialMetadata(
             user->pwszIcon
                 ? absl::make_optional(GURL(base::WideToUTF8(user->pwszIcon)))
                 : absl::nullopt));
+    metadata.system_created = !credential->bRemovable;
     result.push_back(std::move(metadata));
   }
   return result;
