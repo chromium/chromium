@@ -26,18 +26,17 @@
 </style>
 <div id="sidebar">
   <cr-menu-selector>
-    <iron-selector selectable="a"
-        attr-for-selected="href" on-iron-activate="onSelectorActivate_"
-        on-click="onLinkClick_" selected-attribute="selected">
-      <template is="dom-repeat" items="[[demos]]"
-          on-dom-change="onDomChange_" notify-dom-change>
-        <a role="menuitem" href="demos/[[item.url]]"
+    <iron-selector id="selector" selectable="a" selected-attribute="selected">
+      <template is="dom-repeat" items="[[demos]]">
+        <a role="menuitem" href="[[item.path]]"
             class="cr-nav-menu-item">[[item.name]]</a>
       </template>
     </iron-selector>
   </cr-menu-selector>
 </div>
 
+<iron-location path="{{path_}}"></iron-location>
+
 <div id="main">
-  <iframe src="[[currentSrc_]]"></iframe>
+  <iframe id="iframe"></iframe>
 </div>

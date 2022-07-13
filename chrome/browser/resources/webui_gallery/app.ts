@@ -4,12 +4,20 @@
 
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
+import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {getTemplate} from './app.html.js';
+
+export interface WebuiGalleryAppElement {
+  $: {
+    iframe: HTMLIFrameElement,
+    selector: IronSelectorElement,
+  };
+}
 
 export class WebuiGalleryAppElement extends PolymerElement {
   static get is() {
@@ -27,59 +35,63 @@ export class WebuiGalleryAppElement extends PolymerElement {
         value: function() {
           return [
             {
-              name: 'cr-a11y-announcer demo',
-              url: 'cr_a11y_announcer_demo.html',
+              name: 'Accessibility Live Regions',
+              path: 'a11y',
+              src: 'cr_a11y_announcer_demo.html',
             },
             {
-              name: 'cr-action-menu demo',
-              url: 'cr_action_menu_demo.html',
+              name: 'Action Menus',
+              path: 'action-menus',
+              src: 'cr_action_menu_demo.html',
             },
             {
-              name: 'cr-button demo',
-              url: 'cr_button_demo.html',
+              name: 'Buttons',
+              path: 'buttons',
+              src: 'cr_button_demo.html',
             },
             {
-              name: 'cr-checkbox demo',
-              url: 'cr_checkbox_demo.html',
+              name: 'Checkboxes',
+              path: 'checkboxes',
+              src: 'cr_checkbox_demo.html',
             },
             {
-              name: 'cr-dialog demo',
-              url: 'cr_dialog_demo.html',
+              name: 'Dialogs',
+              path: 'dialogs',
+              src: 'cr_dialog_demo.html',
             },
             {
-              name: 'cr-radio demo',
-              url: 'cr_radio_demo.html',
+              name: 'Radio buttons and groups',
+              path: 'radios',
+              src: 'cr_radio_demo.html',
             },
             {
-              name: 'cr-toggle demo',
-              url: 'cr_toggle_demo.html',
+              name: 'Toggles',
+              path: 'toggles',
+              src: 'cr_toggle_demo.html',
             },
           ];
         },
       },
 
-      currentSrc_: String,
+      path_: {
+        type: String,
+        observer: 'onPathChanged_',
+      },
     };
   }
 
-  private currentSrc_: string;
+  demos: Array<{name: string, path: string, src: string}>;
+  private path_: string;
 
-  private onDomChange_() {
-    const first = this.shadowRoot!.querySelector('a');
-    assert(first);
-    const selector = this.shadowRoot!.querySelector('iron-selector');
-    assert(selector);
-    selector.selected = first.href;
-    this.currentSrc_ = first.href;
-  }
+  private onPathChanged_() {
+    const selectedIndex = Math.max(
+        0, this.demos.findIndex(demo => demo.path === this.path_.substring(1)));
+    this.$.selector.selected = selectedIndex;
 
-  private onLinkClick_(e: Event) {
-    e.preventDefault();
-  }
-
-  private onSelectorActivate_(e: CustomEvent<{selected: string}>) {
-    const demoUrl = e.detail.selected;
-    this.currentSrc_ = demoUrl;
+    // Use `location.replace` instead of iframe's `src` to prevent the iframe's
+    // source from interfering with tab's history.
+    this.$.iframe.contentWindow!.location.replace(
+        'demos/' + this.demos[selectedIndex]!.src);
   }
 }
 
