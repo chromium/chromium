@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/failing_request_handler.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -133,7 +133,7 @@ void EmbeddedPolicyTestServer::ConfigureRequestError(
       std::make_unique<FailingRequestHandler>(this, request_type, error_code));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void EmbeddedPolicyTestServer::UpdateExternalPolicy(
     const std::string& type,
     const std::string& entity_id,
@@ -154,7 +154,7 @@ void EmbeddedPolicyTestServer::UpdateExternalPolicy(
   policy_storage()->SetPolicyPayload(type, entity_id,
                                      external_policy_data.SerializeAsString());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
     const HttpRequest& request) {

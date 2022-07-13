@@ -25,6 +25,12 @@
 // URLAllowlist policies.
 + (BOOL)isURLBlocked:(NSString*)URL;
 
+// Sets the browser cloud policy data with a domain.
++ (void)setBrowserCloudPolicyDataWithDomain:(NSString*)domain;
+
+// Sets the user cloud policy data with a domain.
++ (void)setUserCloudPolicyDataWithDomain:(NSString*)domain;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_APP_INTERFACE_H_

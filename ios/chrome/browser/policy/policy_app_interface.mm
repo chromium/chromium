@@ -4,26 +4,32 @@
 
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/json/json_string_value_serializer.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
-#include "components/policy/core/common/configuration_policy_provider.h"
-#include "components/policy/core/common/policy_bundle.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_namespace.h"
-#include "components/policy/core/common/policy_types.h"
-#include "components/policy/policy_constants.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#include "ios/chrome/browser/policy/test_platform_policy_provider.h"
+#import "base/json/json_string_value_serializer.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "components/policy/core/browser/browser_policy_connector.h"
+#import "components/policy/core/browser/url_blocklist_manager.h"
+#import "components/policy/core/common/cloud/cloud_policy_core.h"
+#import "components/policy/core/common/cloud/cloud_policy_store.h"
+#import "components/policy/core/common/cloud/device_management_service.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#import "components/policy/core/common/configuration_policy_provider.h"
+#import "components/policy/core/common/policy_bundle.h"
+#import "components/policy/core/common/policy_map.h"
+#import "components/policy/core/common/policy_namespace.h"
+#import "components/policy/core/common/policy_types.h"
+#import "components/policy/policy_constants.h"
+#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -111,6 +117,34 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
           chrome_test_util::GetOriginalBrowserState());
   return service->GetURLBlocklistState(gurl) ==
          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+}
+
++ (void)setBrowserCloudPolicyDataWithDomain:(NSString*)domain {
+  policy::MachineLevelUserCloudPolicyManager* manager =
+      GetApplicationContext()
+          ->GetBrowserPolicyConnector()
+          ->machine_level_user_cloud_policy_manager();
+  DCHECK(manager);
+
+  policy::CloudPolicyStore* store = manager->core()->store();
+  DCHECK(store);
+
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_managed_by(base::SysNSStringToUTF8(domain));
+  store->set_policy_data_for_testing(std::move(policy_data));
+}
+
++ (void)setUserCloudPolicyDataWithDomain:(NSString*)domain {
+  policy::UserCloudPolicyManager* manager =
+      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+  DCHECK(manager);
+
+  policy::CloudPolicyStore* store = manager->core()->store();
+  DCHECK(store);
+
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_managed_by(base::SysNSStringToUTF8(domain));
+  store->set_policy_data_for_testing(std::move(policy_data));
 }
 
 @end

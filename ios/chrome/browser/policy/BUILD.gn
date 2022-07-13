@@ -244,6 +244,8 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/test_support",
     "//components/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:chrome_url_constants",

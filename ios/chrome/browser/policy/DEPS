@@ -5,5 +5,8 @@ specific_include_rules = {
     "+ios/chrome/browser/ui/main/scene_state.h",
     "+ios/chrome/browser/ui/main/scene_state_browser_agent.h",
   ],
+  "^policy_egtest.mm": [
+    "+components/policy/test_support",
+  ]
 }
 

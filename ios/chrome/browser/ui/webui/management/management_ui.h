@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ios/web/public/webui/web_ui_ios_controller.h"
+#import "ios/web/public/webui/web_ui_ios_controller.h"
 
 // The WebUI handler for chrome://management which displays the details about
 // the current enterprise management state.

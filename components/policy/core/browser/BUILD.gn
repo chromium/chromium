@@ -48,6 +48,8 @@ source_set("internal") {
     "webui/json_generation.h",
     "webui/machine_level_user_cloud_policy_status_provider.cc",
     "webui/machine_level_user_cloud_policy_status_provider.h",
+    "webui/policy_data_utils.cc",
+    "webui/policy_data_utils.h",
     "webui/policy_status_provider.cc",
     "webui/policy_status_provider.h",
   ]

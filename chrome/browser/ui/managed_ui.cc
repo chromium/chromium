@@ -15,9 +15,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/core/browser/webui/policy_data_utils.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -38,17 +40,6 @@
 namespace chrome {
 
 namespace {
-
-std::string GetManagedBy(const policy::CloudPolicyManager* manager) {
-  if (manager) {
-    const enterprise_management::PolicyData* policy =
-        manager->core()->store()->policy();
-    if (policy && policy->has_managed_by()) {
-      return policy->managed_by();
-    }
-  }
-  return std::string();
-}
 
 const policy::CloudPolicyManager* GetUserCloudPolicyManager(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -144,8 +135,8 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
              ? connector->GetRealm()
              : connector->GetEnterpriseDomainManager();
 #else
-  return GetManagedBy(g_browser_process->browser_policy_connector()
-                          ->machine_level_user_cloud_policy_manager());
+  return policy::GetManagedBy(g_browser_process->browser_policy_connector()
+                                  ->machine_level_user_cloud_policy_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -161,10 +152,10 @@ absl::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   if (!policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged())
     return absl::nullopt;
 
-  const std::string managed_by =
-      GetManagedBy(GetUserCloudPolicyManager(profile));
-  if (!managed_by.empty())
-    return managed_by;
+  const absl::optional<std::string> managed_by =
+      policy::GetManagedBy(GetUserCloudPolicyManager(profile));
+  if (managed_by)
+    return *managed_by;
 
   return GetEnterpriseAccountDomain(profile);
 }

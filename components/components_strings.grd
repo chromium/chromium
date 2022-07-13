@@ -306,6 +306,7 @@
       <part file="history_strings.grdp" />
       <part file="javascript_dialogs_strings.grdp" />
       <part file="login_dialog_strings.grdp" />
+      <part file="management_strings.grdp" />
       <part file="media_message_center_strings.grdp" />
       <part file="new_or_sad_tab_strings.grdp" />
       <part file="ntp_snippets_strings.grdp" />
@@ -337,9 +338,6 @@
       <part file="version_ui_strings.grdp" />
       <part file="webapps_strings.grdp" />
 
-      <if expr="not is_ios">
-        <part file="management_strings.grdp" />
-      </if>
       <if expr="not is_ios">
         <part file="history_clusters_strings.grdp" />
       </if>
