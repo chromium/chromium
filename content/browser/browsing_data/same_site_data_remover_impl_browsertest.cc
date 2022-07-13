@@ -83,9 +83,9 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
     ClearSameSiteNoneCookiesAndStorageForOrigins(
         run_loop.QuitClosure(), GetBrowserContext(),
         base::BindLambdaForTesting(
-            [&clear_storage_hosts](const url::Origin& origin,
+            [&clear_storage_hosts](const blink::StorageKey& storage_key,
                                    storage::SpecialStoragePolicy* policy) {
-              return clear_storage_hosts.find(origin.host()) !=
+              return clear_storage_hosts.find(storage_key.origin().host()) !=
                      clear_storage_hosts.end();
             }));
     run_loop.Run();

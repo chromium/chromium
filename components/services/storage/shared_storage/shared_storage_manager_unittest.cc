@@ -48,7 +48,8 @@ using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
 using BudgetResult = SharedStorageDatabase::BudgetResult;
-using OriginMatcherFunction = SharedStorageDatabase::OriginMatcherFunction;
+using StorageKeyPolicyMatcherFunction =
+    SharedStorageDatabase::StorageKeyPolicyMatcherFunction;
 using DBOperation = TestDatabaseOperationReceiver::DBOperation;
 using Type = DBOperation::Type;
 using DBType = SharedStorageTestDBType;
@@ -184,7 +185,7 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
                base::OnceCallback<void(OperationResult)> callback) override {
     Run(std::move(callback));
   }
-  void PurgeMatchingOrigins(OriginMatcherFunction origin_matcher,
+  void PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction storage_key_matcher,
                             base::Time begin,
                             base::Time end,
                             base::OnceCallback<void(OperationResult)> callback,
@@ -636,12 +637,13 @@ class SharedStorageManagerTest : public testing::Test {
     return future.Take();
   }
 
-  void PurgeMatchingOrigins(OriginMatcherFunctionUtility* matcher_utility,
-                            size_t matcher_id,
-                            base::Time begin,
-                            base::Time end,
-                            OperationResult* out_result,
-                            bool perform_storage_cleanup = false) {
+  void PurgeMatchingOrigins(
+      StorageKeyPolicyMatcherFunctionUtility* matcher_utility,
+      size_t matcher_id,
+      base::Time begin,
+      base::Time end,
+      OperationResult* out_result,
+      bool perform_storage_cleanup = false) {
     DCHECK(out_result);
     DCHECK(GetManager());
     DCHECK(receiver_);
@@ -662,14 +664,15 @@ class SharedStorageManagerTest : public testing::Test {
         std::move(callback), perform_storage_cleanup);
   }
 
-  OperationResult PurgeMatchingOriginsSync(OriginMatcherFunction origin_matcher,
-                                           base::Time begin,
-                                           base::Time end,
-                                           bool perform_storage_cleanup) {
+  OperationResult PurgeMatchingOriginsSync(
+      StorageKeyPolicyMatcherFunction storage_key_matcher,
+      base::Time begin,
+      base::Time end,
+      bool perform_storage_cleanup) {
     DCHECK(GetManager());
     base::test::TestFuture<OperationResult> future;
-    GetManager()->PurgeMatchingOrigins(std::move(origin_matcher), begin, end,
-                                       future.GetCallback(),
+    GetManager()->PurgeMatchingOrigins(std::move(storage_key_matcher), begin,
+                                       end, future.GetCallback(),
                                        perform_storage_cleanup);
     return future.Get();
   }
@@ -1195,7 +1198,7 @@ TEST_P(SharedStorageManagerParamTest,
     origins.push_back(info->origin);
   EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2));
 
-  OriginMatcherFunctionUtility matcher_utility;
+  StorageKeyPolicyMatcherFunctionUtility matcher_utility;
   EXPECT_EQ(
       OperationResult::kSuccess,
       PurgeMatchingOriginsSync(matcher_utility.MakeMatcherFunction({kOrigin1}),
@@ -1714,7 +1717,7 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   operation_list.push(DBOperation(Type::DB_FETCH_ORIGINS));
 
   base::Time threshold1 = base::Time::Now();
-  OriginMatcherFunctionUtility matcher_utility;
+  StorageKeyPolicyMatcherFunctionUtility matcher_utility;
   size_t matcher_id1 = matcher_utility.RegisterMatcherFunction({kOrigin1});
 
   operation_list.push(DBOperation(

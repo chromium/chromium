@@ -37,7 +37,8 @@ namespace storage {
 namespace {
 
 using ::testing::ElementsAre;
-using OriginMatcherFunction = SharedStorageDatabase::OriginMatcherFunction;
+using StorageKeyPolicyMatcherFunction =
+    SharedStorageDatabase::StorageKeyPolicyMatcherFunction;
 using InitStatus = SharedStorageDatabase::InitStatus;
 using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
@@ -336,7 +337,7 @@ TEST_F(SharedStorageDatabaseTest, Version1_DestroyTooNew) {
   EXPECT_EQ(OperationResult::kInitFailure, db_->Clear(kOrigin));
   EXPECT_EQ(-1, db_->Length(kOrigin));
   EXPECT_EQ(OperationResult::kInitFailure,
-            db_->PurgeMatchingOrigins(OriginMatcherFunction(),
+            db_->PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction(),
                                       base::Time::Min(), base::Time::Max(),
                                       /*perform_storage_cleanup=*/false));
   EXPECT_EQ(OperationResult::kInitFailure,
@@ -858,7 +859,8 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, AllTime) {
   EXPECT_EQ(
       OperationResult::kSuccess,
       db_->PurgeMatchingOrigins(
-          OriginMatcherFunctionUtility::MakeMatcherFunction({kOrigin1}),
+          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
+              {kOrigin1}),
           base::Time(), base::Time::Max(), GetParam().perform_storage_cleanup));
 
   // `kOrigin1` is cleared. The other origins are not.
@@ -874,7 +876,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, AllTime) {
   EXPECT_EQ(
       OperationResult::kSuccess,
       db_->PurgeMatchingOrigins(
-          OriginMatcherFunctionUtility::MakeMatcherFunction(
+          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
               {kOrigin2, kOrigin3}),
           base::Time(), base::Time::Max(), GetParam().perform_storage_cleanup));
 
@@ -890,7 +892,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, AllTime) {
   EXPECT_EQ(
       OperationResult::kSuccess,
       db_->PurgeMatchingOrigins(
-          OriginMatcherFunctionUtility::MakeMatcherFunction(
+          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
               {"http://www.example4.test"}),
           base::Time(), base::Time::Max(), GetParam().perform_storage_cleanup));
 }
@@ -941,7 +943,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
   EXPECT_EQ(
       OperationResult::kSuccess,
       db_->PurgeMatchingOrigins(
-          OriginMatcherFunctionUtility::MakeMatcherFunction(
+          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
               {kOrigin1, kOrigin2}),
           threshold, base::Time::Max(), GetParam().perform_storage_cleanup));
 
@@ -968,7 +970,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
   EXPECT_EQ(
       OperationResult::kSuccess,
       db_->PurgeMatchingOrigins(
-          OriginMatcherFunctionUtility::MakeMatcherFunction(
+          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
               {kOrigin2, kOrigin3, kOrigin4}),
           threshold, base::Time::Max(), GetParam().perform_storage_cleanup));
 
@@ -989,7 +991,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
   EXPECT_EQ(
       OperationResult::kSuccess,
       db_->PurgeMatchingOrigins(
-          OriginMatcherFunctionUtility::MakeMatcherFunction(
+          StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
               {"http://www.example5.test"}),
           threshold, base::Time::Max(), GetParam().perform_storage_cleanup));
 }

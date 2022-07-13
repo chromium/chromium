@@ -330,20 +330,24 @@ void TestDatabaseOperationReceiver::Finish() {
   loop_.Quit();
 }
 
-OriginMatcherFunctionUtility::OriginMatcherFunctionUtility() = default;
-OriginMatcherFunctionUtility::~OriginMatcherFunctionUtility() = default;
+StorageKeyPolicyMatcherFunctionUtility::
+    StorageKeyPolicyMatcherFunctionUtility() = default;
+StorageKeyPolicyMatcherFunctionUtility::
+    ~StorageKeyPolicyMatcherFunctionUtility() = default;
 
-OriginMatcherFunction OriginMatcherFunctionUtility::MakeMatcherFunction(
+StorageKeyPolicyMatcherFunction
+StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
     std::vector<url::Origin> origins_to_match) {
   return base::BindRepeating(
-      [](std::vector<url::Origin> origins_to_match, const url::Origin& origin,
-         SpecialStoragePolicy* policy) {
-        return base::Contains(origins_to_match, origin);
+      [](std::vector<url::Origin> origins_to_match,
+         const blink::StorageKey& storage_key, SpecialStoragePolicy* policy) {
+        return base::Contains(origins_to_match, storage_key.origin());
       },
       origins_to_match);
 }
 
-OriginMatcherFunction OriginMatcherFunctionUtility::MakeMatcherFunction(
+StorageKeyPolicyMatcherFunction
+StorageKeyPolicyMatcherFunctionUtility::MakeMatcherFunction(
     std::vector<std::string> origin_strs_to_match) {
   std::vector<url::Origin> origins_to_match;
   for (const auto& str : origin_strs_to_match)
@@ -351,14 +355,14 @@ OriginMatcherFunction OriginMatcherFunctionUtility::MakeMatcherFunction(
   return MakeMatcherFunction(origins_to_match);
 }
 
-size_t OriginMatcherFunctionUtility::RegisterMatcherFunction(
+size_t StorageKeyPolicyMatcherFunctionUtility::RegisterMatcherFunction(
     std::vector<url::Origin> origins_to_match) {
   matcher_table_.emplace_back(MakeMatcherFunction(origins_to_match));
   return matcher_table_.size() - 1;
 }
 
-OriginMatcherFunction OriginMatcherFunctionUtility::TakeMatcherFunctionForId(
-    size_t id) {
+StorageKeyPolicyMatcherFunction
+StorageKeyPolicyMatcherFunctionUtility::TakeMatcherFunctionForId(size_t id) {
   DCHECK_LT(id, matcher_table_.size());
   return std::move(matcher_table_[id]);
 }

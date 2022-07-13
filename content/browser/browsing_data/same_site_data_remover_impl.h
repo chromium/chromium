@@ -50,7 +50,7 @@ class CONTENT_EXPORT SameSiteDataRemoverImpl {
   // Clears storage for domains in the provided set.
   void ClearStoragePartitionForOrigins(
       base::OnceClosure closure,
-      StoragePartition::OriginMatcherFunction origin_matcher);
+      StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher);
 
   // For testing purposes only.
   void OverrideStoragePartitionForTesting(StoragePartition* storage_partition);

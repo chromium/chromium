@@ -35,13 +35,14 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
-bool OriginMatcher(const url::Origin& origin,
+bool OriginMatcher(const blink::StorageKey& storage_key,
                    storage::SpecialStoragePolicy* policy) {
-  return policy->IsStorageSessionOnly(origin.GetURL()) &&
-         !policy->IsStorageProtected(origin.GetURL());
+  return policy->IsStorageSessionOnly(storage_key.origin().GetURL()) &&
+         !policy->IsStorageProtected(storage_key.origin().GetURL());
 }
 
 class SessionDataDeleterInternal

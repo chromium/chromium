@@ -44,7 +44,8 @@ class AsyncSharedStorageDatabase {
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always
   // match.
-  using OriginMatcherFunction = SharedStorageDatabase::OriginMatcherFunction;
+  using StorageKeyPolicyMatcherFunction =
+      SharedStorageDatabase::StorageKeyPolicyMatcherFunction;
 
   virtual ~AsyncSharedStorageDatabase() = default;
 
@@ -168,16 +169,16 @@ class AsyncSharedStorageDatabase {
           pending_listener,
       base::OnceCallback<void(OperationResult)> callback) = 0;
 
-  // Clears all origins that match `origin_matcher` run on the owning
+  // Clears all origins that match `storage_key_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between
   // the times `begin` and `end`. If `perform_storage_cleanup` is true, vacuums
   // the database afterwards. The parameter of `callback` reports whether the
   // transaction was successful.
   //
-  // Note that `origin_matcher` is accessed on a different sequence than where
-  // it was created.
+  // Note that `storage_key_matcher` is accessed on a different sequence than
+  // where it was created.
   virtual void PurgeMatchingOrigins(
-      OriginMatcherFunction origin_matcher,
+      StorageKeyPolicyMatcherFunction storage_key_matcher,
       base::Time begin,
       base::Time end,
       base::OnceCallback<void(OperationResult)> callback,

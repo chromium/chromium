@@ -17,13 +17,12 @@ class BrowserContext;
 CONTENT_EXPORT void ClearSameSiteNoneData(base::OnceClosure closure,
                                           BrowserContext* context);
 
-// Clears cookies available in third-party contexts where SameSite=None.
-// Also removes storage for origins that match the clear_storage_origin_matcher
-// predicate.
+// Clears cookies available in third-party contexts where SameSite=None. Also
+// removes storage for StorageKeys that match the storage_key_matcher predicate.
 CONTENT_EXPORT void ClearSameSiteNoneCookiesAndStorageForOrigins(
     base::OnceClosure closure,
     BrowserContext* context,
-    StoragePartition::OriginMatcherFunction clear_storage_origin_matcher);
+    StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher);
 
 }  // namespace content
 

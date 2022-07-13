@@ -222,11 +222,11 @@ class CONTENT_EXPORT StoragePartition {
                                   const GURL& storage_origin,
                                   base::OnceClosure callback) = 0;
 
-  // A callback type to check if a given origin matches a storage policy.
-  // Can be passed empty/null where used, which means the origin will always
+  // A callback type to check if a given StorageKey matches a storage policy.
+  // Can be passed empty/null where used, which means the StorageKey will always
   // match.
-  using OriginMatcherFunction =
-      base::RepeatingCallback<bool(const url::Origin&,
+  using StorageKeyPolicyMatcherFunction =
+      base::RepeatingCallback<bool(const blink::StorageKey&,
                                    storage::SpecialStoragePolicy*)>;
 
   // Observer interface that is notified of specific data clearing events which
@@ -255,27 +255,27 @@ class CONTENT_EXPORT StoragePartition {
 
   // Similar to ClearData().
   // Deletes all data out for the StoragePartition.
-  // * |origin_matcher| is present if special storage policy is to be handled,
-  //   otherwise the callback should be null (!origin_matcher == true).
-  //   The origin matcher does not apply to cookies, instead use:
-  // * |cookie_deletion_filter| identifies the cookies to delete and will be
-  //   used if |remove_mask| has the REMOVE_DATA_MASK_COOKIES bit set. Note:
+  // * `storage_key_matcher` is present if special storage policy is to be
+  //   handled, otherwise the callback should be null.
+  //   The StorageKey matcher does not apply to cookies, instead use:
+  // * `cookie_deletion_filter` identifies the cookies to delete and will be
+  //   used if `remove_mask` has the REMOVE_DATA_MASK_COOKIES bit set. Note:
   //   CookieDeletionFilterPtr also contains a time interval
   //   (created_after_time/created_before_time), so when deleting cookies
-  //   |begin| and |end| will be used ignoring the interval in
-  //   |cookie_deletion_filter|.
-  //   If |perform_storage_cleanup| is true, the storage will try to remove
+  //   `begin` and `end` will be used ignoring the interval in
+  //   `cookie_deletion_filter`.
+  //   If `perform_storage_cleanup` is true, the storage will try to remove
   //   traces about deleted data from disk. This is an expensive operation that
   //   should only be performed if we are sure that almost all data will be
   //   deleted anyway.
-  // * |callback| is called when data deletion is done or at least the deletion
+  // * `callback` is called when data deletion is done or at least the deletion
   //   is scheduled.
   // Note: Make sure you know what you are doing before clearing cookies
   // selectively. You don't want to break the web.
   virtual void ClearData(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
-      OriginMatcherFunction origin_matcher,
+      StorageKeyPolicyMatcherFunction storage_key_matcher,
       network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
       bool perform_storage_cleanup,
       const base::Time begin,

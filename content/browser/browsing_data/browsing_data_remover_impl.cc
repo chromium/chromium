@@ -66,35 +66,36 @@ base::OnceClosure RunsOrPostOnCurrentTaskRunner(base::OnceClosure closure) {
       std::move(closure), base::ThreadTaskRunnerHandle::Get());
 }
 
-// Returns whether |origin| matches |origin_type_mask| given the special
-// storage |policy|; and if |predicate| is not null, then also whether
-// it matches |predicate|. If |origin_type_mask| contains embedder-specific
-// datatypes, |embedder_matcher| must not be null; the decision for those
+// Returns whether `storage_key` matches `origin_type_mask` given the special
+// storage `policy`; and if `predicate` is not null, then also whether
+// it matches `predicate`. If `origin_type_mask` contains embedder-specific
+// datatypes, `embedder_matcher` must not be null; the decision for those
 // datatypes will be delegated to it.
 bool DoesOriginMatchMaskAndPredicate(
     uint64_t origin_type_mask,
     base::OnceCallback<bool(const url::Origin&)> predicate,
     const BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher&
         embedder_matcher,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::SpecialStoragePolicy* policy) {
-  if (predicate && !std::move(predicate).Run(origin))
+  if (predicate && !std::move(predicate).Run(storage_key.origin()))
     return false;
 
   const std::vector<std::string>& schemes = url::GetWebStorageSchemes();
-  bool is_web_scheme = base::Contains(schemes, origin.scheme());
+  bool is_web_scheme = base::Contains(schemes, storage_key.origin().scheme());
 
   // If a websafe origin is unprotected, it matches iff UNPROTECTED_WEB.
   if ((origin_type_mask & BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB) &&
       is_web_scheme &&
-      (!policy || !policy->IsStorageProtected(origin.GetURL()))) {
+      (!policy || !policy->IsStorageProtected(storage_key.origin().GetURL()))) {
     return true;
   }
   origin_type_mask &= ~BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
 
   // Hosted applications (protected and websafe origins) iff PROTECTED_WEB.
   if ((origin_type_mask & BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB) &&
-      is_web_scheme && policy && policy->IsStorageProtected(origin.GetURL())) {
+      is_web_scheme && policy &&
+      policy->IsStorageProtected(storage_key.origin().GetURL())) {
     return true;
   }
   origin_type_mask &= ~BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
@@ -104,7 +105,7 @@ bool DoesOriginMatchMaskAndPredicate(
       << "embedder delegate matcher to process them.";
 
   if (!embedder_matcher.is_null())
-    return embedder_matcher.Run(origin_type_mask, origin, policy);
+    return embedder_matcher.Run(origin_type_mask, storage_key.origin(), policy);
 
   return false;
 }
@@ -170,8 +171,8 @@ bool BrowsingDataRemoverImpl::DoesOriginMatchMaskForTesting(
     embedder_matcher = embedder_delegate_->GetOriginTypeMatcher();
 
   return DoesOriginMatchMaskAndPredicate(origin_type_mask, base::NullCallback(),
-                                         std::move(embedder_matcher), origin,
-                                         policy);
+                                         std::move(embedder_matcher),
+                                         blink::StorageKey(origin), policy);
 }
 
 void BrowsingDataRemoverImpl::Remove(const base::Time& delete_begin,

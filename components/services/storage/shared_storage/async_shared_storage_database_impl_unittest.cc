@@ -545,12 +545,13 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     return future.Take();
   }
 
-  void PurgeMatchingOrigins(OriginMatcherFunctionUtility* matcher_utility,
-                            size_t matcher_id,
-                            base::Time begin,
-                            base::Time end,
-                            OperationResult* out_result,
-                            bool perform_storage_cleanup = false) {
+  void PurgeMatchingOrigins(
+      StorageKeyPolicyMatcherFunctionUtility* matcher_utility,
+      size_t matcher_id,
+      base::Time begin,
+      base::Time end,
+      OperationResult* out_result,
+      bool perform_storage_cleanup = false) {
     DCHECK(out_result);
     DCHECK(async_database_);
     DCHECK(receiver_);
@@ -1948,7 +1949,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
   operation_list.push(DBOperation(Type::DB_STATUS));
 
   base::Time threshold1 = base::Time::Now();
-  OriginMatcherFunctionUtility matcher_utility;
+  StorageKeyPolicyMatcherFunctionUtility matcher_utility;
   size_t matcher_id1 = matcher_utility.RegisterMatcherFunction({kOrigin1});
 
   operation_list.push(DBOperation(

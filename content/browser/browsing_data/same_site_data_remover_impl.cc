@@ -20,6 +20,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -59,10 +60,10 @@ void OnGetAllCookiesWithAccessSemantics(
 }
 
 bool DoesOriginMatchDomain(const std::set<std::string>& same_site_none_domains,
-                           const url::Origin& origin,
+                           const blink::StorageKey& storage_key,
                            storage::SpecialStoragePolicy* policy) {
   for (const std::string& domain : same_site_none_domains) {
-    if (net::cookie_util::IsDomainMatch(domain, origin.host())) {
+    if (net::cookie_util::IsDomainMatch(domain, storage_key.origin().host())) {
       return true;
     }
   }
@@ -112,12 +113,12 @@ void SameSiteDataRemoverImpl::ClearStoragePartitionData(
 
 void SameSiteDataRemoverImpl::ClearStoragePartitionForOrigins(
     base::OnceClosure closure,
-    StoragePartition::OriginMatcherFunction origin_matcher) {
+    StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher) {
   // TODO(crbug.com/987177): Figure out how to handle protected storage.
   storage_partition_->ClearData(
       kStoragePartitionRemovalMask,
       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      std::move(origin_matcher), nullptr, false, base::Time(),
+      std::move(storage_key_matcher), nullptr, false, base::Time(),
       base::Time::Max(), std::move(closure));
 }
 
@@ -135,14 +136,14 @@ void ClearSameSiteNoneData(base::OnceClosure closure, BrowserContext* context) {
 void ClearSameSiteNoneCookiesAndStorageForOrigins(
     base::OnceClosure closure,
     BrowserContext* context,
-    StoragePartition::OriginMatcherFunction clear_storage_origin_matcher) {
+    StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher) {
   auto same_site_remover = std::make_unique<SameSiteDataRemoverImpl>(context);
   SameSiteDataRemoverImpl* remover = same_site_remover.get();
 
   remover->DeleteSameSiteNoneCookies(
       base::BindOnce(&SameSiteDataRemoverImpl::ClearStoragePartitionForOrigins,
                      std::move(same_site_remover), std::move(closure),
-                     std::move(clear_storage_origin_matcher)));
+                     std::move(storage_key_matcher)));
 }
 
 }  // namespace content

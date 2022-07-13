@@ -562,7 +562,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
 
 SharedStorageDatabase::OperationResult
 SharedStorageDatabase::PurgeMatchingOrigins(
-    OriginMatcherFunction origin_matcher,
+    StorageKeyPolicyMatcherFunction storage_key_matcher,
     base::Time begin,
     base::Time end,
     bool perform_storage_cleanup) {
@@ -602,8 +602,10 @@ SharedStorageDatabase::PurgeMatchingOrigins(
     return OperationResult::kSqlError;
 
   for (const auto& origin : origins) {
-    if (origin_matcher && !origin_matcher.Run(url::Origin::Create(GURL(origin)),
-                                              special_storage_policy_.get())) {
+    if (storage_key_matcher &&
+        !storage_key_matcher.Run(
+            blink::StorageKey(url::Origin::Create(GURL(origin))),
+            special_storage_policy_.get())) {
       continue;
     }
 

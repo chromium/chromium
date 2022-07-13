@@ -42,10 +42,11 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
 
-  // A callback type to check if a given origin matches a storage policy.
-  // Can be passed empty/null where used, which means the origin will always
+  // A callback type to check if a given StorageKey matches a storage policy.
+  // Can be passed empty/null where used, which means the StorageKey will always
   // match.
-  using OriginMatcherFunction = SharedStorageDatabase::OriginMatcherFunction;
+  using StorageKeyPolicyMatcherFunction =
+      SharedStorageDatabase::StorageKeyPolicyMatcherFunction;
 
   // Creates an `AsyncSharedStorageDatabase` instance. If `db_path` is empty,
   // creates a temporary, in-memory database; otherwise creates a persistent
@@ -105,7 +106,7 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
                    shared_storage_worklet::mojom::SharedStorageEntriesListener>
                    pending_listener,
                base::OnceCallback<void(OperationResult)> callback) override;
-  void PurgeMatchingOrigins(OriginMatcherFunction origin_matcher,
+  void PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction storage_key_matcher,
                             base::Time begin,
                             base::Time end,
                             base::OnceCallback<void(OperationResult)> callback,

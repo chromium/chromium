@@ -10,14 +10,15 @@
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/same_site_data_remover.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
 bool DoesOriginHaveThirdPartyAccessRecord(
     const std::set<url::Origin>& third_party_storage_origins,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::SpecialStoragePolicy* policy) {
-  return third_party_storage_origins.find(origin) !=
+  return third_party_storage_origins.find(storage_key.origin()) !=
          third_party_storage_origins.end();
 }
 

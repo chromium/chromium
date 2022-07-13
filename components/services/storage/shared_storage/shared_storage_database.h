@@ -24,6 +24,7 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
 class FilePath;
@@ -52,11 +53,12 @@ extern const int kSharedStorageEntryTotalBytesMultiplier;
 // instantiated on a sequence which allows use of blocking file operations.
 class SharedStorageDatabase {
  public:
-  // A callback type to check if a given origin matches a storage policy.
-  // Can be passed empty/null where used, which means the origin will always
+  // A callback type to check if a given StorageKey matches a storage policy.
+  // Can be passed empty/null where used, which means the StorageKey will always
   // match.
-  using OriginMatcherFunction =
-      base::RepeatingCallback<bool(const url::Origin&, SpecialStoragePolicy*)>;
+  using StorageKeyPolicyMatcherFunction =
+      base::RepeatingCallback<bool(const blink::StorageKey&,
+                                   SpecialStoragePolicy*)>;
 
   enum class InitStatus {
     kUnattempted =
@@ -242,12 +244,12 @@ class SharedStorageDatabase {
           shared_storage_worklet::mojom::SharedStorageEntriesListener>
           pending_listener);
 
-  // Clears all origins that match `origin_matcher` run on the owning
+  // Clears all origins that match `storage_key_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between
   // the times `begin` and `end`. If `perform_storage_cleanup` is true, vacuums
   // the database afterwards. Returns whether the transaction was successful.
   [[nodiscard]] OperationResult PurgeMatchingOrigins(
-      OriginMatcherFunction origin_matcher,
+      StorageKeyPolicyMatcherFunction storage_key_matcher,
       base::Time begin,
       base::Time end,
       bool perform_storage_cleanup = false);

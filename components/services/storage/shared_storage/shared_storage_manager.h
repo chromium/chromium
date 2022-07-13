@@ -42,10 +42,11 @@ class SharedStorageManager {
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
 
-  // A callback type to check if a given origin matches a storage policy.
-  // Can be passed empty/null where used, which means the origin will always
+  // A callback type to check if a given StorageKey matches a storage policy.
+  // Can be passed empty/null where used, which means the StorageKey will always
   // match.
-  using OriginMatcherFunction = SharedStorageDatabase::OriginMatcherFunction;
+  using StorageKeyPolicyMatcherFunction =
+      SharedStorageDatabase::StorageKeyPolicyMatcherFunction;
 
   // If only `db_path` and `special_storage_policy` are passed as parameters,
   // then the members that would have been initialized from `options` are given
@@ -191,16 +192,16 @@ class SharedStorageManager {
   void Clear(url::Origin context_origin,
              base::OnceCallback<void(OperationResult)> callback);
 
-  // Clears all origins that match `origin_matcher` run on the owning
+  // Clears all StorageKeys that match `storage_key_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between
   // the times `begin` and `end`. If `perform_storage_cleanup` is true, vacuums
   // the database afterwards. The parameter of `callback` reports whether the
   // transaction was successful. Called by
   // `content::StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread()`.
   //
-  // Note that `origin_matcher` is accessed on a different sequence than where
-  // it was created.
-  void PurgeMatchingOrigins(OriginMatcherFunction origin_matcher,
+  // Note that `storage_key_matcher` is accessed on a different sequence than
+  // where it was created.
+  void PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction storage_key_matcher,
                             base::Time begin,
                             base::Time end,
                             base::OnceCallback<void(OperationResult)> callback,

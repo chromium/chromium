@@ -559,25 +559,27 @@ bool IsWebSafeSchemeForTest(const std::string& scheme) {
 }
 
 bool DoesOriginMatchForUnprotectedWeb(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::SpecialStoragePolicy* special_storage_policy) {
-  if (IsWebSafeSchemeForTest(origin.scheme()))
-    return !special_storage_policy->IsStorageProtected(origin.GetURL());
+  if (IsWebSafeSchemeForTest(storage_key.origin().scheme())) {
+    return !special_storage_policy->IsStorageProtected(
+        storage_key.origin().GetURL());
+  }
 
   return false;
 }
 
 bool DoesOriginMatchForBothProtectedAndUnprotectedWeb(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::SpecialStoragePolicy* special_storage_policy) {
   return true;
 }
 
 bool DoesOriginMatchUnprotected(
     const url::Origin& desired_origin,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::SpecialStoragePolicy* special_storage_policy) {
-  return origin.scheme() != desired_origin.scheme();
+  return storage_key.origin().scheme() != desired_origin.scheme();
 }
 
 void ClearQuotaData(content::StoragePartition* partition,
@@ -590,13 +592,13 @@ void ClearQuotaData(content::StoragePartition* partition,
 
 void ClearQuotaDataWithOriginMatcher(
     content::StoragePartition* partition,
-    StoragePartition::OriginMatcherFunction origin_matcher,
+    StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher,
     const base::Time delete_begin,
     base::RunLoop* loop_to_quit) {
-  partition->ClearData(kAllQuotaRemoveMask,
-                       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-                       std::move(origin_matcher), nullptr, false, delete_begin,
-                       base::Time::Max(), loop_to_quit->QuitClosure());
+  partition->ClearData(
+      kAllQuotaRemoveMask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+      std::move(storage_key_matcher), nullptr, false, delete_begin,
+      base::Time::Max(), loop_to_quit->QuitClosure());
 }
 
 void ClearQuotaDataForOrigin(content::StoragePartition* partition,
@@ -639,21 +641,22 @@ void ClearCookiesMatchingInfo(content::StoragePartition* partition,
     delete_end = delete_filter->created_before_time.value();
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_COOKIES,
                        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-                       StoragePartition::OriginMatcherFunction(),
+                       StoragePartition::StorageKeyPolicyMatcherFunction(),
                        std::move(delete_filter), false, delete_begin,
                        delete_end, run_loop->QuitClosure());
 }
 
-void ClearStuff(uint32_t remove_mask,
-                content::StoragePartition* partition,
-                const base::Time delete_begin,
-                const base::Time delete_end,
-                StoragePartition::OriginMatcherFunction origin_matcher,
-                base::RunLoop* run_loop) {
+void ClearStuff(
+    uint32_t remove_mask,
+    content::StoragePartition* partition,
+    const base::Time delete_begin,
+    const base::Time delete_end,
+    StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher,
+    base::RunLoop* run_loop) {
   partition->ClearData(remove_mask,
                        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-                       std::move(origin_matcher), nullptr, false, delete_begin,
-                       delete_end, run_loop->QuitClosure());
+                       std::move(storage_key_matcher), nullptr, false,
+                       delete_begin, delete_end, run_loop->QuitClosure());
 }
 
 void ClearData(content::StoragePartition* partition, base::RunLoop* run_loop) {
@@ -1796,12 +1799,17 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
 
   // Match against enough Origins to delete three of the imp/conv pairs.
   base::RunLoop run_loop;
-  StoragePartition::OriginMatcherFunction func = base::BindRepeating(
-      [](const url::Origin& origin, storage::SpecialStoragePolicy* policy) {
-        return origin == url::Origin::Create(GURL("https://imp-2.com/")) ||
-               origin == url::Origin::Create(GURL("https://conv-3.com/")) ||
-               origin == url::Origin::Create(GURL("https://rep-4.com/")) ||
-               origin == url::Origin::Create(GURL("https://imp-4.com/"));
+  StoragePartition::StorageKeyPolicyMatcherFunction func =
+      base::BindRepeating([](const blink::StorageKey& storage_key,
+                             storage::SpecialStoragePolicy* policy) {
+        return storage_key == blink::StorageKey::CreateFromStringForTesting(
+                                  "https://imp-2.com/") ||
+               storage_key == blink::StorageKey::CreateFromStringForTesting(
+                                  "https://conv-3.com/") ||
+               storage_key == blink::StorageKey::CreateFromStringForTesting(
+                                  "https://rep-4.com/") ||
+               storage_key == blink::StorageKey::CreateFromStringForTesting(
+                                  "https://imp-4.com/");
       });
   partition->ClearData(
       StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
@@ -1854,11 +1862,12 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
                           kBeginTime, kEndTime));
   partition->ClearData(
       kTestClearMask, kTestQuotaClearMask,
-      base::BindLambdaForTesting([&](const url::Origin& origin,
+      base::BindLambdaForTesting([&](const blink::StorageKey& storage_key,
                                      storage::SpecialStoragePolicy* policy) {
-        return origin == url::Origin::Create(kTestOrigin);
+        return storage_key ==
+               blink::StorageKey(url::Origin::Create(kTestOrigin));
       }),
-      /* cookie_deletion_filter */ nullptr, /* perform_storage_cleanup */ false,
+      /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
       kBeginTime, kEndTime, base::DoNothing());
 }
 
@@ -2095,9 +2104,10 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
       .WillOnce(testing::Invoke(invoke_callback));
   partition->ClearData(
       kTestClearMask, kTestQuotaClearMask,
-      base::BindLambdaForTesting([&](const url::Origin& origin,
+      base::BindLambdaForTesting([&](const blink::StorageKey& storage_key,
                                      storage::SpecialStoragePolicy* policy) {
-        return origin == url::Origin::Create(kTestOrigin);
+        return storage_key ==
+               blink::StorageKey(url::Origin::Create(kTestOrigin));
       }),
       /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
       kBeginTime, kEndTime, base::DoNothing());

@@ -20,6 +20,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
@@ -115,12 +116,12 @@ void ClearCommerceData(Profile* profile,
 
 bool DoesOriginMatchPredicate(
     base::OnceCallback<bool(const url::Origin&)> predicate,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     storage::SpecialStoragePolicy* policy) {
-  if (!std::move(predicate).Run(origin))
+  if (!std::move(predicate).Run(storage_key.origin()))
     return false;
 
-  if (policy && policy->IsStorageProtected(origin.GetURL()))
+  if (policy && policy->IsStorageProtected(storage_key.origin().GetURL()))
     return false;
 
   return true;
@@ -131,10 +132,12 @@ void DeleteStoragePartitionDataWithFilter(
     std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder,
     base::Time delete_begin,
     base::Time delete_end) {
-  content::StoragePartition::OriginMatcherFunction matcher_function =
-      filter_builder ? base::BindRepeating(&DoesOriginMatchPredicate,
-                                           filter_builder->BuildOriginFilter())
-                     : base::NullCallback();
+  content::StoragePartition::StorageKeyPolicyMatcherFunction
+      storage_key_matcher =
+          filter_builder
+              ? base::BindRepeating(&DoesOriginMatchPredicate,
+                                    filter_builder->BuildOriginFilter())
+              : base::NullCallback();
 
   const uint32_t removal_mask =
       content::StoragePartition::
@@ -143,8 +146,8 @@ void DeleteStoragePartitionDataWithFilter(
           REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL;
   const uint32_t quota_removal_mask = 0;
   storage_partition->ClearData(
-      removal_mask, quota_removal_mask, std::move(matcher_function),
-      nullptr /* cookie_deletion_filter */, false /* perform_storage_cleanup */,
+      removal_mask, quota_removal_mask, std::move(storage_key_matcher),
+      /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
       delete_begin, delete_end, base::DoNothing());
 }
 

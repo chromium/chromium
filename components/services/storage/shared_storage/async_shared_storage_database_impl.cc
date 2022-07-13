@@ -156,7 +156,7 @@ void AsyncSharedStorageDatabaseImpl::Entries(
 }
 
 void AsyncSharedStorageDatabaseImpl::PurgeMatchingOrigins(
-    OriginMatcherFunction origin_matcher,
+    StorageKeyPolicyMatcherFunction storage_key_policy,
     base::Time begin,
     base::Time end,
     base::OnceCallback<void(OperationResult)> callback,
@@ -164,7 +164,8 @@ void AsyncSharedStorageDatabaseImpl::PurgeMatchingOrigins(
   DCHECK(callback);
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::PurgeMatchingOrigins)
-      .WithArgs(std::move(origin_matcher), begin, end, perform_storage_cleanup)
+      .WithArgs(std::move(storage_key_policy), begin, end,
+                perform_storage_cleanup)
       .Then(std::move(callback));
 }
 

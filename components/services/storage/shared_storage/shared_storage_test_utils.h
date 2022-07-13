@@ -30,7 +30,8 @@ class Database;
 
 namespace storage {
 
-using OriginMatcherFunction = SharedStorageDatabase::OriginMatcherFunction;
+using StorageKeyPolicyMatcherFunction =
+    SharedStorageDatabase::StorageKeyPolicyMatcherFunction;
 using InitStatus = SharedStorageDatabase::InitStatus;
 using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
@@ -175,28 +176,29 @@ class TestDatabaseOperationReceiver {
   std::queue<DBOperation> expected_operations_;
 };
 
-class OriginMatcherFunctionUtility {
+class StorageKeyPolicyMatcherFunctionUtility {
  public:
-  OriginMatcherFunctionUtility();
-  ~OriginMatcherFunctionUtility();
+  StorageKeyPolicyMatcherFunctionUtility();
+  ~StorageKeyPolicyMatcherFunctionUtility();
 
-  [[nodiscard]] static OriginMatcherFunction MakeMatcherFunction(
+  [[nodiscard]] static StorageKeyPolicyMatcherFunction MakeMatcherFunction(
       std::vector<url::Origin> origins_to_match);
 
-  [[nodiscard]] static OriginMatcherFunction MakeMatcherFunction(
+  [[nodiscard]] static StorageKeyPolicyMatcherFunction MakeMatcherFunction(
       std::vector<std::string> origin_strs_to_match);
 
   [[nodiscard]] size_t RegisterMatcherFunction(
       std::vector<url::Origin> origins_to_match);
 
-  [[nodiscard]] OriginMatcherFunction TakeMatcherFunctionForId(size_t id);
+  [[nodiscard]] StorageKeyPolicyMatcherFunction TakeMatcherFunctionForId(
+      size_t id);
 
   [[nodiscard]] bool is_empty() const { return matcher_table_.empty(); }
 
   [[nodiscard]] size_t size() const { return matcher_table_.size(); }
 
  private:
-  std::vector<OriginMatcherFunction> matcher_table_;
+  std::vector<StorageKeyPolicyMatcherFunction> matcher_table_;
 };
 
 class TestSharedStorageEntriesListener

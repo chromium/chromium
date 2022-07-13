@@ -198,7 +198,7 @@ void SharedStorageManager::Clear(
 }
 
 void SharedStorageManager::PurgeMatchingOrigins(
-    OriginMatcherFunction origin_matcher,
+    StorageKeyPolicyMatcherFunction storage_key_matcher,
     base::Time begin,
     base::Time end,
     base::OnceCallback<void(OperationResult)> callback,
@@ -206,7 +206,7 @@ void SharedStorageManager::PurgeMatchingOrigins(
   DCHECK(callback);
   DCHECK(database_);
   database_->PurgeMatchingOrigins(
-      std::move(origin_matcher), begin, end,
+      std::move(storage_key_matcher), begin, end,
       GetOperationResultCallback(std::move(callback)), perform_storage_cleanup);
 }
 

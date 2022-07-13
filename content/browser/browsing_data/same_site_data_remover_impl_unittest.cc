@@ -34,7 +34,7 @@ namespace content {
 struct StoragePartitionSameSiteRemovalData {
   uint32_t removal_mask = 0;
   uint32_t quota_storage_removal_mask = 0;
-  StoragePartition::OriginMatcherFunction origin_matcher;
+  StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher;
 };
 
 class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
@@ -50,7 +50,7 @@ class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
 
   void ClearData(uint32_t removal_mask,
                  uint32_t quota_storage_removal_mask,
-                 OriginMatcherFunction origin_matcher,
+                 StorageKeyPolicyMatcherFunction storage_key_matcher,
                  network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
                  bool perform_storage_cleanup,
                  const base::Time begin,
@@ -59,7 +59,8 @@ class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
     storage_partition_removal_data_.removal_mask = removal_mask;
     storage_partition_removal_data_.quota_storage_removal_mask =
         quota_storage_removal_mask;
-    storage_partition_removal_data_.origin_matcher = std::move(origin_matcher);
+    storage_partition_removal_data_.storage_key_matcher =
+        std::move(storage_key_matcher);
     std::move(callback).Run();
   }
 
@@ -110,9 +111,10 @@ class SameSiteDataRemoverImplTest : public testing::Test {
     GetSameSiteDataRemoverImpl()->ClearStoragePartitionForOrigins(
         run_loop.QuitClosure(),
         base::BindLambdaForTesting(
-            [&origins](const url::Origin& origin,
+            [&origins](const blink::StorageKey& storage_key,
                        storage::SpecialStoragePolicy* policy) {
-              return origins.find(origin.Serialize()) != origins.end();
+              return origins.find(storage_key.origin().Serialize()) !=
+                     origins.end();
             }));
     run_loop.Run();
   }
@@ -311,14 +313,15 @@ TEST_F(SameSiteDataRemoverImplTest, TestStoragePartitionDataRemoval) {
 
   auto special_storage_policy =
       base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
-  EXPECT_TRUE(removal_data.origin_matcher.Run(
-      url::Origin::Create(GURL("http://www.google.com/test")),
+  EXPECT_TRUE(removal_data.storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting(
+          "http://www.google.com/test"),
       special_storage_policy.get()));
-  EXPECT_TRUE(removal_data.origin_matcher.Run(
-      url::Origin::Create(GURL("http://google.com")),
+  EXPECT_TRUE(removal_data.storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("http://google.com"),
       special_storage_policy.get()));
-  EXPECT_FALSE(removal_data.origin_matcher.Run(
-      url::Origin::Create(GURL("http://youtube.com")),
+  EXPECT_FALSE(removal_data.storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("http://youtube.com"),
       special_storage_policy.get()));
 }
 
@@ -348,11 +351,11 @@ TEST_F(SameSiteDataRemoverImplTest, TestClearStoragePartitionsForOrigins) {
 
   auto special_storage_policy =
       base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
-  EXPECT_TRUE(removal_data.origin_matcher.Run(
-      url::Origin::Create(GURL("https://a.com")),
+  EXPECT_TRUE(removal_data.storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("https://a.com"),
       special_storage_policy.get()));
-  EXPECT_FALSE(removal_data.origin_matcher.Run(
-      url::Origin::Create(GURL("http://youtube.com")),
+  EXPECT_FALSE(removal_data.storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("http://youtube.com"),
       special_storage_policy.get()));
 }
 
@@ -408,11 +411,12 @@ TEST_F(SameSiteDataRemoverImplTest, TestDoesNotDeletePartitionedCookies) {
 
   auto storage_policy =
       base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
-  EXPECT_TRUE(removal_data.origin_matcher.Run(
-      url::Origin::Create(GURL("https://www.google.com")),
+  EXPECT_TRUE(removal_data.storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("https://www.google.com"),
       storage_policy.get()));
-  EXPECT_FALSE(removal_data.origin_matcher.Run(
-      url::Origin::Create(GURL("https://www.partitioned.com")),
+  EXPECT_FALSE(removal_data.storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting(
+          "https://www.partitioned.com"),
       storage_policy.get()));
 }
 
