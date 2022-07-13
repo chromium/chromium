@@ -878,6 +878,14 @@ namespace autotestPrivate {
                                                       DOMString url,
                                                       VoidCallback callback);
 
+    // Launches Files app directly to absolutePath, if the path does not
+    // exist, it will launch to the default opening location (i.e. My files).
+    // If the supplied path is a file (and it exists) it will open Files app
+    // to the parent folder instead.
+    [supportsPromises] static void launchFilesAppToPath(
+        DOMString absolutePath,
+        VoidCallback callback);
+
     // Closes an application the given appId in case it was running.
     [supportsPromises] static void closeApp(DOMString appId,
                                             VoidCallback callback);

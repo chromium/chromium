@@ -92,6 +92,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -2348,6 +2349,45 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
   ash::FlushSystemWebAppLaunchesForTesting(profile);
 
   return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateLaunchFilesAppToPathFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateLaunchFilesAppToPathFunction::
+    ~AutotestPrivateLaunchFilesAppToPathFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateLaunchFilesAppToPathFunction::Run() {
+  std::unique_ptr<api::autotest_private::LaunchFilesAppToPath::Params> params(
+      api::autotest_private::LaunchFilesAppToPath::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  base::FilePath absolute_path(params->absolute_path);
+  if (!absolute_path.IsAbsolute()) {
+    return RespondNow(Error("Supplied path is not absolute"));
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  file_manager::util::ShowItemInFolder(
+      profile, std::move(absolute_path),
+      base::BindOnce(
+          &AutotestPrivateLaunchFilesAppToPathFunction::OnShowItemInFolder,
+          this));
+
+  return RespondLater();
+}
+
+void AutotestPrivateLaunchFilesAppToPathFunction::OnShowItemInFolder(
+    platform_util::OpenOperationResult result) {
+  if (result != platform_util::OpenOperationResult::OPEN_SUCCEEDED) {
+    DVLOG(1) << "Failed navigating to folder with error: " << result;
+    Respond(Error("Failed trying to open the supplied path"));
+    return;
+  }
+
+  Respond(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

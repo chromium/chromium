@@ -35049,6 +35049,7 @@ Called by update_extension_histograms.py.-->
   <int value="1682" label="PASSWORDSPRIVATE_REFRESHSCRIPTSIFNECESSARY"/>
   <int value="1683" label="OFFSCREEN_CLOSEDOCUMENT"/>
   <int value="1684" label="WMDESKSPRIVATE_SETWINDOWPROPERTIES"/>
+  <int value="1685" label="AUTOTESTPRIVATE_LAUNCHFILESAPPTOPATH"/>
 </enum>
 
 <enum name="ExtensionIconState">
