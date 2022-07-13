@@ -107,13 +107,13 @@ class DirectWritingTrigger implements StylusWritingHandler {
 
     private void startRecognition(Rect editableBound) {
         if (mCurrentStylusDownEvent == null) return;
+
         View rootView = mStylusWritingImeCallback.getContainerView();
-        if (mBinder.startRecognition(editableBound, mCurrentStylusDownEvent, rootView)) {
-            mRecognitionStarted = true;
-            // Dispatch stored action down before action move, when writing is not yet started.
-            onDispatchEvent(mCurrentStylusDownEvent, rootView);
-            mStylusWritingImeCallback.resetGestureDetection();
-        }
+        if (!mBinder.startRecognition(editableBound, mCurrentStylusDownEvent, rootView)) return;
+        mRecognitionStarted = true;
+        // Dispatch stored action down before action move, when writing is not yet started.
+        onDispatchEvent(mCurrentStylusDownEvent, rootView);
+        mStylusWritingImeCallback.resetGestureDetection();
     }
 
     @Override

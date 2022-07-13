@@ -12,10 +12,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.directwriting.IDirectWritingService;
 
 import org.chromium.base.Log;
 
@@ -25,6 +27,7 @@ import org.chromium.base.Log;
  */
 class DirectWritingServiceBinder {
     private static final String TAG = "DWServiceBinder";
+    private IDirectWritingService mRemoteDwService;
     private boolean mCallbackRegistered;
     private String mPackageName;
 
@@ -32,6 +35,7 @@ class DirectWritingServiceBinder {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "onServiceConnected for " + mPackageName + ", ComponentName=" + name);
+            mRemoteDwService = IDirectWritingService.Stub.asInterface(service);
             registerCallback();
             updateConfiguration();
         }
@@ -59,6 +63,23 @@ class DirectWritingServiceBinder {
          * @return the object that implements DW service callback interface.
          */
         DirectWritingServiceCallback getServiceCallback();
+    }
+
+    private interface OnServiceCallback {
+        void run(IDirectWritingService remoteDwService) throws Exception;
+    }
+
+    private void tryRunOnService(OnServiceCallback callback, String methodNameForDebug) {
+        if (!isServiceConnected()) return;
+        try {
+            callback.run(mRemoteDwService);
+        } catch (DeadObjectException e) {
+            Log.e(TAG, methodNameForDebug + " failed due to DeadObjectException : " + e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, methodNameForDebug + " failed : " + e);
+            e.printStackTrace();
+        }
     }
 
     void bindService(Context context, DirectWritingTriggerCallback triggerCallback) {
@@ -110,15 +131,30 @@ class DirectWritingServiceBinder {
         if (mCallbackRegistered) return;
         assert mTriggerCallback != null;
         DirectWritingServiceCallback serviceCallback = mTriggerCallback.getServiceCallback();
+
+        tryRunOnService((remoteDwService) -> {
+            String callbackPackage =
+                    (mPackageName + IDirectWritingService.VALUE_SERVICE_HOST_SOURCE_WEBVIEW);
+            remoteDwService.registerCallback(serviceCallback, callbackPackage);
+            Log.d(TAG, "Service callback registered");
+            mCallbackRegistered = true;
+        }, "registerCallback");
     }
 
     private void unregisterCallback() {
         if (!mCallbackRegistered) return;
         assert mTriggerCallback != null;
         DirectWritingServiceCallback serviceCallback = mTriggerCallback.getServiceCallback();
+
+        tryRunOnService((remoteDwService) -> {
+            remoteDwService.unregisterCallback(serviceCallback);
+            Log.d(TAG, "Service callback unregistered");
+            mCallbackRegistered = false;
+        }, "unregisterCallback");
     }
 
     private void resetDwServiceConnection() {
+        mRemoteDwService = null;
         mCallbackRegistered = false;
         mPackageName = "";
     }
@@ -132,27 +168,55 @@ class DirectWritingServiceBinder {
         }
     }
 
+    private void updateConfiguration() {
+        tryRunOnService((remoteDwService) -> {
+            Bundle bundle = new Bundle();
+            remoteDwService.getConfiguration(bundle);
+            assert mTriggerCallback != null;
+            mTriggerCallback.updateConfiguration(bundle);
+        }, "updateConfiguration");
+    }
+
+    boolean isServiceConnected() {
+        return mRemoteDwService != null;
+    }
+
+    boolean startRecognition(Rect editableBound, MotionEvent me, View rootView) {
+        if (!isServiceConnected()) {
+            Log.e(TAG, "startRecognition failed, not bounded");
+            return false;
+        }
+        try {
+            mRemoteDwService.onStartRecognition(
+                    DirectWritingBundleUtil.buildBundle(me, editableBound, rootView));
+            return true;
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "startRecognition failed due to DeadObjectException : " + e);
+            resetDwServiceConnection();
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "startRecognition failed with exception" + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    void onStopRecognition(MotionEvent me, Rect editableBounds, View rootView) {
+        tryRunOnService((remoteDwService) -> {
+            Bundle bundle = DirectWritingBundleUtil.buildBundle(me, editableBounds, rootView);
+            remoteDwService.onStopRecognition(bundle);
+        }, "onStopRecognition");
+    }
+
     // TODO(mahesh.ma): Add implementations to below stub APIs when the direct writing service aidl
     // interface is added.
     void updateEditorInfo(EditorInfo editorInfo) {}
 
     void updateEditableBounds(Rect editableBounds, View rootView) {}
 
-    boolean startRecognition(Rect editableBound, MotionEvent me, View rootView) {
-        return false;
-    }
-
-    boolean isServiceConnected() {
-        return false;
-    }
-
     void onDispatchEvent(MotionEvent me, View rootView) {}
 
-    void onStopRecognition(MotionEvent me, Rect editableBounds, View rootView) {}
-
     private void onWindowFocusLost(String packageName) {}
-
-    private void updateConfiguration() {}
 
     void hideDWToolbar() {}
 }

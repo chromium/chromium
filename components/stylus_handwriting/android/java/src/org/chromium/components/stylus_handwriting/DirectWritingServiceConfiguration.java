@@ -4,6 +4,11 @@
 
 package org.chromium.components.stylus_handwriting;
 
+import static android.widget.directwriting.IDirectWritingService.KEY_BUNDLE_CONFIG_HIDE_DELAY;
+import static android.widget.directwriting.IDirectWritingService.KEY_BUNDLE_CONFIG_KEEP_WRITING_DELAY;
+import static android.widget.directwriting.IDirectWritingService.KEY_BUNDLE_CONFIG_TRIGGER_HORIZONTAL_SPACE_DEFAULT;
+import static android.widget.directwriting.IDirectWritingService.KEY_BUNDLE_CONFIG_TRIGGER_VERTICAL_SPACE;
+
 import android.os.Bundle;
 
 /**
@@ -14,16 +19,6 @@ class DirectWritingServiceConfiguration {
     private static final long DEFAULT_KEEP_WRITING_DELAY_MS = 1000L;
     private static final int DEFAULT_VERTICAL_SLOP_PX = 56;
     private static final int DEFAULT_HORIZONTAL_SLOP_PX = 56;
-
-    // TODO(mahesh.ma): Replace the following constants with values from Direct writing service aidl
-    // when it is added.
-    private static final String KEY_BUNDLE_CONFIG_HIDE_DELAY = "KEY_BUNDLE_CONFIG_HIDE_DELAY";
-    private static final String KEY_BUNDLE_CONFIG_KEEP_WRITING_DELAY =
-            "KEY_BUNDLE_CONFIG_HIDE_DELAY";
-    private static final String KEY_BUNDLE_CONFIG_TRIGGER_VERTICAL_SPACE =
-            "KEY_BUNDLE_CONFIG_HIDE_DELAY";
-    private static final String KEY_BUNDLE_CONFIG_TRIGGER_HORIZONTAL_SPACE_DEFAULT =
-            "KEY_BUNDLE_CONFIG_HIDE_DELAY";
 
     private long mDefaultHideDwToolbarDelayMs = DEFAULT_HIDE_DW_TOOLBAR_DELAY_MS;
     private long mDefaultKeepWritingDelayMs = DEFAULT_KEEP_WRITING_DELAY_MS;
