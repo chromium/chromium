@@ -637,12 +637,14 @@ AutocompleteMatch::MergeClassifications(
   ACMatchClassifications output;
   for (auto i = classifications1.begin(), j = classifications2.begin();
        i != classifications1.end();) {
-    AutocompleteMatch::AddLastClassificationIfNecessary(&output,
-        std::max(i->offset, j->offset), i->style | j->style);
-    const size_t next_i_offset = (i + 1) == classifications1.end() ?
-        static_cast<size_t>(-1) : (i + 1)->offset;
-    const size_t next_j_offset = (j + 1) == classifications2.end() ?
-        static_cast<size_t>(-1) : (j + 1)->offset;
+    AutocompleteMatch::AddLastClassificationIfNecessary(
+        &output, std::max(i->offset, j->offset), i->style | j->style);
+    const size_t next_i_offset = (i + 1) == classifications1.end()
+                                     ? static_cast<size_t>(-1)
+                                     : (i + 1)->offset;
+    const size_t next_j_offset = (j + 1) == classifications2.end()
+                                     ? static_cast<size_t>(-1)
+                                     : (j + 1)->offset;
     if (next_i_offset >= next_j_offset)
       ++j;
     if (next_j_offset >= next_i_offset)
@@ -790,8 +792,9 @@ const TemplateURL* AutocompleteMatch::GetTemplateURLWithKeyword(
   const TemplateURL* template_url =
       keyword.empty() ? nullptr
                       : template_url_service->GetTemplateURLForKeyword(keyword);
-  return (template_url || host.empty()) ?
-      template_url : template_url_service->GetTemplateURLForHost(host);
+  return (template_url || host.empty())
+             ? template_url
+             : template_url_service->GetTemplateURLForHost(host);
 }
 
 // static
@@ -1583,8 +1586,8 @@ void AutocompleteMatch::ValidateClassifications(
         << ". Provider: " << provider_name << ".";
     DCHECK_LT(i->offset, text.length())
         << " Classification of [" << i->offset << "," << text.length()
-        << "] is out of bounds for \"" << text << "\". Provider: "
-        << provider_name << ".";
+        << "] is out of bounds for \"" << text
+        << "\". Provider: " << provider_name << ".";
     last_offset = i->offset;
   }
 }
