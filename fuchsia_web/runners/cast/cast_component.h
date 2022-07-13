@@ -131,10 +131,7 @@ class CastComponent final : public WebComponent,
   const bool is_headless_;
   base::OnceClosure on_destroyed_;
 
-  // Maintains an active connection to the Agent responsible for this component,
-  // to ensure that per-component state is kept live.
   std::unique_ptr<cr_fuchsia::AgentManager> agent_manager_;
-
   chromium::cast::ApplicationConfig application_config_;
   chromium::cast::UrlRequestRewriteRulesProviderPtr url_rewrite_rules_provider_;
   std::vector<fuchsia::web::UrlRequestRewriteRule> initial_url_rewrite_rules_;
