@@ -21,7 +21,7 @@ class Base {
 class Derived : Base {
 };
 
-#if defined(NCTEST_DEFAULT_SPAN_WITH_NON_ZERO_STATIC_EXTENT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '1UL == dynamic_extent || 1UL == 0':? \"?Invalid Extent\"?"]
+#if defined(NCTEST_DEFAULT_SPAN_WITH_NON_ZERO_STATIC_EXTENT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '1UL == dynamic_extent || 1UL == 0': Invalid Extent"]
 
 // A default constructed span must have an extent of 0 or dynamic_extent.
 void WontCompile() {
@@ -126,7 +126,7 @@ void WontCompile() {
   span<int> span(set);
 }
 
-#elif defined(NCTEST_STATIC_FRONT_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r" fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL':? \"?Count must not exceed Extent\"?"]
+#elif defined(NCTEST_STATIC_FRONT_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r" fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL': Count must not exceed Extent"]
 
 // Static first called on a span with static extent must not exceed the size.
 void WontCompile() {
@@ -135,7 +135,7 @@ void WontCompile() {
   auto first = span.first<4>();
 }
 
-#elif defined(NCTEST_STATIC_LAST_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL':? \"?Count must not exceed Extent\"?"]
+#elif defined(NCTEST_STATIC_LAST_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL': Count must not exceed Extent"]
 
 // Static last called on a span with static extent must not exceed the size.
 void WontCompile() {
@@ -144,7 +144,7 @@ void WontCompile() {
   auto last = span.last<4>();
 }
 
-#elif defined(NCTEST_STATIC_SUBSPAN_WITH_EXCEEDING_OFFSET_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL':? \"?Count must not exceed Extent\"?"]
+#elif defined(NCTEST_STATIC_SUBSPAN_WITH_EXCEEDING_OFFSET_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL': Count must not exceed Extent"]
 
 // Static subspan called on a span with static extent must not exceed the size.
 void WontCompile() {
@@ -153,7 +153,7 @@ void WontCompile() {
   auto subspan = span.subspan<4>();
 }
 
-#elif defined(NCTEST_STATIC_SUBSPAN_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL == dynamic_extent || 4UL <= 3UL - 0UL':? \"?Count must not exceed Extent - Offset\"?"]
+#elif defined(NCTEST_STATIC_SUBSPAN_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL == dynamic_extent || 4UL <= 3UL - 0UL': Count must not exceed Extent - Offset"]
 
 // Static subspan called on a span with static extent must not exceed the size.
 void WontCompile() {
