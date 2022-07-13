@@ -252,6 +252,11 @@ PasswordStoreBackendError BackendErrorFromAndroidBackendError(
              : PasswordStoreBackendError::kRecoverable;
 }
 
+bool IsUnenrolledFromUPM(const PrefService* prefs) {
+  return prefs->GetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+}
+
 }  // namespace
 
 class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
@@ -293,33 +298,34 @@ class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
   PasswordStoreBackendMetricsRecorder metrics_recorder_;
 };
 
-PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler() = default;
-
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     LoginsOrErrorReply callback,
-    PasswordStoreBackendMetricsRecorder metrics_recorder)
+    PasswordStoreBackendMetricsRecorder metrics_recorder,
+    bool is_unenrolled_from_upm)
     : success_callback_(std::move(callback)),
-      metrics_recorder_(std::move(metrics_recorder)) {}
+      metrics_recorder_(std::move(metrics_recorder)),
+      is_unenrolled_from_upm_(is_unenrolled_from_upm) {}
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     PasswordChangesOrErrorReply callback,
-    PasswordStoreBackendMetricsRecorder metrics_recorder)
+    PasswordStoreBackendMetricsRecorder metrics_recorder,
+    bool is_unenrolled_from_upm)
     : success_callback_(std::move(callback)),
-      metrics_recorder_(std::move(metrics_recorder)) {}
+      metrics_recorder_(std::move(metrics_recorder)),
+      is_unenrolled_from_upm_(is_unenrolled_from_upm) {}
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
-    JobReturnHandler&&) = default;
-PasswordStoreAndroidBackend::JobReturnHandler&
-
-PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler::operator=(
     JobReturnHandler&&) = default;
 
 PasswordStoreAndroidBackend::JobReturnHandler::~JobReturnHandler() = default;
 
 void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
     absl::optional<AndroidBackendError> error) const {
-  metrics_recorder_.RecordMetrics(GetSuccessStatusFromError(error),
-                                  std::move(error));
+  if (is_unenrolled_from_upm_)
+    metrics_recorder_.RecordMetricsForUnenrolledClients(error);
+
+  SuccessStatus sucess_status = GetSuccessStatusFromError(error);
+  metrics_recorder_.RecordMetrics(sucess_status, std::move(error));
 }
 
 base::TimeDelta
@@ -762,10 +768,11 @@ void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
                                               MetricInfix metric_infix) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   request_for_job_.emplace(
-      job_id,
-      JobReturnHandler(std::move(callback), PasswordStoreBackendMetricsRecorder(
-                                                BackendInfix("AndroidBackend"),
-                                                std::move(metric_infix))));
+      job_id, JobReturnHandler(
+                  std::move(callback),
+                  PasswordStoreBackendMetricsRecorder(
+                      BackendInfix("AndroidBackend"), std::move(metric_infix)),
+                  IsUnenrolledFromUPM(prefs_)));
 }
 
 absl::optional<PasswordStoreAndroidBackend::JobReturnHandler>
