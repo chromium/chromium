@@ -52,8 +52,8 @@ const base::Feature kOmniboxRemoveSuggestionsFromClipboard{
     "OmniboxRemoveSuggestionsFromClipboard", enabled_by_default_android_only};
 
 // Auxiliary search for Android. See http://crbug/1310100 for more details.
-const base::Feature kAndroidAuxiliarySearch{
-    "AndroidAuxiliarySearch", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAndroidAuxiliarySearch{"AndroidAuxiliarySearch",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Demotes the relevance scores when comparing suggestions based on the
 // suggestion's |AutocompleteMatchType| and the user's |PageClassification|.
@@ -227,6 +227,12 @@ const base::Feature kAdaptiveSuggestionsCount{"OmniboxAdaptiveSuggestionsCount",
 // the user clicks the reveal button.
 const base::Feature kClipboardSuggestionContentHidden = {
     "ClipboardSuggestionContentHidden", enabled_by_default_android_only};
+
+// Feature to enable memoizing and filtering non-doc hosts for
+// `DocumentProvider::GetURLForDeduping()`.
+const base::Feature kDocumentProviderDedupingOptimization{
+    "OmniboxDocumentProviderDedupingOptimization",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, finance ticker answer from omnibox will reverse the color for
 // stock ticker. only colors being swapped are those that represent "growth" and

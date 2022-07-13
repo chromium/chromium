@@ -781,6 +781,112 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_WIN)
 
 TEST_F(DocumentProviderTest, GetURLForDeduping) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      omnibox::kDocumentProviderDedupingOptimization);
+
+  // Checks that |url_string| is a URL for opening |expected_id|. An empty ID
+  // signifies |url_string| is not a Drive document and |GetURLForDeduping()| is
+  // expected to simply return an empty (invalid) GURL.
+  auto CheckDeduper = [](const std::string& url_string,
+                         const std::string& expected_id) {
+    const GURL url(url_string);
+    const GURL got_output = DocumentProvider::GetURLForDeduping(url);
+
+    const GURL expected_output;
+    if (!expected_id.empty()) {
+      EXPECT_EQ(got_output,
+                GURL("https://drive.google.com/open?id=" + expected_id))
+          << url_string;
+    } else {
+      EXPECT_FALSE(got_output.is_valid()) << url_string;
+    }
+  };
+
+  // Turning clang-format off to avoid wrapping the URLs which makes them harder
+  // to search, copy/navigate, and edit.
+  // clang-format off
+
+  // Various hosts (e.g. docs).
+  CheckDeduper("https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://spreadsheets.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://script.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://sites.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  // Without domain in path (e.g. a/google.com/).
+  CheckDeduper("https://docs.google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  // Non-document paths (e.g. presentation).
+  CheckDeduper("https://docs.google.com/a/google.com/presentation/d/tH3_d0C-1d", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/a/google.com/spreadsheets/d/tH3_d0C-1d", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/098/d/tH3_d0C-1d", "tH3_d0C-1d");
+  // With various action suffixes (e.g. view).
+  CheckDeduper("https://docs.google.com/a/google.com/forms/d/tH3_d0C-1d/view", "tH3_d0C-1d");
+  CheckDeduper("https://spreadsheets.google.com/spreadsheets/d/tH3_d0C-1d/comment", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/spreadsheets/d/tH3_d0C-1d/view", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/spreadsheets/d/tH3_d0C-1d/089", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/file/d/tH3_d0C-1d", "tH3_d0C-1d");
+  // With query params.
+  CheckDeduper("https://docs.google.com/a/google.com/forms/d/tH3_d0C-1d?usp=drive_web", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/a/google.com/file/d/tH3_d0C-1d/comment?usp=drive_web", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/presentation/d/tH3_d0C-1d/edit?usp=drive_web", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/presentation/d/tH3_d0C-1d/edit#slide=id.abc_0_789", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/file/d/tH3_d0C-1d/789", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/spreadsheets/d/tH3_d0C-1d/preview?x=1#y=2", "tH3_d0C-1d");
+  // With non-google domains.
+  CheckDeduper("https://docs.google.com/a/rand.com/forms/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://sites.google.com/a/rand.om.org/file/d/tH3_d0C-1d/view", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/spreadsheets/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/presentation/d/tH3_d0C-1d/comment", "tH3_d0C-1d");
+  CheckDeduper("https://script.google.com/a/domain/spreadsheets/d/tH3_d0C-1d/preview?x=1#y=2", "tH3_d0C-1d");
+  // Open.
+  CheckDeduper("https://drive.google.com/open?id=tH3_d0C-1d", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/a/google.com/open?x=prefix&id=tH3_d0C-1d&y=suffix", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/a/domain.com/open?id=tH3_d0C-1d&y=suffix/edit", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/open?x=prefix&id=tH3_d0C-1d", "tH3_d0C-1d");
+  CheckDeduper("https://script.google.com/open?id=tH3_d0C-1d", "tH3_d0C-1d");
+  // Viewform examples.
+  CheckDeduper("https://drive.google.com/a/google.com/forms/d/e/tH3_d0C-1d/viewform", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/a/google.com/forms/d/e/tH3_d0C-1d/viewform", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/forms/d/e/tH3_d0C-1d/viewform", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/forms/d/e/tH3_d0C-1d/viewform", "tH3_d0C-1d");
+  // File and folder.
+  CheckDeduper("https://docs.google.com/a/google.com/drive/folders/tH3_d0C-1d", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/drive/folders/tH3_d0C-1d", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/file/d/tH3_d0C-1d/view?usp=sharing", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/a/google.com/file/d/tH3_d0C-1d/view?usp=sharing", "tH3_d0C-1d");
+  // Redirects.
+  CheckDeduper("https://www.google.com/url?q=https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://www.google.com/url?sa=t&url=https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://www.google.com/url?sa=t&q&url=https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/accounts?continueUrl=https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/a/google.com/accounts?continueUrl=https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/a/google.com/accounts?continueUrl=https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/accounts?continueUrl=https://docs.google.com/a/google.com/document/d/tH3_d0C-1d/edit", "tH3_d0C-1d");
+  // Redirects encoded.
+  CheckDeduper("https://www.google.com/url?q=https%3A%2F%2Fdocs.google.com%2Fa%2Fgoogle.com%2Fdocument%2Fd%2FtH3_d0C-1d%2Fedit", "tH3_d0C-1d");
+  CheckDeduper("https://www.google.com/url?sa=t&url=https%3A%2F%2Fdocs.google.com%2Fa%2Fgoogle.com%2Fdocument%2Fd%2FtH3_d0C-1d%2Fedit", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/accounts?continueUrl=https%3A%2F%2Fdocs.google.com%2Fa%2Fgoogle.com%2Fdocument%2Fd%2FtH3_d0C-1d%2Fedit", "tH3_d0C-1d");
+  CheckDeduper("https://docs.google.com/a/google.com/accounts?continueUrl=https%3A%2F%2Fdocs.google.com%2Fa%2Fgoogle.com%2Fdocument%2Fd%2FtH3_d0C-1d%2Fedit", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/a/google.com/accounts?continueUrl=https%3A%2F%2Fdocs.google.com%2Fa%2Fgoogle.com%2Fdocument%2Fd%2FtH3_d0C-1d%2Fedit", "tH3_d0C-1d");
+  CheckDeduper("https://drive.google.com/accounts?continueUrl=https%3A%2F%2Fdocs.google.com%2Fa%2Fgoogle.com%2Fdocument%2Fd%2FtH3_d0C-1d%2Fedit", "tH3_d0C-1d");
+
+  // URLs that do not represent docs should return an empty (invalid) URL.
+  CheckDeduper("https://support.google.com/a/users/answer/1?id=2", "");
+  CheckDeduper("https://www.google.com", "");
+  CheckDeduper("https://www.google.com/url?url=https://drive.google.com/homepage", "");
+  CheckDeduper("https://www.google.com/url?url=https://www.youtube.com/view", "");
+  CheckDeduper("https://notdrive.google.com/?x=https%3A%2F%2Fdocs.google.com%2Fa%2Fgoogle.com%2Fdocument%2Fd%2FtH3_d0C-1d%2Fedit", "");
+  CheckDeduper("https://sites.google.com/google.com/abc/def", "");
+
+  // clang-format on
+}
+
+TEST_F(DocumentProviderTest, GetURLForDeduping_Optimized) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kDocumentProviderDedupingOptimization);
+
   // Checks that |url_string| is a URL for opening |expected_id|. An empty ID
   // signifies |url_string| is not a Drive document and |GetURLForDeduping()| is
   // expected to simply return an empty (invalid) GURL.

@@ -6231,6 +6231,27 @@
             ]
         }
     ],
+    "OmniboxStrippedGurlOptimizations": [
+        {
+            "platforms": [
+                "android",
+                "chromeos_lacros",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxDocumentProviderDedupingOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDemandAT": [
         {
             "platforms": [

@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/adapters.h"
+#include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
@@ -301,8 +302,9 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
       "\\b("  // The first groups matches the whole URL.
       // Domain.
       "(?:https?://)?(?:"
+      // Keep the hosts consistent with `ValidHostPrefix()`.
       "spreadsheets|docs|drive|script|sites|jamboard"
-      ")[0-9]?.google.com"
+      ")[0-9]?\\.google\\.com"
       "(?::[0-9]+)?\\/"  // Port.
       "(?:\\S*)"         // Non-whitespace chars.
       "(?:"
@@ -328,7 +330,7 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
       // Summarization details.
       "(?:summarizationDetails=[0-9a-zA-Z$\\-\\_\\.\\+\\!\\*\'\\,;:@&=/"
       "\\?(?:%5B)(?:%5D)]*)?"
-      // Pther valid chars.
+      // Other valid chars.
       "(?:[0-9a-zA-Z$\\-\\_\\.\\+\\!\\*\'\\,;:@&=/\\?]*)"
       "(?:(#[0-9a-zA-Z$\\-\\_\\.\\+\\!\\*\'\\,;:@&=/\\?]+)?)"  // Fragment
       ")");
@@ -353,9 +355,138 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
   return std::string();
 }
 
+// Verify if the host could possibly be for a valid doc URL. This is a more
+// lightweight check than `ExtractDocIdFromUrl()`. It can be done before
+// unescaping the URL as valid hosts don't contain escapable chars; unescaping
+// is relatively expensive. E.g., 'docs.google.com' isn't a valid doc URL, but
+// it's host looks like it could be, so return true. On the other hand,
+// 'google.com' is definitely not a doc URL so return false.
+bool ValidHostPrefix(const std::string& host) {
+  // There are 66 (5*11) valid, e.g. 'docs5.google.com', so rather than check
+  // all 66, we just check the 6 prefixes. Keep these prefixes consistent with
+  // those in `ExtractDocIdFromUrl()`.
+  static const std::vector<const char*> valid_host_prefixes = {
+      "spreadsheets", "docs", "drive", "script", "sites", "jamboard",
+  };
+  for (const char* valid_host_prefix : valid_host_prefixes) {
+    if (base::StartsWith(host, valid_host_prefix,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string FindStringKeyOrEmpty(const base::Value& value, std::string key) {
   auto* ptr = value.FindStringKey(key);
   return ptr ? *ptr : "";
+}
+
+// One of these 2 helpers are called by `GetURLForDeduping()` depending on
+// whether deduping optimizations (i.e., memoization and filtering non-doc
+// hosts) are enabled. They will be removed after experiments end.
+const GURL GetURLForDedupingControl(const GURL& url) {
+  if (!url.is_valid())
+    return GURL();
+
+  // Early exit to avoid unnecessary and more involved checks.
+  if (!url.DomainIs("google.com"))
+    return GURL();
+
+  // We aim to prevent duplicate Drive URLs to appear between the Drive document
+  // search provider and history/bookmark entries.
+  // All URLs are canonicalized to a GURL form only used for deduplication and
+  // not guaranteed to be usable for navigation.
+
+  // Drive redirects are already handled by the regex in |ExtractDocIdFromUrl|.
+  // The below logic handles google.com redirects; e.g., google.com/url/q=<url>
+  std::string url_str;
+  if (url.host() == "www.google.com" && url.path() == "/url") {
+    if ((!net::GetValueForKeyInQuery(url, "q", &url_str) || url_str.empty()) &&
+        (!net::GetValueForKeyInQuery(url, "url", &url_str) || url_str.empty()))
+      return GURL();
+  } else {
+    url_str = url.spec();
+  }
+
+  // Unescape |url_str|
+  url_str = base::UnescapeURLComponent(
+      url_str,
+      base::UnescapeRule::PATH_SEPARATORS |
+          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+
+  const std::string id = ExtractDocIdFromUrl(url_str);
+
+  // Canonicalize to the /open form without any extra args.
+  // This is similar to what we expect from the server.
+  return id.empty() ? GURL() : GURL("https://drive.google.com/open?id=" + id);
+}
+
+// See comment for `GetURLForDedupingControl()`.
+const GURL GetURLForDedupingOptimized(const GURL& url) {
+  if (!url.is_valid())
+    return GURL();
+
+  // A memoization cache. Only updated if `ExtractDocIdFromUrl()` was attempted.
+  // That's the most expensive part of this algorithm, and memoizing the earlier
+  // trivial checks would worsen performance by pushing out more useful cache
+  // entries.
+  static base::LRUCache<GURL, GURL> cache(10);
+  const auto& cached = cache.Get(url);
+  if (cached != cache.end())
+    return cached->second;
+
+  // Early exit to avoid unnecessary and more involved checks. Don't update the
+  // cache for trivial cases to avoid pushing out a more useful entry.
+  if (!url.DomainIs("google.com"))
+    return GURL();
+
+  // We aim to prevent duplicate Drive URLs to appear between the Drive document
+  // search provider and history/bookmark entries.
+  // All URLs are canonicalized to a GURL form only used for deduplication and
+  // not guaranteed to be usable for navigation.
+
+  // Drive redirects are already handled by the regex in |ExtractDocIdFromUrl|.
+  // The below logic handles google.com redirects; e.g., google.com/url/q=<url>
+  std::string url_str;
+  std::string url_str_host;
+  if (url.host() == "www.google.com" && url.path() == "/url") {
+    if ((!net::GetValueForKeyInQuery(url, "q", &url_str) || url_str.empty()) &&
+        (!net::GetValueForKeyInQuery(url, "url", &url_str) || url_str.empty()))
+      return GURL();
+    url_str_host = GURL(url_str).host();
+  } else {
+    url_str = url.spec();
+    url_str_host = url.host();
+  }
+
+  // Recheck the domain, since a google URL could redirect to a non-google URL
+  if (!base::EndsWith(url_str_host, "google.com",
+                      base::CompareCase::INSENSITIVE_ASCII)) {
+    return GURL();
+  }
+
+  // Filter out non-doc hosts. Do this before unescaping the URL below, as
+  // unescaping can be expensive and valid hosts don't contain escapable chars.
+  // Do this after simplifying the google.com redirect above, as that changes
+  // the host.
+  if (!ValidHostPrefix(url_str_host))
+    return GURL();
+
+  // Unescape |url_str|
+  url_str = base::UnescapeURLComponent(
+      url_str,
+      base::UnescapeRule::PATH_SEPARATORS |
+          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+
+  const std::string id = ExtractDocIdFromUrl(url_str);
+
+  // Canonicalize to the /open form without any extra args.
+  // This is similar to what we expect from the server.
+  GURL deduping_url =
+      id.empty() ? GURL() : GURL("https://drive.google.com/open?id=" + id);
+  cache.Put(url, deduping_url);
+  return deduping_url;
 }
 
 }  // namespace
@@ -914,38 +1045,8 @@ ACMatchClassifications DocumentProvider::Classify(
 
 // static
 const GURL DocumentProvider::GetURLForDeduping(const GURL& url) {
-  if (!url.is_valid())
-    return GURL();
-
-  // Early exit to avoid unnecessary and more involved checks.
-  if (!url.DomainIs("google.com"))
-    return GURL();
-
-  // We aim to prevent duplicate Drive URLs to appear between the Drive document
-  // search provider and history/bookmark entries.
-  // All URLs are canonicalized to a GURL form only used for deduplication and
-  // not guaranteed to be usable for navigation.
-
-  // Drive redirects are already handled by the regex in |ExtractDocIdFromUrl|.
-  // The below logic handles google.com redirects; e.g., google.com/url/q=<url>
-  std::string url_str;
-  if (url.host() == "www.google.com" && url.path() == "/url") {
-    if ((!net::GetValueForKeyInQuery(url, "q", &url_str) || url_str.empty()) &&
-        (!net::GetValueForKeyInQuery(url, "url", &url_str) || url_str.empty()))
-      return GURL();
-  } else {
-    url_str = url.spec();
-  }
-
-  // Unescape |url_str|
-  url_str = base::UnescapeURLComponent(
-      url_str,
-      base::UnescapeRule::PATH_SEPARATORS |
-          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
-
-  const std::string id = ExtractDocIdFromUrl(url_str);
-
-  // Canonicalize to the /open form without any extra args.
-  // This is similar to what we expect from the server.
-  return id.empty() ? GURL() : GURL("https://drive.google.com/open?id=" + id);
+  static const bool optimized = base::FeatureList::IsEnabled(
+      omnibox::kDocumentProviderDedupingOptimization);
+  return optimized ? GetURLForDedupingOptimized(url)
+                   : GetURLForDedupingControl(url);
 }
