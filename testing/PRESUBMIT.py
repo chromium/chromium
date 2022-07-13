@@ -35,7 +35,8 @@ def CommonChecks(input_api, output_api):
       [r'^.+_unittest\.py$'],
       env=testing_env,
       run_on_python2=False,
-      run_on_python3=USE_PYTHON3))
+      run_on_python3=USE_PYTHON3,
+      skip_shebang_check=True))
   files_to_skip = input_api.DEFAULT_FILES_TO_SKIP
   if input_api.is_windows:
     # These scripts don't run on Windows and should not be linted on Windows -
