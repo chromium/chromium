@@ -44,6 +44,7 @@ group("resources") {
       "profile_internals:resources",
       "settings:resources",
       "side_panel:resources",
+      "side_panel/customize_chrome:resources",
       "signin:resources",
       "support_tool:resources",
       "tab_search:resources",

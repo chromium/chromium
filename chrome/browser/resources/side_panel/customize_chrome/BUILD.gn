@@ -1,0 +1,33 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/side_panel_customize_chrome_resources.h",
+    "grit/side_panel_customize_chrome_resources_map.cc",
+    "grit/side_panel_customize_chrome_resources_map.h",
+    "side_panel_customize_chrome_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "side_panel_customize_chrome"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [ "customize_chrome.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+}
