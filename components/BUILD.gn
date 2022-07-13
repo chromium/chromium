@@ -562,6 +562,7 @@ test("components_unittests") {
     deps += [
       "//components/account_manager_core:unit_tests",
       "//components/arc/common:unit_tests",
+      "//components/reporting/health:unit_tests",
     ]
   }
 
