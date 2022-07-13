@@ -940,28 +940,23 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
 // also in the second, and with the same value.
 static void CheckJSONIsSubsetOfJSON(base::StringPiece subset_str,
                                     base::StringPiece test_str) {
-  std::unique_ptr<base::Value> subset(
-      base::JSONReader::ReadDeprecated(subset_str));
+  absl::optional<base::Value> subset = base::JSONReader::Read(subset_str);
   ASSERT_TRUE(subset);
   ASSERT_TRUE(subset->is_dict());
-  std::unique_ptr<base::Value> test(base::JSONReader::ReadDeprecated(test_str));
+  const base::Value::Dict& subset_dict = subset->GetDict();
+  absl::optional<base::Value> test = base::JSONReader::Read(test_str);
   ASSERT_TRUE(test);
   ASSERT_TRUE(test->is_dict());
+  const base::Value::Dict& test_dict = test->GetDict();
 
-  for (auto item : subset->DictItems()) {
-    base::Value* test_value = test->FindKey(item.first);
+  for (auto item : subset_dict) {
+    const base::Value* test_value = test_dict.Find(item.first);
     if (test_value == nullptr) {
       ADD_FAILURE() << item.first << " does not exist in the test dictionary";
       continue;
     }
 
-    if (!item.second.Equals(test_value)) {
-      std::string want, got;
-      ASSERT_TRUE(base::JSONWriter::Write(item.second, &want));
-      ASSERT_TRUE(base::JSONWriter::Write(*test_value, &got));
-      ADD_FAILURE() << "Value of " << item.first << " is unequal: want " << want
-                    << " got " << got;
-    }
+    EXPECT_EQ(item.second, *test_value);
   }
 }
 
