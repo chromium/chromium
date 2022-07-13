@@ -44,7 +44,6 @@ class AccessCodeCastSinkServiceFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace media_router

@@ -1220,4 +1220,20 @@ TEST_F(AccessCodeCastSinkServiceTest,
                   .empty());
 }
 
+TEST_F(AccessCodeCastSinkServiceTest, DiscoverSinkWithNoMediaRouter) {
+  // Make sure that a nullptr media router will cause an error and immediately
+  // returned.
+  MockAddSinkResultCallback mock_callback;
+
+  // Shut down the access code cast sink service causing the media router to
+  // become nullptr.
+  access_code_cast_sink_service_->Shutdown();
+  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR,
+                                 Eq(absl::nullopt)));
+
+  access_code_cast_sink_service_->DiscoverSink("", mock_callback.Get());
+
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
 }  // namespace media_router

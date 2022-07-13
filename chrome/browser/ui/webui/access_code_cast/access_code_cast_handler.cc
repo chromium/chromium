@@ -60,6 +60,8 @@ const char* AddSinkResultCodeToStringHelper(AddSinkResultCode value) {
       return "CHANNEL_OPEN_ERROR";
     case AddSinkResultCode::PROFILE_SYNC_ERROR:
       return "PROFILE_SYNC_ERROR";
+    case AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR:
+      return "INTERNAL_MEDIA_ROUTER_ERROR";
     default:
       return nullptr;
   }

@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_TEST_UTIL_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_TEST_UTIL_H_
 
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace media_router {
 
@@ -29,6 +31,28 @@ DiscoveryDevice BuildDiscoveryDeviceProto(
     const char* ip_v6 = kExpectedIpV6,
     bool set_device_capabilities = true,
     bool set_network_info = true);
+
+// Mock Access Code Cast Sink Service class. Used for testing purposes.
+class MockAccessCodeCastSinkService : public AccessCodeCastSinkService {
+ public:
+  MockAccessCodeCastSinkService(
+      Profile* profile,
+      MediaRouter* media_router,
+      CastMediaSinkServiceImpl* cast_media_sink_service_impl,
+      DiscoveryNetworkMonitor* network_monitor);
+  ~MockAccessCodeCastSinkService() override;
+
+  // This method can be passed into
+  // AccessCodeCastSinkServiceFactory::SetTestingFactory() to
+  // make the factory return a MockAccessCodeCastSinkService.
+  static std::unique_ptr<KeyedService> Create(content::BrowserContext* context);
+
+  MOCK_METHOD(void,
+              AddSinkToMediaRouter,
+              (const MediaSinkInternal& sink,
+               AddSinkResultCallback add_sink_callback),
+              (override));
+};
 
 }  // namespace media_router
 

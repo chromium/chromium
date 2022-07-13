@@ -244,6 +244,8 @@ AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
       return AccessCodeCastAddSinkResult::kChannelOpenError;
     case AddSinkResultCode::PROFILE_SYNC_ERROR:
       return AccessCodeCastAddSinkResult::kProfileSyncError;
+    case AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR:
+      return AccessCodeCastAddSinkResult::kInternalMediaRouterError;
     default:
       NOTREACHED();
       return AccessCodeCastAddSinkResult::kUnknownError;

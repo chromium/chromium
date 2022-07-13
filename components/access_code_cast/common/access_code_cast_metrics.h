@@ -28,10 +28,11 @@ enum class AccessCodeCastAddSinkResult {
   kSinkCreationError = 11,
   kChannelOpenError = 12,
   kProfileSyncError = 13,
+  kInternalMediaRouterError = 14,
 
   // NOTE: Do not reorder existing entries, and add entries only immediately
   // above this line.
-  kMaxValue = kProfileSyncError
+  kMaxValue = kInternalMediaRouterError
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

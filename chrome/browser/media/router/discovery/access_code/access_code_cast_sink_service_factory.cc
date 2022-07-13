@@ -9,6 +9,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/media_router/browser/media_router_factory.h"
 
 namespace media_router {
 
@@ -19,6 +20,10 @@ AccessCodeCastSinkService* AccessCodeCastSinkServiceFactory::GetForProfile(
   if (!GetAccessCodeCastEnabledPref(profile->GetPrefs())) {
     return nullptr;
   }
+  DCHECK(MediaRouterFactory::GetApiForBrowserContext(profile))
+      << "The Media Router has not been properly intialized before the "
+         "AccessCodeCastSinkService is created!";
+
   // GetServiceForBrowserContext returns a KeyedService hence the static_cast<>
   // to return a pointer to AccessCodeCastSinkService.
   AccessCodeCastSinkService* service = static_cast<AccessCodeCastSinkService*>(
@@ -48,6 +53,8 @@ AccessCodeCastSinkServiceFactory::AccessCodeCastSinkServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "AccessCodeSinkService",
           BrowserContextDependencyManager::GetInstance()) {
+  // TODO(b/238212430): Add a browsertest case to ensure that all media router
+  // objects are created before the ACCSS.
   DependsOn(media_router::ChromeMediaRouterFactory::GetInstance());
 }
 
@@ -64,10 +71,6 @@ KeyedService* AccessCodeCastSinkServiceFactory::BuildServiceInstanceFor(
 
 bool AccessCodeCastSinkServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
-}
-
-bool AccessCodeCastSinkServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 

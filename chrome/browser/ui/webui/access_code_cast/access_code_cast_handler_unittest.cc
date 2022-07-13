@@ -72,27 +72,6 @@ class MockPage : public access_code_cast::mojom::Page {
 
 }  // namespace
 
-class MockAccessCodeCastSinkService : public AccessCodeCastSinkService {
- public:
-  MockAccessCodeCastSinkService(
-      Profile* profile,
-      MediaRouter* media_router,
-      CastMediaSinkServiceImpl* cast_media_sink_service_impl,
-      DiscoveryNetworkMonitor* network_monitor)
-      : AccessCodeCastSinkService(profile,
-                                  media_router,
-                                  cast_media_sink_service_impl,
-                                  network_monitor,
-                                  profile->GetPrefs()) {}
-  ~MockAccessCodeCastSinkService() override = default;
-
-  MOCK_METHOD(void,
-              AddSinkToMediaRouter,
-              (const MediaSinkInternal& sink,
-               AddSinkResultCallback add_sink_callback),
-              (override));
-};
-
 class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   AccessCodeCastHandlerTest()

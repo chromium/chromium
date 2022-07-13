@@ -33,7 +33,8 @@ export class ErrorMessageElement extends PolymerElement {
             AddSinkResultCode.CHANNEL_OPEN_ERROR,
             // TODO(b/216529759): Make a new ErrorMessage for profile sync
             // error.
-            AddSinkResultCode.PROFILE_SYNC_ERROR
+            AddSinkResultCode.PROFILE_SYNC_ERROR,
+            AddSinkResultCode.INTERNAL_MEDIA_ROUTER_ERROR
           ]
         ],
         [

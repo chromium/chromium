@@ -147,6 +147,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="11" label="SINK_CREATION_ERROR"/>
   <int value="12" label="CHANNEL_OPEN_ERROR"/>
   <int value="13" label="PROFILE_SYNC_ERROR"/>
+  <int value="14" label="INTERNAL_MEDIA_ROUTER_ERROR"/>
 </enum>
 
 <enum name="AccessCodeCastCastMode">
