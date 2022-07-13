@@ -11,12 +11,12 @@
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -144,22 +144,22 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   // forced to expand, centering the views in between them.
   NSArray<NSLayoutConstraint*>* _superViewConstraints;
 
-  // The UrlLoadingService associated with this view.
-  UrlLoadingBrowserAgent* _URLLoader;  // weak
-
   // Handles drop interactions for this view.
   URLDragDropHandler* _dragDropHandler;
 }
+
+- (instancetype)initWithFrame:(CGRect)frame {
+  return [self initWithFrame:frame showTopIncognitoImageAndTitle:YES];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
-                    URLLoader:(UrlLoadingBrowserAgent*)URLLoader {
+    showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle {
   self = [super initWithFrame:frame];
   if (self) {
-    _URLLoader = URLLoader;
-
-      _dragDropHandler = [[URLDragDropHandler alloc] init];
-      _dragDropHandler.dropDelegate = self;
-      [self addInteraction:[[UIDropInteraction alloc]
-                               initWithDelegate:_dragDropHandler]];
+    _dragDropHandler = [[URLDragDropHandler alloc] init];
+    _dragDropHandler.dropDelegate = self;
+    [self addInteraction:[[UIDropInteraction alloc]
+                             initWithDelegate:_dragDropHandler]];
 
     self.alwaysBounceVertical = YES;
     // The bottom safe area is taken care of with the bottomUnsafeArea guides.
@@ -179,29 +179,31 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     _stackView.alignment = UIStackViewAlignmentCenter;
     [_containerView addSubview:_stackView];
 
-    // Incognito image.
-    UIImage* incognitoImage;
-    if (UseSymbols()) {
-      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-          configurationWithPointSize:kIncognitoSymbolImagePointSize
-                              weight:UIImageSymbolWeightLight
-                               scale:UIImageSymbolScaleMedium];
-      incognitoImage = [CustomSymbolWithConfiguration(
-          kIncognitoCircleFillSymbol, configuration)
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    } else {
-      incognitoImage = [[UIImage imageNamed:@"incognito_icon"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    if (showTopIncognitoImageAndTitle) {
+      // Incognito image.
+      UIImage* incognitoImage;
+      if (UseSymbols()) {
+        UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+            configurationWithPointSize:kIncognitoSymbolImagePointSize
+                                weight:UIImageSymbolWeightLight
+                                 scale:UIImageSymbolScaleMedium];
+        incognitoImage = [CustomSymbolWithConfiguration(
+            kIncognitoCircleFillSymbol, configuration)
+            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      } else {
+        incognitoImage = [[UIImage imageNamed:@"incognito_icon"]
+            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      }
+
+      UIImageView* incognitoImageView =
+          [[UIImageView alloc] initWithImage:incognitoImage];
+      incognitoImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+      [_stackView addArrangedSubview:incognitoImageView];
+      [_stackView setCustomSpacing:kStackViewImageSpacing
+                         afterView:incognitoImageView];
     }
 
-    UIImageView* incognitoImageView =
-        [[UIImageView alloc] initWithImage:incognitoImage];
-    incognitoImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-    [_stackView addArrangedSubview:incognitoImageView];
-    [_stackView setCustomSpacing:kStackViewImageSpacing
-                       afterView:incognitoImageView];
-
-    [self addTextSections];
+    [self addTextSectionsWithTitleShown:showTopIncognitoImageAndTitle];
 
     // `topGuide` and `bottomGuide` exist to vertically position the stackview
     // inside the container scrollview.
@@ -357,7 +359,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 }
 
 - (void)view:(UIView*)view didDropURL:(const GURL&)URL atPoint:(CGPoint)point {
-  _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
+  [self.URLLoaderDelegate loadURLInTab:URL];
 }
 
 #pragma mark - Private
@@ -373,25 +375,27 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
 // Triggers a navigation to the help page.
 - (void)learnMoreButtonPressed {
-  _URLLoader->Load(UrlLoadParams::InCurrentTab(
-      GetUrlWithLang(GURL(kLearnMoreIncognitoUrl))));
+  [self.URLLoaderDelegate
+      loadURLInTab:GetUrlWithLang(GURL(kLearnMoreIncognitoUrl))];
 }
 
 // Adds views containing the text of the incognito page to `_stackView`.
-- (void)addTextSections {
-  UIColor* titleTextColor = [UIColor colorNamed:kTextPrimaryColor];
+- (void)addTextSectionsWithTitleShown:(BOOL)showTitle {
   UIColor* bodyTextColor = BodyTextColor();
   UIColor* linkTextColor = [UIColor colorNamed:kBlueColor];
 
   // Title.
-  UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  titleLabel.font = TitleFont();
-  titleLabel.textColor = titleTextColor;
-  titleLabel.numberOfLines = 0;
-  titleLabel.textAlignment = NSTextAlignmentCenter;
-  titleLabel.text = l10n_util::GetNSString(IDS_NEW_TAB_OTR_TITLE);
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  [_stackView addArrangedSubview:titleLabel];
+  if (showTitle) {
+    UIColor* titleTextColor = [UIColor colorNamed:kTextPrimaryColor];
+    UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    titleLabel.font = TitleFont();
+    titleLabel.textColor = titleTextColor;
+    titleLabel.numberOfLines = 0;
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.text = l10n_util::GetNSString(IDS_NEW_TAB_OTR_TITLE);
+    titleLabel.adjustsFontForContentSizeCategory = YES;
+    [_stackView addArrangedSubview:titleLabel];
+  }
 
   // The Subtitle and Learn More link have no vertical spacing between them,
   // so they are embedded in a separate stack view.

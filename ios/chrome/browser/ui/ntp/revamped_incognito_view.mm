@@ -181,7 +181,13 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   // Handles drop interactions for this view.
   URLDragDropHandler* _dragDropHandler;
 }
+
 - (instancetype)initWithFrame:(CGRect)frame {
+  return [self initWithFrame:frame showTopIncognitoImageAndTitle:YES];
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+    showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle {
   self = [super initWithFrame:frame];
   if (self) {
     _dragDropHandler = [[URLDragDropHandler alloc] init];
@@ -203,29 +209,31 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
     self.stackView.alignment = UIStackViewAlignmentCenter;
     [self.containerView addSubview:self.stackView];
 
-    // Incognito icon.
-    UIImage* incognitoImage;
-    if (UseSymbols()) {
-      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-          configurationWithPointSize:kIncognitoSymbolImagePointSize
-                              weight:UIImageSymbolWeightLight
-                               scale:UIImageSymbolScaleMedium];
-      incognitoImage = [CustomSymbolWithConfiguration(
-          kIncognitoCircleFillSymbol, configuration)
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    } else {
-      incognitoImage = [[UIImage imageNamed:@"incognito_icon"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    if (showTopIncognitoImageAndTitle) {
+      // Incognito icon.
+      UIImage* incognitoImage;
+      if (UseSymbols()) {
+        UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+            configurationWithPointSize:kIncognitoSymbolImagePointSize
+                                weight:UIImageSymbolWeightLight
+                                 scale:UIImageSymbolScaleMedium];
+        incognitoImage = [CustomSymbolWithConfiguration(
+            kIncognitoCircleFillSymbol, configuration)
+            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      } else {
+        incognitoImage = [[UIImage imageNamed:@"incognito_icon"]
+            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      }
+
+      UIImageView* incognitoImageView =
+          [[UIImageView alloc] initWithImage:incognitoImage];
+      incognitoImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+      [self.stackView addArrangedSubview:incognitoImageView];
+      [self.stackView setCustomSpacing:kStackViewImageSpacing
+                             afterView:incognitoImageView];
     }
 
-    UIImageView* incognitoImageView =
-        [[UIImageView alloc] initWithImage:incognitoImage];
-    incognitoImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-    [self.stackView addArrangedSubview:incognitoImageView];
-    [self.stackView setCustomSpacing:kStackViewImageSpacing
-                           afterView:incognitoImageView];
-
-    [self addTextSections];
+    [self addTextSectionsWithTitleShown:showTopIncognitoImageAndTitle];
 
     // `topGuide` and `bottomGuide` exist to vertically position the stackview
     // inside the container scrollview.
@@ -328,18 +336,20 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 #pragma mark - Private
 
 // Adds views containing the text of the incognito page to `self.stackView`.
-- (void)addTextSections {
-  UIColor* titleTextColor = [UIColor colorNamed:kTextPrimaryColor];
+- (void)addTextSectionsWithTitleShown:(BOOL)showTitle {
+  if (showTitle) {
+    UIColor* titleTextColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  // Title.
-  UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  titleLabel.font = TitleFont();
-  titleLabel.textColor = titleTextColor;
-  titleLabel.numberOfLines = 0;
-  titleLabel.textAlignment = NSTextAlignmentCenter;
-  titleLabel.text = l10n_util::GetNSString(IDS_REVAMPED_INCOGNITO_NTP_TITLE);
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  [self.stackView addArrangedSubview:titleLabel];
+    // Title.
+    UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    titleLabel.font = TitleFont();
+    titleLabel.textColor = titleTextColor;
+    titleLabel.numberOfLines = 0;
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.text = l10n_util::GetNSString(IDS_REVAMPED_INCOGNITO_NTP_TITLE);
+    titleLabel.adjustsFontForContentSizeCategory = YES;
+    [self.stackView addArrangedSubview:titleLabel];
+  }
 
   // Does section.
   UIView* doesSection = [self

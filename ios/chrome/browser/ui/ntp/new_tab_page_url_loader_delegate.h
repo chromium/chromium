@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_URL_LOADER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_URL_LOADER_DELEGATE_H_
 
+class GURL;
+
 // Delegate for new tab page to load urls.
 @protocol NewTabPageURLLoaderDelegate
 

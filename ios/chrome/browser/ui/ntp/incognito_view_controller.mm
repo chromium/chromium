@@ -32,6 +32,9 @@
 
 @implementation IncognitoViewController {
   // The UrlLoadingService associated with this view.
+  // TODO(crbug.com/1335402): View controllers should not have access to
+  // model-layer objects. Create a mediator to connect model-layer class
+  // `UrlLoadingBrowserAgent` to the view controller.
   UrlLoadingBrowserAgent* _URLLoader;  // weak
 }
 
@@ -48,13 +51,16 @@
 
   if (base::FeatureList::IsEnabled(kIncognitoNtpRevamp)) {
     RevampedIncognitoView* view =
-        [[RevampedIncognitoView alloc] initWithFrame:self.view.bounds];
+        [[RevampedIncognitoView alloc] initWithFrame:self.view.bounds
+                       showTopIncognitoImageAndTitle:YES];
     view.URLLoaderDelegate = self;
     self.incognitoView = view;
 
   } else {
-    self.incognitoView = [[IncognitoView alloc] initWithFrame:self.view.bounds
-                                                    URLLoader:_URLLoader];
+    IncognitoView* view = [[IncognitoView alloc] initWithFrame:self.view.bounds
+                                 showTopIncognitoImageAndTitle:YES];
+    view.URLLoaderDelegate = self;
+    self.incognitoView = view;
   }
 
   self.incognitoView.accessibilityIdentifier = kNTPIncognitoViewIdentifier;
