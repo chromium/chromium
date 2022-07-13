@@ -214,8 +214,6 @@ std::vector<std::string> GenerateKernelCmdline(
       base::StringPrintf(
           "androidboot.keyboard_shortcut_helper_integration=%d",
           start_params.enable_keyboard_shortcut_helper_integration),
-      base::StringPrintf("androidboot.iioservice_present=%d",
-                         BUILDFLAG(USE_IIOSERVICE)),
       base::StringPrintf("androidboot.enable_notifications_refresh=%d",
                          start_params.enable_notifications_refresh),
       base::StringPrintf("androidboot.zram_size=%d", guest_zram_size),
