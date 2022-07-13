@@ -68,7 +68,7 @@ enum ZeroSuggestRequestsHistogramValue {
   ZERO_SUGGEST_REQUEST_SENT = 1,
   ZERO_SUGGEST_REQUEST_INVALIDATED = 2,
   ZERO_SUGGEST_RESPONSE_RECEIVED = 3,
-  ZERO_SUGGEST_RESPONSE_LOADED_FROM_HTTP_CACHE = 4,
+  // ZERO_SUGGEST_RESPONSE_LOADED_FROM_HTTP_CACHE = 4, no longer used.
   // ZERO_SUGGEST_CACHED_RESPONSE_IS_OUT_OF_DATE = 5,  no longer used.
   ZERO_SUGGEST_RESPONSE_UPDATED_RESULTS = 6,
   ZERO_SUGGEST_MAX_REQUEST_HISTOGRAM_VALUE
@@ -166,11 +166,6 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.page_classification = input.current_page_classification();
   search_terms_args.focus_type = input.focus_type();
-  const int cache_duration_sec =
-      OmniboxFieldTrial::kZeroSuggestCacheDurationSec.Get();
-  if (cache_duration_sec > 0) {
-    search_terms_args.zero_suggest_cache_duration_sec = cache_duration_sec;
-  }
   GURL suggest_url = RemoteSuggestionsService::EndpointUrl(
       search_terms_args, client()->GetTemplateURLService());
   if (!suggest_url.is_valid())
@@ -180,26 +175,30 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   if (result_type_running_ == NONE)
     return;
 
-  if (is_prefetch)
+  if (is_prefetch) {
     prefetch_done_ = false;
-  else
+  } else {
     done_ = false;
 
-  MaybeUpdateResultsWithStoredResponse();
+    // Prefetching is only meant to update the stored response with a fresh
+    // response. It is unnecessary to update the results when prefetching;
+    // as they will get cleared on the next call to `Start()`.
+    auto response_data = ReadStoredResponse();
+    if (response_data) {
+      ConvertResponseToAutocompleteMatches(std::move(response_data));
+    }
+  }
 
   search_terms_args.current_page_url = result_type_running_ == REMOTE_SEND_URL
                                            ? input.current_url().spec()
                                            : std::string();
-  // Grab ownership of the loader until results come in to
-  // `OnURLLoadComplete()`.
-  loader_ = client()
-                ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
-                ->StartSuggestionsRequest(
-                    search_terms_args, client()->GetTemplateURLService(),
-                    base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   client()->GetWeakPtr(), search_terms_args,
-                                   is_prefetch, base::TimeTicks::Now()));
+  loader_ =
+      client()
+          ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+          ->StartSuggestionsRequest(
+              search_terms_args, client()->GetTemplateURLService(),
+              base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,
+                             weak_ptr_factory_.GetWeakPtr(), is_prefetch));
 
   LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_REQUEST_SENT,
                                /*is_prefetch=*/!prefetch_done_);
@@ -216,19 +215,18 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
   loader_.reset();
   prefetch_done_ = true;
   result_type_running_ = NONE;
+
+  if (clear_cached_results) {
+    experiment_stats_v2s_.clear();
+  }
 }
 
 void ZeroSuggestProvider::DeleteMatch(const AutocompleteMatch& match) {
   // Remove the deleted match from the cache, so it is not shown to the user
   // again. Since we cannot remove just one result, blow away the cache.
-  //
   // Although the cache is currently only used for REMOTE_NO_URL, we have no
   // easy way of checking the request type after-the-fact. It's safe though, to
   // always clear the cache even if we are on a different request type.
-  //
-  // TODO(tommycli): It seems quite odd that the cache is saved to a pref, as
-  // if we would want to persist it across restarts. That seems to be directly
-  // contradictory to the fact that ZeroSuggest results can change rapidly.
   client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                   std::string());
   BaseSearchProvider::DeleteMatch(match);
@@ -236,7 +234,7 @@ void ZeroSuggestProvider::DeleteMatch(const AutocompleteMatch& match) {
 
 void ZeroSuggestProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
   BaseSearchProvider::AddProviderInfo(provider_info);
-  if (!results_.suggest_results.empty() || !results_.navigation_results.empty())
+  if (!matches().empty())
     provider_info->back().set_times_returned_results_in_session(1);
 }
 
@@ -283,32 +281,32 @@ void ZeroSuggestProvider::RecordDeletionResult(bool success) {
 }
 
 void ZeroSuggestProvider::OnURLLoadComplete(
-    const base::WeakPtr<AutocompleteProviderClient> client,
-    TemplateURLRef::SearchTermsArgs search_terms_args,
     bool is_prefetch,
-    base::TimeTicks request_time,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
   DCHECK(!done_ || !prefetch_done_);
   DCHECK_EQ(loader_.get(), source);
 
-  LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_RESPONSE_RECEIVED, is_prefetch);
-  if (source->LoadedFromCache()) {
-    LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_RESPONSE_LOADED_FROM_HTTP_CACHE,
-                                 is_prefetch);
-  }
+  std::unique_ptr<base::Value> response_data = nullptr;
 
   const bool response_received =
       response_body && source->NetError() == net::OK &&
       (source->ResponseInfo() && source->ResponseInfo()->headers &&
        source->ResponseInfo()->headers->response_code() == 200);
-  const bool results_updated =
-      response_received &&
-      UpdateResultsWithResponse(SearchSuggestionParser::ExtractJsonData(
-          source, std::move(response_body)));
+  if (response_received) {
+    LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_RESPONSE_RECEIVED, is_prefetch);
+    response_data = StoreRemoteResponse(SearchSuggestionParser::ExtractJsonData(
+        source, std::move(response_body)));
+  }
+
+  // Prefetching is only meant to update the stored response with a fresh
+  // response. It is unnecessary to update the results with prefetched response;
+  // as they will get cleared on the next call to `Start()`.
+  const bool results_updated = response_data && !is_prefetch;
   if (results_updated) {
     LogOmniboxZeroSuggestRequest(ZERO_SUGGEST_RESPONSE_UPDATED_RESULTS,
                                  is_prefetch);
+    ConvertResponseToAutocompleteMatches(std::move(response_data));
   }
 
   loader_.reset();
@@ -321,66 +319,55 @@ void ZeroSuggestProvider::OnURLLoadComplete(
     NotifyListeners(results_updated);
 }
 
-bool ZeroSuggestProvider::UpdateResultsWithResponse(
-    const std::string& json_data) {
-  if (json_data.empty())
-    return false;
+std::unique_ptr<base::Value> ZeroSuggestProvider::StoreRemoteResponse(
+    const std::string& response_json) {
+  if (response_json.empty()) {
+    return nullptr;
+  }
 
-  std::unique_ptr<base::Value> data(
-      SearchSuggestionParser::DeserializeJsonData(json_data));
-  if (!data)
-    return false;
+  auto response_data =
+      SearchSuggestionParser::DeserializeJsonData(response_json);
+  if (!response_data) {
+    return nullptr;
+  }
 
-  // Store non-empty response if running the REMOTE_NO_URL variant.
+  // Store the valid response only if running the REMOTE_NO_URL variant.
   if (result_type_running_ == REMOTE_NO_URL) {
     client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
-                                    json_data);
-
-    // If we received an empty result list, we should update the display, as it
-    // may be showing cached results that should not be shown.
-    //
-    // `data->GetListDeprecated()[1]` is the results list.
-    const bool non_empty_parsed_list =
-        data->is_list() && data->GetListDeprecated().size() >= 2u &&
-        data->GetListDeprecated()[1].is_list() &&
-        !data->GetListDeprecated()[1].GetListDeprecated().empty();
-    const bool non_empty_cache = !results_.suggest_results.empty() ||
-                                 !results_.navigation_results.empty();
-    if (non_empty_parsed_list && non_empty_cache)
-      return false;
+                                    response_json);
   }
 
-  const bool results_updated = ParseSuggestResults(
-      *data, kDefaultZeroSuggestRelevance, false, &results_);
-  if (results_updated) {
-    ConvertResultsToAutocompleteMatches();
+  // For display stability reasons, use the remote response to update the
+  // displayed results, if they are empty or if an empty result set is received;
+  // in which case, the display may be showing results that should not be shown.
+  const bool non_empty_matches = !matches().empty();
+  if (non_empty_matches) {
+    SearchSuggestionParser::Results results;
+    ParseSuggestResults(*response_data, kDefaultZeroSuggestRelevance, false,
+                        &results);
+    const bool non_empty_response =
+        !results.suggest_results.empty() || !results.navigation_results.empty();
+    if (non_empty_response) {
+      return nullptr;
+    }
   }
-  return results_updated;
+
+  return response_data;
 }
 
-void ZeroSuggestProvider::MaybeUpdateResultsWithStoredResponse() {
+std::unique_ptr<base::Value> ZeroSuggestProvider::ReadStoredResponse() {
   // Use the stored response only if running the REMOTE_NO_URL variant.
   if (result_type_running_ != REMOTE_NO_URL) {
-    return;
+    return nullptr;
   }
 
-  std::string json_data =
+  const std::string response_json =
       client()->GetPrefs()->GetString(omnibox::kZeroSuggestCachedResults);
-  if (json_data.empty()) {
-    return;
+  if (response_json.empty()) {
+    return nullptr;
   }
 
-  std::unique_ptr<base::Value> data(
-      SearchSuggestionParser::DeserializeJsonData(json_data));
-  if (!data) {
-    return;
-  }
-
-  const bool results_updated = ParseSuggestResults(
-      *data, kDefaultZeroSuggestRelevance, false, &results_);
-  if (results_updated) {
-    ConvertResultsToAutocompleteMatches();
-  }
+  return SearchSuggestionParser::DeserializeJsonData(response_json);
 }
 
 AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
@@ -411,9 +398,16 @@ AutocompleteMatch ZeroSuggestProvider::NavigationToMatch(
   return match;
 }
 
-void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {
+void ZeroSuggestProvider::ConvertResponseToAutocompleteMatches(
+    std::unique_ptr<base::Value> response) {
+  DCHECK(response);
+
   matches_.clear();
   suggestion_groups_map_.clear();
+  experiment_stats_v2s_.clear();
+
+  SearchSuggestionParser::Results results;
+  ParseSuggestResults(*response, kDefaultZeroSuggestRelevance, false, &results);
 
   TemplateURLService* template_url_service = client()->GetTemplateURLService();
   DCHECK(template_url_service);
@@ -429,13 +423,13 @@ void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {
 
   // Add all the SuggestResults to the map. We display all ZeroSuggest search
   // suggestions as unbolded.
-  for (size_t i = 0; i < results_.suggest_results.size(); ++i) {
-    AddMatchToMap(results_.suggest_results[i], std::string(), i, false, false,
+  for (size_t i = 0; i < results.suggest_results.size(); ++i) {
+    AddMatchToMap(results.suggest_results[i], std::string(), i, false, false,
                   &map);
   }
 
   const int num_query_results = map.size();
-  const int num_nav_results = results_.navigation_results.size();
+  const int num_nav_results = results.navigation_results.size();
   const int num_results = num_query_results + num_nav_results;
   UMA_HISTOGRAM_COUNTS_1M("ZeroSuggest.QueryResults", num_query_results);
   UMA_HISTOGRAM_COUNTS_1M("ZeroSuggest.URLResults", num_nav_results);
@@ -448,14 +442,19 @@ void ZeroSuggestProvider::ConvertResultsToAutocompleteMatches() {
     matches_.push_back(it->second);
 
   const SearchSuggestionParser::NavigationResults& nav_results(
-      results_.navigation_results);
+      results.navigation_results);
   for (const auto& nav_result : nav_results) {
     matches_.push_back(NavigationToMatch(nav_result));
   }
 
   // Update the suggestion groups information from the server response.
-  for (const auto& entry : results_.suggestion_groups_map) {
+  for (const auto& entry : results.suggestion_groups_map) {
     suggestion_groups_map_[entry.first].MergeFrom(entry.second);
+  }
+
+  // Update the list of experiment stats from the server response.
+  for (const auto& experiment_stats_v2 : results.experiment_stats_v2s) {
+    experiment_stats_v2s_.push_back(experiment_stats_v2);
   }
 }
 

@@ -870,11 +870,6 @@ bool IsShortcutExpandingEnabled() {
 }
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
-const base::FeatureParam<int> kZeroSuggestCacheDurationSec(
-    &omnibox::kZeroSuggestPrefetching,
-    "ZeroSuggestCacheDurationSec",
-    0);
-
 const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
     &omnibox::kLocalHistorySuggestRevamp,
     "ZeroSuggestIgnoreDuplicateVisits",

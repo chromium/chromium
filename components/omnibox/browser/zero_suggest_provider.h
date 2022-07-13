@@ -74,11 +74,11 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Sets |field_trial_triggered_| to false.
   void ResetSession() override;
 
-  // Returns the list of experiment stats corresponding to the latest |results_|
-  // to be logged to SearchboxStats as part of a GWS experiment, if any.
+  // Returns the list of experiment stats corresponding to |matches_|. Will be
+  // logged to SearchboxStats as part of a GWS experiment, if any.
   const SearchSuggestionParser::ExperimentStatsV2s& experiment_stats_v2s()
       const {
-    return results_.experiment_stats_v2s;
+    return experiment_stats_v2s_;
   }
 
   ResultType GetResultTypeRunningForTesting() const {
@@ -115,41 +115,34 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   void RecordDeletionResult(bool success) override;
 
   // Called when the network request for suggestions has completed.
-  // `is_prefetch` and `request_time` are bound to this callback and indicate if
-  // the request is a prefetch one and the time it was issued respectively.
-  void OnURLLoadComplete(const base::WeakPtr<AutocompleteProviderClient> client,
-                         TemplateURLRef::SearchTermsArgs search_terms_args,
-                         bool is_prefetch,
-                         base::TimeTicks request_time,
+  // `is_prefetch` is bound to this callback and indicates if the request is a
+  // prefetch one.
+  void OnURLLoadComplete(bool is_prefetch,
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
 
-  // Called when the remote response is received, populates |results_| with
-  // |json_data|; and converts them to |matches_|.
+  // Called when the remote response is received. Stores the remote response in
+  // the user prefs, if valid and applicable based on |result_type_running_|.
   //
-  // * The update is not performed if |json_data| is invalid.
-  // * Updates the zero suggest response stored in user prefs, if applicable.
-  //   In those cases, when |results_| is non-empty, it is updated only if
-  //   |json_data| corresponds to an empty list. This is done to ensure that
-  //   the display is cleared, as it may be showing cached results that should
-  //   not be shown.
-  // * Otherwise, the update is performed.
-  //
-  // Returns whether |results_| changed.
-  bool UpdateResultsWithResponse(const std::string& json_data);
+  // Returns the successfully parsed response if it is eligible to update the
+  // displayed results or nullptr otherwise.
+  std::unique_ptr<base::Value> StoreRemoteResponse(
+      const std::string& response_json);
 
-  // Called in Start(), populates |results_| with the zero suggest response
-  // stored in user prefs, if applicable; and converts them to |matches_|.
-  void MaybeUpdateResultsWithStoredResponse();
+  // Returns the response stored in the user prefs, if applicable based on
+  // |result_type_running_|.
+  // Returns the successfully parsed response or nullptr otherwise.
+  std::unique_ptr<base::Value> ReadStoredResponse();
 
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
   AutocompleteMatch NavigationToMatch(
       const SearchSuggestionParser::NavigationResult& navigation);
 
-  // Converts the parsed results to a set of AutocompleteMatches and adds them
-  // to |matches_|.  Also update the histograms for how many results were
-  // received.
-  void ConvertResultsToAutocompleteMatches();
+  // Converts the parsed response to a set of AutocompleteMatches and populates
+  // |matches_| and its associated metadata. Also records histograms for how
+  // many results were received.
+  void ConvertResponseToAutocompleteMatches(
+      std::unique_ptr<base::Value> response);
 
   // Whether zero suggest suggestions are allowed in the given context.
   // Invoked early, confirms all the external conditions for ZeroSuggest are
@@ -186,9 +179,8 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // never both be true, a `Start()` request stops ongoing requests.
   bool prefetch_done_;
 
-  // Contains suggest and navigation results as well as relevance parsed from
-  // the response for the most recent zero suggest input URL.
-  SearchSuggestionParser::Results results_;
+  // The list of experiment stats corresponding to |matches_|.
+  SearchSuggestionParser::ExperimentStatsV2s experiment_stats_v2s_;
 
   // For callbacks that may be run after destruction.
   base::WeakPtrFactory<ZeroSuggestProvider> weak_ptr_factory_{this};
