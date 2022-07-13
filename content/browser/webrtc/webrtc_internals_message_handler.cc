@@ -32,40 +32,40 @@ WebRTCInternalsMessageHandler::~WebRTCInternalsMessageHandler() {
 }
 
 void WebRTCInternalsMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getStandardStats",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetStandardStats,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getLegacyStats",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetLegacyStats,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "enableAudioDebugRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled,
           base::Unretained(this), true));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "disableAudioDebugRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled,
           base::Unretained(this), false));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "enableEventLogRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled,
           base::Unretained(this), true));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "disableEventLogRecordings",
       base::BindRepeating(
           &WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled,
           base::Unretained(this), false));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "finishedDOMLoad",
       base::BindRepeating(&WebRTCInternalsMessageHandler::OnDOMLoadDone,
                           base::Unretained(this)));
@@ -89,21 +89,22 @@ RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() {
 }
 
 void WebRTCInternalsMessageHandler::OnGetStandardStats(
-    const base::ListValue* /* unused_list */) {
+    const base::Value::List& /* unused_list */) {
   for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
     host->GetStandardStats();
   }
 }
 
 void WebRTCInternalsMessageHandler::OnGetLegacyStats(
-    const base::ListValue* /* unused_list */) {
+    const base::Value::List& /* unused_list */) {
   for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
     host->GetLegacyStats();
   }
 }
 
 void WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled(
-    bool enable, const base::ListValue* /* unused_list */) {
+    bool enable,
+    const base::Value::List& /* unused_list */) {
   if (enable) {
     webrtc_internals_->EnableAudioDebugRecordings(web_ui()->GetWebContents());
   } else {
@@ -113,7 +114,7 @@ void WebRTCInternalsMessageHandler::OnSetAudioDebugRecordingsEnabled(
 
 void WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled(
     bool enable,
-    const base::ListValue* /* unused_list */) {
+    const base::Value::List& /* unused_list */) {
   if (!webrtc_internals_->CanToggleEventLogRecordings()) {
     LOG(WARNING) << "Cannot toggle WebRTC event logging.";
     return;
@@ -127,8 +128,8 @@ void WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled(
   }
 }
 
-void WebRTCInternalsMessageHandler::OnDOMLoadDone(const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetListDeprecated();
+void WebRTCInternalsMessageHandler::OnDOMLoadDone(
+    const base::Value::List& args_list) {
   CHECK_GE(args_list.size(), 1u);
 
   const std::string callback_id = args_list[0].GetString();
@@ -136,15 +137,16 @@ void WebRTCInternalsMessageHandler::OnDOMLoadDone(const base::ListValue* args) {
 
   webrtc_internals_->UpdateObserver(this);
 
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetBoolKey("audioDebugRecordingsEnabled",
-                    webrtc_internals_->IsAudioDebugRecordingsEnabled());
-  params.SetBoolKey("eventLogRecordingsEnabled",
-                    webrtc_internals_->IsEventLogRecordingsEnabled());
-  params.SetBoolKey("eventLogRecordingsToggleable",
-                    webrtc_internals_->CanToggleEventLogRecordings());
+  base::Value::Dict params;
+  params.Set("audioDebugRecordingsEnabled",
+             webrtc_internals_->IsAudioDebugRecordingsEnabled());
+  params.Set("eventLogRecordingsEnabled",
+             webrtc_internals_->IsEventLogRecordingsEnabled());
+  params.Set("eventLogRecordingsToggleable",
+             webrtc_internals_->CanToggleEventLogRecordings());
 
-  ResolveJavascriptCallback(base::Value(callback_id), std::move(params));
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(params)));
 }
 
 void WebRTCInternalsMessageHandler::OnUpdate(const std::string& event_name,

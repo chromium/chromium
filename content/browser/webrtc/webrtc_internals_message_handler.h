@@ -7,13 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace content {
 
@@ -49,19 +46,17 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
   RenderFrameHost* GetWebRTCInternalsHost();
 
   // Javascript message handler.
-  void OnGetStandardStats(const base::ListValue* list);
-  void OnGetLegacyStats(const base::ListValue* list);
+  void OnGetStandardStats(const base::Value::List& list);
+  void OnGetLegacyStats(const base::Value::List& list);
   void OnSetAudioDebugRecordingsEnabled(bool enable,
-                                        const base::ListValue* list);
-  void OnSetEventLogRecordingsEnabled(bool enable, const base::ListValue* list);
-  void OnDOMLoadDone(const base::ListValue* list);
+                                        const base::Value::List& list);
+  void OnSetEventLogRecordingsEnabled(bool enable,
+                                      const base::Value::List& list);
+  void OnDOMLoadDone(const base::Value::List& list);
 
   // WebRTCInternalsUIObserver override.
   void OnUpdate(const std::string& event_name,
                 const base::Value* event_data) override;
-
-  // Executes Javascript command.
-  void ExecuteJavascriptCommand(const char* command, const base::Value* args);
 };
 
 }  // namespace content
