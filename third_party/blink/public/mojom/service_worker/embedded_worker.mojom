@@ -87,6 +87,15 @@ struct EmbeddedWorkerStartParams {
   // Used to set up fetch requests.
   RendererPreferences renderer_preferences;
 
+  // List of blink runtime features (based on their names) to enable for this
+  // renderer process. To avoid exposing dangerous features to other sites, this
+  // is only populated if the renderer process is isolated.
+  //
+  // Ideally this would be part of content.mojom.Renderer, but
+  // EmbedderWorkerInstanceClient and content.mojom.Renderer use separate pipes
+  // so a ServiceWorker could be started before the features are enabled.
+  array<string> forced_enabled_runtime_features;
+
   // Used to talk to the service worker from the browser process.
   pending_receiver<ServiceWorker> service_worker_receiver;
 

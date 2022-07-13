@@ -19,6 +19,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -76,6 +77,10 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
         params->main_script_load_params->redirect_infos;
     start_data->main_script_load_params->url_loader_client_endpoints =
         std::move(params->main_script_load_params->url_loader_client_endpoints);
+  }
+
+  for (const auto& feature : params->forced_enabled_runtime_features) {
+    blink::WebRuntimeFeatures::EnableFeatureFromString(feature, true);
   }
 
   DCHECK(!params->provider_info->cache_storage ||

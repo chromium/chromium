@@ -1367,13 +1367,6 @@ void RenderThreadImpl::SetIsDirectSocketEnabled(bool value) {
   blink::SetIsDirectSocketEnabled(value);
 }
 
-void RenderThreadImpl::EnableBlinkRuntimeFeatures(
-    const std::vector<std::string>& features) {
-  for (const auto& feature : features) {
-    blink::WebRuntimeFeatures::EnableFeatureFromString(feature, true);
-  }
-}
-
 void RenderThreadImpl::CompositingModeFallbackToSoftware() {
   gpu_->LoseChannel();
   is_gpu_compositing_disabled_ = true;

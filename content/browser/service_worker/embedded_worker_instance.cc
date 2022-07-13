@@ -22,6 +22,7 @@
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -291,9 +292,6 @@ void EmbeddedWorkerInstance::Start(
   // rph->IsInitializedAndNotDead().
   CHECK(rph);
 
-  GetContentClient()->browser()->WillStartServiceWorker(
-      process_manager->browser_context(), params->script_url, rph);
-
   rph->BindReceiver(client_.BindNewPipeAndPassReceiver());
   client_.set_disconnect_handler(
       base::BindOnce(&EmbeddedWorkerInstance::Detach, base::Unretained(this)));
@@ -389,6 +387,22 @@ void EmbeddedWorkerInstance::Start(
         ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
         params->devtools_worker_token.ToString());
   }
+
+  // To enable runtime features, the render process must be locked to the site.
+  // These features are highly privileged, so the renderer process with such
+  // features enabled shouldn't be used for other sites.
+  //
+  // WebUI schemes are process isolated already. To isolate other sites, the
+  // embedder can override ContentBrowserClient::ShouldLockProcessToSite().
+  if (rph->GetProcessLock().is_locked_to_site()) {
+    GetContentClient()
+        ->browser()
+        ->UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
+            process_manager->browser_context(), params->script_url,
+            params->forced_enabled_runtime_features);
+  }
+  CHECK(params->forced_enabled_runtime_features.empty() ||
+        rph->GetProcessLock().is_locked_to_site());
 
   // TODO(crbug.com/862854): Support changes to blink::RendererPreferences while
   // the worker is running.

@@ -13,10 +13,6 @@
 class Profile;
 class SystemExtensionsInstallManager;
 
-namespace content {
-class RenderProcessHost;
-}
-
 namespace ash {
 
 // Manages the installation, storage, and execution of System Extensions.
@@ -45,10 +41,13 @@ class SystemExtensionsProvider : public KeyedService {
     return *install_manager_;
   }
 
-  // Called when a service worker will be started to enable blink runtime
-  // features based on system extension type.
-  void WillStartServiceWorker(const GURL& script_url,
-                              content::RenderProcessHost* render_process_host);
+  // Called when a service worker will be started to enable Blink runtime
+  // features based on system extension type. Currently System Extensions run on
+  // chrome-untrusted:// which is process isolated, so this method should be
+  // called.
+  void UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
+      const GURL& script_url,
+      std::vector<std::string>& out_forced_enabled_runtime_features);
 
  private:
   std::unique_ptr<SystemExtensionsInstallManager> install_manager_;

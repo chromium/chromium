@@ -440,8 +440,6 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
   void SetIsCrossOriginIsolated(bool value) override;
   void SetIsDirectSocketEnabled(bool value) override;
-  void EnableBlinkRuntimeFeatures(
-      const std::vector<std::string>& features) override;
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 

@@ -397,10 +397,10 @@ AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
   return AllowServiceWorkerResult::Yes();
 }
 
-void ContentBrowserClient::WillStartServiceWorker(
+void ContentBrowserClient::UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
     BrowserContext* context,
     const GURL& script_url,
-    RenderProcessHost* render_process_host) {}
+    std::vector<std::string>& out_forced_enabled_runtime_features) {}
 
 bool ContentBrowserClient::AllowSharedWorker(
     const GURL& worker_url,

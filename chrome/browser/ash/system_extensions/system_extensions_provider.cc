@@ -37,9 +37,10 @@ SystemExtensionsProvider::SystemExtensionsProvider(Profile* profile) {
   install_manager_ = std::make_unique<SystemExtensionsInstallManager>(profile);
 }
 
-void SystemExtensionsProvider::WillStartServiceWorker(
-    const GURL& script_url,
-    content::RenderProcessHost* render_process_host) {
+void SystemExtensionsProvider::
+    UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
+        const GURL& script_url,
+        std::vector<std::string>& out_forced_enabled_runtime_features) {
   if (!script_url.SchemeIs(kSystemExtensionScheme))
     return;
 
@@ -50,14 +51,11 @@ void SystemExtensionsProvider::WillStartServiceWorker(
 
   // TODO(https://crbug.com/1272371): Change the following to query system
   // extension feature list.
-  std::vector<std::string> features;
-  features.push_back("BlinkExtensionChromeOS");
+  out_forced_enabled_runtime_features.push_back("BlinkExtensionChromeOS");
   if (system_extension->type == SystemExtensionType::kEcho) {
-    features.push_back("BlinkExtensionChromeOSWindowManagement");
+    out_forced_enabled_runtime_features.push_back(
+        "BlinkExtensionChromeOSWindowManagement");
   }
-
-  render_process_host->EnableBlinkRuntimeFeatures(features);
-  return;
 }
 
 SystemExtensionsProvider::~SystemExtensionsProvider() = default;

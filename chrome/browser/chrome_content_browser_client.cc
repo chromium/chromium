@@ -2677,10 +2677,11 @@ ChromeContentBrowserClient::AllowServiceWorker(
       HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
-void ChromeContentBrowserClient::WillStartServiceWorker(
-    content::BrowserContext* context,
-    const GURL& script_url,
-    content::RenderProcessHost* render_process_host) {
+void ChromeContentBrowserClient::
+    UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
+        content::BrowserContext* context,
+        const GURL& script_url,
+        std::vector<std::string>& out_forced_enabled_runtime_features) {
   DCHECK(context);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2688,8 +2689,9 @@ void ChromeContentBrowserClient::WillStartServiceWorker(
   if (!ash::IsSystemExtensionsEnabled(profile))
     return;
 
-  ash::SystemExtensionsProvider::Get(profile).WillStartServiceWorker(
-      script_url, render_process_host);
+  ash::SystemExtensionsProvider::Get(profile)
+      .UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
+          script_url, out_forced_enabled_runtime_features);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

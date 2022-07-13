@@ -2199,26 +2199,6 @@ void RenderProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
 }
 #endif
 
-void RenderProcessHostImpl::EnableBlinkRuntimeFeatures(
-    const std::vector<std::string>& features) {
-  // To enable runtime features, the render process must be locked to the site
-  // (unless site isolation is explicitly disabled). These features are highly
-  // privileged, so the renderer process with such features enabled shouldn't
-  // be used for other sites.
-  //
-  // For WebUI schemes, process isolation is provided by SiteInfo
-  // ShouldLockProcessToSite().
-  //
-  // To isolate other sites, the embedder can override ContentBrowserClient
-  // ShouldLockProcessToSite().
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableSiteIsolation)) {
-    CHECK(GetProcessLock().is_locked_to_site());
-  }
-
-  GetRendererInterface()->EnableBlinkRuntimeFeatures(features);
-}
-
 void RenderProcessHostImpl::WriteIntoTrace(
     perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
     const {

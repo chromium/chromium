@@ -265,8 +265,6 @@ class MockRenderProcessHost : public RenderProcessHost {
 
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
-  void EnableBlinkRuntimeFeatures(
-      const std::vector<std::string>& features) override;
 
   void PauseSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override {}

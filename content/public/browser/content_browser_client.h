@@ -719,12 +719,19 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& script_url,
       BrowserContext* context);
 
-  // Called when a service worker will start on a render process. The embedder
-  // can configure process-wide features here. (e.g. enable extra blink runtime
-  // features).
-  virtual void WillStartServiceWorker(BrowserContext* context,
-                                      const GURL& script_url,
-                                      RenderProcessHost* render_process_host);
+  // Allows the embedder to enable process-wide blink features before starting a
+  // service worker. This is similar to
+  // `blink.mojom.CommitNavigationParams.force_enabled_origin_trials` but for
+  // RuntimeFeatures instead of Origin Trials.
+  //
+  // This method is only called when the process that will run the Service
+  // Worker is isolated. These features can be highly privileged, so the
+  // renderer process with such features enabled shouldn't be used for other
+  // sites.
+  virtual void UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
+      BrowserContext* context,
+      const GURL& script_url,
+      std::vector<std::string>& out_forced_enabled_runtime_features);
 
   // Allow the embedder to control if a Shared Worker can be connected from a
   // given tab.
