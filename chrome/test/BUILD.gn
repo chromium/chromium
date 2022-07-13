@@ -4626,6 +4626,7 @@ if (is_chromeos_lacros) {
     ]
 
     data_deps = [
+      "//build:version_metadata",
       "//chrome:packed_resources",
       "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
     ]
@@ -4740,6 +4741,7 @@ if (is_chromeos_lacros) {
     ]
 
     data_deps = [
+      "//build:version_metadata",
       "//chrome:packed_resources",
       "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
     ]
@@ -9656,6 +9658,11 @@ if (!is_android) {
         "chrome/test/data/android/download/[large]wallpaper.dm",
         "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
       ]
+    }
+
+    if (is_chromeos_lacros && !is_chromeos_device) {
+      # For support version skew testing.
+      data_deps += [ "//build:version_metadata" ]
     }
   }
 }
