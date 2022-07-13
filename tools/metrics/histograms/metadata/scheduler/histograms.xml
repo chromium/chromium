@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
+<histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
     enum="MessagePumpPhases" expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
