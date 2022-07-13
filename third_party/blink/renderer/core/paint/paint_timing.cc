@@ -241,6 +241,11 @@ void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
 
   first_paint_ = stamp;
   RegisterNotifyPresentationTime(PaintEvent::kFirstPaint);
+
+  LocalFrame* frame = GetFrame();
+  if (frame && frame->GetDocument()) {
+    frame->GetDocument()->MarkFirstPaint();
+  }
 }
 
 void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {

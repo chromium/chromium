@@ -50,6 +50,8 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
 
   void QueueScriptForExecution(PendingScript*);
 
+  void NotifyDelayedAsyncScriptsMilestoneReached();
+
   void SetTaskRunnerForTesting(base::SingleThreadTaskRunner* task_runner) {
     task_runner_ = task_runner;
   }
@@ -70,8 +72,17 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   HeapDeque<Member<PendingScript>> pending_in_order_scripts_;
   // https://html.spec.whatwg.org/C/#set-of-scripts-that-will-execute-as-soon-as-possible
   HeapHashSet<Member<PendingScript>> pending_async_scripts_;
+  HeapDeque<Member<PendingScript>> pending_delayed_async_scripts_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // Scripts in |pending_delayed_async_scripts_| are delayed until the
+  // |NotifyDelayedAsyncScriptsMilestoneReached()| is called. After this point,
+  // the ScriptRunner no longer delays async scripts. This bool is used to
+  // ensure we don't continue delaying async scripts after this point. See the
+  // design doc:
+  // https://docs.google.com/document/u/1/d/1G-IUrT4enARZlsIrFQ4d4cRVe9MRTJASfWwolV09JZE/edit.
+  bool delay_async_script_milestone_reached_ = false;
 };
 
 }  // namespace blink

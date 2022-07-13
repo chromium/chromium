@@ -1098,6 +1098,24 @@
     "args": ["--enable-features=AutomaticLazyFrameLoadingToAds:timeout/1000"]
   },
   {
+    "prefix": "async-script-scheduling-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/async-script-scheduling"],
+    "args": ["--disable-features=DelayAsyncScriptExecution"]
+  },
+  {
+    "prefix": "async-script-scheduling-finished-parsing",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/async-script-scheduling"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/finished_parsing"]
+  },
+  {
+    "prefix": "async-script-scheduling-first-paint-or-finished-parsing",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/async-script-scheduling"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/first_paint_or_finished_parsing"]
+  },
+  {
     "prefix": "initially-invisible-images-lcp",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/largest-contentful-paint/initially-invisible-images.html"],

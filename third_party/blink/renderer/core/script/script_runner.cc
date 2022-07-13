@@ -72,6 +72,20 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script) {
   pending_script->WatchForLoad(this);
 }
 
+void ScriptRunner::NotifyDelayedAsyncScriptsMilestoneReached() {
+  delay_async_script_milestone_reached_ = true;
+  while (!pending_delayed_async_scripts_.IsEmpty()) {
+    PendingScript* pending_script = pending_delayed_async_scripts_.TakeFirst();
+    DCHECK_EQ(pending_script->GetSchedulingType(),
+              ScriptSchedulingType::kAsync);
+
+    task_runner_->PostTask(
+        FROM_HERE,
+        WTF::Bind(&ScriptRunner::ExecutePendingScript, WrapWeakPersistent(this),
+                  WrapPersistent(pending_script)));
+  }
+}
+
 void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
   pending_script->StopWatchingForLoad();
 
@@ -79,6 +93,17 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
     case ScriptSchedulingType::kAsync:
       CHECK(pending_async_scripts_.Contains(pending_script));
       pending_async_scripts_.erase(pending_script);
+
+      if (pending_script->IsEligibleForDelay() &&
+          !pending_script->GetElement()->IsPotentiallyRenderBlocking() &&
+          !delay_async_script_milestone_reached_ &&
+          base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution)) {
+        // When the ScriptRunner is notified via
+        // |NotifyDelayedAsyncScriptsMilestoneReached()|, the scripts in
+        // |pending_delayed_async_scripts_| will be scheduled for execution.
+        pending_delayed_async_scripts_.push_back(pending_script);
+        return;
+      }
 
       task_runner_->PostTask(
           FROM_HERE,
@@ -118,6 +143,7 @@ void ScriptRunner::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(pending_in_order_scripts_);
   visitor->Trace(pending_async_scripts_);
+  visitor->Trace(pending_delayed_async_scripts_);
   PendingScriptClient::Trace(visitor);
 }
 

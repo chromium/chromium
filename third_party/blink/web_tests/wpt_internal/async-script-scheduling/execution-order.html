@@ -3,7 +3,9 @@
   <title>Async Script Execution Order</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
-  <link rel="preload" as="script" href="resources/async-script.js?preload">
+  <link rel="preload" as="script" href="resources/script.js?4&preload">
+  <script async blocking=render src="resources/script.js?1&pipe=trickle(d1)"
+          data-label="async_blocking_render"></script>
 </head>
 <body>
   <!-- Note: This test serves mainly to document the current scheduling behavior
@@ -19,28 +21,30 @@
     }
     window.onload = e => {
       const actualOrder = logs.join(";");
-      const expectedOrder = "Async;Async;Async;inline1;external;inline2;DOMContentLoaded";
-      scriptlog.textContent += actualOrder;
+      // The following expectedOrder expects that the
+      // "DelayAsyncScriptExecution" feature is enabled with
+      // "delay_type:first_paint_or_finished_parsing" feature parameter.
+      const expectedOrder =
+        "async_preload;async_blocking_render;inline1;external;inline2;defer;DOMContentLoaded;async";
       assert_equals(actualOrder, expectedOrder);
       done();
     };
     document.addEventListener('DOMContentLoaded', e => { logScript('DOMContentLoaded'); });
   </script>
 
-  <script async src="resources/async-script.js?1"></script>
-  <script async src="resources/async-script.js?2"></script>
-  <script async src="resources/async-script.js?preload"></script>
-  <link rel=stylesheet href=resources/main.css?pipe=trickle(d1)>
-  <pre id="scriptlog"></pre>
+  <script defer src="resources/script.js?2" data-label="defer"></script>
+  <script async src="resources/script.js?3&pipe=trickle(d2)" data-label="async"></script>
+  <script async src="resources/script.js?4&preload" data-label="async_preload"></script>
+  <link rel=stylesheet href=resources/main.css?pipe=trickle(d3)>
   <script>
     logScript('inline1');
+    assert_equals('rgb(255, 255, 0)', getComputedStyle(document.body)['backgroundColor']);
   </script>
-  <h1>
-    Fast finished parsing, slow first paint
-  </h1>
-
-  <script src="resources/external.js?first&pipe=trickle(d2)"></script>
+  <script src="resources/script.js?5&pipe=trickle(d1)" data-label="external"></script>
   <script>
     logScript('inline2');
   </script>
+  <h1>
+    This is the first (contentful) paint.
+  </h1>
 </body>

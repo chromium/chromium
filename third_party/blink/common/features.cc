@@ -1478,6 +1478,21 @@ const base::Feature kEstablishGpuChannelAsync{
 const base::Feature kDecodeScriptSourceOffThread{
     "DecodeScriptSourceOffThread", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDelayAsyncScriptExecution{
+    "DelayAsyncScriptExecution", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<DelayAsyncScriptDelayType>::Option
+    delay_async_script_execution_delay_types[] = {
+        {DelayAsyncScriptDelayType::kFinishedParsing, "finished_parsing"},
+        {DelayAsyncScriptDelayType::kFirstPaintOrFinishedParsing,
+         "first_paint_or_finished_parsing"}};
+
+const base::FeatureParam<DelayAsyncScriptDelayType>
+    kDelayAsyncScriptExecutionDelayParam{
+        &kDelayAsyncScriptExecution, "delay_type",
+        DelayAsyncScriptDelayType::kFinishedParsing,
+        &delay_async_script_execution_delay_types};
+
 const base::Feature kAllowSourceSwitchOnPausedVideoMediaStream{
     "AllowSourceSwitchOnPausedVideoMediaStream",
     base::FEATURE_ENABLED_BY_DEFAULT};
