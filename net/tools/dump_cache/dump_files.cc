@@ -109,7 +109,7 @@ void DumpIndexHeader(const base::FilePath& name,
   printf("magic: %x\n", header.magic);
   printf("version: %d.%d\n", header.version >> 16, header.version & 0xffff);
   printf("entries: %d\n", header.num_entries);
-  printf("total bytes: %d\n", header.num_bytes);
+  printf("total bytes: %" PRId64 "\n", header.num_bytes);
   printf("last file number: %d\n", header.last_file);
   printf("current id: %d\n", header.this_id);
   printf("table length: %d\n", header.table_len);

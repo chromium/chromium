@@ -222,6 +222,7 @@ class DiskCacheBackendTest : public DiskCacheTestWithCache {
   void BackendOpenOrCreateEntry();
   void BackendDeadOpenNextEntry();
   void BackendIteratorConcurrentDoom();
+  void BackendValidateMigrated();
 };
 
 void DiskCacheBackendTest::CreateKeyAndCheck(disk_cache::Backend* cache,
@@ -5446,4 +5447,45 @@ TEST_F(DiskCacheBackendTest, SimpleDoomAfterBackendDestruction) {
 
   entry->Doom();
   entry->Close();
+}
+
+void DiskCacheBackendTest::BackendValidateMigrated() {
+  // Blockfile 3.0 migration test.
+  DisableFirstCleanup();  // started from copied dir, not cleaned dir.
+  InitCache();
+
+  // The total size comes straight from the headers, and is expected to be 1258
+  // for either set of testdata.
+  EXPECT_EQ(1258, CalculateSizeOfAllEntries());
+  EXPECT_EQ(1, cache_->GetEntryCount());
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(OpenEntry("https://example.org/data", &entry), IsOk());
+
+  // Size of the actual payload.
+  EXPECT_EQ(1234, entry->GetDataSize(1));
+
+  entry->Close();
+}
+
+TEST_F(DiskCacheBackendTest, BlockfileMigrate20) {
+  ASSERT_TRUE(CopyTestCache("good_2_0"));
+  BackendValidateMigrated();
+}
+
+TEST_F(DiskCacheBackendTest, BlockfileMigrate21) {
+  ASSERT_TRUE(CopyTestCache("good_2_1"));
+  BackendValidateMigrated();
+}
+
+TEST_F(DiskCacheBackendTest, BlockfileMigrateNewEviction20) {
+  ASSERT_TRUE(CopyTestCache("good_2_0"));
+  SetNewEviction();
+  BackendValidateMigrated();
+}
+
+TEST_F(DiskCacheBackendTest, BlockfileMigrateNewEviction21) {
+  ASSERT_TRUE(CopyTestCache("good_2_1"));
+  SetNewEviction();
+  BackendValidateMigrated();
 }

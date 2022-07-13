@@ -513,7 +513,7 @@ scoped_refptr<EntryImpl> BackendImpl::OpenEntryImpl(const std::string& key) {
     cache_entry = nullptr;
   }
 
-  int current_size = data_->header.num_bytes / (1024 * 1024);
+  int64_t current_size = data_->header.num_bytes / (1024 * 1024);
   int64_t total_hours = stats_.GetCounter(Stats::TIMER) / 120;
   int64_t no_use_hours = stats_.GetCounter(Stats::LAST_REPORT_TIMER) / 120;
   int64_t use_hours = total_hours - no_use_hours;
@@ -1361,11 +1361,6 @@ bool BackendImpl::CreateBackingStore(disk_cache::File* file) {
 
   IndexHeader header;
   header.table_len = DesiredIndexTableLen(max_size_);
-
-  // We need file version 2.1 for the new eviction algorithm.
-  if (new_eviction_)
-    header.version = 0x20001;
-
   header.create_time = Time::Now().ToInternalValue();
 
   if (!file->Write(&header, sizeof(header), 0))
@@ -1880,7 +1875,7 @@ void BackendImpl::LogStats() {
 void BackendImpl::ReportStats() {
   CACHE_UMA(COUNTS, "Entries", 0, data_->header.num_entries);
 
-  int current_size = data_->header.num_bytes / (1024 * 1024);
+  int64_t current_size = data_->header.num_bytes / (1024 * 1024);
   int max_size = max_size_ / (1024 * 1024);
   int hit_ratio_as_percentage = stats_.GetHitRatio();
 
@@ -1953,7 +1948,7 @@ void BackendImpl::ReportStats() {
   int64_t trim_rate = stats_.GetCounter(Stats::TRIM_ENTRY) / use_hours;
   CACHE_UMA(COUNTS, "TrimRate", 0, static_cast<int>(trim_rate));
 
-  int avg_size = data_->header.num_bytes / GetEntryCount();
+  int64_t avg_size = data_->header.num_bytes / GetEntryCount();
   CACHE_UMA(COUNTS, "EntrySize", 0, avg_size);
   CACHE_UMA(COUNTS, "EntriesFull", 0, data_->header.num_entries);
 
@@ -1983,9 +1978,17 @@ void BackendImpl::ReportStats() {
 void BackendImpl::UpgradeTo2_1() {
   // 2.1 is basically the same as 2.0, except that new fields are actually
   // updated by the new eviction algorithm.
-  DCHECK(0x20000 == data_->header.version);
-  data_->header.version = 0x20001;
+  DCHECK_EQ(kVersion2_0, data_->header.version);
+  data_->header.version = kVersion2_1;
   data_->header.lru.sizes[Rankings::NO_USE] = data_->header.num_entries;
+}
+
+void BackendImpl::UpgradeTo3_0() {
+  // 3.0 uses a 64-bit size field.
+  DCHECK(kVersion2_0 == data_->header.version ||
+         kVersion2_1 == data_->header.version);
+  data_->header.version = kVersion3_0;
+  data_->header.num_bytes = data_->header.old_v2_num_bytes;
 }
 
 bool BackendImpl::CheckIndex() {
@@ -1997,23 +2000,25 @@ bool BackendImpl::CheckIndex() {
     return false;
   }
 
-  if (new_eviction_) {
-    // We support versions 2.0 and 2.1, upgrading 2.0 to 2.1.
-    if (kIndexMagic != data_->header.magic ||
-        kCurrentVersion >> 16 != data_->header.version >> 16) {
-      LOG(ERROR) << "Invalid file version or magic";
-      return false;
-    }
-    if (kCurrentVersion == data_->header.version) {
-      // We need file version 2.1 for the new eviction algorithm.
-      UpgradeTo2_1();
-    }
-  } else {
-    if (kIndexMagic != data_->header.magic ||
-        kCurrentVersion != data_->header.version) {
-      LOG(ERROR) << "Invalid file version or magic";
-      return false;
-    }
+  if (data_->header.magic != kIndexMagic) {
+    LOG(ERROR) << "Invalid file magic";
+    return false;
+  }
+
+  // 2.0 + new_eviction needs conversion to 2.1.
+  if (data_->header.version == kVersion2_0 && new_eviction_) {
+    UpgradeTo2_1();
+  }
+
+  // 2.0 or 2.1 can be upgraded to 3.0
+  if (data_->header.version == kVersion2_0 ||
+      data_->header.version == kVersion2_1) {
+    UpgradeTo3_0();
+  }
+
+  if (kCurrentVersion != data_->header.version) {
+    LOG(ERROR) << "Invalid file version";
+    return false;
   }
 
   if (!data_->header.table_len) {

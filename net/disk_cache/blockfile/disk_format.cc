@@ -6,6 +6,8 @@
 
 namespace disk_cache {
 
+static_assert(sizeof(IndexHeader) == 368);
+
 IndexHeader::IndexHeader() {
   memset(this, 0, sizeof(*this));
   magic = kIndexMagic;
