@@ -15,12 +15,17 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
+    <!-- Needed because CastWebContentsActivity sets orientation to landscape. -->
+    <uses-feature android:name="android.hardware.screen.landscape" android:required="false" />
+
     <application android:icon="@drawable/ic_settings_cast">
+        <service android:name="org.chromium.chromecast.shell.CastWebContentsService"/>
+
         <activity android:name="org.chromium.chromecast.shell.CastWebContentsActivity"
                   android:theme="@style/CastShellTheme"
                   android:exported="true"
                   android:hardwareAccelerated="true"
-                  android:launchMode="standard"
+                  android:launchMode="singleInstance"
                   android:screenOrientation="landscape"
                   android:taskAffinity=".CastWebContentsActivity"
                   android:supportsPictureInPicture="true"

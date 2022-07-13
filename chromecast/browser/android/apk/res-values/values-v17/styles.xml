@@ -6,7 +6,7 @@
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="CastShellTheme" parent="@android:style/Theme.Holo.Light.NoActionBar" tools:ignore="UnusedResources">
+    <style name="CastShellTheme" parent="@android:style/Theme.Holo.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 </resources>
