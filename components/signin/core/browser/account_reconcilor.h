@@ -243,6 +243,10 @@ class AccountReconcilor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
                            DelegateTimeoutIsNotCalled);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           ForcedReconcileTriggerShouldNotCallListAccounts);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
+                           ForcedReconcileTriggerShouldNotResultInNoop);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
                            DelegateTimeoutIsNotCalledIfTimeoutIsNotReached);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest, MultiloginLogout);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestForceDiceMigration,
@@ -283,8 +287,9 @@ class AccountReconcilor : public KeyedService,
     kTokenChangeDuringReconcile = 5,
     kCookieChange = 6,
     kCookieSettingChange = 7,
+    kForcedReconcile = 8,
 
-    kMaxValue = kCookieSettingChange
+    kMaxValue = kForcedReconcile
   };
 
   void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> timer);

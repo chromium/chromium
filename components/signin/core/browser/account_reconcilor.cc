@@ -381,8 +381,21 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
     return;
   }
 
+  // In the case of a forced reconciliation, we will not rely on ListAccounts,
+  // and consider the cookie jar to be empty.
+  if (trigger_ == Trigger::kForcedReconcile) {
+    OnAccountsInCookieUpdated(
+        /*accounts_in_cookie_jar_info=*/signin::AccountsInCookieJarInfo(
+            /*accounts_are_fresh_param=*/true,
+            /*signed_in_accounts_param=*/{},
+            /*signed_out_accounts_param=*/{}),
+        /*error=*/GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+    return;
+  }
+
   // Rely on the IdentityManager to manage calls to and responses from
-  // ListAccounts.
+  // ListAccounts - except when a forced reconciliation is requested (handled
+  // above).
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager_->GetAccountsInCookieJar();
   if (accounts_in_cookie_jar.accounts_are_fresh) {

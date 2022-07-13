@@ -2376,6 +2376,90 @@ TEST_F(AccountReconcilorTest, DelegateTimeoutIsNotCalledIfTimeoutIsNotReached) {
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
 }
 
+TEST_F(AccountReconcilorTest, ForcedReconcileTriggerShouldNotCallListAccounts) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  signin::AccountConsistencyMethod account_consistency =
+      signin::AccountConsistencyMethod::kDice;
+  SetAccountConsistency(account_consistency);
+  gaia::MultiloginMode multilogin_mode =
+      gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER;
+#else
+  signin::AccountConsistencyMethod account_consistency =
+      signin::AccountConsistencyMethod::kMirror;
+  SetAccountConsistency(account_consistency);
+  gaia::MultiloginMode multilogin_mode =
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER;
+#endif
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  identity_test_env()->WaitForRefreshTokensLoaded();
+  const CoreAccountId account_id = account_info.account_id;
+
+  // Do not set a ListAccounts response, but still expect multilogin to be
+  // called.
+  std::vector<CoreAccountId> accounts_to_send = {account_id};
+  const signin::MultiloginParameters params(multilogin_mode, accounts_to_send);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kForcedReconcile);
+  ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
+  base::RunLoop().RunUntilIdle();
+}
+
+// Forced account reconciliation
+// (`AccountReconcilor::Trigger::kForcedReconcile`) should not result in a noop
+// - even if ListAccounts claims to have the same set of accounts as Chrome.
+TEST_F(AccountReconcilorTest, ForcedReconcileTriggerShouldNotResultInNoop) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  signin::AccountConsistencyMethod account_consistency =
+      signin::AccountConsistencyMethod::kDice;
+  SetAccountConsistency(account_consistency);
+  gaia::MultiloginMode multilogin_mode =
+      gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER;
+#else
+  signin::AccountConsistencyMethod account_consistency =
+      signin::AccountConsistencyMethod::kMirror;
+  SetAccountConsistency(account_consistency);
+  gaia::MultiloginMode multilogin_mode =
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER;
+#endif
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  identity_test_env()->WaitForRefreshTokensLoaded();
+  const CoreAccountId account_id = account_info.account_id;
+
+  // Set a ListAccounts response to match the Primary Account in Chrome.
+  signin::SetListAccountsResponseOneAccount(
+      /*email=*/account_info.email, /*gaia_id=*/account_info.gaia,
+      /*test_url_loader_factory=*/&test_url_loader_factory_);
+  std::vector<CoreAccountId> accounts_to_send = {account_id};
+  const signin::MultiloginParameters params(multilogin_mode, accounts_to_send);
+  // `PerformSetCookiesAction()` should be called, despite the cookie jar having
+  // the same account(s) as Chrome.
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kForcedReconcile);
+  ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
+  base::RunLoop().RunUntilIdle();
+
+  // Check the reported histograms. Noop bucket should not have a sample.
+  // Multilogin bucket should have a sample.
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kOperationHistogramName,
+      AccountReconcilor::Operation::kMultilogin, 1);
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kTriggerMultiloginHistogramName,
+      AccountReconcilor::Trigger::kForcedReconcile, 1);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerNoopHistogramName, 0);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerMultiloginHistogramName, 1);
+}
+
 TEST_F(AccountReconcilorTest, ScopedSyncedDataDeletionDestructionOrder) {
   AccountReconcilor* reconcilor = GetMockReconcilor();
   std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion> data_deletion =
