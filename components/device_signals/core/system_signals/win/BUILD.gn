@@ -4,6 +4,7 @@
 
 static_library("win") {
   public = [
+    "win_platform_delegate.h",
     "wmi_client.h",
     "wmi_client_impl.h",
     "wsc_client.h",
@@ -11,6 +12,7 @@ static_library("win") {
   ]
 
   sources = [
+    "win_platform_delegate.cc",
     "wmi_client.cc",
     "wmi_client_impl.cc",
     "wsc_client.cc",
@@ -19,6 +21,7 @@ static_library("win") {
 
   public_deps = [
     "//base",
+    "//components/device_signals/core/common",
     "//components/device_signals/core/common/win",
     "//third_party/abseil-cpp:absl",
   ]
