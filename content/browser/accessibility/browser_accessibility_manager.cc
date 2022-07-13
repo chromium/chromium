@@ -300,8 +300,6 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
       !g_focus_change_callback_for_testing.Get()) {
     if (delegate_ && !delegate_->AccessibilityViewHasFocus())
       return;
-    if (!CanFireEvents())
-      return;
   }
 
   // Wait until navigation is complete or stopped, before attempting to move the
@@ -320,6 +318,10 @@ bool BrowserAccessibilityManager::CanFireEvents() const {
   // Events that are generated while waiting until CanFireEvents() returns true
   // are dropped by design. Any events after the page is ready for events will
   // be relative to that initial tree.
+
+  // The current tree must have an AXTreeID.
+  if (ax_tree_id() == ui::AXTreeIDUnknown())
+    return false;
 
   // Fire events only when the root of the tree is reachable, to avoid a bug
   // in AppKit that gets stuck in an infinite loop trying to find the root,
@@ -484,7 +486,9 @@ void BrowserAccessibilityManager::UserIsReloading() {
 
 void BrowserAccessibilityManager::NavigationSucceeded() {
   user_is_navigating_away_ = false;
-  FireFocusEventsIfNeeded();
+  // Do not call FireFocusEventsIfNeeded() yet -- wait until first call
+  // of OnAccessibilityEvents(), which will occur when kLoadStart is fired from
+  // the renderer, at which point there will be an AXTreeID().
 }
 
 void BrowserAccessibilityManager::NavigationFailed() {
@@ -1803,6 +1807,8 @@ void BrowserAccessibilityManager::SetLastFocusedNode(
     DCHECK(node->manager());
     last_focused_node_id_ = node->GetId();
     last_focused_node_tree_id_ = node->manager()->ax_tree_id();
+    DCHECK(last_focused_node_tree_id_);
+    DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
   } else {
     last_focused_node_id_.reset();
     last_focused_node_tree_id_.reset();
@@ -1813,13 +1819,7 @@ void BrowserAccessibilityManager::SetLastFocusedNode(
 BrowserAccessibility* BrowserAccessibilityManager::GetLastFocusedNode() {
   if (last_focused_node_id_) {
     DCHECK(last_focused_node_tree_id_);
-    // TODO(yuzus) This should not fail in
-    // All/BackForwardCacheBrowserTestWithFlagForScreenReader.
-    //   DoNotEvictOnAccessibilityEvents/1.
-    // We should fix and replace the early return with the DCHECK().
-    // DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
-    if (last_focused_node_tree_id_ == ui::AXTreeIDUnknown())
-      return nullptr;
+    DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
     if (BrowserAccessibilityManager* last_focused_manager =
             FromID(last_focused_node_tree_id_.value()))
       return last_focused_manager->GetFromID(last_focused_node_id_.value());
