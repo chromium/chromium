@@ -69,14 +69,6 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
 
   EXPECT_FALSE(config()->IsSupported(absl::nullopt));
-#elif BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::DEV));
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
-  EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
-
-  EXPECT_TRUE(config()->IsSupported(absl::nullopt));
 #else
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
@@ -150,6 +142,10 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetChildProcessEnableFraction) {
+  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
+                     metrics::CallStackProfileParams::Process::kUtility));
+  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
+                     metrics::CallStackProfileParams::Process::kUnknown));
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kGpu));
@@ -158,10 +154,6 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   EXPECT_EQ(0.0,
             config()->GetChildProcessEnableFraction(
                 metrics::CallStackProfileParams::Process::kNetworkService));
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kUtility));
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kUnknown));
 #else
   EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kGpu));
@@ -170,10 +162,6 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   EXPECT_EQ(1.0,
             config()->GetChildProcessEnableFraction(
                 metrics::CallStackProfileParams::Process::kNetworkService));
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kUtility));
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kUnknown));
 #endif
 }
 
