@@ -33,11 +33,14 @@
 #include "base/posix/global_descriptors.h"
 #include "base/scoped_add_feature_flags.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/embedder_support/switches.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/metrics/unsent_log_store_metrics.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
@@ -178,6 +181,28 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot64DataDescriptor,
         gin::V8Initializer::GetSnapshotFilePath(false, file_type));
+
+    {
+      // Disable origin trial features on WebView unless the flag was explicitly
+      // specified via command-line.
+      std::string disabled_origin_trials_switch_value = cl->GetSwitchValueASCII(
+          embedder_support::kOriginTrialDisabledFeatures);
+      base::flat_set<std::string> disabled_origin_trials(
+          base::SplitString(disabled_origin_trials_switch_value, "|",
+                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+
+      // Disable origin trials for the FedCM API on WebView because the FedCM
+      // API is not implemented on WebView. The inserted feature string should
+      // match a name in
+      // third_party/blink/renderer/platform/runtime_enabled_features.json5.
+      // Currently, there is no method to obtain these strings directly so it is
+      // hard coded.
+      disabled_origin_trials.insert("FedCM");
+
+      cl->AppendSwitchASCII(
+          embedder_support::kOriginTrialDisabledFeatures,
+          base::JoinString(std::move(disabled_origin_trials).extract(), "|"));
+    }
   }
 
   if (cl->HasSwitch(switches::kWebViewSandboxedRenderer)) {
@@ -306,6 +331,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // See crbug.com/1277431 for more details.
     if (version_info::android::GetChannel() < version_info::Channel::BETA)
       features.DisableIfNotSet(blink::features::kEventPath);
+
+    // FedCM is not yet supported on WebView.
+    features.DisableIfNotSet(::features::kFedCm);
   }
 
   android_webview::RegisterPathProvider();

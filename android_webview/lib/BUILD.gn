@@ -25,6 +25,7 @@ source_set("lib") {
     "//cc/base",
     "//components/autofill/core/common",
     "//components/crash/core/common",
+    "//components/embedder_support:embedder_support",
     "//components/gwp_asan/buildflags",
     "//components/metrics",
     "//components/power_scheduler",

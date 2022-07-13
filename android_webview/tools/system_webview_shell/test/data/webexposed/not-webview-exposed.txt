@@ -266,6 +266,10 @@ interface FontData
 interface Event
     getter path                        # crbug.com/1277431
 
+# FedCM API is not implemented on WebView. crbug.com/1340252
+interface IdentityCredential : Credential
+    getter token
+
 [GLOBAL OBJECT]
     method openDatabase
     attribute eventSender                    # test only
