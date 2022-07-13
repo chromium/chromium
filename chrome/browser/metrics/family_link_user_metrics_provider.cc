@@ -36,6 +36,13 @@ void FamilyLinkUserMetricsProvider::IdentityManagerCreated(
     signin::IdentityManager* identity_manager) {
   CHECK(identity_manager);
   scoped_observations_.AddObservation(identity_manager);
+  // The account may have been updated before registering the observer.
+  // Set the log segment to the primary account info if it exists.
+  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+
+  if (!primary_account_info.IsEmpty())
+    OnExtendedAccountInfoUpdated(primary_account_info);
 }
 
 void FamilyLinkUserMetricsProvider::OnIdentityManagerShutdown(
@@ -52,7 +59,7 @@ void FamilyLinkUserMetricsProvider::OnExtendedAccountInfoUpdated(
   switch (is_subject_to_parental_controls) {
     case signin::Tribool::kFalse:
     case signin::Tribool::kUnknown: {
-      // Log as unsupervised user if the account is subject to parental
+      // Log as unsupervised user if the account is not subject to parental
       // controls or if the capability is not known.
       SetLogSegment(LogSegment::kUnsupervised);
       return;

@@ -10,6 +10,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +27,6 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
                            /*pref_service=*/&prefs_,
                            signin::AccountConsistencyMethod::kMirror,
                            &client_) {
-    metrics_provider_.IdentityManagerCreated(identity_manager());
     EnableAccountCapabilitiesFetches(identity_manager());
   }
 
@@ -55,6 +55,7 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
 };
 
 TEST_F(FamilyLinkUserMetricsProviderTest, UserWithUnknownCapabilities) {
+  metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::RunLoop().RunUntilIdle();
 
@@ -68,6 +69,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest, UserWithUnknownCapabilities) {
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest, AdultUser) {
+  metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::RunLoop().RunUntilIdle();
 
@@ -90,6 +92,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest, AdultUser) {
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest, UserWithOptionalSupervision) {
+  metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::RunLoop().RunUntilIdle();
 
@@ -115,6 +118,7 @@ TEST_F(FamilyLinkUserMetricsProviderTest, UserWithOptionalSupervision) {
 }
 
 TEST_F(FamilyLinkUserMetricsProviderTest, UserWithRequiredSupervision) {
+  metrics_provider()->IdentityManagerCreated(identity_manager());
   AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::RunLoop().RunUntilIdle();
 
@@ -136,5 +140,22 @@ TEST_F(FamilyLinkUserMetricsProviderTest, UserWithRequiredSupervision) {
   histogram_tester.ExpectUniqueSample(
       FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
       FamilyLinkUserMetricsProvider::LogSegment::kSupervisionEnabledByPolicy,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       MetricsProviderInitAfterPrimaryAccountAdded) {
+  AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+
+  // Identity manager observer set after primary account is made available.
+  metrics_provider()->IdentityManagerCreated(identity_manager());
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->ProvideCurrentSessionData(/*uma_proto_unused=*/nullptr);
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyLinkUserMetricsProvider::GetHistogramNameForTesting(),
+      FamilyLinkUserMetricsProvider::LogSegment::kUnsupervised,
       /*expected_bucket_count=*/1);
 }
