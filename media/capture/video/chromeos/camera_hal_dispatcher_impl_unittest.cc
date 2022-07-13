@@ -234,7 +234,7 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
   // Re-create a new server to simulate a server crash.
   mock_server = std::make_unique<MockCameraHalServer>();
 
-  // Make sure we creates a new Mojo channel from the new server to the same
+  // Make sure we create a new Mojo channel from the new server to the same
   // client.
   EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
@@ -251,7 +251,7 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
           base::BindOnce(&CameraHalDispatcherImplTest::OnRegisteredServer,
                          base::Unretained(this))));
 
-  // Wait until the clients gets the newly established Mojo channel.
+  // Wait until the clients get the newly established Mojo channel.
   DoLoop();
 }
 

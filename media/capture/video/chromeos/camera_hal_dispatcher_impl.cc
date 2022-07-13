@@ -344,6 +344,14 @@ void CameraHalDispatcherImpl::RemoveCameraPrivacySwitchObserver(
 void CameraHalDispatcherImpl::GetCameraSWPrivacySwitchState(
     cros::mojom::CameraHalServer::GetCameraSWPrivacySwitchStateCallback
         callback) {
+  if (!proxy_thread_.IsRunning()) {
+    LOG(ERROR) << "CameraProxyThread is not started. Failed to query the "
+                  "camera SW privacy switch state";
+    std::move(callback).Run(cros::mojom::CameraPrivacySwitchState::UNKNOWN);
+    return;
+  }
+  // Unretained reference is safe here because CameraHalDispatcherImpl owns
+  // |proxy_thread_|.
   proxy_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -353,6 +361,13 @@ void CameraHalDispatcherImpl::GetCameraSWPrivacySwitchState(
 
 void CameraHalDispatcherImpl::SetCameraSWPrivacySwitchState(
     cros::mojom::CameraPrivacySwitchState state) {
+  if (!proxy_thread_.IsRunning()) {
+    LOG(ERROR) << "CameraProxyThread is not started. "
+                  "SetCameraSWPrivacySwitchState request was aborted";
+    return;
+  }
+  // Unretained reference is safe here because CameraHalDispatcherImpl owns
+  // |proxy_thread_|.
   proxy_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
