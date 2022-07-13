@@ -11,6 +11,8 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "base/scoped_observation.h"
@@ -31,7 +33,7 @@ namespace ash {
 // Creates and manages the nudge widget and its contents view for a contextual
 // system nudge. The nudge displays an icon and a label view in a shelf-colored
 // system bubble with rounded corners.
-class ASH_EXPORT SystemNudge : public ShelfObserver {
+class ASH_EXPORT SystemNudge : public ShelfObserver, ShellObserver {
  public:
   SystemNudge(const std::string& name,
               int icon_size,
@@ -48,6 +50,10 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
   void OnHotseatStateChanged(HotseatState old_state,
                              HotseatState new_state) override;
+
+  // ShellObserver:
+  void OnShelfAlignmentChanged(aura::Window* root_window,
+                               ShelfAlignment old_alignment) override;
 
   // Displays the nudge.
   void Show();
@@ -72,17 +78,8 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   // screen reader is enabled when the view is shown.
   virtual std::u16string GetAccessibilityText() const = 0;
 
-  // Calculates the expected bounds of nudge widget.
-  static gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
-                                         Shelf* shelf,
-                                         int nudge_width,
-                                         int nudge_height,
-                                         bool anchor_status_area);
-
  private:
   class SystemNudgeView;
-
-  friend class SystemNudgeTest;
 
   struct SystemNudgeParams {
     // The name for the widget.
@@ -115,6 +112,11 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   SystemNudgeParams params_;
 
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
+  base::ScopedObservation<Shell,
+                          ShellObserver,
+                          &Shell::AddShellObserver,
+                          &Shell::RemoveShellObserver>
+      shell_observation_{this};
 };
 
 }  // namespace ash

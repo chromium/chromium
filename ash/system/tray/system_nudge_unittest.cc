@@ -5,34 +5,52 @@
 #include "ash/system/tray/system_nudge.h"
 
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/system/tray/system_nudge_label.h"
 #include "ash/test/ash_test_base.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
 namespace {
+
 constexpr int kNudgeMargin = 8;
-constexpr int kNudgeWidth = 128;
-constexpr int kNudgeHeight = 32;
-}  // namespace
+constexpr int kIconSize = 20;
+constexpr int kIconLabelSpacing = 16;
+constexpr int kNudgePadding = 16;
+constexpr int kNudgeWidth = 120;
 
-class SystemNudgeTest : public AshTestBase {
+constexpr char kNudgeName[] = "TestSystemNudge";
+
+gfx::VectorIcon kEmptyIcon;
+
+class TestSystemNudge : public SystemNudge {
  public:
-  SystemNudgeTest() = default;
+  explicit TestSystemNudge(bool anchor_status_area)
+      : SystemNudge(kNudgeName,
+                    kIconSize,
+                    kIconLabelSpacing,
+                    kNudgePadding,
+                    anchor_status_area) {}
 
-  SystemNudgeTest(const SystemNudgeTest&) = delete;
-  SystemNudgeTest& operator=(const SystemNudgeTest&) = delete;
+  gfx::Rect GetWidgetBounds() {
+    return widget()->GetClientAreaBoundsInScreen();
+  }
 
-  ~SystemNudgeTest() override = default;
+ private:
+  std::unique_ptr<SystemNudgeLabel> CreateLabelView() const override {
+    return std::make_unique<SystemNudgeLabel>(std::u16string(), kNudgeWidth);
+  }
 
-  gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
-                                  Shelf* shelf,
-                                  int nudge_width,
-                                  int nudge_height,
-                                  bool anchor_status_area) {
-    return SystemNudge::CalculateWidgetBounds(
-        display_bounds, shelf, nudge_width, nudge_height, anchor_status_area);
+  const gfx::VectorIcon& GetIcon() const override { return kEmptyIcon; }
+
+  std::u16string GetAccessibilityText() const override {
+    return std::u16string();
   }
 };
+
+}  // namespace
+
+using SystemNudgeTest = AshTestBase;
 
 TEST_F(SystemNudgeTest, NudgeDefaultOnLeftSide) {
   Shelf* shelf = GetPrimaryShelf();
@@ -41,37 +59,28 @@ TEST_F(SystemNudgeTest, NudgeDefaultOnLeftSide) {
   int shelf_size = ShelfConfig::Get()->shelf_size();
   gfx::Rect nudge_bounds;
 
-  nudge_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, kNudgeWidth, kNudgeHeight,
-                            /*anchor_status_area=*/false);
-  EXPECT_EQ(nudge_bounds.size(), gfx::Size(kNudgeWidth, kNudgeHeight));
+  TestSystemNudge nudge(/*anchor_status_area=*/false);
+
+  nudge.Show();
+  nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   shelf->SetAlignment(ShelfAlignment::kBottomLocked);
-  nudge_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, kNudgeWidth, kNudgeHeight,
-                            /*anchor_status_area=*/false);
-  EXPECT_EQ(nudge_bounds.size(), gfx::Size(kNudgeWidth, kNudgeHeight));
+  nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   shelf->SetAlignment(ShelfAlignment::kRight);
-  nudge_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, kNudgeWidth, kNudgeHeight,
-                            /*anchor_status_area=*/false);
-  EXPECT_EQ(nudge_bounds.size(), gfx::Size(kNudgeWidth, kNudgeHeight));
+  nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
 
   shelf->SetAlignment(ShelfAlignment::kLeft);
-  nudge_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, kNudgeWidth, kNudgeHeight,
-                            /*anchor_status_area=*/false);
-  EXPECT_EQ(nudge_bounds.size(), gfx::Size(kNudgeWidth, kNudgeHeight));
+  nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x() + shelf_size);
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
@@ -84,37 +93,28 @@ TEST_F(SystemNudgeTest, NudgeAnchorStatusArea) {
   int shelf_size = ShelfConfig::Get()->shelf_size();
   gfx::Rect nudge_bounds;
 
-  nudge_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, kNudgeWidth, kNudgeHeight,
-                            /*anchor_status_area=*/true);
-  EXPECT_EQ(nudge_bounds.size(), gfx::Size(kNudgeWidth, kNudgeHeight));
+  TestSystemNudge nudge(/*anchor_status_area=*/true);
+
+  nudge.Show();
+  nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   shelf->SetAlignment(ShelfAlignment::kBottomLocked);
-  nudge_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, kNudgeWidth, kNudgeHeight,
-                            /*anchor_status_area=*/true);
-  EXPECT_EQ(nudge_bounds.size(), gfx::Size(kNudgeWidth, kNudgeHeight));
+  nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   shelf->SetAlignment(ShelfAlignment::kRight);
-  nudge_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, kNudgeWidth, kNudgeHeight,
-                            /*anchor_status_area=*/true);
-  EXPECT_EQ(nudge_bounds.size(), gfx::Size(kNudgeWidth, kNudgeHeight));
+  nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.right(), display_bounds.right() - shelf_size);
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
 
   shelf->SetAlignment(ShelfAlignment::kLeft);
-  nudge_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, kNudgeWidth, kNudgeHeight,
-                            /*anchor_status_area=*/true);
-  EXPECT_EQ(nudge_bounds.size(), gfx::Size(kNudgeWidth, kNudgeHeight));
+  nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x() + shelf_size);
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());

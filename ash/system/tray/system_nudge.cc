@@ -13,14 +13,10 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/rtl.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -39,6 +35,52 @@ constexpr int kNudgeBlurRadius = 30;
 constexpr int kNudgeMargin = 8;
 
 constexpr base::TimeDelta kNudgeBoundsAnimationTime = base::Milliseconds(250);
+
+// Calculates the expected bounds of nudge widget based on shelf alignment,
+// hotseat state, RTL and whether to anchor to status area.
+gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
+                                Shelf* shelf,
+                                int nudge_width,
+                                int nudge_height,
+                                bool anchor_status_area) {
+  bool shelf_hidden = shelf->GetVisibilityState() != SHELF_VISIBLE &&
+                      shelf->GetAutoHideState() == SHELF_AUTO_HIDE_HIDDEN;
+
+  bool on_right_side;
+  if (!anchor_status_area) {
+    on_right_side = base::i18n::IsRTL();
+  } else if (base::i18n::IsRTL()) {
+    // status area is on the left side in RTL when shelf is at bottom.
+    on_right_side = shelf->alignment() == ShelfAlignment::kRight;
+  } else {
+    on_right_side = shelf->alignment() != ShelfAlignment::kLeft;
+  }
+
+  int x;
+  if (on_right_side) {
+    x = display_bounds.right() - nudge_width - kNudgeMargin;
+    if (shelf->alignment() == ShelfAlignment::kRight && !shelf_hidden)
+      x -= ShelfConfig::Get()->shelf_size();
+  } else {
+    x = display_bounds.x() + kNudgeMargin;
+    if (shelf->alignment() == ShelfAlignment::kLeft && !shelf_hidden)
+      x += ShelfConfig::Get()->shelf_size();
+  }
+
+  int y;
+  HotseatWidget* hotseat_widget = shelf->hotseat_widget();
+  // Set the nudge's bounds above the hotseat when it is extended.
+  if (hotseat_widget->state() == HotseatState::kExtended) {
+    y = hotseat_widget->GetTargetBounds().y() - nudge_height - kNudgeMargin;
+  } else {
+    y = display_bounds.bottom() - nudge_height - kNudgeMargin;
+    if ((shelf->alignment() == ShelfAlignment::kBottom && !shelf_hidden) ||
+        shelf->alignment() == ShelfAlignment::kBottomLocked)
+      y -= ShelfConfig::Get()->shelf_size();
+  }
+
+  return gfx::Rect(x, y, nudge_width, nudge_height);
+}
 
 }  // namespace
 
@@ -116,12 +158,18 @@ void SystemNudge::OnHotseatStateChanged(HotseatState old_state,
   CalculateAndSetWidgetBounds();
 }
 
+void SystemNudge::OnShelfAlignmentChanged(aura::Window* root_window,
+                                          ShelfAlignment old_alignment) {
+  CalculateAndSetWidgetBounds();
+}
+
 void SystemNudge::Show() {
   if (!widget_) {
     widget_ = std::make_unique<views::Widget>();
 
     shelf_observation_.Observe(
         RootWindowController::ForWindow(root_window_)->shelf());
+    shell_observation_.Observe(Shell::Get());
 
     views::Widget::InitParams params(
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -147,50 +195,6 @@ void SystemNudge::Show() {
 
 void SystemNudge::Close() {
   widget_.reset();
-}
-
-gfx::Rect SystemNudge::CalculateWidgetBounds(const gfx::Rect& display_bounds,
-                                             Shelf* shelf,
-                                             int nudge_width,
-                                             int nudge_height,
-                                             bool anchor_status_area) {
-  bool shelf_hidden = shelf->GetVisibilityState() != SHELF_VISIBLE &&
-                      shelf->GetAutoHideState() == SHELF_AUTO_HIDE_HIDDEN;
-
-  bool on_right_side;
-  if (!anchor_status_area) {
-    on_right_side = base::i18n::IsRTL();
-  } else if (base::i18n::IsRTL()) {
-    // status area is on the left side in RTL when shelf is at bottom.
-    on_right_side = shelf->alignment() == ShelfAlignment::kRight;
-  } else {
-    on_right_side = shelf->alignment() != ShelfAlignment::kLeft;
-  }
-
-  int x;
-  if (on_right_side) {
-    x = display_bounds.right() - nudge_width - kNudgeMargin;
-    if (shelf->alignment() == ShelfAlignment::kRight && !shelf_hidden)
-      x -= ShelfConfig::Get()->shelf_size();
-  } else {
-    x = display_bounds.x() + kNudgeMargin;
-    if (shelf->alignment() == ShelfAlignment::kLeft && !shelf_hidden)
-      x += ShelfConfig::Get()->shelf_size();
-  }
-
-  int y;
-  HotseatWidget* hotseat_widget = shelf->hotseat_widget();
-  // Set the nudge's bounds above the hotseat when it is extended.
-  if (hotseat_widget->state() == HotseatState::kExtended) {
-    y = hotseat_widget->GetTargetBounds().y() - nudge_height - kNudgeMargin;
-  } else {
-    y = display_bounds.bottom() - nudge_height - kNudgeMargin;
-    if ((shelf->alignment() == ShelfAlignment::kBottom && !shelf_hidden) ||
-        shelf->alignment() == ShelfAlignment::kBottomLocked)
-      y -= ShelfConfig::Get()->shelf_size();
-  }
-
-  return gfx::Rect(x, y, nudge_width, nudge_height);
 }
 
 void SystemNudge::CalculateAndSetWidgetBounds() {
