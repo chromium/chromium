@@ -52,14 +52,14 @@ TEST(BitsTest, Log2Ceiling) {
 
 TEST(BitsTest, AlignUp) {
   static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
-  EXPECT_EQ(0ul, AlignUp(0, 4));
-  EXPECT_EQ(4ul, AlignUp(1, 4));
-  EXPECT_EQ(4096ul, AlignUp(1, 4096));
-  EXPECT_EQ(4096ul, AlignUp(4096, 4096));
-  EXPECT_EQ(4096ul, AlignUp(4095, 4096));
-  EXPECT_EQ(8192ul, AlignUp(4097, 4096));
-  EXPECT_EQ(kSizeTMax - 31, AlignUp(kSizeTMax - 62, 32));
-  EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(1, kSizeTMax / 2 + 1));
+  EXPECT_EQ(0, AlignUp(0, 4));
+  EXPECT_EQ(4, AlignUp(1, 4));
+  EXPECT_EQ(4096, AlignUp(1, 4096));
+  EXPECT_EQ(4096, AlignUp(4096, 4096));
+  EXPECT_EQ(4096, AlignUp(4095, 4096));
+  EXPECT_EQ(8192, AlignUp(4097, 4096));
+  EXPECT_EQ(kSizeTMax - 31, AlignUp(kSizeTMax - 62, size_t{32}));
+  EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(size_t{1}, kSizeTMax / 2 + 1));
 }
 
 TEST(BitsTest, AlignUpPointer) {
@@ -85,15 +85,15 @@ TEST(BitsTest, AlignUpPointer) {
 
 TEST(BitsTest, AlignDown) {
   static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
-  EXPECT_EQ(0ul, AlignDown(0, 4));
-  EXPECT_EQ(0ul, AlignDown(1, 4));
-  EXPECT_EQ(0ul, AlignDown(1, 4096));
-  EXPECT_EQ(4096ul, AlignDown(4096, 4096));
-  EXPECT_EQ(0ul, AlignDown(4095, 4096));
-  EXPECT_EQ(4096ul, AlignDown(4097, 4096));
-  EXPECT_EQ(kSizeTMax - 63, AlignDown(kSizeTMax - 62, 32));
-  EXPECT_EQ(kSizeTMax - 31, AlignDown(kSizeTMax, 32));
-  EXPECT_EQ(0ul, AlignDown(1, kSizeTMax / 2 + 1));
+  EXPECT_EQ(0, AlignDown(0, 4));
+  EXPECT_EQ(0, AlignDown(1, 4));
+  EXPECT_EQ(0, AlignDown(1, 4096));
+  EXPECT_EQ(4096, AlignDown(4096, 4096));
+  EXPECT_EQ(0, AlignDown(4095, 4096));
+  EXPECT_EQ(4096, AlignDown(4097, 4096));
+  EXPECT_EQ(kSizeTMax - 63, AlignDown(kSizeTMax - 62, size_t{32}));
+  EXPECT_EQ(kSizeTMax - 31, AlignDown(kSizeTMax, size_t{32}));
+  EXPECT_EQ(0ul, AlignDown(size_t{1}, kSizeTMax / 2 + 1));
 }
 
 TEST(BitsTest, AlignDownPointer) {

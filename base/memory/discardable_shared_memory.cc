@@ -524,7 +524,7 @@ void DiscardableSharedMemory::CreateSharedMemoryOwnershipEdge(
       shared_memory_mapping_, pmd);
   // TODO(ssid): Clean this by a new api to inherit size of parent dump once the
   // we send the full PMD and calculate sizes inside chrome, crbug.com/704203.
-  size_t resident_size = shared_memory_dump->GetSizeInternal();
+  uint64_t resident_size = shared_memory_dump->GetSizeInternal();
   local_segment_dump->AddScalar(trace_event::MemoryAllocatorDump::kNameSize,
                                 trace_event::MemoryAllocatorDump::kUnitsBytes,
                                 resident_size);

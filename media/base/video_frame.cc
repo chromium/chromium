@@ -1604,8 +1604,8 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize() const {
     // These values were chosen to mirror ffmpeg's get_video_buffer().
     // TODO(dalecurtis): This should be configurable; eventually ffmpeg wants
     // us to use av_cpu_max_align(), but... for now, they just hard-code 32.
-    const size_t height =
-        base::bits::AlignUp(rows(plane), kFrameAddressAlignment);
+    const size_t height = base::bits::AlignUp(static_cast<size_t>(rows(plane)),
+                                              kFrameAddressAlignment);
     const size_t width = std::abs(stride(plane));
     plane_size[plane] = width * height;
   }

@@ -54,12 +54,11 @@ namespace media {
 
 class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
  public:
-  enum {
-    kFrameSizeAlignment = 16,
-    kFrameSizePadding = 16,
+  static constexpr size_t kFrameSizeAlignment = 16;
+  static constexpr size_t kFrameSizePadding = 16;
 
-    kFrameAddressAlignment = VideoFrameLayout::kBufferAddressAlignment
-  };
+  static constexpr size_t kFrameAddressAlignment =
+      VideoFrameLayout::kBufferAddressAlignment;
 
   enum {
     kMaxPlanes = 4,

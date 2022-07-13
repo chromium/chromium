@@ -114,7 +114,8 @@ libgav1::StatusCode GetFrameBufferImpl(void* callback_private_data,
   // VideoFramePool creates frames with a fixed alignment of
   // VideoFrame::kFrameAddressAlignment. If libgav1 requests a larger
   // alignment, it cannot be supported.
-  CHECK_LE(stride_alignment, VideoFrame::kFrameAddressAlignment);
+  CHECK_LE(static_cast<size_t>(stride_alignment),
+           VideoFrame::kFrameAddressAlignment);
 
   const VideoPixelFormat format =
       Libgav1ImageFormatToVideoPixelFormat(image_format, bitdepth);

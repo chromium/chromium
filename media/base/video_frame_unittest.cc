@@ -174,10 +174,10 @@ void ExpectFrameColor(VideoFrame* yv12_frame, uint32_t expect_rgb_color) {
             yv12_frame->stride(VideoFrame::kVPlane));
   ASSERT_EQ(
       yv12_frame->coded_size().width() & (VideoFrame::kFrameSizeAlignment - 1),
-      0);
+      0u);
   ASSERT_EQ(
       yv12_frame->coded_size().height() & (VideoFrame::kFrameSizeAlignment - 1),
-      0);
+      0u);
 
   size_t bytes_per_row = yv12_frame->coded_size().width() * 4u;
   uint8_t* rgb_data = reinterpret_cast<uint8_t*>(

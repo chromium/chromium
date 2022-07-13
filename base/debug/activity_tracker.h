@@ -506,7 +506,7 @@ class BASE_EXPORT ActivityUserData {
  private:
   FRIEND_TEST_ALL_PREFIXES(ActivityTrackerTest, UserDataTest);
 
-  enum : size_t { kMemoryAlignment = sizeof(uint64_t) };
+  static constexpr size_t kMemoryAlignment = sizeof(uint64_t);
 
   // A structure that defines the structure header in memory.
   struct MemoryHeader {

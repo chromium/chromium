@@ -194,7 +194,9 @@ class BASE_EXPORT FileEnumerator {
 
   // Set of visited directories. Used to prevent infinite looping along
   // circular symlinks.
-  std::unordered_set<ino_t> visited_directories_;
+  // The Android NDK (r23) does not declare `st_ino` as an `ino_t`, hence the
+  // need for the ugly decltype.
+  std::unordered_set<decltype(stat_wrapper_t::st_ino)> visited_directories_;
 
   // The next entry to use from the directory_entries_ vector
   size_t current_directory_entry_;

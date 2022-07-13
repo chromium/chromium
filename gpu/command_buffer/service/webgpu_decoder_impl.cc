@@ -544,7 +544,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // Align up to 256, required by WebGPU buffer->texture and texture->buffer
       // copies.
-      checked_bytes_per_row = base::bits::AlignUp(packed_bytes_per_row, 256);
+      checked_bytes_per_row =
+          base::bits::AlignUp(packed_bytes_per_row, uint32_t{256});
       if (!checked_bytes_per_row.AssignIfValid(bytes_per_row)) {
         return false;
       }

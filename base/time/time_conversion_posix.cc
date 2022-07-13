@@ -24,7 +24,7 @@ struct timespec TimeDelta::ToTimeSpec() const {
   int64_t microseconds = InMicroseconds();
   time_t seconds = 0;
   if (microseconds >= Time::kMicrosecondsPerSecond) {
-    seconds = InSeconds();
+    seconds = static_cast<time_t>(InSeconds());
     microseconds -= seconds * Time::kMicrosecondsPerSecond;
   }
   struct timespec result = {
@@ -59,7 +59,7 @@ struct timeval Time::ToTimeVal() const {
     return result;
   }
   int64_t us = us_ - kTimeTToMicrosecondsOffset;
-  result.tv_sec = us / Time::kMicrosecondsPerSecond;
+  result.tv_sec = static_cast<time_t>(us / Time::kMicrosecondsPerSecond);
   result.tv_usec = us % Time::kMicrosecondsPerSecond;
   return result;
 }

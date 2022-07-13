@@ -643,7 +643,17 @@ class BASE_EXPORT PersistentMemoryAllocator {
  private:
   struct SharedMetadata;
   struct BlockHeader;
-  static const uint32_t kAllocAlignment;
+  // All allocations and data-structures must be aligned to this byte boundary.
+  // Alignment as large as the physical bus between CPU and RAM is _required_
+  // for some architectures, is simply more efficient on other CPUs, and
+  // generally a Good Idea(tm) for all platforms as it reduces/eliminates the
+  // chance that a type will span cache lines. Alignment mustn't be less
+  // than 8 to ensure proper alignment for all types. The rest is a balance
+  // between reducing spans across multiple cache lines and wasted space spent
+  // padding out allocations. An alignment of 16 would ensure that the block
+  // header structure always sits in a single cache line. An average of about
+  // 1/2 this value will be wasted with every allocation.
+  static constexpr size_t kAllocAlignment = 8;
   static const Reference kReferenceQueue;
 
   // The shared metadata is always located at the top of the memory segment.

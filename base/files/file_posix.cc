@@ -223,7 +223,7 @@ int64_t File::Seek(Whence whence, int64_t offset) {
 int File::Read(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset + size - 1))
     return -1;
 
   SCOPED_FILE_TRACE_WITH_SIZE("Read", size);
@@ -233,7 +233,7 @@ int File::Read(int64_t offset, char* data, int size) {
   do {
     rv = HANDLE_EINTR(pread(file_.get(), data + bytes_read,
                             static_cast<size_t>(size - bytes_read),
-                            offset + bytes_read));
+                            static_cast<off_t>(offset + bytes_read)));
     if (rv <= 0)
       break;
 
@@ -268,12 +268,13 @@ int File::ReadAtCurrentPos(char* data, int size) {
 int File::ReadNoBestEffort(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset))
     return -1;
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadNoBestEffort", size);
-  return checked_cast<int>(HANDLE_EINTR(
-      pread(file_.get(), data, static_cast<size_t>(size), offset)));
+  return checked_cast<int>(
+      HANDLE_EINTR(pread(file_.get(), data, static_cast<size_t>(size),
+                         static_cast<off_t>(offset))));
 }
 
 int File::ReadAtCurrentPosNoBestEffort(char* data, int size) {

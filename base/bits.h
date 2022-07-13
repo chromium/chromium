@@ -35,7 +35,8 @@ constexpr bool IsPowerOfTwo(T value) {
 }
 
 // Round down |size| to a multiple of alignment, which must be a power of two.
-inline constexpr size_t AlignDown(size_t size, size_t alignment) {
+template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+constexpr T AlignDown(T size, T alignment) {
   DCHECK(IsPowerOfTwo(alignment));
   return size & ~(alignment - 1);
 }
@@ -43,13 +44,14 @@ inline constexpr size_t AlignDown(size_t size, size_t alignment) {
 // Move |ptr| back to the previous multiple of alignment, which must be a power
 // of two. Defined for types where sizeof(T) is one byte.
 template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
-inline T* AlignDown(T* ptr, size_t alignment) {
+inline T* AlignDown(T* ptr, uintptr_t alignment) {
   return reinterpret_cast<T*>(
-      AlignDown(reinterpret_cast<size_t>(ptr), alignment));
+      AlignDown(reinterpret_cast<uintptr_t>(ptr), alignment));
 }
 
 // Round up |size| to a multiple of alignment, which must be a power of two.
-inline constexpr size_t AlignUp(size_t size, size_t alignment) {
+template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
+constexpr T AlignUp(T size, T alignment) {
   DCHECK(IsPowerOfTwo(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
 }
@@ -57,9 +59,9 @@ inline constexpr size_t AlignUp(size_t size, size_t alignment) {
 // Advance |ptr| to the next multiple of alignment, which must be a power of
 // two. Defined for types where sizeof(T) is one byte.
 template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
-inline T* AlignUp(T* ptr, size_t alignment) {
+inline T* AlignUp(T* ptr, uintptr_t alignment) {
   return reinterpret_cast<T*>(
-      AlignUp(reinterpret_cast<size_t>(ptr), alignment));
+      AlignUp(reinterpret_cast<uintptr_t>(ptr), alignment));
 }
 
 // CountLeadingZeroBits(value) returns the number of zero bits following the

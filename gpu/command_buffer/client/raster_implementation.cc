@@ -1223,7 +1223,8 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
 
   GLuint src_size = src_info.computeByteSize(row_bytes);
   GLuint total_size =
-      pixels_offset + base::bits::AlignUp(src_size, sizeof(uint64_t));
+      pixels_offset +
+      base::bits::AlignUp(src_size, static_cast<GLuint>(sizeof(uint64_t)));
 
   std::unique_ptr<ScopedSharedMemoryPtr> scoped_shared_memory =
       std::make_unique<ScopedSharedMemoryPtr>(total_size, transfer_buffer_,
@@ -1441,7 +1442,8 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
 
   GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
   GLuint total_size =
-      pixels_offset + base::bits::AlignUp(dst_size, sizeof(uint64_t));
+      pixels_offset +
+      base::bits::AlignUp(dst_size, static_cast<GLuint>(sizeof(uint64_t)));
 
   std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
       std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),
@@ -1621,9 +1623,9 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
     return;
   }
 
-  GLuint y_offset = base::bits::AlignUp(
+  auto y_offset = static_cast<GLuint>(base::bits::AlignUp(
       sizeof(cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result),
-      sizeof(uint64_t));
+      sizeof(uint64_t)));
 
   if (y_plane_row_stride_bytes < output_rect.width()) {
     SetGLError(
@@ -1633,8 +1635,9 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
   }
   GLuint y_padded_size = output_rect.height() * y_plane_row_stride_bytes;
 
+  constexpr auto kSizeofUint64 = static_cast<GLuint>(sizeof(uint64_t));
   GLuint u_offset =
-      base::bits::AlignUp(y_offset + y_padded_size, sizeof(uint64_t));
+      base::bits::AlignUp(y_offset + y_padded_size, kSizeofUint64);
   if (u_plane_row_stride_bytes < ((output_rect.width() + 1) / 2)) {
     SetGLError(
         GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
@@ -1645,7 +1648,7 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
       ((output_rect.height() + 1) / 2) * u_plane_row_stride_bytes;
 
   GLuint v_offset =
-      base::bits::AlignUp(u_offset + u_padded_size, sizeof(uint64_t));
+      base::bits::AlignUp(u_offset + u_padded_size, kSizeofUint64);
   if (v_plane_row_stride_bytes < ((output_rect.width() + 1) / 2)) {
     SetGLError(
         GL_INVALID_VALUE, "glReadbackYUVPixelsAsync",
@@ -1656,7 +1659,7 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
       ((output_rect.height() + 1) / 2) * v_plane_row_stride_bytes;
 
   size_t total_size =
-      base::bits::AlignUp(v_offset + v_padded_size, sizeof(uint64_t));
+      base::bits::AlignUp(v_offset + v_padded_size, kSizeofUint64);
 
   std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
       std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),

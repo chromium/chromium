@@ -53,7 +53,7 @@ time_t timegm(struct tm* const t) {
   time64_t result = timegm64(t);
   if (result < kTimeMin || result > kTimeMax)
     return -1;
-  return result;
+  return static_cast<time_t>(result);
 }
 #endif
 
@@ -120,11 +120,11 @@ char* mkdtemp(char* path) {
     return nullptr;
   }
 
-  const int path_len = strlen(path);
+  const size_t path_len = strlen(path);
 
   // The last six characters of 'path' must be XXXXXX.
   const base::StringPiece kSuffix("XXXXXX");
-  const int kSuffixLen = kSuffix.length();
+  const size_t kSuffixLen = kSuffix.length();
   if (!base::EndsWith(base::StringPiece(path, path_len), kSuffix)) {
     errno = EINVAL;
     return nullptr;
@@ -156,7 +156,7 @@ char* mkdtemp(char* path) {
   // number of tries.
   for (int i = 0; i < kMaxTries; ++i) {
     // Fill the suffix XXXXXX with a random string composed of a-z chars.
-    for (int pos = 0; pos < kSuffixLen; ++pos) {
+    for (size_t pos = 0; pos < kSuffixLen; ++pos) {
       char rand_char = static_cast<char>(base::RandInt('a', 'z'));
       path[path_len - kSuffixLen + pos] = rand_char;
     }

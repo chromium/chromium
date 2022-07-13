@@ -682,8 +682,8 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
 
 Value VmStatInfo::ToValue() const {
   Value res(Value::Type::DICTIONARY);
-  // TODO(crbug.com/1334256): Make base::Value able to hold unsigned long and
-  // remove casts below.
+  // TODO(crbug.com/1334256): Make base::Value able to hold uint64_t and remove
+  // casts below.
   res.SetIntKey("pswpin", static_cast<int>(pswpin));
   res.SetIntKey("pswpout", static_cast<int>(pswpout));
   res.SetIntKey("pgmajfault", static_cast<int>(pgmajfault));

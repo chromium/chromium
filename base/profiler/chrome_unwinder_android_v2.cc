@@ -55,7 +55,7 @@ uintptr_t DecodeULEB128(const uint8_t*& bytes) {
   unsigned shift = 0;
   do {
     DCHECK_LE(shift, sizeof(uintptr_t) * 8);  // ULEB128 must not overflow.
-    value += (*bytes & 0x7f) << shift;
+    value += (*bytes & 0x7fu) << shift;
     shift += 7;
   } while (*bytes++ & 0x80);
   return value;
@@ -181,7 +181,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   if (GetTopBits(*instruction, 2) == 0b00) {
     // 00xxxxxx
     // vsp = vsp + (xxxxxx << 2) + 4. Covers range 0x04-0x100 inclusive.
-    const uintptr_t offset = ((*instruction++ & 0b00111111) << 2) + 4;
+    const uintptr_t offset = ((*instruction++ & 0b00111111u) << 2) + 4;
 
     const auto new_sp =
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) +
@@ -192,7 +192,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   } else if (GetTopBits(*instruction, 2) == 0b01) {
     // 01xxxxxx
     // vsp = vsp - (xxxxxx << 2) - 4. Covers range 0x04-0x100 inclusive.
-    const uintptr_t offset = ((*instruction++ & 0b00111111) << 2) + 4;
+    const uintptr_t offset = ((*instruction++ & 0b00111111u) << 2) + 4;
     const auto new_sp =
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) -
         offset;
@@ -214,8 +214,8 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   } else if (GetTopBits(*instruction, 5) == 0b10101) {
     // 10101nnn
     // Pop r4-r[4+nnn], r14
-    const uint8_t max_register_index = (*instruction++ & 0b00000111) + 4;
-    for (int n = 4; n <= max_register_index; n++) {
+    const uint8_t max_register_index = (*instruction++ & 0b00000111u) + 4;
+    for (uint8_t n = 4; n <= max_register_index; n++) {
       if (!PopRegister(thread_context, n)) {
         return UnwindInstructionResult::kAborted;
       }
@@ -230,11 +230,11 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     return UnwindInstructionResult::kAborted;
   } else if (GetTopBits(*instruction, 4) == 0b1000) {
     const uint32_t register_bitmask =
-        ((*instruction & 0xf) << 8) + *(instruction + 1);
+        ((*instruction & 0xfu) << 8) + *(instruction + 1);
     instruction += 2;
     // 1000iiii iiiiiiii
     // Pop up to 12 integer registers under masks {r15-r12}, {r11-r4}
-    for (int register_index = 4; register_index < 16; register_index++) {
+    for (uint8_t register_index = 4; register_index < 16; register_index++) {
       if (register_bitmask & (1 << (register_index - 4))) {
         if (!PopRegister(thread_context, register_index)) {
           return UnwindInstructionResult::kAborted;
@@ -325,14 +325,16 @@ GetFunctionTableIndexFromInstructionOffset(
   }
 
   const span<const FunctionTableEntry>::const_iterator
-      function_table_entry_start = function_offset_table_indices.begin() +
-                                   page_start_instructions[page_number];
+      function_table_entry_start =
+          function_offset_table_indices.begin() +
+          checked_cast<ptrdiff_t>(page_start_instructions[page_number]);
   const span<const FunctionTableEntry>::const_iterator
       function_table_entry_end =
           page_number == page_start_instructions.size() - 1
               ? function_offset_table_indices.end()
               : function_offset_table_indices.begin() +
-                    page_start_instructions[page_number + 1];
+                    checked_cast<ptrdiff_t>(
+                        page_start_instructions[page_number + 1]);
 
   // `std::upper_bound` finds first element that > target in range
   // [function_table_entry_start, function_table_entry_end).
@@ -386,7 +388,8 @@ GetFunctionTableIndexFromInstructionOffset(
   // multiple pages.
   uint16_t function_start_page_number = page_number;
   while (function_offset_table_indices.begin() +
-             page_start_instructions[function_start_page_number] >
+             checked_cast<ptrdiff_t>(
+                 page_start_instructions[function_start_page_number]) >
          entry_location) {
     // First page in page table must not be empty.
     DCHECK_NE(function_start_page_number, 0);
@@ -394,12 +397,12 @@ GetFunctionTableIndexFromInstructionOffset(
   };
 
   const uint32_t function_start_address_instruction_offset =
-      (function_start_page_number << 16) +
+      (uint32_t{function_start_page_number} << 16) +
       entry_location->function_start_address_page_instruction_offset;
 
   const int instruction_offset_from_function_start =
-      (instruction_byte_offset_from_text_section_start >> 1) -
-      function_start_address_instruction_offset;
+      static_cast<int>((instruction_byte_offset_from_text_section_start >> 1) -
+                       function_start_address_instruction_offset);
 
   DCHECK_GE(instruction_offset_from_function_start, 0);
   return FunctionOffsetTableIndex{

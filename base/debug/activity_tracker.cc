@@ -482,7 +482,7 @@ void* ActivityUserData::Set(StringPiece name,
     // into a uint16_t.
     size_t full_size =
         std::min({base_size + value_extent, available_,
-                  bits::AlignDown(std::numeric_limits<uint16_t>::max(),
+                  bits::AlignDown(size_t{std::numeric_limits<uint16_t>::max()},
                                   kMemoryAlignment)});
 
     // If the value is actually a single byte, see if it can be stuffed at the

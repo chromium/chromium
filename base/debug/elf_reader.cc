@@ -88,8 +88,8 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
         }
       }
 
-      size_t section_size = bits::AlignUp(current_note->n_namesz, 4) +
-                            bits::AlignUp(current_note->n_descsz, 4) +
+      size_t section_size = bits::AlignUp(current_note->n_namesz, 4u) +
+                            bits::AlignUp(current_note->n_descsz, 4u) +
                             sizeof(Nhdr);
       if (section_size > static_cast<size_t>(section_end - current_section))
         return 0;
@@ -107,7 +107,7 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
     // Write out the build ID as a null-terminated hex string.
     const uint8_t* build_id_raw =
         reinterpret_cast<const uint8_t*>(current_note) + sizeof(Nhdr) +
-        bits::AlignUp(current_note->n_namesz, 4);
+        bits::AlignUp(current_note->n_namesz, 4u);
     size_t i = 0;
     for (i = 0; i < current_note->n_descsz; ++i) {
       strings::SafeSNPrintf(&build_id[i * 2], 3, (uppercase ? "%02X" : "%02x"),
@@ -154,7 +154,9 @@ absl::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
         strtab_addr = reinterpret_cast<const char*>(dynamic_iter->d_un.d_ptr);
 #endif
       } else if (dynamic_iter->d_tag == DT_SONAME) {
-        soname_strtab_offset = dynamic_iter->d_un.d_val;
+        // The Android NDK wrongly defines `d_val` as an Elf32_Sword for 32 bits
+        // and thus needs this cast.
+        soname_strtab_offset = static_cast<Xword>(dynamic_iter->d_un.d_val);
       }
     }
     if (soname_strtab_offset && strtab_addr)

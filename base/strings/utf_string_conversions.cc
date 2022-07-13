@@ -88,7 +88,7 @@ template <typename Char, EnableIfBitsAre<Char, 32> = true>
 void UnicodeAppendUnsafe(Char* out,
                          size_t* size,
                          base_icu::UChar32 code_point) {
-  out[(*size)++] = code_point;
+  out[(*size)++] = static_cast<Char>(code_point);
 }
 
 // DoUTFConversion ------------------------------------------------------------
@@ -171,7 +171,7 @@ bool DoUTFConversion(const wchar_t* src,
   bool success = true;
 
   for (size_t i = 0; i < src_len; ++i) {
-    base_icu::UChar32 code_point = src[i];
+    auto code_point = static_cast<base_icu::UChar32>(src[i]);
 
     if (!IsValidCodepoint(code_point)) {
       success = false;

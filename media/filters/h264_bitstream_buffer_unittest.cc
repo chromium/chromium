@@ -40,7 +40,7 @@ TEST_P(H264BitstreamBufferAppendBitsTest, AppendAndVerifyBits) {
   uint64_t num_bits = GetParam();
   // TODO(posciak): Tests for >64 bits.
   ASSERT_LE(num_bits, 64u);
-  uint64_t num_bytes = base::bits::AlignUp(num_bits, 8) / 8;
+  uint64_t num_bytes = base::bits::AlignUp(num_bits, uint64_t{8}) / 8;
 
   b->AppendBits(num_bits, kTestPattern);
   b->FlushReg();
@@ -60,7 +60,7 @@ TEST_P(H264BitstreamBufferAppendBitsTest, AppendAndVerifyBits) {
 TEST_F(H264BitstreamBufferAppendBitsTest, VerifyFlushAndBitsInBuffer) {
   auto b = base::MakeRefCounted<H264BitstreamBuffer>();
   uint64_t num_bits = 20;
-  uint64_t num_bytes = base::bits::AlignUp(num_bits, 8) / 8;
+  uint64_t num_bytes = base::bits::AlignUp(num_bits, uint64_t{8}) / 8;
 
   b->AppendBits(num_bits, kTestPattern);
   b->Flush();

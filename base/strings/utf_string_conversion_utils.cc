@@ -57,7 +57,7 @@ bool ReadUnicodeCharacter(const wchar_t* src,
                           size_t* char_index,
                           base_icu::UChar32* code_point) {
   // Conversion is easy since the source is 32-bit.
-  *code_point = src[*char_index];
+  *code_point = static_cast<base_icu::UChar32>(src[*char_index]);
 
   // Validate the value.
   return IsValidCodepoint(*code_point);

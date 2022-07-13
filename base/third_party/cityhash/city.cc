@@ -190,7 +190,7 @@ static uint32 Hash32Len0to4(const char* s, size_t len) {
   uint32 b = 0;
   uint32 c = 9;
   for (size_t i = 0; i < len; i++) {
-    signed char v = s[i];
+    signed char v = static_cast<signed char>(s[i]);
     b = b * c1 + static_cast<uint32>(v);
     c ^= b;
   }

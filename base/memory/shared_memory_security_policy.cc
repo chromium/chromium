@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <limits>
 
 #include "base/bits.h"
 #include "base/memory/page_size.h"
@@ -22,7 +23,7 @@ namespace {
 #if defined(ARCH_CPU_32_BITS) || BUILDFLAG(IS_NACL)
 // No effective limit on 32-bit, since there simply isn't enough address space
 // for ASLR to be particularly effective.
-constexpr size_t kTotalMappedSizeLimit = -1;
+constexpr size_t kTotalMappedSizeLimit = std::numeric_limits<size_t>::max();
 #elif defined(ARCH_CPU_64_BITS)
 // 32 GB of mappings ought to be enough for anybody.
 constexpr size_t kTotalMappedSizeLimit = 32ULL * 1024 * 1024 * 1024;

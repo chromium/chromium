@@ -356,7 +356,8 @@ void MessagePumpForUI::ScheduleDelayedWork(
   struct itimerspec ts;
   ts.it_interval.tv_sec = 0;  // Don't repeat.
   ts.it_interval.tv_nsec = 0;
-  ts.it_value.tv_sec = nanos / TimeTicks::kNanosecondsPerSecond;
+  ts.it_value.tv_sec =
+      static_cast<time_t>(nanos / TimeTicks::kNanosecondsPerSecond);
   ts.it_value.tv_nsec = nanos % TimeTicks::kNanosecondsPerSecond;
 
   int ret = timerfd_settime(delayed_fd_, TFD_TIMER_ABSTIME, &ts, nullptr);

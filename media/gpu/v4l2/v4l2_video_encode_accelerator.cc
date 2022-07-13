@@ -1823,7 +1823,7 @@ bool V4L2VideoEncodeAccelerator::InitControlsH264(const Config& config) {
 
   // Set H.264 output level from config. Use Level 4.0 as fallback default.
   uint8_t h264_level = config.h264_output_level.value_or(H264SPS::kLevelIDC4p0);
-  constexpr size_t kH264MacroblockSizeInPixels = 16;
+  constexpr int kH264MacroblockSizeInPixels = 16;
   const uint32_t framerate = config.initial_framerate.value_or(
       VideoEncodeAccelerator::kDefaultFramerate);
   const uint32_t mb_width =

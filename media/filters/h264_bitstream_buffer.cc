@@ -45,7 +45,7 @@ void H264BitstreamBuffer::FlushReg() {
   if (bits_in_reg == 0)
     return;
 
-  size_t bytes_in_reg = base::bits::AlignUp(bits_in_reg, 8) / 8;
+  size_t bytes_in_reg = base::bits::AlignUp(bits_in_reg, size_t{8}) / 8;
   reg_ <<= (kRegBitSize - bits_in_reg);
 
   // Convert to MSB and append as such to the stream.

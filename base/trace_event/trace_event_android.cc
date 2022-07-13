@@ -34,7 +34,7 @@ void WriteToATrace(int fd, const char* buffer, size_t size) {
         fd, buffer + total_written, size - total_written));
     if (written <= 0)
       break;
-    total_written += written;
+    total_written += static_cast<size_t>(written);
   }
   // Tracing might have been disabled before we were notified about it, which
   // triggers EBADF. Since enabling and disabling atrace is racy, ignore the
@@ -62,15 +62,17 @@ void WriteEvent(char phase,
       out += ';';
     out += arg_names[i];
     out += '=';
-    std::string::size_type value_start = out.length();
+    size_t value_start = out.length();
     args.values()[i].AppendAsJSON(args.types()[i], &out);
 
     // Remove the quotes which may confuse the atrace script.
     ReplaceSubstringsAfterOffset(&out, value_start, "\\\"", "'");
     ReplaceSubstringsAfterOffset(&out, value_start, "\"", "");
     // Replace chars used for separators with similar chars in the value.
-    std::replace(out.begin() + value_start, out.end(), ';', ',');
-    std::replace(out.begin() + value_start, out.end(), '|', '!');
+    std::replace(out.begin() + static_cast<ptrdiff_t>(value_start), out.end(),
+                 ';', ',');
+    std::replace(out.begin() + static_cast<ptrdiff_t>(value_start), out.end(),
+                 '|', '!');
   }
 
   out += '|';

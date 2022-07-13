@@ -38,7 +38,7 @@ static const int kDefaultFrameInternvalDenominator = 1000;
 
 __u32 RoundUpToMultipleOfPageSize(__u32 size) {
   CHECK(base::bits::IsPowerOfTwo(getpagesize()));
-  return base::bits::AlignUp(size, getpagesize());
+  return base::bits::AlignUp(size, base::checked_cast<__u32>(getpagesize()));
 }
 
 struct FakeV4L2Buffer {

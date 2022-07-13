@@ -540,8 +540,10 @@ bool SetPosixFilePermissions(const FilePath& path,
     return false;
 
   // Clears the existing permission bits, and adds the new ones.
-  mode_t updated_mode_bits =
-      stat_buf.st_mode & ~static_cast<mode_t>(FILE_PERMISSION_MASK);
+  // The casting here is because the Android NDK does not declare `st_mode` as a
+  // `mode_t`.
+  mode_t updated_mode_bits = static_cast<mode_t>(stat_buf.st_mode);
+  updated_mode_bits &= static_cast<mode_t>(~FILE_PERMISSION_MASK);
   updated_mode_bits |= mode & FILE_PERMISSION_MASK;
 
   if (HANDLE_EINTR(chmod(path.value().c_str(), updated_mode_bits)) != 0)
@@ -924,6 +926,7 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
   // (though not UB).
   if (!IsValueInRangeForNumericType<int64_t>(size) ||
       !IsValueInRangeForNumericType<off_t>(size) ||
+      !IsValueInRangeForNumericType<off_t>(new_file_len) ||
       !file->SetLength(std::max(original_file_len, new_file_len))) {
     DPLOG(ERROR) << "ftruncate " << file->GetPlatformFile();
     return false;
@@ -967,15 +970,15 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
       static_cast<size_t>(original_file_len), static_cast<size_t>(block_size)));
   for (int64_t i = extension_start; i < new_file_len; i += block_size) {
     char existing_byte;
-    if (HANDLE_EINTR(pread(file->GetPlatformFile(), &existing_byte, 1, i)) !=
-        1) {
+    if (HANDLE_EINTR(pread(file->GetPlatformFile(), &existing_byte, 1,
+                           static_cast<off_t>(i))) != 1) {
       return false;  // Can't read? Not viable.
     }
     if (existing_byte != 0) {
       continue;  // Block has data so must already exist.
     }
-    if (HANDLE_EINTR(pwrite(file->GetPlatformFile(), &existing_byte, 1, i)) !=
-        1) {
+    if (HANDLE_EINTR(pwrite(file->GetPlatformFile(), &existing_byte, 1,
+                            static_cast<off_t>(i))) != 1) {
       return false;  // Can't write? Not viable.
     }
   }

@@ -135,12 +135,13 @@ void MemoryMappedFile::CalculateVMAlignedBoundaries(int64_t start,
                                                     int32_t* offset) {
   // Sadly, on Windows, the mmap alignment is not just equal to the page size.
   uint64_t mask = SysInfo::VMAllocationGranularity() - 1;
-  DCHECK(IsValueInRangeForNumericType<int32_t>(mask));
+  CHECK(IsValueInRangeForNumericType<int32_t>(mask));
   *offset = static_cast<int32_t>(static_cast<uint64_t>(start) & mask);
   *aligned_start = static_cast<int64_t>(static_cast<uint64_t>(start) & ~mask);
   // The DCHECK above means bit 31 is not set in `mask`, which in turn means
-  // *offset is positive.  Therefore this cast is safe.
-  *aligned_size = (size + static_cast<size_t>(*offset) + mask) & ~mask;
+  // *offset is positive.  Therefore casting it to a size_t is safe.
+  *aligned_size =
+      (size + static_cast<size_t>(*offset) + static_cast<size_t>(mask)) & ~mask;
 }
 #endif  // !BUILDFLAG(IS_NACL)
 

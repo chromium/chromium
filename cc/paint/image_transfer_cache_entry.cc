@@ -300,7 +300,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
   // 4-byte boundary.
   safe_size += 4;
   safe_size += pixmap_->computeByteSize();
-  size_ = base::bits::AlignUp(safe_size.ValueOrDefault(0),
+  size_ = base::bits::AlignUp(size_t{safe_size.ValueOrDefault(0)},
                               PaintOpWriter::Alignment());
 }
 
@@ -350,7 +350,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
   safe_size += decoded_color_space_size + align;  // SkColorSpace for YUVA image
   for (size_t i = 0; i < num_yuva_pixmaps; ++i)
     safe_size += SafeSizeForPixmap(*yuv_pixmaps_->at(i));
-  size_ = base::bits::AlignUp(safe_size.ValueOrDefault(0),
+  size_ = base::bits::AlignUp(size_t{safe_size.ValueOrDefault(0)},
                               PaintOpWriter::Alignment());
 }
 

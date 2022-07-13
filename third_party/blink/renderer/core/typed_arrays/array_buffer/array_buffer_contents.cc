@@ -152,7 +152,7 @@ void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
   //
   // `partition_alloc::internal::kAlignment` is a compile-time constant.
   if (partition_alloc::internal::kAlignment < 16) {
-    size_t aligned_size = base::bits::AlignUp(size, 16);
+    size_t aligned_size = base::bits::AlignUp(size, size_t{16});
     if (size == 0) {
       aligned_size = 16;
     }

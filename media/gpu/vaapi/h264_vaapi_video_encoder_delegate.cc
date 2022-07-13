@@ -237,7 +237,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     DVLOGF(1) << "The pixel sizes are not even: " << visible_size_.ToString();
     return false;
   }
-  constexpr size_t kH264MacroblockSizeInPixels = 16;
+  constexpr int kH264MacroblockSizeInPixels = 16;
   coded_size_ = gfx::Size(
       base::bits::AlignUp(visible_size_.width(), kH264MacroblockSizeInPixels),
       base::bits::AlignUp(visible_size_.height(), kH264MacroblockSizeInPixels));

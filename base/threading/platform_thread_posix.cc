@@ -287,9 +287,9 @@ void PlatformThread::Sleep(TimeDelta duration) {
   // Break the duration into seconds and nanoseconds.
   // NOTE: TimeDelta's microseconds are int64s while timespec's
   // nanoseconds are longs, so this unpacking must prevent overflow.
-  sleep_time.tv_sec = duration.InSeconds();
+  sleep_time.tv_sec = static_cast<time_t>(duration.InSeconds());
   duration -= Seconds(sleep_time.tv_sec);
-  sleep_time.tv_nsec = duration.InMicroseconds() * 1000;  // nanoseconds
+  sleep_time.tv_nsec = static_cast<long>(duration.InMicroseconds() * 1000);
 
   while (nanosleep(&sleep_time, &remaining) == -1 && errno == EINTR)
     sleep_time = remaining;

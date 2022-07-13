@@ -245,7 +245,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
 
       // Setup a timer to break out of the event loop at the right time.
       struct timeval poll_tv;
-      poll_tv.tv_sec = delay.InSeconds();
+      poll_tv.tv_sec = static_cast<time_t>(delay.InSeconds());
       poll_tv.tv_usec = delay.InMicroseconds() % Time::kMicrosecondsPerSecond;
       event_set(timer_event.get(), -1, 0, timer_callback, event_base_);
       event_base_set(event_base_, timer_event.get());

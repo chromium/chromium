@@ -253,12 +253,13 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
       const size_t plane_width = (size.width() + factor - 1) / factor;
       const size_t plane_height = (size.height() + factor - 1) / factor;
       const size_t plane_bytes_per_element = BytesPerElement(format, plane);
-      const size_t plane_bytes_per_row = IOSurfaceAlignProperty(
-          kIOSurfacePlaneBytesPerRow,
-          base::bits::AlignUp(plane_width, 2) * plane_bytes_per_element);
+      const size_t plane_bytes_per_row =
+          IOSurfaceAlignProperty(kIOSurfacePlaneBytesPerRow,
+                                 base::bits::AlignUp(plane_width, size_t{2}) *
+                                     plane_bytes_per_element);
       const size_t plane_bytes_alloc = IOSurfaceAlignProperty(
           kIOSurfacePlaneSize,
-          base::bits::AlignUp(plane_height, 2) * plane_bytes_per_row);
+          base::bits::AlignUp(plane_height, size_t{2}) * plane_bytes_per_row);
       const size_t plane_offset =
           IOSurfaceAlignProperty(kIOSurfacePlaneOffset, total_bytes_alloc);
 

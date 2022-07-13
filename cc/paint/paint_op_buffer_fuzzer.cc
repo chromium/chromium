@@ -130,8 +130,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (bytes_for_fonts > size)
     bytes_for_fonts = size / 2;
   // PaintOpBuffer only accepts 4 bytes aligned buffer.
-  bytes_for_fonts =
-      base::bits::AlignDown(bytes_for_fonts, cc::PaintOpWriter::Alignment());
+  bytes_for_fonts = base::bits::AlignDown(
+      bytes_for_fonts,
+      base::checked_cast<uint32_t>(cc::PaintOpWriter::Alignment()));
 
   FontSupport font_support;
   scoped_refptr<gpu::ServiceFontManager> font_manager(

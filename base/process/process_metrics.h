@@ -450,10 +450,10 @@ struct BASE_EXPORT VmStatInfo {
   // Serializes the platform specific fields to value.
   Value ToValue() const;
 
-  unsigned long pswpin = 0;
-  unsigned long pswpout = 0;
-  unsigned long pgmajfault = 0;
-  unsigned long oom_kill = 0;
+  uint64_t pswpin = 0;
+  uint64_t pswpout = 0;
+  uint64_t pgmajfault = 0;
+  uint64_t oom_kill = 0;
 };
 
 // Retrieves data from /proc/vmstat about system-wide vm operations.
