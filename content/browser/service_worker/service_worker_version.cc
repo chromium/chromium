@@ -2060,6 +2060,9 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
 
   // Requests have not finished before their expiration.
   bool stop_for_timeout = false;
+  // In case, `request_timeouts_` can be modified in the callbacks initiated
+  // in `MaybeTimeoutRequest`, we keep its contents locally during the
+  // following while loop.
   std::set<InflightRequestTimeoutInfo> request_timeouts;
   request_timeouts.swap(request_timeouts_);
   auto timeout_iter = request_timeouts.begin();
@@ -2074,6 +2077,7 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
     }
     timeout_iter = request_timeouts.erase(timeout_iter);
   }
+  // Ensure the `request_timeouts_` won't be touched during the loop.
   DCHECK(request_timeouts_.empty());
   request_timeouts_.swap(request_timeouts);
   if (stop_for_timeout && running_status() != EmbeddedWorkerStatus::STOPPING)
