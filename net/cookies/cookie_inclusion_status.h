@@ -94,6 +94,8 @@ class NET_EXPORT CookieInclusionStatus {
     // whole cookie to be rejected. There will be a corresponding WarningReason
     // to notify users that an attribute value was ignored in that case.
     EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 20,
+    // Cookie was set with a Domain attribute containing non ASCII characters.
+    EXCLUDE_DOMAIN_NON_ASCII = 21,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS
@@ -223,6 +225,9 @@ class NET_EXPORT CookieInclusionStatus {
     // to be rejected. This is applied by the code that parses cookie lines and
     // notifies the user that an attribute value was ignored.
     WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 18,
+
+    // Cookie was set with a Domain attribute containing non ASCII characters.
+    WARN_DOMAIN_NON_ASCII = 19,
 
     // This should be kept last.
     NUM_WARNING_REASONS

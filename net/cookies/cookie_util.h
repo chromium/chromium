@@ -27,6 +27,7 @@ namespace net {
 class IsolationInfo;
 class SchemefulSite;
 class CookieAccessDelegate;
+class CookieInclusionStatus;
 
 namespace cookie_util {
 
@@ -63,6 +64,7 @@ NET_EXPORT std::string GetEffectiveDomain(const std::string& scheme,
 // begin with a '.' character.
 NET_EXPORT bool GetCookieDomainWithString(const GURL& url,
                                           const std::string& domain_string,
+                                          CookieInclusionStatus& status,
                                           std::string* result);
 
 // Returns true if a domain string represents a host-only cookie,

@@ -40794,6 +40794,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4297" label="UnhandledExceptionCountInMainThread"/>
   <int value="4298" label="UnhandledExceptionCountInWorker"/>
   <int value="4299" label="WebCodecsImageDecoderPremultiplyAlphaDeprecation"/>
+  <int value="4300" label="CookieDomainNonASCII"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

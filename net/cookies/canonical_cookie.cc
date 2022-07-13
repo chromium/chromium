@@ -81,11 +81,13 @@ namespace {
 // Determine the cookie domain to use for setting the specified cookie.
 bool GetCookieDomain(const GURL& url,
                      const ParsedCookie& pc,
+                     CookieInclusionStatus& status,
                      std::string* result) {
   std::string domain_string;
   if (pc.HasDomain())
     domain_string = pc.Domain();
-  return cookie_util::GetCookieDomainWithString(url, domain_string, result);
+  return cookie_util::GetCookieDomainWithString(url, domain_string, status,
+                                                result);
 }
 
 // Compares cookies using name, domain and path, so that "equivalent" cookies
@@ -577,7 +579,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
                             !base::IsStringASCII(parsed_cookie.Domain()));
 
   std::string cookie_domain;
-  if (!GetCookieDomain(url, parsed_cookie, &cookie_domain)) {
+  if (!GetCookieDomain(url, parsed_cookie, *status, &cookie_domain)) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "Create() failed to get a valid cookie domain";
     status->AddExclusionReason(CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
@@ -755,7 +757,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
   } else if (!cookie_util::GetCookieDomainWithString(url, domain_attribute,
-                                                     &cookie_domain)) {
+                                                     *status, &cookie_domain)) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
   }

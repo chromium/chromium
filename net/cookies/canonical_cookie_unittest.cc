@@ -471,7 +471,10 @@ TEST(CanonicalCookieTest, CreateWithNonASCIIDomain) {
         absl::nullopt /* cookie_partition_key */, &status);
     EXPECT_EQ(nullptr, cookie.get());
     EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-        {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
+        {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN,
+         CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII}));
+    EXPECT_FALSE(
+        status.HasWarningReason(CookieInclusionStatus::WARN_DOMAIN_NON_ASCII));
   }
 
   // Test with feature flag disabled.
@@ -486,6 +489,8 @@ TEST(CanonicalCookieTest, CreateWithNonASCIIDomain) {
 
     EXPECT_TRUE(cookie2.get());
     EXPECT_TRUE(status2.IsInclude());
+    EXPECT_TRUE(
+        status2.HasWarningReason(CookieInclusionStatus::WARN_DOMAIN_NON_ASCII));
   }
 
   // Test that regular ascii punycode still works.
@@ -495,6 +500,8 @@ TEST(CanonicalCookieTest, CreateWithNonASCIIDomain) {
       absl::nullopt /* cookie_partition_key */, &status3);
   EXPECT_TRUE(cookie3.get());
   EXPECT_TRUE(status3.IsInclude());
+  EXPECT_FALSE(
+      status3.HasWarningReason(CookieInclusionStatus::WARN_DOMAIN_NON_ASCII));
 }
 
 TEST(CanonicalCookieTest, CreateWithDomainAsIP) {

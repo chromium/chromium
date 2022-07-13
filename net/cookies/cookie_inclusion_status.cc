@@ -227,6 +227,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
             "EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE"},
            {EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
             "EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE"},
+           {EXCLUDE_DOMAIN_NON_ASCII, "EXCLUDE_DOMAIN_NON_ASCII"},
        }) {
     if (HasExclusionReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});
@@ -274,6 +275,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
             "WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION"},
            {WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
             "WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE"},
+           {WARN_DOMAIN_NON_ASCII, "WARN_DOMAIN_NON_ASCII"},
        }) {
     if (HasWarningReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});

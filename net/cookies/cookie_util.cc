@@ -27,6 +27,7 @@
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/first_party_set_metadata.h"
@@ -305,11 +306,16 @@ std::string GetEffectiveDomain(const std::string& scheme,
 
 bool GetCookieDomainWithString(const GURL& url,
                                const std::string& domain_string,
+                               CookieInclusionStatus& status,
                                std::string* result) {
   // Disallow non-ASCII domain names.
-  if (base::FeatureList::IsEnabled(features::kCookieDomainRejectNonASCII) &&
-      !base::IsStringASCII(domain_string)) {
-    return false;
+  if (!base::IsStringASCII(domain_string)) {
+    if (base::FeatureList::IsEnabled(features::kCookieDomainRejectNonASCII)) {
+      status.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
+      return false;
+    }
+    status.AddWarningReason(CookieInclusionStatus::WARN_DOMAIN_NON_ASCII);
   }
 
   const std::string url_host(url.host());
