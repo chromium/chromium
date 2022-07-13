@@ -1071,6 +1071,59 @@ TEST_F(WindowPerformanceTest, EventTimingTraceEvents) {
   ASSERT_FALSE(events[5]->HasDictArg("data"));
 }
 
+bool CompareTraceEventTimestamp(const trace_analyzer::TraceEvent* e1,
+                                const trace_analyzer::TraceEvent* e2) {
+  return (e1->thread_timestamp < e2->thread_timestamp);
+}
+
+TEST_F(WindowPerformanceTest, UserTimingTraceEvents) {
+  using trace_analyzer::Query;
+  trace_analyzer::Start("*");
+  // Need to have an active V8 context for ScriptValues to operate.
+  ScriptState* script_state = GetScriptState();
+  v8::HandleScope handle_scope(script_state->GetIsolate());
+  v8::Local<v8::Context> context = script_state->GetContext();
+  v8::Context::Scope context_scope(context);
+  DummyExceptionStateForTesting exception_state;
+  performance_->measure(script_state, "my_first_measure", exception_state);
+  test_task_runner_->FastForwardBy(base::Seconds(2));
+  performance_->mark(script_state, "my_first_mark", nullptr, exception_state);
+  test_task_runner_->FastForwardBy(base::Seconds(2));
+  performance_->clearMarks("my_first_mark");
+  test_task_runner_->FastForwardBy(base::Seconds(2));
+  performance_->mark(script_state, "my_second_mark", nullptr, exception_state);
+  test_task_runner_->FastForwardBy(base::Seconds(2));
+  performance_->clearMeasures();
+  auto analyzer = trace_analyzer::Stop();
+
+  trace_analyzer::TraceEventVector events;
+  Query q = Query::EventCategoryIs("blink.user_timing");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(6u, events.size());
+  // Explicitly sort trace events by timestamp to get comparable results
+  // cross-platform.
+  // TODO(sullivan): investigate why this sort is needed--why doesn't
+  // TraceAnalyzer::FindEvents return events in the same order across platforms?
+  sort(events.begin(), events.end(), CompareTraceEventTimestamp);
+
+  // Note: the "name" attribute of the event is the title of the trace event.
+  // For mark() and measure(), that is the mark/measure name.
+  // But for clearMarks() and clearMeasures(), "clearMarks" and "clearMeasures"
+  // are the trace event title, and there is a "name" field in the trace with
+  // the name of the trace event to be cleared (or "" if not specified).
+  // Also note that performance.measure() adds two trace events (for the start
+  // and end of the measure).
+  EXPECT_EQ("my_first_measure", events[0]->name);
+  EXPECT_EQ("my_first_measure", events[1]->name);
+  EXPECT_EQ("my_first_mark", events[2]->name);
+  EXPECT_EQ("clearMarks", events[3]->name);
+  ASSERT_TRUE(events[3]->HasStringArg("name"));
+  EXPECT_EQ("my_first_mark", events[3]->GetKnownArgAsString("name"));
+  EXPECT_EQ("my_second_mark", events[4]->name);
+  EXPECT_EQ("clearMeasures", events[5]->name);
+  EXPECT_EQ("", events[5]->GetKnownArgAsString("name"));
+}
+
 TEST_F(WindowPerformanceTest, InteractionID) {
   // Keyboard with max duration 25, total duration 40.
   PerformanceEventTiming* keydown_entry =
