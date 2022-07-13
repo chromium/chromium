@@ -411,6 +411,10 @@ class CONTENT_EXPORT MediaStreamManager
   void SetGenerateStreamsCallbackForTesting(
       GenerateStreamTestCallback test_callback);
 
+  void SetStateForTesting(size_t request_index,
+                          blink::mojom::MediaStreamType stream_type,
+                          MediaRequestState new_state);
+
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
 
@@ -436,10 +440,17 @@ class CONTENT_EXPORT MediaStreamManager
 #endif
 
  private:
+  friend class MediaStreamManagerTest;
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest, DesktopCaptureDeviceStopped);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest, DesktopCaptureDeviceChanged);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest,
                            MultiCaptureOnMediaStreamUIWindowId);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest,
+                           MultiCaptureAllDevicesOpened);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest,
+                           MultiCaptureNotAllDevicesOpened);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest,
+                           MultiCaptureIntermediateErrorOnOpening);
 
   // Contains all data needed to keep track of requests.
   class DeviceRequest;
