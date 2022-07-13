@@ -447,14 +447,11 @@ TEST_F(GaiaOAuthClientTest, GetUserInfo) {
   auth.GetUserInfo("access_token", 1, &delegate);
   FlushNetwork();
 
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(kDummyFullUserInfoResult);
-  DCHECK(value);
-  ASSERT_TRUE(value->is_dict());
-  base::DictionaryValue* expected_result;
-  value->GetAsDictionary(&expected_result);
-
-  ASSERT_TRUE(expected_result->Equals(captured_result.get()));
+  absl::optional<base::Value> expected_value =
+      base::JSONReader::Read(kDummyFullUserInfoResult);
+  DCHECK(expected_value);
+  ASSERT_TRUE(expected_value->is_dict());
+  EXPECT_EQ(*expected_value, *captured_result);
 }
 
 TEST_F(GaiaOAuthClientTest, GetTokenInfo) {
