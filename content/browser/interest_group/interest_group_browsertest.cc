@@ -858,9 +858,20 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   }
 
   bool HasServerSeenUrl(const GURL& url) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr("127.0.0.1");
+    GURL look_for_url = url.ReplaceComponents(replacements);
     base::AutoLock auto_lock(requests_lock_);
-    return received_https_test_server_requests_.find(url) !=
+    return received_https_test_server_requests_.find(look_for_url) !=
            received_https_test_server_requests_.end();
+  }
+
+  bool HasServerSeenUrls(const std::vector<GURL>& urls) {
+    for (const auto& url : urls) {
+      if (!HasServerSeenUrl(url))
+        return false;
+    }
+    return true;
   }
 
   void ExpectNotAllowedToJoinOrUpdateInterestGroup(
@@ -4330,8 +4341,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // Seller and winning bidder should get reports, and other bidders shouldn't
   // get reports.
   WaitForURL(https_server_->GetURL("/echoall?report_seller"));
-  WaitForURL(
-      https_server_->GetURL("/echoall?report_bidder_stop_bidding_after_win"));
+  WaitForURL(https_server_->GetURL(
+      "/echoall?report_bidder_stop_bidding_after_win&cars"));
   base::AutoLock auto_lock(requests_lock_);
   EXPECT_FALSE(base::Contains(received_https_test_server_requests_,
                               https_server_->GetURL("/echoall?report_bidder")));
@@ -4731,6 +4742,69 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   });
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionGroupLimitRandomized) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_ad");
+
+  std::vector<std::pair<std::string, double>> interest_groups = {
+      {"cars", 3},
+      {"motorcycles", 2},
+      {"bikes", 2},
+      {"shoes", 1},
+      {"scooters", 2}};
+  for (const auto& g : interest_groups) {
+    EXPECT_EQ(
+        kSuccess,
+        JoinInterestGroupAndVerify(blink::InterestGroup(
+            /*expiry=*/base::Time(),
+            /*owner=*/test_origin,
+            /*name=*/g.first,
+            /*priority=*/g.second,
+            /*execution_mode=*/
+            blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+            /*bidding_url=*/
+            https_server_->GetURL(
+                "a.test",
+                "/interest_group/bidding_logic_stop_bidding_after_win.js"),
+            /*bidding_wasm_helper_url=*/absl::nullopt,
+            /*daily_update_url=*/absl::nullopt,
+            /*trusted_bidding_signals_url=*/absl::nullopt,
+            /*trusted_bidding_signals_keys=*/absl::nullopt,
+            /*user_bidding_signals=*/absl::nullopt,
+            /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
+            /*ad_components=*/absl::nullopt)));
+  }
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    perBuyerGroupLimits: {'*': 3},
+                })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+
+  std::vector<GURL> expected_urls = {
+      https_server_->GetURL(
+          "a.test", "/echoall?report_bidder_stop_bidding_after_win&cars"),
+      https_server_->GetURL(
+          "a.test",
+          "/echoall?report_bidder_stop_bidding_after_win&motorcycles"),
+      https_server_->GetURL(
+          "a.test", "/echoall?report_bidder_stop_bidding_after_win&bikes"),
+      https_server_->GetURL(
+          "a.test", "/echoall?report_bidder_stop_bidding_after_win&scooters"),
+  };
+  while (!HasServerSeenUrls(expected_urls)) {
+    EvalJsResult ignored = RunAuctionAndWait(auction_config);
+  }
+  EXPECT_FALSE(HasServerSeenUrl(https_server_->GetURL(
+      "a.test", "/echoall?report_bidder_stop_bidding_after_win&shoes")));
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -5031,8 +5105,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
       // First auction's seller's ReportResult() URL.
       {https_server_->GetURL("b.test", "/echoall?report_seller"), origin_b},
       // First auction's winning bidder's ReportWin() URL.
-      {https_server_->GetURL("a.test",
-                             "/echoall?report_bidder_stop_bidding_after_win"),
+      {https_server_->GetURL(
+           "a.test", "/echoall?report_bidder_stop_bidding_after_win&cars"),
        origin_b},
       // First auction's debugging loss report URL from bidder.
       {https_server_->GetURL("b.test", "/echo?bidder_debug_report_loss/shoes"),

@@ -617,15 +617,17 @@ void AuctionRunner::Auction::OnInterestGroupRead(
     // Randomize order of interest groups with lowest allowed priority. This
     // effectively performs a random sample among interest groups with the same
     // priority.
-    double min_priority =
-        interest_groups.back().interest_group.priority.value();
-    auto rand_begin = std::lower_bound(
-        interest_groups.begin(), interest_groups.end(), min_priority, cmp);
-    auto rand_end =
-        std::upper_bound(rand_begin, interest_groups.end(), min_priority, cmp);
-    base::RandomShuffle(rand_begin, rand_end);
-    interest_groups.resize(std::min(interest_groups.size(), size_limit));
-
+    size_limit = std::min(interest_groups.size(), size_limit);
+    if (size_limit > 0) {
+      double min_priority =
+          interest_groups[size_limit - 1].interest_group.priority.value();
+      auto rand_begin = std::lower_bound(
+          interest_groups.begin(), interest_groups.end(), min_priority, cmp);
+      auto rand_end = std::upper_bound(rand_begin, interest_groups.end(),
+                                       min_priority, cmp);
+      base::RandomShuffle(rand_begin, rand_end);
+    }
+    interest_groups.resize(size_limit);
     for (auto& bidder : interest_groups) {
       // Report freshness metrics.
       if (bidder.interest_group.daily_update_url.has_value()) {

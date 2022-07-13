@@ -17,5 +17,6 @@ function reportWin(
   auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
 sendReportTo(
     browserSignals.interestGroupOwner +
-    '/echoall?report_bidder_stop_bidding_after_win');
+    '/echoall?report_bidder_stop_bidding_after_win&' +
+    browserSignals.interestGroupName);
 }
