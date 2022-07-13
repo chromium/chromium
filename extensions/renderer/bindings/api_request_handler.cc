@@ -208,8 +208,13 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
     last_error->SetError(context, error);
   }
 
+  // If there is a result modifier for this async request and the response args
+  // are not empty, run the result modifier and allow it to massage the return
+  // arguments before we send them back.
+  // Note: a request can end up with a result modifier and be returning an empty
+  // set of args if we are responding that an error occurred.
   const std::vector<v8::Local<v8::Value>> args =
-      result_modifier_.is_null()
+      result_modifier_.is_null() || response_args.empty()
           ? response_args
           : std::move(result_modifier_)
                 .Run(response_args, context, async_type_);

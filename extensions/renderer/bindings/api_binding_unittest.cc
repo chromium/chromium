@@ -1990,10 +1990,13 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
   // Register a hook for the test.supportsPromises method with a result modifier
   // that changes the result when the async response type is callback based.
   auto hooks = std::make_unique<APIBindingHooksTestDelegate>();
+  int total_modifier_call_count = 0;
   auto result_modifier =
-      [](const std::vector<v8::Local<v8::Value>>& result_args,
-         v8::Local<v8::Context> context,
-         binding::AsyncResponseType async_type) {
+      [&total_modifier_call_count](
+          const std::vector<v8::Local<v8::Value>>& result_args,
+          v8::Local<v8::Context> context,
+          binding::AsyncResponseType async_type) {
+        total_modifier_call_count++;
         if (async_type == binding::AsyncResponseType::kCallback) {
           // For callback based calls change the result to a vector with
           // multiple arguments by appending "bar" to the end.
@@ -2011,7 +2014,8 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
                          const APITypeReferenceMap& ref_map) {
         APIBindingHooks::RequestResult result(
             APIBindingHooks::RequestResult::NOT_HANDLED,
-            v8::Local<v8::Function>(), base::BindOnce(result_modifier));
+            v8::Local<v8::Function>(),
+            base::BindLambdaForTesting(result_modifier));
         return result;
       };
   hooks->AddHandler("test.supportsPromises",
@@ -2043,6 +2047,7 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
     EXPECT_EQ(R"("foo")", V8ToString(promise->Result(), context));
+    EXPECT_EQ(1, total_modifier_call_count);
   }
 
   // A callback-based call will be modified by the hook and return with multiple
@@ -2069,6 +2074,33 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
                                                       context, "argument1"));
     EXPECT_EQ(R"("bar")", GetStringPropertyFromObject(context->Global(),
                                                       context, "argument2"));
+    EXPECT_EQ(2, total_modifier_call_count);
+  }
+
+  // A call which results in an error should reject as expected and the result
+  // modifier should never be called.
+  {
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.supportsPromises(3) });");
+    v8::Local<v8::Value> args[] = {binding_object};
+    v8::Local<v8::Value> api_result =
+        RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
+
+    v8::Local<v8::Promise> promise = api_result.As<v8::Promise>();
+    ASSERT_FALSE(api_result.IsEmpty());
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    ASSERT_TRUE(last_request());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       base::Value::List(), "Error message");
+    EXPECT_EQ(v8::Promise::kRejected, promise->State());
+    ASSERT_TRUE(promise->Result()->IsObject());
+    EXPECT_EQ(R"("Error message")",
+              GetStringPropertyFromObject(promise->Result().As<v8::Object>(),
+                                          context, "message"));
+    // Since the result modifier should have never been called, the total call
+    // count should still be the same as in the previous test case.
+    EXPECT_EQ(2, total_modifier_call_count);
   }
 }
 

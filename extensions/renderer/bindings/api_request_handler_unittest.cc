@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -632,6 +633,35 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
                                     "some error");
     ASSERT_TRUE(logged_error);
     EXPECT_EQ("Unchecked runtime.lastError: some error", *logged_error);
+    logged_error.reset();
+  }
+
+  {
+    // Test a function call resulting in an error for a request handler that has
+    // an associated result modifier. The result modifier should never be called
+    // and since the callback checks last error no error should be logged to the
+    // console.
+    bool result_modifier_called = false;
+    auto result_modifier =
+        [&result_modifier_called](
+            const std::vector<v8::Local<v8::Value>>& result_args,
+            v8::Local<v8::Context> context,
+            binding::AsyncResponseType async_type) {
+          result_modifier_called = true;
+          return result_args;
+        };
+    v8::Local<v8::Function> callback =
+        FunctionFromString(context, kReportExposedLastError);
+    request_handler.StartRequest(
+        context, kMethod, std::make_unique<base::ListValue>(),
+        binding::AsyncResponseType::kCallback, callback,
+        v8::Local<v8::Function>(), base::BindLambdaForTesting(result_modifier));
+    int request_id = request_handler.last_sent_request_id();
+    request_handler.CompleteRequest(request_id, base::Value::List(),
+                                    "some error");
+    EXPECT_FALSE(logged_error);
+    EXPECT_EQ("\"some error\"", get_exposed_error());
+    EXPECT_FALSE(result_modifier_called);
     logged_error.reset();
   }
 }
