@@ -22734,13 +22734,63 @@ metrics consent we also won't be able to send UMA metrics. -->
 
 <enum name="CryptohomeErrorLocation">
 <!--
-  This enum is intended to be populated automatically by platform2/src/cryptohome/error/tool/location_db.py. It populates all values found in the cryptohome code base.
+  This enum is intended to be populated automatically by
+  platform2/cryptohome/error/tool/location_db.py. It populates all values
+  found in the cryptohome code base.
 
-  The labels are the Cryptohome Error Location enum defined in platform2/cryptohome/error/locations.h
+  It is allowed to manually add <int> error location to this file, and the
+  added error location will continue to be updated when the script runs the
+  next time. However, the label, and all changes to the label field may be
+  overwritten by the tool. Furthermore, removal of <int> may be added back
+  if that bucket is still observed in the field.
+
+  The labels are the Cryptohome Error Location enum defined in
+  platform2/cryptohome/error/locations.h
   -->
 
+  <int value="100" label="kLocUserSessionMountEphemeralFailed"/>
+  <int value="103" label="kLocUserDataAuthMountGuestSessionMountFailed"/>
+  <int value="105" label="kLocUserDataAuthEphemeralMountWithoutCreate"/>
+  <int value="138" label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDerive"/>
+  <int value="144" label="kLocTpmNotBoundToPcrAuthBlockDecryptFailedInDecrypt"/>
+  <int value="154" label="kLocPinWeaverAuthBlockCheckCredFailedInDerive"/>
+  <int value="160" label="kLocAuthBlockUtilDeriveFailedInDeriveKeyBlobs"/>
+  <int value="197" label="kLocTpmAuthBlockUtilsHashIncorrectInPubkeyHash"/>
+  <int value="201" label="kLocTpmAuthBlockUtilsCHKeyMismatchInCheckReadiness"/>
+  <int value="217" label="kLocTpmBoundToPcrAuthBlockTpmNotReadyInDerive"/>
+  <int value="219" label="kLocTpmBoundToPcrAuthBlockDecryptFailedInDerive"/>
+  <int value="222" label="kLocTpmBoundToPcrAuthBlockUnsealFailedInDecrypt"/>
+  <int value="245" label="kLocTpmEccAuthBlockTpmNotReadyInDerive"/>
+  <int value="246" label="kLocTpmEccAuthBlockCantDeriveVKKInDerive"/>
+  <int value="247" label="kLocTpmEccAuthBlockPreloadFailedInDeriveVKK"/>
+  <int value="250" label="kLocTpmEccAuthBlockDeriveHVKKMFailedInDeriveVKK"/>
+  <int value="256" label="kLocTpmEccAuthBlockUnsealFailedInDeriveHVKKM"/>
+  <int value="280" label="kLocLECredManTpmFailedInCheckSecret"/>
+  <int value="284" label="kLocLECredManConvertTpmError"/>
   <int value="286" label="kLocUserDataAuthSessionNotFoundInAuthAuthSession"/>
   <int value="288" label="kLocUserDataAuthSessionNotFoundInExtendAuthSession"/>
+  <int value="326" label="kLocAuthSessionInvalidBlockTypeInAuthViaVaultKey"/>
+  <int value="329" label="kLocAuthSessionDeriveFailedInLoadVaultKeyset"/>
+  <int value="330"
+      label="kLocAuthSessionGetValidKeysetFailedInLoadVaultKeyset"/>
+  <int value="371" label="kLocVaultKeysetKeysetDecryptFailedInUnwrapVKK"/>
+  <int value="375" label="kLocVaultKeysetKeysetDecryptFailedInUnwrapScrypt"/>
+  <int value="390" label="kLocVaultKeysetUnwrapVKKFailedInUnwrapVK"/>
+  <int value="391" label="kLocVaultKeysetUnwrapScryptFailedInUnwrapVK"/>
+  <int value="427" label="kLocKeysetManagementDecryptFailedInGetValidKeyset"/>
+  <int value="449" label="kLocUserDataAuthLoadVKFailedInAttemptUserMountCred"/>
+  <int value="455" label="kLocUserSessionMountFailedInMountVault"/>
+  <int value="476"
+      label="kLocUserDataAuthSessionAlreadyMountedInGetMountableUS"/>
+  <int value="478"
+      label="kLocUserDataAuthOtherSessionActiveInPrepareGuestVault"/>
+  <int value="485"
+      label="kLocUserDataAuthGetSessionFailedInPreparePersistentVault"/>
+  <int value="486" label="kLocUserDataAuthMountFailedInPreparePersistentVault"/>
+  <int value="532" label="kLocUserDataAuthNotConfiguredInStartAuthSession"/>
+  <int value="572"
+      label="kLocUserDataAuthAccountNotFoundInContinueMountWithCred"/>
+  <int value="579" label="kLocUserDataAuthMountFailedInContinueMountWithCred"/>
 </enum>
 
 <enum name="CryptohomeErrorLocationWithTPMError">
