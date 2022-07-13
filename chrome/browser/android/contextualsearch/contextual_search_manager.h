@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_context.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
 
 // Manages the native extraction and request logic for Contextual Search,

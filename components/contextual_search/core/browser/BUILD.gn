@@ -1,0 +1,32 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("browser") {
+  sources = [
+    "contextual_search_context.cc",
+    "contextual_search_context.h",
+    "public.cc",
+    "public.h",
+    "resolved_search_term.cc",
+    "resolved_search_term.h",
+  ]
+  deps = [
+    "//base",
+    "//components/contextual_search:buildflags",
+    "//components/prefs:prefs",
+    "//components/translate/core/common",
+    "//components/translate/core/language_detection",
+    "//url:url",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("quick_action_category_enum_javagen") {
+    sources = [ "resolved_search_term.h" ]
+  }
+}

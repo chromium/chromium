@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_field_trial.h"
-#include "chrome/browser/android/contextualsearch/resolved_search_term.h"
 #include "chrome/browser/android/proto/client_discourse_context.pb.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "components/contextual_search/core/browser/public.h"
+#include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
@@ -102,7 +102,7 @@ ContextualSearchDelegate::~ContextualSearchDelegate() {
 }
 
 void ContextualSearchDelegate::GatherAndSaveSurroundingText(
-    base::WeakPtr<ContextualSearchContext> contextual_search_context,
+    base::WeakPtr<NativeContextualSearchContext> contextual_search_context,
     content::WebContents* web_contents) {
   DCHECK(web_contents);
   blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback callback =
@@ -127,7 +127,7 @@ void ContextualSearchDelegate::GatherAndSaveSurroundingText(
 }
 
 void ContextualSearchDelegate::StartSearchTermResolutionRequest(
-    base::WeakPtr<ContextualSearchContext> contextual_search_context,
+    base::WeakPtr<NativeContextualSearchContext> contextual_search_context,
     content::WebContents* web_contents) {
   DCHECK(web_contents);
   if (context_ == nullptr)
@@ -285,7 +285,7 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
 }
 
 std::string ContextualSearchDelegate::BuildRequestUrl(
-    ContextualSearchContext* context) {
+    NativeContextualSearchContext* context) {
   if (!template_url_service_ ||
       !template_url_service_->GetDefaultSearchProvider()) {
     return std::string();
@@ -367,6 +367,8 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
 
   // Pin the start and end offsets to ensure they point within the string.
   uint32_t surrounding_length = surrounding_text.length();
+  // TODO(crbug.com/1343955): The case where end_offset < start_offset should be
+  // handled here as well.
   start_offset = std::min(surrounding_length, start_offset);
   end_offset = std::min(surrounding_length, end_offset);
 
@@ -391,7 +393,7 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
 }
 
 const net::HttpRequestHeaders ContextualSearchDelegate::GetDiscourseContext(
-    const ContextualSearchContext& context) {
+    const NativeContextualSearchContext& context) {
   discourse_context::ClientDiscourseContext proto;
   discourse_context::Display* display = proto.add_display();
   display->set_uri(context.GetBasePageUrl().spec());

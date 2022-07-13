@@ -19,11 +19,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_context.h"
-#include "chrome/browser/android/contextualsearch/resolved_search_term.h"
+#include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
 #include "chrome/browser/android/proto/client_discourse_context.pb.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -98,7 +98,7 @@ class ContextualSearchDelegateTest : public testing::Test {
       const std::u16string& surrounding_text,
       int start_offset,
       int end_offset) {
-    test_context_ = new ContextualSearchContext(
+    test_context_ = new NativeContextualSearchContext(
         std::string(), GURL(kSomeSpecificBasePage), "utf-8");
     // ContextualSearchDelegate class takes ownership of the context.
     delegate_->SetContextForTesting(test_context_->GetWeakPtr());
@@ -135,7 +135,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   // from tests, but can be called here because this is a friend class.
   //-------------------------------------------------------------------
   void CreateTestContext() {
-    test_context_ = new ContextualSearchContext(
+    test_context_ = new NativeContextualSearchContext(
         std::string(), GURL(kSomeSpecificBasePage), "utf-8");
     delegate_->SetContextForTesting(test_context_->GetWeakPtr());
   }
@@ -177,7 +177,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   void SetSurroundingContext(const std::u16string& surrounding_text,
                              int start_offset,
                              int end_offset) {
-    test_context_ = new ContextualSearchContext(
+    test_context_ = new NativeContextualSearchContext(
         std::string(), GURL(kSomeSpecificBasePage), "utf-8");
     test_context_->SetSelectionSurroundings(start_offset, end_offset,
                                             surrounding_text);
@@ -306,7 +306,7 @@ class ContextualSearchDelegateTest : public testing::Test {
       test_shared_url_loader_factory_;
 
   // Will be owned by the delegate.
-  raw_ptr<ContextualSearchContext> test_context_;
+  raw_ptr<NativeContextualSearchContext> test_context_;
 
   // Features to enable
   base::test::ScopedFeatureList feature_list_;

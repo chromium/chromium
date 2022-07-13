@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/contextualsearch/resolved_search_term.h"
+#include "components/contextual_search/core/browser/resolved_search_term.h"
 
 ResolvedSearchTerm::ResolvedSearchTerm(int response_code)
     : is_invalid(response_code == kResponseCodeUninitialized),

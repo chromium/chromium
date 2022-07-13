@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
 
 /**
@@ -460,18 +461,26 @@ public abstract class ContextualSearchContext {
 
     @NativeMethods
     interface Natives {
+        @NativeClassQualifiedName("NativeContextualSearchContext")
         long init(ContextualSearchContext caller);
+        @NativeClassQualifiedName("NativeContextualSearchContext")
         void destroy(long nativeContextualSearchContext, ContextualSearchContext caller);
+        @NativeClassQualifiedName("NativeContextualSearchContext")
         void setResolveProperties(long nativeContextualSearchContext,
                 ContextualSearchContext caller, String homeCountry, boolean doSendBasePageUrl);
+        @NativeClassQualifiedName("NativeContextualSearchContext")
         void adjustSelection(long nativeContextualSearchContext, ContextualSearchContext caller,
                 int startAdjust, int endAdjust);
+        @NativeClassQualifiedName("NativeContextualSearchContext")
         String detectLanguage(long nativeContextualSearchContext, ContextualSearchContext caller);
+        @NativeClassQualifiedName("NativeContextualSearchContext")
         void setTranslationLanguages(long nativeContextualSearchContext,
                 ContextualSearchContext caller, String detectedLanguage, String targetLanguage,
                 String fluentLanguages);
+        @NativeClassQualifiedName("NativeContextualSearchContext")
         void prepareToResolve(long nativeContextualSearchContext, ContextualSearchContext caller,
                 boolean isExactSearch, String relatedSearchesStamp);
+        @NativeClassQualifiedName("NativeContextualSearchContext")
         void setSurroundingsAndSelection(long nativeContextualSearchContext,
                 ContextualSearchContext caller, String surroundings, int startOffset,
                 int endOffset);

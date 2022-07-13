@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/translate/core/common",
+  "+components/translate/core/language_detection",
+  "+url",
+]

@@ -234,6 +234,7 @@ static_library("test_support") {
     "//components/captive_portal/core:test_support",
     "//components/consent_auditor:test_support",
     "//components/content_settings/core/browser",
+    "//components/contextual_search/core/browser",
     "//components/custom_handlers/",
     "//components/domain_reliability",
     "//components/find_in_page",

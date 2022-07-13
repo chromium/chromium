@@ -2,24 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_RESOLVED_SEARCH_TERM_H_
-#define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_RESOLVED_SEARCH_TERM_H_
+#ifndef COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_RESOLVED_SEARCH_TERM_H_
+#define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_RESOLVED_SEARCH_TERM_H_
 
-#include <string.h>
-
-#include <algorithm>
-#include <cmath>
-#include <new>
-#include <ostream>
-#include <utility>
-
-#include "base/containers/checked_iterators.h"
-#include "base/json/json_writer.h"
-#include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/trace_event/memory_usage_estimator.h"
+#include <string>
 
 // Provides the native support needed for the Java class by the same name,
 // which encapsulates a server response for Contextual Search.
@@ -91,4 +77,4 @@ struct ResolvedSearchTerm {
   const std::string related_searches_json;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_RESOLVED_SEARCH_TERM_H_
+#endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_RESOLVED_SEARCH_TERM_H_

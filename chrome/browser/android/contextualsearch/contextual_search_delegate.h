@@ -15,8 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_context.h"
-#include "chrome/browser/android/contextualsearch/resolved_search_term.h"
+#include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
+#include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "net/http/http_request_headers.h"
 
 namespace content {
@@ -59,7 +59,7 @@ class ContextualSearchDelegate
 
   // Gathers surrounding text and saves it locally in the given context.
   void GatherAndSaveSurroundingText(
-      base::WeakPtr<ContextualSearchContext> contextual_search_context,
+      base::WeakPtr<NativeContextualSearchContext> contextual_search_context,
       content::WebContents* web_contents);
 
   // Starts an asynchronous search term resolution request.
@@ -68,7 +68,7 @@ class ContextualSearchDelegate
   // When the response is available the callback specified in the constructor
   // is run.
   void StartSearchTermResolutionRequest(
-      base::WeakPtr<ContextualSearchContext> contextual_search_context,
+      base::WeakPtr<NativeContextualSearchContext> contextual_search_context,
       content::WebContents* web_contents);
 
   // Gets the target language for translation purposes for this user.
@@ -111,7 +111,7 @@ class ContextualSearchDelegate
 
   // Builds and returns the search term resolution request URL.
   // |context| is used to help build the query.
-  std::string BuildRequestUrl(ContextualSearchContext* context);
+  std::string BuildRequestUrl(NativeContextualSearchContext* context);
 
   // Uses the TemplateURL service to construct a search term resolution URL from
   // the given parameters.
@@ -127,7 +127,7 @@ class ContextualSearchDelegate
 
   // Populates and returns the discourse context.
   const net::HttpRequestHeaders GetDiscourseContext(
-      const ContextualSearchContext& context);
+      const NativeContextualSearchContext& context);
 
   // Builds a Resolved Search Term by decoding the given JSON string.
   std::unique_ptr<ResolvedSearchTerm> GetResolvedSearchTermFromJson(
@@ -180,7 +180,7 @@ class ContextualSearchDelegate
 
   // For testing.
   void SetContextForTesting(
-      const base::WeakPtr<ContextualSearchContext>& context) {
+      const base::WeakPtr<NativeContextualSearchContext>& context) {
     context_ = context;
   }
 
@@ -204,7 +204,7 @@ class ContextualSearchDelegate
 
   // Used to hold the context until an upcoming search term request is started.
   // Owned by the Java ContextualSearchContext.
-  base::WeakPtr<ContextualSearchContext> context_;
+  base::WeakPtr<NativeContextualSearchContext> context_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_DELEGATE_H_

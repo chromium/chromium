@@ -16,9 +16,10 @@
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
-#include "chrome/browser/android/contextualsearch/resolved_search_term.h"
+#include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_view_host.h"
@@ -69,8 +70,8 @@ void ContextualSearchManager::StartSearchTermResolutionRequest(
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
-  base::WeakPtr<ContextualSearchContext> contextual_search_context =
-      ContextualSearchContext::FromJavaContextualSearchContext(
+  base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
+      NativeContextualSearchContext::FromJavaContextualSearchContext(
           j_contextual_search_context);
   // Calls back to OnSearchTermResolutionResponse.
   delegate_->StartSearchTermResolutionRequest(contextual_search_context,
@@ -85,8 +86,8 @@ void ContextualSearchManager::GatherSurroundingText(
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
-  base::WeakPtr<ContextualSearchContext> contextual_search_context =
-      ContextualSearchContext::FromJavaContextualSearchContext(
+  base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
+      NativeContextualSearchContext::FromJavaContextualSearchContext(
           j_contextual_search_context);
   delegate_->GatherAndSaveSurroundingText(contextual_search_context,
                                           base_web_contents);
