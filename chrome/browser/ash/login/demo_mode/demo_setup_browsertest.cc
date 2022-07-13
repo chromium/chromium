@@ -739,10 +739,14 @@ class OfflineDemoSetupTest : public DemoSetupArcSupportedTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// crbug.com/1340651 Disable the test due to flakiness. Note that the test is
-// also disabled for ASAN, see crbug.com/1150349 for more information.
+// Flake on ASAN: crbug.com/1340651
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NextDisabledOnNetworkScreen DISABLED_NextDisabledOnNetworkScreen
+#else
+#define MAYBE_NextDisabledOnNetworkScreen NextDisabledOnNetworkScreen
+#endif
 IN_PROC_BROWSER_TEST_F(OfflineDemoSetupTest,
-                       DISABLED_NextDisabledOnNetworkScreen) {
+                       MAYBE_NextDisabledOnNetworkScreen) {
   SimulateNetworkDisconnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -1030,10 +1034,16 @@ class DemoSetupVariantCountryCodeRegionTest : public DemoSetupArcSupportedTest {
   }
 };
 
-// crbug.com/1340982 Disable due to flakiness. Note that this test is also
-// disabled with ASAN, see crbug.com/1150349 for more information.
+// Flake on ASAN: crbug.com/1340982
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_VariantCountryCodeRegionDefaultCountryIsSet \
+  DISABLED_VariantCountryCodeRegionDefaultCountryIsSet
+#else
+#define MAYBE_VariantCountryCodeRegionDefaultCountryIsSet \
+  VariantCountryCodeRegionDefaultCountryIsSet
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupVariantCountryCodeRegionTest,
-                       DISABLED_VariantCountryCodeRegionDefaultCountryIsSet) {
+                       MAYBE_VariantCountryCodeRegionDefaultCountryIsSet) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -1074,10 +1084,16 @@ class DemoSetupVirtualSetRegionCodeTest : public DemoSetupArcSupportedTest {
   }
 };
 
-// crbug.com/1340618 Disable the test due to flakiness. Note that the test is
-// also disabled for ASAN, see crrev.com/c/3227288 for more information.
+// Flake on ASAN: crbug.com/1340618
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_VirtualSetCountryCodeRegionPlaceholderIsSet \
+  DISABLED_VirtualSetCountryCodeRegionPlaceholderIsSet
+#else
+#define MAYBE_VirtualSetCountryCodeRegionPlaceholderIsSet \
+  VirtualSetCountryCodeRegionPlaceholderIsSet
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupVirtualSetRegionCodeTest,
-                       DISABLED_VirtualSetCountryCodeRegionPlaceholderIsSet) {
+                       MAYBE_VirtualSetCountryCodeRegionPlaceholderIsSet) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
