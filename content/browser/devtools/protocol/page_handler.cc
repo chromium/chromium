@@ -214,12 +214,14 @@ PageHandler::PageHandler(
     BrowserHandler* browser_handler,
     bool allow_unsafe_operations,
     bool may_capture_screenshots_not_from_surface,
-    absl::optional<url::Origin> navigation_initiator_origin)
+    absl::optional<url::Origin> navigation_initiator_origin,
+    bool may_read_local_files)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       allow_unsafe_operations_(allow_unsafe_operations),
       may_capture_screenshots_not_from_surface_(
           may_capture_screenshots_not_from_surface),
       navigation_initiator_origin_(navigation_initiator_origin),
+      may_read_local_files_(may_read_local_files),
       enabled_(false),
       screencast_enabled_(false),
       screencast_quality_(kDefaultScreenshotQuality),
@@ -515,6 +517,11 @@ void PageHandler::Navigate(const std::string& url,
   if (!gurl.is_valid()) {
     callback->sendFailure(
         Response::ServerError("Cannot navigate to invalid URL"));
+    return;
+  }
+  if (gurl.SchemeIsFile() && !may_read_local_files_) {
+    callback->sendFailure(
+        Response::ServerError("Navigating to local URL is not allowed"));
     return;
   }
 
