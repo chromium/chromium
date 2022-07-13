@@ -198,12 +198,13 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     [self.scrollContentView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:self.scrollView.heightAnchor],
 
-    // Banner image constraints. Scale the image vertically so its height takes
-    // a certain % of the view height while maintaining its aspect ratio. Don't
-    // constrain the width so that the image extends all the way to the edges of
-    // the view, outside the scrollContentView.
+    // Common banner image constraints, further constraints are added below
+    // depending on the value of `self.shouldBannerFillTopSpace`.
+    // The first constraint ensures bounciness of the scroll view does not lead
+    // to the user being able to see the void space above the banner.
+    // The second ensures the banner is well centered within the view.
     [self.imageView.topAnchor
-        constraintEqualToAnchor:self.scrollContentView.topAnchor],
+        constraintLessThanOrEqualToAnchor:self.view.topAnchor],
     [self.imageView.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
 
@@ -245,6 +246,29 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     [self.actionStackView.trailingAnchor
         constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
   ]];
+
+  // Banner image constraints.
+  if (!self.shouldBannerFillTopSpace) {
+    // Scale the image vertically so its height takes
+    // a certain % of the view height while maintaining its aspect ratio. Don't
+    // constrain the width so that the image extends all the way to the edges of
+    // the view, outside the scrollContentView.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.imageView.topAnchor
+          constraintEqualToAnchor:self.scrollContentView.topAnchor],
+    ]];
+  } else {
+    NSLayoutDimension* dimFromToOfViewToBottomOfBanner = [self.view.topAnchor
+        anchorWithOffsetToAnchor:self.imageView.bottomAnchor];
+    [NSLayoutConstraint activateConstraints:@[
+      // Constrain bottom of banner to top of view + C * height of view
+      // where C = isTallBanner ? tallMultiplier : defaultMultiplier.
+      [dimFromToOfViewToBottomOfBanner
+          constraintEqualToAnchor:self.view.heightAnchor
+                       multiplier:self.isTallBanner ? kTallBannerMultiplier
+                                                    : kDefaultBannerMultiplier],
+    ]];
+  }
 
   self.buttonsVerticalAnchorConstraints = @[
     [self.scrollView.bottomAnchor
@@ -601,12 +625,23 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (CGSize)computeBannerImageSize {
   CGFloat bannerMultiplier =
       self.isTallBanner ? kTallBannerMultiplier : kDefaultBannerMultiplier;
+  CGFloat bannerAspectRatio =
+      [self bannerImage].size.width / [self bannerImage].size.height;
 
-  CGFloat destinationHeight =
-      roundf(self.view.bounds.size.height * bannerMultiplier);
-  CGFloat destinationWidth =
-      roundf([self bannerImage].size.width / [self bannerImage].size.height *
-             destinationHeight);
+  CGFloat destinationHeight = 0;
+  CGFloat destinationWidth = 0;
+
+  if (!self.shouldBannerFillTopSpace) {
+    destinationHeight = roundf(self.view.bounds.size.height * bannerMultiplier);
+    destinationWidth = roundf(bannerAspectRatio * destinationHeight);
+  } else {
+    CGFloat minBannerWidth = self.view.bounds.size.width;
+    CGFloat minBannerHeight = self.view.bounds.size.height * bannerMultiplier;
+    destinationWidth =
+        roundf(fmax(minBannerWidth, bannerAspectRatio * minBannerHeight));
+    destinationHeight = roundf(bannerAspectRatio * destinationWidth);
+  }
+
   CGSize newSize = CGSizeMake(destinationWidth, destinationHeight);
   return newSize;
 }

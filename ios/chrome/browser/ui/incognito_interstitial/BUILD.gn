@@ -1,0 +1,46 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("incognito_interstitial_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "incognito_interstitial_view_controller.h",
+    "incognito_interstitial_view_controller.mm",
+    "incognito_interstitial_view_controller_delegate.h",
+  ]
+  deps = [
+    "resources:incognito_interstitial_screen_banner",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/ntp:ntp_internal",
+    "//ios/chrome/browser/ui/util:util",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/promo_style:promo_style",
+    "//ios/chrome/common/ui/util:util",
+    "//ui/base:base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("incognito_interstitial") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "incognito_interstitial_coordinator.h",
+    "incognito_interstitial_coordinator.mm",
+    "incognito_interstitial_coordinator_delegate.h",
+  ]
+  deps = [
+    ":incognito_interstitial_ui",
+    "//base:base",
+    "//ios/chrome/app:mode",
+    "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/ntp:ntp_internal",
+    "//ios/chrome/browser/url_loading:url_loading",
+    "//ios/chrome/browser/url_loading:url_loading_params_header",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

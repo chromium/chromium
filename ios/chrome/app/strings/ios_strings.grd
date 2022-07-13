@@ -1146,6 +1146,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ICON_SEARCH" desc="Accessibility label for the search icon [iOS only].">
         Search
       </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE" desc="Title of interstitial which lets the user choose, when they open a link from an external app, whether to open it in Incognito mode or in a regular tab. [iOS only]">
+        Open in Incognito?
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO" desc="Button to open a link from an external app in Incognito mode rather than a regular tab. [iOS only]">
+        Open in Chrome Incognito
+      </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME" desc="Button to open a link from an external app in a regular tab rather than in Incognito mode. [iOS only]">
+        Open in Chrome
+      </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_SYSTEM_DIALOG_REASON" desc="Text for system biometric authentication dialog to explain why authentication is required when the user attempts to authenticate to access Incognito tabs. [iOS only]">
         Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph> to unlock your Incognito tabs.
       </message>
