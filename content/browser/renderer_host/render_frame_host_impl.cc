@@ -12776,6 +12776,12 @@ bool ShouldVerify(const std::string& param) {
 #if DCHECK_IS_ON()
   return true;
 #else
+  if (param != "should_replace_current_entry" &&
+      param != "url_is_unreachable") {
+    // All params except the two above have no known complications and should be
+    // compared by default.
+    return true;
+  }
   return GetFieldTrialParamByFeatureAsBool(features::kVerifyDidCommitParams,
                                            param, false);
 #endif
