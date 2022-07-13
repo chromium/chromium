@@ -16,10 +16,8 @@ namespace {
 constexpr char kProfileName[] = "SHIPPING";
 }  // namespace
 
-FastCheckoutExternalActionDelegate::FastCheckoutExternalActionDelegate(
-    content::WebContents* web_contents)
-    : fast_checkout_controller_(
-          std::make_unique<FastCheckoutControllerImpl>(web_contents, this)) {}
+FastCheckoutExternalActionDelegate::FastCheckoutExternalActionDelegate() =
+    default;
 
 FastCheckoutExternalActionDelegate::~FastCheckoutExternalActionDelegate() =
     default;
@@ -40,10 +38,12 @@ void FastCheckoutExternalActionDelegate::OnActionRequested(
 
   switch (fast_checkout_action.action_case()) {
     case autofill_assistant::fast_checkout::FastCheckoutAction::ActionCase::
-        kShowBottomSheet:
-      // Show bottomsheet UI.
-      end_show_bottomsheet_action_callback_ = std::move(end_action_callback);
-      fast_checkout_controller_->Show();
+        kWaitForUserSelection:
+      // Waits for user selection of address and credit card and communicates
+      // it back to external action via callback.
+      wait_for_user_selection_action_callback_ = std::move(end_action_callback);
+      if (selected_profile_proto_ && selected_credit_card_proto_)
+        EndWaitForUserSelectionAction();
       break;
     case autofill_assistant::fast_checkout::FastCheckoutAction::ActionCase::
         ACTION_NOT_SET:
@@ -53,40 +53,26 @@ void FastCheckoutExternalActionDelegate::OnActionRequested(
   }
 }
 
-void FastCheckoutExternalActionDelegate::OnOptionsSelected(
-    std::unique_ptr<autofill::AutofillProfile> selected_profile,
-    std::unique_ptr<autofill::CreditCard> selected_credit_card) {
-  if (selected_profile && selected_credit_card) {
-    EndShowBottomSheetAction(true, std::move(selected_profile),
-                             std::move(selected_credit_card));
-    return;
-  }
+void FastCheckoutExternalActionDelegate::SetOptionsSelected(
+    const autofill::AutofillProfile& selected_profile,
+    const autofill::CreditCard& selected_credit_card) {
+  selected_profile_proto_ = fast_checkout::CreateProfileProto(selected_profile);
+  selected_credit_card_proto_ =
+      fast_checkout::CreateCreditCardProto(selected_credit_card);
 
-  // Should not be reached.
-  DLOG(ERROR) << "FastCheckoutExternalActionDelegate::OnOptionsSelected was "
-                 "passed at least one null pointer.";
-  EndShowBottomSheetAction(false);
+  if (wait_for_user_selection_action_callback_)
+    EndWaitForUserSelectionAction();
 }
 
-void FastCheckoutExternalActionDelegate::OnDismiss() {
-  EndShowBottomSheetAction(false);
-}
-
-void FastCheckoutExternalActionDelegate::EndShowBottomSheetAction(
-    bool success,
-    std::unique_ptr<autofill::AutofillProfile> selected_profile,
-    std::unique_ptr<autofill::CreditCard> selected_credit_card) {
+void FastCheckoutExternalActionDelegate::EndWaitForUserSelectionAction() {
   autofill_assistant::external::Result result;
-  result.set_success(success);
+  result.set_success(true);
 
-  if (success) {
-    result.mutable_selected_profiles()->insert(
-        {kProfileName, fast_checkout::CreateProfileProto(*selected_profile)});
-    *result.mutable_selected_credit_card() =
-        fast_checkout::CreateCreditCardProto(*selected_credit_card);
-  }
+  result.mutable_selected_profiles()->insert(
+      {kProfileName, selected_profile_proto_.value()});
+  *result.mutable_selected_credit_card() = selected_credit_card_proto_.value();
 
-  std::move(end_show_bottomsheet_action_callback_).Run(std::move(result));
+  std::move(wait_for_user_selection_action_callback_).Run(std::move(result));
 }
 
 void FastCheckoutExternalActionDelegate::CancelInvalidActionRequest(

@@ -7,6 +7,8 @@
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -26,8 +28,6 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
 FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;
 
 bool FastCheckoutClientImpl::Start(const GURL& url) {
-  // TODO(crbug.com/1338507): Don't run if onboarding was not successful.
-
   if (!base::FeatureList::IsEnabled(features::kFastCheckout))
     return false;
 
@@ -35,13 +35,26 @@ bool FastCheckoutClientImpl::Start(const GURL& url) {
     return false;
 
   is_running_ = true;
+  url_ = url;
+
+  // TODO(crbug.com/1338507): Don't run if onboarding was not successful.
+  OnOnboardingComplete(/*success=*/true);
+
+  return true;
+}
+
+void FastCheckoutClientImpl::OnOnboardingComplete(bool success) {
+  if (!success) {
+    Stop();
+    return;
+  }
 
   base::flat_map<std::string, std::string> params_map{
       {autofill_assistant::public_script_parameters::kIntentParamenterName,
        kIntentValue},
       {autofill_assistant::public_script_parameters::
            kOriginalDeeplinkParameterName,
-       url.spec()},
+       url_.spec()},
       {autofill_assistant::public_script_parameters::kEnabledParameterName,
        kTrue},
       {autofill_assistant::public_script_parameters::
@@ -53,12 +66,17 @@ bool FastCheckoutClientImpl::Start(const GURL& url) {
        kSource},
   };
 
+  fast_checkout_external_action_delegate_ =
+      CreateFastCheckoutExternalActionDelegate();
   external_script_controller_ = CreateHeadlessScriptController();
+  fast_checkout_controller_ = CreateFastCheckoutController();
+
+  // Show bottomsheet and start script in parallel. This reduces the delay due
+  // to server requests after selections in the bottomsheet were made.
+  fast_checkout_controller_->Show();
   external_script_controller_->StartScript(
       params_map, base::BindOnce(&FastCheckoutClientImpl::OnRunComplete,
                                  base::Unretained(this)));
-
-  return true;
 }
 
 void FastCheckoutClientImpl::OnRunComplete(
@@ -69,6 +87,7 @@ void FastCheckoutClientImpl::OnRunComplete(
 
 void FastCheckoutClientImpl::Stop() {
   external_script_controller_.reset();
+  fast_checkout_controller_.reset();
   is_running_ = false;
 }
 
@@ -76,16 +95,35 @@ bool FastCheckoutClientImpl::IsRunning() const {
   return is_running_;
 }
 
+std::unique_ptr<FastCheckoutExternalActionDelegate>
+FastCheckoutClientImpl::CreateFastCheckoutExternalActionDelegate() {
+  return std::make_unique<FastCheckoutExternalActionDelegate>();
+}
+
+std::unique_ptr<FastCheckoutController>
+FastCheckoutClientImpl::CreateFastCheckoutController() {
+  return std::make_unique<FastCheckoutControllerImpl>(&GetWebContents(), this);
+}
+
 std::unique_ptr<autofill_assistant::HeadlessScriptController>
 FastCheckoutClientImpl::CreateHeadlessScriptController() {
-  fast_checkout_external_action_delegate_ =
-      std::make_unique<FastCheckoutExternalActionDelegate>(&GetWebContents());
   std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
       autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
           GetWebContents().GetBrowserContext(),
           std::make_unique<autofill_assistant::CommonDependenciesChrome>());
   return autofill_assistant->CreateHeadlessScriptController(
       &GetWebContents(), fast_checkout_external_action_delegate_.get());
+}
+
+void FastCheckoutClientImpl::OnOptionsSelected(
+    std::unique_ptr<autofill::AutofillProfile> selected_profile,
+    std::unique_ptr<autofill::CreditCard> selected_credit_card) {
+  fast_checkout_external_action_delegate_->SetOptionsSelected(
+      *selected_profile, *selected_credit_card);
+}
+
+void FastCheckoutClientImpl::OnDismiss() {
+  Stop();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FastCheckoutClientImpl);

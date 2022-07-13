@@ -5,27 +5,32 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_EXTERNAL_ACTION_DELEGATE_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_EXTERNAL_ACTION_DELEGATE_H_
 
-#include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
+namespace autofill {
+class AutofillProfile;
+class CreditCard;
+}  // namespace autofill
 
 // Handles external actions defined for fast checkout.
 class FastCheckoutExternalActionDelegate
-    : public autofill_assistant::ExternalActionDelegate,
-      public FastCheckoutControllerImpl::Delegate {
+    : public autofill_assistant::ExternalActionDelegate {
  public:
-  explicit FastCheckoutExternalActionDelegate(
-      content::WebContents* web_contents);
+  FastCheckoutExternalActionDelegate();
   ~FastCheckoutExternalActionDelegate() override;
 
   FastCheckoutExternalActionDelegate(
       const FastCheckoutExternalActionDelegate&) = delete;
   FastCheckoutExternalActionDelegate& operator=(
       const FastCheckoutExternalActionDelegate&) = delete;
+
+  // Saves user selections and sends selections back to external action via
+  // callback if wait for user selection action is already running.
+  virtual void SetOptionsSelected(
+      const autofill::AutofillProfile& selected_profile,
+      const autofill::CreditCard& selected_credit_card);
 
   // ExternalActionDelegate:
   void OnActionRequested(
@@ -34,27 +39,9 @@ class FastCheckoutExternalActionDelegate
       base::OnceCallback<void(const autofill_assistant::external::Result&)>
           end_action_callback) override;
 
-  // FastCheckoutControllerImpl::Delegate:
-  void OnOptionsSelected(
-      std::unique_ptr<autofill::AutofillProfile> profile,
-      std::unique_ptr<autofill::CreditCard> credit_card) override;
-  void OnDismiss() override;
-
-#ifdef UNIT_TEST
-  void SetFastCheckoutControllerForTest(
-      std::unique_ptr<FastCheckoutController> controller) {
-    fast_checkout_controller_ = std::move(controller);
-  }
-#endif
-
  private:
-  // Ends the current action by notifying the `ExternalActionController` about
-  // the `success` of the action. If existent, `selected_profile` and
-  // `selected_credit_card` are set in the `Result` proto.
-  void EndShowBottomSheetAction(
-      bool success,
-      std::unique_ptr<autofill::AutofillProfile> selected_profile = nullptr,
-      std::unique_ptr<autofill::CreditCard> selected_credit_card = nullptr);
+  // Ends the current action by notifying the `ExternalActionController`.
+  void EndWaitForUserSelectionAction();
 
   // Ends the current action request because the action was not recognized by
   // `this`.
@@ -64,10 +51,15 @@ class FastCheckoutExternalActionDelegate
 
   // The callback that terminates the current action.
   base::OnceCallback<void(const autofill_assistant::external::Result& result)>
-      end_show_bottomsheet_action_callback_;
+      wait_for_user_selection_action_callback_;
 
-  // Fast Checkout bottom sheet UI controller.
-  std::unique_ptr<FastCheckoutController> fast_checkout_controller_;
+  // Proto representation of the Autofill profile selected by the user.
+  absl::optional<autofill_assistant::external::ProfileProto>
+      selected_profile_proto_;
+
+  // Proto representation of the credit card selected by the user.
+  absl::optional<autofill_assistant::external::CreditCardProto>
+      selected_credit_card_proto_;
 };
 
 #endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_EXTERNAL_ACTION_DELEGATE_H_

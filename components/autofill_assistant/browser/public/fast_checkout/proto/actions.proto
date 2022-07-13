@@ -10,11 +10,11 @@ option java_multiple_files = true;
 
 package autofill_assistant.fast_checkout;
 
-// Shows the bottom sheet rendered during FastCheckout flows.
-message ShowFastCheckoutBottomSheet {}
+// Waits for user selection and communicates it back to external action.
+message WaitForFastCheckoutUserSelection {}
 
 message FastCheckoutAction {
   oneof action {
-    ShowFastCheckoutBottomSheet show_bottom_sheet = 1;
+    WaitForFastCheckoutUserSelection wait_for_user_selection = 1;
   }
 }
