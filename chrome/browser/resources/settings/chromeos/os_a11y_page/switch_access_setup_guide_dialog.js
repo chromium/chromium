@@ -74,58 +74,63 @@ const SASetupPageList = {};
 SASetupPageList[SASetupPageId.INTRO] = {
   titleId: 'switchAccessSetupIntroTitle',
   visibleElements: [
-    SASetupElement.BLUETOOTH_BUTTON, SASetupElement.NEXT_BUTTON,
-    SASetupElement.INTRO_CONTENT
-  ]
+    SASetupElement.BLUETOOTH_BUTTON,
+    SASetupElement.NEXT_BUTTON,
+    SASetupElement.INTRO_CONTENT,
+  ],
 };
 
 SASetupPageList[SASetupPageId.ASSIGN_SELECT] = {
   titleId: 'switchAccessSetupAssignSelectTitle',
-  visibleElements: [SASetupElement.ASSIGN_SWITCH_CONTENT]
+  visibleElements: [SASetupElement.ASSIGN_SWITCH_CONTENT],
 };
 
 SASetupPageList[SASetupPageId.AUTO_SCAN_ENABLED] = {
   titleId: 'switchAccessSetupAutoScanEnabledTitle',
   visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.AUTO_SCAN_ENABLED_CONTENT
-  ]
+    SASetupElement.NEXT_BUTTON,
+    SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.AUTO_SCAN_ENABLED_CONTENT,
+  ],
 };
 
 SASetupPageList[SASetupPageId.CHOOSE_SWITCH_COUNT] = {
   titleId: 'switchAccessSetupChooseSwitchCountTitle',
   visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.CHOOSE_SWITCH_COUNT_CONTENT
-  ]
+    SASetupElement.NEXT_BUTTON,
+    SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.CHOOSE_SWITCH_COUNT_CONTENT,
+  ],
 };
 
 SASetupPageList[SASetupPageId.AUTO_SCAN_SPEED] = {
   titleId: 'switchAccessSetupAutoScanSpeedTitle',
   visibleElements: [
-    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
-    SASetupElement.AUTO_SCAN_SPEED_CONTENT
-  ]
+    SASetupElement.NEXT_BUTTON,
+    SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.AUTO_SCAN_SPEED_CONTENT,
+  ],
 };
 
 SASetupPageList[SASetupPageId.ASSIGN_NEXT] = {
   titleId: 'switchAccessSetupAssignNextTitle',
   visibleElements:
-      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
+      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT],
 };
 
 SASetupPageList[SASetupPageId.ASSIGN_PREVIOUS] = {
   titleId: 'switchAccessSetupAssignPreviousTitle',
   visibleElements:
-      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT]
+      [SASetupElement.PREVIOUS_BUTTON, SASetupElement.ASSIGN_SWITCH_CONTENT],
 };
 
 SASetupPageList[SASetupPageId.CLOSING] = {
   titleId: 'switchAccessSetupClosingTitle',
   visibleElements: [
-    SASetupElement.DONE_BUTTON, SASetupElement.START_OVER_BUTTON,
-    SASetupElement.CLOSING_CONTENT
-  ]
+    SASetupElement.DONE_BUTTON,
+    SASetupElement.START_OVER_BUTTON,
+    SASetupElement.CLOSING_CONTENT,
+  ],
 };
 
 /**
@@ -190,7 +195,7 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
       maxScanSpeedMs_: {
         readOnly: true,
         type: Number,
-        value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1]
+        value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1],
       },
 
       /** @private */

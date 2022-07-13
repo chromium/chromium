@@ -38,8 +38,10 @@ import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserP
  */
 const SettingsBluetoothDevicesSubpageElementBase = mixinBehaviors(
     [
-      I18nBehavior, RouteObserverBehavior, DeepLinkingBehavior,
-      WebUIListenerBehavior
+      I18nBehavior,
+      RouteObserverBehavior,
+      DeepLinkingBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -123,7 +125,7 @@ class SettingsBluetoothDevicesSubpageElement extends
       unconnectedDevices_: {
         type: Array,
         value: [],
-      }
+      },
     };
   }
 

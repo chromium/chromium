@@ -32,7 +32,7 @@ import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin
  */
 const LabelType = {
   A11Y: 1,
-  DISPLAYED_TEXT: 2
+  DISPLAYED_TEXT: 2,
 };
 
 /**

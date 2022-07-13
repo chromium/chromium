@@ -71,7 +71,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isGuest');
-        }
+        },
       },
 
       /** @private */
@@ -80,7 +80,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         // Initialize showOtherUsers_ to false if the user is in guest mode.
         value() {
           return !loadTimeData.getBoolean('isGuest');
-        }
+        },
       },
 
       /** @private {StorageSizeStat} */

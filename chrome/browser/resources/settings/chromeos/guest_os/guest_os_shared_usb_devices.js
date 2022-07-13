@@ -130,7 +130,7 @@ class SettingsGuestOsSharedUsbDevicesElement extends
       crostini: 'termina',
       pluginVm: 'PvmDefault',
       arcvm: 'arcvm',
-      bruschetta: 'bru'
+      bruschetta: 'bru',
     }[this.guestOsType];
   }
 

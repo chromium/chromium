@@ -50,8 +50,11 @@ import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser
  */
 const SettingsCrostiniPageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -140,7 +143,7 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
       enableBruschetta_: {
         type: Boolean,
         value: loadTimeData.getBoolean('enableBruschetta'),
-      }
+      },
     };
   }
 

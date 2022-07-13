@@ -202,8 +202,8 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
             'appManagementAppDetailsTypeAndSourceCombined', {
               substitutions: [
                 String(this.getTypeString_(app)),
-                String(this.getInstallSourceString_(app))
-              ]
+                String(this.getInstallSourceString_(app)),
+              ],
             });
       case InstallSource.kBrowser:
         return this.i18n('appManagementAppDetailsInstallSourceBrowser');

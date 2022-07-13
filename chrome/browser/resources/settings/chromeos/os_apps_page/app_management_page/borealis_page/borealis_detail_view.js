@@ -41,7 +41,7 @@ class AppManagementBorealisDetailViewElement extends
       /** @private {App} */
       app_: {
         type: Object,
-      }
+      },
     };
   }
 

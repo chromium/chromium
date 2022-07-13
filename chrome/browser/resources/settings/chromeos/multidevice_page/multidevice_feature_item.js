@@ -95,7 +95,7 @@ class SettingsMultideviceFeatureItemElement extends
       isFeatureIconHidden: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

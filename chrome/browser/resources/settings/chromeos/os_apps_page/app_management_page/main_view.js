@@ -61,7 +61,7 @@ class AppManagementMainViewElement extends AppManagementMainViewElementBase {
       appList_: {
         type: Array,
         value: () => [],
-        computed: 'computeAppList_(apps_, searchTerm)'
+        computed: 'computeAppList_(apps_, searchTerm)',
       },
     };
   }

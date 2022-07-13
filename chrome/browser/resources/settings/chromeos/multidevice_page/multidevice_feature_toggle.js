@@ -80,7 +80,7 @@ export class SettingsMultideviceFeatureToggleElement extends
         new CustomEvent('feature-toggle-clicked', {
           bubbles: true,
           composed: true,
-          detail: {feature: this.feature, enabled: !this.checked_}
+          detail: {feature: this.feature, enabled: !this.checked_},
         });
     this.dispatchEvent(featureToggleClickedEvent);
   }

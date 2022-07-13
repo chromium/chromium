@@ -122,7 +122,7 @@ class SettingsNearbyShareSubpageElement extends
       /** @private */
       manageContactsUrl_: {
         type: String,
-        value: () => loadTimeData.getString('nearbyShareManageContactsUrl')
+        value: () => loadTimeData.getString('nearbyShareManageContactsUrl'),
       },
 
       /** @private {boolean} */

@@ -78,7 +78,7 @@ class SettingsSetupPinDialogElement extends SettingsSetupPinDialogElementBase {
         type: Object,
         value() {
           return () => {};
-        }
+        },
       },
     };
   }

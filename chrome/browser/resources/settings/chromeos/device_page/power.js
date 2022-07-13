@@ -39,8 +39,10 @@ import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleB
  */
 const SettingsPowerElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -337,7 +339,7 @@ class SettingsPowerElement extends SettingsPowerElementBase {
     recordSettingChange(
         chromeos.settings.mojom.Setting.kAdaptiveCharging,
         /** @type {!chromeos.settings.mojom.SettingChangeValue} */ ({
-          boolValue: enabled
+          boolValue: enabled,
         }));
   }
 
@@ -405,31 +407,31 @@ class SettingsPowerElement extends SettingsPowerElementBase {
         return {
           value: idleBehavior,
           name: loadTimeData.getString('powerIdleDisplayOffSleep'),
-          selected: selected
+          selected: selected,
         };
       case IdleBehavior.DISPLAY_OFF:
         return {
           value: idleBehavior,
           name: loadTimeData.getString('powerIdleDisplayOff'),
-          selected: selected
+          selected: selected,
         };
       case IdleBehavior.DISPLAY_ON:
         return {
           value: idleBehavior,
           name: loadTimeData.getString('powerIdleDisplayOn'),
-          selected: selected
+          selected: selected,
         };
       case IdleBehavior.SHUT_DOWN:
         return {
           value: idleBehavior,
           name: loadTimeData.getString('powerIdleDisplayShutDown'),
-          selected: selected
+          selected: selected,
         };
       case IdleBehavior.STOP_SESSION:
         return {
           value: idleBehavior,
           name: loadTimeData.getString('powerIdleDisplayStopSession'),
-          selected: selected
+          selected: selected,
         };
       default:
         assertNotReached('Unknown IdleBehavior type');

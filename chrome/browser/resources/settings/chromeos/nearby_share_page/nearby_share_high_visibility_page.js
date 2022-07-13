@@ -121,7 +121,7 @@ class NearbyShareHighVisibilityPageElement extends
         value: null,
         computed:
             'computeErrorState_(shutoffTimestamp, remainingTimeInSeconds_,' +
-            'registerResult, nearbyProcessStopped, startAdvertisingFailed)'
+            'registerResult, nearbyProcessStopped, startAdvertisingFailed)',
       },
 
       /**

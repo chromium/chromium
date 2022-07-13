@@ -110,7 +110,7 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
     const event = new CustomEvent('refresh-pref', {
       bubbles: true,
       composed: true,
-      detail: 'default_search_provider.enabled'
+      detail: 'default_search_provider.enabled',
     });
     this.dispatchEvent(event);
   }

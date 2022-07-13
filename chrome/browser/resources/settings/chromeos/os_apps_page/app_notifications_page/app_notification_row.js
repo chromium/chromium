@@ -45,7 +45,7 @@ export class AppNotificationRowElement extends PolymerElement {
       checked_: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

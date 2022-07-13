@@ -37,8 +37,10 @@ import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser
  */
 const SettingsCrostiniArcAdbElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 

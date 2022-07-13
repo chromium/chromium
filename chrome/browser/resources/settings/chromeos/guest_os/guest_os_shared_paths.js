@@ -72,7 +72,7 @@ class SettingsGuestOsSharedPathsElement extends
 
   static get observers() {
     return [
-      'onGuestOsSharedPathsChanged_(prefs.guest_os.paths_shared_to_vms.value)'
+      'onGuestOsSharedPathsChanged_(prefs.guest_os.paths_shared_to_vms.value)',
     ];
   }
 

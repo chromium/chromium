@@ -66,7 +66,7 @@ class SettingsBluetoothChangeDeviceNameDialogElement extends
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-      }
+      },
     };
   }
 

@@ -48,8 +48,9 @@ function moveEntryInPrinters(printerArr, fromIndex, toIndex) {
  */
 const SettingsCupsEnterprisePrintersElementBase = mixinBehaviors(
     [
-      CupsPrintersEntryListBehavior, ListPropertyUpdateBehavior,
-      WebUIListenerBehavior
+      CupsPrintersEntryListBehavior,
+      ListPropertyUpdateBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 

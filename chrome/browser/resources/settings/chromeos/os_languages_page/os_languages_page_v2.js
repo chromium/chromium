@@ -381,7 +381,7 @@ class OsSettingsLanguagesPageV2Element extends
     this.detailLanguage_ =
         /** @type {{state: !LanguageState, index: number}} */ ({
           state: /** @type {!LanguageState} */ (e.model.item),
-          index: /** @type {number} */ (e.model.index)
+          index: /** @type {number} */ (e.model.index),
         });
 
     const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());

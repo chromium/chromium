@@ -35,21 +35,21 @@ class MultideviceRadioButtonElement extends MultideviceRadioButtonElementBase {
         type: String,
         notify: true,
         reflectToAttribute: true,
-        computed: 'getAriaChecked_(checked)'
+        computed: 'getAriaChecked_(checked)',
       },
       ariaDisabled: {
         type: String,
         notify: true,
         reflectToAttribute: true,
-        computed: 'getAriaDisabled_(disabled)'
+        computed: 'getAriaDisabled_(disabled)',
 
       },
       ariaLabel: {
         type: String,
         notify: true,
         reflectToAttribute: true,
-        computed: 'getLabel_(label)'
-      }
+        computed: 'getLabel_(label)',
+      },
     };
   }
 

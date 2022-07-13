@@ -51,10 +51,11 @@ assert(
  */
 const OsSettingsUiElementBase = mixinBehaviors(
     [
-      CrContainerShadowBehavior, FindShortcutBehavior,
+      CrContainerShadowBehavior,
+      FindShortcutBehavior,
       // Calls currentRouteChanged() in attached(),so ensure other behaviors
       // run their attached() first.
-      RouteObserverBehavior
+      RouteObserverBehavior,
     ],
     PolymerElement);
 

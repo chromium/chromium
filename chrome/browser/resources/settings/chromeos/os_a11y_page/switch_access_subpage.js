@@ -68,8 +68,11 @@ function ticksWithCountingLabels(ticks) {
  */
 const SettingsSwitchAccessSubpageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -144,7 +147,7 @@ class SettingsSwitchAccessSubpageElement extends
       maxScanSpeedMs_: {
         readOnly: true,
         type: Number,
-        value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1]
+        value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1],
       },
 
       /** @private {string} */
@@ -173,7 +176,7 @@ class SettingsSwitchAccessSubpageElement extends
       maxPointScanSpeed_: {
         readOnly: true,
         type: Number,
-        value: POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND.length
+        value: POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND.length,
       },
 
       /** @private {number} */

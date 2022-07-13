@@ -290,7 +290,7 @@ class SettingsPairedBluetoothListItemElement extends
         show: showTooltip,
         element: showTooltip ? this.shadowRoot.getElementById('managedIcon') :
                                undefined,
-      }
+      },
     }));
   }
 }

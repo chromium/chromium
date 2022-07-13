@@ -35,7 +35,7 @@ class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
       cancelButtonText: {
         type: String,
         value: loadTimeData.getString('cancel'),
-      }
+      },
     };
   }
 

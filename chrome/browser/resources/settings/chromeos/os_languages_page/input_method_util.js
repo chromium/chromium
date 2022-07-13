@@ -39,7 +39,7 @@ const KeyboardLayout = {
   SET3_YET: '3 Set (Old Hangul) / 세벌식 (옛글)',
   XKB_US: 'US',
   XKB_DVORAK: 'Dvorak',
-  XKB_COLEMAK: 'Colemak'
+  XKB_COLEMAK: 'Colemak',
 };
 
 /**
@@ -134,7 +134,7 @@ export const OPTION_DEFAULT = {
     r_l: undefined,
     s_sh: undefined,
     uan_uang: undefined,
-    z_zh: undefined
+    z_zh: undefined,
   },
   // Options for zhuyin input method.
   [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: KeyboardLayout.STANDARD,
@@ -185,17 +185,18 @@ const Settings = {
     {
       title: SettingsHeaders.VIRTUAL_KEYBOARD,
       optionNames: [
-        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS}, {
+        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
+        {
           name: OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL,
           dependentOptions: [
             OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION,
-          ]
+          ],
         },
         {name: OptionType.ENABLE_GESTURE_TYPING},
         {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
-        {name: OptionType.EDIT_USER_DICT}
+        {name: OptionType.EDIT_USER_DICT},
       ],
-    }
+    },
   ],
   [SettingsType.ZHUYIN_SETTINGS]: [{
     title: SettingsHeaders.PHYSICAL_KEYBOARD,
@@ -203,7 +204,7 @@ const Settings = {
       {name: OptionType.ZHUYIN_KEYBOARD_LAYOUT},
       {name: OptionType.ZHUYIN_SELECT_KEYS},
       {name: OptionType.ZHUYIN_PAGE_SIZE},
-    ]
+    ],
   }],
   [SettingsType.KOREAN_SETTINGS]: [{
     title: SettingsHeaders.BASIC,
@@ -229,7 +230,7 @@ const Settings = {
         OptionType.PINYIN_L_N,
         OptionType.PINYIN_S_SH,
         OptionType.PINYIN_Z_ZH,
-      ]
+      ],
     }],
   }],
   [SettingsType.PINYIN_SETTINGS]: [
@@ -246,8 +247,8 @@ const Settings = {
         {name: OptionType.PINYIN_DEFAULT_CHINESE},
         {name: OptionType.PINYIN_FULL_WIDTH_CHARACTER},
         {name: OptionType.PINYIN_CHINESE_PUNCTUATION},
-      ]
-    }
+      ],
+    },
   ],
   [SettingsType.BASIC_SETTINGS]: [{
     title: SettingsHeaders.VIRTUAL_KEYBOARD,
@@ -495,13 +496,13 @@ export function getOptionMenuItems(option) {
       return [
         {value: 0, name: 'inputMethodOptionsAutoCorrectionOff'},
         {value: 1, name: 'inputMethodOptionsAutoCorrectionModest'},
-        {value: 2, name: 'inputMethodOptionsAutoCorrectionAggressive'}
+        {value: 2, name: 'inputMethodOptionsAutoCorrectionAggressive'},
       ];
     case OptionType.XKB_LAYOUT:
       return [
         {value: 'US', name: 'inputMethodOptionsUsKeyboard'},
         {value: 'Dvorak', name: 'inputMethodOptionsDvorakKeyboard'},
-        {value: 'Colemak', name: 'inputMethodOptionsColemakKeyboard'}
+        {value: 'Colemak', name: 'inputMethodOptionsColemakKeyboard'},
       ];
     case OptionType.ZHUYIN_KEYBOARD_LAYOUT:
       return [

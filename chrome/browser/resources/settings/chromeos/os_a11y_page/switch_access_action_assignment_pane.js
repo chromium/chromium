@@ -90,7 +90,7 @@ export function getLabelForDeviceType(deviceType) {
  */
 export function getLabelForAssignment(assignment) {
   return I18nBehavior.i18nAdvanced('switchAndDeviceType', {
-    substitutions: [assignment.key, getLabelForDeviceType(assignment.device)]
+    substitutions: [assignment.key, getLabelForDeviceType(assignment.device)],
   });
 }
 

@@ -33,8 +33,10 @@ import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_
  */
 const SettingsPrivacyHubPageBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 

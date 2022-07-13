@@ -51,8 +51,10 @@ const ConfirmationState = {
  */
 const SettingsCrostiniSubpageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, PrefsBehavior, RouteOriginBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      PrefsBehavior,
+      RouteOriginBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -243,7 +245,7 @@ class SettingsCrostiniSubpageElement extends
   static get observers() {
     return [
       'onCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
-      'onArcEnabledChanged_(prefs.arc.enabled.value)'
+      'onArcEnabledChanged_(prefs.arc.enabled.value)',
     ];
   }
 

@@ -62,8 +62,10 @@ const SyncPrefsIndividualDataTypes = [
  */
 const OsSyncControlsElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 

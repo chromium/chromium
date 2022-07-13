@@ -83,7 +83,7 @@ class SettingsFingerprintListElement extends
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /** @private */

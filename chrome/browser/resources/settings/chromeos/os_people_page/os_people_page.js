@@ -60,8 +60,11 @@ import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavi
  */
 const OsSettingsPeoplePageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, RouteObserverBehavior, I18nBehavior,
-      WebUIListenerBehavior, LockStateBehavior
+      DeepLinkingBehavior,
+      RouteObserverBehavior,
+      I18nBehavior,
+      WebUIListenerBehavior,
+      LockStateBehavior,
     ],
     PolymerElement);
 

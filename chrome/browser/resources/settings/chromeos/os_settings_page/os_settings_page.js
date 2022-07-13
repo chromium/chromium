@@ -111,7 +111,7 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
         value() {
           return loadTimeData.getBoolean(
               'isAccessibilityOSSettingsVisibilityEnabled');
-        }
+        },
       },
 
       /**
@@ -171,7 +171,7 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('enableBluetoothRevamp');
-        }
+        },
       },
     };
   }
@@ -325,8 +325,8 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
                   top: toggle.offsetTop,
                   callback: () => {
                     this.advancedTogglingInProgress_ = false;
-                  }
-                }
+                  },
+                },
               });
               this.dispatchEvent(event);
             });
@@ -340,8 +340,8 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
           callback: () => {
             this.advancedToggleExpanded = false;
             this.advancedTogglingInProgress_ = false;
-          }
-        }
+          },
+        },
       });
       this.dispatchEvent(event);
     }

@@ -609,7 +609,7 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     const pinNumberEvent = new CustomEvent('pin-number-selected', {
       bubbles: true,
       composed: true,
-      detail: {isPinNumberSelected: selected}
+      detail: {isPinNumberSelected: selected},
     });
     this.dispatchEvent(pinNumberEvent);
   }

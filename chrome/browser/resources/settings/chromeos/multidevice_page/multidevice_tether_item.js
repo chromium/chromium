@@ -85,7 +85,7 @@ class SettingsMultideviceTetherItemElement extends
         value() {
           return loadTimeData.valueExists('showTechnologyBadge') &&
               loadTimeData.getBoolean('showTechnologyBadge');
-        }
+        },
       },
     };
   }

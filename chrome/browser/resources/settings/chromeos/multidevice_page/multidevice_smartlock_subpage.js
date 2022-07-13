@@ -34,8 +34,10 @@ import {recordSmartLockToggleMetric, SmartLockToggleLocation} from './multidevic
  */
 const SettingsMultideviceSmartlockSubpageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, MultiDeviceFeatureBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      MultiDeviceFeatureBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 

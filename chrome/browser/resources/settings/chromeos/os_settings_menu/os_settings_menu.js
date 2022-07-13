@@ -67,7 +67,7 @@ class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         value() {
           return loadTimeData.getBoolean(
               'isAccessibilityOSSettingsVisibilityEnabled');
-        }
+        },
       },
 
       showCrostini: Boolean,

@@ -61,7 +61,7 @@ class SettingsUserListElement extends SettingsUserListElementBase {
         value() {
           return [];
         },
-        notify: true
+        notify: true,
       },
 
       /**
@@ -73,7 +73,7 @@ class SettingsUserListElement extends SettingsUserListElementBase {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-      }
+      },
     };
   }
 

@@ -45,7 +45,7 @@ class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
       /** @type {!Array<string>} */
       body: {
         type: Array,
-      }
+      },
     };
   }
 

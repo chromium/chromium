@@ -55,7 +55,7 @@ class SettingsLockScreenPasswordPromptDialogElement extends
         type: Object,
         value() {
           return recordLockScreenProgress;
-        }
+        },
       },
     };
   }

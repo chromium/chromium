@@ -30,8 +30,9 @@ import {CupsPrintersEntryListBehavior, CupsPrintersEntryListBehaviorInterface} f
  */
 const SettingsCupsNearbyPrintersElementBase = mixinBehaviors(
     [
-      CupsPrintersEntryListBehavior, ListPropertyUpdateBehavior,
-      WebUIListenerBehavior
+      CupsPrintersEntryListBehavior,
+      ListPropertyUpdateBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -251,7 +252,7 @@ class SettingsCupsNearbyPrintersElement extends
       detail: {
         resultCode,
         printerName,
-      }
+      },
     });
     this.dispatchEvent(event);
   }
@@ -300,7 +301,7 @@ class SettingsCupsNearbyPrintersElement extends
         'open-manufacturer-model-dialog-for-specified-printer', {
           bubbles: true,
           composed: true,
-          detail: {item: /** @type {CupsPrinterInfo} */ (printer)}
+          detail: {item: /** @type {CupsPrinterInfo} */ (printer)},
         });
     this.dispatchEvent(openManufacturerDialogEvent);
   }

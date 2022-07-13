@@ -15,7 +15,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 export const LockScreenUnlockType = {
   VALUE_PENDING: 'value_pending',
   PASSWORD: 'password',
-  PIN_PASSWORD: 'pin+password'
+  PIN_PASSWORD: 'pin+password',
 };
 
 /**

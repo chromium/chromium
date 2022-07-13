@@ -100,7 +100,7 @@ class OsSettingsEditDictionaryPageElement extends
         type: Number,
         value: NewWordState.NO_WORD,
         computed: 'updateNewWordState_(newWordValue_, words_.*)',
-      }
+      },
     };
   }
 

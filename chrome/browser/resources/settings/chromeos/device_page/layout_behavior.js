@@ -109,7 +109,7 @@ export const LayoutBehavior = {
     const oldBounds = this.dragBounds_ || this.getCalculatedDisplayBounds(id);
     const deltaPos = {
       x: newBounds.left - oldBounds.left,
-      y: newBounds.top - oldBounds.top
+      y: newBounds.top - oldBounds.top,
     };
 
     // Check for collisions after snapping. This should not collide with the
@@ -277,7 +277,7 @@ export const LayoutBehavior = {
     const desiredPos = this.snapBounds_(bounds, newParentId, layoutPosition);
     const deltaPos = {
       x: desiredPos.x - cornerBounds.left,
-      y: desiredPos.y - cornerBounds.top
+      y: desiredPos.y - cornerBounds.top,
     };
 
     // Check for collisions.
@@ -286,7 +286,7 @@ export const LayoutBehavior = {
       left: cornerBounds.left + deltaPos.x,
       top: cornerBounds.top + deltaPos.y,
       width: bounds.width,
-      height: bounds.height
+      height: bounds.height,
     };
 
     this.updateOffsetAndPosition_(desiredBounds, layoutPosition, layout);

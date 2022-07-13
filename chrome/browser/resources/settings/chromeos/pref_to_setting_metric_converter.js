@@ -25,14 +25,14 @@ export class PrefToSettingMetricConverter {
       case 'settings.language.send_function_keys':
         return {
           setting: chromeos.settings.mojom.Setting.kKeyboardFunctionKeys,
-          value: {boolValue: /** @type {boolean} */ (prefValue)}
+          value: {boolValue: /** @type {boolean} */ (prefValue)},
         };
 
       // device_page/pointers.js
       case 'settings.touchpad.sensitivity2':
         return {
           setting: chromeos.settings.mojom.Setting.kTouchpadSpeed,
-          value: {intValue: /** @type {number} */ (prefValue)}
+          value: {intValue: /** @type {number} */ (prefValue)},
         };
 
       // os_privacy_page/os_privacy_page.js
@@ -40,7 +40,7 @@ export class PrefToSettingMetricConverter {
         return {
           setting:
               chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection,
-          value: {boolValue: /** @type {boolean} */ (prefValue)}
+          value: {boolValue: /** @type {boolean} */ (prefValue)},
         };
 
       // pref to setting metric not implemented.

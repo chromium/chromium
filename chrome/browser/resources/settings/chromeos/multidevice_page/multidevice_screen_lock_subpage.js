@@ -121,8 +121,8 @@ class SettingsMultideviceScreenLockSubpageElement extends
       bubbles: true,
       composed: true,
       detail: {
-        isPinNumberSelected: (selected === LockScreenUnlockType.PIN_PASSWORD)
-      }
+        isPinNumberSelected: (selected === LockScreenUnlockType.PIN_PASSWORD),
+      },
     });
     this.dispatchEvent(pinNumberEvent);
     if (selected === LockScreenUnlockType.PASSWORD && this.setModes_) {

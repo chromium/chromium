@@ -91,7 +91,7 @@ class SettingsPersonalizationPageElement extends
           }
 
           return map;
-        }
+        },
       },
 
       /**

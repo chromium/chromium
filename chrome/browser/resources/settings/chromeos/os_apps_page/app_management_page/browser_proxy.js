@@ -54,7 +54,7 @@ export class BrowserProxy {
       };
       permissionOptions[PermissionType.kCamera] = {
         permissionValue: TriState.kBlock,
-        isManaged: true
+        isManaged: true,
       };
 
       const /** @type {!Array<App>}*/ appList = [

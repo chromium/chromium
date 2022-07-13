@@ -36,8 +36,10 @@ import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser
  */
 const TimezoneSubpageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -130,20 +132,20 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     }
     result.push({
       value: TimeZoneAutoDetectMethod.IP_ONLY,
-      name: loadTimeData.getString('setTimeZoneAutomaticallyIpOnlyDefault')
+      name: loadTimeData.getString('setTimeZoneAutomaticallyIpOnlyDefault'),
     });
 
     if (pref.value === TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS) {
       result.push({
         value: TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS,
         name: loadTimeData.getString(
-            'setTimeZoneAutomaticallyWithWiFiAccessPointsData')
+            'setTimeZoneAutomaticallyWithWiFiAccessPointsData'),
       });
     }
     result.push({
       value: TimeZoneAutoDetectMethod.SEND_ALL_LOCATION_INFO,
       name:
-          loadTimeData.getString('setTimeZoneAutomaticallyWithAllLocationInfo')
+          loadTimeData.getString('setTimeZoneAutomaticallyWithAllLocationInfo'),
     });
     return result;
   }

@@ -177,7 +177,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         type: Object,
         value() {
           return new Set();
-        }
+        },
       },
 
       /** @private Prospective UI language when the page was loaded. */
@@ -522,7 +522,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
           isManaged: blockedCodesSet.has(language.code),
           spellCheckEnabled: false,
           downloadDictionaryStatus: null,
-          downloadDictionaryFailureCount: 0
+          downloadDictionaryFailureCount: 0,
         });
       }
     }

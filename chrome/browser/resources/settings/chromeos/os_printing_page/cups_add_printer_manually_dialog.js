@@ -108,7 +108,8 @@ class AddPrinterManuallyDialogElement extends PolymerElement {
         new CustomEvent('show-cups-printer-toast', {
           bubbles: true,
           composed: true,
-          detail: {resultCode: result, printerName: this.newPrinter.printerName}
+          detail:
+              {resultCode: result, printerName: this.newPrinter.printerName},
         });
     this.dispatchEvent(showCupsPrinterToastEvent);
     this.shadowRoot.querySelector('add-printer-dialog').close();

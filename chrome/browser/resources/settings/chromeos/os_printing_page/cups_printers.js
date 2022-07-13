@@ -56,8 +56,10 @@ import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
  */
 const SettingsCupsPrintersElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, NetworkListenerBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      NetworkListenerBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 

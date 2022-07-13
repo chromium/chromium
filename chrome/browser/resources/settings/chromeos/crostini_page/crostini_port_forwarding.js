@@ -90,7 +90,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
 
   static get observers() {
     return [
-      'onCrostiniPortsChanged_(prefs.crostini.port_forwarding.ports.value)'
+      'onCrostiniPortsChanged_(prefs.crostini.port_forwarding.ports.value)',
     ];
   }
 
@@ -153,7 +153,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
               activePort.protocol_type === port.protocol_type);
       port.container_id = port.container_id || {
         vm_name: port['vm_name'] || DEFAULT_CROSTINI_VM,
-        container_name: port['container_name'] || DEFAULT_CROSTINI_CONTAINER
+        container_name: port['container_name'] || DEFAULT_CROSTINI_CONTAINER,
       };
       this.push('allPorts_', port);
     }

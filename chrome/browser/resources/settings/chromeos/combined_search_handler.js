@@ -48,6 +48,6 @@ export async function combinedSearch(
   return {
     results: mergeResults(
         settingsResponse.results, personalizationResponse.results,
-        maxNumResults)
+        maxNumResults),
   };
 }

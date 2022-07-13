@@ -68,8 +68,11 @@ const ESIM_PROFILE_LIMIT = 5;
  */
 const SettingsInternetPageElementBase = mixinBehaviors(
     [
-      NetworkListenerBehavior, DeepLinkingBehavior, I18nBehavior,
-      RouteObserverBehavior, WebUIListenerBehavior
+      NetworkListenerBehavior,
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -171,7 +174,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /** @private {boolean} */

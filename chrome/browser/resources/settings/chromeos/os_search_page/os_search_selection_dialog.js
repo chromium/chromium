@@ -46,7 +46,7 @@ class OsSettingsSearchSelectionDialogElement extends
         type: Array,
         value() {
           return [];
-        }
+        },
       },
     };
   }

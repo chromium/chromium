@@ -176,7 +176,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('unifiedDesktopAvailable');
-        }
+        },
       },
 
       /** @private */
@@ -184,7 +184,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('deviceSupportsAmbientColor');
-        }
+        },
       },
 
       /** @private */
@@ -192,7 +192,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('listAllDisplayModes');
-        }
+        },
       },
 
       /** @private */
@@ -223,17 +223,17 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
           return [
             {
               name: loadTimeData.getString('displayNightLightScheduleNever'),
-              value: NightLightScheduleType.NEVER
+              value: NightLightScheduleType.NEVER,
             },
             {
               name: loadTimeData.getString(
                   'displayNightLightScheduleSunsetToSunRise'),
-              value: NightLightScheduleType.SUNSET_TO_SUNRISE
+              value: NightLightScheduleType.SUNSET_TO_SUNRISE,
             },
             {
               name: loadTimeData.getString('displayNightLightScheduleCustom'),
-              value: NightLightScheduleType.CUSTOM
-            }
+              value: NightLightScheduleType.CUSTOM,
+            },
           ];
         },
       },
@@ -446,7 +446,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /** @private */
   getDisplayInfo_() {
     /** @type {chrome.system.display.GetInfoFlags} */ const flags = {
-      singleUnified: true
+      singleUnified: true,
     };
     getDisplayApi().getInfo(
         flags, displays => this.displayInfoFetched_(displays));
@@ -829,7 +829,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       return {
         value,
         ariaValue,
-        label: this.i18n('displayZoomValue', ariaValue.toString())
+        label: this.i18n('displayZoomValue', ariaValue.toString()),
       };
     });
   }
@@ -1247,7 +1247,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
 
     /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
-      isPrimary: true
+      isPrimary: true,
     };
     getDisplayApi().setDisplayProperties(
         this.selectedDisplay.id, properties,
@@ -1328,7 +1328,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
     /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
       displayMode: this.selectedDisplay.modes[
-          /** @type {number} */ (this.selectedModePref_.value)]
+          /** @type {number} */ (this.selectedModePref_.value)],
     };
 
     this.refreshRateList_ = this.parentModeToRefreshRateMap_.get(
@@ -1351,7 +1351,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
     /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
       displayZoomFactor:
-          /** @type {number} */ (this.selectedZoomPref_.value)
+          /** @type {number} */ (this.selectedZoomPref_.value),
     };
 
     getDisplayApi().setDisplayProperties(
@@ -1381,7 +1381,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     assert(value !== -1 || this.selectedDisplay.isAutoRotationAllowed);
 
     /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
-      rotation: value
+      rotation: value,
     };
     getDisplayApi().setDisplayProperties(
         this.selectedDisplay.id, properties,
@@ -1398,7 +1398,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     const mirrorModeInfo = {
       mode: this.isMirrored_(this.displays) ?
           chrome.system.display.MirrorMode.OFF :
-          chrome.system.display.MirrorMode.NORMAL
+          chrome.system.display.MirrorMode.NORMAL,
     };
     getDisplayApi().setMirrorMode(mirrorModeInfo, () => {
       const error = chrome.runtime.lastError;

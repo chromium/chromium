@@ -44,8 +44,10 @@ import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserPr
  */
 const SettingsKerberosAccountsElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 

@@ -79,7 +79,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /**

@@ -73,8 +73,11 @@ export const ConsentStatus = {
  */
 const SettingsGoogleAssistantPageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -113,18 +116,18 @@ class SettingsGoogleAssistantPageElement extends
             {
               name: loadTimeData.getString(
                   'googleAssistantEnableHotwordWithoutDspRecommended'),
-              value: DspHotwordState.DEFAULT_ON
+              value: DspHotwordState.DEFAULT_ON,
             },
             {
               name: loadTimeData.getString(
                   'googleAssistantEnableHotwordWithoutDspAlwaysOn'),
-              value: DspHotwordState.ALWAYS_ON
+              value: DspHotwordState.ALWAYS_ON,
             },
             {
               name: loadTimeData.getString(
                   'googleAssistantEnableHotwordWithoutDspOff'),
-              value: DspHotwordState.OFF
-            }
+              value: DspHotwordState.OFF,
+            },
           ];
         },
       },

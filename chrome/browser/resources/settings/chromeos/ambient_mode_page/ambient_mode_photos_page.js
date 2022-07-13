@@ -75,7 +75,7 @@ class SettingsAmbientModePhotosPageElement extends
       showArtAlbumDialog_: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

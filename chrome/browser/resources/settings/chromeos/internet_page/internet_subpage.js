@@ -55,8 +55,12 @@ const mojom = chromeos.networkConfig.mojom;
  */
 const SettingsInternetSubpageElementBase = mixinBehaviors(
     [
-      NetworkListenerBehavior, CrPolicyNetworkBehaviorMojo, DeepLinkingBehavior,
-      RouteObserverBehavior, RouteOriginBehavior, I18nBehavior
+      NetworkListenerBehavior,
+      CrPolicyNetworkBehaviorMojo,
+      DeepLinkingBehavior,
+      RouteObserverBehavior,
+      RouteOriginBehavior,
+      I18nBehavior,
     ],
     PolymerElement);
 
@@ -193,7 +197,7 @@ class SettingsInternetSubpageElement extends
         value() {
           return loadTimeData.valueExists('showTechnologyBadge') &&
               loadTimeData.getBoolean('showTechnologyBadge');
-        }
+        },
       },
 
       /** @private */
@@ -589,7 +593,7 @@ class SettingsInternetSubpageElement extends
         providerId: vpn.providerId,
         providerName: vpn.providerName || vpn.providerId,
         appId: '',
-        lastLaunchTime: {internalValue: 0}
+        lastLaunchTime: {internalValue: 0},
       };
       configuredProviders.push(provider);
     }
@@ -804,7 +808,7 @@ class SettingsInternetSubpageElement extends
           composed: true,
           detail: {
             enabled: !this.deviceIsEnabled_(this.deviceState),
-            type: this.deviceState.type
+            type: this.deviceState.type,
           },
         });
     this.dispatchEvent(deviceEnabledToggledEvent);

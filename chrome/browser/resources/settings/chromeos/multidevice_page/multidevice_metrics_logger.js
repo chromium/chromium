@@ -42,7 +42,7 @@ export function recordSmartLockToggleMetric(smartLockToggleLocation, enabled) {
   chrome.send('metricsHandler:recordInHistogram', [
     SmartLockToggleHistogramName,
     getSmartLockToggleValue_(smartLockToggleLocation, enabled),
-    SmartLockToggle.MAX
+    SmartLockToggle.MAX,
   ]);
 }
 

@@ -38,8 +38,10 @@ import {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './tts_subpage_
  */
 const SettingsTtsSubpageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -288,7 +290,7 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
           language: voice.displayLanguage,
           code: voice.languageCode,
           preferred: false,
-          voices: []
+          voices: [],
         };
       }
       // Each voice gets a unique ID from its name and extension.

@@ -163,7 +163,7 @@ class SettingsInputMethodOptionsPageElement extends
         url: getOptionUrl(name),
         dependentOptions: option.dependentOptions ?
             option.dependentOptions.map(t => makeOption({name: t})) :
-            []
+            [],
       };
     };
 

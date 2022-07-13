@@ -43,8 +43,11 @@ import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser
  */
 const SettingsDateTimePageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -100,7 +103,7 @@ class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
         computed: `computeTimeZoneSettingSubLabel_(
             activeTimeZoneDisplayName,
             prefs.generated.resolve_timezone_by_geolocation_on_off.value,
-            prefs.generated.resolve_timezone_by_geolocation_method_short.value)`
+            prefs.generated.resolve_timezone_by_geolocation_method_short.value)`,
       },
 
       /**

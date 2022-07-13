@@ -77,8 +77,11 @@ export function isAppInstalled(app) {
  */
 const OsSettingsAppsPageElementBase = mixinBehaviors(
     [
-      AppManagementStoreClient, DeepLinkingBehavior, I18nBehavior,
-      PrefsBehavior, RouteObserverBehavior
+      AppManagementStoreClient,
+      DeepLinkingBehavior,
+      I18nBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
     ],
     PolymerElement);
 

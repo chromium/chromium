@@ -50,8 +50,9 @@ function moveEntryInPrinters(printerArr, fromIndex, toIndex) {
  */
 const SettingsCupsSavedPrintersElementBase = mixinBehaviors(
     [
-      CupsPrintersEntryListBehavior, ListPropertyUpdateBehavior,
-      WebUIListenerBehavior
+      CupsPrintersEntryListBehavior,
+      ListPropertyUpdateBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -147,7 +148,7 @@ class SettingsCupsSavedPrintersElement extends
   static get observers() {
     return [
       'onSearchOrPrintersChanged_(savedPrinters.*, searchTerm,' +
-      'hasShowMoreBeenTapped_, newPrinters_.*)'
+          'hasShowMoreBeenTapped_, newPrinters_.*)',
     ];
   }
 

@@ -70,7 +70,7 @@ class EditHostnameDialogElement extends EditHostnameDialogElementBase {
       inputCountString_: {
         type: String,
         computed: 'computeInputCountString_(deviceName_)',
-      }
+      },
 
     };
   }

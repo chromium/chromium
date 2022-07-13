@@ -44,8 +44,10 @@ let ExtensionInfo;
  */
 const NetworkProxySectionElementBase = mixinBehaviors(
     [
-      CrPolicyNetworkBehaviorMojo, I18nBehavior, PrefsBehavior,
-      RouteObserverBehavior
+      CrPolicyNetworkBehaviorMojo,
+      I18nBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
     ],
     PolymerElement);
 
@@ -136,7 +138,7 @@ class NetworkProxySectionElement extends NetworkProxySectionElementBase {
       this.extensionInfo_ = {
         id: pref.value['extension_id_key'],
         name: pref.value['extension_name_key'],
-        canBeDisabled: pref.value['can_be_disabled_key']
+        canBeDisabled: pref.value['can_be_disabled_key'],
       };
     }
   }
@@ -153,7 +155,7 @@ class NetworkProxySectionElement extends NetworkProxySectionElementBase {
     this.extensionInfo_ = {
       id: this.prefs.proxy.extensionId,
       name: this.prefs.proxy.controlledByName,
-      canBeDisabled: this.prefs.proxy.extensionCanBeDisabled
+      canBeDisabled: this.prefs.proxy.extensionCanBeDisabled,
     };
     return true;
   }

@@ -47,8 +47,11 @@ const DEFAULT_BLACK_CURSOR_COLOR = 0;
  */
 const SettingsManageA11YPageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
-      RouteOriginBehavior, WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      RouteOriginBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -121,20 +124,20 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
           return [
             {
               value: 600,
-              name: loadTimeData.getString('delayBeforeClickExtremelyShort')
+              name: loadTimeData.getString('delayBeforeClickExtremelyShort'),
             },
             {
               value: 800,
-              name: loadTimeData.getString('delayBeforeClickVeryShort')
+              name: loadTimeData.getString('delayBeforeClickVeryShort'),
             },
             {
               value: 1000,
-              name: loadTimeData.getString('delayBeforeClickShort')
+              name: loadTimeData.getString('delayBeforeClickShort'),
             },
             {value: 2000, name: loadTimeData.getString('delayBeforeClickLong')},
             {
               value: 4000,
-              name: loadTimeData.getString('delayBeforeClickVeryLong')
+              name: loadTimeData.getString('delayBeforeClickVeryLong'),
             },
           ];
         },
@@ -147,25 +150,25 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
           return [
             {
               value: 5,
-              name:
-                  loadTimeData.getString('autoclickMovementThresholdExtraSmall')
+              name: loadTimeData.getString(
+                  'autoclickMovementThresholdExtraSmall'),
             },
             {
               value: 10,
-              name: loadTimeData.getString('autoclickMovementThresholdSmall')
+              name: loadTimeData.getString('autoclickMovementThresholdSmall'),
             },
             {
               value: 20,
-              name: loadTimeData.getString('autoclickMovementThresholdDefault')
+              name: loadTimeData.getString('autoclickMovementThresholdDefault'),
             },
             {
               value: 30,
-              name: loadTimeData.getString('autoclickMovementThresholdLarge')
+              name: loadTimeData.getString('autoclickMovementThresholdLarge'),
             },
             {
               value: 40,
-              name:
-                  loadTimeData.getString('autoclickMovementThresholdExtraLarge')
+              name: loadTimeData.getString(
+                  'autoclickMovementThresholdExtraLarge'),
             },
           ];
         },
@@ -240,7 +243,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isKioskModeActive');
-        }
+        },
       },
 
       /**
@@ -259,7 +262,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isGuest');
-        }
+        },
       },
 
       /** @private */
@@ -269,7 +272,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
           return this.i18n(
               'screenMagnifierHintLabel',
               this.i18n('screenMagnifierHintSearchKey'));
-        }
+        },
       },
 
       /** @private */
@@ -277,7 +280,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         type: String,
         value() {
           return loadTimeData.getString('dictationDescription');
-        }
+        },
       },
 
       /** @private */
@@ -306,7 +309,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /** @private */
@@ -314,7 +317,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /** @private */
@@ -634,7 +637,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
       return /** @type {!chrome.settingsPrivate.PrefObject}*/ ({
         value: true,
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        key: ''
+        key: '',
       });
     }
 

@@ -49,7 +49,7 @@ class SettingsStorageExternalElement extends
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /** @private {!chrome.settingsPrivate.PrefObject} */

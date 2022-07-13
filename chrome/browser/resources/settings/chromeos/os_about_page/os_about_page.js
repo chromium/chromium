@@ -93,7 +93,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
           progress: 0,
           rollback: false,
           powerwash: false,
-          status: UpdateStatus.UPDATED
+          status: UpdateStatus.UPDATED,
         },
       },
 
@@ -516,8 +516,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
             substitutions: [
               this.i18nAdvanced(
                   browserChannelToI18nId(this.targetChannel_, this.isLts_)),
-              progressPercent
-            ]
+              progressPercent,
+            ],
           });
         }
         if (this.currentUpdateStatusEvent_.rollback) {

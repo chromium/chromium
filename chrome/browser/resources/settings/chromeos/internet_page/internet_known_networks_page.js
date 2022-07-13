@@ -40,8 +40,11 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_ob
  */
 const SettingsInternetKnownNetworksPageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, NetworkListenerBehavior, CrPolicyNetworkBehaviorMojo,
-      RouteObserverBehavior, I18nBehavior
+      DeepLinkingBehavior,
+      NetworkListenerBehavior,
+      CrPolicyNetworkBehaviorMojo,
+      RouteObserverBehavior,
+      I18nBehavior,
     ],
     PolymerElement);
 
@@ -75,7 +78,7 @@ class SettingsInternetKnownNetworksPageElement extends
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /** @private */

@@ -118,7 +118,7 @@ class OsSettingsAddItemsDialogElement extends
       suggestedItems_: {
         type: Array,
         computed: 'getSuggestedItems_(suggestedItemIds.*, itemIdsToItems_)',
-        value: []
+        value: [],
       },
 
       /** @private */
@@ -151,7 +151,7 @@ class OsSettingsAddItemsDialogElement extends
       `updateSuggestedListScrollOffset_(showSuggestedList_,
           suggestedItemsLabel)`,
       `updateFilteredListScrollOffset_(showSuggestedList_,
-          suggestedItemsLabel, suggestedItems_.length, showFilteredList_)`
+          suggestedItemsLabel, suggestedItems_.length, showFilteredList_)`,
     ];
   }
 

@@ -38,8 +38,11 @@ import {TextToSpeechPageBrowserProxy, TextToSpeechPageBrowserProxyImpl} from './
  */
 const SettingsTextToSpeechPageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
-      RouteOriginBehavior, WebUIListenerBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      RouteObserverBehavior,
+      RouteOriginBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 

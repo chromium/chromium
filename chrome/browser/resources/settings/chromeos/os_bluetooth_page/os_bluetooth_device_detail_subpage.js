@@ -103,7 +103,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       pageState_: {
         type: Object,
         value: PageState.DISCONNECTED,
-      }
+      },
     };
   }
 

@@ -345,7 +345,7 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
           this.hasDragStarted_ = true;
           this.lastDragCoordinates_ = {
             x: calculatedBounds.left,
-            y: calculatedBounds.top
+            y: calculatedBounds.top,
           };
         }
 

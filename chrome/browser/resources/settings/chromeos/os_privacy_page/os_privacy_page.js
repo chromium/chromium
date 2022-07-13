@@ -45,8 +45,10 @@ import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} 
  */
 const OsSettingsPrivacyPageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, RouteObserverBehavior, LockStateBehavior,
-      PrefsBehavior
+      DeepLinkingBehavior,
+      RouteObserverBehavior,
+      LockStateBehavior,
+      PrefsBehavior,
     ],
     PolymerElement);
 

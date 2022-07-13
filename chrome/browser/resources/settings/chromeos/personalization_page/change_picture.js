@@ -38,8 +38,10 @@ import {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl, DefaultImage} 
  */
 const SettingsChangePictureElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, RouteObserverBehavior, I18nBehavior,
-      WebUIListenerBehavior
+      DeepLinkingBehavior,
+      RouteObserverBehavior,
+      I18nBehavior,
+      WebUIListenerBehavior,
     ],
     PolymerElement);
 
@@ -374,7 +376,7 @@ class SettingsChangePictureElement extends SettingsChangePictureElementBase {
     const event = new CustomEvent('iron-announce', {
       bubbles: true,
       composed: true,
-      detail: {text: this.i18n('photoDiscardAccessibleText')}
+      detail: {text: this.i18n('photoDiscardAccessibleText')},
     });
     this.dispatchEvent(event);
   }

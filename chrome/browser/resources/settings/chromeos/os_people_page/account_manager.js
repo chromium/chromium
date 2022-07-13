@@ -43,8 +43,10 @@ import {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} fro
  */
 const SettingsAccountManagerElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, WebUIListenerBehavior,
-      RouteObserverBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      WebUIListenerBehavior,
+      RouteObserverBehavior,
     ],
     PolymerElement);
 

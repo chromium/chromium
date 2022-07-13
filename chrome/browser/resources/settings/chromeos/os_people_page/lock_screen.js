@@ -56,8 +56,11 @@ import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorInterface} fro
  */
 const SettingsLockScreenElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, I18nBehavior, LockStateBehavior,
-      WebUIListenerBehavior, RouteObserverBehavior
+      DeepLinkingBehavior,
+      I18nBehavior,
+      LockStateBehavior,
+      WebUIListenerBehavior,
+      RouteObserverBehavior,
     ],
     PolymerElement);
 

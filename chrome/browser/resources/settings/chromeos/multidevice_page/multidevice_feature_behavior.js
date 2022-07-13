@@ -87,7 +87,8 @@ const MultiDeviceFeatureBehaviorImpl = {
     return [
       MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL,
       MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
-      MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION, MultiDeviceFeature.ECHE
+      MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
+      MultiDeviceFeature.ECHE,
     ].includes(feature);
   },
 
@@ -182,7 +183,7 @@ const MultiDeviceFeatureBehaviorImpl = {
 
     return [
       MultiDeviceFeatureState.DISABLED_BY_USER,
-      MultiDeviceFeatureState.ENABLED_BY_USER
+      MultiDeviceFeatureState.ENABLED_BY_USER,
     ].includes(this.getFeatureState(feature));
   },
 

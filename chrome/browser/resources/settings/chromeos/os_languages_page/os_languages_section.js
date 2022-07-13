@@ -101,7 +101,7 @@ class OsSettingsLanguagesSectionElement extends
           return loadTimeData.getBoolean('allowAssistivePersonalInfo') ||
               loadTimeData.getBoolean('allowEmojiSuggestion');
         },
-      }
+      },
 
     };
   }

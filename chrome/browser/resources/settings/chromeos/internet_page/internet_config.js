@@ -44,7 +44,7 @@ export class InternetConfigElement extends InternetConfigElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('shareNetworkAllowEnable');
-        }
+        },
       },
 
       /** @private */
@@ -52,7 +52,7 @@ export class InternetConfigElement extends InternetConfigElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('shareNetworkDefault');
-        }
+        },
       },
 
       /**

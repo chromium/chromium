@@ -79,7 +79,7 @@ class OsSettingsAddSpellcheckLanguagesDialogElement extends
           name: this.getDisplayText_(spellCheckLang.language),
           searchTerms: [
             spellCheckLang.language.displayName,
-            spellCheckLang.language.nativeDisplayName
+            spellCheckLang.language.nativeDisplayName,
           ],
           disabledByPolicy: spellCheckLang.isManaged,
         }));

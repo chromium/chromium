@@ -13,7 +13,7 @@ import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 export const StorageSpaceState = {
   NORMAL: 0,
   LOW: 1,
-  CRITICALLY_LOW: 2
+  CRITICALLY_LOW: 2,
 };
 
 let systemDisplayApi = null;
@@ -97,7 +97,7 @@ export const NoteAppLockScreenSupport = {
   NOT_SUPPORTED: 0,
   NOT_ALLOWED_BY_POLICY: 1,
   SUPPORTED: 2,
-  ENABLED: 3
+  ENABLED: 3,
 };
 
 /**

@@ -12,5 +12,5 @@ export const TimeZoneAutoDetectMethod = {
   DISABLED: 0,
   IP_ONLY: 1,
   SEND_WIFI_ACCESS_POINTS: 2,
-  SEND_ALL_LOCATION_INFO: 3
+  SEND_ALL_LOCATION_INFO: 3,
 };

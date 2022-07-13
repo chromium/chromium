@@ -47,7 +47,7 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
   getSuggestedInputMethodIds_() {
     const languageCodes = [
       ...this.languageHelper.getEnabledLanguageCodes(),
-      this.languageHelper.getArcImeLanguageCode()
+      this.languageHelper.getArcImeLanguageCode(),
     ];
     let inputMethods =
         this.languageHelper.getInputMethodsForLanguages(languageCodes);
@@ -86,7 +86,7 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
                id: inputMethod.id,
                name: inputMethod.displayName,
                searchTerms: inputMethod.tags,
-               disabledByPolicy: !!inputMethod.isProhibitedByPolicy
+               disabledByPolicy: !!inputMethod.isProhibitedByPolicy,
              }));
   }
 

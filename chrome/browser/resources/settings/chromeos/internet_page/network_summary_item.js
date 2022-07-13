@@ -97,7 +97,7 @@ class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
         value() {
           return loadTimeData.valueExists('showTechnologyBadge') &&
               loadTimeData.getBoolean('showTechnologyBadge');
-        }
+        },
       },
 
       /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
@@ -604,7 +604,7 @@ class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
         new CustomEvent('device-enabled-toggled', {
           bubbles: true,
           composed: true,
-          detail: {enabled: !deviceIsEnabled, type: this.deviceState.type}
+          detail: {enabled: !deviceIsEnabled, type: this.deviceState.type},
         });
     this.dispatchEvent(deviceEnabledToggledEvent);
 

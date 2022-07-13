@@ -68,11 +68,11 @@ class SettingsPointersElement extends SettingsPointersElementBase {
           return [
             {
               value: false,
-              name: loadTimeData.getString('primaryMouseButtonLeft')
+              name: loadTimeData.getString('primaryMouseButtonLeft'),
             },
             {
               value: true,
-              name: loadTimeData.getString('primaryMouseButtonRight')
+              name: loadTimeData.getString('primaryMouseButtonRight'),
             },
           ];
         },

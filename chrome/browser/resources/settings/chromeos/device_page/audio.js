@@ -43,7 +43,7 @@ class SettingsAudioElement extends SettingsAudioElementBase {
       showAudioInfo: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

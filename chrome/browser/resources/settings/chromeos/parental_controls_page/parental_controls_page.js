@@ -46,7 +46,7 @@ export class SettingsParentalControlsPageElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isChild');
-        }
+        },
       },
 
       /** @private */
@@ -54,7 +54,7 @@ export class SettingsParentalControlsPageElement extends
         type: Boolean,
         value() {
           return navigator.onLine;
-        }
+        },
       },
     };
   }

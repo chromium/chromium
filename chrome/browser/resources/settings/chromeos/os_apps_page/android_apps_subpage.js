@@ -63,7 +63,7 @@ class SettingsAndroidAppsSubpageElement extends
       playStoreEnabled_: {
         type: Boolean,
         computed: 'computePlayStoreEnabled_(androidAppsInfo)',
-        observer: 'onPlayStoreEnabledChanged_'
+        observer: 'onPlayStoreEnabledChanged_',
       },
 
       /** @private */
@@ -73,7 +73,7 @@ class SettingsAndroidAppsSubpageElement extends
           return this.i18nAdvanced(
               'androidAppsDisableDialogMessage',
               {substitutions: [], tags: ['br']});
-        }
+        },
       },
 
       /** Whether Arc VM manage usb subpage should be shown. */

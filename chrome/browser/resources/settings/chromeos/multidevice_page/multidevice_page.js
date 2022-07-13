@@ -137,7 +137,7 @@ class SettingsMultidevicePageElement extends
         type: Boolean,
         value: function() {
           return loadTimeData.getBoolean('isNearbyShareSupported');
-        }
+        },
       },
 
       /** @private */
@@ -190,7 +190,7 @@ class SettingsMultidevicePageElement extends
         type: Boolean,
         value: function() {
           return loadTimeData.getBoolean('isChromeosScreenLockEnabled');
-        }
+        },
       },
 
       /** @private */
@@ -198,7 +198,7 @@ class SettingsMultidevicePageElement extends
         type: Boolean,
         value: function() {
           return loadTimeData.getBoolean('isPhoneScreenLockEnabled');
-        }
+        },
       },
     };
   }

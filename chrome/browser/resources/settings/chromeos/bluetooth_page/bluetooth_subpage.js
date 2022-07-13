@@ -48,8 +48,11 @@ const MAX_NUMBER_DEVICE_SHOWN = 50;
  */
 const SettingsBluetoothSubpageElementBase = mixinBehaviors(
     [
-      I18nBehavior, CrScrollableBehavior, DeepLinkingBehavior,
-      ListPropertyUpdateBehavior, RouteObserverBehavior
+      I18nBehavior,
+      CrScrollableBehavior,
+      DeepLinkingBehavior,
+      ListPropertyUpdateBehavior,
+      RouteObserverBehavior,
     ],
     PolymerElement);
 
@@ -673,7 +676,7 @@ class SettingsBluetoothSubpageElement extends
   refreshBluetoothList_() {
     const filter = {
       filterType: chrome.bluetooth.FilterType.KNOWN,
-      limit: MAX_NUMBER_DEVICE_SHOWN
+      limit: MAX_NUMBER_DEVICE_SHOWN,
     };
     this.bluetooth.getDevices(filter, devices => {
       this.deviceList_ = this.sortDevices_(devices);

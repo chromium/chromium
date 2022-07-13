@@ -92,7 +92,7 @@ class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
         value() {
           return this.getAriaLabelledSubLabel_(
               this.i18nAdvanced('quickAnswersEnableDescriptionWithLink'));
-        }
+        },
       },
 
       /** @private */
@@ -101,7 +101,7 @@ class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
         value() {
           return this.getAriaLabelledSubLabel_(
               this.i18nAdvanced('quickAnswersTranslationEnableDescription'));
-        }
+        },
       },
     };
   }

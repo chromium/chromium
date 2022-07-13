@@ -45,8 +45,10 @@ import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from '.
  */
 const SettingsMultideviceSubpageElementBase = mixinBehaviors(
     [
-      DeepLinkingBehavior, MultiDeviceFeatureBehavior, RouteObserverBehavior,
-      I18nBehavior
+      DeepLinkingBehavior,
+      MultiDeviceFeatureBehavior,
+      RouteObserverBehavior,
+      I18nBehavior,
     ],
     PolymerElement);
 

@@ -60,7 +60,7 @@ class SettingsCupsPrintersEntryElement extends
       userPrintersAllowed: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 
