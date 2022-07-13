@@ -307,8 +307,11 @@
   </message>
 
   <!-- Autofill Assistant settings -->
-  <message name="IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF" translateable="false" desc="The documentation string of the 'Use Google Assistant' preference to help with automated flows on the web">
+  <message name="IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF" desc="The documentation string of the 'Use Google Assistant' preference to help with automated flows on the web">
     Google Assistant in Chrome
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF_DESC" desc="The description of the 'Use Google Assistant' preference to help with automated flows on the web">
+    Google Assistant in Chrome can complete actions across websites for you
   </message>
 
   <!-- Languages Page -->

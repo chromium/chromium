@@ -227,9 +227,6 @@
   <message name="IDS_DRIVE_SUGGEST_PREF" desc="The documentation string of the 'Show Drive Results in Omnibox' preference - short description">
     Google Drive search suggestions
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF_DESC" translateable="false" desc="The description of the 'Use Google Assistant' preference to help with automated flows on the web">
-    Helps you complete tasks, such as changing your password, throughout the web
-  </message>
 
   <!-- Sync Accounts page (used by the <settings-sync-account-control> element) -->
   <message name="IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT" desc="The text displayed to the user that the profile is currently syncing to a specific account.">
