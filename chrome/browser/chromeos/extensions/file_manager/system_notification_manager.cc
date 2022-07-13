@@ -212,6 +212,7 @@ SystemNotificationManager::CreateProgressNotification(
     int progress) {
   message_center::RichNotificationData rich_data;
   rich_data.progress = progress;
+  rich_data.progress_status = message;
 
   return ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
@@ -231,6 +232,7 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
     int progress) {
   message_center::RichNotificationData rich_data;
   rich_data.progress = progress;
+  rich_data.progress_status = message;
 
   auto notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
