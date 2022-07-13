@@ -8,13 +8,16 @@
 <!DOCTYPE html>
 <html>
 <body>
-<div role="tabpanel">
-  <div role="tab">
+<div role="tablist">
+  <div role="tab" id="item">
     <h3>Item</h3>
   </div>
-  <div role="tab">
+  <div role="tab" id="prices">
     <h3>Prices</h3>
   </div>
+</div>
+<div role="tabpanel" aria-labelledby="item">
+  Item tab content
 </div>
 </body>
 </html>

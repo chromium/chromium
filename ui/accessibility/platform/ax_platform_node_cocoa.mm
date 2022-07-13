@@ -301,6 +301,7 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::Role::kGenericContainer:
     case ax::mojom::Role::kGroup:
     case ax::mojom::Role::kRadioGroup:
+    case ax::mojom::Role::kTabPanel:
       return true;
     default:
       break;
