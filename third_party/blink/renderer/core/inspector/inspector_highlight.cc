@@ -1456,7 +1456,9 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
                        isPrimary);
 }
 
-void CollectQuadsRecursive(Node* node, Vector<gfx::QuadF>& out_quads) {
+void CollectQuads(Node* node,
+                  bool adjust_for_absolute_zoom,
+                  Vector<gfx::QuadF>& out_quads) {
   LayoutObject* layout_object = node->GetLayoutObject();
   // For inline elements, absoluteQuads will return a line box based on the
   // line-height and font metrics, which is technically incorrect as replaced
@@ -1472,20 +1474,18 @@ void CollectQuadsRecursive(Node* node, Vector<gfx::QuadF>& out_quads) {
       LayoutTreeBuilderTraversal::FirstChild(*node)) {
     for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node); child;
          child = LayoutTreeBuilderTraversal::NextSibling(*child))
-      CollectQuadsRecursive(child, out_quads);
+      CollectQuads(child, adjust_for_absolute_zoom, out_quads);
   } else if (layout_object) {
+    wtf_size_t old_size = out_quads.size();
     layout_object->AbsoluteQuads(out_quads);
-  }
-}
-
-void CollectQuads(Node* node, Vector<gfx::QuadF>& out_quads) {
-  CollectQuadsRecursive(node, out_quads);
-  LocalFrameView* containing_view =
-      node->GetLayoutObject() ? node->GetLayoutObject()->GetFrameView()
-                              : nullptr;
-  if (containing_view) {
-    for (gfx::QuadF& quad : out_quads)
-      FrameQuadToViewport(containing_view, quad);
+    wtf_size_t new_size = out_quads.size();
+    LocalFrameView* containing_view = layout_object->GetFrameView();
+    for (wtf_size_t i = old_size; i < new_size; i++) {
+      if (containing_view)
+        FrameQuadToViewport(containing_view, out_quads[i]);
+      if (adjust_for_absolute_zoom)
+        AdjustForAbsoluteZoom::AdjustQuad(out_quads[i], *layout_object);
+    }
   }
 }
 
@@ -2101,7 +2101,7 @@ bool InspectorHighlight::BuildSVGQuads(Node* node, Vector<gfx::QuadF>& quads) {
   if (!layout_object->GetNode() || !layout_object->GetNode()->IsSVGElement() ||
       layout_object->IsSVGRoot())
     return false;
-  CollectQuads(node, quads);
+  CollectQuads(node, false /* adjust_for_absolute_zoom */, quads);
   return true;
 }
 
@@ -2109,17 +2109,14 @@ bool InspectorHighlight::BuildSVGQuads(Node* node, Vector<gfx::QuadF>& quads) {
 bool InspectorHighlight::GetContentQuads(
     Node* node,
     std::unique_ptr<protocol::Array<protocol::Array<double>>>* result) {
-  LayoutObject* layout_object = node->GetLayoutObject();
   LocalFrameView* view = node->GetDocument().View();
-  if (!layout_object || !view)
+  if (!view)
     return false;
   Vector<gfx::QuadF> quads;
-  CollectQuads(node, quads);
+  CollectQuads(node, true /* adjust_for_absolute_zoom */, quads);
   float scale = PageScaleFromFrameView(view);
-  for (gfx::QuadF& quad : quads) {
-    AdjustForAbsoluteZoom::AdjustQuad(quad, *layout_object);
+  for (gfx::QuadF& quad : quads)
     quad.Scale(scale, scale);
-  }
 
   *result = std::make_unique<protocol::Array<protocol::Array<double>>>();
   for (gfx::QuadF& quad : quads)
