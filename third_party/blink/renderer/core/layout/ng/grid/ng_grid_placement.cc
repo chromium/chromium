@@ -210,8 +210,8 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
                                  : item_minor_span.EndLine());
 
     if (!has_indefinite_major_span && !has_indefinite_minor_span) {
-      auto* placed_item =
-          new PlacedGridItem(position, major_direction_, minor_direction_);
+      auto placed_item = std::make_unique<PlacedGridItem>(
+          position, major_direction_, minor_direction_);
 
       // We will need to sort the item vector if the new placed item should be
       // inserted to the ordered list before the last item in the vector.
@@ -219,7 +219,7 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
           !non_auto_placed_items.IsEmpty() &&
           *placed_item < *non_auto_placed_items.back();
 
-      non_auto_placed_items.emplace_back(placed_item);
+      non_auto_placed_items.emplace_back(std::move(placed_item));
     } else {
       if (has_indefinite_major_span)
         positions_not_locked_to_major_axis->emplace_back(&position);
@@ -332,16 +332,17 @@ void NGGridPlacement::PlaceGridItemAtCursor(
     AutoPlacementCursor* placement_cursor) const {
   DCHECK(placed_items && placement_cursor);
 
-  auto* new_placed_item =
-      new PlacedGridItem(position, major_direction_, minor_direction_);
-  placed_items->item_vector.emplace_back(new_placed_item);
-
+  auto new_placed_item = std::make_unique<PlacedGridItem>(
+      position, major_direction_, minor_direction_);
   const auto* next_placed_item = placement_cursor->NextPlacedItem();
-  placed_items->ordered_list.InsertAfter(
-      new_placed_item, next_placed_item ? next_placed_item->Prev()
-                                        : placed_items->ordered_list.Tail());
 
-  placement_cursor->InsertPlacedItemAtCurrentPosition(new_placed_item);
+  placed_items->ordered_list.InsertAfter(
+      new_placed_item.get(), next_placed_item
+                                 ? next_placed_item->Prev()
+                                 : placed_items->ordered_list.Tail());
+
+  placement_cursor->InsertPlacedItemAtCurrentPosition(new_placed_item.get());
+  placed_items->item_vector.emplace_back(std::move(new_placed_item));
 }
 
 void NGGridPlacement::ClampGridItemsToFitSubgridArea(

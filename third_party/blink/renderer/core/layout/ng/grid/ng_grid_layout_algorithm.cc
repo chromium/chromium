@@ -423,7 +423,7 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
       LayoutTrackCollection(placement_data, kForColumns, &grid_items),
       LayoutTrackCollection(placement_data, kForRows, &grid_items));
 
-  for (auto& grid_item : grid_items) {
+  for (auto& grid_item : grid_items.item_data) {
     grid_item.ComputeSetIndices(*layout_data.Columns());
     grid_item.ComputeSetIndices(*layout_data.Rows());
   }
