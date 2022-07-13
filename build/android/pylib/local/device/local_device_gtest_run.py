@@ -618,8 +618,10 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         timeout = None
 
       flags = [
-          f for f in self._test_instance.flags
-          if f not in ['--wait-for-debugger', '--wait-for-java-debugger']
+          f for f in self._test_instance.flags if f not in [
+              '--wait-for-debugger', '--wait-for-java-debugger',
+              '--gtest_also_run_disabled_tests'
+          ]
       ]
       flags.append('--gtest_list_tests')
 
