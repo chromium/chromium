@@ -87,7 +87,7 @@ std::string GetDataCollectorName(
   // string constants until we have the translatable strings ready.
   switch (data_collector_type) {
     case support_tool::CHROME_INTERNAL:
-      return "Internal";
+      return "Chrome System Information";
     case support_tool::CRASH_IDS:
       return "Crash IDs";
     case support_tool::MEMORY_DETAILS:
@@ -95,19 +95,19 @@ std::string GetDataCollectorName(
     case support_tool::CHROMEOS_UI_HIERARCHY:
       return "UI Hierarchy";
     case support_tool::CHROMEOS_COMMAND_LINE:
-      return "Command Line";
+      return "Additional Chrome OS Platform Logs";
     case support_tool::CHROMEOS_DEVICE_EVENT:
       return "Device Event";
     case support_tool::CHROMEOS_IWL_WIFI_DUMP:
-      return "IWL WiFi Dump";
+      return "Intel WiFi NICs Debug Dump";
     case support_tool::CHROMEOS_TOUCH_EVENTS:
       return "Touch Events";
     case support_tool::CHROMEOS_CROS_API:
-      return "CROS API";
+      return "LaCrOS System Information";
     case support_tool::CHROMEOS_LACROS:
-      return "Lacros";
+      return "LaCrOS";
     case support_tool::CHROMEOS_REVEN:
-      return "Chrome OS Reven";
+      return "Chrome OS Flex Logs";
     case support_tool::CHROMEOS_DBUS:
       return "DBus Details";
     case support_tool::CHROMEOS_NETWORK_ROUTES:
