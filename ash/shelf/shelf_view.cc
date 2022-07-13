@@ -1678,6 +1678,10 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
       // the move as in any normal case.
       dragged_off_shelf_ = false;
 
+      // After re-insertion, trigger an animation to ideal bounds to show the
+      // ghost view.
+      AnimateToIdealBounds();
+
       return;
     }
     drag_icon_proxy_->UpdatePosition(screen_location);
