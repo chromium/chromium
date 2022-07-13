@@ -8,6 +8,7 @@ source_set("interfaces") {
     "user_note_metadata_snapshot.h",
     "user_note_service_delegate.h",
     "user_note_storage.h",
+    "user_notes_ui.cc",
     "user_notes_ui.h",
     "user_notes_ui_delegate.h",
   ]

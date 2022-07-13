@@ -10,7 +10,6 @@
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -38,10 +37,19 @@ class UnguessableToken;
 
 class UserNoteUICoordinator : public user_notes::UserNotesUI,
                               public TabStripModelObserver,
-                              public views::ViewObserver,
-                              public BrowserUserData<UserNoteUICoordinator> {
+                              public views::ViewObserver {
  public:
-  explicit UserNoteUICoordinator(Browser* browser);
+  // Creates a UserNoteUICoordinator and attaches it to the specified Browser
+  // using the user data key of UserNotesUI. If an instance is already attached,
+  // does nothing.
+  static void CreateForBrowser(Browser* browser);
+
+  // Retrieves the UserNoteUICoordinator instance that was attached to the
+  // specified Browser (via CreateForBrowser above) and returns it. If no
+  // instance of the type was attached, returns nullptr.
+  static UserNoteUICoordinator* FromBrowser(Browser* browser);
+
+  static UserNoteUICoordinator* GetOrCreateForBrowser(Browser* browser);
 
   UserNoteUICoordinator(const UserNoteUICoordinator&) = delete;
   UserNoteUICoordinator& operator=(const UserNoteUICoordinator&) = delete;
@@ -75,7 +83,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   void OnViewBoundsChanged(views::View* observed_view) override;
 
  private:
-  friend class BrowserUserData<UserNoteUICoordinator>;
+  explicit UserNoteUICoordinator(Browser* browser);
 
   void CreateSidePanelEntry(SidePanelRegistry* global_registry);
   void ScrollToNote();
@@ -86,8 +94,6 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   base::ScopedObservation<views::View, views::ViewObserver>
       scoped_view_observer_{this};
   base::UnguessableToken scroll_to_note_id_ = base::UnguessableToken::Null();
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_UI_COORDINATOR_H_

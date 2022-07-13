@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_H_
 #define COMPONENTS_USER_NOTES_INTERFACES_USER_NOTES_UI_H_
 
+#include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -14,12 +15,14 @@ class UserNoteInstance;
 
 // Interface that the UI layer of User Notes must implement. Used by the
 // business logic in the service to send commands to the UI.
-class UserNotesUI {
+class UserNotesUI : public base::SupportsUserData::Data {
  public:
+  static const void* UserDataKey() { return &kUserDataKey; }
+
   UserNotesUI() = default;
   UserNotesUI(const UserNotesUI&) = delete;
   UserNotesUI& operator=(const UserNotesUI&) = delete;
-  virtual ~UserNotesUI() = default;
+  ~UserNotesUI() override = default;
 
   // Called when a note in the UI should be scrolled to / brought to the
   // foreground, and focused.
@@ -39,6 +42,9 @@ class UserNotesUI {
   // Called by the UserNoteService when the user triggers one of the feature's
   // entry points, indicating the Notes UI should show itself.
   virtual void Show() = 0;
+
+ private:
+  static const int kUserDataKey = 0;
 };
 
 }  // namespace user_notes

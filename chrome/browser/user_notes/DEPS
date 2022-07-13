@@ -1,8 +1,0 @@
-include_rules = [
-  # Required to get the interface implementation from BrowserUserData. No other
-  # assumptions about chrome/browser/ui/views are made; consumers use the base
-  # interface to interact with the UI implementation.
-  # TODO(crbug.com/1341055): Find a way to return the coordinator without
-  # needing this dependency.
-  "+chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h",
-]

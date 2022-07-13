@@ -5,11 +5,12 @@
 #include "chrome/browser/user_notes/user_note_service_delegate_impl.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace user_notes {
 
@@ -64,7 +65,8 @@ UserNotesUI* UserNoteServiceDelegateImpl::GetUICoordinatorForFrame(
     return nullptr;
   }
 
-  return UserNoteUICoordinator::FromBrowser(browser);
+  return static_cast<UserNotesUI*>(
+      browser->GetUserData(UserNotesUI::UserDataKey()));
 }
 
 bool UserNoteServiceDelegateImpl::IsFrameInActiveTab(
