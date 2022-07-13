@@ -102,19 +102,6 @@ public class ShoppingService {
     }
 
     /**
-     * Get the currently available product information for the specified URL. This method may return
-     * {@code null} or partial data if the page has not yet been completely processed. This is less
-     * reliable than {@link #getProductInfoForUrl(GURL, ProductInfoCallback)}.
-     * @param url The URL to fetch product info for.
-     */
-    public ProductInfo getAvailableProductInfoForUrl(GURL url) {
-        if (mNativeShoppingServiceAndroid == 0) return null;
-
-        return ShoppingServiceJni.get().getAvailableProductInfoForUrl(
-                mNativeShoppingServiceAndroid, this, url);
-    }
-
-    /**
      * Fetch information about a merchant for a URL.
      * @param url The URL to fetch merchant info for.
      * @param callback The callback that will run after the fetch is completed. The merchant info
@@ -168,8 +155,6 @@ public class ShoppingService {
     interface Natives {
         void getProductInfoForUrl(long nativeShoppingServiceAndroid, ShoppingService caller,
                 GURL url, ProductInfoCallback callback);
-        ProductInfo getAvailableProductInfoForUrl(
-                long nativeShoppingServiceAndroid, ShoppingService caller, GURL url);
         void getMerchantInfoForUrl(long nativeShoppingServiceAndroid, ShoppingService caller,
                 GURL url, MerchantInfoCallback callback);
     }
