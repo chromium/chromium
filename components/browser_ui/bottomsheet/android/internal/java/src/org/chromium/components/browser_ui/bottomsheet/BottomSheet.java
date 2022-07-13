@@ -25,6 +25,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -163,6 +164,18 @@ class BottomSheet extends FrameLayout
 
     /** A means of checking whether accessibility is currently enabled. */
     private AccessibilityUtil mAccessibilityUtil;
+
+    private Window mWindow;
+
+    /**
+     * Provides the height of the base app area on which bottom sheet client is drawn. This is
+     * not necessary for most embedders of BottomSheet, unless they have non-zero vertical Window
+     * offset that would push down a part of app area out of the screen. BottomSheet then uses
+     * this height to resize the sheet content so all of it is visible.
+     *
+     * Note: The only embedder for which BottomSheet needs this is partial-height custom tabs.
+     */
+    private Supplier<Integer> mBaseHeightProvider;
 
     /**
      * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
@@ -303,8 +316,10 @@ class BottomSheet extends FrameLayout
      * calculations in this class.
      * @param window Android window for getting insets.
      * @param keyboardDelegate Delegate for hiding the keyboard.
+     * @param baseHeightProvider Provides the height of base app area the sheet content is drawn on.
      */
-    public void init(Window window, KeyboardVisibilityDelegate keyboardDelegate) {
+    public void init(Window window, KeyboardVisibilityDelegate keyboardDelegate,
+            Supplier<Integer> baseHeightProvider) {
         mSheetContainer = (ViewGroup) getParent();
 
         mToolbarHolder =
@@ -317,6 +332,8 @@ class BottomSheet extends FrameLayout
         mContainerWidth = mSheetContainer.getWidth();
         mContainerHeight = mSheetContainer.getHeight();
         mContentWidth = mContainerWidth;
+        mWindow = window;
+        mBaseHeightProvider = baseHeightProvider;
 
         sizeAndPositionSheetInParent();
 
@@ -1016,6 +1033,8 @@ class BottomSheet extends FrameLayout
             if (getFocusedChild() == null) requestFocus();
         }
 
+        sizeAndPositionSheetInParent();
+
         for (BottomSheetObserver o : mObservers) {
             o.onSheetStateChanged(mCurrentState, reason);
         }
@@ -1063,12 +1082,25 @@ class BottomSheet extends FrameLayout
         return mContainerWidth;
     }
 
-    /** Center and size the sheet in its container. */
     private void sizeAndPositionSheetInParent() {
+        // Center and size the sheet in its container.
         int maxSheetWidth = getMaxSheetWidth();
         getLayoutParams().width = maxSheetWidth;
         setTranslationX((LocalizationUtils.isLayoutRtl() ? -1 : 1)
                 * (mContainerWidth - maxSheetWidth) / 2f);
+
+        // Resizing is necessary if we have non-zero translation on Window Y, which can change
+        // throughout the lifecycle. Ensure sheet content's bottom is aligned with the base layout.
+        if (mWindow.getAttributes().y != 0
+                && (mCurrentState == SheetState.PEEK || mCurrentState == SheetState.HALF
+                        || mCurrentState == SheetState.FULL)) {
+            BottomSheetContent content = mSheetContent;
+            assert content != null
+                    && content.getContentView() != null : "Current content should exist";
+
+            int bottomY = mBaseHeightProvider.get();
+            content.getContentView().getLayoutParams().height = bottomY - (int) getTranslationY();
+        }
         requestLayout();
     }
 

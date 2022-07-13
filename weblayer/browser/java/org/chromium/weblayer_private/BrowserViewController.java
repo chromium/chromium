@@ -190,7 +190,8 @@ public final class BrowserViewController
 
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
                 () -> mScrim, (v) -> {}, ContextUtils.activityFromContext(context).getWindow(),
-                KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer);
+                KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer,
+                () -> mContentViewRenderView.getHeight());
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
         mPwaBottomSheetController = PwaBottomSheetControllerFactory.createPwaBottomSheetController(
