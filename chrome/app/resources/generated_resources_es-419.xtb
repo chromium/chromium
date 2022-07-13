@@ -3450,7 +3450,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Cuenta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Cuentas de Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314497418046265427">Conecta tu teléfono a <ph name="DEVICE_TYPE" /> para mejorar tu productividad</translation>
-<translation id="4314815835985389558">Administrar la sincronización</translation>
+<translation id="4314815835985389558">Administrar sincronización</translation>
 <translation id="4315933848520197627">Desvincular cuenta</translation>
 <translation id="4316850752623536204">Sitio web del programador</translation>
 <translation id="4317820549299924617">No se completó la verificación</translation>
