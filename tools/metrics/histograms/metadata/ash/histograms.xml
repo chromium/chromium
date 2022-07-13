@@ -1490,6 +1490,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ClipboardHistory.ReorderType"
+    enum="ClipboardHistoryReorderType" expires_after="2022-10-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    Each time the clipboard history list is reordered, the operation (copy or
+    paste) initiating that reorder is emitted here.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DarkTheme.Settings.IsDarkModeEnabled" enum="Boolean"
     expires_after="2023-03-01">
   <obsolete>

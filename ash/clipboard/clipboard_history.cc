@@ -6,6 +6,7 @@
 
 #include <deque>
 
+#include "ash/clipboard/clipboard_history_metrics.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "base/bind.h"
@@ -22,25 +23,6 @@
 namespace ash {
 
 using PauseBehavior = ClipboardHistoryUtil::PauseBehavior;
-
-namespace {
-
-// The different operations `ClipboardHistory` sees. These values are written to
-// logs. New enum values can be added, but existing enums must never be
-// renumbered, deleted, or reused. Keep this up to date with the
-// `ClipboardHistoryOperation` enum in enums.xml.
-enum class ClipboardHistoryOperation {
-  // Emitted when the user initiates a clipboard write.
-  kCopy = 0,
-
-  // Emitted when the user initiates a clipboard read.
-  kPaste = 1,
-
-  // Insert new types above this line.
-  kMaxValue = kPaste
-};
-
-}  // namespace
 
 ClipboardHistory::ClipboardHistory() {
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
@@ -128,7 +110,10 @@ void ClipboardHistory::OnClipboardDataChanged() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHistory::MaybeCommitData,
-                     commit_data_weak_factory_.GetWeakPtr(), *clipboard_data));
+                     commit_data_weak_factory_.GetWeakPtr(), *clipboard_data,
+                     /*is_reorder_on_paste=*/!pauses_.empty() &&
+                         pauses_.front().pause_behavior ==
+                             PauseBehavior::kAllowReorderOnPaste));
 
   // If clipboard history was paused with a contingency that allowed data to be
   // committed, the operation that changed clipboard data was not a user's copy.
@@ -222,7 +207,8 @@ void ClipboardHistory::SyncClipboardToClipboardHistory() {
   }
 }
 
-void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
+void ClipboardHistory::MaybeCommitData(ui::ClipboardData data,
+                                       bool is_reorder_on_paste) {
   if (!ClipboardHistoryUtil::IsSupported(data))
     return;
 
@@ -235,7 +221,12 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
     // instead of creating a new one because creating a new one will result in a
     // new unique identifier.
     history_list_.splice(history_list_.begin(), history_list_, iter);
+    base::UmaHistogramEnumeration("Ash.ClipboardHistory.ReorderType",
+                                  is_reorder_on_paste
+                                      ? ClipboardHistoryReorderType::kOnPaste
+                                      : ClipboardHistoryReorderType::kOnCopy);
   } else {
+    DCHECK(!is_reorder_on_paste);
     history_list_.emplace_front(std::move(data));
   }
 

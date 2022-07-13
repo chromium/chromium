@@ -16943,6 +16943,11 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="3" label="Web Smart Paste"/>
 </enum>
 
+<enum name="ClipboardHistoryReorderType">
+  <int value="0" label="On copy"/>
+  <int value="1" label="On paste"/>
+</enum>
+
 <enum name="ClipboardHistoryTriggerType">
   <int value="0" label="Accelerator"/>
   <int value="1" label="Render View Context Menu"/>

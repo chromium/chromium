@@ -10,11 +10,10 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
-#include "ash/clipboard/views/clipboard_history_delete_button.h"
+#include "ash/clipboard/clipboard_history_metrics.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/path_service.h"
@@ -22,7 +21,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,13 +32,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/clipboard_image_model_request.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,7 +52,6 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
-#include "url/origin.h"
 
 namespace {
 
@@ -991,10 +985,65 @@ INSTANTIATE_TEST_SUITE_P(
         /*clipboard_history_reorder_enabled=*/::testing::Bool(),
         /*paste_plain_text=*/::testing::Bool()));
 
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, Reorder) {
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnCopy) {
+  // Confirm initial state.
+  const auto& clipboard_history_items = GetClipboardItems();
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(clipboard_history_items.empty());
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
+                                    /*count=*/0);
+
+  const auto* const clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+
+  // Write some data to the clipboard.
+  {
+    // Start listening for changes to the item list. We must wait for the item
+    // list to update before checking verifying the clipboard history state.
+    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+    SetClipboardTextAndHtml("A", "<span>A</span>");
+  }
+  ui::ClipboardData clipboard_data_a(*clipboard->GetClipboardData(&data_dst));
+  ASSERT_EQ(clipboard_history_items.size(), 1);
+  ASSERT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
+                                    /*count=*/0);
+
+  // Write different data to the clipboard.
+  {
+    // Start listening for changes to the item list. We must wait for the item
+    // list to update before checking verifying the clipboard history state.
+    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+    SetClipboardTextAndHtml("B", "<span>B</span>");
+  }
+  ui::ClipboardData clipboard_data_b(*clipboard->GetClipboardData(&data_dst));
+  ASSERT_EQ(clipboard_history_items.size(), 2);
+  ASSERT_EQ(clipboard_history_items.front().data(), clipboard_data_b);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
+                                    /*count=*/0);
+
+  // Write the original data to the clipboard again. Instead of creating a new
+  // clipboard history item, this should bump the original item to the top slot.
+  {
+    // Start listening for changes to the item list. We must wait for the item
+    // list to update before checking verifying the clipboard history state.
+    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+    SetClipboardTextAndHtml("A", "<span>A</span>");
+  }
+  ASSERT_EQ(clipboard_history_items.size(), 2);
+  ASSERT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ReorderType",
+      /*sample=*/ash::ClipboardHistoryReorderType::kOnCopy,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnPaste) {
   // Confirm initial state.
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ConsecutivePastes",
+                                    /*count=*/0);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
                                     /*count=*/0);
 
   // Write some things to the clipboard. Pasting may result in temporary
@@ -1026,6 +1075,8 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, Reorder) {
   // Wait for the clipboard buffer to be restored before performing another
   // paste.
   ClipboardDataWaiter().WaitFor(&clipboard_data_b);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
+                                    /*count=*/0);
 
   // Open clipboard history and paste the last history item.
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
@@ -1065,6 +1116,11 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, Reorder) {
     // item of the clipboard history item list.
     ClipboardDataWaiter().WaitFor(expected_clipboard_data);
   }
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ReorderType",
+      /*sample=*/ash::ClipboardHistoryReorderType::kOnPaste,
+      /*expected_count=*/ClipboardHistoryReorderEnabled() ? 1 : 0);
+
   const auto& clipboard_history_items = GetClipboardItems();
   ASSERT_EQ(clipboard_history_items.size(), 2);
   ASSERT_EQ(clipboard_history_items.front().data(), *expected_clipboard_data);

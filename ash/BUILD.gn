@@ -326,6 +326,7 @@ component("ash") {
     "clipboard/clipboard_history_item.h",
     "clipboard/clipboard_history_menu_model_adapter.cc",
     "clipboard/clipboard_history_menu_model_adapter.h",
+    "clipboard/clipboard_history_metrics.h",
     "clipboard/clipboard_history_resource_manager.cc",
     "clipboard/clipboard_history_resource_manager.h",
     "clipboard/clipboard_history_util.cc",

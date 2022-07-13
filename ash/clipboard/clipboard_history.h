@@ -83,7 +83,7 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // clipboard history. If `data` is not supported, this method no-ops. If
   // `data` is already in the history list, `data` will be moved to the top of
   // the list.
-  void MaybeCommitData(ui::ClipboardData data);
+  void MaybeCommitData(ui::ClipboardData data, bool is_reorder_on_paste);
 
   // When `Pause()` is called, clipboard accesses will modify clipboard history
   // according to `pause_behavior` until `Resume()` is called with that pause's

@@ -285,8 +285,13 @@ TEST_F(ClipboardHistoryTest, PauseHistoryBasic) {
 // behavior allows clipboard history to be modified, but clipboard data changes
 // received during the pause are not recorded as copy operations.
 TEST_F(ClipboardHistoryTest, PauseHistoryAllowReorders) {
-  std::vector<std::u16string> input_strings{u"test"};
-  std::vector<std::u16string> expected_strings = input_strings;
+  std::vector<std::u16string> input_strings{u"test1", u"test2"};
+  std::vector<std::u16string> input_string1{u"test1"};
+  std::vector<std::u16string> expected_strings_initial{u"test2", u"test1"};
+  std::vector<std::u16string> expected_strings_reordered = input_strings;
+
+  // Populate clipboard history to simulate paste-based reorders.
+  WriteAndEnsureTextHistory(input_strings, expected_strings_initial);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
@@ -294,7 +299,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryAllowReorders) {
   ScopedClipboardHistoryPauseImpl scoped_pause(
       clipboard_history(),
       ClipboardHistoryUtil::PauseBehavior::kAllowReorderOnPaste);
-  WriteAndEnsureTextHistory(input_strings, expected_strings);
+  WriteAndEnsureTextHistory(input_string1, expected_strings_reordered);
   // Clipboard history modifications made during a reorder-on-paste operation
   // should not count as copies (or pastes). A reorder is not a user action.
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
@@ -304,11 +309,17 @@ TEST_F(ClipboardHistoryTest, PauseHistoryAllowReorders) {
 // different behavior, the newest behavior overrides all others for the duration
 // of the pause's lifetime.
 TEST_F(ClipboardHistoryTest, PauseHistoryNested) {
-  std::vector<std::u16string> input_strings1{u"test1"};
-  std::vector<std::u16string> input_strings2{u"test2"};
-  std::vector<std::u16string> expected_strings_empty = {};
-  std::vector<std::u16string> expected_strings1 = input_strings1;
-  std::vector<std::u16string> expected_strings2 = {u"test2", u"test1"};
+  std::vector<std::u16string> input_strings{u"test1", u"test2"};
+  std::vector<std::u16string> input_string1{u"test1"};
+  std::vector<std::u16string> input_string2{u"test2"};
+  std::vector<std::u16string> input_string3{u"test3"};
+  std::vector<std::u16string> expected_strings_initial{u"test2", u"test1"};
+  std::vector<std::u16string> expected_strings_reordered1 = input_strings;
+  std::vector<std::u16string> expected_strings_reordered2 =
+      expected_strings_initial;
+
+  // Populate clipboard history to simulate paste-based reorders.
+  WriteAndEnsureTextHistory(input_strings, expected_strings_initial);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
@@ -316,7 +327,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryNested) {
   // By default, pausing prevents clipboard history modifications.
   ScopedClipboardHistoryPauseImpl scoped_pause_default_1(
       clipboard_history(), ClipboardHistoryUtil::PauseBehavior::kDefault);
-  WriteAndEnsureTextHistory(input_strings1, expected_strings_empty);
+  WriteAndEnsureTextHistory(input_string3, expected_strings_initial);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
 
   {
@@ -326,7 +337,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryNested) {
     ScopedClipboardHistoryPauseImpl scoped_pause_allow_reorders(
         clipboard_history(),
         ClipboardHistoryUtil::PauseBehavior::kAllowReorderOnPaste);
-    WriteAndEnsureTextHistory(input_strings1, expected_strings1);
+    WriteAndEnsureTextHistory(input_string1, expected_strings_reordered1);
     // Clipboard history modifications made during a reorder-on-paste operation
     // should not count as copies (or pastes). A reorder is not a user action.
     histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
@@ -336,47 +347,52 @@ TEST_F(ClipboardHistoryTest, PauseHistoryNested) {
       // behaviors were overridden.
       ScopedClipboardHistoryPauseImpl scoped_pause_default_2(
           clipboard_history(), ClipboardHistoryUtil::PauseBehavior::kDefault);
-      WriteAndEnsureTextHistory(input_strings2, expected_strings1);
+      WriteAndEnsureTextHistory(input_string3, expected_strings_reordered1);
       histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
     }
 
     // Test that the previous behavior is restored when the newest pause goes
     // out of scope.
-    WriteAndEnsureTextHistory(input_strings2, expected_strings2);
+    WriteAndEnsureTextHistory(input_string2, expected_strings_reordered2);
     histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
   }
 
   // Test that the previous behavior is restored when the newest pause goes out
   // of scope, regardless of what order behaviors were overridden.
-  WriteAndEnsureTextHistory(input_strings1, expected_strings2);
+  WriteAndEnsureTextHistory(input_string3, expected_strings_reordered2);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
 }
 
 // Tests that clipboard history pauses do not have to be destroyed in LIFO
 // order.
 TEST_F(ClipboardHistoryTest, PauseHistoryResumeOutOfOrder) {
-  std::vector<std::u16string> input_strings1{u"test1"};
-  std::vector<std::u16string> input_strings2{u"test2"};
-  std::vector<std::u16string> input_strings3{u"test3"};
-  std::vector<std::u16string> expected_strings_empty = {};
-  std::vector<std::u16string> expected_strings1 = input_strings1;
-  std::vector<std::u16string> expected_strings2 = {u"test2", u"test1"};
-  std::vector<std::u16string> expected_strings3 = {u"test3", u"test2",
-                                                   u"test1"};
+  std::vector<std::u16string> input_strings{u"test1", u"test2"};
+  std::vector<std::u16string> input_string1{u"test1"};
+  std::vector<std::u16string> input_string2{u"test2"};
+  std::vector<std::u16string> input_string3{u"test3"};
+  std::vector<std::u16string> expected_strings_initial{u"test2", u"test1"};
+  std::vector<std::u16string> expected_strings_reordered1 = input_strings;
+  std::vector<std::u16string> expected_strings_reordered2 =
+      expected_strings_initial;
+  std::vector<std::u16string> expected_strings_new_item = {u"test3", u"test2",
+                                                           u"test1"};
+
+  // Populate clipboard history to simulate paste-based reorders.
+  WriteAndEnsureTextHistory(input_strings, expected_strings_initial);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
 
   auto scoped_pause_default = std::make_unique<ScopedClipboardHistoryPauseImpl>(
       clipboard_history(), ClipboardHistoryUtil::PauseBehavior::kDefault);
-  WriteAndEnsureTextHistory(input_strings1, expected_strings_empty);
+  WriteAndEnsureTextHistory(input_string3, expected_strings_initial);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
 
   auto scoped_pause_allow_reorders =
       std::make_unique<ScopedClipboardHistoryPauseImpl>(
           clipboard_history(),
           ClipboardHistoryUtil::PauseBehavior::kAllowReorderOnPaste);
-  WriteAndEnsureTextHistory(input_strings1, expected_strings1);
+  WriteAndEnsureTextHistory(input_string1, expected_strings_reordered1);
   // Clipboard history modifications made during a reorder-on-paste operation
   // should not count as copies (or pastes). A reorder is not a user action.
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
@@ -384,7 +400,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryResumeOutOfOrder) {
   // Verify that pauses can be destroyed in non-LIFO order without changing the
   // current pause behavior.
   scoped_pause_default.reset();
-  WriteAndEnsureTextHistory(input_strings2, expected_strings2);
+  WriteAndEnsureTextHistory(input_string2, expected_strings_reordered2);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
 
   // Verify that when all pauses are destroyed, clipboard history is modified as
@@ -395,7 +411,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryResumeOutOfOrder) {
       ->set_confirmed_operation_callback_for_test(
           operation_confirmed_future.GetCallback());
   scoped_pause_allow_reorders.reset();
-  WriteAndEnsureTextHistory(input_strings3, expected_strings3);
+  WriteAndEnsureTextHistory(input_string3, expected_strings_new_item);
   // Since clipboard history is not paused in any way, data being written to the
   // clipboard is interpreted as a copy operation.
   EXPECT_EQ(operation_confirmed_future.Take(), true);
