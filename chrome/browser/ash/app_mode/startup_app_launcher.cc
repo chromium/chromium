@@ -152,6 +152,7 @@ void StartupAppLauncher::ContinueWithNetworkReady() {
 }
 
 void StartupAppLauncher::RestartLauncher() {
+  SYSLOG(INFO) << "RestartLauncher";
   // Do not allow restarts after the launcher finishes kiosk apps installation
   // - notify the delegate that kiosk app is ready to launch, in case the
   // launch was delayed, for example by network config dialog.
@@ -172,6 +173,8 @@ void StartupAppLauncher::RestartLauncher() {
     SYSLOG(WARNING) << "Launcher is running";
     return;
   }
+
+  kiosk_app_manager_observation_.Reset();
 
   Initialize();
 }
