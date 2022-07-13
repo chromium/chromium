@@ -41,10 +41,6 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // area when it is floated.
   static constexpr int kFloatWindowPaddingDp = 8;
 
-  // Gets the ideal float bounds of `window` in tablet mode if it were to be
-  // floated.
-  static gfx::Rect GetPreferredFloatWindowTabletBounds(aura::Window* window);
-
   // Determines if a window can be floated in tablet mode.
   static bool CanFloatWindowInTablet(aura::Window* window);
 
@@ -52,13 +48,28 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
 
   MagnetismCorner magnetism_corner() const { return magnetism_corner_; }
 
+  // Gets the ideal float bounds of `window` in tablet mode if it were to be
+  // floated.
+  gfx::Rect GetPreferredFloatWindowTabletBounds(aura::Window* window);
+
   // Return true if `window` is floated, otherwise false.
   bool IsFloated(const aura::Window* window) const;
+
+  // Tucks or untucks `float_window_`. Does nothing if the window is already
+  // tucked or untucked.
+  void MaybeTuckFloatedWindow();
+  void MaybeUntuckFloatedWindow();
 
   // Called by the resizer when a drag is completed. This assumes the dragged
   // window associated with the resizer is `float_window_`. Updates the bounds
   // and magnetism of the floated window.
   void OnDragCompleted(const gfx::PointF& last_location_in_parent);
+
+  // Called by the resizer when a drag is completed by a fling or swipe gesture
+  // event. Updates the magnetism of the window and then tucks the window
+  // offscreen. `left` and `up` are used to determine the direction of the fling
+  // or swipe gesture.
+  void OnFlingOrSwipe(bool left, bool up);
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -73,8 +84,10 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
                                uint32_t metrics) override;
 
  private:
+  class ScopedWindowTucker;
   friend class DefaultState;
   friend class TabletModeWindowState;
+  friend class WindowFloatTest;
 
   // Floats/Unfloats `window`.
   // Only one floating window is allowed, floating a new window will
@@ -97,6 +110,10 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // the session; if you drag a window to the bottom left and float another
   // window, that window will also be magnetized to the bottom left.
   MagnetismCorner magnetism_corner_ = MagnetismCorner::kBottomRight;
+
+  // Scoped class that handles the special tucked window state, which is not a
+  // normal window state. Null when there is no current tucked window.
+  std::unique_ptr<ScopedWindowTucker> scoped_window_tucker_;
 
   // Observes floated window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>

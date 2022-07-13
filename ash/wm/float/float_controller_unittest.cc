@@ -10,6 +10,7 @@
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -42,6 +43,10 @@ class WindowFloatTest : public AshTestBase {
     PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
     DCHECK(WindowState::Get(floated_window.get())->IsFloated());
     return floated_window;
+  }
+
+  bool IsFloatedWindowTucked() const {
+    return !!Shell::Get()->float_controller()->scoped_window_tucker_;
   }
 
   void SetUp() override {
@@ -295,6 +300,38 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(gfx::Point(padding, 1600 - shelf_size - padding),
             window->bounds().bottom_left());
+}
+
+// Tests the functionality of tucking a window in tablet mode. Tucking a window
+// is hiding partially offscreen to the side.
+TEST_F(TabletWindowFloatTest, TuckedWindow) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Exiting immersive mode because of float does not seem to trigger a layout
+  // like it does in production code. Here we force a layout, otherwise the
+  // client view will remain the size of the widget, and dragging it will give
+  // us HTCLIENT.
+  auto* frame = NonClientFrameViewAsh::Get(window.get());
+  frame->Layout();
+
+  // Generate a fling to the top left corner. Tests that the window is tucked,
+  // and 100 pixels are visible to the user.
+  const gfx::Point header_center =
+      frame->GetHeaderView()->GetBoundsInScreen().CenterPoint();
+  GetEventGenerator()->GestureScrollSequence(
+      header_center, header_center - gfx::Vector2d(10, 10),
+      base::Milliseconds(10), /*steps=*/2);
+  EXPECT_TRUE(IsFloatedWindowTucked());
+  EXPECT_EQ(100, window->bounds().right());
+
+  // Tests that after we exit tablet mode, the window is untucked and fully
+  // visible, but is still floated.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ASSERT_TRUE(Shell::Get()->float_controller()->IsFloated(window.get()));
+  EXPECT_TRUE(screen_util::GetDisplayBoundsInParent(window.get())
+                  .Contains(window->bounds()));
 }
 
 }  // namespace ash
