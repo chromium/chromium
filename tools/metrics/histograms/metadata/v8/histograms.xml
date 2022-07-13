@@ -1417,6 +1417,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.SandboxedExternalPointersCount" units="count"
+    expires_after="2022-12-04">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    The number of in-use external pointers in an Isolate's ExternalPointerTable.
+
+    When the V8 Sandbox is enabled, objects located outside of the sandbox are
+    referenced through a per-Isolate ExternalPointerTable to ensure memory-safe
+    access to them. This histogram records the number of active external
+    pointers in a single table, which is determined by counting the number of
+    alive entries during garbage collection of an ExternalPointerTable.
+  </summary>
+</histogram>
+
 <histogram name="V8.SandboxMode" enum="V8SandboxMode"
     expires_after="2022-12-04">
   <owner>saelo@chromium.org</owner>
