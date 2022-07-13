@@ -230,7 +230,7 @@ std::string ListSelectionModel::ToString() const {
     return opt.has_value() ? base::NumberToString(opt.value())
                            : std::string("<none>");
   };
-  std::vector<const std::string> index_strings;
+  std::vector<std::string> index_strings;
   base::ranges::transform(
       selected_indices_, std::back_inserter(index_strings),
       [](const auto& index) { return base::NumberToString(index); });
