@@ -133,6 +133,8 @@ TEST_F(RgbKeyboardManagerTest, StaticResetRainbowMode) {
 }
 
 TEST_F(RgbKeyboardManagerTest, OnCapsLockChanged) {
+  InitializeManagerWithCapability(
+      rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
   ime_controller_->UpdateCapsLockState(/*caps_enabled=*/true);
   EXPECT_TRUE(client_->get_caps_lock_state());
   ime_controller_->UpdateCapsLockState(/*caps_enabled=*/false);
@@ -179,6 +181,8 @@ TEST_F(RgbKeyboardManagerTest, SetCapsLockStateDisallowedForZonedKeyboards) {
 }
 
 TEST_F(RgbKeyboardManagerTest, SetCapsLockStateAllowedForPerKeyKeboards) {
+  InitializeManagerWithCapability(
+      rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
   EXPECT_FALSE(client_->get_caps_lock_state());
   ime_controller_->UpdateCapsLockState(/*caps_enabled=*/true);
   EXPECT_TRUE(client_->get_caps_lock_state());
