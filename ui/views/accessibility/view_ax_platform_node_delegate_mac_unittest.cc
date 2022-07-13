@@ -80,14 +80,14 @@ class ViewAXPlatformNodeDelegateMacTest : public ViewsTestBase {
 };
 
 TEST_F(ViewAXPlatformNodeDelegateMacTest,
-       GetNameReturnsNodeDescriptionWhenNameAndTitleAreEqual) {
-  EXPECT_EQ(view_->GetPlatformNodeDelegate()->GetName(),
+       GetNameReturnsNodeNameWhenNameAndTitleAreEqual) {
+  EXPECT_NE(view_->GetPlatformNodeDelegate()->GetName(),
             *view_->GetDescription());
 }
 
 TEST_F(ViewAXPlatformNodeDelegateMacTest,
        GetNameReturnsNodeNameWhenNameAndTitleAreDifferent) {
-  EXPECT_EQ(view_->GetPlatformNodeDelegate()->GetName(),
+  EXPECT_NE(view_->GetPlatformNodeDelegate()->GetName(),
             *view_->GetDescription());
 
   view_->SetName(kDifferentNodeName);
@@ -96,7 +96,7 @@ TEST_F(ViewAXPlatformNodeDelegateMacTest,
 }
 
 TEST_F(ViewAXPlatformNodeDelegateMacTest, GetNameReturnsNodeNameForNonDialog) {
-  EXPECT_EQ(view_->GetPlatformNodeDelegate()->GetName(),
+  EXPECT_NE(view_->GetPlatformNodeDelegate()->GetName(),
             *view_->GetDescription());
 
   view_->SetRole(ax::mojom::Role::kDesktop);
@@ -106,7 +106,7 @@ TEST_F(ViewAXPlatformNodeDelegateMacTest, GetNameReturnsNodeNameForNonDialog) {
 
 TEST_F(ViewAXPlatformNodeDelegateMacTest,
        GetNameReturnsNodeNameWhenDescriptionIsNotSet) {
-  EXPECT_EQ(view_->GetPlatformNodeDelegate()->GetName(),
+  EXPECT_NE(view_->GetPlatformNodeDelegate()->GetName(),
             *view_->GetDescription());
 
   view_->SetDescription(absl::nullopt);
@@ -116,7 +116,7 @@ TEST_F(ViewAXPlatformNodeDelegateMacTest,
 
 TEST_F(ViewAXPlatformNodeDelegateMacTest,
        GetNameReturnsNodeNameWhenDescriptionIsAnEmptyString) {
-  EXPECT_EQ(view_->GetPlatformNodeDelegate()->GetName(),
+  EXPECT_NE(view_->GetPlatformNodeDelegate()->GetName(),
             *view_->GetDescription());
 
   view_->SetDescription("");
