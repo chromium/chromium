@@ -70739,6 +70739,23 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Odd width and height"/>
 </enum>
 
+<enum name="OffersSuggestionsEvent">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Suggestion shown in popup"/>
+  <int value="2" label="Suggestion shown in popup (once)"/>
+  <int value="3" label="Suggestion selected in popup"/>
+  <int value="4" label="Suggestion selected in popup (once)"/>
+  <int value="5" label="Footer suggestion see offer details selected in popup"/>
+  <int value="6"
+      label="Footer suggestion see offer details selected in popup (once)"/>
+</enum>
+
+<enum name="OffersSuggestionsPopupEvent">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Suggestions popup shown"/>
+  <int value="2" label="Suggestions popup shown (once)"/>
+</enum>
+
 <enum name="OfficeFileHandler">
   <int value="0" label="Other"/>
   <int value="1" label="Web Drive Office"/>

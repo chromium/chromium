@@ -104,7 +104,8 @@ void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
     int frontend_id) {
   if (merchant_promo_code_manager_ &&
-      frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
+      (frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY ||
+       frontend_id == POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS)) {
     merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(value,
                                                                   frontend_id);
   } else {

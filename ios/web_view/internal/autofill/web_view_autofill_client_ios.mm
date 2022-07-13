@@ -327,8 +327,7 @@ void WebViewAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }
 
-void WebViewAutofillClientIOS::OnPromoCodeSuggestionsFooterSelected(
-    const GURL& url) {
+void WebViewAutofillClientIOS::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   web_state_->OpenURL(web::WebState::OpenURLParams(
       url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,

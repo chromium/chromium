@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 
 namespace autofill::autofill_metrics {
@@ -45,6 +46,44 @@ void LogStoredOfferMetrics(
         "Autofill.Offer.StoredOfferCount.CardLinkedOffer",
         offer_count[AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER]);
   }
+}
+
+void LogOffersSuggestionsPopupShown(bool first_time_being_logged) {
+  if (first_time_being_logged) {
+    // We log that the offers suggestions popup was shown once for this field
+    // while autofilling if it is the first time being logged.
+    base::UmaHistogramEnumeration(
+        "Autofill.Offer.SuggestionsPopupShown",
+        autofill::autofill_metrics::OffersSuggestionsPopupEvent::
+            kOffersSuggestionsPopupShownOnce);
+  }
+
+  // We log every time the offers suggestions popup is shown, regardless if the
+  // user is repeatedly clicking the same field.
+  base::UmaHistogramEnumeration(
+      "Autofill.Offer.SuggestionsPopupShown",
+      autofill::autofill_metrics::OffersSuggestionsPopupEvent::
+          kOffersSuggestionsPopupShown);
+}
+
+void LogIndividualOfferSuggestionEvent(
+    OffersSuggestionsEvent event,
+    AutofillOfferData::OfferType offer_type) {
+  std::string histogram_name = "Autofill.Offer.Suggestion";
+
+  // Switch to different sub-histogram depending on offer type being displayed.
+  switch (offer_type) {
+    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+      histogram_name += ".GPayPromoCodeOffer";
+      break;
+    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
+    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
+    case AutofillOfferData::OfferType::UNKNOWN:
+      NOTREACHED();
+      return;
+  }
+
+  base::UmaHistogramEnumeration(histogram_name, event);
 }
 
 }  // namespace autofill::autofill_metrics

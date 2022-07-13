@@ -139,7 +139,7 @@ class AwAutofillClient : public autofill::AutofillClient,
   bool ShouldShowSigninPromo() override;
   bool AreServerCardsSupported() const override;
   void ExecuteCommand(int id) override;
-  void OnPromoCodeSuggestionsFooterSelected(const GURL& url) override;
+  void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
 
   // RiskDataLoader:
   void LoadRiskData(
