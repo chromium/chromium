@@ -269,6 +269,21 @@
             ]
         }
     ],
+    "AndroidScrollOptimizations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidScrollOptimizations"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSearchEnginePromoV2": [
         {
             "platforms": [
