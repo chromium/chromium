@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/guid.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/no_destructor.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/hash_util.h"
@@ -17,8 +17,75 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_bookmarks {
+
+namespace {
+
+// A helper wrapper used to compare UniquePosition with positions before the
+// first and after the last elements.
+class UniquePositionWrapper {
+ public:
+  static UniquePositionWrapper Min() {
+    return UniquePositionWrapper(MinUniquePosition{});
+  }
+
+  static UniquePositionWrapper Max() {
+    return UniquePositionWrapper(MaxUniquePosition{});
+  }
+
+  // |unique_position| must be valid.
+  static UniquePositionWrapper ForValidUniquePosition(
+      syncer::UniquePosition unique_position) {
+    DCHECK(unique_position.IsValid());
+    return UniquePositionWrapper(std::move(unique_position));
+  }
+
+  UniquePositionWrapper(UniquePositionWrapper&&) = default;
+  UniquePositionWrapper& operator=(UniquePositionWrapper&&) = default;
+
+  // Returns valid UniquePosition or invalid one for Min() and Max().
+  const syncer::UniquePosition& GetUniquePosition() const {
+    static const base::NoDestructor<syncer::UniquePosition>
+        kEmptyUniquePosition;
+    if (HoldsUniquePosition()) {
+      return absl::get<syncer::UniquePosition>(value_);
+    }
+    return *kEmptyUniquePosition;
+  }
+
+  bool LessThan(const UniquePositionWrapper& other) const {
+    if (value_.index() != other.value_.index()) {
+      return value_.index() < other.value_.index();
+    }
+    if (!HoldsUniquePosition()) {
+      // Both arguments are MinUniquePosition or MaxUniquePosition, in both
+      // cases they are equal.
+      return false;
+    }
+    return GetUniquePosition().LessThan(other.GetUniquePosition());
+  }
+
+ private:
+  struct MinUniquePosition {};
+  struct MaxUniquePosition {};
+
+  explicit UniquePositionWrapper(absl::variant<MinUniquePosition,
+                                               syncer::UniquePosition,
+                                               MaxUniquePosition> value)
+      : value_(std::move(value)) {}
+
+  bool HoldsUniquePosition() const {
+    return absl::holds_alternative<syncer::UniquePosition>(value_);
+  }
+
+  // The order is used to compare positions.
+  absl::variant<MinUniquePosition, syncer::UniquePosition, MaxUniquePosition>
+      value_;
+};
+
+}  // namespace
 
 BookmarkModelObserverImpl::BookmarkModelObserverImpl(
     const base::RepeatingClosure& nudge_for_commit_closure,
@@ -267,39 +334,100 @@ void BookmarkModelObserverImpl::BookmarkNodeChildrenReordered(
     return;
   }
 
-  // The given node's children got reordered. We need to reorder all the
-  // corresponding sync node.
-  // TODO(crbug.com/1321519): children reordering is used to move one bookmark
-  // on Android, it should be either taken into account here or another bridge
-  // interface should be provided. One approach would be something like:
-  // 1. Find a subsequence of elements in the beginning of the vector that is
-  //    already sorted.
-  // 2. The same for the end.
-  // 3. If the two overlap, adjust so they don't.
-  // 4. Sort the middle, using Between (e.g. recursive implementation).
-  syncer::UniquePosition position;
-  for (const auto& child : node->children()) {
-    const SyncedBookmarkTrackerEntity* entity =
-        bookmark_tracker_->GetEntityForBookmarkNode(child.get());
-    DCHECK(entity);
-
-    const std::string& sync_id = entity->metadata()->server_id();
-    const std::string suffix = syncer::GenerateSyncableBookmarkHash(
-        bookmark_tracker_->model_type_state().cache_guid(), sync_id);
-    const base::Time modification_time = base::Time::Now();
-
-    position = (child == node->children().front())
-                   ? syncer::UniquePosition::InitialPosition(suffix)
-                   : syncer::UniquePosition::After(position, suffix);
-
-    const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-        child.get(), model, position.ToProto(), /*force_favicon_load=*/true);
-
-    bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
-                              modification_time, specifics);
-    // Mark the entity that it needs to be committed.
-    bookmark_tracker_->IncrementSequenceNumber(entity);
+  if (node->children().size() <= 1) {
+    // There is no real change in the order of |node|'s children.
+    return;
   }
+
+  // The given node's children got reordered, all the corresponding sync nodes
+  // need to be reordered. The code is optimized to detect move of only one
+  // bookmark (which is the case on Android platform). There are 2 main cases:
+  // a bookmark moved to left or to right. Moving a bookmark to the first and
+  // last positions are two more special cases. The algorithm iterates over each
+  // bookmark and compares it to the left and right nodes to determine whether
+  // it's ordered or not.
+  //
+  // Each digit below represents bookmark's original position.
+  //
+  // Moving a bookmark to the left: 0123456 -> 0612345.
+  // When processing '6', its unique position is greater than both left and
+  // right nodes.
+  //
+  // Moving a bookmark to the right: 0123456 -> 0234516.
+  // When processing '1', its unique position is less than both left and right
+  // nodes.
+  //
+  // Note that in both cases left node is less than right node. This condition
+  // is checked when iterating over bookmarks and if it's violated, the
+  // algorithm falls back to generating positions for all the following nodes.
+  //
+  // For example, if two nodes are moved to one place: 0123456 -> 0156234 (nodes
+  // '5' and '6' are moved together). In this case, 0156 will remain and when
+  // processing '2', algorithm will fall back to generating unique positions for
+  // nodes '2', '3' and '4'. It will be detected by comparing the next node '3'
+  // with the previous '6'.
+
+  // Store |cur| outside of the loop to prevent parsing UniquePosition twice.
+  UniquePositionWrapper cur = UniquePositionWrapper::ForValidUniquePosition(
+      GetUniquePositionForNode(node->children().front().get()));
+  UniquePositionWrapper prev = UniquePositionWrapper::Min();
+  for (size_t current_index = 0; current_index < node->children().size();
+       ++current_index) {
+    UniquePositionWrapper next = UniquePositionWrapper::Max();
+    if (current_index + 1 < node->children().size()) {
+      next = UniquePositionWrapper::ForValidUniquePosition(
+          GetUniquePositionForNode(node->children()[current_index + 1].get()));
+    }
+
+    // |prev| is the last ordered node. Compare |cur| and |next| with it to
+    // decide whether current node needs to be updated. Consider the following
+    // cases: 0. |prev| < |cur| < |next|: all elements are ordered.
+    // 1. |cur| < |prev| < |next|: update current node and put it between |prev|
+    //                             and |next|.
+    // 2. |cur| < |next| < |prev|: both |cur| and |next| are out of order, fall
+    //                             back to simple approach.
+    // 3. |next| < |cur| < |prev|: same as #2.
+    // 4. |prev| < |next| < |cur|: update current node and put it between |prev|
+    //                             and |next|.
+    // 5. |next| < |prev| < |cur|: consider current node ordered, |next| will be
+    //                             updated on the next step.
+    //
+    // In the following code only cases where current node needs to be updated
+    // are considered (#0 and #5 are omitted because there is nothing to do).
+
+    bool update_current_position = false;
+    if (cur.LessThan(prev)) {
+      // |cur| < |prev|, cases #1, #2 and #3.
+      if (next.LessThan(prev)) {
+        // There are two consecutive nodes which both are out of order (#2, #3):
+        // |prev| > |cur| and |prev| > |next|.
+        // It means that more than one bookmark has been reordered, fall back to
+        // generating unique positions for all the remaining children.
+        //
+        // |current_index| is always not 0 because |prev| cannot be
+        // UniquePositionWrapper::Min() if |next| < |prev|.
+        DCHECK_GT(current_index, 0u);
+        UpdateAllUniquePositionsStartingAt(node, model, current_index);
+        break;
+      }
+      update_current_position = true;
+    } else if (next.LessThan(cur) && prev.LessThan(next)) {
+      // |prev| < |next| < |cur| (case #4).
+      update_current_position = true;
+    }
+
+    if (update_current_position) {
+      cur = UniquePositionWrapper::ForValidUniquePosition(
+          UpdateUniquePositionForNode(node->children()[current_index].get(),
+                                      model, prev.GetUniquePosition(),
+                                      next.GetUniquePosition()));
+    }
+
+    DCHECK(prev.LessThan(cur));
+    prev = std::move(cur);
+    cur = std::move(next);
+  }
+
   nudge_for_commit_closure_.Run();
 }
 
@@ -413,6 +541,72 @@ void BookmarkModelObserverImpl::ProcessDelete(
   bookmark_tracker_->MarkDeleted(entity);
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
+}
+
+syncer::UniquePosition BookmarkModelObserverImpl::GetUniquePositionForNode(
+    const bookmarks::BookmarkNode* node) const {
+  DCHECK(bookmark_tracker_);
+  DCHECK(node);
+  const SyncedBookmarkTrackerEntity* entity =
+      bookmark_tracker_->GetEntityForBookmarkNode(node);
+  DCHECK(entity);
+  return syncer::UniquePosition::FromProto(
+      entity->metadata()->unique_position());
+}
+
+syncer::UniquePosition BookmarkModelObserverImpl::UpdateUniquePositionForNode(
+    const bookmarks::BookmarkNode* node,
+    bookmarks::BookmarkModel* bookmark_model,
+    const syncer::UniquePosition& prev,
+    const syncer::UniquePosition& next) {
+  DCHECK(bookmark_tracker_);
+  DCHECK(node);
+  DCHECK(bookmark_model);
+
+  const SyncedBookmarkTrackerEntity* entity =
+      bookmark_tracker_->GetEntityForBookmarkNode(node);
+  DCHECK(entity);
+  const std::string suffix = syncer::GenerateSyncableBookmarkHash(
+      bookmark_tracker_->model_type_state().cache_guid(),
+      entity->metadata()->server_id());
+  const base::Time modification_time = base::Time::Now();
+
+  syncer::UniquePosition new_unique_position;
+  if (prev.IsValid() && next.IsValid()) {
+    new_unique_position = syncer::UniquePosition::Between(prev, next, suffix);
+  } else if (prev.IsValid()) {
+    new_unique_position = syncer::UniquePosition::After(prev, suffix);
+  } else {
+    new_unique_position = syncer::UniquePosition::Before(next, suffix);
+  }
+
+  sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
+      node, bookmark_model, new_unique_position.ToProto(),
+      /*force_favicon_load=*/true);
+  bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
+                            modification_time, specifics);
+
+  // Mark the entity that it needs to be committed.
+  bookmark_tracker_->IncrementSequenceNumber(entity);
+  return new_unique_position;
+}
+
+void BookmarkModelObserverImpl::UpdateAllUniquePositionsStartingAt(
+    const bookmarks::BookmarkNode* parent,
+    bookmarks::BookmarkModel* bookmark_model,
+    size_t start_index) {
+  DCHECK_GT(start_index, 0u);
+  DCHECK_LT(start_index, parent->children().size());
+
+  syncer::UniquePosition prev =
+      GetUniquePositionForNode(parent->children()[start_index - 1].get());
+  for (size_t current_index = start_index;
+       current_index < parent->children().size(); ++current_index) {
+    // Right position is unknown because it will also be updated.
+    prev = UpdateUniquePositionForNode(parent->children()[current_index].get(),
+                                       bookmark_model, prev,
+                                       /*next=*/syncer::UniquePosition());
+  }
 }
 
 }  // namespace sync_bookmarks

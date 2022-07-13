@@ -93,6 +93,26 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   // over all children before processing the folder itself.
   void ProcessDelete(const bookmarks::BookmarkNode* node);
 
+  // Returns current unique_position from sync metadata for the tracked |node|.
+  syncer::UniquePosition GetUniquePositionForNode(
+      const bookmarks::BookmarkNode* node) const;
+
+  // Updates the unique position in sync metadata for the tracked |node| and
+  // returns the new position. A new position is generated based on the left and
+  // right node's positions. At least one of |prev| and |next| must be valid.
+  syncer::UniquePosition UpdateUniquePositionForNode(
+      const bookmarks::BookmarkNode* node,
+      bookmarks::BookmarkModel* model,
+      const syncer::UniquePosition& prev,
+      const syncer::UniquePosition& next);
+
+  // Updates unique positions for all children from |parent| starting from
+  // |start_index| (must not be 0).
+  void UpdateAllUniquePositionsStartingAt(
+      const bookmarks::BookmarkNode* parent,
+      bookmarks::BookmarkModel* bookmark_model,
+      size_t start_index);
+
   // Points to the tracker owned by the processor. It keeps the mapping between
   // bookmark nodes and corresponding sync server entities.
   const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
