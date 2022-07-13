@@ -274,7 +274,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableTouchpadsInDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableTouchscreensInDiagnosticsApp;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableWireGuard;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnforceAshExtensionKeeplist;
 COMPONENT_EXPORT(ASH_CONSTANTS)

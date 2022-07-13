@@ -639,10 +639,6 @@ const base::Feature kEnableTouchpadsInDiagnosticsApp{
 const base::Feature kEnableTouchscreensInDiagnosticsApp{
     "EnableTouchscreensInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables WireGuard VPN, if running a compatible kernel.
-const base::Feature kEnableWireGuard{"EnableWireGuard",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enforces Ash extension keep-list. Only the extensions/Chrome apps in the
 // keep-list are enabled in Ash.
 const base::Feature kEnforceAshExtensionKeeplist{

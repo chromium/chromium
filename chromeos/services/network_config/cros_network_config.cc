@@ -66,9 +66,6 @@ const char kErrorNotReady[] = "Error.NotReady";
 // IKEv2 string from Shill SupportedVPNType property.
 const char kIKEv2VPNType[] = "ikev2";
 
-// WireGuard string from Shill SupportedVPNType property.
-const char kWireGuardVPNType[] = "wireguard";
-
 // Default traffic counter reset day.
 const int kDefaultResetDay = 1;
 
@@ -1985,8 +1982,7 @@ std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
                 open_vpn.user_authentication_type, &open_vpn_dict);
       type_dict.SetKey(::onc::vpn::kOpenVPN, std::move(open_vpn_dict));
     }
-    if (vpn.wireguard &&
-        base::FeatureList::IsEnabled(ash::features::kEnableWireGuard)) {
+    if (vpn.wireguard) {
       const mojom::WireGuardConfigProperties& wireguard = *vpn.wireguard;
       base::Value wireguard_dict(base::Value::Type::DICTIONARY);
       SetString(::onc::wireguard::kPrivateKey, wireguard.private_key,
@@ -3190,12 +3186,6 @@ void CrosNetworkConfig::OnGetSupportedVpnTypes(
   }
   if (!base::FeatureList::IsEnabled(ash::features::kEnableIkev2Vpn)) {
     auto iter = std::find(result.begin(), result.end(), kIKEv2VPNType);
-    if (iter != result.end()) {
-      result.erase(iter);
-    }
-  }
-  if (!base::FeatureList::IsEnabled(ash::features::kEnableWireGuard)) {
-    auto iter = std::find(result.begin(), result.end(), kWireGuardVPNType);
     if (iter != result.end()) {
       result.erase(iter);
     }

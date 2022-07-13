@@ -99,10 +99,6 @@ bool ShouldIncludeNetworkInList(const NetworkState* network_state,
         !base::FeatureList::IsEnabled(ash::features::kEnableIkev2Vpn)) {
       return false;
     }
-    if (network_state->GetVpnProviderType() == shill::kProviderWireGuard &&
-        !base::FeatureList::IsEnabled(ash::features::kEnableWireGuard)) {
-      return false;
-    }
   }
 
   return true;
