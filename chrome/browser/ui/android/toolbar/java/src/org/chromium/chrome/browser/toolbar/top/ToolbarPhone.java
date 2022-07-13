@@ -1338,8 +1338,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     mToolbarButtonsContainer, canvas, rgbAlpha);
         }
 
-        mToolbarSnapshotState = generateToolbarSnapshotState();
-
         canvas.restore();
     }
 
@@ -1793,6 +1791,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             setVisibility(mPreTextureCaptureVisibility);
             updateShadowVisibility();
             mPreTextureCaptureAlpha = 1f;
+
+            // When texture mode is turned off, we know a capture has just been completed. Update
+            // our snapshot so that we can suppress correctly on the next
+            // #isReadyForTextureCapture() call.
+            mToolbarSnapshotState = generateToolbarSnapshotState();
         }
     }
 
