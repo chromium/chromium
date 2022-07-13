@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -982,6 +983,197 @@ TEST_F(PermissionsUpdaterTest, DesiredActivePermissionsAreFixedOnLoad) {
     EXPECT_TRUE(desired->HasAPIPermission(APIPermissionID::kTab));
     EXPECT_FALSE(desired->HasAPIPermission(APIPermissionID::kBookmark));
   }
+}
+
+class PermissionsUpdaterTestWithEnhancedHostControls
+    : public PermissionsUpdaterTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PermissionsUpdaterTestWithEnhancedHostControls() {
+    const base::Feature& feature =
+        extensions_features::kExtensionsMenuAccessControl;
+    if (GetParam())
+      feature_list_.InitAndEnableFeature(feature);
+    else
+      feature_list_.InitAndDisableFeature(feature);
+  }
+  ~PermissionsUpdaterTestWithEnhancedHostControls() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PermissionsUpdaterTestWithEnhancedHostControls,
+                         testing::Bool());
+
+// Tests the behavior of revoking permissions from the extension while the
+// user has specified a set of sites that all extensions are allowed to run on.
+TEST_P(PermissionsUpdaterTestWithEnhancedHostControls,
+       RevokingPermissionsWithUserPermittedSites) {
+  InitializeEmptyExtensionService();
+
+  // Install and initialize an extension that wants to run everywhere.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("extension").AddPermission("<all_urls>").Build();
+
+  {
+    PermissionsUpdater updater(profile());
+    updater.InitializePermissions(extension.get());
+    updater.GrantActivePermissions(extension.get());
+  }
+
+  // Note that the PermissionsManger requires the extension to be in the
+  // ExtensionRegistry, so add it through the ExtensionService.
+  service()->AddExtension(extension.get());
+
+  const GURL first_url("http://first.example");
+  const GURL second_url("http://second.example");
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  {
+    // Simulate the user allowing all extensions to run on `first_url`.
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserPermittedSite(url::Origin::Create(first_url));
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+
+  auto get_site_access = [extension](const GURL& url) {
+    return extension->permissions_data()->GetPageAccess(url, -1, nullptr);
+  };
+
+  auto has_desired_active_permission_for_url = [extension,
+                                                prefs](const GURL& url) {
+    return prefs->GetDesiredActivePermissions(extension->id())
+        ->effective_hosts()
+        .MatchesURL(url);
+  };
+
+  auto has_runtime_permission_for_url = [extension, prefs](const GURL& url) {
+    return prefs->GetRuntimeGrantedPermissions(extension->id())
+        ->effective_hosts()
+        .MatchesURL(url);
+  };
+
+  auto has_granted_permission_for_url = [extension, prefs](const GURL& url) {
+    return prefs->GetGrantedPermissions(extension->id())
+        ->effective_hosts()
+        .MatchesURL(url);
+  };
+
+  // By default, the extension should have permission to both sites, since it
+  // has access to all URLs.
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_site_access(first_url));
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_site_access(second_url));
+  // The desired permission should include both, as well, as should the
+  // granted.
+  EXPECT_TRUE(has_desired_active_permission_for_url(first_url));
+  EXPECT_TRUE(has_desired_active_permission_for_url(second_url));
+  EXPECT_TRUE(has_granted_permission_for_url(first_url));
+  EXPECT_TRUE(has_granted_permission_for_url(second_url));
+  // The extension does not yet have any runtime granted permissions.
+  EXPECT_FALSE(has_runtime_permission_for_url(first_url));
+  EXPECT_FALSE(has_runtime_permission_for_url(second_url));
+
+  // Withhold host permissions from the extension.
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  // If the enhanced host controls feature is disabled, then both hosts are
+  // withheld.
+  if (!GetParam()) {
+    EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
+              get_site_access(first_url));
+    EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
+              get_site_access(second_url));
+    // There's nothing more we need to test in this case.
+    return;
+  }
+
+  // Otherwise, the feature is enabled, and user host settings are considered
+  // in the permissions adjustment.
+
+  // The extension should be allowed to run on `first_url`, since the
+  // user indicated all extensions can always run there. However, it should not
+  // be allowed on `second_url`.
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_site_access(first_url));
+  EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
+            get_site_access(second_url));
+  // The desired permissions (indicating the extension's desired state) and
+  // the granted permissions (indicating the install-time granted permissions)
+  // should be unchanged, including both sites.
+  EXPECT_TRUE(has_desired_active_permission_for_url(first_url));
+  EXPECT_TRUE(has_desired_active_permission_for_url(second_url));
+  EXPECT_TRUE(has_granted_permission_for_url(first_url));
+  EXPECT_TRUE(has_granted_permission_for_url(second_url));
+  // The runtime permissions should also be unchanged. Even though the extension
+  // is allowed to run on `first_url`, it does not have runtime access to
+  // that site (this is important if the user later removes the site from
+  // permitted sites).
+  EXPECT_FALSE(has_runtime_permission_for_url(first_url));
+  EXPECT_FALSE(has_runtime_permission_for_url(second_url));
+
+  // Now, grant the extension explicit access to `second_url`.
+  ScriptingPermissionsModifier(profile(), extension)
+      .GrantHostPermission(second_url);
+
+  // The extension should now be allowed to run on both sites.
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_site_access(first_url));
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_site_access(second_url));
+  // Desired and granted permissions remain unchanged.
+  EXPECT_TRUE(has_desired_active_permission_for_url(first_url));
+  EXPECT_TRUE(has_desired_active_permission_for_url(second_url));
+  EXPECT_TRUE(has_granted_permission_for_url(first_url));
+  EXPECT_TRUE(has_granted_permission_for_url(second_url));
+  // The extension should have runtime access for `second_url`, since it
+  // was granted explicit access to it by the user.
+  EXPECT_FALSE(has_runtime_permission_for_url(first_url));
+  EXPECT_TRUE(has_runtime_permission_for_url(second_url));
+
+  {
+    // (Temporarily) add `second_url` as a user-permitted site.
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserPermittedSite(url::Origin::Create(second_url));
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+
+  // All sites should be accessible; permissions should be unchanged.
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_site_access(first_url));
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_site_access(second_url));
+  EXPECT_TRUE(has_desired_active_permission_for_url(first_url));
+  EXPECT_TRUE(has_desired_active_permission_for_url(second_url));
+  EXPECT_TRUE(has_granted_permission_for_url(first_url));
+  EXPECT_TRUE(has_granted_permission_for_url(second_url));
+  EXPECT_FALSE(has_runtime_permission_for_url(first_url));
+  EXPECT_TRUE(has_runtime_permission_for_url(second_url));
+
+  // Remove both sites from the permitted sites.
+  {
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->RemoveUserPermittedSite(
+        url::Origin::Create(first_url));
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+  {
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->RemoveUserPermittedSite(
+        url::Origin::Create(second_url));
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+
+  // Now, `first_url` should be withheld, since it's no longer a permitted
+  // site. However, `second_url` should still be accessible, because the
+  // extension had explicit access to that site.
+  EXPECT_EQ(PermissionsData::PageAccess::kWithheld, get_site_access(first_url));
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_site_access(second_url));
+  EXPECT_TRUE(has_desired_active_permission_for_url(first_url));
+  EXPECT_TRUE(has_desired_active_permission_for_url(second_url));
+  EXPECT_TRUE(has_granted_permission_for_url(first_url));
+  EXPECT_TRUE(has_granted_permission_for_url(second_url));
+  EXPECT_FALSE(has_runtime_permission_for_url(first_url));
+  EXPECT_TRUE(has_runtime_permission_for_url(second_url));
 }
 
 }  // namespace extensions

@@ -460,4 +460,59 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
   }
 }
 
+// Tests that sites the user indicated all extensions may run on are still
+// available to extensions after a permissions withholding change.
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+                       UserPermittedSitesAreAppliedOnWithholdingChange) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "host_permissions": ["<all_urls>"]
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL user_permitted_site("https://allowed.example");
+  const GURL non_user_permitted_site("https://not-allowed.example");
+
+  AddUserPermittedSite(user_permitted_site);
+
+  // Without withholding permissions, the extension may run on both sites.
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+            extension->permissions_data()->GetPageAccess(
+                user_permitted_site, extension_misc::kUnknownTabId, nullptr));
+  EXPECT_EQ(
+      PermissionsData::PageAccess::kAllowed,
+      extension->permissions_data()->GetPageAccess(
+          non_user_permitted_site, extension_misc::kUnknownTabId, nullptr));
+
+  WithholdExtensionPermissions(*extension);
+
+  // Once permissions are withheld, with the feature enabled, the extension may
+  // still run on the user-permitted site (without the feature enabled, the
+  // site is withheld).
+  if (GetParam()) {
+    EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+              extension->permissions_data()->GetPageAccess(
+                  user_permitted_site, extension_misc::kUnknownTabId, nullptr));
+  } else {
+    EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
+              extension->permissions_data()->GetPageAccess(
+                  user_permitted_site, extension_misc::kUnknownTabId, nullptr));
+  }
+
+  // Non-permitted sites remain withheld with and without the feature enabled.
+  EXPECT_EQ(
+      PermissionsData::PageAccess::kWithheld,
+      extension->permissions_data()->GetPageAccess(
+          non_user_permitted_site, extension_misc::kUnknownTabId, nullptr));
+}
+
 }  // namespace extensions

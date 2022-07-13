@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/site_permissions_helper.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/permissions_updater.h"
@@ -13,9 +15,12 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/test/permissions_manager_waiter.h"
 
 namespace extensions {
 
@@ -357,6 +362,109 @@ TEST_F(SitePermissionsHelperUnitTest, CanSelectSiteAccess_ActiveTab) {
                                                          SiteAccess::kOnSite));
   EXPECT_FALSE(permissions_helper()->CanSelectSiteAccess(
       *extension, url, SiteAccess::kOnAllSites));
+}
+
+class SitePermissionsHelperWithUserHostControlsUnitTest
+    : public SitePermissionsHelperUnitTest {
+ public:
+  SitePermissionsHelperWithUserHostControlsUnitTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+  ~SitePermissionsHelperWithUserHostControlsUnitTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that setting an extension to on-click retains its access to
+// sites the user explicitly marked as ones that all extensions may run on.
+TEST_F(SitePermissionsHelperWithUserHostControlsUnitTest,
+       DowngradingFromAllSitesToOnClickAppliesUserPermittedSites) {
+  auto extension = InstallExtensionWithPermissions(
+      "extension", /*host_permissions=*/{"<all_urls>"}, /*permissions=*/{});
+
+  const GURL user_permitted_site("https://allowed.example");
+  const GURL non_user_permitted_site("https://not-allowed.example");
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  {
+    // Add a user-permitted site.
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserPermittedSite(
+        url::Origin::Create(user_permitted_site));
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+
+  auto* user_permitted_contents = AddTab(user_permitted_site);
+  auto* non_user_permitted_contents = AddTab(non_user_permitted_site);
+
+  // Right now, the extension should be allowed to run everywhere (on both
+  // `user_permitted_site` and `non_user_permitted_site`).
+  EXPECT_EQ(
+      SitePermissionsHelper::SiteAccess::kOnAllSites,
+      permissions_helper()->GetSiteAccess(*extension, user_permitted_site));
+  EXPECT_EQ(SitePermissionsHelper::SiteInteraction::kGranted,
+            permissions_helper()->GetSiteInteraction(*extension,
+                                                     user_permitted_contents));
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+            extension->permissions_data()->GetPageAccess(
+                user_permitted_site, extension_misc::kUnknownTabId, nullptr));
+  EXPECT_EQ(
+      SitePermissionsHelper::SiteAccess::kOnAllSites,
+      permissions_helper()->GetSiteAccess(*extension, non_user_permitted_site));
+  EXPECT_EQ(SitePermissionsHelper::SiteInteraction::kGranted,
+            permissions_helper()->GetSiteInteraction(
+                *extension, non_user_permitted_contents));
+  EXPECT_EQ(
+      PermissionsData::PageAccess::kAllowed,
+      extension->permissions_data()->GetPageAccess(
+          non_user_permitted_site, extension_misc::kUnknownTabId, nullptr));
+
+  {
+    // Switch the extension from on all sites to on-click.
+    ExtensionActionRunner* action_runner =
+        ExtensionActionRunner::GetForWebContents(non_user_permitted_contents);
+    ASSERT_TRUE(action_runner);
+    action_runner->accept_bubble_for_testing(true);
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_helper()->UpdateSiteAccess(
+        *extension, non_user_permitted_contents,
+        SitePermissionsHelper::SiteAccess::kOnClick);
+    waiter.WaitForExtensionPermissionsUpdate();
+  }
+
+  // The extension should now be able to run on `user_permitted` site
+  // automatically, since it's a user-permitted site.
+
+  // TODO(https://crbug.com/1268198): The following check should be in place:
+  // EXPECT_EQ(SitePermissionsHelper::SiteAccess::kOnSite,
+  //           permissions_helper()->GetSiteAccess(
+  //               *extension, user_permitted_site));
+  // However, currently PermissionsManager::GetSiteAccess() (which is used by
+  // SitePermissionsHelper::GetSiteAccess()) doesn't take user-permitted sites
+  // into account.
+  EXPECT_EQ(
+      SitePermissionsHelper::SiteAccess::kOnClick,
+      permissions_helper()->GetSiteAccess(*extension, user_permitted_site));
+  EXPECT_EQ(SitePermissionsHelper::SiteInteraction::kGranted,
+            permissions_helper()->GetSiteInteraction(*extension,
+                                                     user_permitted_contents));
+  EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
+            extension->permissions_data()->GetPageAccess(
+                user_permitted_site, extension_misc::kUnknownTabId, nullptr));
+
+  // Non-user-permitted sites should remain withheld.
+  EXPECT_EQ(
+      SitePermissionsHelper::SiteAccess::kOnClick,
+      permissions_helper()->GetSiteAccess(*extension, non_user_permitted_site));
+  EXPECT_EQ(SitePermissionsHelper::SiteInteraction::kWithheld,
+            permissions_helper()->GetSiteInteraction(
+                *extension, non_user_permitted_contents));
+  EXPECT_EQ(
+      PermissionsData::PageAccess::kWithheld,
+      extension->permissions_data()->GetPageAccess(
+          non_user_permitted_site, extension_misc::kUnknownTabId, nullptr));
 }
 
 }  // namespace extensions
