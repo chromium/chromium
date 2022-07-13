@@ -3880,7 +3880,7 @@
 <translation id="4742334355511750246">ఇమేజ్‌లను చూపడానికి అనుమతించబడలేదు</translation>
 <translation id="4742970037960872810">హైలైట్‌ను తీసివేయండి</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />అప్లికేషన్‌లను ఎలా అప్‌డేట్ చేయాలో తెలుసుకోండి<ph name="END_LINK" /></translation>
-<translation id="4744981231093950366">{NUM_TABS,plural, =1{సైట్‌ను అన్‌మ్యూట్ చేయి}other{సైట్‌లను అన్‌మ్యూట్ చేయి}}</translation>
+<translation id="4744981231093950366">{NUM_TABS,plural, =1{సైట్‌ను అన్‌మ్యూట్ చేయండి}other{సైట్‌లను అన్‌మ్యూట్ చేయండి}}</translation>
 <translation id="474609389162964566">"Ok Google"తో మీ Assistantను యాక్సెస్ చేయండి</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">అసాధారణ కీబోర్డ్‌లు, గేమ్ కంట్రోలర్‌లు, అలాగే ఇతర పరికరాలను ఉపయోగించే ఫీచర్‌ల కోసం సైట్‌లు సాధారణంగా HID పరికరాలకు కనెక్ట్ అవుతాయి</translation>
@@ -4104,7 +4104,7 @@
 <translation id="4972129977812092092">ప్రింటర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="4972164225939028131">పాస్‌వర్డ్ తప్పు</translation>
 <translation id="4972737347717125191">వర్చువల్ రియాలిటీ పరికరాలు, డేటాను ఉపయోగించడానికి సైట్‌లు అడగగలవు</translation>
-<translation id="4973325300212422370">{NUM_TABS,plural, =1{సైట్‌ని మ్యూట్ చేయండి}other{సైట్‌లను మ్యూట్ చేయండి}}</translation>
+<translation id="4973325300212422370">{NUM_TABS,plural, =1{సైట్‌ను మ్యూట్ చేయండి}other{సైట్‌లను మ్యూట్ చేయండి}}</translation>
 <translation id="497403230787583386">సెక్యూరిటీ చెక్‌లు పూర్తయ్యాయి. మీ డాక్యుమెంట్ ప్రింట్ చేయబడుతుంది.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">యాక్సెస్‌ను నిర్ధారించండి</translation>
@@ -7005,7 +7005,7 @@
 <translation id="7870790288828963061">సరికొత్త వెర్షన్ అందుబాటులో ఉన్న కియోస్క్ యాప్‌లేవీ కనుగొనబడలేదు. అప్‌డేట్ చేయడానికి ఏదీ లేదు. దయచేసి USB స్టిక్‌ను తీసివేయండి.</translation>
 <translation id="7871109039747854576">అభ్యర్థి లిస్ట్‌ను పేజీ చేయడానికి <ph name="COMMA" />, <ph name="PERIOD" /> కీలను ఉపయోగించండి</translation>
 <translation id="787268756490971083">ఆఫ్ చేయబడి ఉంది</translation>
-<translation id="7872758299142009420">చాలా ఎక్కువ నెస్ట్ చేయబడిన గ్రూప్‌లు: <ph name="ERROR_LINE" /></translation>
+<translation id="7872758299142009420">చాలా ఎక్కువ Nest చేయబడిన గ్రూప్‌లు: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome నేపథ్యాలు</translation>
 <translation id="7876027585589532670">షార్ట్‌కట్‌ను ఎడిట్ చేయడం సాధ్యపడదు</translation>
 <translation id="7877451762676714207">తెలియని సర్వర్ ఎర్రర్. దయచేసి మళ్లీ ప్రయత్నించండి లేదా సర్వర్ నిర్వాహకుడిని సంప్రదించండి.</translation>
@@ -7896,7 +7896,7 @@
 <translation id="8761945298804995673">ఈ వినియోగదారు ఇప్పటికే ఉన్నారు.</translation>
 <translation id="8762886931014513155">మీ <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయాలి</translation>
 <translation id="8763927697961133303">USB పరికరం</translation>
-<translation id="87646919272181953">Google ఫోటోల ఆల్బమ్</translation>
+<translation id="87646919272181953">Google Photos ఆల్బమ్</translation>
 <translation id="8767621466733104912">అందరు వినియోగదారుల కోసం Chromeను ఆటోమేటిక్‌గా అప్‌డేట్ చేయి</translation>
 <translation id="8767765348545497220">సహాయ బబుల్‌ను మూసివేయి</translation>
 <translation id="8769901904650373714">Steamను సెటప్ చేయడంలో సమస్య ఏర్పడింది</translation>

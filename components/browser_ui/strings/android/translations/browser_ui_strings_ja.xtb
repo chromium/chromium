@@ -156,7 +156,7 @@
 <translation id="4994033804516042629">連絡先が見つかりませんでした</translation>
 <translation id="4996978546172906250">共有方法</translation>
 <translation id="5014906230196386306">Cookie を消去しますか？</translation>
-<translation id="5039804452771397117">許可</translation>
+<translation id="5039804452771397117">許可する</translation>
 <translation id="5048398596102334565">サイトによるモーション センサーへのアクセスを許可する（推奨）</translation>
 <translation id="5050380848339752099">このサイトの情報がシークレット モードの外部のアプリに共有されようとしています。</translation>
 <translation id="5063480226653192405">使用状況</translation>
@@ -191,7 +191,7 @@
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5649053991847567735">自動ダウンロード</translation>
 <translation id="5668404140385795438">ウェブサイトのズーム防止リクエストを上書きします</translation>
-<translation id="5677928146339483299">ブロック中</translation>
+<translation id="5677928146339483299">ブロック</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="5690795753582697420">Android の設定でカメラがオフになっています</translation>
 <translation id="5719847187258001597"><ph name="ORIGIN" /> またはホーム画面の同アプリにより保存されたすべてのデータおよび Cookie が削除されます。</translation>

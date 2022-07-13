@@ -145,7 +145,7 @@
           <ph name="LIST_ITEM" />你的雇主或學校
           <ph name="LIST_ITEM" />你的網際網路服務供應商
         <ph name="END_LIST" /></translation>
-<translation id="1337692097987160377">共用此分頁</translation>
+<translation id="1337692097987160377">分享此分頁</translation>
 <translation id="1339601241726513588">註冊網域：</translation>
 <translation id="1340482604681802745">取件地址</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -1220,7 +1220,7 @@
 <translation id="4306812610847412719">剪貼簿</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
-<translation id="4314815835985389558">管理同步功能資料</translation>
+<translation id="4314815835985389558">管理同步資料</translation>
 <translation id="4318312030194671742">繪製預覽合成器服務</translation>
 <translation id="4318566738941496689">你的裝置名稱和網路位址</translation>
 <translation id="4325600325087822253">紙匣 17</translation>

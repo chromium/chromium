@@ -145,7 +145,7 @@
           <ph name="LIST_ITEM" />고용주 또는 학교
           <ph name="LIST_ITEM" />인터넷 서비스 제공업체
         <ph name="END_LIST" /></translation>
-<translation id="1337692097987160377">탭 공유</translation>
+<translation id="1337692097987160377">이 탭 공유</translation>
 <translation id="1339601241726513588">등록 도메인:</translation>
 <translation id="1340482604681802745">수령 주소</translation>
 <translation id="1346748346194534595">오른쪽</translation>
@@ -259,7 +259,7 @@
 <translation id="1592005682883173041">로컬 데이터 액세스</translation>
 <translation id="1594030484168838125">선택</translation>
 <translation id="1596296697375291157">스릴러, 범죄 및 미스터리 영화</translation>
-<translation id="160851722280695521">Chrome 공룡 게임 플레이</translation>
+<translation id="160851722280695521">Chrome 공룡 달리기 게임 플레이</translation>
 <translation id="161042844686301425">청록색</translation>
 <translation id="1611101756749861742">2번째 롤</translation>
 <translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
@@ -602,7 +602,7 @@
 <translation id="2557417190997681027">비즈니스 여행</translation>
 <translation id="2562087035394240049">노하우, DIY 및 전문가 콘텐츠</translation>
 <translation id="2563042576090522782">신혼여행 및 로맨틱 휴가</translation>
-<translation id="2570734079541893434">설정 관리하기</translation>
+<translation id="2570734079541893434">설정 관리</translation>
 <translation id="2573834589046842510">인쇄 및 출판</translation>
 <translation id="257674075312929031">그룹화</translation>
 <translation id="2576880857912732701">보안 설정 관리 버튼, Chrome 설정에서 세이프 브라우징 등의 기능을 관리하려면 Enter를 누르세요</translation>
