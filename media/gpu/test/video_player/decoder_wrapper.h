@@ -13,7 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/threading/thread.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -49,7 +50,7 @@ struct DecoderWrapperConfig {
 // This class wraps the VideoDecoder implementation and associated
 // FrameRendererDummy and, maybe, VideoFrameProcessors. It maintains the
 // communication between them, notifies |event_cb| of events and does all the
-// necessary thread jumping between the parent thread and the internal worker
+// necessary thread jumping between the parent thread and the dedicated worker
 // thread.
 class DecoderWrapper {
  public:
@@ -104,11 +105,11 @@ class DecoderWrapper {
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
       const DecoderWrapperConfig& config);
 
-  // All methods called ...Task() below are executed on |worker_thread_|.
+  // All methods called ...Task() below are executed on |worker_task_runner_|.
 
   // Creates a new |decoder_|, returns whether creating was successful.
-  bool CreateDecoder();
-  void CreateDecoderTask(bool* success, base::WaitableEvent* done);
+  void CreateDecoder();
+  void CreateDecoderTask(base::WaitableEvent* done);
   void DestroyDecoderTask(base::WaitableEvent* done);
 
   // Methods below are the equivalent of the public homonym ones.
@@ -118,7 +119,7 @@ class DecoderWrapper {
   void ResetTask();
 
   // Instruct the decoder to decode the next video stream fragment on the
-  // |worker_thread_|.
+  // |worker_task_runner_|.
   void DecodeNextFragmentTask();
 
   // Callbacks for |decoder_|. See media::VideoDecoder.
@@ -147,7 +148,7 @@ class DecoderWrapper {
       GUARDED_BY_CONTEXT(worker_sequence_checker_);
   const DecoderWrapperConfig decoder_wrapper_config_;
 
-  base::Thread worker_thread_;
+  const scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner_;
 
   DecoderWrapperState state_ GUARDED_BY_CONTEXT(worker_sequence_checker_);
 

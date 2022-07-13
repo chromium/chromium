@@ -39,8 +39,6 @@ const char* EventName(VideoPlayerEvent event) {
 }
 }  // namespace
 
-VideoPlayer::VideoPlayer() : event_cv_(&event_lock_) {}
-
 VideoPlayer::~VideoPlayer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(4);
@@ -53,32 +51,8 @@ std::unique_ptr<VideoPlayer> VideoPlayer::Create(
     const DecoderWrapperConfig& config,
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
-  auto video_player = base::WrapUnique(new VideoPlayer());
-  if (!video_player->CreateWrapper(config, std::move(frame_renderer),
-                                   std::move(frame_processors))) {
-    return nullptr;
-  }
-  return video_player;
-}
-
-bool VideoPlayer::CreateWrapper(
-    const DecoderWrapperConfig& config,
-    std::unique_ptr<FrameRendererDummy> frame_renderer,
-    std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(frame_renderer);
-  DVLOGF(4);
-
-  // base::Unretained is safe here because |decoder_wrapper_| is fully owned.
-  EventCallback event_cb =
-      base::BindRepeating(&VideoPlayer::NotifyEvent, base::Unretained(this));
-
-  decoder_wrapper_ = DecoderWrapper::Create(
-      event_cb, std::move(frame_renderer), std::move(frame_processors), config);
-
-  LOG_IF(ERROR, !decoder_wrapper_) << __func__ << "(): "
-                                   << "Failed to create resources";
-  return !!decoder_wrapper_;
+  return base::WrapUnique(new VideoPlayer(config, std::move(frame_renderer),
+                                          std::move(frame_processors)));
 }
 
 void VideoPlayer::SetEventWaitTimeout(base::TimeDelta timeout) {
@@ -201,6 +175,20 @@ size_t VideoPlayer::GetResetDoneCount() const {
 size_t VideoPlayer::GetFrameDecodedCount() const {
   return GetEventCount(VideoPlayerEvent::kFrameDecoded);
 }
+
+VideoPlayer::VideoPlayer(
+    const DecoderWrapperConfig& config,
+    std::unique_ptr<FrameRendererDummy> frame_renderer,
+    std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors)
+    : decoder_wrapper_(DecoderWrapper::Create(
+          // base::Unretained is safe here because |decoder_wrapper_| is fully
+          // owned.
+          base::BindRepeating(&VideoPlayer::NotifyEvent,
+                              base::Unretained(this)),
+          std::move(frame_renderer),
+          std::move(frame_processors),
+          config)),
+      event_cv_(&event_lock_) {}
 
 bool VideoPlayer::NotifyEvent(VideoPlayerEvent event) {
   base::AutoLock auto_lock(event_lock_);

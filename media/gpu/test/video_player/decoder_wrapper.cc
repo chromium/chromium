@@ -9,7 +9,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner_thread_mode.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "media/base/media_util.h"
 #include "media/base/waiting.h"
@@ -54,8 +55,13 @@ DecoderWrapper::DecoderWrapper(
       frame_renderer_(std::move(renderer)),
       frame_processors_(std::move(frame_processors)),
       decoder_wrapper_config_(config),
-      worker_thread_("VDAClientDecoderThread"),
+      worker_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
+           base::WithBaseSyncPrimitives()},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
       state_(DecoderWrapperState::kUninitialized) {
+  DCHECK(event_cb_);
+  DCHECK(frame_renderer_);
   DETACH_FROM_SEQUENCE(worker_sequence_checker_);
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
@@ -64,13 +70,11 @@ DecoderWrapper::DecoderWrapper(
 DecoderWrapper::~DecoderWrapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
 
-  if (worker_thread_.IsRunning()) {
-    base::WaitableEvent done;
-    worker_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DecoderWrapper::DestroyDecoderTask, weak_this_, &done));
-    done.Wait();
-  }
+  base::WaitableEvent done;
+  worker_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DecoderWrapper::DestroyDecoderTask, weak_this_, &done));
+  done.Wait();
 
   // Wait until the renderer and frame processors are done before destroying
   // them. This needs to be done after destroying the decoder so no new frames
@@ -79,8 +83,6 @@ DecoderWrapper::~DecoderWrapper() {
   WaitForFrameProcessors();
   frame_renderer_ = nullptr;
   frame_processors_.clear();
-
-  worker_thread_.Stop();
 }
 
 // static
@@ -89,32 +91,21 @@ std::unique_ptr<DecoderWrapper> DecoderWrapper::Create(
     std::unique_ptr<FrameRendererDummy> frame_renderer,
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
     const DecoderWrapperConfig& config) {
-  auto decoder_client =
+  auto wrapper =
       base::WrapUnique(new DecoderWrapper(event_cb, std::move(frame_renderer),
                                           std::move(frame_processors), config));
-  if (!decoder_client->CreateDecoder()) {
-    return nullptr;
-  }
-  return decoder_client;
+  wrapper->CreateDecoder();
+  return wrapper;
 }
 
-bool DecoderWrapper::CreateDecoder() {
+void DecoderWrapper::CreateDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
-  DCHECK(!worker_thread_.IsRunning());
-  DCHECK(event_cb_ && frame_renderer_);
 
-  if (!worker_thread_.Start()) {
-    VLOGF(1) << "Failed to start decoder thread";
-    return false;
-  }
-
-  bool success = false;
   base::WaitableEvent done;
-  worker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DecoderWrapper::CreateDecoderTask, weak_this_,
-                                &success, &done));
+  worker_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DecoderWrapper::CreateDecoderTask, weak_this_, &done));
   done.Wait();
-  return success;
 }
 
 bool DecoderWrapper::WaitForFrameProcessors() {
@@ -134,7 +125,7 @@ void DecoderWrapper::Initialize(const Video* video) {
   DCHECK(video);
 
   base::WaitableEvent done;
-  worker_thread_.task_runner()->PostTask(
+  worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DecoderWrapper::InitializeTask, weak_this_,
                                 video, &done));
   done.Wait();
@@ -143,26 +134,25 @@ void DecoderWrapper::Initialize(const Video* video) {
 void DecoderWrapper::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
 
-  worker_thread_.task_runner()->PostTask(
+  worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DecoderWrapper::PlayTask, weak_this_));
 }
 
 void DecoderWrapper::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
 
-  worker_thread_.task_runner()->PostTask(
+  worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DecoderWrapper::FlushTask, weak_this_));
 }
 
 void DecoderWrapper::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
 
-  worker_thread_.task_runner()->PostTask(
+  worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DecoderWrapper::ResetTask, weak_this_));
 }
 
-void DecoderWrapper::CreateDecoderTask(bool* success,
-                                       base::WaitableEvent* done) {
+void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
   DCHECK_EQ(state_, DecoderWrapperState::kUninitialized);
   ASSERT_TRUE(!decoder_) << "Can't create decoder: already created";
@@ -195,7 +185,6 @@ void DecoderWrapper::CreateDecoderTask(bool* success,
       break;
   }
 
-  *success = (decoder_ != nullptr);
   done->Signal();
 }
 
@@ -222,13 +211,12 @@ void DecoderWrapper::InitializeTask(const Video* video,
   VideoDecoder::InitCB init_cb = base::BindOnce(
       CallbackThunk<decltype(&DecoderWrapper::OnDecoderInitializedTask),
                     DecoderStatus>,
-      weak_this_, worker_thread_.task_runner(),
+      weak_this_, worker_task_runner_,
       &DecoderWrapper::OnDecoderInitializedTask);
   VideoDecoder::OutputCB output_cb = base::BindRepeating(
       CallbackThunk<decltype(&DecoderWrapper::OnFrameReadyTask),
                     scoped_refptr<VideoFrame>>,
-      weak_this_, worker_thread_.task_runner(),
-      &DecoderWrapper::OnFrameReadyTask);
+      weak_this_, worker_task_runner_, &DecoderWrapper::OnFrameReadyTask);
 
   decoder_->Initialize(config, false, nullptr, std::move(init_cb), output_cb,
                        WaitingCB());
@@ -247,10 +235,7 @@ void DecoderWrapper::DestroyDecoderTask(base::WaitableEvent* done) {
   // Invalidate all scheduled tasks.
   weak_this_factory_.InvalidateWeakPtrs();
 
-  // Destroy the decoder. This will destroy all video frames.
-  if (decoder_) {
-    decoder_.reset();
-  }
+  decoder_.reset();
 
   state_ = DecoderWrapperState::kUninitialized;
   done->Signal();
@@ -307,8 +292,7 @@ void DecoderWrapper::DecodeNextFragmentTask() {
 
   VideoDecoder::DecodeCB decode_cb = base::BindOnce(
       CallbackThunk<decltype(&DecoderWrapper::OnDecodeDoneTask), DecoderStatus>,
-      weak_this_, worker_thread_.task_runner(),
-      &DecoderWrapper::OnDecodeDoneTask);
+      weak_this_, worker_task_runner_, &DecoderWrapper::OnDecodeDoneTask);
   decoder_->Decode(std::move(bitstream_buffer), std::move(decode_cb));
 
   num_outstanding_decode_requests_++;
@@ -327,8 +311,7 @@ void DecoderWrapper::FlushTask() {
 
   VideoDecoder::DecodeCB flush_done_cb = base::BindOnce(
       CallbackThunk<decltype(&DecoderWrapper::OnFlushDoneTask), DecoderStatus>,
-      weak_this_, worker_thread_.task_runner(),
-      &DecoderWrapper::OnFlushDoneTask);
+      weak_this_, worker_task_runner_, &DecoderWrapper::OnFlushDoneTask);
   decoder_->Decode(DecoderBuffer::CreateEOSBuffer(), std::move(flush_done_cb));
 
   FireEvent(VideoPlayerEvent::kFlushing);
@@ -345,7 +328,7 @@ void DecoderWrapper::ResetTask() {
 
   decoder_->Reset(base::BindOnce(
       CallbackThunk<decltype(&DecoderWrapper::OnResetDoneTask)>, weak_this_,
-      worker_thread_.task_runner(), &DecoderWrapper::OnResetDoneTask));
+      worker_task_runner_, &DecoderWrapper::OnResetDoneTask));
   FireEvent(VideoPlayerEvent::kResetting);
 }
 
@@ -375,7 +358,7 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
   // encoded chunk enqueued at this point) and not in OnFrameReadyTask as it
   // should (naively moving this task there doesn't work because it prevents the
   // V4L2VideoDecoder backend from polling the device driver).
-  worker_thread_.task_runner()->PostDelayedTask(
+  worker_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DecoderWrapper::DecodeNextFragmentTask, weak_this_),
 #if BUILDFLAG(USE_V4L2_CODEC)

@@ -107,15 +107,13 @@ class VideoPlayer {
   size_t GetFrameDecodedCount() const;
 
  private:
-  VideoPlayer();
-
-  bool CreateWrapper(
+  VideoPlayer(
       const DecoderWrapperConfig& config,
       std::unique_ptr<FrameRendererDummy> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
 
   // Notify the video player an event has occurred (e.g. frame decoded). Returns
-  // whether the decoder client should continue decoding frames.
+  // whether |decoder_wrapper_| should continue decoding frames.
   bool NotifyEvent(VideoPlayerEvent event);
 
   std::unique_ptr<DecoderWrapper> decoder_wrapper_;
