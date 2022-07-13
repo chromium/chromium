@@ -514,11 +514,11 @@ const LocalizedErrorMap* LookupErrorMap(const std::string& error_domain,
 
 // Returns a dictionary containing the strings for the settings menu under the
 // app menu, and the advanced settings button.
-base::DictionaryValue GetStandardMenuItemsText() {
-  base::DictionaryValue standard_menu_items_text;
-  standard_menu_items_text.SetStringPath(
-      "settingsTitle", l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE));
-  standard_menu_items_text.SetStringPath(
+base::Value::Dict GetStandardMenuItemsText() {
+  base::Value::Dict standard_menu_items_text;
+  standard_menu_items_text.Set("settingsTitle",
+                               l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE));
+  standard_menu_items_text.Set(
       "advancedTitle",
       l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS));
   return standard_menu_items_text;
@@ -532,19 +532,18 @@ const char* GetIconClassForError(const std::string& error_domain,
              : "icon-generic";
 }
 
-base::DictionaryValue SingleEntryDictionary(base::StringPiece path,
-                                            int message_id) {
-  base::DictionaryValue result;
-  result.SetStringPath(path, l10n_util::GetStringUTF16(message_id));
+base::Value::Dict SingleEntryDictionary(base::StringPiece path,
+                                        int message_id) {
+  base::Value::Dict result;
+  result.Set(path, l10n_util::GetStringUTF16(message_id));
   return result;
 }
 
 // Adds a linked suggestion dictionary entry to the suggestions list.
-void AddLinkedSuggestionToList(
-    const int error_code,
-    const std::string& locale,
-    std::vector<base::Value>& suggestions_summary_list,
-    bool standalone_suggestion) {
+void AddLinkedSuggestionToList(const int error_code,
+                               const std::string& locale,
+                               base::Value::List& suggestions_summary_list,
+                               bool standalone_suggestion) {
   GURL learn_more_url;
   std::u16string suggestion_string =
       standalone_suggestion
@@ -571,11 +570,10 @@ void AddLinkedSuggestionToList(
   repl.SetQueryStr(query);
   GURL learn_more_url_with_locale = learn_more_url.ReplaceComponents(repl);
 
-  base::DictionaryValue suggestion_list_item;
-  suggestion_list_item.SetStringPath("summary", suggestion_string);
-  suggestion_list_item.SetStringPath("learnMoreUrl",
-                                     learn_more_url_with_locale.spec());
-  suggestions_summary_list.push_back(std::move(suggestion_list_item));
+  base::Value::Dict suggestion_list_item;
+  suggestion_list_item.Set("summary", suggestion_string);
+  suggestion_list_item.Set("learnMoreUrl", learn_more_url_with_locale.spec());
+  suggestions_summary_list.Append(std::move(suggestion_list_item));
 }
 
 // Check if a suggestion is in the bitmap of suggestions.
@@ -590,14 +588,13 @@ bool IsOnlySuggestion(int suggestions, int suggestion) {
 
 // Creates a list of suggestions that a user may try to resolve a particular
 // network error. Appears above the fold underneath heading and intro paragraph.
-void GetSuggestionsSummaryList(
-    int error_code,
-    base::Value::Dict& error_strings,
-    int suggestions,
-    const std::string& locale,
-    std::vector<base::Value>& suggestions_summary_list,
-    bool can_show_network_diagnostics_dialog,
-    const GURL& failed_url) {
+void GetSuggestionsSummaryList(int error_code,
+                               base::Value::Dict& error_strings,
+                               int suggestions,
+                               const std::string& locale,
+                               base::Value::List& suggestions_summary_list,
+                               bool can_show_network_diagnostics_dialog,
+                               const GURL& failed_url) {
   // Remove the diagnostic tool suggestion if the platform doesn't support it
   // or the url isn't valid.
   if (!can_show_network_diagnostics_dialog || !failed_url.is_valid() ||
@@ -611,21 +608,21 @@ void GetSuggestionsSummaryList(
   if (IsOnlySuggestion(suggestions, SUGGEST_CONTACT_ADMINISTRATOR)) {
     DCHECK(suggestions_summary_list.empty());
     DCHECK(!(suggestions & ~SUGGEST_CONTACT_ADMINISTRATOR));
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CONTACT_ADMIN_SUMMARY_STANDALONE));
     return;
   }
   if (IsSuggested(suggestions, SUGGEST_CONTACT_ADMINISTRATOR)) {
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CONTACT_ADMIN_SUMMARY));
   }
 
   if (IsOnlySuggestion(suggestions, SUGGEST_COMPLETE_SETUP)) {
     DCHECK(suggestions_summary_list.empty());
     DCHECK(!(suggestions & ~SUGGEST_COMPLETE_SETUP));
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CONNECTION_SUMMARY));
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_COMPLETE_SETUP_SUMMARY));
     return;
   }
@@ -638,7 +635,7 @@ void GetSuggestionsSummaryList(
     // way, so just add a suggestion instead.
     // TODO(mmenke):  Make the reload button bring up the repost confirmation
     //                dialog for pages resulting from posts.
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_RELOAD_REPOST_SUMMARY));
     return;
   }
@@ -651,12 +648,12 @@ void GetSuggestionsSummaryList(
     if (failed_origin.opaque())
       return;
 
-    base::DictionaryValue suggestion;
-    suggestion.SetStringPath("summary",
-                             l10n_util::GetStringUTF16(
-                                 IDS_ERRORPAGES_SUGGESTION_NAVIGATE_TO_ORIGIN));
-    suggestion.SetStringPath("originURL", failed_origin.Serialize());
-    suggestions_summary_list.push_back(std::move(suggestion));
+    base::Value::Dict suggestion;
+    suggestion.Set("summary",
+                   l10n_util::GetStringUTF16(
+                       IDS_ERRORPAGES_SUGGESTION_NAVIGATE_TO_ORIGIN));
+    suggestion.Set("originURL", failed_origin.Serialize());
+    suggestions_summary_list.Append(std::move(suggestion));
     return;
   }
   DCHECK(!IsSuggested(suggestions, SUGGEST_NAVIGATE_TO_ORIGIN));
@@ -674,14 +671,14 @@ void GetSuggestionsSummaryList(
 
   if (suggestions & SUGGEST_DISABLE_EXTENSION) {
     DCHECK(suggestions_summary_list.empty());
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_DISABLE_EXTENSION_SUMMARY));
     return;
   }
   DCHECK(!IsSuggested(suggestions, SUGGEST_DISABLE_EXTENSION));
 
   if (suggestions & SUGGEST_CHECK_CONNECTION) {
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_SUMMARY));
   }
 
@@ -689,24 +686,24 @@ void GetSuggestionsSummaryList(
   if (IsSuggested(suggestions, SUGGEST_DNS_CONFIG) &&
       IsSuggested(suggestions, SUGGEST_FIREWALL_CONFIG) &&
       IsSuggested(suggestions, SUGGEST_PROXY_CONFIG)) {
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_PROXY_FIREWALL_DNS_SUMMARY));
   } else if (IsSuggested(suggestions, SUGGEST_SECURE_DNS_CONFIG) &&
              IsSuggested(suggestions, SUGGEST_FIREWALL_CONFIG) &&
              IsSuggested(suggestions, SUGGEST_PROXY_CONFIG)) {
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary",
         IDS_ERRORPAGES_SUGGESTION_CHECK_PROXY_FIREWALL_SECURE_DNS_SUMMARY));
   } else if (IsSuggested(suggestions, SUGGEST_FIREWALL_CONFIG) &&
              IsSuggested(suggestions, SUGGEST_ANTIVIRUS_CONFIG)) {
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_FIREWALL_ANTIVIRUS_SUMMARY));
   } else if (IsSuggested(suggestions, SUGGEST_PROXY_CONFIG) &&
              IsSuggested(suggestions, SUGGEST_FIREWALL_CONFIG)) {
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_PROXY_FIREWALL_SUMMARY));
   } else if (IsSuggested(suggestions, SUGGEST_PROXY_CONFIG)) {
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_PROXY_ADDRESS_SUMMARY));
   } else {
     DCHECK(!(suggestions & SUGGEST_PROXY_CONFIG));
@@ -716,23 +713,23 @@ void GetSuggestionsSummaryList(
   }
 #elif BUILDFLAG(IS_ANDROID)
   if (IsSuggested(suggestions, SUGGEST_SECURE_DNS_CONFIG)) {
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_SECURE_DNS_SUMMARY));
   }
 #endif
 
   if (IsSuggested(suggestions, SUGGEST_OFFLINE_CHECKS)) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_TURN_OFF_AIRPLANE_SUMMARY));
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_TURN_ON_DATA_SUMMARY));
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECKING_SIGNAL_SUMMARY));
 #else
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_HARDWARE_SUMMARY));
-    suggestions_summary_list.push_back(SingleEntryDictionary(
+    suggestions_summary_list.Append(SingleEntryDictionary(
         "summary", IDS_ERRORPAGES_SUGGESTION_CHECK_WIFI_SUMMARY));
 #endif
   }
@@ -746,12 +743,12 @@ void GetSuggestionsSummaryList(
             ? IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE
             : IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE;
 
-    suggestions_summary_list.push_back(
+    suggestions_summary_list.Append(
         SingleEntryDictionary("summary", diagose_message_id));
     return;
   }
   if (IsSuggested(suggestions, SUGGEST_DIAGNOSE_TOOL)) {
-    suggestions_summary_list.push_back(
+    suggestions_summary_list.Append(
         SingleEntryDictionary("summary", IDS_ERRORPAGES_SUGGESTION_DIAGNOSE));
   }
 #else
@@ -765,30 +762,30 @@ void GetSuggestionsSummaryList(
 }
 
 // Creates a dictionary with "header" and "body" entries and adds it to `list`.
-void AddSuggestionDetailDictionaryToList(std::vector<base::Value>& list,
+void AddSuggestionDetailDictionaryToList(base::Value::List& list,
                                          int header_message_id,
                                          int body_message_id,
                                          bool append_standard_menu_items) {
-  base::DictionaryValue suggestion_list_item;
+  base::Value::Dict suggestion_list_item;
   if (append_standard_menu_items)
     suggestion_list_item = GetStandardMenuItemsText();
 
   if (header_message_id) {
-    suggestion_list_item.SetStringPath(
-        "header", l10n_util::GetStringUTF16(header_message_id));
+    suggestion_list_item.Set("header",
+                             l10n_util::GetStringUTF16(header_message_id));
   }
   if (body_message_id) {
-    suggestion_list_item.SetStringPath(
-        "body", l10n_util::GetStringUTF16(body_message_id));
+    suggestion_list_item.Set("body",
+                             l10n_util::GetStringUTF16(body_message_id));
   }
-  list.push_back(std::move(suggestion_list_item));
+  list.Append(std::move(suggestion_list_item));
 }
 
 // Certain suggestions have supporting details which get displayed under
 // the "Details" button.
 void AddSuggestionsDetails(int error_code,
                            int suggestions,
-                           std::vector<base::Value>& suggestions_details) {
+                           base::Value::List& suggestions_details) {
   if (suggestions & SUGGEST_CHECK_CONNECTION) {
     AddSuggestionDetailDictionaryToList(suggestions_details,
           IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER,
@@ -1050,8 +1047,8 @@ LocalizedError::PageState LocalizedError::GetPageState(
   }
   result.strings.Set("errorCode", error_string);
 
-  std::vector<base::Value> suggestions_details;
-  std::vector<base::Value> suggestions_summary_list;
+  base::Value::List suggestions_details;
+  base::Value::List suggestions_summary_list;
 
   // Add the reload suggestion, if needed, for pages that didn't come
   // from a post.

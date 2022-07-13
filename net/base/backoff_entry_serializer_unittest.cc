@@ -205,13 +205,11 @@ TEST(BackoffEntrySerializerTest, SerializeNoFailures) {
 // Test that deserialization fails instead of producing an entry with an
 // infinite release time. (Regression test for https://crbug.com/1293904)
 TEST(BackoffEntrySerializerTest, DeserializeNeverInfiniteReleaseTime) {
-  const base::Value kSerialized[] = {
-      base::Value(2),
-      base::Value(2),
-      base::Value("-9223372036854775807"),
-      base::Value("2"),
-  };
-  base::Value serialized(base::make_span(kSerialized));
+  base::Value::List serialized;
+  serialized.Append(2);
+  serialized.Append(2);
+  serialized.Append("-9223372036854775807");
+  serialized.Append("2");
 
   TestTickClock original_ticks;
   original_ticks.set_now(base::TimeTicks() + base::Microseconds(-1));
@@ -220,8 +218,9 @@ TEST(BackoffEntrySerializerTest, DeserializeNeverInfiniteReleaseTime) {
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(-1));
 
   std::unique_ptr<BackoffEntry> entry =
-      BackoffEntrySerializer::DeserializeFromValue(serialized, &base_policy,
-                                                   &original_ticks, time_now);
+      BackoffEntrySerializer::DeserializeFromValue(
+          base::Value(std::move(serialized)), &base_policy, &original_ticks,
+          time_now);
   ASSERT_FALSE(entry);
 }
 

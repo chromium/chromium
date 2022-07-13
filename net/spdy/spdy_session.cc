@@ -302,15 +302,15 @@ base::Value NetLogSpdyInitializedParams(NetLogSource source) {
 
 base::Value NetLogSpdySendSettingsParams(const spdy::SettingsMap* settings) {
   base::Value::Dict dict;
-  std::vector<base::Value> settings_list;
+  base::Value::List settings_list;
   for (const auto& setting : *settings) {
     const spdy::SpdySettingsId id = setting.first;
     const uint32_t value = setting.second;
-    settings_list.emplace_back(
+    settings_list.Append(
         base::StringPrintf("[id:%u (%s) value:%u]", id,
                            spdy::SettingsIdToString(id).c_str(), value));
   }
-  dict.Set("settings", base::Value(std::move(settings_list)));
+  dict.Set("settings", std::move(settings_list));
   return base::Value(std::move(dict));
 }
 
