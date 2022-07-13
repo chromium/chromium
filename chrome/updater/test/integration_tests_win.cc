@@ -1195,7 +1195,7 @@ void RunOfflineInstall(UpdaterScope scope) {
       "        <actions>"
       "          <action event=\"install\" needsadmin=\"false\""
       "            run=\"reg.exe\""
-      "            arguments=\"ADD HKCU\\%ls /t REG_DWORD /v %ls /d 123 /f\"/>"
+      "            arguments=\"ADD %s\\%ls /t REG_DWORD /v %ls /d 123 /f\"/>"
       "        </actions>"
       "      </manifest>"
       "    </updatecheck>"
@@ -1205,7 +1205,10 @@ void RunOfflineInstall(UpdaterScope scope) {
       "  </app>"
       "</response>";
 
-  DeleteRegKey(HKEY_CURRENT_USER, kTestRegKey);
+  HKEY key_hive =
+      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+
+  DeleteRegKey(key_hive, kTestRegKey);
 
   wchar_t reg_exe_path[MAX_PATH] = {0};
   DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\reg.exe",
@@ -1224,7 +1227,9 @@ void RunOfflineInstall(UpdaterScope scope) {
   int64_t exe_size = 0;
   EXPECT_TRUE(base::GetFileSize(exe_path, &exe_size));
   const std::string manifest =
-      base::StringPrintf(kManifestFormat, exe_size, kTestRegKey, kTestRegValue);
+      base::StringPrintf(kManifestFormat, exe_size,
+                         scope == UpdaterScope::kSystem ? "HKLM" : "HKCU",
+                         kTestRegKey, kTestRegValue);
   EXPECT_TRUE(base::WriteFile(manifest_path, manifest));
 
   // Copy app installer.
@@ -1255,8 +1260,9 @@ void RunOfflineInstall(UpdaterScope scope) {
   EXPECT_TRUE(process.IsValid());
 
   // Dismiss the installation completion dialog, then wait for the process exit.
-  WaitFor(base::BindRepeating(
-      [](const wchar_t* test_key_name, const wchar_t* test_value_name) {
+  EXPECT_TRUE(WaitFor(base::BindRepeating(
+      [](HKEY key_hive, const wchar_t* test_key_name,
+         const wchar_t* test_value_name) {
         // Enumerate the top-level dialogs to find the setup dialog.
         WindowEnumerator(
             ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
@@ -1290,14 +1296,14 @@ void RunOfflineInstall(UpdaterScope scope) {
         // Wait for the app installer writes the expected reg value.
         base::win::RegKey key;
         DWORD value = 0;
-        return (ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, test_key_name,
-                                          Wow6432(KEY_QUERY_VALUE)) &&
+        return (ERROR_SUCCESS ==
+                    key.Open(key_hive, test_key_name, KEY_QUERY_VALUE) &&
                 ERROR_SUCCESS == key.ReadValueDW(test_value_name, &value) &&
                 value == 123);
       },
-      kTestRegKey, kTestRegValue));
+      key_hive, kTestRegKey, kTestRegValue)));
 
-  DeleteRegKey(HKEY_CURRENT_USER, kTestRegKey);
+  DeleteRegKey(key_hive, kTestRegKey);
 }
 
 }  // namespace test

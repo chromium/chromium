@@ -527,6 +527,8 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                                   const wchar_t* install_data,
                                   const wchar_t* install_settings,
                                   IUpdaterObserver* observer) {
+  VLOG(1) << __func__;
+
   for (const wchar_t* str :
        {app_id, installer_path, install_args, install_data, install_settings}) {
     if (wcsnlen_s(str, kMaxStringLen) >= kMaxStringLen) {

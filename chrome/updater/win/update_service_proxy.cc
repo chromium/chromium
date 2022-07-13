@@ -779,6 +779,7 @@ void UpdateServiceProxy::RunInstallerOnSTA(const std::string& app_id,
                                            Callback callback,
                                            HRESULT prev_hr) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
+  VLOG(1) << __func__;
 
   if (FAILED(prev_hr)) {
     std::move(callback).Run(Result::kServiceFailed);
@@ -803,10 +804,11 @@ void UpdateServiceProxy::RunInstallerOnSTA(const std::string& app_id,
       base::UTF8ToWide(install_args).c_str(),
       base::UTF8ToWide(install_data).c_str(),
       base::UTF8ToWide(install_settings).c_str(), observer.Get());
-  if (FAILED(hr)) {
-    DVLOG(2) << "Failed to call IUpdater::OfflineInstall: " << std::hex << hr;
+  if (SUCCEEDED(hr)) {
+    VLOG(2) << "IUpdater::OfflineInstall completed successfully.";
+  } else {
+    VLOG(2) << "Failed to call IUpdater::OfflineInstall: " << std::hex << hr;
     observer->Disconnect().Run(Result::kServiceFailed);
-    return;
   }
 }
 
