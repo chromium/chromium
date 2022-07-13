@@ -40,12 +40,11 @@ int RequestQueue<T>::active_request_failure_count() {
 }
 
 template <typename T>
-std::unique_ptr<T> RequestQueue<T>::reset_active_request() {
-  if (!active_request_)
-    return nullptr;
-  std::unique_ptr<T> fetch = std::move(active_request_->fetch);
+typename RequestQueue<T>::Request RequestQueue<T>::reset_active_request() {
+  DCHECK(active_request_);
+  Request request = std::move(*active_request_);
   active_request_.reset();
-  return fetch;
+  return request;
 }
 
 template <typename T>

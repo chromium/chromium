@@ -39,6 +39,14 @@ namespace extensions {
 template <typename T>
 class RequestQueue {
  public:
+  struct Request {
+    Request(std::unique_ptr<net::BackoffEntry> backoff_entry,
+            std::unique_ptr<T> fetch)
+        : backoff_entry(std::move(backoff_entry)), fetch(std::move(fetch)) {}
+    std::unique_ptr<net::BackoffEntry> backoff_entry;
+    std::unique_ptr<T> fetch;
+  };
+
   class iterator;
 
   RequestQueue(const net::BackoffEntry::Policy* backoff_policy,
@@ -52,7 +60,7 @@ class RequestQueue {
   int active_request_failure_count();
 
   // Signals RequestQueue that processing of the current request has completed.
-  std::unique_ptr<T> reset_active_request();
+  Request reset_active_request();
 
   // Add the given request to the queue, and starts the next request if no
   // request is currently being processed.
@@ -88,14 +96,6 @@ class RequestQueue {
   void set_backoff_policy(const net::BackoffEntry::Policy* backoff_policy);
 
  private:
-  struct Request {
-    Request(std::unique_ptr<net::BackoffEntry> backoff_entry,
-            std::unique_ptr<T> fetch)
-        : backoff_entry(std::move(backoff_entry)), fetch(std::move(fetch)) {}
-    std::unique_ptr<net::BackoffEntry> backoff_entry;
-    std::unique_ptr<T> fetch;
-  };
-
   // Compares the release time of two pending requests.
   static bool CompareRequests(const Request& a, const Request& b);
 

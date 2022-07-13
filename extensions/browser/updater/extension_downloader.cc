@@ -768,9 +768,10 @@ void ExtensionDownloader::OnManifestLoadComplete(
     NotifyExtensionsDownloadStageChanged(
         manifests_queue_.active_request()->GetExtensionIds(),
         ExtensionDownloaderDelegate::Stage::PARSING_MANIFEST);
-    auto callback = base::BindOnce(&ExtensionDownloader::HandleManifestResults,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   manifests_queue_.reset_active_request());
+    auto callback = base::BindOnce(
+        &ExtensionDownloader::HandleManifestResults,
+        weak_ptr_factory_.GetWeakPtr(),
+        std::move(manifests_queue_.reset_active_request().fetch));
     ParseUpdateManifest(*response_body, std::move(callback));
   } else {
     VLOG(1) << "Failed to fetch manifest '" << url.possibly_invalid_spec()
@@ -778,7 +779,8 @@ void ExtensionDownloader::OnManifestLoadComplete(
     RetryRequestOrHandleFailureOnManifestFetchFailure(*loader, response_code);
   }
   file_url_loader_factory_.reset();
-  manifests_queue_.reset_active_request();
+  if (manifests_queue_.active_request())
+    manifests_queue_.reset_active_request();
 
   // If we have any pending manifest requests, fire off the next one.
   manifests_queue_.StartNextRequest();
@@ -1310,7 +1312,7 @@ void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
                     extensions_queue_.active_request_failure_count(),
                     url);
     std::unique_ptr<ExtensionFetch> fetch_data =
-        extensions_queue_.reset_active_request();
+        std::move(extensions_queue_.reset_active_request().fetch);
     delegate_->OnExtensionDownloadStageChanged(
         id, ExtensionDownloaderDelegate::Stage::FINISHED);
     NotifyDelegateDownloadFinished(std::move(fetch_data), false, crx_path,
@@ -1357,7 +1359,8 @@ void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
           request_ids, failure_data);
     }
     ping_results_.erase(id);
-    extensions_queue_.reset_active_request();
+    if (extensions_queue_.active_request())
+      extensions_queue_.reset_active_request();
   }
 
   extension_loader_.reset();
