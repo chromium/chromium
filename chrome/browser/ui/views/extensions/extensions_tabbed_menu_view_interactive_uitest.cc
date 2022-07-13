@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -39,18 +40,26 @@ class ExtensionsTabbedMenuViewInteractiveUITest
       const ExtensionsTabbedMenuViewInteractiveUITest&) = delete;
 
   std::vector<InstalledExtensionMenuItemView*> installed_items() {
-    return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
-        ->GetInstalledItemsForTesting();
+    return extensions_tabbed_menu_view()->GetInstalledItemsForTesting();
   }
 
   std::vector<SiteAccessMenuItemView*> requests_access_items() {
-    return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
+    return extensions_tabbed_menu_view()
         ->GetVisibleRequestsAccessItemsForTesting();
   }
 
   std::vector<SiteAccessMenuItemView*> has_access_items() {
-    return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
-        ->GetVisibleHasAccessItemsForTesting();
+    return extensions_tabbed_menu_view()->GetVisibleHasAccessItemsForTesting();
+  }
+
+  // This should only be called after the menu is visible.
+  ExtensionsTabbedMenuView* extensions_tabbed_menu_view() {
+    ExtensionsTabbedMenuView* menu =
+        GetExtensionsToolbarContainer()
+            ->GetExtensionsTabbedMenuCoordinatorForTesting()
+            ->GetExtensionsTabbedMenuView();
+    EXPECT_TRUE(menu);
+    return menu;
   }
 
   // Asserts there is exactly one installed menu item and then returns it.
@@ -83,8 +92,7 @@ void ExtensionsTabbedMenuViewInteractiveUITest::ShowUi(
 #endif
 
   ShowInstalledTabInMenu();
-  ASSERT_TRUE(
-      ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting());
+  ASSERT_TRUE(extensions_tabbed_menu_view());
 }
 
 bool ExtensionsTabbedMenuViewInteractiveUITest::VerifyUi() {

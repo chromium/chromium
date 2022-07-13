@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,11 +49,13 @@ const std::u16string GetIconTooltip(
 ExtensionsToolbarButton::ExtensionsToolbarButton(
     Browser* browser,
     ExtensionsToolbarContainer* extensions_container,
-    ButtonType button_type)
+    ButtonType button_type,
+    ExtensionsTabbedMenuCoordinator* extensions_tabbed_menu_coordinator)
     : ToolbarButton(PressedCallback()),
       browser_(browser),
       button_type_(button_type),
-      extensions_container_(extensions_container) {
+      extensions_container_(extensions_container),
+      extensions_tabbed_menu_coordinator_(extensions_tabbed_menu_coordinator) {
   std::unique_ptr<views::MenuButtonController> menu_button_controller =
       std::make_unique<views::MenuButtonController>(
           this,
@@ -138,8 +141,9 @@ void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void ExtensionsToolbarButton::ToggleExtensionsMenu() {
-  if (ExtensionsTabbedMenuView::IsShowing()) {
-    ExtensionsTabbedMenuView::Hide();
+  if (extensions_tabbed_menu_coordinator_ &&
+      extensions_tabbed_menu_coordinator_->IsShowing()) {
+    extensions_tabbed_menu_coordinator_->Hide();
     return;
   } else if (ExtensionsMenuView::IsShowing()) {
     ExtensionsMenuView::Hide();
@@ -152,9 +156,9 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   views::Widget* menu;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    menu = ExtensionsTabbedMenuView::ShowBubble(
-        this, browser_, extensions_container_, button_type_,
-        extensions_container_->CanShowIconInToolbar());
+    extensions_tabbed_menu_coordinator_->Show(this, button_type_);
+    menu = extensions_tabbed_menu_coordinator_->GetExtensionsTabbedMenuView()
+               ->GetWidget();
   } else {
     menu = ExtensionsMenuView::ShowBubble(
         this, browser_, extensions_container_,

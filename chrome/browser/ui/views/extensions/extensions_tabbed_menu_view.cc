@@ -64,8 +64,6 @@ constexpr size_t kCustomizeByExtensionIndex = 2;
 constexpr bool kDontShowCombobox = false;
 constexpr bool kShowCombobox = true;
 
-ExtensionsTabbedMenuView* g_extensions_dialog = nullptr;
-
 // Adds a new tab in `tabbed_pane` at `index` with the given `contents` and
 // `footer`.
 void CreateTab(raw_ptr<views::TabbedPane> tabbed_pane,
@@ -254,59 +252,15 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
 }
 
 ExtensionsTabbedMenuView::~ExtensionsTabbedMenuView() {
-  g_extensions_dialog = nullptr;
-
   // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
   // directly within TabStripModelObserver::~TabStripModelObserver().
-}
-
-// static
-views::Widget* ExtensionsTabbedMenuView::ShowBubble(
-    views::View* anchor_view,
-    Browser* browser,
-    ExtensionsContainer* extensions_container_,
-    ExtensionsToolbarButton::ButtonType button_type,
-    bool allow_pining) {
-  DCHECK(!g_extensions_dialog);
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
-  g_extensions_dialog = new ExtensionsTabbedMenuView(
-      anchor_view, browser, extensions_container_, button_type, allow_pining);
-  views::Widget* widget =
-      views::BubbleDialogDelegateView::CreateBubble(g_extensions_dialog);
-  widget->Show();
-  return widget;
-}
-
-// static
-bool ExtensionsTabbedMenuView::IsShowing() {
-  return g_extensions_dialog != nullptr;
-}
-
-// static
-void ExtensionsTabbedMenuView::Hide() {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
-  if (IsShowing()) {
-    g_extensions_dialog->GetWidget()->Close();
-    // Set the dialog to nullptr since `GetWidget->Close()` is not synchronous.
-    g_extensions_dialog = nullptr;
-  }
-}
-
-// static
-ExtensionsTabbedMenuView*
-ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting() {
-  return g_extensions_dialog;
 }
 
 std::vector<InstalledExtensionMenuItemView*>
 ExtensionsTabbedMenuView::GetInstalledItemsForTesting() const {
   std::vector<InstalledExtensionMenuItemView*> menu_item_views;
-  if (IsShowing()) {
-    for (views::View* view : installed_items_->children())
-      menu_item_views.push_back(GetAsInstalledExtensionMenuItem(view));
-  }
+  for (views::View* view : installed_items_->children())
+    menu_item_views.push_back(GetAsInstalledExtensionMenuItem(view));
   return menu_item_views;
 }
 
@@ -848,7 +802,7 @@ std::vector<SiteAccessMenuItemView*>
 ExtensionsTabbedMenuView::GetVisibleMenuItemsOf(
     ExtensionsTabbedMenuView::SiteAccessSection section) const {
   std::vector<SiteAccessMenuItemView*> menu_items;
-  if (IsShowing() && section.container->GetVisible()) {
+  if (section.container->GetVisible()) {
     for (views::View* item : section.items->children())
       menu_items.push_back(GetAsSiteAccessMenuItem(item));
   }

@@ -46,26 +46,6 @@ class ExtensionsTabbedMenuView
   const ExtensionsTabbedMenuView& operator=(const ExtensionsTabbedMenuView&) =
       delete;
 
-  // Displays the ExtensionsTabbedMenu under `anchor_view` with the selected tab
-  // open by the `selected_tab_index` given. Only one menu is allowed to be
-  // shown at a time (outside of tests).
-  static views::Widget* ShowBubble(
-      views::View* anchor_view,
-      Browser* browser,
-      ExtensionsContainer* extensions_container_,
-      ExtensionsToolbarButton::ButtonType button_type,
-      bool allow_pinning);
-
-  // Returns true if there is currently an ExtensionsTabbedMenuView showing
-  // (across all browsers and profiles).
-  static bool IsShowing();
-
-  // Hides the currently-showing ExtensionsTabbedMenuView, if any exists.
-  static void Hide();
-
-  // Returns the currently-showing ExtensionsTabbedMenuView, if any exists.
-  static ExtensionsTabbedMenuView* GetExtensionsTabbedMenuViewForTesting();
-
   // Returns the currently-showing extension items in the extensions tab, if any
   // exists.
   std::vector<InstalledExtensionMenuItemView*> GetInstalledItemsForTesting()
