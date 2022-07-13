@@ -3741,10 +3741,6 @@
     ],
     'modifications': {
       'chromeos-amd64-generic-rel': {
-        'args': [
-          # Added to debug crbug.com/1293967.
-          '--extra-browser-args=--disable-features=BackgroundVideoPauseOptimization',
-        ],
         'swarming': {
           'quickrun_shards': 40,
         },
