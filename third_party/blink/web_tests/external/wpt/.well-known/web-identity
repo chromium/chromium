@@ -1,5 +1,6 @@
 def main(request, response):
-  host = request.headers.get(b"Host").decode("utf-8")
+  config = request.server.config
+  host = config.browser_host + ":" + str(config.ports["https"][0])
   return """
 {{
   "provider_urls": [

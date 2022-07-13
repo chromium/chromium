@@ -7179,7 +7179,7 @@ crbug.com/1343270 [ Win11 ] media/controls/video-controls-with-cast-rendering.ht
 # Sheriff 2022-07-12
 crbug.com/1343674 [ Linux ] editing/deleting/460938.html [ Failure Pass ]
 crbug.com/1343664 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-document.html [ Failure Pass ]
-crbug.com/1343651 external/wpt/credential-management/fedcm-network-requests.sub.https.html [ Crash Failure Pass ]
+crbug.com/1343651 external/wpt/credential-management/fedcm-network-requests.sub.https.html [ Crash Pass ]
 crbug.com/1343698 [ Mac Release ] external/wpt/webmessaging/postMessage_asterisk_xorigin.sub.htm [ Failure Pass ]
 crbug.com/1343698 [ Release Win10.20h2 ] external/wpt/webmessaging/postMessage_asterisk_xorigin.sub.htm [ Failure Pass ]
 
