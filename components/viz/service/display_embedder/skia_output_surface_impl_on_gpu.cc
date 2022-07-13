@@ -1379,6 +1379,7 @@ void SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread(
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutput(
+    AggregatedRenderPassId id,
     const copy_output::RenderPassGeometry& geometry,
     const gfx::ColorSpace& color_space,
     std::unique_ptr<CopyOutputRequest> request,
@@ -1391,7 +1392,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   if (context_is_lost_)
     return;
 
-  bool from_framebuffer = mailbox.IsZero();
+  bool from_framebuffer = !id;
   DCHECK(scoped_output_device_paint_ || !from_framebuffer);
 
   SkSurface* surface;

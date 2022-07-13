@@ -136,7 +136,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void ScheduleOverlays(OverlayList overlays,
                         std::vector<gpu::SyncToken> sync_tokens) override;
 
-  void CopyOutput(const copy_output::RenderPassGeometry& geometry,
+  void CopyOutput(AggregatedRenderPassId id,
+                  const copy_output::RenderPassGeometry& geometry,
                   const gfx::ColorSpace& color_space,
                   std::unique_ptr<CopyOutputRequest> request,
                   const gpu::Mailbox& mailbox) override;

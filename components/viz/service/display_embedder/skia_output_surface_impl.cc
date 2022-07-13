@@ -504,11 +504,8 @@ SkiaOutputSurfaceImpl::CreateImageContext(
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!current_paint_);
-  // If the renderer allocates images then `current_buffer_modified_` isn't
-  // updated, and we can't make this check.
-  DCHECK(capabilities_.renderer_allocates_images ||
-         ((!frame.sub_buffer_rect || !frame.sub_buffer_rect->IsEmpty()) ==
-          current_buffer_modified_));
+  DCHECK_EQ(!frame.sub_buffer_rect || !frame.sub_buffer_rect->IsEmpty(),
+            current_buffer_modified_);
 
   has_set_draw_rectangle_for_frame_ = false;
 
@@ -590,7 +587,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
       ResourceFormatToClosestSkColorType(/*gpu_compositing=*/true, format);
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       surface_size, color_type, mipmap, std::move(color_space),
-      /*is_root_render_pass=*/false, is_overlay);
+      /*is_root_render_pass=*/false, /*is_overlay=*/is_overlay);
   if (!characterization.isValid())
     return nullptr;
 
@@ -749,6 +746,7 @@ void SkiaOutputSurfaceImpl::RemoveRenderPassResource(
 }
 
 void SkiaOutputSurfaceImpl::CopyOutput(
+    AggregatedRenderPassId id,
     const copy_output::RenderPassGeometry& geometry,
     const gfx::ColorSpace& color_space,
     std::unique_ptr<CopyOutputRequest> request,
@@ -763,11 +761,12 @@ void SkiaOutputSurfaceImpl::CopyOutput(
     }
   }
 
-  auto callback = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CopyOutput,
-                                 base::Unretained(impl_on_gpu_.get()), geometry,
-                                 color_space, std::move(request), mailbox);
+  auto callback =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CopyOutput,
+                     base::Unretained(impl_on_gpu_.get()), id, geometry,
+                     color_space, std::move(request), mailbox);
   EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
-                 /*make_current=*/true, /*need_framebuffer=*/mailbox.IsZero());
+                 /*make_current=*/true, /*need_framebuffer=*/!id);
 }
 
 void SkiaOutputSurfaceImpl::ScheduleOverlays(
@@ -843,9 +842,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
         capabilities_.damage_area_from_skia_output_device) {
       use_damage_area_from_skia_output_device_ = true;
       damage_of_current_buffer_ = gfx::Rect();
-    } else if (!capabilities_.renderer_allocates_images) {
-      // We don't need a damage tracker if SkiaRenderer allocates the images,
-      // because it will keep track of the damage as well.
+    } else {
       frame_buffer_damage_tracker_.emplace(capabilities_.number_of_buffers);
     }
   }

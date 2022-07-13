@@ -173,8 +173,8 @@ TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
   geometry.sampling_bounds = output_rect;
   geometry.readback_offset = gfx::Vector2d(0, 0);
 
-  output_surface_->CopyOutput(geometry, color_space, std::move(request),
-                              gpu::Mailbox());
+  output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
+                              std::move(request), gpu::Mailbox());
   output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   BlockMainThread();
@@ -248,8 +248,8 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
   geometry.readback_offset = gfx::Vector2d(0, 0);
 
   PaintRootRenderPass(kSurfaceRect, base::DoNothing(), base::DoNothing());
-  output_surface_->CopyOutput(geometry, color_space, std::move(request),
-                              gpu::Mailbox());
+  output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
+                              std::move(request), gpu::Mailbox());
   output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   run_loop.Run();
@@ -289,8 +289,8 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
   geometry.readback_offset = gfx::Vector2d(0, 0);
 
   PaintRootRenderPass(kSurfaceRect, base::DoNothing(), base::DoNothing());
-  output_surface_->CopyOutput(geometry, color_space, std::move(request),
-                              gpu::Mailbox());
+  output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
+                              std::move(request), gpu::Mailbox());
   output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   run_loop.Run();

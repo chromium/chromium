@@ -151,7 +151,6 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
 #if BUILDFLAG(IS_ANDROID)
-  capabilities_.renderer_allocates_images = true;
   if (::features::IncreaseBufferCountForHighFrameRate()) {
     capabilities_.number_of_buffers = 5;
   }
@@ -210,7 +209,6 @@ SkiaOutputDeviceBufferQueue::~SkiaOutputDeviceBufferQueue() {
 }
 
 OutputPresenter::Image* SkiaOutputDeviceBufferQueue::GetNextImage() {
-  DCHECK(!capabilities_.renderer_allocates_images);
   CHECK(!available_images_.empty());
   auto* image = available_images_.front();
   available_images_.pop_front();
@@ -221,7 +219,6 @@ void SkiaOutputDeviceBufferQueue::PageFlipComplete(
     OutputPresenter::Image* image,
     gfx::GpuFenceHandle release_fence) {
   if (displayed_image_) {
-    DCHECK(!capabilities_.renderer_allocates_images);
     DCHECK_EQ(displayed_image_->skia_representation()->size(), image_size_);
     DCHECK_EQ(displayed_image_->GetPresentCount() > 1,
               displayed_image_ == image);
@@ -265,7 +262,6 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
   MaybeScheduleBackgroundImage();
 
   if (plane) {
-    DCHECK(!capabilities_.renderer_allocates_images);
     // If the current_image_ is nullptr, it means there is no change on the
     // primary plane. So we just need to schedule the last submitted image.
     auto* image =
@@ -720,9 +716,6 @@ void SkiaOutputDeviceBufferQueue::SetViewportSize(
 }
 
 bool SkiaOutputDeviceBufferQueue::RecreateImages() {
-  if (capabilities_.renderer_allocates_images) {
-    return true;
-  }
   FreeAllSurfaces();
   size_t number_to_allocate =
       capabilities_.supports_dynamic_frame_buffer_allocation
@@ -773,7 +766,6 @@ void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  DCHECK(!capabilities_.renderer_allocates_images);
   primary_plane_waiting_on_paint_ = false;
 
   if (!current_image_) {
@@ -787,13 +779,11 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
 }
 
 void SkiaOutputDeviceBufferQueue::EndPaint() {
-  DCHECK(!capabilities_.renderer_allocates_images);
   DCHECK(current_image_);
   current_image_->EndWriteSkia();
 }
 
 bool SkiaOutputDeviceBufferQueue::EnsureMinNumberOfBuffers(size_t n) {
-  DCHECK(!capabilities_.renderer_allocates_images);
   DCHECK(capabilities_.supports_dynamic_frame_buffer_allocation);
   DCHECK_GT(n, 0u);
   DCHECK_LE(n, static_cast<size_t>(capabilities_.number_of_buffers));
