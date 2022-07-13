@@ -1526,13 +1526,13 @@ const FeatureEntry::FeatureVariation kNtpRecipeTasksModuleVariations[] = {
     {"- Fake Data", kNtpRecipeTasksModuleFakeData,
      std::size(kNtpRecipeTasksModuleFakeData), nullptr},
     {"- Historical Arm (7 days)", kNtpRecipeTasksModuleHistorical7Days,
-     std::size(kNtpRecipeTasksModuleHistorical7Days), nullptr},
+     std::size(kNtpRecipeTasksModuleHistorical7Days), "t3349934"},
     {"- Historical Arm (14 days)", kNtpRecipeTasksModuleHistorical14Days,
-     std::size(kNtpRecipeTasksModuleHistorical14Days), nullptr},
+     std::size(kNtpRecipeTasksModuleHistorical14Days), "t3349935"},
     {"- Recommended Mix Arm (7 days)", kNtpRecipeTasksModuleMix7Days,
-     std::size(kNtpRecipeTasksModuleMix7Days), nullptr},
+     std::size(kNtpRecipeTasksModuleMix7Days), "t3349936"},
     {"- Recommended Mix Arm (14 days)", kNtpRecipeTasksModuleMix14Days,
-     std::size(kNtpRecipeTasksModuleMix14Days), nullptr},
+     std::size(kNtpRecipeTasksModuleMix14Days), "t3349937"},
 };
 
 const FeatureEntry::FeatureParam kNtpDriveModuleFakeData[] = {
