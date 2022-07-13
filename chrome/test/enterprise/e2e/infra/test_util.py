@@ -43,6 +43,15 @@ def shutdown_chrome():
   time.sleep(2)
 
 
+def getElementFromShadowRoot(driver, element, selector):
+  if element is None:
+    return None
+  else:
+    return driver.execute_script(
+        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
+        selector)
+
+
 def create_chrome_webdriver(chrome_options=None, incognito=False, prefs=None):
   """Configures and returns a Chrome WebDriver object."
 

@@ -7,7 +7,8 @@ from absl import app
 from pywinauto.application import Application
 from selenium import webdriver
 
-import test_util
+from test_util import create_chrome_webdriver
+from test_util import getElementFromShadowRoot
 
 UnsafePageLink = "http://testsafebrowsing.appspot.com/s/malware.html"
 UnsafeDownloadLink = "http://testsafebrowsing.appspot.com/s/badrep.exe"
@@ -23,21 +24,12 @@ def visit(window, url):
   time.sleep(10)
 
 
-def getElementFromShadowRoot(driver, element, selector):
-  if element is None:
-    return None
-  else:
-    return driver.execute_script(
-        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
-        selector)
-
-
 def main(argv):
   exclude_switches = ["disable-background-networking"]
   chrome_options = webdriver.ChromeOptions()
   chrome_options.add_experimental_option("excludeSwitches", exclude_switches)
 
-  driver = test_util.create_chrome_webdriver(chrome_options=chrome_options)
+  driver = create_chrome_webdriver(chrome_options=chrome_options)
 
   try:
     app = Application(backend="uia")

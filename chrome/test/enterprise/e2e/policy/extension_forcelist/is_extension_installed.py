@@ -2,26 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import test_util
 import time
 import traceback
 from absl import app, flags
 from selenium import webdriver
+
+from test_util import create_chrome_webdriver
+from test_util import getElementFromShadowRoot
 
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('extension_id', None,
                     'The id of the extension to look for.')
 flags.mark_flag_as_required('extension_id')
-
-
-def getElementFromShadowRoot(driver, element, selector):
-  if element is None:
-    return None
-  else:
-    return driver.execute_script(
-        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
-        selector)
 
 
 def RunTest(driver):
@@ -55,7 +48,7 @@ def main(argv):
     chrome_options.add_experimental_option("excludeSwitches",
                                            ["disable-background-networking"])
 
-    driver = test_util.create_chrome_webdriver(chrome_options=chrome_options)
+    driver = create_chrome_webdriver(chrome_options=chrome_options)
 
     # Wait for the extension to install on this new profile.
     time.sleep(20)

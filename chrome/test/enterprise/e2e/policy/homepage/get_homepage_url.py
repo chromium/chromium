@@ -4,9 +4,9 @@
 
 from pywinauto.application import Application
 
-import test_util
+from test_util import create_chrome_webdriver
 
-driver = test_util.create_chrome_webdriver()
+driver = create_chrome_webdriver()
 
 try:
   app = Application(backend="uia")

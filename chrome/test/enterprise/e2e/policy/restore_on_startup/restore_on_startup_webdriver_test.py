@@ -8,7 +8,8 @@ import time
 from absl import app, flags
 from selenium.webdriver.chrome.options import Options
 
-import test_util
+from test_util import create_chrome_webdriver
+from test_util import shutdown_chrome
 
 FLAGS = flags.FLAGS
 
@@ -27,7 +28,7 @@ flags.DEFINE_string('user_data_dir', None,
 def _create_driver():
   chrome_options = Options()
   chrome_options.add_argument(r'user-data-dir=%s' % FLAGS.user_data_dir)
-  return test_util.create_chrome_webdriver(chrome_options=chrome_options)
+  return create_chrome_webdriver(chrome_options=chrome_options)
 
 
 def _get_urls(driver):
@@ -54,7 +55,7 @@ def open_urls():
   time.sleep(2)
 
   print(json.dumps(_get_urls(driver)))
-  test_util.shutdown_chrome()
+  shutdown_chrome()
 
 
 def start_chrome():
@@ -69,7 +70,7 @@ def start_chrome():
   time.sleep(10)
 
   print(json.dumps(_get_urls(driver)))
-  test_util.shutdown_chrome()
+  shutdown_chrome()
 
 
 def main(argv):

@@ -7,7 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 
-import test_util
+from test_util import create_chrome_webdriver
+from test_util import getElementFromShadowRoot
 
 # Detect if history deletion is enabled or disabled and print the result.
 
@@ -17,18 +18,9 @@ import test_util
 # - check the checkbox. If history deletion is disabled, then the check
 #   box has attribute 'disabled';
 
-# TODO(crbug.com/986444): move those helper methods into test_util.py once
-def getElementFromShadowRoot(driver, element, selector):
-  if element is None:
-    return None
-  else:
-    return driver.execute_script(
-        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
-        selector)
-
 
 def main(argv):
-  driver = test_util.create_chrome_webdriver()
+  driver = create_chrome_webdriver()
 
   try:
     driver.get('http://www.google.com')

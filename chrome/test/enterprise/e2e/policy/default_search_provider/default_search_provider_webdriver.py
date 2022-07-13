@@ -5,13 +5,13 @@
 from pywinauto.application import Application
 from selenium import webdriver
 
-import test_util
+from test_util import create_chrome_webdriver
 
 # Set up ChromeDriver
 options = webdriver.ChromeOptions()
 options.add_argument("--force-renderer-accessibility")
 
-driver = test_util.create_chrome_webdriver(chrome_options=options)
+driver = create_chrome_webdriver(chrome_options=options)
 
 try:
   app = Application(backend="uia")

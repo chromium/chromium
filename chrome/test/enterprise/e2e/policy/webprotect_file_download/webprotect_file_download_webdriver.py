@@ -11,7 +11,7 @@ from selenium import webdriver
 from pywinauto.application import Application
 from pywinauto.findwindows import ElementNotFoundError
 
-import test_util
+from test_util import create_chrome_webdriver
 
 encrypted_file_url = "https://storage.googleapis.com/testfiles-webprotect/malware_file_encrypted.zip"
 large_file_url = "https://storage.googleapis.com/testfiles-webprotect/large_file.bin"
@@ -41,7 +41,7 @@ def main(argv):
   options.add_argument("--force-renderer-accessibility")
   options.add_experimental_option("excludeSwitches", exclude_switches)
   os.environ["CHROME_LOG_FILE"] = r"c:\temp\chrome_log.txt"
-  driver = test_util.create_chrome_webdriver(chrome_options=options)
+  driver = create_chrome_webdriver(chrome_options=options)
 
   app = Application(backend="uia")
   app.connect(title_re='.*Chrome|.*Chromium')

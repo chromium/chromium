@@ -11,7 +11,7 @@ from selenium import webdriver
 from pywinauto.application import Application
 from pywinauto.findwindows import ElementNotFoundError
 
-import test_util
+from test_util import create_chrome_webdriver
 
 # A URL that is in a different language than our Chrome language.
 URL = "https://zh.wikipedia.org/wiki/Chromium"
@@ -27,7 +27,7 @@ def main(argv):
   options = webdriver.ChromeOptions()
   # Add option for connecting chromedriver with Chrome
   options.add_experimental_option("debuggerAddress", "localhost:9222")
-  driver = test_util.create_chrome_webdriver(
+  driver = create_chrome_webdriver(
       chrome_options=options, incognito=FLAGS.incognito)
   driver.get(URL)
   time.sleep(10)

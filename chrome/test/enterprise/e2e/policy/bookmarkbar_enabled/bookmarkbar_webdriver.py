@@ -6,12 +6,12 @@ from pywinauto.application import Application
 from pywinauto.findwindows import ElementNotFoundError
 from selenium import webdriver
 
-import test_util
+from test_util import create_chrome_webdriver
 
 options = webdriver.ChromeOptions()
 options.add_argument("--force-renderer-accessibility")
 
-driver = test_util.create_chrome_webdriver(chrome_options=options)
+driver = create_chrome_webdriver(chrome_options=options)
 
 try:
   app = Application(backend="uia")

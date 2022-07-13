@@ -6,21 +6,15 @@ import os
 from absl import app
 import time
 from selenium import webdriver
-import test_util
 
+from test_util import create_chrome_webdriver
+from test_util import getElementFromShadowRoot
 
-def getElementFromShadowRoot(driver, element, selector):
-  if element is None:
-    return None
-  else:
-    return driver.execute_script(
-        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
-        selector)
 
 def main(argv):
   options = webdriver.ChromeOptions()
   os.environ["CHROME_LOG_FILE"] = r"c:\temp\chrome_log.txt"
-  driver = test_util.create_chrome_webdriver(chrome_options=options)
+  driver = create_chrome_webdriver(chrome_options=options)
 
   # Give some time for browser to enroll
   time.sleep(10)
