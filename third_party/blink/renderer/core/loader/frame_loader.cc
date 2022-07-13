@@ -1062,6 +1062,44 @@ void FrameLoader::CommitNavigation(
     extra_data = document_loader_->TakeExtraData();
   }
 
+  // Fenced frame reporting metadata persists across same-origin navigations
+  // initiated from inside the fenced frame. Embedder-initiated navigations
+  // use a unique origin (in `FencedFrame::Navigate`), so the requestor is
+  // always considered cross-origin by the check (in MPArch).
+  bool is_requestor_same_origin =
+      !navigation_params->requestor_origin.IsNull() &&
+      navigation_params->requestor_origin.IsSameOriginWith(
+          WebSecurityOrigin::Create(navigation_params->url));
+  if (is_requestor_same_origin) {
+    for (const WebNavigationParams::RedirectInfo& redirect :
+         navigation_params->redirects) {
+      is_requestor_same_origin &=
+          navigation_params->requestor_origin.IsSameOriginWith(
+              WebSecurityOrigin::Create(redirect.new_url));
+    }
+  }
+  if (is_requestor_same_origin) {
+    const mojom::blink::FencedFrameReportingPtr& old_fenced_frame_reporting =
+        document_loader_->FencedFrameReporting();
+    // TODO(crbug.com/1342301): When we disable FF self urn navigations, add
+    // this DCHECK:
+    // DCHECK(!navigation_params->fenced_frame_reporting);
+    // and remove the condition from the `if` below.
+    if (old_fenced_frame_reporting &&
+        !navigation_params->fenced_frame_reporting) {
+      navigation_params->fenced_frame_reporting.emplace();
+      for (const auto& [destination, event_type_url] :
+           old_fenced_frame_reporting->metadata) {
+        base::flat_map<WebString, WebURL> data;
+        for (const auto& [event_type, url] : event_type_url) {
+          data.emplace(event_type, url);
+        }
+        navigation_params->fenced_frame_reporting->metadata.emplace(
+            destination, std::move(data));
+      }
+    }
+  }
+
   // Create the OldDocumentInfoForCommit for the old document (that might be in
   // another FrameLoader) and save it in ScopedOldDocumentInfoForCommitCapturer,
   // so that the old document can access it and fill in the information as it
