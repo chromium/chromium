@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/logging.h"
@@ -154,6 +155,8 @@ void It2MeHost::ConnectOnNetworkThread(
     CreateDeferredConnectContext create_context) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(It2MeHostState::kDisconnected, state_);
+  // This thread is used as a network thread in WebRTC.
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
   if (!remote_support_connections_allowed_) {
     SetState(It2MeHostState::kError, ErrorCode::DISALLOWED_BY_POLICY);
@@ -239,6 +242,7 @@ void It2MeHost::ConnectOnNetworkThread(
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
+          webrtc::ThreadWrapper::current()->SocketServer(),
           host_context_->url_loader_factory(), oauth_token_getter_.get(),
           network_settings, protocol::TransportRole::SERVER);
   if (!ice_config.is_null()) {

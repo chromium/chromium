@@ -41,6 +41,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
 
   TransportContext(
       std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
+      rtc::SocketFactory* socket_factory,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuthTokenGetter* oauth_token_getter,
       const NetworkSettings& network_settings,
@@ -71,6 +72,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   PortAllocatorFactory* port_allocator_factory() {
     return port_allocator_factory_.get();
   }
+  rtc::SocketFactory* socket_factory() const { return socket_factory_; }
   const NetworkSettings& network_settings() const { return network_settings_; }
   TransportRole role() const { return role_; }
 
@@ -87,6 +89,7 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   void OnIceConfig(const IceConfig& ice_config);
 
   std::unique_ptr<PortAllocatorFactory> port_allocator_factory_;
+  raw_ptr<rtc::SocketFactory> socket_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<OAuthTokenGetter> oauth_token_getter_ = nullptr;
   NetworkSettings network_settings_;

@@ -19,8 +19,10 @@ std::unique_ptr<cricket::PortAllocator>
 ChromiumPortAllocatorFactory::CreatePortAllocator(
     scoped_refptr<TransportContext> transport_context,
     base::WeakPtr<SessionOptionsProvider> session_options_provider) {
+  rtc::SocketFactory* socket_factory = transport_context->socket_factory();
+  DCHECK(socket_factory);
   return std::make_unique<PortAllocator>(
-      base::WrapUnique(new rtc::BasicNetworkManager()),
+      base::WrapUnique(new rtc::BasicNetworkManager(socket_factory)),
       base::WrapUnique(
           new ChromiumPacketSocketFactory(session_options_provider)),
       transport_context);

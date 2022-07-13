@@ -296,9 +296,10 @@ class ProtocolPerfTest
     port_allocator_factory->socket_factory()->set_out_of_order_rate(
         GetParam().out_of_order_rate);
     scoped_refptr<protocol::TransportContext> transport_context(
-        new protocol::TransportContext(std::move(port_allocator_factory),
-                                       nullptr, nullptr, network_settings,
-                                       protocol::TransportRole::SERVER));
+        new protocol::TransportContext(
+            std::move(port_allocator_factory),
+            webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
+            network_settings, protocol::TransportRole::SERVER));
     std::unique_ptr<protocol::SessionManager> session_manager(
         new protocol::JingleSessionManager(host_signaling_.get()));
     session_manager->set_protocol_config(protocol_config_->Clone());
@@ -363,9 +364,10 @@ class ProtocolPerfTest
     port_allocator_factory->socket_factory()->set_out_of_order_rate(
         GetParam().out_of_order_rate);
     scoped_refptr<protocol::TransportContext> transport_context(
-        new protocol::TransportContext(std::move(port_allocator_factory),
-                                       nullptr, nullptr, network_settings,
-                                       protocol::TransportRole::CLIENT));
+        new protocol::TransportContext(
+            std::move(port_allocator_factory),
+            webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
+            network_settings, protocol::TransportRole::CLIENT));
 
     protocol::ClientAuthenticationConfig client_auth_config;
     client_auth_config.host_id = kHostId;

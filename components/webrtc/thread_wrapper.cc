@@ -159,6 +159,10 @@ ThreadWrapper::~ThreadWrapper() {
   coalesced_tasks_.Clear();
 }
 
+rtc::SocketServer* ThreadWrapper::SocketServer() {
+  return rtc::Thread::socketserver();
+}
+
 void ThreadWrapper::WillDestroyCurrentMessageLoop() {
   delete this;
 }

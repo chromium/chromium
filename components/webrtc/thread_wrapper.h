@@ -86,6 +86,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // need to call Send() for other threads.
   void set_send_allowed(bool allowed) { send_allowed_ = allowed; }
 
+  rtc::SocketServer* SocketServer();
+
   // CurrentThread::DestructionObserver implementation.
   void WillDestroyCurrentMessageLoop() override;
 

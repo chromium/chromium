@@ -120,10 +120,12 @@ class IceTransportTest : public testing::Test {
   void InitializeConnection() {
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
+    rtc::SocketFactory* socket_factory =
+        webrtc::ThreadWrapper::current()->SocketServer();
     host_transport_ = std::make_unique<IceTransport>(
         new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
-                             nullptr, nullptr, network_settings_,
-                             TransportRole::SERVER),
+                             socket_factory, nullptr, nullptr,
+                             network_settings_, TransportRole::SERVER),
         &host_event_handler_);
     if (!host_authenticator_) {
       host_authenticator_ =
@@ -132,8 +134,8 @@ class IceTransportTest : public testing::Test {
 
     client_transport_ = std::make_unique<IceTransport>(
         new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
-                             nullptr, nullptr, network_settings_,
-                             TransportRole::CLIENT),
+                             socket_factory, nullptr, nullptr,
+                             network_settings_, TransportRole::CLIENT),
         &client_event_handler_);
     if (!client_authenticator_) {
       client_authenticator_ =

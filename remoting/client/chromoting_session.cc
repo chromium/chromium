@@ -542,6 +542,7 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
+          webrtc::ThreadWrapper::current()->SocketServer(),
           runtime_->url_loader_factory(),
           /* oauth_token_getter= */ nullptr,
           protocol::NetworkSettings(

@@ -29,6 +29,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/policy_constants.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
@@ -1655,6 +1656,9 @@ void HostProcess::StartHost() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK(!host_);
 
+  // This thread is used as a network thread in WebRTC.
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
+
   SetState(HOST_STARTED);
 
   InitializeSignaling();
@@ -1682,6 +1686,7 @@ void HostProcess::StartHost() {
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
+          webrtc::ThreadWrapper::current()->SocketServer(),
           context_->url_loader_factory(), oauth_token_getter_.get(),
           network_settings, protocol::TransportRole::SERVER);
   std::unique_ptr<protocol::SessionManager> session_manager(

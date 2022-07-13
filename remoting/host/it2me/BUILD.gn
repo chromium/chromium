@@ -78,6 +78,7 @@ source_set("common") {
     "//base:i18n",
     "//build:chromeos_buildflags",
     "//components/policy:policy_code_generate",
+    "//components/webrtc:thread_wrapper",
     "//extensions/browser/api/messaging:native_messaging",
     "//mojo/core/embedder",
     "//net",
