@@ -569,7 +569,7 @@ HRESULT IsCOMCallerAdmin(bool& is_com_caller_admin) {
     base::ScopedClosureRunner co_revert_to_self(
         base::BindOnce([]() { ::CoRevertToSelf(); }));
 
-    if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_ALL_ACCESS, TRUE,
+    if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
       hr = HRESULTFromLastError();
       LOG(ERROR) << __func__ << ": ::OpenThreadToken failed: " << std::hex
