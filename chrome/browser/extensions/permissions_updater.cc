@@ -553,7 +553,7 @@ void PermissionsUpdater::SetPermissions(
 
   if (update_prefs) {
     ExtensionPrefs::Get(browser_context_)
-        ->SetActivePermissions(
+        ->SetDesiredActivePermissions(
             extension->id(),
             extension->permissions_data()->active_permissions());
   }

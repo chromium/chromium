@@ -1683,7 +1683,7 @@ TEST_F(ExtensionServiceSyncCustomGalleryTest,
         prefs->GetGrantedPermissions(id);
     if (test_case.expect_permissions_granted) {
       std::unique_ptr<const PermissionSet> active_permissions =
-          prefs->GetActivePermissions(id);
+          prefs->GetDesiredActivePermissions(id);
       EXPECT_EQ(*granted_permissions, *active_permissions);
     } else {
       EXPECT_EQ(*granted_permissions, *granted_permissions_v1);

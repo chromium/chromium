@@ -133,12 +133,21 @@ constexpr const char kPrefAllowFileAccess[] = "newAllowFileAccess";
 // the old flag and possibly go back to that name.
 // constexpr const char kPrefAllowFileAccessOld[] = "allowFileAccess";
 
-// Preferences that hold which permissions the user has granted the extension.
-// We explicitly keep track of these so that extensions can contain unknown
-// permissions, for backwards compatibility reasons, and we can still prompt
-// the user to accept them once recognized. We store the active permission
-// permissions because they may differ from those defined in the manifest.
-constexpr const char kPrefActivePermissions[] = "active_permissions";
+// The set of permissions the extension desires to have active. This may include
+// more than the required permissions from the manifest if the extension has
+// optional permissions.
+constexpr const char kPrefDesiredActivePermissions[] = "active_permissions";
+
+// The set of permissions that the user has approved for the extension either at
+// install time or through an optional permissions request. We track this in
+// order to alert the user of permissions escalation.
+// This also works with not-yet-recognized permissions (such as if an extension
+// installed on stable channel uses a new permission that's only available in
+// canary): the recorded granted permissions are determined from the recognized
+// set of permissions, so when the new requested permission is later recognized
+// (when it's available on stable), the requested set of permissions will
+// differ from the stored granted set, and Chrome will notify the user of a
+// permissions increase.
 constexpr const char kPrefGrantedPermissions[] = "granted_permissions";
 
 // Pref that was previously used to indicate if host permissions should be
@@ -1202,16 +1211,18 @@ void ExtensionPrefs::RemoveGrantedPermissions(
                               kPrefGrantedPermissions);
 }
 
-std::unique_ptr<const PermissionSet> ExtensionPrefs::GetActivePermissions(
+std::unique_ptr<const PermissionSet>
+ExtensionPrefs::GetDesiredActivePermissions(
     const std::string& extension_id) const {
   CHECK(crx_file::id_util::IdIsValid(extension_id));
-  return ReadPrefAsPermissionSet(extension_id, kPrefActivePermissions);
+  return ReadPrefAsPermissionSet(extension_id, kPrefDesiredActivePermissions);
 }
 
-void ExtensionPrefs::SetActivePermissions(const std::string& extension_id,
-                                          const PermissionSet& permissions) {
-  SetExtensionPrefPermissionSet(
-      extension_id, kPrefActivePermissions, permissions);
+void ExtensionPrefs::SetDesiredActivePermissions(
+    const std::string& extension_id,
+    const PermissionSet& permissions) {
+  SetExtensionPrefPermissionSet(extension_id, kPrefDesiredActivePermissions,
+                                permissions);
 }
 
 void ExtensionPrefs::SetWithholdingPermissions(const ExtensionId& extension_id,

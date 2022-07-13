@@ -481,15 +481,21 @@ class ExtensionPrefs : public KeyedService {
   void RemoveGrantedPermissions(const std::string& extension_id,
                                 const PermissionSet& permissions);
 
-  // Gets the active permission set for the specified extension. This may
-  // differ from the permissions in the manifest due to the optional
-  // permissions API. This passes ownership of the set to the caller.
-  std::unique_ptr<const PermissionSet> GetActivePermissions(
+  // Gets the set of permissions that the extension would like to be active.
+  // This should always include at least the required permissions from the
+  // manifest and can include a subset of optional permissions, if the extension
+  // requested and was granted them.
+  // This differs from the set of permissions *actually* active on the extension
+  // because the user may have withheld certain permissions, as well as because
+  // of possible enterprise policy settings. Use `PermissionsData` to determine
+  // the current effective permissions of an extension.
+  std::unique_ptr<const PermissionSet> GetDesiredActivePermissions(
       const std::string& extension_id) const;
 
-  // Sets the active |permissions| for the extension with |extension_id|.
-  void SetActivePermissions(const std::string& extension_id,
-                            const PermissionSet& permissions);
+  // Sets the desired active permissions for the given `extension_id` to
+  // `permissions`.
+  void SetDesiredActivePermissions(const std::string& extension_id,
+                                   const PermissionSet& permissions);
 
   // Sets/Gets the value indicating if an extension should be granted all the
   // requested host permissions without requiring explicit runtime-granted

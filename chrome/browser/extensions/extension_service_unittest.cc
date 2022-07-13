@@ -1861,7 +1861,7 @@ TEST_F(ExtensionServiceTest,
   };
 
   auto get_active_permissions = [prefs, id]() {
-    return prefs->GetActivePermissions(id);
+    return prefs->GetDesiredActivePermissions(id);
   };
 
   APIPermissionSet tabs_permission_set;
@@ -4376,7 +4376,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
   GrantAllOptionalPermissions(ext2_forced);
 
   std::unique_ptr<const PermissionSet> active_permissions =
-      ExtensionPrefs::Get(profile())->GetActivePermissions(ext1);
+      ExtensionPrefs::Get(profile())->GetDesiredActivePermissions(ext1);
   EXPECT_TRUE(
       active_permissions->HasAPIPermission(APIPermissionID::kDownloads));
 
@@ -4391,7 +4391,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
   // 'ext1' should still be enabled, but with 'downloads' permission revoked.
   EXPECT_TRUE(registry->enabled_extensions().GetByID(ext1));
   active_permissions =
-      ExtensionPrefs::Get(profile())->GetActivePermissions(ext1);
+      ExtensionPrefs::Get(profile())->GetDesiredActivePermissions(ext1);
   EXPECT_FALSE(
       active_permissions->HasAPIPermission(APIPermissionID::kDownloads));
 

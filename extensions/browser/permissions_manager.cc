@@ -260,10 +260,10 @@ void PermissionsManager::UpdatePermissionsWithUserSettings(
   //    most recently set for itself, as extensions can revoke their own
   //    permissions via chrome.permissions.remove() (which removes the
   //    permission from the active set, but not the granted set).
-  std::unique_ptr<const PermissionSet> stored_active_permissions =
-      extension_prefs_->GetActivePermissions(extension.id());
+  std::unique_ptr<const PermissionSet> stored_desired_active_permissions =
+      extension_prefs_->GetDesiredActivePermissions(extension.id());
   std::unique_ptr<const PermissionSet> bounded_active =
-      PermissionSet::CreateIntersection(*stored_active_permissions,
+      PermissionSet::CreateIntersection(*stored_desired_active_permissions,
                                         *requested_permissions);
   // Since we don't allow withholding of API and manifest permissions, the
   // allowed set always contains all (bounded) requested API and manifest
@@ -465,7 +465,7 @@ PermissionsManager::GetExtensionDesiredPermissionsFromPrefs(
   // own permissions via chrome.permissions.remove() (which removes the
   // permission from the active set, but not the granted set).
   std::unique_ptr<const PermissionSet> desired_active_permissions =
-      extension_prefs_->GetActivePermissions(extension.id());
+      extension_prefs_->GetDesiredActivePermissions(extension.id());
   // The stored desired permissions may be null if the extension has never
   // used the permissions API to modify its active permissions. In this case,
   // the desired permissions are simply the set of required permissions.

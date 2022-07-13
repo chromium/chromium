@@ -171,7 +171,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
     // in the extension preferences. In this case, the granted permissions
     // should be equal to the active permissions.
     ASSERT_EQ(*active_permissions,
-              *prefs->GetActivePermissions(extension->id()));
+              *prefs->GetDesiredActivePermissions(extension->id()));
     granted_permissions = active_permissions->Clone();
     ASSERT_EQ(*granted_permissions,
               *prefs->GetGrantedPermissions(extension->id()));
@@ -207,7 +207,7 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
     // Verify that the extension prefs hold the new active permissions and the
     // same granted permissions.
     ASSERT_EQ(*active_permissions,
-              *prefs->GetActivePermissions(extension->id()));
+              *prefs->GetDesiredActivePermissions(extension->id()));
 
     ASSERT_EQ(*granted_permissions,
               *prefs->GetGrantedPermissions(extension->id()));
@@ -722,7 +722,7 @@ TEST_F(PermissionsUpdaterTest, GrantingBroadRuntimePermissions) {
     // the runtime host permissions feature. Thus, this should include the
     // requested host permissions, and nothing more.
     std::unique_ptr<const PermissionSet> active_prefs =
-        prefs->GetActivePermissions(extension->id());
+        prefs->GetDesiredActivePermissions(extension->id());
     EXPECT_TRUE(active_prefs->effective_hosts().ContainsPattern(kMapsPattern));
     EXPECT_FALSE(
         active_prefs->effective_hosts().ContainsPattern(kAllGooglePattern));
@@ -760,7 +760,7 @@ TEST_F(PermissionsUpdaterTest, GrantingBroadRuntimePermissions) {
     // permission state without the runtime host permissions feature, so should
     // still include exactly the requested permissions.
     std::unique_ptr<const PermissionSet> active_prefs =
-        prefs->GetActivePermissions(extension->id());
+        prefs->GetDesiredActivePermissions(extension->id());
     EXPECT_TRUE(active_prefs->effective_hosts().ContainsPattern(kMapsPattern));
     EXPECT_FALSE(
         active_prefs->effective_hosts().ContainsPattern(kAllGooglePattern));
@@ -787,7 +787,7 @@ TEST_F(PermissionsUpdaterTest, GrantingBroadRuntimePermissions) {
     // Active permissions in the preferences should remain constant (unaffected
     // by the runtime host permissions feature).
     std::unique_ptr<const PermissionSet> active_prefs =
-        prefs->GetActivePermissions(extension->id());
+        prefs->GetDesiredActivePermissions(extension->id());
     EXPECT_TRUE(active_prefs->effective_hosts().ContainsPattern(kMapsPattern));
     EXPECT_FALSE(
         active_prefs->effective_hosts().ContainsPattern(kAllGooglePattern));
