@@ -28,6 +28,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -133,11 +137,16 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
   return kSwapPeriod;
 }
 
-RemoteFontFaceSource::RemoteFontFaceSource(CSSFontFace* css_font_face,
-                                           FontSelector* font_selector,
-                                           FontDisplay display)
+RemoteFontFaceSource::RemoteFontFaceSource(
+    CSSFontFace* css_font_face,
+    FontSelector* font_selector,
+    FontDisplay display,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : face_(css_font_face),
       font_selector_(font_selector),
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+      task_runner_(task_runner),
+#endif
       // No need to report the violation here since the font is not loaded yet
       display_(
           GetFontDisplayWithDocumentPolicyCheck(display,
@@ -176,6 +185,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   ExecutionContext* execution_context = font_selector_->GetExecutionContext();
   if (!execution_context)
     return;
+  DCHECK(execution_context->IsContextThread());
   // Prevent promise rejection while shutting down the document.
   // See crbug.com/960290
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
@@ -372,8 +382,29 @@ RemoteFontFaceSource::CreateLoadingFallbackFontData(
 }
 
 void RemoteFontFaceSource::BeginLoadIfNeeded() {
-  if (IsLoaded() || !font_selector_->GetExecutionContext())
+  if (IsLoaded())
     return;
+  ExecutionContext* const execution_context =
+      font_selector_->GetExecutionContext();
+  if (!execution_context)
+    return;
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  if (!execution_context->IsContextThread()) {
+    // Following tests reache here.
+    //  * fast/css3-text/css3-text-decoration/text-decoration-skip-ink-links.html
+    //  * fast/css3-text/css3-word-break/word-break-break-all-in-span.html
+    //  * virtual/text-antialias/justify-vertical.html
+    //  * virtual/text-antialias/line-break-8bit-after-16bit.html
+    // Note: |ExecutionContext::GetTaskRunner()| works only for context
+    // thread, so we ask main thread to handle |BeginLoadIfNeeded()|.
+    PostCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&RemoteFontFaceSource::BeginLoadIfNeeded,
+                            WrapCrossThreadPersistent(this)));
+    return;
+  }
+#endif
+
   DCHECK(GetResource());
 
   SetDisplay(face_->GetFontFace()->GetFontDisplay());
@@ -381,20 +412,19 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
   auto* font = To<FontResource>(GetResource());
   if (font->StillNeedsLoad()) {
     if (font->IsLowPriorityLoadingAllowedForRemoteFont()) {
-      font_selector_->GetExecutionContext()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kIntervention,
-              mojom::ConsoleMessageLevel::kInfo,
-              "Slow network is detected. See "
-              "https://www.chromestatus.com/feature/5636954674692096 for more "
-              "details. Fallback font will be used while loading: " +
-                  font->Url().ElidedString()));
+      execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kIntervention,
+          mojom::blink::ConsoleMessageLevel::kInfo,
+          "Slow network is detected. See "
+          "https://www.chromestatus.com/feature/5636954674692096 for more "
+          "details. Fallback font will be used while loading: " +
+              font->Url().ElidedString()));
 
       // Set the loading priority to VeryLow only when all other clients agreed
       // that this font is not required for painting the text.
       font->DidChangePriority(ResourceLoadPriority::kVeryLow, 0);
     }
-    if (font_selector_->GetExecutionContext()->Fetcher()->StartLoad(font))
+    if (execution_context->Fetcher()->StartLoad(font))
       histograms_.LoadStarted();
   }
 
@@ -402,9 +432,7 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
   // Note that <link rel=preload> may have initiated loading without kicking
   // off the timers.
   font->StartLoadLimitTimersIfNecessary(
-      font_selector_->GetExecutionContext()
-          ->GetTaskRunner(TaskType::kInternalLoading)
-          .get());
+      execution_context->GetTaskRunner(TaskType::kInternalLoading).get());
 
   face_->DidBeginLoad();
 }
