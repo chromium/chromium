@@ -471,8 +471,6 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kBeforecopy, nullptr},
       {html_names::kOnbeforecutAttr, kNoWebFeature,
        event_type_names::kBeforecut, nullptr},
-      {html_names::kOnbeforeinputAttr, kNoWebFeature,
-       event_type_names::kBeforeinput, nullptr},
       {html_names::kOnbeforepasteAttr, kNoWebFeature,
        event_type_names::kBeforepaste, nullptr},
       {html_names::kOnblurAttr, kNoWebFeature, event_type_names::kBlur,

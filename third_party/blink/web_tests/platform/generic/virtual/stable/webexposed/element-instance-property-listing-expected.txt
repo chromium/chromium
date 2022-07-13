@@ -164,7 +164,6 @@ namespace http://www.w3.org/1999/xhtml
     property onauxclick
     property onbeforecopy
     property onbeforecut
-    property onbeforeinput
     property onbeforematch
     property onbeforepaste
     property onbeforexrselect
@@ -1331,7 +1330,6 @@ namespace http://www.w3.org/2000/svg
     property onauxclick
     property onbeforecopy
     property onbeforecut
-    property onbeforeinput
     property onbeforematch
     property onbeforepaste
     property onbeforexrselect

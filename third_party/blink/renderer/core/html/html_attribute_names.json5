@@ -163,7 +163,6 @@
     "onauxclick",
     "onbeforecopy",
     "onbeforecut",
-    "onbeforeinput",
     "onbeforepaste",
     "onbeforeprint",
     "onbeforeunload",

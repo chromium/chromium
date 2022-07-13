@@ -33,7 +33,6 @@
     LegacyTreatAsPartialInterface
 ] interface mixin GlobalEventHandlers {
     attribute EventHandler onabort;
-    attribute EventHandler onbeforeinput;
     [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
     attribute EventHandler onblur;
     attribute EventHandler oncancel;
