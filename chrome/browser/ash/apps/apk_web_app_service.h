@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -93,7 +94,8 @@ class ApkWebAppService : public KeyedService,
   // If the app has updated from a web app to Android app or vice-versa,
   // this function pins the new app in the old app's place on the shelf if it
   // was pinned prior to the update.
-  void UpdateShelfPin(const arc::mojom::ArcPackageInfo* package_info);
+  void UpdateShelfPin(const std::string& package_name,
+                      const arc::mojom::WebAppInfoPtr& web_app_info);
 
   // KeyedService:
   void Shutdown() override;

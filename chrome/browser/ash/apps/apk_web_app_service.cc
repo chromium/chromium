@@ -242,14 +242,14 @@ void ApkWebAppService::UninstallWebApp(const web_app::AppId& web_app_id) {
 }
 
 void ApkWebAppService::UpdateShelfPin(
-    const arc::mojom::ArcPackageInfo* package_info) {
+    const std::string& package_name,
+    const arc::mojom::WebAppInfoPtr& web_app_info) {
   std::string new_app_id;
   // Compute the current app id. It may have changed if the package has been
   // updated from an Android app to a web app, or vice versa.
-  if (!package_info->web_app_info.is_null()) {
+  if (!web_app_info.is_null()) {
     new_app_id = web_app::GenerateAppId(
-        /*manifest_id=*/absl::nullopt,
-        GURL(package_info->web_app_info->start_url));
+        /*manifest_id=*/absl::nullopt, GURL(web_app_info->start_url));
   } else {
     // Get the first app in the package. If there are multiple apps in the
     // package there is no way to determine which app is more suitable to
@@ -257,22 +257,22 @@ void ApkWebAppService::UpdateShelfPin(
     // the first one.
     DCHECK(arc_app_list_prefs_);
     std::unordered_set<std::string> apps =
-        arc_app_list_prefs_->GetAppsForPackage(package_info->package_name);
+        arc_app_list_prefs_->GetAppsForPackage(package_name);
     if (!apps.empty())
       new_app_id = *apps.begin();
   }
 
   // Query for the old app id, which is cached in the package dict to ensure it
   // isn't overwritten before this method can run.
-  const base::Value* last_app_id_value = arc_app_list_prefs_->GetPackagePrefs(
-      package_info->package_name, kLastAppId);
+  const base::Value* last_app_id_value =
+      arc_app_list_prefs_->GetPackagePrefs(package_name, kLastAppId);
 
   std::string last_app_id;
   if (last_app_id_value && last_app_id_value->is_string())
     last_app_id = last_app_id_value->GetString();
 
   if (new_app_id != last_app_id && !new_app_id.empty()) {
-    arc_app_list_prefs_->SetPackagePrefs(package_info->package_name, kLastAppId,
+    arc_app_list_prefs_->SetPackagePrefs(package_name, kLastAppId,
                                          base::Value(new_app_id));
     if (!last_app_id.empty()) {
       auto* shelf_controller = ChromeShelfController::instance();
@@ -282,13 +282,13 @@ void ApkWebAppService::UpdateShelfPin(
       // The previously installed app has been uninstalled or hidden, in this
       // instance get the saved pin index and pin at that place.
       if (index == ChromeShelfController::kInvalidIndex) {
-        const base::Value* saved_index = arc_app_list_prefs_->GetPackagePrefs(
-            package_info->package_name, kPinIndex);
+        const base::Value* saved_index =
+            arc_app_list_prefs_->GetPackagePrefs(package_name, kPinIndex);
         if (!(saved_index && saved_index->is_int()))
           return;
         shelf_controller->PinAppAtIndex(new_app_id, saved_index->GetInt());
         arc_app_list_prefs_->SetPackagePrefs(
-            package_info->package_name, kPinIndex,
+            package_name, kPinIndex,
             base::Value(ChromeShelfController::kInvalidIndex));
       } else {
         shelf_controller->ReplacePinnedItem(last_app_id, new_app_id);
@@ -336,7 +336,7 @@ void ApkWebAppService::OnPackageInstalled(
 
   // Only call this function if there has been a state change from web app to
   // Android app or vice-versa.
-  UpdateShelfPin(&package_info);
+  UpdateShelfPin(package_info.package_name, package_info.web_app_info);
 
   if (was_previously_web_app) {
     // The package was a web app, but now isn't. Remove the web app.
