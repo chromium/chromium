@@ -1522,6 +1522,9 @@ config("default_warnings") {
         cflags += [
           # TODO(crbug.com/1343303) Evaluate and possibly enable.
           "-Wno-array-parameter",
+
+          # TODO(crbug.com/1343975) Evaluate and possibly enable.
+          "-Wno-deprecated-builtins",
         ]
       }
 
