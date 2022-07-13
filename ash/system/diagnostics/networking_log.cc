@@ -326,6 +326,11 @@ void NetworkingLog::UpdateNetworkList(
 }
 
 void NetworkingLog::UpdateNetworkState(mojom::NetworkPtr network) {
+  if (network.is_null()) {
+    LOG(ERROR) << "Network to log update is null";
+    return;
+  }
+
   if (!base::Contains(latest_network_states_, network->observer_guid)) {
     LogNetworkAdded(network);
     latest_network_states_.emplace(network->observer_guid, std::move(network));
@@ -351,6 +356,11 @@ void NetworkingLog::LogNetworkAdded(const mojom::NetworkPtr& network) {
 }
 
 void NetworkingLog::LogNetworkRemoved(const mojom::NetworkPtr& network) {
+  if (network.is_null()) {
+    LOG(ERROR) << "Network to log removal is null";
+    return;
+  }
+
   const std::string line = base::StringPrintf(
       kNetworkRemovedEventTemplate, GetNetworkType(network->type).c_str(),
       network->mac_address.value_or("").c_str());

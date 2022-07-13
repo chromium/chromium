@@ -4,17 +4,20 @@
 
 #include "ash/system/diagnostics/networking_log.h"
 
+#include <vector>
+
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace diagnostics {
 namespace {
+
+constexpr char kNetworkInfoHeader[] = "--- Network Info ---";
 
 mojom::NetworkPtr CreateWiFiNetworkPtr(uint32_t signal_strength,
                                        uint32_t frequency,
@@ -134,7 +137,7 @@ TEST_F(NetworkingLogTest, DetailedLogContentsWiFi) {
 
   // Expect one title line and 14 content lines.
   EXPECT_EQ(15u, log_lines.size());
-  EXPECT_EQ("--- Network Info ---", log_lines[0]);
+  EXPECT_EQ(kNetworkInfoHeader, log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: WiFi", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
@@ -186,7 +189,7 @@ TEST_F(NetworkingLogTest, DetailedLogContentsEthernet) {
 
   // Expect one title line and 10 content lines.
   EXPECT_EQ(11u, log_lines.size());
-  EXPECT_EQ("--- Network Info ---", log_lines[0]);
+  EXPECT_EQ(kNetworkInfoHeader, log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: Ethernet", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
@@ -235,7 +238,7 @@ TEST_F(NetworkingLogTest, DetailedLogContentsCellular) {
 
   // Expect one title line and 17 content lines.
   EXPECT_EQ(18u, log_lines.size());
-  EXPECT_EQ("--- Network Info ---", log_lines[0]);
+  EXPECT_EQ(kNetworkInfoHeader, log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: Cellular", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
@@ -410,6 +413,43 @@ TEST_F(NetworkingLogTest, WiFiNetworkEvents) {
   // Verify remove event.
   expected_line = "WiFi network [" + expected_mac_address + "] removed";
   ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+}
+
+TEST_F(NetworkingLogTest, NetworkPtrInvalidDoesNotCrash) {
+  mojom::NetworkPtr null_network;
+  NetworkingLog log(temp_dir_.GetPath());
+  const std::vector<std::string> observer_guids;
+
+  EXPECT_NO_FATAL_FAILURE(
+      log.UpdateNetworkList(observer_guids, /**active_guid=*/""));
+  EXPECT_TRUE(null_network.is_null());
+  EXPECT_NO_FATAL_FAILURE(log.UpdateNetworkState(std::move(null_network)));
+
+  // Ensure AsyncLog tasks complete.
+  task_environment_.RunUntilIdle();
+
+  // No networks, only header should be logged.
+  const std::vector<std::string> logged_network_info_1 =
+      ash::diagnostics::GetLogLines(log.GetNetworkInfo());
+  EXPECT_EQ(1u, logged_network_info_1.size());
+  EXPECT_EQ(kNetworkInfoHeader, logged_network_info_1[0]);
+
+  // LogRemoveNetwork should not crash if NetworkPtr null.
+  mojom::NetworkPtr removed_network =
+      CreateEthernetNetworkPtr("fake_guid", "eth0", "00:AA:11:BB:22:CC",
+                               mojom::AuthenticationType::kNone);
+  EXPECT_NO_FATAL_FAILURE(log.UpdateNetworkState(std::move(removed_network)));
+  EXPECT_NO_FATAL_FAILURE(
+      log.UpdateNetworkList(observer_guids, /**active_guid=*/""));
+
+  // Ensure AsyncLog tasks complete.
+  task_environment_.RunUntilIdle();
+
+  // No networks, only header should be logged.
+  const std::vector<std::string> logged_network_info_2 =
+      ash::diagnostics::GetLogLines(log.GetNetworkInfo());
+  EXPECT_EQ(1u, logged_network_info_2.size());
+  EXPECT_EQ(kNetworkInfoHeader, logged_network_info_2[0]);
 }
 
 }  // namespace diagnostics
