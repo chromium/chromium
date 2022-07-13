@@ -111,7 +111,7 @@ class VirtualKeyboardTest : public WebEngineBrowserTest {
         frame_for_test_.ptr().get(),
         base::StringPrintf("getPointInsideText('%.*s')",
                            base::saturated_cast<int>(id.length()), id.data()));
-    if (!result) {
+    if (!result || !result->is_dict()) {
       ADD_FAILURE() << "!result";
       return {};
     }
@@ -119,8 +119,9 @@ class VirtualKeyboardTest : public WebEngineBrowserTest {
     // Note that coordinates are floating point and must be retrieved as such
     // from the Value, but we can cast them to integers and disregard the
     // fractional value with no major consequences.
-    return gfx::Point(*result->FindDoublePath("x") + kInputFieldClickInset,
-                      *result->FindDoublePath("y") + kInputFieldClickInset);
+    return gfx::Point(
+        *result->GetDict().FindDouble("x") + kInputFieldClickInset,
+        *result->GetDict().FindDouble("y") + kInputFieldClickInset);
   }
 
  protected:

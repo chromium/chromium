@@ -193,11 +193,14 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
                             metadata_mmap.length()));
 
       if (metadata_parsed && metadata_parsed->is_dict()) {
-        if (metadata_parsed->FindStringKey("charset"))
-          charset = *metadata_parsed->FindStringKey("charset");
+        const auto& dict = metadata_parsed->GetDict();
+        const std::string* parsed_charset = dict.FindString("charset");
+        if (parsed_charset)
+          charset = *parsed_charset;
 
-        if (metadata_parsed->FindStringKey("mime"))
-          mime_type = *metadata_parsed->FindStringKey("mime");
+        const std::string* parsed_mime = dict.FindString("mime");
+        if (parsed_mime)
+          mime_type = *parsed_mime;
       }
     }
 

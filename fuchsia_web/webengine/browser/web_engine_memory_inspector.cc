@@ -22,13 +22,14 @@ std::vector<std::string> GetAllocatorDumpNamesFromConfig() {
   if (!config)
     return {};
 
-  const base::Value* names_list = config->FindListPath("allocator-dump-names");
+  const base::Value::List* names_list =
+      config->GetDict().FindList("allocator-dump-names");
   if (!names_list)
     return {};
 
   std::vector<std::string> names;
-  names.reserve(names_list->GetListDeprecated().size());
-  for (auto& name : names_list->GetListDeprecated()) {
+  names.reserve(names_list->size());
+  for (auto& name : *names_list) {
     names.push_back(name.GetString());
   }
   return names;

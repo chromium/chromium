@@ -11,6 +11,7 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
@@ -57,24 +58,11 @@ KeyEvent CreateCharacterEvent(uint32_t codepoint, KeyEventType event_type) {
 base::Value ExpectedKeyValue(base::StringPiece code,
                              base::StringPiece key,
                              base::StringPiece type) {
-  base::Value expected(base::Value::Type::DICTIONARY);
-  expected.SetStringKey("code", code);
-  expected.SetStringKey("key", key);
-  expected.SetStringKey("type", type);
-  return expected;
-}
-
-// Recursive base case.
-template <typename T>
-void AppendValueList(std::vector<T>* vec) {}
-
-// Use tail recursion to emplace a sequence of Values into |vec|.
-// It is used as an alternative to initializer lists, which don't work with
-// move-only types like base::Value.
-template <typename T, typename... Args>
-void AppendValueList(std::vector<T>* vec, T&& value, Args&&... args) {
-  vec->push_back(std::move(value));
-  AppendValueList(vec, std::forward<base::Value>(args)...);
+  base::Value::Dict expected;
+  expected.Set("code", code);
+  expected.Set("key", key);
+  expected.Set("type", type);
+  return base::Value(std::move(expected));
 }
 
 class FakeKeyboard : public fuchsia::ui::input3::testing::Keyboard_TestBase {
@@ -185,14 +173,14 @@ class KeyboardInputTest : public WebEngineBrowserTest {
 
   template <typename... Args>
   void ExpectKeyEventsEqual(Args... events) {
-    std::vector<base::Value> expected;
-    AppendValueList(&expected, std::forward<Args>(events)...);
+    base::Value::List expected;
+    content::ConvertToBaseValueList(expected, std::forward<Args>(events)...);
     frame_for_test_.navigation_listener().RunUntilTitleEquals(
         base::NumberToString(expected.size()));
 
     absl::optional<base::Value> actual =
         ExecuteJavaScript(frame_for_test_.ptr().get(), kKeyDicts);
-    EXPECT_EQ(*actual, base::Value(expected));
+    EXPECT_EQ(*actual, base::Value(std::move(expected)));
   }
 
   // Used to publish fake services.

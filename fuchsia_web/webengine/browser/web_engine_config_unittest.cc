@@ -15,11 +15,11 @@ constexpr char kCommandLineArgs[] = "command-line-args";
 
 base::Value CreateConfigWithSwitchValue(std::string switch_name,
                                         std::string switch_value) {
-  base::Value config_dict(base::Value::Type::DICTIONARY);
-  base::Value args(base::Value::Type::DICTIONARY);
-  args.SetStringKey(switch_name, switch_value);
-  config_dict.SetKey(kCommandLineArgs, std::move(args));
-  return config_dict;
+  base::Value::Dict config_dict;
+  base::Value::Dict args;
+  args.Set(switch_name, switch_value);
+  config_dict.Set(kCommandLineArgs, std::move(args));
+  return base::Value(std::move(config_dict));
 }
 
 }  // namespace
@@ -41,15 +41,16 @@ TEST(WebEngineConfig, DisallowedCommandLineArgs) {
 }
 
 TEST(WebEngineConfig, WronglyTypedCommandLineArgs) {
-  base::Value config(base::Value::Type::DICTIONARY);
+  base::Value::Dict config;
 
   // Specify a configuration that sets valid args with invalid value.
-  base::Value args(base::Value::Type::DICTIONARY);
-  args.SetBoolKey("renderer-process-limit", false);
-  config.SetKey(kCommandLineArgs, std::move(args));
+  base::Value::Dict args;
+  args.Set("renderer-process-limit", false);
+  config.Set(kCommandLineArgs, std::move(args));
 
   base::CommandLine command(base::CommandLine::NO_PROGRAM);
-  EXPECT_FALSE(UpdateCommandLineFromConfigFile(config, &command));
+  EXPECT_FALSE(UpdateCommandLineFromConfigFile(base::Value(std::move(config)),
+                                               &command));
 }
 
 TEST(WebEngineConfig, WithGoogleApiKeyValue) {
