@@ -41,6 +41,8 @@ extern const base::Feature kAvoidEarlyExtensionScriptContextCreation;
 
 extern const base::Feature kExtensionsOffscreenDocuments;
 
+extern const base::Feature kNewWebstoreDomain;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

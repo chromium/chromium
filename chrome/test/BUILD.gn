@@ -3036,6 +3036,7 @@ if (!is_android) {
         "../browser/extensions/wasm_app_browsertest.cc",
         "../browser/extensions/wasm_mv3_browsertest.cc",
         "../browser/extensions/web_contents_browsertest.cc",
+        "../browser/extensions/webstore_domain_browsertest.cc",
         "../browser/extensions/webstore_installer_browsertest.cc",
         "../browser/extensions/webstore_installer_test.cc",
         "../browser/extensions/webstore_installer_test.h",

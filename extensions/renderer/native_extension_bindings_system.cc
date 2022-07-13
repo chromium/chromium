@@ -390,6 +390,8 @@ bool IsRuntimeAvailableToContext(ScriptContext* context) {
 const char* const kWebAvailableFeatures[] = {
     "app",
     "dashboardPrivate",
+    "webstorePrivate",
+    "management",
 };
 
 }  // namespace

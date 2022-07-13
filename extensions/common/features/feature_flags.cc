@@ -20,6 +20,7 @@ namespace {
 // generally be removed once the API has been stable for a few releases.
 const base::Feature* kFeatureFlags[] = {
     &extensions_features::kExtensionsOffscreenDocuments,
+    &extensions_features::kNewWebstoreDomain,
 };
 
 const std::vector<base::Feature>* g_feature_flags_test_override = nullptr;

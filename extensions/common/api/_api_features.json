@@ -286,6 +286,11 @@
       "chrome://extensions/*",
       "chrome://settings/*"
     ]
+  }, {
+    "channel": "dev",
+    "contexts": ["web_page"],
+    "matches": ["https://webstore.google.com/*"],
+    "feature_flag": "NewWebstoreDomain"
   }],
   "management.getPermissionWarningsByManifest": {
     "dependencies": [],

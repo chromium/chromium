@@ -937,13 +937,18 @@
       "81986D4F846CEDDDB962643FA501D1780DD441BB"   // http://crbug.com/775961
     ]
   },
-  "webstorePrivate": {
+  "webstorePrivate": [{
     "dependencies": ["permission:webstorePrivate"],
     // NOTE: even though this is only used by the webstore hosted app, which
     // normally would mean blessed_web_page, component hosted apps are actually
     // given the blessed_extension denomination. Confusing.
     "contexts": ["blessed_extension"]
-  },
+  }, {
+    "channel": "dev",
+    "contexts": ["web_page"],
+    "matches": ["https://webstore.google.com/*"],
+    "feature_flag": "NewWebstoreDomain"
+  }],
   "webviewTag": {
     "internal": true,
     "channel": "stable",
