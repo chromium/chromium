@@ -272,6 +272,9 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   // WebFrameWidgetImpl::Resize) to set the initial size of the viewport.
   //
   void DispatchThroughCcInputHandler(const WebInputEvent& event);
+  const mojom::blink::DidOverscrollParamsPtr& last_overscroll() const {
+    return last_overscroll_;
+  }
 
   using WebFrameWidgetImpl::GetOriginalScreenInfo;
 
@@ -297,6 +300,7 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   std::unique_ptr<TestWidgetInputHandlerHost> widget_input_handler_host_;
   viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<TestWebFrameWidgetHost> widget_host_;
+  mojom::blink::DidOverscrollParamsPtr last_overscroll_;
 };
 
 class TestWebViewClient : public WebViewClient {
