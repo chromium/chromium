@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "base/types/expected.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -28,6 +29,16 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                            const base::FilePath& dir,
                            const base::FilePath& file,
                            const base::Value& app_config);
+
+using IconBitmapsOrError =
+    base::expected<std::map<SquareSizePx, SkBitmap>, std::string>;
+
+IconBitmapsOrError ParseOfflineManifestIconBitmaps(
+    FileUtilsWrapper& file_utils,
+    const base::FilePath& dir,
+    const base::FilePath& manifest_file,
+    const char* icon_key,
+    const base::Value* icon_files);
 
 using WebAppInstallInfoFactoryOrError =
     absl::variant<WebAppInstallInfoFactory, std::string>;

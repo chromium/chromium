@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/common/constants.h"
@@ -158,6 +159,10 @@ constexpr char kOfflineManifestDisplay[] = "display";
 // List of PNG files in the default web app config directory to use as the
 // icons for offline install. Will be installed with purpose "any".
 constexpr char kOfflineManifestIconAnyPngs[] = "icon_any_pngs";
+
+// List of PNG files in the default web app config directory to use as the
+// icons for offline install. Will be installed with purpose "maskable".
+constexpr char kOfflineManifestIconMaskablePngs[] = "icon_maskable_pngs";
 
 // Optional 8 value ARGB hex code to use as the "theme_color" manifest value.
 // Example:
@@ -446,6 +451,48 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   return options;
 }
 
+IconBitmapsOrError ParseOfflineManifestIconBitmaps(
+    FileUtilsWrapper& file_utils,
+    const base::FilePath& dir,
+    const base::FilePath& manifest_file,
+    const char* icon_key,
+    const base::Value* icon_files) {
+  std::map<SquareSizePx, SkBitmap> icon_bitmaps;
+
+  for (const base::Value& icon_file : icon_files->GetList()) {
+    if (!icon_file.is_string()) {
+      return base::unexpected(base::StrCat(
+          {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
+           " ", icon_file.DebugString(), " invalid."}));
+    }
+    base::FilePath icon_path = dir.AppendASCII(icon_file.GetString());
+    std::string icon_data;
+    if (!file_utils.ReadFileToString(icon_path, &icon_data)) {
+      return base::unexpected(base::StrCat(
+          {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
+           " ", icon_file.DebugString(), " failed to read."}));
+    }
+    SkBitmap bitmap;
+    if (!gfx::PNGCodec::Decode(
+            reinterpret_cast<const unsigned char*>(icon_data.c_str()),
+            icon_data.size(), &bitmap)) {
+      return base::unexpected(base::StrCat(
+          {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
+           " ", icon_file.DebugString(), " failed to decode."}));
+    }
+    if (bitmap.width() != bitmap.height()) {
+      return base::unexpected(base::StrCat(
+          {manifest_file.AsUTF8Unsafe(), " ", kOfflineManifest, " ", icon_key,
+           " ", icon_file.DebugString(),
+           " must be square: ", base::NumberToString(bitmap.width()), "x",
+           base::NumberToString(bitmap.height())}));
+    }
+    icon_bitmaps[bitmap.width()] = std::move(bitmap);
+  }
+
+  return icon_bitmaps;
+}
+
 WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     FileUtilsWrapper& file_utils,
     const base::FilePath& dir,
@@ -516,49 +563,49 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
   }
   app_info.display_mode = display;
 
-  // icon_any_pngs
-  const base::Value* icon_files =
+  // icon_any_pngs || icon_maskable_pngs
+  const base::Value* icon_any_files =
       offline_manifest.FindListKey(kOfflineManifestIconAnyPngs);
-  if (!icon_files || icon_files->GetListDeprecated().empty()) {
+  const base::Value* icon_maskable_files =
+      offline_manifest.FindListKey(kOfflineManifestIconMaskablePngs);
+
+  if (!icon_any_files && !icon_maskable_files) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                         kOfflineManifestIconAnyPngs,
-                         " missing, empty or invalid."});
+                         kOfflineManifestIconAnyPngs, " and ",
+                         kOfflineManifestIconMaskablePngs,
+                         " missing or invalid."});
   }
-  for (const base::Value& icon_file : icon_files->GetListDeprecated()) {
-    if (!icon_file.is_string()) {
+
+  if (icon_any_files) {
+    if (icon_any_files->GetList().empty()) {
       return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                           kOfflineManifestIconAnyPngs, " ",
-                           icon_file.DebugString(), " invalid."});
+                           kOfflineManifestIconAnyPngs, " empty."});
     }
 
-    base::FilePath icon_path = dir.AppendASCII(icon_file.GetString());
-    std::string icon_data;
-    if (!file_utils.ReadFileToString(icon_path, &icon_data)) {
-      return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                           kOfflineManifestIconAnyPngs, " ",
-                           icon_file.DebugString(), " failed to read."});
+    auto any_bitmaps = ParseOfflineManifestIconBitmaps(
+        file_utils, dir, file, kOfflineManifestIconAnyPngs, icon_any_files);
+    if (!any_bitmaps.has_value()) {
+      return std::move(any_bitmaps.error());
     }
 
-    SkBitmap bitmap;
-    if (!gfx::PNGCodec::Decode(
-            reinterpret_cast<const unsigned char*>(icon_data.c_str()),
-            icon_data.size(), &bitmap)) {
-      return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-                           kOfflineManifestIconAnyPngs, " ",
-                           icon_file.DebugString(), " failed to decode."});
-    }
-
-    if (bitmap.width() != bitmap.height()) {
-      return base::StrCat(
-          {file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
-           kOfflineManifestIconAnyPngs, " ", icon_file.DebugString(),
-           " must be square: ", base::NumberToString(bitmap.width()), "x",
-           base::NumberToString(bitmap.height())});
-    }
-
-    app_info.icon_bitmaps.any[bitmap.width()] = std::move(bitmap);
+    app_info.icon_bitmaps.any = std::move(any_bitmaps.value());
   }
-  DCHECK(!app_info.icon_bitmaps.any.empty());
+
+  if (icon_maskable_files) {
+    if (icon_maskable_files->GetList().empty()) {
+      return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
+                           kOfflineManifestIconMaskablePngs, " empty."});
+    }
+
+    auto maskable_bitmaps = ParseOfflineManifestIconBitmaps(
+        file_utils, dir, file, kOfflineManifestIconMaskablePngs,
+        icon_maskable_files);
+    if (!maskable_bitmaps.has_value()) {
+      return std::move(maskable_bitmaps.error());
+    }
+
+    app_info.icon_bitmaps.maskable = maskable_bitmaps.value();
+  }
 
   // theme_color_argb_hex (optional)
   const base::Value* theme_color_value =

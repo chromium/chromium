@@ -214,6 +214,7 @@ TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
       "scope": "https://test.org/",
       "display": "standalone",
       "icon_any_pngs": ["icon.png"],
+      "icon_maskable_pngs": ["icon.png"],
       "theme_color_argb_hex": "AABBCCDD"
     }
   )")
@@ -226,6 +227,9 @@ TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
   EXPECT_EQ(app_info->display_mode, DisplayMode::kStandalone);
   EXPECT_EQ(app_info->icon_bitmaps.any.size(), 1u);
   EXPECT_EQ(app_info->icon_bitmaps.any.at(192).getColor(0, 0), SK_ColorBLUE);
+  EXPECT_EQ(app_info->icon_bitmaps.maskable.size(), 1u);
+  EXPECT_EQ(app_info->icon_bitmaps.maskable.at(192).getColor(0, 0),
+            SK_ColorBLUE);
   EXPECT_EQ(app_info->theme_color, SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
 }
 
@@ -429,6 +433,47 @@ TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestIconAnyPngs) {
       "icon_any_pngs": ["basic.html"]
     }
   )")) << "icon_any_pngs is a PNG";
+}
+
+TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestIconMaskablePngs) {
+  EXPECT_FALSE(ParseOfflineManifest(R"(
+    {
+      "name": "Test App",
+      "start_url": "https://test.org/start.html",
+      "scope": "https://test.org/",
+      "display": "standalone"
+    }
+  )")) << "icon_any_pngs or icon_maskable_pngs is required";
+
+  EXPECT_FALSE(ParseOfflineManifest(R"(
+    {
+      "name": "Test App",
+      "start_url": "https://test.org/start.html",
+      "scope": "https://test.org/",
+      "display": "standalone",
+      "icon_maskable_pngs": "icon.png"
+    }
+  )")) << "icon_maskable_pngs is valid";
+
+  EXPECT_FALSE(ParseOfflineManifest(R"(
+    {
+      "name": "Test App",
+      "start_url": "https://test.org/start.html",
+      "scope": "https://test.org/",
+      "display": "standalone",
+      "icon_maskable_pngs": ["does-not-exist.png"]
+    }
+  )")) << "icon_maskable_pngs exists";
+
+  EXPECT_FALSE(ParseOfflineManifest(R"(
+    {
+      "name": "Test App",
+      "start_url": "https://test.org/start.html",
+      "scope": "https://test.org/",
+      "display": "standalone",
+      "icon_maskable_pngs": ["basic.html"]
+    }
+  )")) << "icon_maskable_pngs is a PNG";
 }
 
 TEST_F(PreinstalledWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
