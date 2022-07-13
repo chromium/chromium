@@ -352,9 +352,11 @@ void UserNoteService::OnNoteModelsFetched(
   // Now that the creation and model maps have been updated, apply all the diffs
   // to propagate the changes to the webpages and UI.
   for (std::unique_ptr<FrameUserNoteChanges>& diff : note_changes) {
-    diff->Apply(base::BindOnce(&UserNoteService::OnFrameChangesApplied,
-                               weak_ptr_factory_.GetWeakPtr(), diff->id()));
+    FrameUserNoteChanges* diff_raw = diff.get();
     note_changes_in_progress_.emplace(diff->id(), std::move(diff));
+    diff_raw->Apply(base::BindOnce(&UserNoteService::OnFrameChangesApplied,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   diff_raw->id()));
   }
 }
 
