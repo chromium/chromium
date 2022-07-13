@@ -111,7 +111,10 @@ DYNAMIC_SHARDING_TESTERS = [
     'android-pixel2-perf-calibration', 'linux-perf-calibration'
 ]
 
-TESTERS_OPT_IN_FOR_PY3 = ['linux-perf-fyi']
+TESTERS_OPT_IN_FOR_PY3 = [
+    'linux-perf-fyi', 'android-pixel2-perf-fyi',
+    'win-10_laptop_low_end-perf_HP-Candidate'
+]
 
 CALIBRATION_BUILDERS = {
     'linux-perf-calibration': {
