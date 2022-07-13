@@ -21,8 +21,8 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -399,14 +399,14 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, DISABLED_LaunchAppUserCancel) {
   BlockAppLaunch(true);
   splash_waiter.Wait();
 
+  base::RunLoop run_loop;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
   settings_helper_.SetBoolean(
       kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled, true);
-  content::WindowedNotificationObserver signal(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
   LoginDisplayHost::default_host()->HandleAccelerator(
       LoginAcceleratorAction::kAppLaunchBailout);
-  signal.Wait();
+  run_loop.Run();
   EXPECT_EQ(KioskAppLaunchError::Error::kUserCancel,
             KioskAppLaunchError::Get());
 }

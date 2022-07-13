@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -396,13 +397,14 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, PRE_Session) {
   ASSERT_EQ(notifications.size(), 1u);
 
   // Click on notification should trigger Chrome restart.
-  content::WindowedNotificationObserver exit_waiter(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
+  base::RunLoop exit_waiter;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(exit_waiter.QuitClosure());
+
   display_service_tester->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                         notifications[0].id(), absl::nullopt,
                                         absl::nullopt);
-  exit_waiter.Wait();
+  exit_waiter.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, Session) {

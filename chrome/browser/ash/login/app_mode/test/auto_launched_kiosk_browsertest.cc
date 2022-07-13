@@ -9,6 +9,7 @@
 #include "apps/test/app_window_waiter.h"
 #include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -25,8 +26,8 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/common/chrome_constants.h"
@@ -35,9 +36,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "components/crx_file/crx_verifier.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -82,35 +80,6 @@ constexpr char kTestManagementApiKioskApp[] =
 //   chrome/test/data/chromeos/app_mode/management_api/secondary_app/
 constexpr char kTestManagementApiSecondaryApp[] =
     "kajpgkhinciaiihghpdamekpjpldgpfi";
-
-// Used to listen for app termination notification.
-class TerminationObserver : public content::NotificationObserver {
- public:
-  TerminationObserver() {
-    registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                   content::NotificationService::AllSources());
-  }
-
-  TerminationObserver(const TerminationObserver&) = delete;
-  TerminationObserver& operator=(const TerminationObserver&) = delete;
-
-  ~TerminationObserver() override = default;
-
-  // Whether app has been terminated - i.e. whether app termination notification
-  // has been observed.
-  bool terminated() const { return notification_seen_; }
-
- private:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    ASSERT_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
-    notification_seen_ = true;
-  }
-
-  bool notification_seen_ = false;
-  content::NotificationRegistrar registrar_;
-};
 
 }  // namespace
 
@@ -192,7 +161,9 @@ class AutoLaunchedKioskTestBase : public OobeBaseTest {
     // from the kiosk app.
     app_window_loaded_listener_ =
         std::make_unique<ExtensionTestMessageListener>("appWindowLoaded");
-    termination_observer_ = std::make_unique<TerminationObserver>();
+    termination_subscription_ =
+        browser_shutdown::AddAppTerminatingCallback(base::DoNothing());
+
     InProcessBrowserTest::PreRunTestOnMainThread();
   }
 
@@ -203,7 +174,7 @@ class AutoLaunchedKioskTestBase : public OobeBaseTest {
 
   void TearDownOnMainThread() override {
     app_window_loaded_listener_.reset();
-    termination_observer_.reset();
+    termination_subscription_ = {};
 
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
@@ -258,7 +229,7 @@ class AutoLaunchedKioskTestBase : public OobeBaseTest {
 
  protected:
   std::unique_ptr<ExtensionTestMessageListener> app_window_loaded_listener_;
-  std::unique_ptr<TerminationObserver> termination_observer_;
+  base::CallbackListSubscription termination_subscription_;
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -292,7 +263,7 @@ class AutoLaunchedKioskTest : public AutoLaunchedKioskTestBase,
 IN_PROC_BROWSER_TEST_P(AutoLaunchedKioskTest, PRE_CrashRestore) {
   // Verify that Chrome hasn't already exited, e.g. in order to apply user
   // session flags.
-  ASSERT_FALSE(termination_observer_->terminated());
+  ASSERT_TRUE(termination_subscription_);
 
   // Check that policy flags have not been lost.
   ExpectCommandLineHasDefaultPolicySwitches(
@@ -308,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(AutoLaunchedKioskTest, PRE_CrashRestore) {
 IN_PROC_BROWSER_TEST_P(AutoLaunchedKioskTest, CrashRestore) {
   // Verify that Chrome hasn't already exited, e.g. in order to apply user
   // session flags.
-  ASSERT_FALSE(termination_observer_->terminated());
+  ASSERT_TRUE(termination_subscription_);
 
   ExpectCommandLineHasDefaultPolicySwitches(
       *base::CommandLine::ForCurrentProcess());
@@ -383,18 +354,17 @@ class AutoLaunchedNonKioskEnabledAppTest : public AutoLaunchedKioskTest {
 IN_PROC_BROWSER_TEST_P(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
   // Verify that Chrome hasn't already exited, e.g. in order to apply user
   // session flags.
-  ASSERT_FALSE(termination_observer_->terminated());
+  ASSERT_TRUE(termination_subscription_);
 
   EXPECT_TRUE(IsKioskAppAutoLaunched(kTestNonKioskEnabledApp));
 
   ExtensionTestMessageListener listener("launchRequested");
 
-  content::WindowedNotificationObserver termination_waiter(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
-
   // App launch should be canceled, and user session stopped.
-  termination_waiter.Wait();
+  base::RunLoop run_loop;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_FALSE(listener.was_satisfied());
   EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,

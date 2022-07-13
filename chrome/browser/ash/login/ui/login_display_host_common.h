@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
+#include "base/callback_list.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/ui/kiosk_app_menu_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -19,8 +20,6 @@
 #include "chromeos/ash/components/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_manager/user_type.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
@@ -33,7 +32,6 @@ class LoginFeedback;
 // LoginDisplayHostMojo and LoginDisplayHostWebUI.
 class LoginDisplayHostCommon : public LoginDisplayHost,
                                public BrowserListObserver,
-                               public content::NotificationObserver,
                                public SigninUI {
  public:
   LoginDisplayHostCommon();
@@ -93,11 +91,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   WizardContext* GetWizardContext() override;
 
  protected:
@@ -127,8 +120,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   // Kiosk launch controller.
   std::unique_ptr<KioskLaunchController> kiosk_launch_controller_;
 
-  content::NotificationRegistrar registrar_;
-
  private:
   void Cleanup();
   // Set screen, from which WC flow will continue after attempt to show
@@ -138,6 +129,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void OnPowerwashAllowedCallback(
       bool is_reset_allowed,
       absl::optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
+
+  void OnAppTerminating();
 
   // True if session start is in progress.
   bool session_starting_ = false;
@@ -167,6 +160,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   std::unique_ptr<ash::quick_start::TargetDeviceBootstrapController>
       bootstrap_controller_;
+
+  base::CallbackListSubscription app_terminating_subscription_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };

@@ -76,6 +76,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
@@ -106,11 +107,9 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/mock_notification_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -3157,19 +3156,14 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
                                    configuration_file);
   }
 
-  content::MockNotificationObserver observer_;
-  content::NotificationRegistrar registrar_;
-
   FakeRollbackNetworkConfig* network_config_;
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
                        RestartChromeAfterRollbackEnrollment) {
-  // TODO(crbug/1292955) |NOTIFICATION_APP_TERMINATING| is always sent, even if
-  // Chrome is not restarted properly because of the rollback.
-  registrar_.Add(&observer_, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
-  EXPECT_CALL(observer_, Observe(chrome::NOTIFICATION_APP_TERMINATING, _, _));
+  base::RunLoop run_loop;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
 
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
@@ -3178,6 +3172,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
       EnrollmentScreenView::kScreenId);
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
   mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
+  run_loop.Run();
 }
 
 // TODO(crbug.com/1324410): Disabled due to flakiness.
