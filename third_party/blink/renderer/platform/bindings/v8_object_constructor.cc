@@ -77,18 +77,14 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
       type->GetV8ClassTemplate(isolate, world).As<v8::FunctionTemplate>();
   // Getting the function might fail if we're running out of stack or memory.
   v8::Local<v8::Function> interface_object;
-  {
-    v8::TryCatch try_catch(isolate);
-    bool get_interface_object =
-        interface_template->GetFunction(context).ToLocal(&interface_object);
-    if (UNLIKELY(!get_interface_object)) {
-      // For investigation of crbug.com/1247628
-      static crash_reporter::CrashKeyString<64> crash_key(
-          "blink__create_interface_object");
-      crash_key.Set(type->interface_name);
-      CHECK(!try_catch.HasCaught());
-      CHECK(get_interface_object);
-    }
+  bool get_interface_object =
+      interface_template->GetFunction(context).ToLocal(&interface_object);
+  if (UNLIKELY(!get_interface_object)) {
+    // For investigation of crbug.com/1247628
+    static crash_reporter::CrashKeyString<64> crash_key(
+        "blink__create_interface_object");
+    crash_key.Set(type->interface_name);
+    CHECK(get_interface_object);
   }
 
   if (type->parent_class) {
