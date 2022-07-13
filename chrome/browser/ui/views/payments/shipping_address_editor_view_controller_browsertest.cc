@@ -169,7 +169,7 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
         dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combobox);
-    int selected_country_row = country_combobox->GetSelectedRow();
+    size_t selected_country_row = country_combobox->GetSelectedRow().value();
     autofill::CountryComboboxModel* country_model =
         static_cast<autofill::CountryComboboxModel*>(
             country_combobox->GetModel());
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
       dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
           autofill::ADDRESS_HOME_COUNTRY)));
   ASSERT_NE(nullptr, country_combobox);
-  ASSERT_EQ(0, country_combobox->GetSelectedRow());
+  ASSERT_EQ(0u, country_combobox->GetSelectedRow());
   autofill::CountryComboboxModel* country_model =
       static_cast<autofill::CountryComboboxModel*>(
           country_combobox->GetModel());
@@ -437,8 +437,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
         dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combobox);
-    EXPECT_EQ(country_index,
-              static_cast<size_t>(country_combobox->GetSelectedRow()));
+    EXPECT_EQ(country_index, country_combobox->GetSelectedRow().value());
     country_model = static_cast<autofill::CountryComboboxModel*>(
         country_combobox->GetModel());
     ASSERT_EQ(num_countries, country_model->countries().size());

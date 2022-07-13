@@ -30,17 +30,19 @@ class TestPrefixDelegate : public View, public PrefixDelegate {
 
   ~TestPrefixDelegate() override = default;
 
-  int GetRowCount() override { return static_cast<int>(rows_.size()); }
+  size_t GetRowCount() override { return rows_.size(); }
 
-  int GetSelectedRow() override { return selected_row_; }
+  absl::optional<size_t> GetSelectedRow() override { return selected_row_; }
 
-  void SetSelectedRow(int row) override { selected_row_ = row; }
+  void SetSelectedRow(absl::optional<size_t> row) override {
+    selected_row_ = row;
+  }
 
-  std::u16string GetTextForRow(int row) override { return rows_[row]; }
+  std::u16string GetTextForRow(size_t row) override { return rows_[row]; }
 
  private:
   std::vector<std::u16string> rows_;
-  int selected_row_ = 0;
+  absl::optional<size_t> selected_row_ = 0;
 };
 
 class PrefixSelectorTest : public ViewsTestBase {
@@ -67,20 +69,20 @@ TEST_F(PrefixSelectorTest, PrefixSelect) {
   selector_->InsertText(
       u"an",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_EQ(1, delegate_.GetSelectedRow());
+  EXPECT_EQ(1u, delegate_.GetSelectedRow());
 
   // Invoke OnViewBlur() to reset time.
   selector_->OnViewBlur();
   selector_->InsertText(
       u"a",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_EQ(0, delegate_.GetSelectedRow());
+  EXPECT_EQ(0u, delegate_.GetSelectedRow());
 
   selector_->OnViewBlur();
   selector_->InsertText(
       u"g",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_EQ(3, delegate_.GetSelectedRow());
+  EXPECT_EQ(3u, delegate_.GetSelectedRow());
 
   selector_->OnViewBlur();
   selector_->InsertText(
@@ -89,7 +91,7 @@ TEST_F(PrefixSelectorTest, PrefixSelect) {
   selector_->InsertText(
       u"a",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_EQ(2, delegate_.GetSelectedRow());
+  EXPECT_EQ(2u, delegate_.GetSelectedRow());
 
   selector_->OnViewBlur();
   selector_->InsertText(
@@ -101,7 +103,7 @@ TEST_F(PrefixSelectorTest, PrefixSelect) {
   selector_->InsertText(
       u"a",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  EXPECT_EQ(2, delegate_.GetSelectedRow());
+  EXPECT_EQ(2u, delegate_.GetSelectedRow());
 }
 
 }  // namespace views

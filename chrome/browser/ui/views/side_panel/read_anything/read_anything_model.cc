@@ -125,7 +125,7 @@ void ReadAnythingFontModel::SetDefaultIndexFromPrefsFontName(
   default_index_ = it - font_choices_.begin();
 }
 
-int ReadAnythingFontModel::GetDefaultIndex() const {
+absl::optional<size_t> ReadAnythingFontModel::GetDefaultIndex() const {
   return default_index_;
 }
 

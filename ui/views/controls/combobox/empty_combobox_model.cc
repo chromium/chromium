@@ -23,8 +23,8 @@ std::u16string EmptyComboboxModel::GetItemAt(int index) const {
   return std::u16string();
 }
 
-int EmptyComboboxModel::GetDefaultIndex() const {
-  return -1;
+absl::optional<size_t> EmptyComboboxModel::GetDefaultIndex() const {
+  return absl::nullopt;
 }
 
 }  // namespace internal

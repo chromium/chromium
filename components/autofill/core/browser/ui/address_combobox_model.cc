@@ -75,7 +75,7 @@ bool AddressComboboxModel::IsItemSeparatorAt(int index) const {
   return index == 1;
 }
 
-int AddressComboboxModel::GetDefaultIndex() const {
+absl::optional<size_t> AddressComboboxModel::GetDefaultIndex() const {
   if (!default_selected_guid_.empty()) {
     int address_index = GetIndexOfIdentifier(default_selected_guid_);
     if (address_index != -1)

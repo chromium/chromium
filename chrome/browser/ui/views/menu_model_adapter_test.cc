@@ -61,7 +61,7 @@ class CommonMenuModel : public ui::MenuModel {
     return ui::NORMAL_SEPARATOR;
   }
 
-  bool IsItemCheckedAt(int index) const override { return false; }
+  bool IsItemCheckedAt(size_t index) const override { return false; }
 
   int GetGroupIdAt(int index) const override { return 0; }
 

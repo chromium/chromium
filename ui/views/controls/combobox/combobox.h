@@ -78,8 +78,8 @@ class VIEWS_EXPORT Combobox : public View,
   }
 
   // Gets/Sets the selected index.
-  int GetSelectedIndex() const { return selected_index_; }
-  void SetSelectedIndex(int index);
+  absl::optional<size_t> GetSelectedIndex() const { return selected_index_; }
+  void SetSelectedIndex(absl::optional<size_t> index);
   [[nodiscard]] base::CallbackListSubscription AddSelectedIndexChangedCallback(
       views::PropertyChangedCallback callback);
 
@@ -143,10 +143,10 @@ class VIEWS_EXPORT Combobox : public View,
   void OnThemeChanged() override;
 
   // Overridden from PrefixDelegate:
-  int GetRowCount() override;
-  int GetSelectedRow() override;
-  void SetSelectedRow(int row) override;
-  std::u16string GetTextForRow(int row) override;
+  size_t GetRowCount() override;
+  absl::optional<size_t> GetSelectedRow() override;
+  void SetSelectedRow(absl::optional<size_t> row) override;
+  std::u16string GetTextForRow(size_t row) override;
 
  protected:
   // Overridden from ComboboxModelObserver:
@@ -219,8 +219,8 @@ class VIEWS_EXPORT Combobox : public View,
   // will updated based on the selection.
   MenuSelectionAtCallback menu_selection_at_callback_;
 
-  // The current selected index; -1 and means no selection.
-  int selected_index_ = -1;
+  // The current selected index; nullopt means no selection.
+  absl::optional<size_t> selected_index_ = absl::nullopt;
 
   // True when the selection is visually denoted as invalid.
   bool invalid_ = false;
@@ -274,7 +274,7 @@ BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Combobox, View)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, Callback)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<ui::ComboboxModel>, OwnedModel)
 VIEW_BUILDER_PROPERTY(ui::ComboboxModel*, Model)
-VIEW_BUILDER_PROPERTY(int, SelectedIndex)
+VIEW_BUILDER_PROPERTY(absl::optional<size_t>, SelectedIndex)
 VIEW_BUILDER_PROPERTY(bool, Invalid)
 VIEW_BUILDER_PROPERTY(bool, SizeToLargestLabel)
 VIEW_BUILDER_PROPERTY(std::u16string, AccessibleName)

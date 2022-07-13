@@ -247,11 +247,11 @@ bool CardUnmaskPromptViews::Accept() {
 
   controller_->OnUnmaskPromptAccepted(
       cvc_input_->GetText(),
-      month_input_->GetVisible()
-          ? month_input_->GetTextForRow(month_input_->GetSelectedIndex())
-          : std::u16string(),
+      month_input_->GetVisible() ? month_input_->GetTextForRow(
+                                       month_input_->GetSelectedIndex().value())
+                                 : std::u16string(),
       year_input_->GetVisible()
-          ? year_input_->GetTextForRow(year_input_->GetSelectedIndex())
+          ? year_input_->GetTextForRow(year_input_->GetSelectedIndex().value())
           : std::u16string(),
       /*enable_fido_auth=*/false);
   return false;
@@ -275,9 +275,9 @@ void CardUnmaskPromptViews::DateChanged() {
       SetRetriableErrorMessage(std::u16string());
     }
   } else if (month_input_->GetSelectedIndex() !=
-                 month_combobox_model_.GetDefaultIndex() &&
+                 month_combobox_model_.GetDefaultIndex().value() &&
              year_input_->GetSelectedIndex() !=
-                 year_combobox_model_.GetDefaultIndex()) {
+                 year_combobox_model_.GetDefaultIndex().value()) {
     month_input_->SetInvalid(true);
     year_input_->SetInvalid(true);
     SetRetriableErrorMessage(l10n_util::GetStringUTF16(
@@ -409,8 +409,8 @@ bool CardUnmaskPromptViews::ExpirationDateIsValid() const {
     return true;
 
   return controller_->InputExpirationIsValid(
-      month_input_->GetTextForRow(month_input_->GetSelectedIndex()),
-      year_input_->GetTextForRow(year_input_->GetSelectedIndex()));
+      month_input_->GetTextForRow(month_input_->GetSelectedIndex().value()),
+      year_input_->GetTextForRow(year_input_->GetSelectedIndex().value()));
 }
 
 void CardUnmaskPromptViews::ClosePrompt() {

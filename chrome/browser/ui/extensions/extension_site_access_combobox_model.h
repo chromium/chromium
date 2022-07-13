@@ -37,7 +37,7 @@ class ExtensionSiteAccessComboboxModel : public ui::ComboboxModel {
   // ui::ComboboxModel:
   int GetItemCount() const override;
   std::u16string GetItemAt(int index) const override;
-  int GetDefaultIndex() const override;
+  absl::optional<size_t> GetDefaultIndex() const override;
   bool IsItemEnabledAt(int index) const override;
 
  private:

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -49,7 +50,7 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
 
   // The index of the item that is selected by default (before user
   // interaction).
-  virtual int GetDefaultIndex() const;
+  virtual absl::optional<size_t> GetDefaultIndex() const;
 
   // Returns true if the item at |index| is enabled.
   virtual bool IsItemEnabledAt(int index) const;

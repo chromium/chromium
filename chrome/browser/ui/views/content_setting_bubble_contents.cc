@@ -672,7 +672,8 @@ void ContentSettingBubbleContents::OnPerformAction(views::Combobox* combobox) {
   MediaComboboxModel* model =
       static_cast<MediaComboboxModel*>(combobox->GetModel());
   content_setting_bubble_model_->OnMediaMenuClicked(
-      model->type(), model->GetDevices()[combobox->GetSelectedIndex()].id);
+      model->type(),
+      model->GetDevices()[combobox->GetSelectedIndex().value()].id);
 }
 
 BEGIN_METADATA(ContentSettingBubbleContents, views::BubbleDialogDelegateView)

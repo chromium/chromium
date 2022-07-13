@@ -228,7 +228,7 @@ void TextExample::AlignComboboxChanged() {
   int flags = text_view_->GetFlags() &
               ~(gfx::Canvas::TEXT_ALIGN_LEFT | gfx::Canvas::TEXT_ALIGN_CENTER |
                 gfx::Canvas::TEXT_ALIGN_RIGHT);
-  switch (h_align_cb_->GetSelectedIndex()) {
+  switch (h_align_cb_->GetSelectedIndex().value()) {
     case 0:
       break;
     case 1:
@@ -245,7 +245,7 @@ void TextExample::AlignComboboxChanged() {
 }
 
 void TextExample::TextComboboxChanged() {
-  switch (text_cb_->GetSelectedIndex()) {
+  switch (text_cb_->GetSelectedIndex().value()) {
     case 0:
       text_view_->SetText(u"The quick brown fox jumps over the lazy dog.");
       break;
@@ -279,7 +279,7 @@ void TextExample::TextComboboxChanged() {
 }
 
 void TextExample::ElideComboboxChanged() {
-  switch (eliding_cb_->GetSelectedIndex()) {
+  switch (eliding_cb_->GetSelectedIndex().value()) {
     case 0:
       text_view_->SetElide(gfx::ELIDE_TAIL);
       break;
@@ -292,7 +292,7 @@ void TextExample::ElideComboboxChanged() {
 void TextExample::PrefixComboboxChanged() {
   int flags = text_view_->GetFlags() &
               ~(gfx::Canvas::SHOW_PREFIX | gfx::Canvas::HIDE_PREFIX);
-  switch (prefix_cb_->GetSelectedIndex()) {
+  switch (prefix_cb_->GetSelectedIndex().value()) {
     case 0:
       break;
     case 1:
@@ -313,7 +313,7 @@ void TextExample::WeightComboboxChanged() {
       gfx::Font::Weight::BOLD,   gfx::Font::Weight::EXTRA_BOLD,
       gfx::Font::Weight::BLACK,
   };
-  text_view_->SetWeight(kFontWeights[weight_cb_->GetSelectedIndex()]);
+  text_view_->SetWeight(kFontWeights[weight_cb_->GetSelectedIndex().value()]);
 }
 
 }  // namespace examples

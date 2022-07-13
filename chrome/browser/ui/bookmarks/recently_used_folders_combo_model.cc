@@ -117,7 +117,7 @@ bool RecentlyUsedFoldersComboModel::IsItemSeparatorAt(int index) const {
   return items_[index].type == Item::TYPE_SEPARATOR;
 }
 
-int RecentlyUsedFoldersComboModel::GetDefaultIndex() const {
+absl::optional<size_t> RecentlyUsedFoldersComboModel::GetDefaultIndex() const {
   // TODO(pbos): Ideally we shouldn't have to handle `parent_node_` removal
   // here, the dialog should instead close immediately (and destroy `this`).
   // If that can be resolved, this should DCHECK that it != items_.end() and

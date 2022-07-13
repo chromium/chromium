@@ -170,7 +170,7 @@ void AddressEditorView::UpdateEditorView() {
         GetViewByID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combo_box);
     DCHECK_EQ(controller_->GetCountriesSize(),
-              static_cast<size_t>(country_combo_box->GetRowCount()));
+              country_combo_box->GetRowCount());
     country_combo_box->SetSelectedIndex(controller_->chosen_country_index());
   } else if (controller_->GetCountriesSize() > 0UL) {
     controller_->set_chosen_country_index(0UL);
@@ -188,7 +188,7 @@ void AddressEditorView::SaveFieldsToProfile() {
   // the view.
   if (combobox) {
     std::u16string country(
-        combobox->GetTextForRow(combobox->GetSelectedIndex()));
+        combobox->GetTextForRow(combobox->GetSelectedIndex().value()));
     controller_->SetProfileInfo(autofill::ADDRESS_HOME_COUNTRY, country);
   }
 
@@ -200,10 +200,9 @@ void AddressEditorView::SaveFieldsToProfile() {
 void AddressEditorView::OnPerformAction(views::Combobox* combobox) {
   if (combobox->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
     return;
-  DCHECK_GE(combobox->GetSelectedIndex(), 0);
-  if (controller_->chosen_country_index() !=
-      static_cast<size_t>(combobox->GetSelectedIndex())) {
-    controller_->set_chosen_country_index(combobox->GetSelectedIndex());
+  DCHECK(combobox->GetSelectedIndex().has_value());
+  if (controller_->chosen_country_index() != combobox->GetSelectedIndex()) {
+    controller_->set_chosen_country_index(combobox->GetSelectedIndex().value());
     OnDataChanged();
   }
 }

@@ -204,8 +204,8 @@ class ExamplesWindowContents : public WidgetDelegateView {
   gfx::Size GetMinimumSize() const override { return gfx::Size(50, 50); }
 
   void ComboboxChanged() {
-    int index = combobox_->GetSelectedIndex();
-    DCHECK_LT(index, combobox_model_->GetItemCount());
+    size_t index = combobox_->GetSelectedIndex().value();
+    DCHECK_LT(index, static_cast<size_t>(combobox_model_->GetItemCount()));
     example_shown_->RemoveAllChildViewsWithoutDeleting();
     example_shown_->AddChildView(combobox_model_->GetItemViewAt(index));
     example_shown_->RequestFocus();

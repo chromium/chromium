@@ -59,7 +59,7 @@ namespace {
 // as if done by a user.
 void SelectComboboxRowForValue(views::Combobox* combobox,
                                const std::u16string& text) {
-  int i;
+  size_t i;
   for (i = 0; i < combobox->GetRowCount(); i++) {
     if (combobox->GetTextForRow(i) == text)
       break;
@@ -773,7 +773,7 @@ std::u16string PaymentRequestBrowserTestBase::GetComboboxValue(
       static_cast<ValidatingCombobox*>(delegate_->dialog_view()->GetViewByID(
           EditorViewController::GetInputFieldViewId(type)));
   DCHECK(combobox);
-  return combobox->GetModel()->GetItemAt(combobox->GetSelectedIndex());
+  return combobox->GetModel()->GetItemAt(combobox->GetSelectedIndex().value());
 }
 
 void PaymentRequestBrowserTestBase::SetComboboxValue(

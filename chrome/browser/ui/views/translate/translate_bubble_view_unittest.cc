@@ -393,7 +393,7 @@ TEST_F(TranslateBubbleViewTest, SourceResetButton) {
   // Change the language selection. The reset button should be enabled.
   bubble_->source_language_combobox_->SetSelectedIndex(10);
   bubble_->SourceLanguageChanged();
-  EXPECT_EQ(10, bubble_->source_language_combobox_->GetSelectedIndex());
+  EXPECT_EQ(10u, bubble_->source_language_combobox_->GetSelectedIndex());
   EXPECT_TRUE(bubble_->advanced_reset_button_source_->GetEnabled());
   histogram_tester.ExpectBucketCount(
       translate::kTranslateBubbleUiEventHistogramName,
@@ -401,7 +401,7 @@ TEST_F(TranslateBubbleViewTest, SourceResetButton) {
 
   // Press the reset button. Language should change back to initial selection.
   PressButton(TranslateBubbleView::BUTTON_ID_RESET);
-  EXPECT_EQ(1, bubble_->source_language_combobox_->GetSelectedIndex());
+  EXPECT_EQ(1u, bubble_->source_language_combobox_->GetSelectedIndex());
   EXPECT_FALSE(bubble_->advanced_reset_button_source_->GetEnabled());
 }
 
@@ -417,7 +417,7 @@ TEST_F(TranslateBubbleViewTest, TargetResetButton) {
   // Change the language selection. The reset button should be enabled.
   bubble_->target_language_combobox_->SetSelectedIndex(10);
   bubble_->TargetLanguageChanged();
-  EXPECT_EQ(10, bubble_->target_language_combobox_->GetSelectedIndex());
+  EXPECT_EQ(10u, bubble_->target_language_combobox_->GetSelectedIndex());
   EXPECT_TRUE(bubble_->advanced_reset_button_target_->GetEnabled());
   histogram_tester.ExpectBucketCount(
       translate::kTranslateBubbleUiEventHistogramName,
@@ -425,7 +425,7 @@ TEST_F(TranslateBubbleViewTest, TargetResetButton) {
 
   // Press the reset button. Language should change back to initial selection.
   PressButton(TranslateBubbleView::BUTTON_ID_RESET);
-  EXPECT_EQ(2, bubble_->target_language_combobox_->GetSelectedIndex());
+  EXPECT_EQ(2u, bubble_->target_language_combobox_->GetSelectedIndex());
 }
 
 TEST_F(TranslateBubbleViewTest, SourceDoneButton) {

@@ -193,8 +193,8 @@ class VIEWS_EXPORT Label : public View,
 
   // If multi-line, a non-zero value will cap the number of lines rendered, and
   // elide the rest (currently only ELIDE_TAIL supported). See gfx::RenderText.
-  int GetMaxLines() const;
-  void SetMaxLines(int max_lines);
+  size_t GetMaxLines() const;
+  void SetMaxLines(size_t max_lines);
 
   // If single-line, a non-zero value will help determine the amount of space
   // needed *after* elision, which may be less than the passed |max_width|.
@@ -475,7 +475,7 @@ class VIEWS_EXPORT Label : public View,
   bool auto_color_readability_enabled_ = true;
   // TODO(mukai): remove |multi_line_| when all RenderText can render multiline.
   bool multi_line_ = false;
-  int max_lines_ = 0;
+  size_t max_lines_ = 0;
   std::u16string tooltip_text_;
   bool handles_tooltips_ = true;
   // Whether to collapse the label when it's not visible.

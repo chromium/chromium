@@ -191,7 +191,7 @@ const gfx::FontList& Combobox::GetFontList() const {
   return style::GetFont(text_context_, text_style_);
 }
 
-void Combobox::SetSelectedIndex(int index) {
+void Combobox::SetSelectedIndex(absl::optional<size_t> index) {
   if (selected_index_ == index)
     return;
   // TODO(pbos): Add (D)CHECKs to validate the selected index.
@@ -210,7 +210,7 @@ base::CallbackListSubscription Combobox::AddSelectedIndexChangedCallback(
 }
 
 bool Combobox::SelectValue(const std::u16string& value) {
-  for (int i = 0; i < GetModel()->GetItemCount(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(GetModel()->GetItemCount()); ++i) {
     if (value == GetModel()->GetItemAt(i)) {
       SetSelectedIndex(i);
       return true;
@@ -312,22 +312,22 @@ void Combobox::OnThemeChanged() {
   OnContentSizeMaybeChanged();
 }
 
-int Combobox::GetRowCount() {
+size_t Combobox::GetRowCount() {
   return GetModel()->GetItemCount();
 }
 
-int Combobox::GetSelectedRow() {
+absl::optional<size_t> Combobox::GetSelectedRow() {
   return selected_index_;
 }
 
-void Combobox::SetSelectedRow(int row) {
-  int prev_index = selected_index_;
+void Combobox::SetSelectedRow(absl::optional<size_t> row) {
+  absl::optional<size_t> prev_index = selected_index_;
   SetSelectedIndex(row);
   if (selected_index_ != prev_index)
     OnPerformAction();
 }
 
-std::u16string Combobox::GetTextForRow(int row) {
+std::u16string Combobox::GetTextForRow(size_t row) {
   return GetModel()->IsItemSeparatorAt(row) ? std::u16string()
                                             : GetModel()->GetItemAt(row);
 }
@@ -368,12 +368,9 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   // TODO(oshima): handle IME.
   DCHECK_EQ(e.type(), ui::ET_KEY_PRESSED);
 
-  // TODO(pbos): Do we need to handle selected_index_ == -1 for unselected here?
-  // Ditto on handling an empty model?
-  DCHECK_GE(selected_index_, 0);
-  DCHECK_LT(selected_index_, GetModel()->GetItemCount());
-  if (selected_index_ < 0 || selected_index_ >= GetModel()->GetItemCount())
-    SetSelectedIndex(0);
+  DCHECK(selected_index_.has_value());
+  DCHECK_LT(selected_index_.value(),
+            static_cast<size_t>(GetModel()->GetItemCount()));
 
   bool show_menu = false;
   int new_index = kNoSelection;
@@ -400,7 +397,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
       if (e.IsAltDown())
         show_menu = true;
       else
-        new_index = GetAdjacentIndex(GetModel(), 1, selected_index_);
+        new_index = GetAdjacentIndex(GetModel(), 1, selected_index_.value());
       break;
 
     // Move to the end of the list.
@@ -417,7 +414,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
 
     // Move to the previous item if any.
     case ui::VKEY_UP:
-      new_index = GetAdjacentIndex(GetModel(), -1, selected_index_);
+      new_index = GetAdjacentIndex(GetModel(), -1, selected_index_.value());
       break;
 
     case ui::VKEY_RETURN:
@@ -431,7 +428,8 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
 
   if (show_menu) {
     ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
-  } else if (new_index != selected_index_ && new_index != kNoSelection) {
+  } else if (static_cast<size_t>(new_index) != selected_index_ &&
+             new_index != kNoSelection) {
     DCHECK(!GetModel()->IsItemSeparatorAt(new_index));
     SetSelectedIndex(new_index);
     OnPerformAction();
@@ -477,12 +475,12 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   node_data->SetName(accessible_name_);
-  node_data->SetValue(model_->GetItemAt(selected_index_));
+  node_data->SetValue(model_->GetItemAt(selected_index_.value()));
   if (GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   }
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                             selected_index_);
+                             selected_index_.value());
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
                              model_->GetItemCount());
 }
@@ -506,9 +504,9 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
 
   // If the selection is no longer valid (or the model is empty), restore the
   // default index.
-  if (selected_index_ >= model_->GetItemCount() ||
+  if (selected_index_ >= static_cast<size_t>(model_->GetItemCount()) ||
       model_->GetItemCount() == 0 ||
-      model_->IsItemSeparatorAt(selected_index_)) {
+      model_->IsItemSeparatorAt(selected_index_.value())) {
     SetSelectedIndex(model_->GetDefaultIndex());
   }
 
@@ -552,8 +550,12 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   int y = insets.top();
   int contents_height = height() - insets.height();
 
+  DCHECK(selected_index_.has_value());
+  DCHECK_LT(selected_index_.value(),
+            static_cast<size_t>(GetModel()->GetItemCount()));
+
   // Draw the icon.
-  ui::ImageModel icon = GetModel()->GetIconAt(selected_index_);
+  ui::ImageModel icon = GetModel()->GetIconAt(selected_index_.value());
   if (!icon.IsEmpty()) {
     gfx::ImageSkia icon_skia = icon.Rasterize(GetColorProvider());
     int icon_y = y + (contents_height - icon_skia.height()) / 2;
@@ -566,14 +568,7 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
 
   // Draw the text.
   SkColor text_color = GetTextColorForEnableState(*this, GetEnabled());
-  // TODO(pbos): Do we need to handle selected_index_ == -1 for unselected here?
-  // Ditto on handling an empty model?
-  DCHECK_GE(selected_index_, 0);
-  DCHECK_LT(selected_index_, GetModel()->GetItemCount());
-  if (selected_index_ < 0 || selected_index_ >= GetModel()->GetItemCount())
-    SetSelectedIndex(0);
-
-  std::u16string text = GetModel()->GetItemAt(selected_index_);
+  std::u16string text = GetModel()->GetItemAt(selected_index_.value());
 
   int disclosure_arrow_offset = width() - kComboboxArrowContainerWidth;
 
@@ -675,7 +670,7 @@ gfx::Size Combobox::GetContentSize() const {
   const gfx::FontList& font_list = GetFontList();
   int height = font_list.GetHeight();
   int width = 0;
-  for (int i = 0; i < GetModel()->GetItemCount(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(GetModel()->GetItemCount()); ++i) {
     if (model_->IsItemSeparatorAt(i))
       continue;
 
@@ -722,7 +717,7 @@ BEGIN_METADATA(Combobox, View)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, Callback)
 ADD_PROPERTY_METADATA(std::unique_ptr<ui::ComboboxModel>, OwnedModel)
 ADD_PROPERTY_METADATA(ui::ComboboxModel*, Model)
-ADD_PROPERTY_METADATA(int, SelectedIndex)
+ADD_PROPERTY_METADATA(absl::optional<size_t>, SelectedIndex)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(bool, SizeToLargestLabel)
 ADD_PROPERTY_METADATA(std::u16string, AccessibleName)

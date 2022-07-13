@@ -76,7 +76,8 @@ std::u16string ExtensionSiteAccessComboboxModel::GetItemAt(int index) const {
   return l10n_util::GetStringUTF16(label_id);
 }
 
-int ExtensionSiteAccessComboboxModel::GetDefaultIndex() const {
+absl::optional<size_t> ExtensionSiteAccessComboboxModel::GetDefaultIndex()
+    const {
   return GetCurrentSiteAccessIndex();
 }
 

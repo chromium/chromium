@@ -162,7 +162,7 @@ class ClassRegistration<Combobox> : public BaseClassRegistration,
   // ui::ComboboxModel
   int GetItemCount() const override { return 1; }
   std::u16string GetItemAt(int index) const override { return u"<empty>"; }
-  int GetDefaultIndex() const override { return 0; }
+  absl::optional<size_t> GetDefaultIndex() const override { return 0; }
 };
 
 template <>
@@ -596,7 +596,7 @@ gfx::Vector2d DesignerExample::SnapToGrid(const gfx::Vector2d& distance) {
 
 void DesignerExample::CreateView(const ui::Event& event) {
   std::unique_ptr<View> new_view =
-      class_registrations_[view_type_->GetSelectedRow()]->CreateView();
+      class_registrations_[view_type_->GetSelectedRow().value()]->CreateView();
   new_view->SizeToPreferredSize();
   gfx::Rect child_rect = designer_panel_->GetContentsBounds();
   child_rect.ClampToCenteredSize(new_view->size());
@@ -632,7 +632,7 @@ std::u16string DesignerExample::GetItemAt(int index) const {
   return class_registrations_[index]->GetViewClassName();
 }
 
-int DesignerExample::GetDefaultIndex() const {
+absl::optional<size_t> DesignerExample::GetDefaultIndex() const {
   return 0;
 }
 

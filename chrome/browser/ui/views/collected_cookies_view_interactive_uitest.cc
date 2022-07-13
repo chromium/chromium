@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewInteractiveUiTest,
                                  views::AsViewClass<views::TreeView>(
                                      element->AsA<views::TrackedElementViews>()
                                          ->view());
-                             ASSERT_EQ(1, blocked_cookies_tree->GetRowCount());
+                             ASSERT_EQ(1u, blocked_cookies_tree->GetRowCount());
 
                              auto* model = blocked_cookies_tree->model();
                              auto nodes = model->GetChildren(model->GetRoot());

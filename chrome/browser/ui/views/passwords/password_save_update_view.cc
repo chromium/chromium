@@ -473,7 +473,7 @@ const PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController()
 
 void PasswordSaveUpdateView::DestinationChanged() {
   bool is_account_store_selected =
-      destination_dropdown_->GetSelectedIndex() == 0;
+      destination_dropdown_->GetSelectedIndex() == 0u;
   controller_.OnToggleAccountStore(is_account_store_selected);
   // Saving in account and local stores have action button text for non-opted-in
   // users (Next vs. Save).
@@ -742,7 +742,7 @@ void PasswordSaveUpdateView::AnnounceSaveUpdateChange() {
     // For Save bubbles, if the `destination_dropdown_` exists (for account
     // store users), we use the labels in the `destination_dropdown_` instead.
     accessibility_alert_text = destination_dropdown_->GetTextForRow(
-        destination_dropdown_->GetSelectedIndex());
+        destination_dropdown_->GetSelectedIndex().value());
   }
 
   views::ViewAccessibility& ax = accessibility_alert_->GetViewAccessibility();

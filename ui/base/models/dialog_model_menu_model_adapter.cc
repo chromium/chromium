@@ -73,7 +73,7 @@ bool DialogModelMenuModelAdapter::GetAcceleratorAt(
   return false;
 }
 
-bool DialogModelMenuModelAdapter::IsItemCheckedAt(int index) const {
+bool DialogModelMenuModelAdapter::IsItemCheckedAt(size_t index) const {
   // TODO(pbos): Add support for checkbox items.
   return false;
 }

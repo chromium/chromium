@@ -31,7 +31,7 @@ namespace views {
 namespace examples {
 namespace {
 
-constexpr int kFakeModeless = ui::MODAL_TYPE_SYSTEM + 1;
+constexpr size_t kFakeModeless = ui::MODAL_TYPE_SYSTEM + 1;
 
 }  // namespace
 
@@ -235,7 +235,7 @@ ui::ModalType DialogExample::GetModalType() const {
   if (mode_->GetSelectedIndex() == kFakeModeless)
     return ui::MODAL_TYPE_WINDOW;
 
-  return static_cast<ui::ModalType>(mode_->GetSelectedIndex());
+  return static_cast<ui::ModalType>(mode_->GetSelectedIndex().value());
 }
 
 int DialogExample::GetDialogButtons() const {

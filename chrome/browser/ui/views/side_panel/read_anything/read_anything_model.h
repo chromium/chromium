@@ -38,7 +38,7 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
 
  protected:
   // ui::Combobox implementation:
-  int GetDefaultIndex() const override;
+  absl::optional<size_t> GetDefaultIndex() const override;
   int GetItemCount() const override;
   std::u16string GetItemAt(int index) const override;
   std::u16string GetDropDownTextAt(int index) const override;

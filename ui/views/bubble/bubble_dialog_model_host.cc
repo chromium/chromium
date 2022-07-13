@@ -649,8 +649,8 @@ void BubbleDialogModelHost::AddOrUpdateCombobox(
       combobox->AddSelectedIndexChangedCallback(base::BindRepeating(
           [](ui::DialogModelCombobox* model_field,
              base::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
-            model_field->OnSelectedIndexChanged(pass_key,
-                                                combobox->GetSelectedIndex());
+            model_field->OnSelectedIndexChanged(
+                pass_key, combobox->GetSelectedIndex().value());
           },
           model_field, GetPassKey(), combobox.get())));
   const gfx::FontList& font_list = combobox->GetFontList();

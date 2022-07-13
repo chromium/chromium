@@ -218,7 +218,7 @@ void PartialTranslateBubbleView::ResetLanguage() {
     source_language_combobox_->SetSelectedIndex(
         previous_source_language_index_);
     model_->UpdateSourceLanguageIndex(
-        source_language_combobox_->GetSelectedIndex());
+        source_language_combobox_->GetSelectedIndex().value());
     translate::ReportPartialTranslateBubbleUiAction(
         translate::PartialTranslateBubbleUiEvent::
             SOURCE_LANGUAGE_RESET_BUTTON_CLICKED);
@@ -226,7 +226,7 @@ void PartialTranslateBubbleView::ResetLanguage() {
     target_language_combobox_->SetSelectedIndex(
         previous_target_language_index_);
     model_->UpdateTargetLanguageIndex(
-        target_language_combobox_->GetSelectedIndex());
+        target_language_combobox_->GetSelectedIndex().value());
     translate::ReportPartialTranslateBubbleUiAction(
         translate::PartialTranslateBubbleUiEvent::
             TARGET_LANGUAGE_RESET_BUTTON_CLICKED);
@@ -448,7 +448,7 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
 
 void PartialTranslateBubbleView::SourceLanguageChanged() {
   model_->UpdateSourceLanguageIndex(
-      source_language_combobox_->GetSelectedIndex());
+      source_language_combobox_->GetSelectedIndex().value());
   UpdateAdvancedView();
   translate::ReportPartialTranslateBubbleUiAction(
       translate::PartialTranslateBubbleUiEvent::
@@ -457,7 +457,7 @@ void PartialTranslateBubbleView::SourceLanguageChanged() {
 
 void PartialTranslateBubbleView::TargetLanguageChanged() {
   model_->UpdateTargetLanguageIndex(
-      target_language_combobox_->GetSelectedIndex());
+      target_language_combobox_->GetSelectedIndex().value());
   UpdateAdvancedView();
   translate::ReportPartialTranslateBubbleUiAction(
       translate::PartialTranslateBubbleUiEvent::

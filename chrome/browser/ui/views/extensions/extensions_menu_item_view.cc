@@ -131,8 +131,8 @@ void SiteAccessMenuItemView::SetSiteAccessComboboxVisible(bool visibility) {
 }
 
 void SiteAccessMenuItemView::OnComboboxSelectionChanged() {
-  int selected_index = site_access_combobox_->GetSelectedIndex();
-  site_access_combobox_model_->HandleSelection(selected_index);
+  site_access_combobox_model_->HandleSelection(
+      site_access_combobox_->GetSelectedIndex().value());
 }
 
 InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(

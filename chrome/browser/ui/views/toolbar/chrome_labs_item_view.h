@@ -41,7 +41,7 @@ class ChromeLabsItemView : public views::View {
 
   ~ChromeLabsItemView() override;
 
-  int GetSelectedIndex() const;
+  absl::optional<size_t> GetSelectedIndex() const;
 
   void ShowNewBadge();
 

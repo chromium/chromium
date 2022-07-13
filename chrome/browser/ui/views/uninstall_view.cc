@@ -128,7 +128,7 @@ void UninstallView::OnDialogAccepted() {
     user_selection_ = chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE;
   if (change_default_browser_ && change_default_browser_->GetChecked()) {
     BrowsersMap::const_iterator i = browsers_->begin();
-    std::advance(i, browsers_combo_->GetSelectedIndex());
+    std::advance(i, browsers_combo_->GetSelectedIndex().value());
     base::LaunchOptions options;
     options.start_hidden = true;
     base::LaunchProcess(i->second, options);

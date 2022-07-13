@@ -383,7 +383,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // Returns the range of the specified model index. If a TableGrouper has not
   // been set this returns a group with a start of |model_index| and length of
   // 1.
-  GroupRange GetGroupRange(int model_index) const;
+  GroupRange GetGroupRange(size_t model_index) const;
 
   // Updates a set of accessibility views that expose the visible table contents
   // to assistive software.
@@ -400,11 +400,11 @@ class VIEWS_EXPORT TableView : public views::View,
   // cell's.
   gfx::Rect CalculateHeaderRowAccessibilityBounds() const;
   gfx::Rect CalculateHeaderCellAccessibilityBounds(
-      const int visible_column_index) const;
-  gfx::Rect CalculateTableRowAccessibilityBounds(const int row_index) const;
+      const size_t visible_column_index) const;
+  gfx::Rect CalculateTableRowAccessibilityBounds(const size_t row_index) const;
   gfx::Rect CalculateTableCellAccessibilityBounds(
-      const int row_index,
-      const int visible_column_index) const;
+      const size_t row_index,
+      const size_t visible_column_index) const;
 
   // Schedule a future call UpdateAccessibilityFocus if not already pending.
   void ScheduleUpdateAccessibilityFocusIfNeeded();

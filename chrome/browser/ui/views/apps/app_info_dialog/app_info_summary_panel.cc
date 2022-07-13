@@ -223,7 +223,7 @@ void AppInfoSummaryPanel::AddSubviews() {
 
 void AppInfoSummaryPanel::LaunchOptionsChanged() {
   SetLaunchType(launch_options_combobox_model_->GetLaunchTypeAtIndex(
-      launch_options_combobox_->GetSelectedIndex()));
+      launch_options_combobox_->GetSelectedIndex().value()));
 }
 
 void AppInfoSummaryPanel::StartCalculatingAppSize() {

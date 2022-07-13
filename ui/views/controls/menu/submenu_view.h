@@ -72,7 +72,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   MenuItems GetMenuItems() const;
 
   // Returns the MenuItemView at the specified index.
-  MenuItemView* GetMenuItemAt(int index);
+  MenuItemView* GetMenuItemAt(size_t index);
 
   PrefixSelector* GetPrefixSelector();
 
@@ -106,10 +106,10 @@ class VIEWS_EXPORT SubmenuView : public View,
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Overridden from PrefixDelegate.
-  int GetRowCount() override;
-  int GetSelectedRow() override;
-  void SetSelectedRow(int row) override;
-  std::u16string GetTextForRow(int row) override;
+  size_t GetRowCount() override;
+  absl::optional<size_t> GetSelectedRow() override;
+  void SetSelectedRow(absl::optional<size_t> row) override;
+  std::u16string GetTextForRow(size_t row) override;
 
   // Returns true if the menu is showing.
   virtual bool IsShowing() const;

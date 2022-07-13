@@ -125,7 +125,7 @@ bool BackForwardMenuModel::GetAcceleratorAt(
   return false;
 }
 
-bool BackForwardMenuModel::IsItemCheckedAt(int index) const {
+bool BackForwardMenuModel::IsItemCheckedAt(size_t index) const {
   return false;
 }
 

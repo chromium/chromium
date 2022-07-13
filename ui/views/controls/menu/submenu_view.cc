@@ -87,10 +87,9 @@ SubmenuView::MenuItems SubmenuView::GetMenuItems() const {
   return menu_items;
 }
 
-MenuItemView* SubmenuView::GetMenuItemAt(int index) {
+MenuItemView* SubmenuView::GetMenuItemAt(size_t index) {
   const MenuItems menu_items = GetMenuItems();
-  DCHECK_GE(index, 0);
-  DCHECK_LT(static_cast<size_t>(index), menu_items.size());
+  DCHECK_LT(index, menu_items.size());
   return menu_items[index];
 }
 
@@ -363,24 +362,26 @@ void SubmenuView::OnGestureEvent(ui::GestureEvent* event) {
     event->SetHandled();
 }
 
-int SubmenuView::GetRowCount() {
-  return static_cast<int>(GetMenuItems().size());
+size_t SubmenuView::GetRowCount() {
+  return GetMenuItems().size();
 }
 
-int SubmenuView::GetSelectedRow() {
+absl::optional<size_t> SubmenuView::GetSelectedRow() {
   const auto menu_items = GetMenuItems();
   const auto i =
       std::find_if(menu_items.cbegin(), menu_items.cend(),
                    [](const MenuItemView* item) { return item->IsSelected(); });
-  return (i == menu_items.cend()) ? -1 : std::distance(menu_items.cbegin(), i);
+  return (i == menu_items.cend()) ? absl::nullopt
+                                  : absl::make_optional(static_cast<size_t>(
+                                        std::distance(menu_items.cbegin(), i)));
 }
 
-void SubmenuView::SetSelectedRow(int row) {
+void SubmenuView::SetSelectedRow(absl::optional<size_t> row) {
   parent_menu_item_->GetMenuController()->SetSelection(
-      GetMenuItemAt(row), MenuController::SELECTION_DEFAULT);
+      GetMenuItemAt(row.value()), MenuController::SELECTION_DEFAULT);
 }
 
-std::u16string SubmenuView::GetTextForRow(int row) {
+std::u16string SubmenuView::GetTextForRow(size_t row) {
   return MenuItemView::GetAccessibleNameForMenuItem(
       GetMenuItemAt(row)->title(), std::u16string(),
       GetMenuItemAt(row)->ShouldShowNewBadge());

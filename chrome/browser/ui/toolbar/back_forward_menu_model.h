@@ -59,7 +59,7 @@ class BackForwardMenuModel : public ui::MenuModel {
   std::u16string GetLabelAt(int index) const override;
   bool IsItemDynamicAt(int index) const override;
   bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const override;
-  bool IsItemCheckedAt(int index) const override;
+  bool IsItemCheckedAt(size_t index) const override;
   int GetGroupIdAt(int index) const override;
   ui::ImageModel GetIconAt(int index) const override;
   ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override;

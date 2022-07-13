@@ -244,7 +244,7 @@ class EditableCombobox::EditableComboboxMenuModel
     return false;
   }
 
-  bool IsItemCheckedAt(int index) const override {
+  bool IsItemCheckedAt(size_t index) const override {
     return UseCheckmarks() &&
            combobox_model_->GetItemAt(items_shown_[index].index) ==
                owner_->GetText();

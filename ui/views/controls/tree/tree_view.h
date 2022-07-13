@@ -202,10 +202,10 @@ class VIEWS_EXPORT TreeView : public View,
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // PrefixDelegate overrides:
-  int GetRowCount() override;
-  int GetSelectedRow() override;
-  void SetSelectedRow(int row) override;
-  std::u16string GetTextForRow(int row) override;
+  size_t GetRowCount() override;
+  absl::optional<size_t> GetSelectedRow() override;
+  void SetSelectedRow(absl::optional<size_t> row) override;
+  std::u16string GetTextForRow(size_t row) override;
 
  protected:
   // View overrides:

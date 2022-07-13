@@ -37,7 +37,7 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   int GetItemCount() const override;
   std::u16string GetItemAt(int index) const override;
   bool IsItemSeparatorAt(int index) const override;
-  int GetDefaultIndex() const override;
+  absl::optional<size_t> GetDefaultIndex() const override;
 
   // Overriden from bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bookmarks::BookmarkModel* model,

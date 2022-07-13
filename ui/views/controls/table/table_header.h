@@ -63,7 +63,7 @@ class VIEWS_EXPORT TableHeader : public views::View {
     ColumnResizeDetails() = default;
 
     // Index into table_->visible_columns() that is being resized.
-    int column_index = 0;
+    size_t column_index = 0;
 
     // X-coordinate of the mouse at the time the resize started.
     int initial_x = 0;

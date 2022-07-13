@@ -79,7 +79,7 @@ void ComboboxExample::CreateExampleView(View* container) {
 void ComboboxExample::ValueChanged() {
   PrintStatus("Selected: %s",
               base::UTF16ToUTF8(combobox_->GetModel()->GetItemAt(
-                                    combobox_->GetSelectedIndex()))
+                                    combobox_->GetSelectedIndex().value()))
                   .c_str());
 }
 

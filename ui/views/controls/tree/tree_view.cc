@@ -646,29 +646,34 @@ void TreeView::OnDidChangeFocus(View* focused_before, View* focused_now) {
   CommitEdit();
 }
 
-int TreeView::GetRowCount() {
+size_t TreeView::GetRowCount() {
   int row_count = root_.NumExpandedNodes();
   if (!root_shown_)
     row_count--;
   return row_count;
 }
 
-int TreeView::GetSelectedRow() {
+absl::optional<size_t> TreeView::GetSelectedRow() {
   // Type-ahead searches should be relative to the active node, so return the
   // row of the active node for |PrefixSelector|.
   ui::TreeModelNode* model_node = GetActiveNode();
-  return model_node ? GetRowForNode(model_node) : -1;
+  if (!model_node)
+    return absl::nullopt;
+  const int row = GetRowForNode(model_node);
+  return (row == -1) ? absl::nullopt
+                     : absl::make_optional(static_cast<size_t>(row));
 }
 
-void TreeView::SetSelectedRow(int row) {
+void TreeView::SetSelectedRow(absl::optional<size_t> row) {
   // Type-ahead manipulates selection because active node is synced to selected
   // node, so call SetSelectedNode() instead of SetActiveNode().
   // TODO(crbug.com/1080944): Decouple active node from selected node by adding
   // new keyboard affordances.
-  SetSelectedNode(GetNodeForRow(row));
+  SetSelectedNode(
+      GetNodeForRow(row.has_value() ? static_cast<int>(row.value()) : -1));
 }
 
-std::u16string TreeView::GetTextForRow(int row) {
+std::u16string TreeView::GetTextForRow(size_t row) {
   return GetNodeForRow(row)->GetTitle();
 }
 
@@ -1003,7 +1008,7 @@ void TreeView::UpdatePreferredSize() {
   preferred_size_.SetSize(
       root_.GetMaxWidth(this, text_offset_, root_shown_ ? 1 : 0) +
           kTextHorizontalPadding * 2,
-      row_height_ * GetRowCount());
+      row_height_ * base::checked_cast<int>(GetRowCount()));
 
   // When the editor is visible, more space is needed beyond the regular row,
   // such as for drawing the focus ring.
@@ -1363,7 +1368,7 @@ void TreeView::IncrementSelection(IncrementType type) {
     if (root_.children().empty())
       return;
     if (type == IncrementType::kPrevious) {
-      int row_count = GetRowCount();
+      size_t row_count = GetRowCount();
       int depth = 0;
       DCHECK(row_count);
       InternalNode* node = GetNodeByRow(row_count - 1, &depth);
@@ -1379,7 +1384,8 @@ void TreeView::IncrementSelection(IncrementType type) {
   int depth = 0;
   int delta = type == IncrementType::kPrevious ? -1 : 1;
   int row = GetRowForInternalNode(active_node_, &depth);
-  int new_row = base::clamp(row + delta, 0, GetRowCount() - 1);
+  int new_row =
+      base::clamp(row + delta, 0, base::checked_cast<int>(GetRowCount()) - 1);
   if (new_row == row)
     return;  // At the end/beginning.
   SetSelectedNode(GetNodeByRow(new_row, &depth)->model_node());

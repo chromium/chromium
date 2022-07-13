@@ -419,7 +419,7 @@ bool SimpleMenuModel::GetAcceleratorAt(int index,
   return false;
 }
 
-bool SimpleMenuModel::IsItemCheckedAt(int index) const {
+bool SimpleMenuModel::IsItemCheckedAt(size_t index) const {
   if (!delegate_)
     return false;
   MenuModel::ItemType item_type = GetTypeAt(index);

@@ -37,9 +37,9 @@
 namespace {
 
 // Combobox option's indexes for site access menu items.
-constexpr int kOnClickComboboxIndex = 0;
-constexpr int kOnSiteComboboxIndex = 1;
-constexpr int kOnAllSitesComboboxIndex = 2;
+constexpr size_t kOnClickComboboxIndex = 0;
+constexpr size_t kOnSiteComboboxIndex = 1;
+constexpr size_t kOnAllSitesComboboxIndex = 2;
 // Button's indexes for site access settings
 constexpr int kGrantAllExtensionsIndex = 0;
 constexpr int kBlockAllExtensionsIndex = 1;

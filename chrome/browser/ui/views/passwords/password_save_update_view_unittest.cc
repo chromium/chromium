@@ -122,7 +122,7 @@ TEST_F(PasswordSaveUpdateViewTest, ShouldShowAccountPicker) {
   SimulateSignIn();
   CreateViewAndShow();
   ASSERT_TRUE(account_picker());
-  EXPECT_EQ(0, account_picker()->GetSelectedIndex());
+  EXPECT_EQ(0u, account_picker()->GetSelectedIndex());
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
@@ -137,11 +137,11 @@ TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
   CreateViewAndShow();
 
   ASSERT_TRUE(account_picker());
-  EXPECT_EQ(0, account_picker()->GetSelectedIndex());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT),
-      account_picker()->GetTextForRow(account_picker()->GetSelectedIndex()));
+  EXPECT_EQ(0u, account_picker()->GetSelectedIndex());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT),
+            account_picker()->GetTextForRow(
+                account_picker()->GetSelectedIndex().value()));
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
@@ -153,11 +153,11 @@ TEST_F(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
   SimulateSignIn();
   CreateViewAndShow();
   ASSERT_TRUE(account_picker());
-  EXPECT_EQ(1, account_picker()->GetSelectedIndex());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(
-          IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
-      account_picker()->GetTextForRow(account_picker()->GetSelectedIndex()));
+  EXPECT_EQ(1u, account_picker()->GetSelectedIndex());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
+            account_picker()->GetTextForRow(
+                account_picker()->GetSelectedIndex().value()));
 }
 
 // This is a regression test for crbug.com/1093290

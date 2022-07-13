@@ -1206,8 +1206,9 @@ TableView::PaintRegion TableView::GetPaintRegion(
   DCHECK(GetRowCount());
 
   PaintRegion region;
-  region.min_row = base::clamp(static_cast<size_t>(bounds.y() / row_height_),
-                               size_t{0}, GetRowCount() - 1);
+  region.min_row = static_cast<size_t>(
+      base::clamp(bounds.y() / row_height_, 0,
+                  base::saturated_cast<int>(GetRowCount() - 1)));
   region.max_row = static_cast<size_t>(bounds.bottom() / row_height_);
   if (bounds.bottom() % row_height_ != 0)
     region.max_row++;
@@ -1271,7 +1272,7 @@ void TableView::AdvanceActiveVisibleColumn(AdvanceDirection direction) {
 
   if (!active_visible_column_index_.has_value()) {
     if (!selection_model_.active().has_value() && !header_row_is_active_)
-      SelectByViewIndex(0);
+      SelectByViewIndex(size_t{0});
     SetActiveVisibleColumnIndex(size_t{0});
     return;
   }
@@ -1427,7 +1428,7 @@ void TableView::SelectRowsInRangeFrom(size_t view_index,
   }
 }
 
-GroupRange TableView::GetGroupRange(int model_index) const {
+GroupRange TableView::GetGroupRange(size_t model_index) const {
   GroupRange range;
   if (grouper_) {
     grouper_->GetGroupRange(model_index, &range);
@@ -1756,7 +1757,7 @@ gfx::Rect TableView::CalculateHeaderRowAccessibilityBounds() const {
 }
 
 gfx::Rect TableView::CalculateHeaderCellAccessibilityBounds(
-    const int visible_column_index) const {
+    const size_t visible_column_index) const {
   const gfx::Rect& header_bounds = CalculateHeaderRowAccessibilityBounds();
   const VisibleColumn& visible_column = visible_columns_[visible_column_index];
   gfx::Rect header_cell_bounds(visible_column.x, header_bounds.y(),
@@ -1765,14 +1766,14 @@ gfx::Rect TableView::CalculateHeaderCellAccessibilityBounds(
 }
 
 gfx::Rect TableView::CalculateTableRowAccessibilityBounds(
-    const int row_index) const {
+    const size_t row_index) const {
   gfx::Rect row_bounds = GetRowBounds(row_index);
   return row_bounds;
 }
 
 gfx::Rect TableView::CalculateTableCellAccessibilityBounds(
-    const int row_index,
-    const int visible_column_index) const {
+    const size_t row_index,
+    const size_t visible_column_index) const {
   gfx::Rect cell_bounds = GetCellBounds(row_index, visible_column_index);
   return cell_bounds;
 }
@@ -1895,7 +1896,7 @@ AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
 }
 
 BEGIN_METADATA(TableView, View)
-ADD_READONLY_PROPERTY_METADATA(int, RowCount)
+ADD_READONLY_PROPERTY_METADATA(size_t, RowCount)
 ADD_READONLY_PROPERTY_METADATA(absl::optional<size_t>, FirstSelectedRow)
 ADD_READONLY_PROPERTY_METADATA(bool, HasFocusIndicator)
 ADD_PROPERTY_METADATA(absl::optional<size_t>, ActiveVisibleColumnIndex)

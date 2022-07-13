@@ -70,7 +70,7 @@ bool ComboboxMenuModel::GetAcceleratorAt(int index,
   return false;
 }
 
-bool ComboboxMenuModel::IsItemCheckedAt(int index) const {
+bool ComboboxMenuModel::IsItemCheckedAt(size_t index) const {
   return UseCheckmarks() && index == owner_->GetSelectedIndex();
 }
 

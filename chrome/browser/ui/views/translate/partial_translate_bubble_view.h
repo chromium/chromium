@@ -234,8 +234,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   raw_ptr<views::LabelButton> advanced_done_button_target_ = nullptr;
 
   // Default source/target language without user interaction.
-  int previous_source_language_index_;
-  int previous_target_language_index_;
+  size_t previous_source_language_index_;
+  size_t previous_target_language_index_;
 
   std::unique_ptr<ui::SimpleMenuModel> options_menu_model_;
   std::unique_ptr<views::MenuRunner> options_menu_runner_;

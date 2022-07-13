@@ -297,7 +297,7 @@ absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
 
 SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
     const {
-  return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
+  return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex().value());
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
@@ -435,7 +435,7 @@ absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetSelectedId() const {
 
   // If we are not waiting on content swapping we want to return the active
   // selected entry id.
-  return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
+  return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex().value());
 }
 
 SidePanelRegistry* SidePanelCoordinator::GetActiveContextualRegistry() const {
@@ -488,7 +488,7 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
       GetLastActiveEntryId().value_or(kDefaultEntry)));
   // TODO(corising): Replace this with something appropriate.
   combobox->SetAccessibleName(
-      combobox_model_->GetItemAt(combobox->GetSelectedIndex()));
+      combobox_model_->GetItemAt(combobox->GetSelectedIndex().value()));
   combobox->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,

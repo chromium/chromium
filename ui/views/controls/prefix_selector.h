@@ -117,7 +117,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   void OnTextInput(const std::u16string& text);
 
   // Returns true if the text of the node at |row| starts with |lower_text|.
-  bool TextAtRowMatchesText(int row, const std::u16string& lower_text);
+  bool TextAtRowMatchesText(size_t row, const std::u16string& lower_text);
 
   // Clears |current_text_| and resets |time_of_last_key_|.
   void ClearText();

@@ -240,13 +240,13 @@ Combobox* LabelExample::AddCombobox(View* parent,
 }
 
 void LabelExample::AlignmentChanged() {
-  custom_label_->SetHorizontalAlignment(
-      static_cast<gfx::HorizontalAlignment>(alignment_->GetSelectedIndex()));
+  custom_label_->SetHorizontalAlignment(static_cast<gfx::HorizontalAlignment>(
+      alignment_->GetSelectedIndex().value()));
 }
 
 void LabelExample::ElidingChanged() {
-  custom_label_->SetElideBehavior(
-      static_cast<gfx::ElideBehavior>(elide_behavior_->GetSelectedIndex()));
+  custom_label_->SetElideBehavior(static_cast<gfx::ElideBehavior>(
+      elide_behavior_->GetSelectedIndex().value()));
 }
 
 void LabelExample::OnViewThemeChanged(View* observed_view) {

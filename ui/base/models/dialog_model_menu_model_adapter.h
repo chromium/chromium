@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuModelAdapter final
   std::u16string GetLabelAt(int index) const override;
   bool IsItemDynamicAt(int index) const override;
   bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const override;
-  bool IsItemCheckedAt(int index) const override;
+  bool IsItemCheckedAt(size_t index) const override;
   int GetGroupIdAt(int index) const override;
   ImageModel GetIconAt(int index) const override;
   ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override;

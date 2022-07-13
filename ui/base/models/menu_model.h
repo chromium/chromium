@@ -104,7 +104,7 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
                                 ui::Accelerator* accelerator) const = 0;
 
   // Returns the checked state of the item at the specified index.
-  virtual bool IsItemCheckedAt(int index) const = 0;
+  virtual bool IsItemCheckedAt(size_t index) const = 0;
 
   // Returns the id of the group of radio items that the item at the specified
   // index belongs to.

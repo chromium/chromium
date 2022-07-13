@@ -39,7 +39,7 @@ class AddressComboboxModel : public ui::ComboboxModel {
   int GetItemCount() const override;
   std::u16string GetItemAt(int index) const override;
   bool IsItemSeparatorAt(int index) const override;
-  int GetDefaultIndex() const override;
+  absl::optional<size_t> GetDefaultIndex() const override;
 
   // Adds |profile| to model and return its combobox index. The lifespan of
   // |profile| beyond this call is undefined so a copy must be made.

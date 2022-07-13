@@ -51,7 +51,7 @@ ReadAnythingFontCombobox::ReadAnythingFontCombobox(
 
 void ReadAnythingFontCombobox::FontNameChangedCallback() {
   if (delegate_)
-    delegate_->OnFontChoiceChanged(GetSelectedIndex());
+    delegate_->OnFontChoiceChanged(GetSelectedIndex().value());
 }
 
 ReadAnythingFontCombobox::~ReadAnythingFontCombobox() = default;

@@ -48,7 +48,9 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   }
 
   // ui::ComboboxModel:
-  int GetDefaultIndex() const override { return default_index_; }
+  absl::optional<size_t> GetDefaultIndex() const override {
+    return default_index_;
+  }
 
  private:
   const std::vector<PublicAccountMenuView::Item>& items_;
@@ -77,7 +79,7 @@ PublicAccountMenuView::PublicAccountMenuView(const std::vector<Item>& items,
 PublicAccountMenuView::~PublicAccountMenuView() = default;
 
 void PublicAccountMenuView::OnSelectedIndexChanged() {
-  on_select_.Run(items_[GetSelectedIndex()].value);
+  on_select_.Run(items_[GetSelectedIndex().value()].value);
 }
 
 }  // namespace ash

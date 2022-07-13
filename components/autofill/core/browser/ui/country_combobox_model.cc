@@ -94,7 +94,7 @@ bool CountryComboboxModel::IsItemSeparatorAt(int index) const {
 }
 
 std::string CountryComboboxModel::GetDefaultCountryCode() const {
-  return countries_[GetDefaultIndex()]->country_code();
+  return countries_[GetDefaultIndex().value()]->country_code();
 }
 
 }  // namespace autofill

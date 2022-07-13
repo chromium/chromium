@@ -93,7 +93,9 @@ class LabsComboboxModel : public ui::ComboboxModel {
     return l10n_util::GetStringUTF16(description_translation_id);
   }
 
-  int GetDefaultIndex() const override { return default_index_; }
+  absl::optional<size_t> GetDefaultIndex() const override {
+    return default_index_;
+  }
 
  private:
   const LabInfo& lab_;
@@ -225,7 +227,7 @@ ChromeLabsItemView::ChromeLabsItemView(
 
 ChromeLabsItemView::~ChromeLabsItemView() = default;
 
-int ChromeLabsItemView::GetSelectedIndex() const {
+absl::optional<size_t> ChromeLabsItemView::GetSelectedIndex() const {
   return lab_state_combobox_->GetSelectedIndex();
 }
 
@@ -240,5 +242,5 @@ const flags_ui::FeatureEntry* ChromeLabsItemView::GetFeatureEntry() {
 }
 
 BEGIN_METADATA(ChromeLabsItemView, views::View)
-ADD_READONLY_PROPERTY_METADATA(int, SelectedIndex)
+ADD_READONLY_PROPERTY_METADATA(absl::optional<size_t>, SelectedIndex)
 END_METADATA

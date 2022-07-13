@@ -50,7 +50,7 @@ bool ConcatMenuModel::GetAcceleratorAt(int index,
   return GetterImpl(&ui::MenuModel::GetAcceleratorAt, index, accelerator);
 }
 
-bool ConcatMenuModel::IsItemCheckedAt(int index) const {
+bool ConcatMenuModel::IsItemCheckedAt(size_t index) const {
   return GetterImpl(&ui::MenuModel::IsItemCheckedAt, index);
 }
 

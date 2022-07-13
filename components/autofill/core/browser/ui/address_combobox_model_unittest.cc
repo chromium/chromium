@@ -42,7 +42,7 @@ TEST(AddressComboboxModelTest, OneAddress) {
   EXPECT_EQ(-1, model.GetIndexOfIdentifier("Anything"));
   EXPECT_EQ(profile1.guid(), model.GetItemIdentifierAt(2));
   EXPECT_EQ(2, model.GetIndexOfIdentifier(profile1.guid()));
-  EXPECT_EQ(2, model.GetDefaultIndex());
+  EXPECT_EQ(2u, model.GetDefaultIndex());
 }
 
 TEST(AddressComboboxModelTest, TwoAddresses) {
@@ -68,7 +68,7 @@ TEST(AddressComboboxModelTest, TwoAddresses) {
   EXPECT_EQ(profile2.guid(), model.GetItemIdentifierAt(3));
   EXPECT_EQ(2, model.GetIndexOfIdentifier(profile1.guid()));
   EXPECT_EQ(3, model.GetIndexOfIdentifier(profile2.guid()));
-  EXPECT_EQ(3, model.GetDefaultIndex());
+  EXPECT_EQ(3u, model.GetDefaultIndex());
 }
 
 TEST(AddressComboboxModelTest, AddAnAddress) {

@@ -149,7 +149,7 @@ void ChromeLabsViewController::ParseModelDataAndAddLabs() {
               [](ChromeLabsBubbleView* bubble_view, std::string internal_name,
                  flags_ui::FlagsStorage* flags_storage,
                  ChromeLabsItemView* item_view) {
-                int selected_index = item_view->GetSelectedIndex();
+                size_t selected_index = item_view->GetSelectedIndex().value();
                 about_flags::SetFeatureEntryEnabled(
                     flags_storage,
                     internal_name + flags_ui::kMultiSeparatorChar +

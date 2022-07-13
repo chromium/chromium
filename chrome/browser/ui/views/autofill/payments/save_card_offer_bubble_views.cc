@@ -86,12 +86,14 @@ bool SaveCardOfferBubbleViews::Accept() {
     controller()->OnSaveButton(
         {cardholder_name_textfield_ ? cardholder_name_textfield_->GetText()
                                     : std::u16string(),
-         month_input_dropdown_ ? month_input_dropdown_->GetModel()->GetItemAt(
-                                     month_input_dropdown_->GetSelectedIndex())
-                               : std::u16string(),
-         year_input_dropdown_ ? year_input_dropdown_->GetModel()->GetItemAt(
-                                    year_input_dropdown_->GetSelectedIndex())
-                              : std::u16string()});
+         month_input_dropdown_
+             ? month_input_dropdown_->GetModel()->GetItemAt(
+                   month_input_dropdown_->GetSelectedIndex().value())
+             : std::u16string(),
+         year_input_dropdown_
+             ? year_input_dropdown_->GetModel()->GetItemAt(
+                   year_input_dropdown_->GetSelectedIndex().value())
+             : std::u16string()});
   }
   return true;
 }
@@ -119,12 +121,14 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
     // the same time.
     DCHECK(!cardholder_name_textfield_);
     int month_value = 0, year_value = 0;
-    if (!base::StringToInt(month_input_dropdown_->GetModel()->GetItemAt(
-                               month_input_dropdown_->GetSelectedIndex()),
-                           &month_value) ||
-        !base::StringToInt(year_input_dropdown_->GetModel()->GetItemAt(
-                               year_input_dropdown_->GetSelectedIndex()),
-                           &year_value)) {
+    if (!base::StringToInt(
+            month_input_dropdown_->GetModel()->GetItemAt(
+                month_input_dropdown_->GetSelectedIndex().value()),
+            &month_value) ||
+        !base::StringToInt(
+            year_input_dropdown_->GetModel()->GetItemAt(
+                year_input_dropdown_->GetSelectedIndex().value()),
+            &year_value)) {
       return false;
     }
     return IsValidCreditCardExpirationDate(year_value, month_value,
