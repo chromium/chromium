@@ -309,8 +309,8 @@ class UserNoteUtilsTest
             note_service_->model_map_.find(token_it->second);
         UserNote* model = note_entry_it->second.model.get();
         note_manager->instance_map_.emplace(
-            model->id(), std::make_unique<UserNoteInstance>(model->GetSafeRef(),
-                                                            note_manager));
+            model->id(),
+            UserNoteInstance::Create(model->GetSafeRef(), note_manager));
       }
     }
 

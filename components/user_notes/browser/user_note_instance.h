@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_USER_NOTES_BROWSER_USER_NOTE_INSTANCE_H_
 #define COMPONENTS_USER_NOTES_BROWSER_USER_NOTE_INSTANCE_H_
 
+#include <memory>
+
 #include "base/barrier_closure.h"
 #include "base/memory/safe_ref.h"
+#include "base/types/pass_key.h"
 #include "components/user_notes/model/user_note.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,15 +24,22 @@ class UserNoteManager;
 // page.
 class UserNoteInstance : public blink::mojom::AnnotationAgentHost {
  public:
-  // The main constructor.
-  UserNoteInstance(base::SafeRef<UserNote> model,
-                   UserNoteManager* parent_manager);
+  using PassKey = base::PassKey<UserNoteInstance>;
 
-  // A constructor for when the bounding rect of the highlight is known in
-  // advance, for example during the note creation process.
+  // The callback type invoked when attachment in the renderer is completed.
+  using AttachmentFinishedCallback = base::OnceClosure;
+
+  // Creates a UserNoteInstance. This instance will attach to a highlight in
+  // the renderer (if the note is a non-page note) when
+  // InitializeHighlightIfNeeded is called.
+  static std::unique_ptr<UserNoteInstance> Create(
+      base::SafeRef<UserNote> model,
+      UserNoteManager* parent_manager);
+
+  // Use the Create static methods above. Public for use with std::make_unique.
   UserNoteInstance(base::SafeRef<UserNote> model,
                    UserNoteManager* parent_manager,
-                   gfx::Rect rect);
+                   PassKey pass_key);
 
   ~UserNoteInstance() override;
   UserNoteInstance(const UserNoteInstance&) = delete;
@@ -45,11 +55,19 @@ class UserNoteInstance : public blink::mojom::AnnotationAgentHost {
   // 3) Its bounding rect is empty.
   bool IsDetached() const;
 
-  // If this note is a text-level note, this method kicks off the asynchronous
-  // process to set up the Mojo connection with the corresponding agent in the
-  // renderer process. Otherwise, it invokes the provided callback.
-  // Marked virtual for tests to override.
-  virtual void InitializeHighlightIfNeeded(base::OnceClosure callback);
+  // Binds this instance to an existing highlight in the renderer. Must be
+  // called before the instance is added to the manager.
+  void BindToHighlight(
+      mojo::PendingReceiver<blink::mojom::AnnotationAgentHost> host_receiver,
+      mojo::PendingRemote<blink::mojom::AnnotationAgent> agent_remote,
+      AttachmentFinishedCallback callback);
+
+  // If this note is a text-level note and hasn't yet been bound to a highlight
+  // (via BindToHighlight), this method kicks off the asynchronous process to
+  // set up the Mojo connection with the corresponding agent in the renderer
+  // process. Otherwise, it invokes the provided callback. Marked virtual for
+  // tests to override.
+  virtual void InitializeHighlightIfNeeded(AttachmentFinishedCallback callback);
 
   void OnNoteSelected();
 
@@ -64,6 +82,11 @@ class UserNoteInstance : public blink::mojom::AnnotationAgentHost {
   // AnnotationAgentHost interface so it's called when a note becomes detached.
   // Mark this one as override.
   void OnNoteDetached();
+
+ protected:
+  // For mock descendants in tests since they can't instantiate the PassKey.
+  UserNoteInstance(base::SafeRef<UserNote> model,
+                   UserNoteManager* parent_manager);
 
  private:
   friend class UserNoteInstanceTest;
@@ -85,11 +108,12 @@ class UserNoteInstance : public blink::mojom::AnnotationAgentHost {
   gfx::Rect rect_;
 
   // Callback to invoke after the renderer agent has initialized.
-  base::OnceClosure did_finish_attachment_callback_;
+  AttachmentFinishedCallback did_finish_attachment_callback_;
 
-  // Stores whether this note instance has had its highlight initialized in the
-  // renderer process.
-  bool is_initialized_ = false;
+  // Stores whether this note instance has had its highlight initialized
+  // ("attached") in the renderer process. This will be true, even if
+  // attachment failed.
+  bool finished_attachment_ = false;
 
   // Receiver and agent for communication with the renderer process.
   mojo::Receiver<blink::mojom::AnnotationAgentHost> receiver_;

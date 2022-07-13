@@ -9,6 +9,7 @@
 
 #include "base/memory/safe_ref.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/unguessable_token.h"
 #include "components/user_notes/browser/user_note_base_test.h"
 #include "components/user_notes/browser/user_note_instance.h"
@@ -34,7 +35,7 @@ class MockUserNoteInstance : public UserNoteInstance {
 
   MOCK_METHOD(void,
               InitializeHighlightIfNeeded,
-              (base::OnceClosure callback),
+              (UserNoteInstance::AttachmentFinishedCallback callback),
               (override));
 };
 

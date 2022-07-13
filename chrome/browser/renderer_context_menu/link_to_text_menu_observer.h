@@ -48,9 +48,6 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
       RenderViewContextMenuProxy* proxy,
       content::GlobalRenderFrameHostId render_frame_host_id,
       CompletionCallback callback);
-  // Returns true if the link should be generated from the constructor, vs
-  // determined when executed.
-  bool ShouldPreemptivelyGenerateLink();
 
   // Requests link generation if needed.
   void RequestLinkGeneration();

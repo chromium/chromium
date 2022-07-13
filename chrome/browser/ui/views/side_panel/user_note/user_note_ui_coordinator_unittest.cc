@@ -29,6 +29,8 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
+using user_notes::UserNoteInstance;
+
 namespace {
 
 // Mock the note storage to prevent side effects.
@@ -133,8 +135,14 @@ class UserNoteUICoordinatorTest : public TestWithBrowserView {
     auto note = CreateUserNote(note_ids_[index]);
     auto safe_ref = note->GetSafeRef();
     service_->model_map_.emplace(note_ids_[index], std::move(note));
-    manager->AddNoteInstance(std::make_unique<user_notes::UserNoteInstance>(
-        safe_ref, manager, note_rects_[index]));
+
+    std::unique_ptr<UserNoteInstance> note_instance =
+        UserNoteInstance::Create(safe_ref, manager);
+    auto* instance_raw = note_instance.get();
+
+    manager->AddNoteInstance(std::move(note_instance));
+
+    instance_raw->DidFinishAttachment(note_rects_[index]);
   }
 
   views::ScrollView* GetUserNoteScrollView() {

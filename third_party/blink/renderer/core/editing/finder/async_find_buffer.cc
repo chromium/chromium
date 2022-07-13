@@ -11,8 +11,18 @@ namespace blink {
 
 namespace {
 // Indicates how long FindBuffer task should run before pausing the work.
-constexpr base::TimeDelta kFindBufferTaskTimeoutMs = base::Milliseconds(100);
+constexpr base::TimeDelta kFindBufferTaskTimeout = base::Milliseconds(100);
+
+// Global static to allow tests to override the timeout.
+base::TimeDelta g_find_buffer_timeout = kFindBufferTaskTimeout;
 }  // namespace
+
+// static
+std::unique_ptr<base::AutoReset<base::TimeDelta>>
+AsyncFindBuffer::OverrideTimeoutForTesting(base::TimeDelta timeout_override) {
+  return std::make_unique<base::AutoReset<base::TimeDelta>>(
+      &g_find_buffer_timeout, timeout_override);
+}
 
 void AsyncFindBuffer::FindMatchInRange(RangeInFlatTree* search_range,
                                        String search_text,
@@ -40,9 +50,9 @@ void AsyncFindBuffer::Run(RangeInFlatTree* search_range,
   search_range->StartPosition().GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);
 
-  EphemeralRangeInFlatTree range = FindBuffer::FindMatchInRange(
-      search_range->ToEphemeralRange(), search_text, options,
-      kFindBufferTaskTimeoutMs);
+  EphemeralRangeInFlatTree range =
+      FindBuffer::FindMatchInRange(search_range->ToEphemeralRange(),
+                                   search_text, options, g_find_buffer_timeout);
 
   if (range.IsNotNull() && range.IsCollapsed()) {
     // FindBuffer reached time limit - Start/End of range is last checked

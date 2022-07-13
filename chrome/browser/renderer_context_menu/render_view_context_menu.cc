@@ -147,6 +147,8 @@
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/user_notes/browser/user_note_manager.h"
+#include "components/user_notes/user_notes_features.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -444,13 +446,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST, 121},
        {IDC_CONTENT_CONTEXT_RUN_PDF_OCR, 122},
        {IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE, 123},
+       {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 124},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 124}});
+       {0, 125}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -481,13 +484,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 23},
        {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 24},
        {IDC_OPEN_LINK_IN_PROFILE_FIRST, 25},
+       {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 26},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 26}});
+       {0, 27}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
                                                       : kSpecificMap);
@@ -993,6 +997,11 @@ void RenderViewContextMenu::InitMenu() {
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_EXISTING_LINK_TO_TEXT)) {
     AppendLinkToTextItems();
+  }
+
+  if (user_notes::IsUserNotesEnabled() &&
+      base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    AppendUserNotesItems();
   }
 
   if (!content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK))
@@ -2439,6 +2448,9 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING:
       return true;
 
+    case IDC_CONTENT_CONTEXT_ADD_A_NOTE:
+      return IsAddANoteEnabled();
+
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN:
       return true;
 
@@ -2628,6 +2640,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING:
       ExecOpenInReadAnything();
+      break;
+
+    case IDC_CONTENT_CONTEXT_ADD_A_NOTE:
+      ExecAddANote();
       break;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
@@ -3216,6 +3232,20 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 #endif
 }
 
+bool RenderViewContextMenu::IsAddANoteEnabled() const {
+  DCHECK(user_notes::IsUserNotesEnabled());
+  DCHECK(base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
+
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
+  if (!render_frame_host)
+    return false;
+
+  if (!render_frame_host->IsInPrimaryMainFrame())
+    return false;
+
+  return user_notes::UserNoteManager::GetForPage(render_frame_host->GetPage());
+}
+
 // Returns true if the item was appended.
 bool RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
                                                       bool draw_icon,
@@ -3256,6 +3286,11 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
       l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
       ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
 #endif
+}
+
+void RenderViewContextMenu::AppendUserNotesItems() {
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_ADD_A_NOTE,
+                                  IDS_CONTENT_CONTEXT_ADD_A_NOTE);
 }
 
 // Returns true if the item was appended (along with a SEPARATOR).
@@ -3500,6 +3535,23 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
       render_frame_host, params().src_url,
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
       lens::features::IsLensSidePanelEnabled());
+}
+
+void RenderViewContextMenu::ExecAddANote() {
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
+  if (!render_frame_host)
+    return;
+
+  DCHECK(render_frame_host->IsInPrimaryMainFrame());
+
+  auto* notes_manager =
+      user_notes::UserNoteManager::GetForPage(render_frame_host->GetPage());
+  if (!notes_manager)
+    return;
+
+  bool has_text_selection = !params().selection_text.empty();
+
+  notes_manager->OnAddNoteRequested(render_frame_host, has_text_selection);
 }
 
 void RenderViewContextMenu::ExecRegionSearch(

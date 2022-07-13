@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum AnnotationType {
@@ -42,15 +43,51 @@ interface AnnotationAgentContainer {
   // Instantiates a new agent in the renderer. The new agent will immediately
   // attempt attachment. Currently, an AnnotationAgent can only perform
   // attachment on creation and if it fails it cannot retry.
-  // `host_remote` - A binding to an object in the caller which will receive
-  //                 events for the agent.
-  // `agent_receiver` - A binding that the caller will use to send messages to
-  //                    and control the life time of the agent.
-  // `type` - The use case the annotation agent is being used for.
-  // `serialized_selector` - A selector that will be used to attach the agent
-  //                         to a Range of DOM in the Document.
+  //
+  // `host_remote`: A binding to an object in the caller which will receive
+  //    events for the agent.
+  // `agent_receiver`: A binding that the caller will use to send messages to
+  //    and control the life time of the agent.
+  // `type`: The use case the annotation agent is being used for.
+  // `serialized_selector`: A selector that will be used to attach the agent to
+  //    a Range of DOM in the Document.
   CreateAgent(pending_remote<blink.mojom.AnnotationAgentHost> host_remote,
               pending_receiver<blink.mojom.AnnotationAgent> agent_receiver,
               AnnotationType type,
               string serialized_selector);
+
+  // Creates an agent from the document's current text selection and returns
+  // the bindings as well as a selector which can be used in the future to
+  // target the same content. Performs attachment immediately after returning.
+  // If successful, clears the current text selection.
+  //
+  // Selector creation may fail for a few reasons:
+  //    * If there is no text selection in the renderer
+  //    * If the selection is degenerate (contains no text).
+  //    * The selected text cannot be uniquely identified using a text
+  //      selector.
+  //    * Generating the selector took too long and timed out.
+  //
+  // `type`: The use case the annotation agent is being used for.
+  //
+  // Returns:
+  // `host_receiver`: The receiver for the AnnotationAgentHost in the browser
+  //    that the agent will send messages to, or NullReceiver if a selector
+  //    could not be created.
+  // `agent_remote`: The remote that can be used from the browser to interact
+  //    with the agent, or NullRemote if a selector could not be created.
+  // `serialized_selector`: A string representing a selector that can be used
+  //    in the future (via `CreateAgent`) to target the same content. Empty
+  //    string if a selector could not be created (e.g. because no text
+  //    selection exists, or the selection is too ambiguous).
+  // `selected_text`: The text that's selected by the returned selector. Empty
+  //    string if a selector could not be created. This is in UTF-16 since
+  //    it'll be displayed in UI which requires UTF-16 encoding.
+  // TODO(bokan): Package the reply arguments into a single nullable result
+  // struct to simplify consistency checking on the browser side.
+  CreateAgentFromSelection(AnnotationType type) => (
+      pending_receiver<blink.mojom.AnnotationAgentHost>? host_receiver,
+      pending_remote<blink.mojom.AnnotationAgent>? agent_remote,
+      string serialized_selector,
+      mojo_base.mojom.String16 selected_text);
 };

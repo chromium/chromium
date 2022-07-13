@@ -1088,4 +1088,77 @@ TEST_F(UserNoteServiceTest, OnFrameChangesApplied) {
   EXPECT_EQ(note_service_->note_changes_in_progress_.size(), 0u);
 }
 
+// Verify the creation flow is started and a partial note inserted into the
+// creation map when "Add Note" is requested (as it would be from the context
+// menu). The creation should begin synchronously when there's no selection
+// since the renderer doesn't need to create a highlight and selector.
+TEST_F(UserNoteServiceTest, OnAddNoteRequestedWithoutSelection) {
+  // Initial setup.
+  ConfigureNewManager();
+
+  // Verify initial setup.
+  ASSERT_EQ(web_contents_list_.size(), 1ul);
+  ASSERT_EQ(ModelMapSize(), 2u);
+  ASSERT_EQ(CreationMapSize(), 0u);
+
+  content::RenderFrameHost* rfh = web_contents_list_[0]->GetPrimaryMainFrame();
+
+  // Simulate the "Add Note" context menu item being invoked while there's no
+  // selection in the renderer.
+  note_service_->OnAddNoteRequested(rfh, /*has_selected_text=*/false);
+
+  // Since there's no selection, a new partial note should be added to the
+  // creation map synchronously. The model map should be unchanged.
+  EXPECT_EQ(CreationMapSize(), 1u);
+  EXPECT_EQ(ModelMapSize(), 2u);
+}
+
+// Verify the creation flow is started when "Add Note" is requested with a
+// selection in the renderer.
+TEST_F(UserNoteServiceTest, OnAddNoteRequestedWithSelection) {
+  MockAnnotationAgentContainer container;
+
+  // Initial setup.
+  UserNoteManager* manager = ConfigureNewManager(&container);
+
+  // Verify initial setup.
+  ASSERT_TRUE(container.is_bound());
+  ASSERT_EQ(web_contents_list_.size(), 1ul);
+  ASSERT_EQ(ModelMapSize(), 2u);
+  ASSERT_EQ(CreationMapSize(), 0u);
+
+  content::RenderFrameHost* rfh = web_contents_list_[0]->GetPrimaryMainFrame();
+
+  // Simulate the "Add Note" context menu item being invoked while there's no
+  // selection in the renderer.
+  note_service_->OnAddNoteRequested(rfh, /*has_selected_text=*/true);
+
+  // Since there's a selection, a partial note won't be created until the
+  // renderer replies with a selector.
+  EXPECT_EQ(CreationMapSize(), 0u);
+  EXPECT_EQ(ModelMapSize(), 2u);
+
+  mojo::Remote<blink::mojom::AnnotationAgentHost> host;
+  MockAnnotationAgent agent;
+  EXPECT_CALL(container,
+              CreateAgentFromSelection(blink::mojom::AnnotationType::kUserNote,
+                                       testing::_))
+      .WillOnce(
+          [&](blink::mojom::AnnotationType type,
+              MockAnnotationAgentContainer::CreateAgentFromSelectionCallback
+                  cb) {
+            std::move(cb).Run(host.BindNewPipeAndPassReceiver(),
+                              agent.BindNewPipeAndPassRemote(),
+                              /*serialized_selector=*/"FOO",
+                              /*selected_text=*/std::u16string(u"FOO"));
+          });
+  manager->note_agent_container().FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&container);
+
+  // Now that the renderer replied, a new partial note should be added to the
+  // creation map.
+  EXPECT_EQ(CreationMapSize(), 1u);
+  EXPECT_EQ(ModelMapSize(), 2u);
+}
+
 }  // namespace user_notes

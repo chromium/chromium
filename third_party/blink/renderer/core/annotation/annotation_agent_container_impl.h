@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANNOTATION_ANNOTATION_AGENT_CONTAINER_IMPL_H_
 
 #include "base/types/pass_key.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -21,6 +22,8 @@ class AnnotationAgentContainerImplTest;
 class AnnotationAgentImpl;
 class AnnotationSelector;
 class LocalFrame;
+class TextFragmentSelector;
+class TextFragmentSelectorGenerator;
 
 // This class provides a per-Document container for AnnotationAgents. It is
 // used primarily as an entrypoint to allow clients to create an
@@ -85,9 +88,19 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
       mojo::PendingReceiver<mojom::blink::AnnotationAgent> agent_receiver,
       mojom::blink::AnnotationType type,
       const String& serialized_selector) override;
+  void CreateAgentFromSelection(
+      mojom::blink::AnnotationType type,
+      CreateAgentFromSelectionCallback callback) override;
 
  private:
   friend AnnotationAgentContainerImplTest;
+
+  void DidFinishSelectorGeneration(
+      TextFragmentSelectorGenerator* generator,
+      mojom::blink::AnnotationType type,
+      CreateAgentFromSelectionCallback callback,
+      const TextFragmentSelector& selector,
+      shared_highlighting::LinkGenerationError error);
 
   HeapMojoReceiverSet<mojom::blink::AnnotationAgentContainer,
                       AnnotationAgentContainerImpl>

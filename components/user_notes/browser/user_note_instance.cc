@@ -10,36 +10,82 @@
 namespace user_notes {
 
 UserNoteInstance::UserNoteInstance(base::SafeRef<UserNote> model,
-                                   UserNoteManager* parent_manager)
-    : UserNoteInstance(model, parent_manager, gfx::Rect()) {}
+                                   UserNoteManager* parent_manager,
+                                   PassKey pass_key)
+    : model_(std::move(model)),
+      parent_manager_(parent_manager),
+      receiver_(this) {}
 
 UserNoteInstance::UserNoteInstance(base::SafeRef<UserNote> model,
-                                   UserNoteManager* parent_manager,
-                                   gfx::Rect rect)
-    : model_(model),
-      parent_manager_(parent_manager),
-      rect_(rect),
-      receiver_(this) {}
+                                   UserNoteManager* parent_manager)
+    : UserNoteInstance(std::move(model), parent_manager, PassKey()) {}
+
+// static
+std::unique_ptr<UserNoteInstance> UserNoteInstance::Create(
+    base::SafeRef<UserNote> model,
+    UserNoteManager* parent_manager) {
+  return std::make_unique<UserNoteInstance>(std::move(model), parent_manager,
+                                            PassKey());
+}
 
 UserNoteInstance::~UserNoteInstance() = default;
 
 bool UserNoteInstance::IsDetached() const {
-  return is_initialized_ && rect_.IsEmpty() &&
+  return finished_attachment_ && rect_.IsEmpty() &&
          model_->target().type() == UserNoteTarget::TargetType::kPageText;
 }
 
-void UserNoteInstance::InitializeHighlightIfNeeded(base::OnceClosure callback) {
-  DCHECK(!is_initialized_);
+void UserNoteInstance::BindToHighlight(
+    mojo::PendingReceiver<blink::mojom::AnnotationAgentHost> host_receiver,
+    mojo::PendingRemote<blink::mojom::AnnotationAgent> agent_remote,
+    AttachmentFinishedCallback callback) {
+  DCHECK_EQ(model_->target().type(), UserNoteTarget::TargetType::kPageText);
+  DCHECK(!agent_.is_bound());
+  DCHECK(!receiver_.is_bound());
+  DCHECK(agent_remote.is_valid());
+  DCHECK(host_receiver.is_valid());
 
-  if (model_->target().type() == UserNoteTarget::TargetType::kPage) {
-    // Page-level notes are not associated with text in the page, so there is no
-    // highlight to create on the renderer side.
-    is_initialized_ = true;
-    DCHECK(callback);
-    std::move(callback).Run();
-  } else {
-    did_finish_attachment_callback_ = std::move(callback);
-    InitializeHighlightInternal();
+  did_finish_attachment_callback_ = std::move(callback);
+  agent_.Bind(std::move(agent_remote));
+  // base::Unretained since note instances are always destroyed before the
+  // manager (the manager's destructor explicitly destroys them).
+  agent_.set_disconnect_handler(
+      base::BindOnce(&UserNoteManager::RemoveNote,
+                     base::Unretained(parent_manager_), model_->id()));
+
+  receiver_.Bind(std::move(host_receiver));
+}
+
+void UserNoteInstance::InitializeHighlightIfNeeded(
+    AttachmentFinishedCallback callback) {
+  // If the UserNoteInstance was instantiated to create a new note, the
+  // highlight will already be initialized in the renderer. In this case,
+  // BindToHighlight must already have been called and so a `callback` must not
+  // be passed to this method since a callback was already passed in
+  // BindToHighlight.
+  if (agent_.is_bound()) {
+    DCHECK(receiver_.is_bound());
+    DCHECK(!callback);
+    DCHECK_EQ(model_->target().type(), UserNoteTarget::TargetType::kPageText);
+    DCHECK_EQ(finished_attachment_, did_finish_attachment_callback_.is_null());
+    return;
+  }
+
+  DCHECK(callback);
+
+  switch (model_->target().type()) {
+    case UserNoteTarget::TargetType::kPage: {
+      // Page-level notes are not associated with text in the page, so there is
+      // no highlight to create on the renderer side. Also, this instance may
+      // already have been initialized as part of generating a new note. In
+      // these cases, do nothing.
+      std::move(callback).Run();
+    } break;
+    case UserNoteTarget::TargetType::kPageText: {
+      DCHECK(!did_finish_attachment_callback_);
+      did_finish_attachment_callback_ = std::move(callback);
+      InitializeHighlightInternal();
+    } break;
   }
 }
 
@@ -50,11 +96,11 @@ void UserNoteInstance::OnNoteSelected() {
 }
 
 void UserNoteInstance::DidFinishAttachment(const gfx::Rect& rect) {
-  is_initialized_ = true;
+  finished_attachment_ = true;
   rect_ = rect;
 
-  DCHECK(did_finish_attachment_callback_);
-  std::move(did_finish_attachment_callback_).Run();
+  if (did_finish_attachment_callback_)
+    std::move(did_finish_attachment_callback_).Run();
 }
 
 void UserNoteInstance::OnWebHighlightFocused() {
@@ -77,7 +123,7 @@ void UserNoteInstance::InitializeHighlightInternal() {
 
   // Set a disconnect handler because the renderer can close the pipe at any
   // moment to signal that the highlight has been removed from the page. It's ok
-  // to use base::unretained here because the note instances are always
+  // to use base::Unretained here because the note instances are always
   // destroyed before the manager (the manager's destructor explicitly destroys
   // them).
   agent_.set_disconnect_handler(

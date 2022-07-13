@@ -4,7 +4,7 @@
 
 #include "components/user_notes/browser/frame_user_note_changes.h"
 
-#include "base/barrier_closure.h"
+#include "base/barrier_callback.h"
 #include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/model/user_note.h"
 #include "components/user_notes/model/user_note_target.h"
@@ -81,7 +81,7 @@ void FrameUserNoteChanges::Apply(base::OnceClosure callback) {
 std::unique_ptr<UserNoteInstance> FrameUserNoteChanges::MakeNoteInstance(
     const UserNote* note_model,
     UserNoteManager* manager) const {
-  return std::make_unique<UserNoteInstance>(note_model->GetSafeRef(), manager);
+  return UserNoteInstance::Create(note_model->GetSafeRef(), manager);
 }
 
 }  // namespace user_notes

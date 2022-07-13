@@ -98,6 +98,13 @@ class MockAnnotationAgentHost : public mojom::blink::AnnotationAgentHost {
     agent.Bind(std::move(pending_remote), agent_.BindNewPipeAndPassReceiver());
   }
 
+  void Bind(
+      mojo::PendingReceiver<mojom::blink::AnnotationAgentHost> host_receiver,
+      mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote) {
+    agent_.Bind(std::move(agent_remote));
+    receiver_.Bind(std::move(host_receiver));
+  }
+
   using RemoteHostReceiverAgentPair =
       std::pair<mojo::PendingRemote<mojom::blink::AnnotationAgentHost>,
                 mojo::PendingReceiver<mojom::blink::AnnotationAgent>>;

@@ -21,6 +21,7 @@
 
 namespace content {
 class Page;
+class RenderFrameHost;
 }  // namespace content
 
 namespace user_notes {
@@ -35,8 +36,7 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
   UserNoteManager(const UserNoteManager&) = delete;
   UserNoteManager& operator=(const UserNoteManager&) = delete;
 
-  const mojo::Remote<blink::mojom::AnnotationAgentContainer>&
-  note_agent_container() {
+  mojo::Remote<blink::mojom::AnnotationAgentContainer>& note_agent_container() {
     return note_agent_container_;
   };
 
@@ -60,8 +60,12 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
   // TODO(gujen): Remove the overload without the callback after tests are
   //              fixed.
   void AddNoteInstance(std::unique_ptr<UserNoteInstance> note);
-  void AddNoteInstance(std::unique_ptr<UserNoteInstance> note,
-                       base::OnceClosure initialize_callback);
+  void AddNoteInstance(
+      std::unique_ptr<UserNoteInstance> note,
+      UserNoteInstance::AttachmentFinishedCallback initialize_callback);
+
+  void OnAddNoteRequested(content::RenderFrameHost* frame,
+                          bool has_selected_text);
 
  private:
   friend class content::PageUserData<UserNoteManager>;

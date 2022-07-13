@@ -13,6 +13,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_notes {
@@ -22,6 +23,14 @@ namespace {
 const char kBaseUrl[] = "https://www.example.com/";
 
 }  // namespace
+
+MockAnnotationAgentContainer::MockAnnotationAgentContainer() = default;
+
+MockAnnotationAgentContainer::~MockAnnotationAgentContainer() = default;
+
+MockAnnotationAgent::MockAnnotationAgent() = default;
+
+MockAnnotationAgent::~MockAnnotationAgent() = default;
 
 UserNoteBaseTest::UserNoteBaseTest() {
   scoped_feature_list_.InitAndEnableFeature(user_notes::kUserNotes);
@@ -67,7 +76,8 @@ void UserNoteBaseTest::AddPartialNotesToService(size_t count) {
   }
 }
 
-UserNoteManager* UserNoteBaseTest::ConfigureNewManager() {
+UserNoteManager* UserNoteBaseTest::ConfigureNewManager(
+    MockAnnotationAgentContainer* mock_container) {
   // Create a test frame and navigate it to a unique URL.
   std::unique_ptr<content::WebContents> wc = CreateTestWebContents();
   content::RenderFrameHostTester::For(wc->GetPrimaryMainFrame())
@@ -76,12 +86,25 @@ UserNoteManager* UserNoteBaseTest::ConfigureNewManager() {
       wc.get(),
       GURL(kBaseUrl + base::NumberToString(web_contents_list_.size())));
 
+  std::unique_ptr<service_manager::InterfaceProvider::TestApi> test_api;
+  if (mock_container) {
+    CHECK(!mock_container->is_bound());
+    test_api = std::make_unique<service_manager::InterfaceProvider::TestApi>(
+        wc->GetPrimaryMainFrame()->GetRemoteInterfaces());
+    test_api->SetBinderForName(
+        blink::mojom::AnnotationAgentContainer::Name_,
+        base::BindRepeating(&MockAnnotationAgentContainer::Bind,
+                            base::Unretained(mock_container)));
+  }
+
   // Create and attach a `UserNoteManager` to the primary page.
   content::Page& page = wc->GetPrimaryPage();
   UserNoteManager::CreateForPage(page, note_service_->GetSafeRef());
   UserNoteManager* note_manager = UserNoteManager::GetForPage(page);
   DCHECK(note_manager);
   web_contents_list_.emplace_back(std::move(wc));
+
+  CHECK(!mock_container || mock_container->is_bound());
 
   return note_manager;
 }
@@ -91,8 +114,8 @@ void UserNoteBaseTest::AddNewInstanceToManager(UserNoteManager* manager,
   DCHECK(manager);
   const auto& entry_it = note_service_->model_map_.find(note_id);
   ASSERT_FALSE(entry_it == note_service_->model_map_.end());
-  manager->AddNoteInstance(std::make_unique<UserNoteInstance>(
-      entry_it->second.model->GetSafeRef(), manager));
+  manager->AddNoteInstance(
+      UserNoteInstance::Create(entry_it->second.model->GetSafeRef(), manager));
 }
 
 size_t UserNoteBaseTest::ManagerCountForId(

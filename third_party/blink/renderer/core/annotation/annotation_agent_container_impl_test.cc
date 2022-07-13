@@ -13,6 +13,11 @@
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_test_utils.h"
+#include "third_party/blink/renderer/core/editing/finder/async_find_buffer.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
@@ -301,6 +306,223 @@ TEST_F(AnnotationAgentContainerImplTest,
   )HTML");
 
   EXPECT_FALSE(AnnotationAgentContainerImpl::From(first_document));
+}
+
+// When the document has no selection, calling CreateAgentFromSelection must
+// not create an agent and it must return empty null bindings back to the
+// caller.
+TEST_F(AnnotationAgentContainerImplTest,
+       CreateAgentFromSelectionWithNoSelection) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body>TEST PAGE</body>
+  )HTML");
+
+  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+
+  bool did_reply = false;
+  container->CreateAgentFromSelection(
+      mojom::blink::AnnotationType::kUserNote,
+      base::BindLambdaForTesting(
+          [&did_reply](
+              mojo::PendingReceiver<mojom::blink::AnnotationAgentHost>
+                  host_receiver,
+              mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote,
+              const String& serialized_selector, const String& selected_text) {
+            did_reply = true;
+
+            EXPECT_EQ(selected_text, "");
+            EXPECT_EQ(serialized_selector, "");
+            EXPECT_FALSE(host_receiver.is_valid());
+            EXPECT_FALSE(agent_remote.is_valid());
+          }));
+
+  EXPECT_TRUE(did_reply);
+  EXPECT_EQ(GetAgentCount(*container), 0ul);
+}
+
+// CreateAgentFromSelection must create an agent and return a selector for the
+// selected text and bindings to the agent. It should also attach the agent to
+// show the highlight.
+TEST_F(AnnotationAgentContainerImplTest,
+       CreateAgentFromSelectionWithCollapsedSelection) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body>TEST PAGE</body>
+  )HTML");
+
+  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+
+  FrameSelection& frame_selection = GetDocument().GetFrame()->Selection();
+
+  Element* body = GetDocument().body();
+  frame_selection.SetSelection(SelectionInDOMTree::Builder()
+                                   .Collapse(Position(body->firstChild(), 0))
+                                   .Build(),
+                               SetSelectionOptions());
+
+  bool did_reply = false;
+  container->CreateAgentFromSelection(
+      mojom::blink::AnnotationType::kUserNote,
+      base::BindLambdaForTesting(
+          [&did_reply](
+              mojo::PendingReceiver<mojom::blink::AnnotationAgentHost>
+                  host_receiver,
+              mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote,
+              const String& serialized_selector, const String& selected_text) {
+            did_reply = true;
+
+            EXPECT_EQ(selected_text, "");
+            EXPECT_EQ(serialized_selector, "");
+            EXPECT_FALSE(host_receiver.is_valid());
+            EXPECT_FALSE(agent_remote.is_valid());
+          }));
+
+  EXPECT_TRUE(did_reply);
+  EXPECT_EQ(GetAgentCount(*container), 0ul);
+}
+
+// When the document has a collapsed selection, calling
+// CreateAgentFromSelection must not create an agent and it must return empty
+// null bindings back to the caller.
+TEST_F(AnnotationAgentContainerImplTest, CreateAgentFromSelection) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body>TEST PAGE</body>
+  )HTML");
+
+  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+
+  FrameSelection& frame_selection = GetDocument().GetFrame()->Selection();
+
+  Element* body = GetDocument().body();
+  EphemeralRange range = EphemeralRange(Position(body->firstChild(), 0),
+                                        Position(body->firstChild(), 5));
+  ASSERT_EQ("TEST ", PlainText(range));
+
+  frame_selection.SetSelection(
+      SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build(),
+      SetSelectionOptions());
+
+  MockAnnotationAgentHost host;
+
+  base::RunLoop run_loop;
+  container->CreateAgentFromSelection(
+      mojom::blink::AnnotationType::kUserNote,
+      base::BindLambdaForTesting(
+          [&run_loop, &host](
+              mojo::PendingReceiver<mojom::blink::AnnotationAgentHost>
+                  host_receiver,
+              mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote,
+              const String& serialized_selector, const String& selected_text) {
+            run_loop.Quit();
+
+            EXPECT_EQ(selected_text, "TEST");
+            EXPECT_EQ(serialized_selector, "TEST,-PAGE");
+            EXPECT_TRUE(host_receiver.is_valid());
+            EXPECT_TRUE(agent_remote.is_valid());
+
+            host.Bind(std::move(host_receiver), std::move(agent_remote));
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(host.agent_.is_connected());
+  host.FlushForTesting();
+
+  // Creating an agent from selection should automatically start attachment.
+  EXPECT_TRUE(host.did_finish_attachment_rect_);
+
+  EXPECT_EQ(GetAgentCount(*container), 1ul);
+}
+
+// Test that an in-progress, asynchronous generation is canceled gracefully if
+// a new document is navigated.
+TEST_F(AnnotationAgentContainerImplTest, ShutdownDocumentWhileGenerating) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  SimRequest request_next("https://example.com/next.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body>
+      <p>Multiple blocks</p>
+      <p>Multiple blocks</p>
+      <p>Multiple blocks</p>
+      <p>Multiple blocks</p>
+      <p>Multiple blocks</p>
+      <p id="target">TARGET</p>
+      <p>Multiple blocks</p>
+    </body>
+  )HTML");
+
+  // Set a tiny timeout so that the generator takes many tasks to finish its
+  // work.
+  auto auto_reset_timeout =
+      AsyncFindBuffer::OverrideTimeoutForTesting(base::TimeDelta::Min());
+
+  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+
+  FrameSelection& frame_selection = GetDocument().GetFrame()->Selection();
+
+  Element* target = GetDocument().getElementById("target");
+  EphemeralRange range =
+      EphemeralRange(Position(target, 0), Position(target, 1));
+  ASSERT_EQ("TARGET", PlainText(range));
+
+  frame_selection.SetSelection(
+      SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build(),
+      SetSelectionOptions());
+
+  base::RunLoop run_loop;
+  bool did_finish = false;
+
+  container->CreateAgentFromSelection(
+      mojom::blink::AnnotationType::kUserNote,
+      base::BindLambdaForTesting(
+          [&did_finish](
+              mojo::PendingReceiver<mojom::blink::AnnotationAgentHost>
+                  host_receiver,
+              mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote,
+              const String& serialized_selector, const String& selected_text) {
+            did_finish = true;
+            EXPECT_EQ(selected_text, "");
+            EXPECT_EQ(serialized_selector, "");
+            EXPECT_FALSE(host_receiver.is_valid());
+            EXPECT_FALSE(agent_remote.is_valid());
+          }));
+
+  // The above will have posted the first generator task to
+  // kInternalFindInPage. Post a task after it to exit back to test code after
+  // that task runs.
+  GetDocument()
+      .GetTaskRunner(TaskType::kInternalFindInPage)
+      ->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The generator should still not have completed. Navigate the page to a new
+  // document.
+  EXPECT_FALSE(did_finish);
+  LoadURL("https://example.com/next.html");
+  request_next.Complete(R"HTML(
+    <!DOCTYPE html>
+    NEXT PAGE
+  )HTML");
+
+  // The generation should complete but return failure, the agent should not
+  // have been created.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(did_finish);
+  EXPECT_EQ(GetAgentCount(*container), 0ul);
+
+  // Ensure the new document doesn't somehow get involved.
+  auto* new_container = AnnotationAgentContainerImpl::From(GetDocument());
+  ASSERT_NE(new_container, container);
+  EXPECT_EQ(GetAgentCount(*new_container), 0ul);
 }
 
 }  // namespace blink

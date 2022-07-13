@@ -644,6 +644,10 @@ are declared in tools/grit/grit_rule.gni.
             Copy link to highlight
           </message>
 
+          <message name="IDS_CONTENT_CONTEXT_ADD_A_NOTE" desc="The name of the Add Note command in the content area context menu">
+            Add a note
+          </message>
+
           <message name="IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT" desc="The name of the Remove Highlights command in the content area context menu">
             Remove highlight
           </message>
@@ -893,6 +897,10 @@ are declared in tools/grit/grit_rule.gni.
 
           <message name="IDS_CONTENT_CONTEXT_COPYLINKTOTEXT" desc="In Title Case: The name of the Copy Link to Highlight command in the content area context menu">
             Copy Link to Highlight
+          </message>
+
+          <message name="IDS_CONTENT_CONTEXT_ADD_A_NOTE" desc="In Title Case: The name of the Add Note command in the content area context menu">
+            Add a Note
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT" desc="In TitleCase: The name of the Remove Highlights command in the content area context menu">

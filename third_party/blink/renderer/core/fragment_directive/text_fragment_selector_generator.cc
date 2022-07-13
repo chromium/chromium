@@ -184,6 +184,13 @@ void TextFragmentSelectorGenerator::RecordSelectorStateUma() const {
                                 state_);
 }
 
+String TextFragmentSelectorGenerator::GetSelectorTargetText() const {
+  if (!range_)
+    return g_empty_string;
+
+  return PlainText(range_->ToEphemeralRange()).StripWhiteSpace();
+}
+
 void TextFragmentSelectorGenerator::DidFindMatch(const RangeInFlatTree& match,
                                                  bool is_unique) {
   if (is_unique &&
@@ -678,14 +685,8 @@ void TextFragmentSelectorGenerator::OnSelectorReady(
 
   RecordAllMetrics(selector);
   if (pending_generate_selector_callback_) {
-    NotifyClientSelectorReady(selector);
+    std::move(pending_generate_selector_callback_).Run(selector, error_);
   }
-}
-
-void TextFragmentSelectorGenerator::NotifyClientSelectorReady(
-    const TextFragmentSelector& selector) {
-  DCHECK(pending_generate_selector_callback_);
-  std::move(pending_generate_selector_callback_).Run(selector, error_);
 }
 
 // static

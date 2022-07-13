@@ -243,6 +243,7 @@ class RenderViewContextMenu
   void AppendRegionSearchItem();
   bool AppendFollowUnfollowItem();
   void AppendSendTabToSelfItem(bool add_separator);
+  void AppendUserNotesItems();
   bool AppendQRCodeGeneratorItem(bool for_image,
                                  bool draw_icon,
                                  bool add_separator);
@@ -270,6 +271,7 @@ class RenderViewContextMenu
   bool IsOpenLinkOTREnabled() const;
   bool IsSearchWebForEnabled() const;
   bool IsRegionSearchEnabled() const;
+  bool IsAddANoteEnabled() const;
 
   // Command execution functions.
   void ExecOpenWebApp();
@@ -283,6 +285,7 @@ class RenderViewContextMenu
   void ExecCopyLinkText();
   void ExecCopyImageAt();
   void ExecSearchLensForImage();
+  void ExecAddANote();
   void ExecRegionSearch(int event_flags,
                         bool is_google_default_search_provider);
   void ExecSearchWebForImage();

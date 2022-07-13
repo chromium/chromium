@@ -759,6 +759,14 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/renderer/core/annotation'],
+        'allowed': [
+            # AnnotationAgentContainerImpl reuses TextFragmentSelectorGenerator
+            # and the callback must accept this type as the result code.
+            'shared_highlighting::LinkGenerationError',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/offscreencanvas'],
         'allowed': [
             # Flags to be used to set up sharedImage

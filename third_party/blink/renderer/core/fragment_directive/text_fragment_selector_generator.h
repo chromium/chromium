@@ -28,9 +28,9 @@ class TextFragmentSelector;
 //
 // TextFragmentSelectorGenerator works by starting with a candidate selector
 // and repeatedly trying it against the page content to ensure the correct and
-// unique match. While we don't have a unique match, we repeatedly adding
-// context/range to the selector until the correct match is uniquely identified
-// or no new context/range can be added.
+// unique match. While the match isn't unique, repeatedly add context/range to
+// the selector until the correct match is uniquely identified or no new
+// context/range can be added.
 class CORE_EXPORT TextFragmentSelectorGenerator final
     : public GarbageCollected<TextFragmentSelectorGenerator>,
       public TextFragmentFinder::Client {
@@ -64,6 +64,11 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void RecordSelectorStateUma() const;
 
   LocalFrame* GetFrame() { return frame_; }
+
+  // Returns the text value of the range this generator is attempting to
+  // generate a selector for. Returns empty string if the range is invalid or
+  // if called before calling Generate().
+  String GetSelectorTargetText() const;
 
  private:
   friend class TextFragmentSelectorGeneratorTest;
@@ -161,9 +166,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   // Called when selector generation is complete.
   void OnSelectorReady(const TextFragmentSelector& selector);
-
-  // Called to notify clients of the result of |Generate|.
-  void NotifyClientSelectorReady(const TextFragmentSelector& selector);
 
   // Called by tests to change default parameters. A negative value will reset
   // the override.
