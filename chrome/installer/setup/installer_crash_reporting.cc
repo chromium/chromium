@@ -71,6 +71,8 @@ void ConfigureCrashReporting(const InstallerState& installer_state) {
   ANNOTATE_LEAKING_OBJECT_PTR(crash_client);
   crash_reporter::SetCrashReporterClient(crash_client);
 
+  crash_reporter::InitializeCrashKeys();
+
   if (installer_state.system_install()) {
     base::FilePath temp_dir;
     if (GetSystemTemp(&temp_dir)) {
