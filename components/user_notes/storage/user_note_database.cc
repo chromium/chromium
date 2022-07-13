@@ -238,21 +238,19 @@ bool UserNoteDatabase::CreateNote(const UserNote* model,
   if (!create_note.Run())
     return false;
 
-  if (model->target().type() == UserNoteTarget::TargetType::kPageText) {
-    sql::Statement notes_text_target(db_.GetCachedStatement(
-        SQL_FROM_HERE,
-        "INSERT INTO notes_text_target(note_id, original_text, selector) "
-        "VALUES(?,?,?)"));
-    if (!notes_text_target.is_valid())
-      return false;
+  sql::Statement notes_text_target(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO notes_text_target(note_id, original_text, selector) "
+      "VALUES(?,?,?)"));
+  if (!notes_text_target.is_valid())
+    return false;
 
-    notes_text_target.BindString(0, model->id().ToString());
-    notes_text_target.BindString(1, model->target().original_text());
-    notes_text_target.BindString(2, model->target().selector());
+  notes_text_target.BindString(0, model->id().ToString());
+  notes_text_target.BindString(1, model->target().original_text());
+  notes_text_target.BindString(2, model->target().selector());
 
-    if (!notes_text_target.Run())
-      return false;
-  }
+  if (!notes_text_target.Run())
+    return false;
 
   sql::Statement notes_body(db_.GetCachedStatement(
       SQL_FROM_HERE,
