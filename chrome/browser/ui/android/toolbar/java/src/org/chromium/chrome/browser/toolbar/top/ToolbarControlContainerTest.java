@@ -48,6 +48,8 @@ public class ToolbarControlContainerTest {
     public void testIsDirty() {
         ToolbarViewResourceAdapter adapter =
                 new ToolbarViewResourceAdapter(mToolbarContainer, false);
+        adapter.setOnResourceReadyCallback((resource) -> {});
+
         Assert.assertEquals(0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason"));
@@ -79,7 +81,7 @@ public class ToolbarControlContainerTest {
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
 
-        adapter.getBitmap();
+        adapter.triggerBitmapCapture();
         Assert.assertFalse(adapter.isDirty());
         Assert.assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
@@ -88,19 +90,14 @@ public class ToolbarControlContainerTest {
         Assert.assertEquals(0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.SnapshotDifference"));
-
-        // Need to be careful here. #getBitmap() in debug builds will call isDirty. Reset histogram
-        // tracking to avoid being needing to depend on build type.
-        ShadowRecordHistogram.reset();
-
-        Assert.assertEquals(0,
+        Assert.assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
 
         adapter.forceInvalidate();
         Assert.assertTrue(adapter.isDirty());
-        Assert.assertEquals(1,
+        Assert.assertEquals(2,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
