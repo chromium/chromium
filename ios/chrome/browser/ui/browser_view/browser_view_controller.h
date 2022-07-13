@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
@@ -90,8 +89,7 @@ typedef struct {
                         ToolbarCoordinatorDelegate,
                         WebNavigationNTPDelegate,
                         WebStateContainerViewProvider,
-                        BrowserCommands,
-                        NewTabPageCommands>
+                        BrowserCommands>
 
 // Initializes a new BVC.
 // `browser` is the browser whose tabs this BVC will display.

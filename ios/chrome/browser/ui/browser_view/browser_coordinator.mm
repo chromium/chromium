@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/feed_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/ui/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
@@ -172,6 +173,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
                                   EnterprisePromptCoordinatorDelegate,
                                   FormInputAccessoryCoordinatorNavigator,
                                   NetExportTabHelperDelegate,
+                                  NewTabPageCommands,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
                                   PasswordProtectionCommands,
@@ -564,6 +566,7 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FeedCommands),
     @protocol(FindInPageCommands),
+    @protocol(NewTabPageCommands),
     @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
@@ -735,8 +738,6 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 
   [_dispatcher startDispatchingToTarget:self.viewController
                             forProtocol:@protocol(BrowserCommands)];
-  [_dispatcher startDispatchingToTarget:self.viewController
-                            forProtocol:@protocol(NewTabPageCommands)];
 }
 
 // Destroys the browser view controller dependencies.
@@ -2114,6 +2115,47 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     return (NTPHelper && NTPHelper->IsActive());
   }
   return NO;
+}
+
+#pragma mark - NewTabPageCommands
+
+- (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
+  // Dismiss any presenting modal. Ex. Follow management page.
+
+  __weak __typeof(self) weakSelf = self;
+  [self.viewController
+      clearPresentedStateWithCompletion:^{
+        [weakSelf scrollToNTPAfterPresentedStateCleared:feedType];
+      }
+                         dismissOmnibox:YES];
+}
+
+- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
+  [_ntpCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
+}
+
+- (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
+  [_ntpCoordinator handleFeedModelDidEndUpdates:feedType];
+}
+
+- (void)scrollToNTPAfterPresentedStateCleared:(FeedType)feedType {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+
+  // Configure next NTP to be scrolled into `feedType`.
+  NewTabPageTabHelper* NTPHelper =
+      NewTabPageTabHelper::FromWebState(currentWebState);
+  if (NTPHelper) {
+    NTPHelper->SetNextNTPFeedType(feedType);
+    // TODO(crbug.com/1329173): Scroll into feed.
+  }
+
+  // Navigate to NTP in same tab.
+  UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  UrlLoadParams urlLoadParams =
+      UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
+  urlLoadingBrowserAgent->Load(urlLoadParams);
 }
 
 @end

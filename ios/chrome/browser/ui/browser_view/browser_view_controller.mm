@@ -3358,39 +3358,6 @@ bookmarks::BookmarkModel* GetBookmarkModelForWebState(
   }
 }
 
-#pragma mark - NewTabPageCommands
-// TODO (crbug/1329108): Remove NewTabPageCommands from the BVC.
-
-- (void)openNTPScrolledIntoFeedType:(FeedType)feedType {
-  // Dismiss any presenting modal. Ex. Follow management page.
-  [self
-      clearPresentedStateWithCompletion:^{
-        // Configure next NTP to be scrolled into `feedType`.
-        NewTabPageTabHelper* NTPHelper =
-            NewTabPageTabHelper::FromWebState(self.currentWebState);
-        if (NTPHelper) {
-          NTPHelper->SetNextNTPFeedType(feedType);
-          // TODO(crbug.com/1329173): Scroll into feed.
-        }
-
-        // Navigate to NTP in same tab.
-        UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
-            UrlLoadingBrowserAgent::FromBrowser(self.browser);
-        UrlLoadParams urlLoadParams =
-            UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
-        urlLoadingBrowserAgent->Load(urlLoadParams);
-      }
-                         dismissOmnibox:YES];
-}
-
-- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  [self.ntpCoordinator updateFollowingFeedHasUnseenContent:hasUnseenContent];
-}
-
-- (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
-  [self.ntpCoordinator handleFeedModelDidEndUpdates:feedType];
-}
-
 #pragma mark - WebStateListObserving methods
 
 // TODO(crbug.com/1329088): Move BVC's tab lifeceyle event updates to a
