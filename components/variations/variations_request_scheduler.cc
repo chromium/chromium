@@ -9,15 +9,48 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
+namespace {
+
+// The minimum time between consecutive variations seed fetches.
+constexpr base::TimeDelta kVariationsSeedFetchIntervalMinimum =
+    base::Minutes(1);
+
+// Returns the variations seed fetch interval specified through the
+// |kVariationsSeedFetchInterval| switch. The value returned is subject to a
+// minimum value, |kVariationsSeedFetchIntervalMinimum|. If no overridden value
+// is specified, or if it is malformed, an empty optional is returned.
+absl::optional<base::TimeDelta> GetOverriddenFetchPeriod() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  const std::string switch_value =
+      command_line->GetSwitchValueASCII(switches::kVariationsSeedFetchInterval);
+
+  if (switch_value.empty())
+    return absl::nullopt;
+
+  int overridden_period;
+  if (!base::StringToInt(switch_value, &overridden_period)) {
+    LOG(DFATAL) << "Malformed value for --"
+                << switches::kVariationsSeedFetchInterval << ". "
+                << "Expected int, got: " << switch_value;
+    return absl::nullopt;
+  }
+
+  return std::max(base::Minutes(overridden_period),
+                  kVariationsSeedFetchIntervalMinimum);
+}
+
+}  // namespace
 
 VariationsRequestScheduler::VariationsRequestScheduler(
     const base::RepeatingClosure& task)
     : task_(task) {}
 
-VariationsRequestScheduler::~VariationsRequestScheduler() {
-}
+VariationsRequestScheduler::~VariationsRequestScheduler() = default;
 
 void VariationsRequestScheduler::Start() {
   task_.Run();
@@ -33,10 +66,19 @@ void VariationsRequestScheduler::Reset() {
 void VariationsRequestScheduler::ScheduleFetchShortly() {
   // Reset the regular timer to avoid it triggering soon after.
   Reset();
-  // The delay before attempting a fetch shortly, in minutes.
-  const int kFetchShortlyDelayMinutes = 5;
-  one_shot_timer_.Start(FROM_HERE, base::Minutes(kFetchShortlyDelayMinutes),
-                        task_);
+  // The delay before attempting a fetch shortly.
+  base::TimeDelta fetch_shortly_delay = base::Minutes(5);
+
+  // If there is a fetch interval specified in the command line, and it is
+  // shorter than |fetch_shortly_delay|, use it instead.
+  absl::optional<base::TimeDelta> overridden_period =
+      GetOverriddenFetchPeriod();
+  if (overridden_period.has_value()) {
+    fetch_shortly_delay =
+        std::min(fetch_shortly_delay, overridden_period.value());
+  }
+
+  one_shot_timer_.Start(FROM_HERE, fetch_shortly_delay, task_);
 }
 
 void VariationsRequestScheduler::OnAppEnterForeground() {
@@ -44,6 +86,12 @@ void VariationsRequestScheduler::OnAppEnterForeground() {
 }
 
 base::TimeDelta VariationsRequestScheduler::GetFetchPeriod() const {
+  // The fetch interval can be overridden through the command line.
+  absl::optional<base::TimeDelta> overridden_period =
+      GetOverriddenFetchPeriod();
+  if (overridden_period.has_value())
+    return overridden_period.value();
+
   // The fetch interval can be overridden by a variation param.
   std::string period_min_str =
       GetVariationParamValue("VariationsServiceControl", "fetch_period_min");

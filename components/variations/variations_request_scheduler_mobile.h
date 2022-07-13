@@ -47,6 +47,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsRequestSchedulerMobile
   FRIEND_TEST_ALL_PREFIXES(VariationsRequestSchedulerMobileTest,
                            OnAppEnterForegroundOnStartup);
 
+  // Determines whether we should fetch a seed depending on how much time has
+  // passed since the last seed fetch. If the
+  // |kDisableVariationsSeedFetchThrottling| command line switch is present,
+  // this always returns true.
+  bool ShouldFetchSeed(base::Time last_fetch_time);
+
   // The local state instance that provides the last fetch time.
   raw_ptr<PrefService> local_state_;
 
