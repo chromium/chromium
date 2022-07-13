@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase_list.h"
 #include "base/files/file_util.h"
 #include "base/strings/escape.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
@@ -93,16 +94,6 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
     base::FilePath html_file = test_path.Append(base::FilePath(file_path));
     RunTest(html_file, "accessibility/html", FILE_PATH_LITERAL("node"));
   }
-
-  void RunMathMLTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "mathml");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath mathml_file = test_path.Append(base::FilePath(file_path));
-    RunTest(mathml_file, "accessibility/mathml", FILE_PATH_LITERAL("node"));
-  }
 };
 
 class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
@@ -139,8 +130,23 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
   }
 };
 
+// Revert CL 3721405 once crbug.com/1260585 (implement MathML UIA) is fixed,
+// also see related crbug.com/1272996 (MathML tests fail on UIA).
+class DumpAccessibilityMathMLNodeTest : public DumpAccessibilityNodeTest {
+ public:
+  void RunMathMLTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path = GetTestFilePath("accessibility", "mathml");
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath mathml_file = test_path.Append(base::FilePath(file_path));
+    RunTest(mathml_file, "accessibility/mathml", FILE_PATH_LITERAL("node"));
+  }
+};
+
 class DumpAccessibilityNodeWithoutMathMLTest
-    : public DumpAccessibilityNodeTest {
+    : public DumpAccessibilityMathMLNodeTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DumpAccessibilityNodeTest::SetUpCommandLine(command_line);
@@ -157,6 +163,13 @@ struct TestPassToString {
   }
 };
 
+std::vector<ui::AXApiType::Type> TreeTestPassesExceptUIA() {
+  std::vector<ui::AXApiType::Type> passes =
+      ui::AXInspectTestHelper::TreeTestPasses();
+  base::Erase(passes, ui::AXApiType::kWinUIA);
+  return passes;
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityNodeTest,
@@ -169,11 +182,15 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     TestPassToString());
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityNodeWithoutMathMLTest,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
-    TestPassToString());
+INSTANTIATE_TEST_SUITE_P(All,
+                         DumpAccessibilityNodeWithoutMathMLTest,
+                         ::testing::ValuesIn(TreeTestPassesExceptUIA()),
+                         TestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DumpAccessibilityMathMLNodeTest,
+                         ::testing::ValuesIn(TreeTestPassesExceptUIA()),
+                         TestPassToString());
 
 // ARIA tests.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, AccessibilityAriaScrollbar) {
@@ -190,103 +207,103 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest,
 // MathML tests.
 //
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLAction) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLAction) {
   RunMathMLTest(FILE_PATH_LITERAL("maction.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLAnnotation) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLAnnotation) {
   RunMathMLTest(FILE_PATH_LITERAL("annotation.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLAnnotationXML) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLAnnotationXML) {
   RunMathMLTest(FILE_PATH_LITERAL("annotation-xml.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLError) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLError) {
   RunMathMLTest(FILE_PATH_LITERAL("merror.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLFraction) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLFraction) {
   RunMathMLTest(FILE_PATH_LITERAL("mfrac.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLIdentifier) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLIdentifier) {
   RunMathMLTest(FILE_PATH_LITERAL("mi.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLMath) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLMath) {
   RunMathMLTest(FILE_PATH_LITERAL("math.html"));
 }
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeWithoutMathMLTest, MathMLMath) {
   RunMathMLTest(FILE_PATH_LITERAL("math-disabled.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLMultiscripts) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLMultiscripts) {
   RunMathMLTest(FILE_PATH_LITERAL("mmultiscripts.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLNone) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLNone) {
   RunMathMLTest(FILE_PATH_LITERAL("none.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLNumber) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLNumber) {
   RunMathMLTest(FILE_PATH_LITERAL("mn.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLOperator) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLOperator) {
   RunMathMLTest(FILE_PATH_LITERAL("mo.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLOver) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLOver) {
   RunMathMLTest(FILE_PATH_LITERAL("mover.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLPadded) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLPadded) {
   RunMathMLTest(FILE_PATH_LITERAL("mpadded.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLPhantom) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLPhantom) {
   RunMathMLTest(FILE_PATH_LITERAL("mphantom.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLPrescripts) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLPrescripts) {
   RunMathMLTest(FILE_PATH_LITERAL("mprescripts.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLRoot) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLRoot) {
   RunMathMLTest(FILE_PATH_LITERAL("mroot.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLRow) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLRow) {
   RunMathMLTest(FILE_PATH_LITERAL("mrow.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLSemantics) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLSemantics) {
   RunMathMLTest(FILE_PATH_LITERAL("semantics.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLSpace) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLSpace) {
   RunMathMLTest(FILE_PATH_LITERAL("mspace.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLSquareRoot) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLSquareRoot) {
   RunMathMLTest(FILE_PATH_LITERAL("msqrt.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLStringLiteral) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLStringLiteral) {
   RunMathMLTest(FILE_PATH_LITERAL("ms.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLStyle) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLStyle) {
   RunMathMLTest(FILE_PATH_LITERAL("mstyle.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLSub) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLSub) {
   RunMathMLTest(FILE_PATH_LITERAL("msub.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLSubSup) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLSubSup) {
   RunMathMLTest(FILE_PATH_LITERAL("msubsup.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLSup) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLSup) {
   RunMathMLTest(FILE_PATH_LITERAL("msup.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLTable) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLTable) {
   RunMathMLTest(FILE_PATH_LITERAL("mtable.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLTableCell) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLTableCell) {
   RunMathMLTest(FILE_PATH_LITERAL("mtd.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLTableRow) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLTableRow) {
   RunMathMLTest(FILE_PATH_LITERAL("mtr.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLText) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLText) {
   RunMathMLTest(FILE_PATH_LITERAL("mtext.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLUnder) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLUnder) {
   RunMathMLTest(FILE_PATH_LITERAL("munder.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLUnderOver) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLUnderOver) {
   RunMathMLTest(FILE_PATH_LITERAL("munderover.html"));
 }
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLUnknown) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLUnknown) {
   RunMathMLTest(FILE_PATH_LITERAL("unknown.html"));
 }
 
