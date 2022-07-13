@@ -135,6 +135,9 @@ function createOSSettingsRoutes() {
       createSubpage(r.DEVICE, mojom.STYLUS_SUBPAGE_PATH, Subpage.kStylus);
   r.DISPLAY =
       createSubpage(r.DEVICE, mojom.DISPLAY_SUBPAGE_PATH, Subpage.kDisplay);
+  if (loadTimeData.getBoolean('enableAudioSettingsPage')) {
+    r.AUDIO = createSubpage(r.DEVICE, mojom.AUDIO_SUBPAGE_PATH, Subpage.kAudio);
+  }
   r.STORAGE =
       createSubpage(r.DEVICE, mojom.STORAGE_SUBPAGE_PATH, Subpage.kStorage);
   r.EXTERNAL_STORAGE_PREFERENCES = createSubpage(

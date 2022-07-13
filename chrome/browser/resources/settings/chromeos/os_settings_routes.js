@@ -23,6 +23,7 @@ import {Route} from '../router.js';
  *   APPS: !Route,
  *   ANDROID_APPS_DETAILS: !Route,
  *   ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES: !Route,
+ *   AUDIO: !Route,
  *   CROSTINI: !Route,
  *   CROSTINI_ANDROID_ADB: !Route,
  *   CROSTINI_DETAILS: !Route,

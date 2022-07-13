@@ -502,6 +502,7 @@ preprocess_if_expr("preprocess_web_components") {
     "chromeos/date_time_page/date_time_page.js",
     "chromeos/date_time_page/timezone_selector.js",
     "chromeos/date_time_page/timezone_subpage.js",
+    "chromeos/device_page/audio.js",
     "chromeos/device_page/device_page.js",
     "chromeos/device_page/display.js",
     "chromeos/device_page/display_layout.js",

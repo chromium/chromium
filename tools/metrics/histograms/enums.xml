@@ -72818,6 +72818,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="405" label="External Storage"/>
   <int value="406" label="DLC (Deprecated)"/>
   <int value="407" label="Power"/>
+  <int value="408" label="Audio"/>
   <int value="500" label="Change Picture"/>
   <int value="501" label="Ambient Mode"/>
   <int value="502" label="Ambient Mode Photos (Deprecated)"/>

@@ -19,6 +19,7 @@ import {FakeSystemDisplay} from './fake_system_display.js';
 /** @enum {string} */
 const TestNames = {
   DevicePage: 'device page',
+  Audio: 'audio',
   Display: 'display',
   Keyboard: 'keyboard',
   NightLight: 'night light',
@@ -659,8 +660,8 @@ suite('SettingsDevicePage', function() {
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
 
-    // enableAudioSettingsPage feature flag by default is turned off.
-    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
+    // enableAudioSettingsPage feature flag by default is turned on in tests.
+    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
 
     webUIListenerCallback('has-mouse-changed', false);
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
@@ -677,26 +678,31 @@ suite('SettingsDevicePage', function() {
 
   test('audio row visibility', async function() {
     loadTimeData.overrideValues({
-      enableAudioSettingsPage: true,
+      enableAudioSettingsPage: false,
+    });
+    await init();
+    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
+  });
+
+  suite(assert(TestNames.Audio), function() {
+    let audioPage;
+
+    setup(async function() {
+      loadTimeData.overrideValues({
+        enableAudioSettingsPage: true,
+      });
+      await init();
+      return showAndGetDeviceSubpage('audio', routes.AUDIO)
+          .then(function(page) {
+            audioPage = page;
+          });
     });
 
-    await init();
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#keyboardRow')));
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#audioRow')));
-
-    webUIListenerCallback('has-mouse-changed', false);
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-pointing-stick-changed', false);
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-touchpad-changed', false);
-    assertFalse(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-mouse-changed', true);
-    assertTrue(isVisible(devicePage.shadowRoot.querySelector('#pointersRow')));
+    test('subpage visibility', function() {
+      assertEquals(routes.AUDIO, Router.getInstance().getCurrentRoute());
+      assertTrue(
+          isVisible(audioPage.shadowRoot.querySelector('#audioSubpageTitle')));
+    });
   });
 
   suite(assert(TestNames.Pointers), function() {

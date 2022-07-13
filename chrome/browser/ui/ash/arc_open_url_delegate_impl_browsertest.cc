@@ -292,6 +292,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
       ChromePage::DISPLAY,
       base_url.Resolve(chromeos::settings::mojom::kDisplaySubpagePath));
   TestOpenOSSettingsChromePage(
+      ChromePage::AUDIO,
+      base_url.Resolve(chromeos::settings::mojom::kAudioSubpagePath));
+  TestOpenOSSettingsChromePage(
       ChromePage::HELP,
       base_url.Resolve(chromeos::settings::mojom::kAboutChromeOsSectionPath));
   TestOpenOSSettingsChromePage(

@@ -44,6 +44,7 @@ var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   get featureList() {
     return {
       enabled: [
+        'chromeos::features::kAudioSettingsPage',
         'features::kAllowDisableTouchpadHapticFeedback',
         'features::kAllowTouchpadHapticClickSettings',
       ],

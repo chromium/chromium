@@ -672,6 +672,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:apps';
       case Icon.kAssistant:
         return 'os-settings:assistant';
+      case Icon.kAudio:
+        return 'os-settings:audio';
       case Icon.kAuthKey:
         return 'os-settings:auth-key';
       case Icon.kAvatar:

@@ -76,6 +76,7 @@ enum Subpage {
   // Note: Value 406 was for deprecated DLC Subpage - see
   // https://crbug.com/1108093. Do not reuse.
   kPower = 407,
+  kAudio = 408,
 
   // Personalization section.
   kChangePicture = 500,
@@ -193,6 +194,7 @@ const string kPointersSubpagePath = "pointer-overlay";
 const string kKeyboardSubpagePath = "keyboard-overlay";
 const string kStylusSubpagePath = "stylus";
 const string kDisplaySubpagePath = "display";
+const string kAudioSubpagePath = "audio";
 const string kStorageSubpagePath = "storage";
 const string kExternalStorageSubpagePath = "storage/externalStoragePreferences";
 const string kPowerSubpagePath = "power";

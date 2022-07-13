@@ -755,6 +755,14 @@ void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
           base::ASCIIToUTF16(chrome::kArcExternalStorageLearnMoreURL)));
 }
 
+void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kAudioStrings[] = {
+      {"audioTitle", IDS_SETTINGS_AUDIO_TITLE},
+  };
+
+  html_source->AddLocalizedStrings(kAudioStrings);
+}
+
 void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kPowerStrings[] = {
       {"powerTitle", IDS_SETTINGS_POWER_TITLE},
@@ -890,6 +898,7 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceKeyboardStrings(html_source);
   AddDeviceStylusStrings(html_source);
   AddDeviceDisplayStrings(html_source);
+  AddDeviceAudioStrings(html_source);
   AddDeviceStorageStrings(
       html_source, features::ShouldShowExternalStorageSettings(profile()));
   AddDevicePowerStrings(html_source);
@@ -1032,6 +1041,12 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kStorage, mojom::SearchResultIcon::kHardDrive,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kExternalStorageSubpagePath);
+
+  // Audio.
+  generator->RegisterTopLevelSubpage(
+      IDS_SETTINGS_AUDIO_TITLE, mojom::Subpage::kAudio,
+      mojom::SearchResultIcon::kAudio, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kAudioSubpagePath);
 
   // Power.
   generator->RegisterTopLevelSubpage(
@@ -1240,7 +1255,6 @@ void DeviceSection::UpdateStylusSearchTags() {
 void DeviceSection::AddDevicePointersStrings(
     content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kPointersStrings[] = {
-      {"audioTitle", IDS_SETTINGS_AUDIO_TITLE},
       {"mouseTitle", IDS_SETTINGS_MOUSE_TITLE},
       {"pointingStickTitle", IDS_SETTINGS_POINTING_STICK_TITLE},
       {"touchpadTitle", IDS_SETTINGS_TOUCHPAD_TITLE},

@@ -7,6 +7,7 @@
  * peripheral settings.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import './audio.js';
 import './display.js';
 import './keyboard.js';
 import './pointers.js';
@@ -135,7 +136,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           if (routes.DISPLAY) {
             map.set(routes.DISPLAY.path, '#displayRow');
           }
-          // TODO(crbug.com/1092970): Create routes.Audio page.
+          if (routes.AUDIO) {
+            map.set(routes.AUDIO.path, '#audioRow');
+          }
           if (routes.STORAGE) {
             map.set(routes.STORAGE.path, '#storageRow');
           }
@@ -249,6 +252,14 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
    */
   onDisplayTap_() {
     Router.getInstance().navigateTo(routes.DISPLAY);
+  }
+
+  /**
+   * Handler for tapping the Audio settings menu item.
+   * @private
+   */
+  onAudioTap_() {
+    Router.getInstance().navigateTo(routes.AUDIO);
   }
 
   /**

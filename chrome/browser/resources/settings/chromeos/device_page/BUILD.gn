@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
+    ":audio",
     ":device_page",
     ":device_page_browser_proxy",
     ":display",
@@ -25,6 +26,15 @@ js_type_check("closure_compile_module") {
     ":storage_external",
     ":storage_external_entry",
     ":stylus",
+  ]
+}
+
+js_library("audio") {
+  deps = [
+    "..:os_route",
+    "..:route_observer_behavior",
+    "../..:router",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -182,6 +192,7 @@ js_library("stylus") {
 
 html_to_js("web_components") {
   js_files = [
+    "audio.js",
     "device_page.js",
     "display_layout.js",
     "display.js",

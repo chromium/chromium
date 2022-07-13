@@ -53,6 +53,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kKeyboardSubpagePath,
       chromeos::settings::mojom::kStylusSubpagePath,
       chromeos::settings::mojom::kDisplaySubpagePath,
+      chromeos::settings::mojom::kAudioSubpagePath,
       chromeos::settings::mojom::kStorageSubpagePath,
       chromeos::settings::mojom::kExternalStorageSubpagePath,
       chromeos::settings::mojom::kPowerSubpagePath,

@@ -169,8 +169,8 @@ enum ChromePage {
   SMARTPRIVACY = 77,
   PRIVACYHUB = 78,
   TEXTTOSPEECH = 79,
-
-  // Next value to be used is 80.
+  AUDIO = 80,
+  // Next value to be used is 81.
 };
 
 // Describes an unique chrome app.
