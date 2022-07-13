@@ -55344,6 +55344,7 @@ from previous Chrome versions.
   <int value="-2058762785"
       label="AllowDownloadResumptionWithoutStrongValidators:disabled"/>
   <int value="-2058656447" label="ContextualSearchUrlActions:enabled"/>
+  <int value="-2058148545" label="LinkLayerPrivacy:enabled"/>
   <int value="-2057927571"
       label="AutofillEnableSendingBcnInGetUploadDetails:enabled"/>
   <int value="-2056436874" label="WebFeedAwareness:disabled"/>
@@ -60241,6 +60242,7 @@ from previous Chrome versions.
   <int value="1059698271" label="EnableZeroStateSuggestions:disabled"/>
   <int value="1060319397" label="enable-data-reduction-proxy-carrier-test"/>
   <int value="1060780557" label="DynamicColorGamut:disabled"/>
+  <int value="1061351122" label="LinkLayerPrivacy:disabled"/>
   <int value="1061947013" label="OmniboxDeferredKeyboardPopup:disabled"/>
   <int value="1062357243" label="remember-cert-error-decisions"/>
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>

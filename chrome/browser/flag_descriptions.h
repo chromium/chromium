@@ -2572,6 +2572,9 @@ extern const char kBluetoothWbsDogfoodDescription[];
 extern const char kBluetoothUseFlossName[];
 extern const char kBluetoothUseFlossDescription[];
 
+extern const char kBluetoothUseLLPrivacyName[];
+extern const char kBluetoothUseLLPrivacyDescription[];
+
 extern const char kCalendarViewName[];
 extern const char kCalendarViewDescription[];
 

@@ -158,6 +158,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"
+#include "device/bluetooth/bluez/bluez_features.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "device/fido/features.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
@@ -3519,6 +3520,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"bluetooth-use-floss", flag_descriptions::kBluetoothUseFlossName,
      flag_descriptions::kBluetoothUseFlossDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(floss::features::kFlossEnabled)},
+    {"bluetooth-use-llprivacy", flag_descriptions::kBluetoothUseLLPrivacyName,
+     flag_descriptions::kBluetoothUseLLPrivacyDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(bluez::features::kLinkLayerPrivacy)},
     {"calendar-view", flag_descriptions::kCalendarViewName,
      flag_descriptions::kCalendarViewDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCalendarView)},

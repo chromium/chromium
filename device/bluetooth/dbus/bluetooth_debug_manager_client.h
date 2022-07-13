@@ -33,6 +33,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDebugManagerClient
                                   const std::string& error_message)>
       ErrorCallback;
 
+  // Invoke D-Bus API to enable or disable LL privacy.
+  virtual void SetLLPrivacy(const bool enable,
+                            base::OnceClosure callback,
+                            ErrorCallback error_callback) = 0;
+
   // Invoke D-Bus API to set the levels of logging verbosity for each of
   // the bluetooth daemons and kernel.
   virtual void SetLogLevels(const uint8_t bluez_level,

@@ -4490,6 +4490,11 @@ const char kBluetoothUseFlossDescription[] =
     "instead of Bluez. This is meant to be used by developers and is not "
     "guaranteed to be stable";
 
+const char kBluetoothUseLLPrivacyName[] = "Enable LL Privacy in BlueZ";
+const char kBluetoothUseLLPrivacyDescription[] =
+    "Enable address resolution offloading to Bluetooth Controller if "
+    "supported. Modifying this flag will cause Bluetooth Controller to reset.";
+
 const char kCalendarViewName[] =
     "Productivity experiment: Monthly Calendar View";
 const char kCalendarViewDescription[] =

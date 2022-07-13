@@ -386,6 +386,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                         ConfirmationCallback callback) override;
   void Cancel() override;
 
+  // Called by dbus:: on completion of the D-Bus method call to enable LL
+  // privacy.
+  void OnSetLLPrivacySuccess();
+  void OnSetLLPrivacyError(const std::string& error_name,
+                           const std::string& error_message);
+
   // Called by dbus:: on completion of the D-Bus method call to register the
   // pairing agent.
   void OnRegisterAgent();

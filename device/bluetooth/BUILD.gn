@@ -351,6 +351,8 @@ component("bluetooth") {
         "bluez/bluetooth_service_record_bluez.h",
         "bluez/bluetooth_socket_bluez.cc",
         "bluez/bluetooth_socket_bluez.h",
+        "bluez/bluez_features.cc",
+        "bluez/bluez_features.h",
         "bluez/metrics_recorder.cc",
         "bluez/metrics_recorder.h",
         "dbus/bluetooth_adapter_client.cc",

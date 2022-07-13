@@ -645,6 +645,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "bluetooth-use-llprivacy",
+    "owners": ["jiangzp", "chromeos-bluetooth@google.com"],
+    "expiry_milestone": 111
+  },
+  {
     "name": "bluetooth-wbs-dogfood",
     "owners": [ "hychao" ],
     "expiry_milestone": 95
