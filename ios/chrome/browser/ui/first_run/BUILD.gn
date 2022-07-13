@@ -190,9 +190,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "first_run_util_unittest.mm",
+    "fre_field_trial_unittest.mm",
     "welcome_to_chrome_view_controller_unittest.mm",
   ]
   deps = [
+    ":field_trial",
     ":first_run",
     ":utils",
     "//base",
@@ -201,8 +203,10 @@ source_set("unit_tests") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/variations",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/browser/ui/util",

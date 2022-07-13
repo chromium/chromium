@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_FRE_FIELD_TRIAL_H_
 
 #include "base/metrics/field_trial.h"
+#include "components/variations/variations_associated_data.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -82,6 +83,17 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state);
+
+namespace testing {
+
+// Exposes CreateNewMICeAndDefaultBrowserFRETrial() for testing FieldTrial
+// set-up.
+int CreateNewMICeAndDefaultBrowserFRETrialForTesting(
+    const std::map<variations::VariationID, int>& weight_by_id,
+    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    base::FeatureList* feature_list);
+
+}  // namespace testing
 
 }  // namespace fre_field_trial
 
