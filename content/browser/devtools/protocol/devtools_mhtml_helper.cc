@@ -24,9 +24,10 @@ void ClearFileReferenceOnIOThread(
 }  // namespace
 
 DevToolsMHTMLHelper::DevToolsMHTMLHelper(
-    base::WeakPtr<PageHandler> page_handler,
+    const WebContents::Getter& web_contents_getter,
     std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback)
-    : page_handler_(page_handler), callback_(std::move(callback)) {}
+    : web_contents_getter_(web_contents_getter),
+      callback_(std::move(callback)) {}
 
 DevToolsMHTMLHelper::~DevToolsMHTMLHelper() {
   if (mhtml_file_.get()) {
@@ -38,11 +39,10 @@ DevToolsMHTMLHelper::~DevToolsMHTMLHelper() {
 
 // static
 void DevToolsMHTMLHelper::Capture(
-    base::WeakPtr<PageHandler> page_handler,
+    const WebContents::Getter& web_contents_getter,
     std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback) {
-  DCHECK(!page_handler->AssureTopLevelActiveFrame().IsError());
   scoped_refptr<DevToolsMHTMLHelper> helper =
-      new DevToolsMHTMLHelper(page_handler, std::move(callback));
+      new DevToolsMHTMLHelper(web_contents_getter, std::move(callback));
   base::ThreadPool::PostTask(
       FROM_HERE,
       {// Requires IO.
@@ -90,11 +90,7 @@ void DevToolsMHTMLHelper::TemporaryFileCreatedOnIO() {
 
 void DevToolsMHTMLHelper::TemporaryFileCreatedOnUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!page_handler_) {
-    ReportFailure("");
-    return;
-  }
-  WebContentsImpl* web_contents = page_handler_->GetWebContents();
+  WebContents* web_contents = web_contents_getter_.Run();
   if (!web_contents) {
     ReportFailure("No web contents");
     return;

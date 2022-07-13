@@ -27,6 +27,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/common/javascript_dialog_type.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -102,8 +103,6 @@ class PageHandler : public DevToolsDomainHandler,
   void DidCloseJavaScriptDialog(bool success, const std::u16string& user_input);
   void NavigationReset(NavigationRequest* navigation_request);
   void DownloadWillBegin(FrameTreeNode* ftn, download::DownloadItem* item);
-
-  WebContentsImpl* GetWebContents();
 
   bool ShouldBypassCSP();
   void BackForwardCacheNotUsed(
@@ -220,6 +219,11 @@ class PageHandler : public DevToolsDomainHandler,
   // DownloadItem::Observer overrides
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;
+
+  // Returns WebContents only if `host_` is a top level frame. Otherwise, it
+  // returns Response with an error.
+  using ResponseOrWebContents = absl::variant<Response, WebContentsImpl*>;
+  ResponseOrWebContents GetWebContentsForTopLevelActiveFrame();
 
   const bool allow_unsafe_operations_;
   const bool may_capture_screenshots_not_from_surface_;

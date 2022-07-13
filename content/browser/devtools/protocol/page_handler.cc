@@ -378,10 +378,10 @@ Response PageHandler::Disable() {
     video_consumer_->StopCapture();
 
   if (!pending_dialog_.is_null()) {
+    ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
     // Only a top level frame can have a dialog.
-    DCHECK(!AssureTopLevelActiveFrame().IsError());
-
-    WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
+    DCHECK(absl::holds_alternative<WebContentsImpl*>(result));
+    WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
     // Leave dialog hanging if there is a manager that can take care of it,
     // cancel and send ack otherwise.
     bool has_dialog_manager =
@@ -400,6 +400,7 @@ Response PageHandler::Disable() {
 }
 
 Response PageHandler::Crash() {
+  // Can be called in a subframe.
   WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
   if (!web_contents)
     return Response::ServerError(kErrorNotAttached);
@@ -760,7 +761,12 @@ void PageHandler::CaptureSnapshot(
     callback->sendFailure(Response::ServerError("Unsupported snapshot format"));
     return;
   }
-  DevToolsMHTMLHelper::Capture(weak_factory_.GetWeakPtr(), std::move(callback));
+
+  DCHECK(host_);
+  DevToolsMHTMLHelper::Capture(
+      base::BindRepeating(&WebContents::FromFrameTreeNodeId,
+                          host_->frame_tree_node()->frame_tree_node_id()),
+      std::move(callback));
 }
 
 void PageHandler::CaptureScreenshot(
@@ -999,9 +1005,9 @@ Response PageHandler::ScreencastFrameAck(int session_id) {
 
 Response PageHandler::HandleJavaScriptDialog(bool accept,
                                              Maybe<std::string> prompt_text) {
-  Response response = AssureTopLevelActiveFrame();
-  if (response.IsError())
-    return response;
+  ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
+  if (absl::holds_alternative<Response>(result))
+    return absl::get<Response>(result);
 
   if (pending_dialog_.is_null())
     return Response::InvalidParams("No dialog is showing");
@@ -1012,7 +1018,7 @@ Response PageHandler::HandleJavaScriptDialog(bool accept,
   std::move(pending_dialog_).Run(accept, prompt_override);
 
   // Clean up the dialog UI if any.
-  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
+  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
   if (web_contents->GetDelegate()) {
     JavaScriptDialogManager* manager =
         web_contents->GetDelegate()->GetJavaScriptDialogManager(web_contents);
@@ -1027,13 +1033,14 @@ Response PageHandler::HandleJavaScriptDialog(bool accept,
 }
 
 Response PageHandler::BringToFront() {
-  WebContentsImpl* wc = GetWebContents();
-  if (wc) {
-    wc->Activate();
-    wc->Focus();
-    return Response::Success();
-  }
-  return Response::InternalError();
+  ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
+  if (absl::holds_alternative<Response>(result))
+    return absl::get<Response>(result);
+
+  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
+  web_contents->Activate();
+  web_contents->Focus();
+  return Response::Success();
 }
 
 Response PageHandler::SetDownloadBehavior(const std::string& behavior,
@@ -1062,11 +1069,13 @@ void PageHandler::GetAppManifest(
                                                 std::move(callback)));
 }
 
-WebContentsImpl* PageHandler::GetWebContents() {
-  return host_ && !host_->frame_tree_node()->parent()
-             ? static_cast<WebContentsImpl*>(
-                   WebContents::FromRenderFrameHost(host_))
-             : nullptr;
+PageHandler::ResponseOrWebContents
+PageHandler::GetWebContentsForTopLevelActiveFrame() {
+  Response response = AssureTopLevelActiveFrame();
+  if (response.IsError())
+    return response;
+
+  return static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(host_));
 }
 
 void PageHandler::NotifyScreencastVisibility(bool visible) {
@@ -1275,11 +1284,12 @@ void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
 }
 
 Response PageHandler::StopLoading() {
-  Response response = AssureTopLevelActiveFrame();
-  if (response.IsError())
-    return response;
+  ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
 
-  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
+  if (absl::holds_alternative<Response>(result))
+    return absl::get<Response>(result);
+
+  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
   web_contents->Stop();
   return Response::Success();
 }
@@ -1287,11 +1297,11 @@ Response PageHandler::StopLoading() {
 Response PageHandler::SetWebLifecycleState(const std::string& state) {
   // Inactive pages(e.g., a prerendered or back-forward cached page) should not
   // affect the state.
-  Response response = AssureTopLevelActiveFrame();
-  if (response.IsError())
-    return response;
+  ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
+  if (absl::holds_alternative<Response>(result))
+    return absl::get<Response>(result);
 
-  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
+  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
   if (state == Page::SetWebLifecycleState::StateEnum::Frozen) {
     // TODO(fmeawad): Instead of forcing a visibility change, only allow
     // freezing a page if it was already hidden.
