@@ -832,6 +832,10 @@ class CORE_EXPORT LocalFrame final
                                     String& clip_html,
                                     gfx::Rect& clip_rect);
 
+#if !BUILDFLAG(IS_ANDROID)
+  void SetTitlebarAreaDocumentStyleEnvironmentVariables() const;
+#endif
+
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 
   // Holds all PauseSubresourceLoadingHandles allowing either |this| to delete

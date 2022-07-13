@@ -712,6 +712,23 @@ void LocalFrame::DidAttachDocument() {
   GetEventHandler().Clear();
   Selection().DidAttachDocument(document);
   notified_color_scheme_ = false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // For PWAs with display_override "window-controls-overlay", titlebar area
+  // rect bounds sent from the browser need to persist on navigation to keep the
+  // UI consistent. The titlebar area rect values are set in |LocalFrame| before
+  // the new document is attached. The css environment variables are needed to
+  // be set for the new document.
+  if (is_window_controls_overlay_visible_) {
+    DocumentStyleEnvironmentVariables& vars =
+        GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+    DCHECK(!vars.ResolveVariable(
+        StyleEnvironmentVariables::GetVariableName(
+            UADefinedVariable::kTitlebarAreaX, document->GetExecutionContext()),
+        {}, false /* record_metrics */));
+    SetTitlebarAreaDocumentStyleEnvironmentVariables();
+  }
+#endif
 }
 
 void LocalFrame::OnFirstPaint(bool text_painted, bool image_painted) {
@@ -2803,18 +2820,7 @@ void LocalFrame::UpdateWindowControlsOverlay(
       GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
 
   if (is_window_controls_overlay_visible_) {
-    vars.SetVariable(
-        UADefinedVariable::kTitlebarAreaX,
-        StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.x()));
-    vars.SetVariable(
-        UADefinedVariable::kTitlebarAreaY,
-        StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.y()));
-    vars.SetVariable(UADefinedVariable::kTitlebarAreaWidth,
-                     StyleEnvironmentVariables::FormatPx(
-                         window_controls_overlay_rect_.width()));
-    vars.SetVariable(UADefinedVariable::kTitlebarAreaHeight,
-                     StyleEnvironmentVariables::FormatPx(
-                         window_controls_overlay_rect_.height()));
+    SetTitlebarAreaDocumentStyleEnvironmentVariables();
   } else {
     const UADefinedVariable vars_to_remove[] = {
         UADefinedVariable::kTitlebarAreaX,
@@ -3237,5 +3243,25 @@ void LocalFrame::WriteIntoTrace(perfetto::TracedValue ctx) const {
   dict.Add("is_cross_origin_to_outermost_main_frame",
            IsCrossOriginToOutermostMainFrame());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void LocalFrame::SetTitlebarAreaDocumentStyleEnvironmentVariables() const {
+  DCHECK(is_window_controls_overlay_visible_);
+  DocumentStyleEnvironmentVariables& vars =
+      GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+  vars.SetVariable(
+      UADefinedVariable::kTitlebarAreaX,
+      StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.x()));
+  vars.SetVariable(
+      UADefinedVariable::kTitlebarAreaY,
+      StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.y()));
+  vars.SetVariable(UADefinedVariable::kTitlebarAreaWidth,
+                   StyleEnvironmentVariables::FormatPx(
+                       window_controls_overlay_rect_.width()));
+  vars.SetVariable(UADefinedVariable::kTitlebarAreaHeight,
+                   StyleEnvironmentVariables::FormatPx(
+                       window_controls_overlay_rect_.height()));
+}
+#endif
 
 }  // namespace blink

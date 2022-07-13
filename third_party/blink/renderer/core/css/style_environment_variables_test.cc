@@ -682,4 +682,93 @@ TEST_F(StyleEnvironmentVariablesTest, TwoDimensionalVariables_Removal) {
                                GetCSSPropertyBackgroundColor()));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterLoad) {
+  // This test asserts that the titlebar area environment variables should be
+  // loaded when UpdateWindowControlsOverlay is invoked in LocalFrame when the
+  // WindowControlsOverlay runtime flag is set for PWAs with display_override
+  // "window-controls-overlay".
+  ScopedWebAppWindowControlsOverlayForTest scoped_feature(true);
+
+  // Simulate browser sending the titlebar area bounds.
+  GetFrame().UpdateWindowControlsOverlay(gfx::Rect(0, 0, 100, 10));
+  String env_contents("titlebar-area-x");
+  InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
+
+  // Validate the data is set.
+  DocumentStyleEnvironmentVariables& vars =
+      GetDocument().GetStyleEngine().EnsureEnvironmentVariables();
+
+  CSSVariableData* data =
+      vars.ResolveVariable(StyleEnvironmentVariables::GetVariableName(
+                               UADefinedVariable::kTitlebarAreaX,
+                               /*feature_context=*/nullptr),
+                           {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "0px");
+  data = vars.ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kTitlebarAreaY, /*feature_context=*/nullptr),
+      {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "0px");
+  data = vars.ResolveVariable(StyleEnvironmentVariables::GetVariableName(
+                                  UADefinedVariable::kTitlebarAreaWidth,
+                                  /*feature_context=*/nullptr),
+                              {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "100px");
+  data = vars.ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kTitlebarAreaHeight, /*feature_context=*/nullptr),
+      {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "10px");
+}
+
+TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterNavigation) {
+  // This test asserts that the titlebar area environment variables should be
+  // set after a navigation when the WindowControlsOverlay runtime flag is set
+  // for PWAs with display_override "window-controls-overlay".
+  ScopedWebAppWindowControlsOverlayForTest scoped_feature(true);
+
+  // Simulate browser sending the titlebar area bounds.
+  GetFrame().UpdateWindowControlsOverlay(gfx::Rect(0, 0, 100, 10));
+  String env_contents("titlebar-area-x");
+  InitializeTestPageWithVariableNamed(GetFrame(), env_contents);
+
+  SimulateNavigation();
+
+  // Validate the data is set after navigation.
+  DocumentStyleEnvironmentVariables& vars =
+      GetDocument().GetStyleEngine().EnsureEnvironmentVariables();
+
+  CSSVariableData* data =
+      vars.ResolveVariable(StyleEnvironmentVariables::GetVariableName(
+                               UADefinedVariable::kTitlebarAreaX,
+                               /*feature_context=*/nullptr),
+                           {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "0px");
+  data = vars.ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kTitlebarAreaY, /*feature_context=*/nullptr),
+      {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "0px");
+  data = vars.ResolveVariable(StyleEnvironmentVariables::GetVariableName(
+                                  UADefinedVariable::kTitlebarAreaWidth,
+                                  /*feature_context=*/nullptr),
+                              {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "100px");
+  data = vars.ResolveVariable(
+      StyleEnvironmentVariables::GetVariableName(
+          UADefinedVariable::kTitlebarAreaHeight, /*feature_context=*/nullptr),
+      {});
+  EXPECT_TRUE(data);
+  EXPECT_EQ(data->Serialize(), "10px");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace blink
