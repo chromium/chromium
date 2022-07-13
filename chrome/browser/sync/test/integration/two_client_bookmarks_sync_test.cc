@@ -1875,8 +1875,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   ASSERT_NE(nullptr, AddURL(1, folder1, 1, "BooKMarK 1", GURL(kGenericURL)));
   ASSERT_NE(nullptr, AddURL(1, folder1, 2, "bOOKMARK 2", GURL(kGenericURL)));
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 }
@@ -1901,8 +1900,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     ASSERT_NE(nullptr, AddURL(1, i, title1, url1));
   }
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 }
@@ -1924,8 +1922,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     ASSERT_NE(nullptr, AddURL(1, i, title, url));
   }
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 }
@@ -1941,8 +1938,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     ASSERT_NE(nullptr, AddURL(1, i, title, url));
   }
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
@@ -1965,8 +1961,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     GURL url1 = GURL(IndexedURL(2 * i + 1));
     ASSERT_NE(nullptr, AddURL(1, folder1, i, title1, url1));
   }
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 }
@@ -2013,8 +2008,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     ASSERT_NE(nullptr, AddURL(1, title, url));
   }
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 }
@@ -2038,8 +2032,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
       }
     }
   }
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 }
@@ -2061,8 +2054,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     ASSERT_NE(nullptr, AddURL(1, j, title, url));
   }
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
   ASSERT_FALSE(ContainsDuplicateBookmarks(1));
@@ -2092,8 +2084,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   ASSERT_NE(nullptr,
             AddURL(1, folder1, 4, IndexedURLTitle(1), GURL(IndexedURL(1))));
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 }
@@ -2122,8 +2113,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   ASSERT_NE(nullptr,
             AddURL(1, folder1, 3, IndexedURLTitle(8), GURL(IndexedURL(8))));
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 }
@@ -2173,8 +2163,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     ASSERT_NE(nullptr, AddURL(1, i, title, url));
   }
 
-  // Commit sequentially to make sure there is no race condition.
-  SetupSyncOneClientAfterAnother();
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 
   for (size_t i = 1; i < 5; ++i) {
