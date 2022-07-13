@@ -1911,6 +1911,9 @@ extern const char kFeedStampDescription[];
 extern const char kFeedIsAblatedName[];
 extern const char kFeedIsAblatedDescription[];
 
+extern const char kFeedCloseRefreshName[];
+extern const char kFeedCloseRefreshDescription[];
+
 extern const char kGridTabSwitcherForTabletsName[];
 extern const char kGridTabSwitcherForTabletsDescription[];
 

@@ -55733,6 +55733,7 @@ from previous Chrome versions.
   <int value="-1839874877" label="WebXROrientationSensorDevice:enabled"/>
   <int value="-1839540507" label="OneGoogleBarModalOverlays:enabled"/>
   <int value="-1839496458" label="disable-file-manager-touch-mode"/>
+  <int value="-1838992280" label="FeedCloseRefresh:disabled"/>
   <int value="-1838482444" label="disable-settings-window"/>
   <int value="-1837855388" label="ReduceUserAgentPlatformOsCpu:disabled"/>
   <int value="-1837401779" label="EnableFileManagerFormatDialog:enabled"/>
@@ -55854,6 +55855,7 @@ from previous Chrome versions.
   <int value="-1759769801" label="PasswordEditDialogWithDetails:enabled"/>
   <int value="-1759403147" label="MinorModeSupport:disabled"/>
   <int value="-1758468685" label="DownloadHomeV2:disabled"/>
+  <int value="-1755714804" label="FeedCloseRefresh:enabled"/>
   <int value="-1755301960" label="ClearOldBrowsingData:enabled"/>
   <int value="-1754262889" label="RemoteCopyPersistentNotification:enabled"/>
   <int value="-1753458842" label="OfflinePagesLivePageSharing:disabled"/>

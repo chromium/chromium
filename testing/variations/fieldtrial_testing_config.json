@@ -333,6 +333,30 @@
             ]
         }
     ],
+    "AppCloseRefreshClankStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Open30",
+                    "enable_features": [
+                        "FeedCloseRefresh"
+                    ]
+                },
+                {
+                    "name": "Interact30",
+                    "params": {
+                        "require_interaction": "true"
+                    },
+                    "enable_features": [
+                        "FeedCloseRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppListLaunchRecorder": [
         {
             "platforms": [
