@@ -104,12 +104,14 @@ void CastComponent::ConnectMetricsRecorder(
 
 void CastComponent::ConnectAudio(
     fidl::InterfaceRequest<fuchsia::media::Audio> request) {
-  startup_context()->svc()->Connect(std::move(request));
+  agent_manager_->ConnectToAgentService(application_config_.agent_url(),
+                                        std::move(request));
 }
 
 void CastComponent::ConnectDeviceWatcher(
     fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
-  startup_context()->svc()->Connect(std::move(request));
+  agent_manager_->ConnectToAgentService(application_config_.agent_url(),
+                                        std::move(request));
 }
 
 bool CastComponent::HasWebPermission(
