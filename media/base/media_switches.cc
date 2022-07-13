@@ -585,7 +585,7 @@ const base::Feature kVaapiH264TemporalLayerHWEncoding{
     "VaapiH264TemporalLayerEncoding", base::FEATURE_ENABLED_BY_DEFAULT};
 // Enable VP8 temporal layer encoding with HW encoder on ChromeOS.
 const base::Feature kVaapiVp8TemporalLayerHWEncoding{
-    "VaapiVp8TemporalLayerEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
+    "VaapiVp8TemporalLayerEncoding", base::FEATURE_ENABLED_BY_DEFAULT};
 // Enable VP9 k-SVC encoding with HW encoder for webrtc use case on ChromeOS.
 const base::Feature kVaapiVp9kSVCHWEncoding{"VaapiVp9kSVCHWEncoding",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
