@@ -29,8 +29,8 @@ absl::optional<base::Value> ParseList(const std::string& data);
 base::Value::Dict ToDictionary(std::unique_ptr<base::Value> val);
 base::Value::Dict ToDictionary(const base::Value& val);
 
-// If |val| is a list, return it as one, otherwise NULL.
-std::unique_ptr<base::ListValue> ToList(std::unique_ptr<base::Value> val);
+// If |val| is a list, return it as one, otherwise create an empty one.
+base::Value::List ToList(std::unique_ptr<base::Value> val);
 
 // Returns true if |val| contains any privacy information, e.g. url,
 // pendingUrl, title or faviconUrl.

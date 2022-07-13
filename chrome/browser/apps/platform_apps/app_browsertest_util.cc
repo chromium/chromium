@@ -206,10 +206,10 @@ size_t PlatformAppBrowserTest::RunGetWindowsFunctionForExtension(
     const Extension* extension) {
   scoped_refptr<WindowsGetAllFunction> function = new WindowsGetAllFunction();
   function->set_extension(extension);
-  std::unique_ptr<base::ListValue> result(
+  base::Value::List result(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(function.get(),
                                                             "[]", browser())));
-  return result->GetListDeprecated().size();
+  return result.size();
 }
 
 bool PlatformAppBrowserTest::RunGetWindowFunctionForExtension(

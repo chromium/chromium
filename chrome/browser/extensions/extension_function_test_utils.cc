@@ -77,12 +77,12 @@ base::Value::Dict ToDictionary(const base::Value& val) {
   return val.GetDict().Clone();
 }
 
-std::unique_ptr<base::ListValue> ToList(std::unique_ptr<base::Value> val) {
+base::Value::List ToList(std::unique_ptr<base::Value> val) {
   if (!val || !val->is_list()) {
     ADD_FAILURE() << "val is nullptr or is not a list.";
-    return nullptr;
+    return base::Value::List();
   }
-  return base::ListValue::From(std::move(val));
+  return std::move(val->GetList());
 }
 
 bool HasAnyPrivacySensitiveFields(const base::Value::Dict& dict) {

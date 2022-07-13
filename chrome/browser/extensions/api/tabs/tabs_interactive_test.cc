@@ -112,14 +112,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   scoped_refptr<const extensions::Extension> extension(
       extensions::ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
-  std::unique_ptr<base::ListValue> result(
+  base::Value::List result_tabs(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
           function.get(), "[{\"lastFocusedWindow\":true}]", browser())));
 
-  base::ListValue* result_tabs = result.get();
   // We should have one initial tab and one added tab.
-  EXPECT_EQ(2u, result_tabs->GetListDeprecated().size());
-  for (const base::Value& result_tab : result_tabs->GetListDeprecated()) {
+  EXPECT_EQ(2u, result_tabs.size());
+  for (const base::Value& result_tab : result_tabs) {
     EXPECT_EQ(focused_window_id,
               api_test_utils::GetInteger(utils::ToDictionary(result_tab),
                                          keys::kWindowIdKey));
@@ -128,13 +127,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   // Get tabs NOT in the 'last focused' window called from the focused browser.
   function = new extensions::TabsQueryFunction();
   function->set_extension(extension.get());
-  result = utils::ToList(utils::RunFunctionAndReturnSingleResult(
+  result_tabs = utils::ToList(utils::RunFunctionAndReturnSingleResult(
       function.get(), "[{\"lastFocusedWindow\":false}]", browser()));
 
-  result_tabs = result.get();
   // We should get one tab for each extra window and one for the initial window.
-  EXPECT_EQ(kExtraWindows + 1, result_tabs->GetListDeprecated().size());
-  for (const base::Value& result_tab : result_tabs->GetListDeprecated()) {
+  EXPECT_EQ(kExtraWindows + 1, result_tabs.size());
+  for (const base::Value& result_tab : result_tabs) {
     EXPECT_NE(focused_window_id,
               api_test_utils::GetInteger(utils::ToDictionary(result_tab),
                                          keys::kWindowIdKey));
