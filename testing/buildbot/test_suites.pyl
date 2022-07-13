@@ -164,7 +164,7 @@
       'gfx_unittests': {
         'ci_only': True,
       },
-      'sandbox_unittests': {
+      'sandbox_linux_unittests': {
         'ci_only': True,
       },
       'unit_tests': {
@@ -4355,7 +4355,7 @@
 
     'linux_flavor_specific_chromium_gtests': {
       # Android, Chrome OS and Linux
-      'sandbox_unittests': {},
+      'sandbox_linux_unittests': {},
     },
 
     'linux_lacros_chrome_browsertests_non_version_skew': {

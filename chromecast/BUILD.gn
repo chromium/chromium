@@ -130,16 +130,16 @@ cast_test_group("cast_tests") {
   if (is_linux) {
     tests += [
       "//chromecast/crash:cast_crash_unittests",
-      "//sandbox:sandbox_unittests",
+      "//sandbox/linux:sandbox_linux_unittests",
     ]
 
-    sandbox_unittests_filter = {
-      test_name = "sandbox_unittests"
+    sandbox_linux_unittests_filter = {
+      test_name = "sandbox_linux_unittests"
 
       # TODO(b/148974697): re-enable this.
       gtest_excludes = [ "BaselinePolicy.SystemEperm" ]
     }
-    filters += [ sandbox_unittests_filter ]
+    filters += [ sandbox_linux_unittests_filter ]
   }
 
   # TODO(crbug/1319009): `media_use_ffmpeg` should not largely affect top-level

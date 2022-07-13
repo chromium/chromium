@@ -5,6 +5,7 @@
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//sandbox/features.gni")
+import("//testing/test.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -19,7 +20,7 @@ declare_args() {
   use_base_test_suite = is_linux || is_chromeos
 }
 
-# We have two principal targets: sandbox and sandbox_unittests
+# We have two principal targets: sandbox and sandbox_linux_unittests
 # All other targets are listed as dependencies.
 # There is one notable exception: for historical reasons, chrome_sandbox is
 # the setuid sandbox and is its own target.
@@ -75,7 +76,8 @@ source_set("sandbox_linux_test_utils") {
   }
 }
 
-source_set("sandbox_unittests") {
+# Sources for sandbox_linux_unittests.
+source_set("sandbox_linux_unittests_sources") {
   testonly = true
 
   sources = [
@@ -185,6 +187,17 @@ action("bpf_dsl_golden") {
   outputs = [ "$target_gen_dir/bpf_dsl/golden/golden_files.h" ]
   args =
       rebase_path(outputs, root_build_dir) + rebase_path(inputs, root_build_dir)
+}
+
+test("sandbox_linux_unittests") {
+  deps = [
+    ":sandbox_linux_unittests_sources",
+    "//sandbox/policy:tests",
+  ]
+  data_deps = [ "//testing/buildbot/filters:sandbox_linux_unittests_filters" ]
+  if (is_android) {
+    use_raw_android_executable = true
+  }
 }
 
 component("seccomp_bpf") {

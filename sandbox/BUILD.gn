@@ -35,13 +35,6 @@ test("sandbox_unittests") {
 
   if (is_mac) {
     deps += [ "//sandbox/mac:sandbox_unittests" ]
-  } else if (is_linux || is_android) {
-    deps += [ "//sandbox/linux:sandbox_unittests" ]
-    data_deps = [ "//testing/buildbot/filters:sandbox_unittests_filters" ]
-
-    if (is_android) {
-      use_raw_android_executable = true
-    }
   }
 }
 
