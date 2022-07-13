@@ -89,7 +89,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   void ReceiveTraceChunkOnBlockingThread(std::unique_ptr<std::string> chunk) {
     if (!OpenFileIfNeededOnBlockingThread())
       return;
-    std::ignore = fwrite(chunk->c_str(), chunk->size(), 1, file_);
+    std::ignore = fwrite(chunk->c_str(), chunk->size(), 1, file_.get());
   }
 
   bool OpenFileIfNeededOnBlockingThread() {
@@ -105,13 +105,13 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
       // it's still owned by base::File. So we have to close it first and then
       // reopen as FILE*.
       temp_file.Close();
-      file_ = base::OpenFile(pending_file_path_, "w");
+      file_.reset(base::OpenFile(pending_file_path_, "w"));
     } else {
       LOG(WARNING) << "Unable to use temporary file " << pending_file_path_
                    << ": "
                    << base::File::ErrorToString(temp_file.error_details());
       pending_file_path_.clear();
-      file_ = base::OpenFile(file_path_, "w");
+      file_.reset(base::OpenFile(file_path_, "w"));
       LOG_IF(ERROR, file_ == nullptr)
           << "Failed to open " << file_path_.value();
     }
@@ -120,7 +120,6 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
 
   void CloseOnBlockingThread() {
     if (OpenFileIfNeededOnBlockingThread()) {
-      base::CloseFile(file_);
       file_ = nullptr;
     }
 
@@ -144,7 +143,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   base::FilePath file_path_;
   base::FilePath pending_file_path_;
   base::OnceClosure completion_callback_;
-  raw_ptr<FILE, DanglingUntriaged> file_ = nullptr;
+  base::ScopedFILE file_ = nullptr;
   const scoped_refptr<base::SequencedTaskRunner> may_block_task_runner_;
 };
 
