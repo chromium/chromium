@@ -16,6 +16,7 @@ import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 // <if expr="not is_official_build">
 import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Descriptor04, dummyV2Descriptor05, dummyV2Descriptor06, dummyV2Descriptor07, dummyV2Descriptor08, dummyV2Descriptor09, dummyV2Descriptor10, dummyV2Descriptor11, dummyV2Descriptor12} from './dummy_v2/module.js';
 // </if>
+import {feedDescriptor, feedV2Descriptor} from './feed/module.js';
 import {ModuleDescriptor, ModuleDescriptorV2} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
@@ -52,6 +53,14 @@ if (loadTimeData.getBoolean('driveModuleEnabled')) {
 
 if (loadTimeData.getBoolean('photosModuleEnabled')) {
   descriptors.push(photosDescriptor);
+}
+
+if (loadTimeData.getBoolean('feedModuleEnabled')) {
+  if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
+    descriptorsV2.push(feedV2Descriptor);
+  } else {
+    descriptors.push(feedDescriptor);
+  }
 }
 
 // <if expr="not is_official_build">

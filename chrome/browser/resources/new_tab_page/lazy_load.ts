@@ -32,6 +32,8 @@ export {driveDescriptor as driveV2Descriptor, DriveModuleElement as DriveV2Modul
 // <if expr="not is_official_build">
 export {FooProxy} from './modules/dummy_v2/foo_proxy.js';
 export {DummyModuleElement, dummyV2Descriptor} from './modules/dummy_v2/module.js';
+export {FeedProxy} from './modules/feed/feed_module_proxy.js';
+export {feedDescriptor, FeedModuleElement, feedV2Descriptor} from './modules/feed/module.js';
 // </if>
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight} from './modules/module_descriptor.js';

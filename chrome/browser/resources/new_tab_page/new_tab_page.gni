@@ -52,6 +52,7 @@ ts_files = web_component_files + non_web_component_files
 mojo_js_files = [
   "chrome_cart.mojom-webui.js",
   "drive.mojom-webui.js",
+  "feed.mojom-webui.js",
   "new_tab_page.mojom-webui.js",
   "photos.mojom-webui.js",
   "realbox.mojom-webui.js",
