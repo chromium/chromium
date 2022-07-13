@@ -1247,6 +1247,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">新增 Wi-Fi...</translation>
 <translation id="2162155940152307086">同步功能會在你退出同步功能設定後立即啟動</translation>
+<translation id="2162705204091149050">讀取瀏覽器、OS、裝置、已安裝的軟體和檔案的相關資訊</translation>
 <translation id="2162926944953615670">沒有可用的 eSIM 卡設定檔</translation>
 <translation id="2163470535490402084">請連線至網際網路，以登入您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />，以及另外 1 個按鍵</translation>
@@ -1267,6 +1268,7 @@
 <translation id="2180620921879609685">封鎖任何網頁所含內容</translation>
 <translation id="2182058453334755893">已複製到剪貼簿</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
+<translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="2186711480981247270">透過其他裝置分享的網頁</translation>
 <translation id="2187675480456493911">已與你帳戶中的其他裝置同步。系統不會同步處理其他使用者修改的設定。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
@@ -2493,6 +2495,7 @@
 <translation id="3359256513598016054">憑證原則限制</translation>
 <translation id="3360297538363969800">列印失敗。請檢查你的印表機，然後再試一次。</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}}</translation>
+<translation id="3363202073972776113">這個新的設定檔將由貴機構管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">來自系統管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">請擇一使用 Ctrl 或 Alt 鍵</translation>
 <translation id="3368922792935385530">已連線</translation>
@@ -2527,6 +2530,7 @@
 <translation id="339722927132407568">畫面凍結</translation>
 <translation id="3399432415385675819">通知功能會遭到停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> 赫茲) - 交錯顯示</translation>
+<translation id="3401484564516348917">讀取瀏覽器、OS、裝置、已安裝的軟體、登錄值和檔案的相關資訊</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{這部裝置中已經儲存了 {COUNT} 組密碼}other{這部裝置中已經儲存了 {COUNT} 組密碼}}</translation>
 <translation id="3402255108239926910">請選擇顯示圖片</translation>
 <translation id="3402585168444815892">正在註冊展示模式</translation>
@@ -2773,6 +2777,7 @@
 <translation id="3627879631695760395">安裝「<ph name="APP" />」...</translation>
 <translation id="3628275722731025472">關閉藍牙</translation>
 <translation id="3629631988386925734">輸入密碼即可啟用 Smart Lock，這樣下次手機就會為你的 <ph name="DEVICE_TYPE" />.解鎖。你可以在「設定」中停用 Smart Lock。</translation>
+<translation id="3629664892718440872">記住這個選擇</translation>
 <translation id="3630132874740063857">你的電話號碼</translation>
 <translation id="3630995161997703415">請將這個網站加入檔案櫃，以便隨時使用</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
@@ -3200,7 +3205,7 @@
 <translation id="4021941025609472374">關閉左側的分頁</translation>
 <translation id="402211067068791756">這會清除目前顯示的網站所儲存的資料，共 <ph name="TOTAL_USAGE" /></translation>
 <translation id="4022426551683927403">新增到字典(&amp;A)</translation>
-<translation id="4025039777635956441">將所選網站設為靜音</translation>
+<translation id="4025039777635956441">關閉所選網站的音訊</translation>
 <translation id="4028467762035011525">新增輸入法</translation>
 <translation id="4029556917477724407">從「<ph name="PAGE_TITLE" />」頁面返回</translation>
 <translation id="4031179711345676612">可使用麥克風</translation>
@@ -3261,6 +3266,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">已拒絕提供 MIDI 裝置的完整控制權限</translation>
+<translation id="4087328411748538168">顯示在右側</translation>
 <translation id="4089235344645910861">設定儲存完畢，已開始同步處理。</translation>
 <translation id="4090103403438682346">啟用已驗證存取權</translation>
 <translation id="4090947011087001172">要重設 <ph name="SITE" /> 的網站權限嗎？</translation>
@@ -3921,7 +3927,7 @@
 <translation id="4742334355511750246">不得顯示圖片</translation>
 <translation id="4742970037960872810">移除醒目顯示</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
-<translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟網站音訊}other{開啟多個網站的音訊}}</translation>
+<translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
 <translation id="474609389162964566">說出「Ok Google」即可存取 Google 助理</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">網站通常會連線至 HID 裝置，是因為有功能需要使用非標準鍵盤、遊戲控制器和其他裝置。</translation>
@@ -3953,6 +3959,7 @@
 <translation id="4779766576531456629">重新命名 eSIM 卡的行動網路</translation>
 <translation id="4780321648949301421">另存網頁...</translation>
 <translation id="4781443161433589743">你啟用了 Chrome 最強大的安全防護功能</translation>
+<translation id="4782861709165039462">裝置硬體切換按鈕已停用所有的麥克風</translation>
 <translation id="4785719467058219317">你目前使用的安全金鑰並未在這個網站註冊</translation>
 <translation id="4785914069240823137">取消裁剪</translation>
 <translation id="4788092183367008521">請檢查你的網路連線，然後再試一次。</translation>
@@ -4155,7 +4162,7 @@
 <translation id="4972129977812092092">編輯印表機資訊</translation>
 <translation id="4972164225939028131">密碼錯誤</translation>
 <translation id="4972737347717125191">網站可以要求使用虛擬實境裝置和資料</translation>
-<translation id="4973325300212422370">{NUM_TABS,plural, =1{關閉網站音訊}other{關閉多個網站的音訊}}</translation>
+<translation id="4973325300212422370">{NUM_TABS,plural, =1{關閉這個網站的音訊}other{關閉這些網站的音訊}}</translation>
 <translation id="497403230787583386">已完成安全性檢查，即將列印文件。</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">確認存取權</translation>
@@ -4221,7 +4228,6 @@
 <translation id="5054374119096692193">前往<ph name="BEGIN_LINK" />自訂 Chrome<ph name="END_LINK" /> 查看所有資訊卡選項</translation>
 <translation id="5056950756634735043">正在連線到容器</translation>
 <translation id="5057110919553308744">當你點選擴充功能時</translation>
-<translation id="505776528429481161">輕鬆連線並設定附近的裝置</translation>
 <translation id="5059241099014281248">限制登入</translation>
 <translation id="5059526285558225588">選擇要分享的內容</translation>
 <translation id="5060332552815861872">有 1 台可供儲存的印表機。</translation>
@@ -4720,6 +4726,7 @@
 <translation id="5548075230008247516">已取消選取所有項目，並結束選取模式。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個分頁}other{「<ph name="TAB_TITLE" />」和另外 # 個分頁}}</translation>
 <translation id="5548606607480005320">安全檢查</translation>
+<translation id="5548644592758170183">顯示在左側</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">鍵盤與文字輸入</translation>
 <translation id="5553089923092577885">憑證政策對應關聯</translation>
@@ -7132,7 +7139,7 @@
 <translation id="79312157130859720"><ph name="APP_NAME" /> 正在共用您的畫面和音訊。</translation>
 <translation id="793293630927785390">新的 Wi-Fi 網路對話方塊</translation>
 <translation id="7932969338829957666">在 Linux 中，你可以前往 <ph name="BASE_DIR" /> 存取共用資料夾。</translation>
-<translation id="7933314993013528982">{NUM_TABS,plural, =1{開啟網站音訊}other{開啟多個網站的音訊}}</translation>
+<translation id="7933314993013528982">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
 <translation id="7933518760693751884">如要儲存頁面以便稍後閱讀，請按一下「書籤」圖示</translation>
 <translation id="7933634003144813719">管理共用資料夾</translation>
 <translation id="793531125873261495">下載虛擬機器時發生錯誤，請再試一次。</translation>
@@ -8199,6 +8206,7 @@
 <translation id="8980345560318123814">使用狀況報告</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 已當機</translation>
 <translation id="8981825781894055334">紙張即將用盡</translation>
+<translation id="8983018820925880511">這個新的設定檔將由 <ph name="DOMAIN" /> 負責管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> 可以編輯「<ph name="FILENAME" />」</translation>
 <translation id="8984694057134206124">所有人都看得到你的裝置，這個狀態將持續 <ph name="MINUTES" /> 分鐘。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">歡迎在 Chromebook 上使用 Steam</translation>
@@ -8295,6 +8303,7 @@
 <translation id="9075413375877487220">安全瀏覽強化防護功能不信任這個擴充功能。</translation>
 <translation id="9076283476770535406">這個網站可能含有成人內容</translation>
 <translation id="9076523132036239772">抱歉，系統無法驗證你的電子郵件或密碼，請先連線至網路。</translation>
+<translation id="9076821103818989526">側邊面板</translation>
 <translation id="9076977315710973122">SMB 共用</translation>
 <translation id="9078193189520575214">正在套用變更...</translation>
 <translation id="9078316009970372699">停用即時網路共用</translation>

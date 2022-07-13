@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Kongsi folder dengan Parallels Desktop</translation>
 <translation id="1439919885608649279">Orang dengan bunga</translation>
 <translation id="1471718551822868769">Slovak</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" tidak dimuat naik. Ruang kosong tidak mencukupi dalam Google Drive anda.</translation>
 <translation id="1482884275703521657">Finland</translation>
 <translation id="148466539719134488">Bahasa Switzerland</translation>
 <translation id="1497522201463361063">Tidak dapat menamakan semula "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Selamat</translation>
 <translation id="2638942478653899953">Google Drive tidak dapat dicapai. Sila <ph name="BEGIN_LINK" />log keluar<ph name="END_LINK" /> dan log masuk kembali.</translation>
 <translation id="2649120831653069427">Ikan Pelangi</translation>
+<translation id="2653059201992392941">Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="2663066752008346276">Burma/Myanmar dengan papan kekunci Myansan</translation>
 <translation id="2664412712123763093">Lokasi fail</translation>
 <translation id="2718540689505416944">Pasang apl dengan Linux</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Kosongkan Sampah</translation>
 <translation id="5163869187418756376">Perkongsian gagal. Periksa sambungan anda dan cuba lagi nanti.</translation>
 <translation id="516592729076796170">Dvorak Pengatur Cara AS</translation>
-<translation id="5170477580121653719">Ruang Google Drive yang tinggal: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Paparan lakaran kenit</translation>
 <translation id="5194713942430106590">Klik untuk mengisih lajur dalam tertib menaik.</translation>
 <translation id="5211614973734216083">Faroe</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">Latvia</translation>
 <translation id="5489965683297092283">Penapis <ph name="FILTER_NAME" /> dimatikan.</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
+<translation id="5500104704744051184">Anda tidak akan dapat menggunakan rangkaian ini sehingga anda memasukkan PUK</translation>
 <translation id="5500122897333236901">Bahasa Iceland</translation>
 <translation id="5508696409934741614">Titik</translation>
 <translation id="5522908512596376669">Senarai fail telah berubah kepada paparan senarai.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
 <translation id="642282551015776456">Nama ini tidak boleh digunakan sebagai nama fail atau folder</translation>
 <translation id="6423031066725912715">Vietnam dengan papan kekunci TCVN</translation>
+<translation id="6430271654280079150">Anda mempunyai 1 percubaan lagi.</translation>
 <translation id="6485131920355264772">Gagal mendapatkan maklumat ruang</translation>
 <translation id="6495925982925244349">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Butiran</translation>
 <translation id="649877868557234318">Mengekstrak <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903">Menyegerakkan <ph name="NUMBER_OF_FILES" /> item...</translation>
 <translation id="8600173386174225982">Senarai fail telah berubah kepada paparan lakaran kecil.</translation>
 <translation id="8601932370724196034">Fail imej Crostini</translation>
+<translation id="8608515571837163082">PIN yang salah telah dimasukkan terlalu banyak kali. Masukkan Kunci Penyahsekat Peribadi (PUK) 8 digit yang diberikan oleh pembawa.</translation>
 <translation id="8609695766746872526">Iceland</translation>
 <translation id="863903787380594467">PIN salah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Udostępnij folder aplikacji Parallels Desktop</translation>
 <translation id="1439919885608649279">Osoba z kwiatami</translation>
 <translation id="1471718551822868769">Słowacki</translation>
-<translation id="1474339897586437869">Plik „<ph name="FILENAME" />” nie został przesłany. Za mało wolnego miejsca na Dysku Google.</translation>
 <translation id="1482884275703521657">Fiński</translation>
 <translation id="148466539719134488">szwajcarska klawiatura</translation>
 <translation id="1497522201463361063">Nie można zmienić nazwy pliku „<ph name="FILE_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Zabezpieczona</translation>
 <translation id="2638942478653899953">Nie można uzyskać dostępu do Dysku Google. <ph name="BEGIN_LINK" />Wyloguj się<ph name="END_LINK" /> i ponownie zaloguj.</translation>
 <translation id="2649120831653069427">Tęczanka</translation>
+<translation id="2653059201992392941">Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Birmański/myanmarski z klawiaturą Myansan</translation>
 <translation id="2664412712123763093">Lokalizacja pliku</translation>
 <translation id="2718540689505416944">Zainstaluj za pomocą Linuksa</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Opróżnij kosz</translation>
 <translation id="5163869187418756376">Niepowodzenie udostępniania. Sprawdź połączenie i spróbuj ponownie później.</translation>
 <translation id="516592729076796170">Amerykańska dewelopera (Dvorak)</translation>
-<translation id="5170477580121653719">Na Dysku Google pozostało <ph name="SPACE_AVAILABLE" /> wolnego miejsca.</translation>
 <translation id="5177526793333269655">Widok miniatur</translation>
 <translation id="5194713942430106590">Kliknij, by posortować kolumnę w kolejności rosnącej.</translation>
 <translation id="5211614973734216083">Farerski</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">Łotewski</translation>
 <translation id="5489965683297092283">Filtr <ph name="FILTER_NAME" /> jest wyłączony.</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>
+<translation id="5500104704744051184">Nie możesz korzystać z tej sieci, dopóki nie podasz kodu PUK</translation>
 <translation id="5500122897333236901">Islandzki</translation>
 <translation id="5508696409934741614">Punkty</translation>
 <translation id="5522908512596376669">Lista plików została przełączona na widok listy.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044">Elementy: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Tej nazwy nie można używać jako nazwy pliku ani katalogu.</translation>
 <translation id="6423031066725912715">Wietnamski z klawiaturą TCVN</translation>
+<translation id="6430271654280079150">Pozostała 1 próba.</translation>
 <translation id="6485131920355264772">Pobieranie informacji o wolnym miejscu nie powiodło się</translation>
 <translation id="6495925982925244349">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
 <translation id="649877868557234318">Rozpakowuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903">Synchronizuję elementy – <ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Lista plików została przełączona na widok miniatur.</translation>
 <translation id="8601932370724196034">Plik graficzny Crostini</translation>
+<translation id="8608515571837163082">Zbyt wiele razy podano nieprawidłowy kod PIN. Wpisz 8-cyfrowy kod PUK otrzymany od operatora.</translation>
 <translation id="8609695766746872526">Islandzki</translation>
 <translation id="863903787380594467">Nieprawidłowy kod PIN. Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

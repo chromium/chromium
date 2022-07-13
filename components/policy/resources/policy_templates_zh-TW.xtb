@@ -925,17 +925,6 @@
 <translation id="1962864958436828230">設定防止資料外洩的剪貼簿資料大小最低限制</translation>
 <translation id="1964634611280150550">無痕模式已停用</translation>
 <translation id="1964802606569741174">這項政策對 Android YouTube 應用程式沒有影響。如要強制採用 YouTube 安全模式，則必須禁止下載 Android YouTube 應用程式。</translation>
-<translation id="1965363065727209968">setTimeout(…, 0) 常用來細分長時間的 JavaScript 工作。
-          將這項政策設為啟用時，系統不會主動延遲間隔時間小於 4 毫秒的 setTimeouts 和 setIntervals。
-          這麼做可以提升短期間的執行效能，但濫用 API 的網站最終仍會將 setTimeouts 設為延遲。
-
-          這可能會改變網頁上的工作排序，進而導致必須以某種方法透過特定排序完成工作的網站發生異常行為，
-          也可能影響將許多 setTimeout() 設為逾時 0 毫秒 (例如增加 CPU 負載) 的網站。
-
-          對於未設定這項政策的使用者，<ph name="PRODUCT_NAME" /> 將在穩定版上逐步推出變更。
-
-          這項政策是暫時性的，預計會在 <ph name="PRODUCT_NAME" /> 107 中移除。如果有需要的企業眾多，我們將會延長這個期限。
-          </translation>
 <translation id="1967334955994230472">停用 Projector</translation>
 <translation id="1969212217917526199">覆寫遠端存取主機的偵錯版本政策。
 
@@ -1703,6 +1692,9 @@
 <translation id="274769314493317695">如果在 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_WHITELIST" />，系統會根據 <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />。</translation>
+<translation id="2751959596774212778">從 M107 開始，不安全內容中的 WebSQL 預設為關閉狀態，而在 M110 中將全面移除。
+          如果將這項政策設為 False 或未設定，不安全內容中的 WebSQL 會維持啟用狀態，一直到 M106 結束時為止，接著在 M107 中停用。
+          如果將這項政策設為 True，系統會啟用不安全內容中的 WebSQL。</translation>
 <translation id="2752046642026416564">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 將可使用安裝在使用者層級的原生訊息傳遞主機。
 
       如果設為停用，<ph name="PRODUCT_NAME" /> 只能使用安裝在系統層級的主機。</translation>
@@ -4069,7 +4061,6 @@
 <translation id="5475361623548884387">啟用列印功能</translation>
 <translation id="547601067149622666">禁止含侵入式廣告的網站顯示廣告</translation>
 <translation id="5476152378885134514">禁止這些網站使用剪貼簿</translation>
-<translation id="5478734531226638813">如果設定這項政策，系統會停用工作階段中的 Kiosk Chrome 應用程式更新作業 (該作業會使用擴充功能資訊清單中的更新網址)，且只會保留 CRX 預先擷取做為更新機制。</translation>
 <translation id="5480380613778757009">如果停用或不設定這項政策，當受管理訪客工作階段結束後，系統就會立即重設在此期間配置的所有顯示設定。如果將這項政策設為 True，系統就會在受管理的訪客工作階段結束後保留顯示屬性。</translation>
 <translation id="5483065054530244863">允許本機信任錨點核發的 SHA-1 簽署憑證</translation>
 <translation id="5487758664517243511">如果啟用這項設定，已開啟 Phone Hub 功能的使用者將可在 Chrome OS 上繼續執行工作，例如瀏覽手機的網頁。
@@ -4299,11 +4290,6 @@
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="5749396052108288586">這項政策已遭淘汰，請改用 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> 政策。</translation>
 <translation id="574983287620584622">在登入畫面上啟用無障礙功能快速鍵</translation>
-<translation id="5749873635525257317">這項政策已遭淘汰，請考慮改用 BrowserSignin。
-
-      允許使用者登入 <ph name="PRODUCT_NAME" />。
-
-      如果設定這項政策，你可以設定是否允許使用者登入 <ph name="PRODUCT_NAME" />。將這項政策設為「False」後，將會導致使用 chrome.identity API 的應用程式和擴充功能無法運作，因此建議你改用 <ph name="SYNC_DISABLED_POLICY_NAME" />。</translation>
 <translation id="5755002458331714762"> Web Components v0 API (Shadow DOM v0、Custom Elements v0 和 HTML Imports) 已在 2018 年淘汰，並從 M80 版開始預設為停用。這項政策可讓你選擇性地重新啟用這些功能，直到 M84 版為止。
 
       如果將這項政策設為 True，系統會在所有網站上啟用 Web Components v0 功能。
@@ -5470,6 +5456,7 @@
       如果選取 [U2F]，整合式雙重驗證將依照 FIDO U2F 規格運作。
 
       如果選取 [U2F_EXTENDED]，整合式雙重驗證會為個人認證提供 U2F 功能和一些擴充功能。</translation>
+<translation id="6998179760789945134">除非已經透過 Chrome 旗標加以啟用，否則請在不安全內容中停用 WebSQL。</translation>
 <translation id="6999948519306285655">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
        你可以透過這項政策，指定 Proxy .pac 檔案的網址。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> 時，這項政策才會生效。
@@ -6023,14 +6010,6 @@
       如果將這項政策設為啟用或不設定，系統會啟用快速解答的單位轉換功能。
       如果停用這項政策，系統會停用快速解答的單位轉換功能。</translation>
 <translation id="7587345076013230465">每當自動選取政策與多個憑證相符時，在登入畫面中提示使用者選取用戶端憑證</translation>
-<translation id="7590188804371204512">控管是否能安裝外部擴充功能。
-
-      啟用這項設定會禁止安裝外部擴充功能。
-
-      如果停用或不指定這項設定，則可以安裝外部擴充功能。
-
-      外部擴充功能及其安裝方式請參閱 https://developer.chrome.com/apps/external_extensions。
-      </translation>
 <translation id="759957074386651883">安全瀏覽設定</translation>
 <translation id="7604169113182304895">Android 應用程式可以選擇是否使用這份清單，你無法強制套用。</translation>
 <translation id="7612157962821894603">要在 <ph name="PRODUCT_NAME" /> 啟動時套用的全系統設定</translation>
@@ -7202,6 +7181,7 @@
 <translation id="8919100556245407184">將使用者登出前的緩衝天數。如果使用者未在自動更新期限訊息顯示後將 <ph name="PRODUCT_OS_NAME" />版本更新為指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> 版，系統會在設定的天數過後將該使用者登出</translation>
 <translation id="8919369436496201075">允許裝置接收長期支援更新</translation>
 <translation id="8921669704201370845">為受管理的設定檔啟用 <ph name="PRODUCT_NAME" /> 雲端報告功能</translation>
+<translation id="8922494933893518624">強制在不安全內容中啟用 WebSQL。</translation>
 <translation id="8930064580550462145">透過螢幕鎖定畫面登入時，<ph name="PRODUCT_OS_NAME" />可以透過伺服器進行線上驗證，或使用快取密碼進行離線驗證。
 
       如果為這項政策設定 -2 的值，系統會根據 <ph name="POLICY" /> 政策決定登入畫面的離線登入時限值。

@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Deljenje mape s programom Parallels Desktop</translation>
 <translation id="1439919885608649279">Oseba z rožami</translation>
 <translation id="1471718551822868769">slovaščina</translation>
-<translation id="1474339897586437869">Datoteka »<ph name="FILENAME" />« ni bila naložena. V Googlu Drive nimate dovolj razpoložljivega prostora.</translation>
 <translation id="1482884275703521657">finščina</translation>
 <translation id="148466539719134488">švicarska</translation>
 <translation id="1497522201463361063">Datoteke »<ph name="FILE_NAME" />« ni mogoče preimenovati. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Varno</translation>
 <translation id="2638942478653899953">Google Drive ni dosegljiv. <ph name="BEGIN_LINK" />Odjavite se<ph name="END_LINK" /> in se znova prijavite.</translation>
 <translation id="2649120831653069427">Riba mavričarka</translation>
+<translation id="2653059201992392941">Imate še toliko poskusov: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">burmanščina/mjanmarščina s tipkovnico za mjanmarščino</translation>
 <translation id="2664412712123763093">Mesto datoteke</translation>
 <translation id="2718540689505416944">Namestitev aplikacije z Linuxom</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Izprazni smetnjak</translation>
 <translation id="5163869187418756376">Souporaba ni uspela. Preverite povezavo in poskusite znova.</translation>
 <translation id="516592729076796170">Angleška tipkovnica Dvorak za programerje (ZDA)</translation>
-<translation id="5170477580121653719">Preostali prostor v Google Driveu: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Pogled sličic</translation>
 <translation id="5194713942430106590">Kliknite, če želite razvrstiti elemente stolpca v naraščajočem vrstnem redu.</translation>
 <translation id="5211614973734216083">ferščina</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">latvijščina</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> je izklopljen.</translation>
 <translation id="5494920125229734069">Izberi vse</translation>
+<translation id="5500104704744051184">Tega omrežja ne bo mogoče uporabljati, dokler ne vnesete kode PUK.</translation>
 <translation id="5500122897333236901">islandščina</translation>
 <translation id="5508696409934741614">Pike</translation>
 <translation id="5522908512596376669">Seznam datotek je spremenjen na prikaz seznama.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044">Št. datotek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Tega imena ne morete uporabiti kot ime za datoteko ali mapo</translation>
 <translation id="6423031066725912715">vietnamščina s tipkovnico TCVN</translation>
+<translation id="6430271654280079150">Imate še 1 poskus.</translation>
 <translation id="6485131920355264772">Podatkov o prostoru ni bilo mogoče prenesti</translation>
 <translation id="6495925982925244349">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="649877868557234318">Razširjanje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903">Sinhroniziranje datotek (<ph name="NUMBER_OF_FILES" />) ...</translation>
 <translation id="8600173386174225982">Seznam datotek je spremenjen na pogled sličic.</translation>
 <translation id="8601932370724196034">Slikovna datoteka za Crostini</translation>
+<translation id="8608515571837163082">Prevečkrat ste vnesli napačno kodo PIN. Vnesite 8-mestno osebno kodo za odblokiranje (PUK), ki jo dobite od operaterja.</translation>
 <translation id="8609695766746872526">islandščina</translation>
 <translation id="863903787380594467">Napačna koda PIN. Imate še toliko poskusov: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – vrata</translation>

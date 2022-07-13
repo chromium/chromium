@@ -223,7 +223,6 @@
 <translation id="2172688499998841696">इमेज की जानकारी जोड़ने की सुविधा बंद कर दी गई है</translation>
 <translation id="2172905120685242547">क्या आप विंडो बंद करना चाहते हैं?</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
-<translation id="2176767904800337188">वर्चुअल कार्ड आपके असली कार्ड की पहचान ज़ाहिर नहीं होने देता है. इससे, आपको धोखाधड़ी से बचने में मदद मिलती है. <ph name="BEGIN_LINK1" />वर्चुअल कार्ड के बारे में ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">शेयर किया जा रहा है</translation>
 <translation id="2189903024544168260">पसंद का विषय हटाया गया</translation>
 <translation id="2194856509914051091">इन बातों का ध्यान रखें</translation>
@@ -272,7 +271,6 @@
 <translation id="2496180316473517155">ब्राउज़िंग इतिहास</translation>
 <translation id="2497852260688568942">सिंक को आपके व्यवस्थापक ने अक्षम कर दिया है</translation>
 <translation id="250020030759455918">आपको Chrome में अपनी <ph name="SITE_NAME" /> की साइन इन स्थिति, ब्राउज़िंग डेटा, और साइट डेटा दिखेगा</translation>
-<translation id="2512164632052122970">कॉन्टेंट की भाषाएं</translation>
 <translation id="2513403576141822879">निजता, सुरक्षा और डेटा इकट्ठा करने से जुड़ी ज़्यादा सेटिंग के लिए, <ph name="BEGIN_LINK" />सिंक और Google सेवाएं<ph name="END_LINK" /> देखें</translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2523184218357549926">आप जिन पेजों पर जाते हैं उनके यूआरएल Google को भेजती है</translation>

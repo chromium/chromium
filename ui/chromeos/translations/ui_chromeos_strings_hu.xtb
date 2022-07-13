@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Mappa megosztása a Parallels Desktoppal</translation>
 <translation id="1439919885608649279">Ember virágokkal</translation>
 <translation id="1471718551822868769">szlovák</translation>
-<translation id="1474339897586437869">A(z) „<ph name="FILENAME" />” feltöltése nem történt meg. Nincs elegendő szabad terület a Google Drive-on.</translation>
 <translation id="1482884275703521657">finn</translation>
 <translation id="148466539719134488">svájci</translation>
 <translation id="1497522201463361063">A(z) "<ph name="FILE_NAME" />" fájl nem nevezhető át. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Biztonságos</translation>
 <translation id="2638942478653899953">A Google Drive nem érhető el. Kérjük, <ph name="BEGIN_LINK" />jelentkezzen ki<ph name="END_LINK" />, majd jelentkezzen be újra.</translation>
 <translation id="2649120831653069427">Szivárványhal</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> próbálkozási lehetősége maradt.</translation>
 <translation id="2663066752008346276">burmai (Mianmar), myansan billentyűzettel</translation>
 <translation id="2664412712123763093">Fájl helye</translation>
 <translation id="2718540689505416944">Alkalmazás telepítése a Linux segítségével</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Kuka kiürítése</translation>
 <translation id="5163869187418756376">Nem sikerült a megosztás. Ellenőrizze a kapcsolatot, és később próbálkozzon újra.</translation>
 <translation id="516592729076796170">US Dvorak programozó</translation>
-<translation id="5170477580121653719">Szabad hely a Google Drive-on: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Indexképnézet</translation>
 <translation id="5194713942430106590">Kattintson az oszlop növekvő sorrendben való rendezéséhez.</translation>
 <translation id="5211614973734216083">feröeri</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">lett</translation>
 <translation id="5489965683297092283">A(z) <ph name="FILTER_NAME" /> szűrő ki van kapcsolva.</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
+<translation id="5500104704744051184">Addig nem tudja használni ezt a hálózatot, amíg meg nem adja a PUK kódot</translation>
 <translation id="5500122897333236901">izlandi</translation>
 <translation id="5508696409934741614">Pöttyök</translation>
 <translation id="5522908512596376669">A fájllista nézete listanézetre változott.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elem</translation>
 <translation id="642282551015776456">Ezt a nevet nem lehet mappa fájlneveként használni</translation>
 <translation id="6423031066725912715">vietnámi, TCVN-billentyűzettel</translation>
+<translation id="6430271654280079150">1 próbálkozási lehetősége maradt.</translation>
 <translation id="6485131920355264772">A helyinformációk lekérése sikertelen</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> kicsomagolása ide: <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elem szinkronizálása…</translation>
 <translation id="8600173386174225982">A fájllista nézete indexképnézetre változott.</translation>
 <translation id="8601932370724196034">Crostini-képfájl</translation>
+<translation id="8608515571837163082">Túl sokszor lett megadva helytelen PIN-kód. Adja meg a szolgáltatótól kapott nyolcjegyű személyes feloldókulcsot (PUK kódot).</translation>
 <translation id="8609695766746872526">izlandi</translation>
 <translation id="863903787380594467">Helytelen PIN-kód. <ph name="RETRIES" /> próbálkozási lehetősége maradt.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

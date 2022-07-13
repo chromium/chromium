@@ -97,6 +97,7 @@
 <translation id="1428770807407000502">सिंक गर्ने सुविधा अफ गर्ने हो?</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1436784010935106834">हटाइयो</translation>
+<translation id="1437543266176261764">यो क्रियाकलाप <ph name="APP_NAME" /> मार्फत गरिँदै छ</translation>
 <translation id="1448440926884431741">"बुकमार्कहरू" मा गई आफूले ट्रयाक गरेका उत्पादनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
 <translation id="1466383950273130737">Chrome मा प्रयोग गरिने भाषा छान्नुहोस्</translation>
@@ -223,7 +224,6 @@
 <translation id="2172688499998841696">'फोटोको वर्णन' सुविधा अफ छ</translation>
 <translation id="2172905120685242547">विन्डो बन्द गर्ने हो?</translation>
 <translation id="2175927920773552910">QR कोड</translation>
-<translation id="2176767904800337188">भर्चुअल कार्डले तपाईंलाई ठगीबाट जोगाउनका निम्ति तपाईंको कार्डको वास्तविक जानकारी लुकाउँछ। <ph name="BEGIN_LINK1" />भर्चुअल कार्डका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">आदान प्रदान गर्दै</translation>
 <translation id="2189903024544168260">रुचि हटाइयो</translation>
 <translation id="2194856509914051091">विचार गर्नु पर्ने कुराहरू</translation>
@@ -272,7 +272,6 @@
 <translation id="2496180316473517155">ब्राउजिङ इतिहास</translation>
 <translation id="2497852260688568942">तपाईंको प्रशासकले सिंंक असक्षम पार्नुभएको छ।</translation>
 <translation id="250020030759455918">तपाईं Chrome मा आफ्नो <ph name="SITE_NAME" /> को साइन इनसम्बन्धी अवस्था, ब्राउजिङ डेटा र साइट डेटा देख्नु हुने छ</translation>
-<translation id="2512164632052122970">सामग्रीका भाषाहरू</translation>
 <translation id="2513403576141822879">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङहरूका लागि <ph name="BEGIN_LINK" />सिंक तथा वैयक्तीकरण<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2523184218357549926">तपाईं जाने पृष्ठका URL हरू Google मा पठाउँछ</translation>

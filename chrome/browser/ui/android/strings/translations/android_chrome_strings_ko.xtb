@@ -97,6 +97,7 @@
 <translation id="1428770807407000502">동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1436784010935106834">삭제됨</translation>
+<translation id="1437543266176261764"><ph name="APP_NAME" />에서 실행 중</translation>
 <translation id="1448440926884431741">추적 중인 제품을 북마크로 정리하세요.</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1466383950273130737">Chrome 언어 선택</translation>
@@ -223,7 +224,6 @@
 <translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
 <translation id="2172905120685242547">창을 닫으시겠습니까?</translation>
 <translation id="2175927920773552910">QR 코드</translation>
-<translation id="2176767904800337188">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="BEGIN_LINK1" />가상 카드 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">공유</translation>
 <translation id="2189903024544168260">관심분야 삭제됨</translation>
 <translation id="2194856509914051091">고려사항</translation>
@@ -272,7 +272,6 @@
 <translation id="2496180316473517155">인터넷 사용 기록</translation>
 <translation id="2497852260688568942">관리자가 동기화를 사용 중지했습니다.</translation>
 <translation id="250020030759455918">Chrome에서 <ph name="SITE_NAME" /> 로그인 상태, 인터넷 사용 기록, 사이트 데이터를 볼 수 있습니다.</translation>
-<translation id="2512164632052122970">콘텐츠 언어</translation>
 <translation id="2513403576141822879">개인정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
 <translation id="2517472476991765520">검색</translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>

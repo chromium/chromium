@@ -224,7 +224,6 @@
 <translation id="2172688499998841696">Описания изображений отключены.</translation>
 <translation id="2172905120685242547">Закрыть окно?</translation>
 <translation id="2175927920773552910">QR-код</translation>
-<translation id="2176767904800337188">Чтобы защитить ваши данные от мошенников, вместо настоящей карты будет использоваться виртуальная. Подробнее <ph name="BEGIN_LINK1" />о виртуальных картах<ph name="END_LINK1" />…</translation>
 <translation id="218608176142494674">Совместный доступ</translation>
 <translation id="2189903024544168260">Интерес удален.</translation>
 <translation id="2194856509914051091">Важная информация</translation>
@@ -273,7 +272,6 @@
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
 <translation id="250020030759455918">Вы увидите статус входа на сайт <ph name="SITE_NAME" />, а также данные о работе в браузере и данные сайтов в Chrome.</translation>
-<translation id="2512164632052122970">Языки контента</translation>
 <translation id="2513403576141822879">Остальные настройки конфиденциальности, безопасности и сбора данных вы можете найти в разделе <ph name="BEGIN_LINK" />Синхронизация сервисов Google<ph name="END_LINK" />.</translation>
 <translation id="2517472476991765520">Сканировать</translation>
 <translation id="2523184218357549926">Отправлять URL посещенных страниц в Google</translation>

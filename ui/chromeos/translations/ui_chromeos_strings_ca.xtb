@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Comparteix la carpeta amb Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona amb flors</translation>
 <translation id="1471718551822868769">Eslovac</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" no s'ha penjat. No hi ha prou espai lliure al vostre compte de Google Drive.</translation>
 <translation id="1482884275703521657">Finès</translation>
 <translation id="148466539719134488">Suís</translation>
 <translation id="1497522201463361063">No es pot canviar el nom a "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Segura</translation>
 <translation id="2638942478653899953">No s'ha pogut accedir a Google Drive. <ph name="BEGIN_LINK" />Tanqueu la sessió<ph name="END_LINK" /> i torneu-la a iniciar.</translation>
 <translation id="2649120831653069427">Peix arc iris</translation>
+<translation id="2653059201992392941">Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="2663066752008346276">Birmà (Birmània) amb teclat myansan</translation>
 <translation id="2664412712123763093">Ubicació del fitxer</translation>
 <translation id="2718540689505416944">Instal·la l'aplicació per a Linux</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Buida la paperera</translation>
 <translation id="5163869187418756376">S'ha produït un error en compartir. Comproveu la connexió i torneu-ho a provar més tard.</translation>
 <translation id="516592729076796170">Dvorak nord-americà per a programadors</translation>
-<translation id="5170477580121653719">Espai que queda a Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Visualització de miniatures</translation>
 <translation id="5194713942430106590">Fes clic per veure les dades de la columna en ordre ascendent.</translation>
 <translation id="5211614973734216083">Feroès</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">Letó</translation>
 <translation id="5489965683297092283">El filtre <ph name="FILTER_NAME" /> està desactivat.</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
+<translation id="5500104704744051184">No podràs utilitzar aquesta xarxa fins que no introdueixis el PUK</translation>
 <translation id="5500122897333236901">Islandès</translation>
 <translation id="5508696409934741614">Punts</translation>
 <translation id="5522908512596376669">La llista de fitxers ha canviat a la visualització de llista.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elements</translation>
 <translation id="642282551015776456">Aquest nom no es pot utilitzar com a nom de fitxer o de carpeta</translation>
 <translation id="6423031066725912715">Vietnamita amb teclat TCVN</translation>
+<translation id="6430271654280079150">Et queda 1 intent.</translation>
 <translation id="6485131920355264772">No s'ha pogut recuperar informació sobre l'espai</translation>
 <translation id="6495925982925244349">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, gestionada per l'administrador, detalls</translation>
 <translation id="649877868557234318">S'està extraient <ph name="FILE_NAME" /> a la carpeta <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903">S'estan sincronitzant <ph name="NUMBER_OF_FILES" /> elements...</translation>
 <translation id="8600173386174225982">La llista de fitxers ha canviat a la visualització de miniatures.</translation>
 <translation id="8601932370724196034">Fitxer d'imatge de Crostini</translation>
+<translation id="8608515571837163082">S'ha introduït un PIN incorrecte massa vegades. Introdueix el número personal de desbloqueig (PUK) de 8 dígits proporcionat per l'operador.</translation>
 <translation id="8609695766746872526">Islandès</translation>
 <translation id="863903787380594467">El PIN no és correcte. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

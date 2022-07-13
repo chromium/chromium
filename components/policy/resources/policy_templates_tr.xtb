@@ -932,17 +932,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="1962864958436828230">Veri sızıntısını önleme amaçlı pano kısıtlaması için minimum boyut sınırını belirleyin</translation>
 <translation id="1964634611280150550">Gizli mod devre dışı</translation>
 <translation id="1964802606569741174">Bu politikanın Android YouTube uygulaması üzerinde hiçbir etkisi yoktur. YouTube'da Güvenlik Modu uygulanacaksa Android YouTube uygulamasının yüklenmesine izin verilmemelidir.</translation>
-<translation id="1965363065727209968">setTimeout(…, 0), genellikle uzun JavaScript görevlerinin dökümünü almak için kullanılır.
-          Politika, Etkin değerine ayarlandığında 4 ms'den kısa bir aralığa sahip setTimeout'lar ve setInterval'lar yoğun şekilde zaman aşımına uğramaz.
-          Bu şekilde kısa dönem performansı iyileştirilir ancak, API'yi kötüye kullanan web sitelerinin setTimeout'ları nihayetinde zaman aşımına uğrar.
-
-          Bu, bir web sayfasındaki görev sıralamasını değiştirerek bir şekilde belirli bir sıralamaya bağlı olan sitelerde beklenmeyen davranışlara yol açabilir.
-          Ayrıca, 0 ms zaman aşımına sahip çok sayıda setTimeout() kullanımı içeren siteyi de etkileyebilir. (ör. CPU yükünü artırabilir.)
-
-          <ph name="PRODUCT_NAME" />, bu politikanın ayarlanmadığı kullanıcılar için değişikliği kararlı kanalında kademeli olarak kullanıma sunacaktır.
-
-          Bu politika geçicidir ve <ph name="PRODUCT_NAME" /> 107 sürümünde kaldırılması planlanmaktadır. Kuruluşların ihtiyaç duyması halinde bu süre uzatılabilir.
-          </translation>
 <translation id="1967334955994230472">Projektörü devre dışı bırak</translation>
 <translation id="1969212217917526199">Uzaktan erişim ana makinesinin Hata Ayıklama yapılarındaki politikaları geçersiz kılar.
 
@@ -4107,7 +4096,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="5475361623548884387">Yazdırmayı etkinleştir</translation>
 <translation id="547601067149622666">Arayan giren reklamların yer aldığı sitelerde reklamlara izin verme</translation>
 <translation id="5476152378885134514">Bu sitelerde panoyu engelle</translation>
-<translation id="5478734531226638813">Politika ayarlandığında, uzantı manifestindeki güncelleme URL'sini kullanan oturum içi Kiosk Chrome uygulamaları güncellemesi devre dışı bırakılır ve güncelleme mekanizması olarak yalnızca CRX önceden getirme işlemi kalır.</translation>
 <translation id="5480380613778757009">Bu politika, devre dışı bırakılır veya ayarlanmazsa Yönetilen misafir oturumunda ayarlanan tüm görüntü ayarları, oturum biter bitmez sıfırlanır. Bu politika, Doğru değerine ayarlanırsa yönetilen misafir oturumundan çıkıldıktan sonra görüntü özellikleri tutulur.</translation>
 <translation id="5483065054530244863">Yerel güven bağlantıları tarafından yayınlanan SHA-1 imzalı sertifikalara izin ver</translation>
 <translation id="5487758664517243511">Bu ayar etkinleştirilirse Telefon Merkezi'ne zaten kaydolmuş kullanıcılar, telefonlarının web sayfalarını ChromeOS'te görüntülemek gibi görevlere devam edebilirler.
@@ -4348,11 +4336,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
 <translation id="5749396052108288586">Bu politika kullanımdan kaldırılmıştır. Lütfen bunun yerine <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="574983287620584622">Giriş ekranında erişilebilirlik özellikleri kısayollarını etkinleştir</translation>
-<translation id="5749873635525257317">Bu politika kullanımdan kaldırılmıştır. Bunun yerine BrowserSignin'i kullanabilirsiniz.
-
-      Kullanıcının <ph name="PRODUCT_NAME" /> ürününde oturum açmasına olanak tanır.
-
-      Bu politikayı ayarlarsanız, bir kullanıcının <ph name="PRODUCT_NAME" /> ürününde oturum açmasına izin verilip verilmeyeceğini yapılandırabilirsiniz. Bu politika "Yanlış" değerine ayarlanırsa, chrome.identity API'yi kullanan uygulama ve uzantıların çalışması engelleneceğinden, onun yerine <ph name="SYNC_DISABLED_POLICY_NAME" /> politikasını kullanmanız daha iyi olabilir.</translation>
 <translation id="5755002458331714762"> Web Bileşenleri v0 API'leri (Gölge DOM v0, Özel Öğeler v0 ve HTML İçe Aktarmaları) 2018'de kullanımdan kaldırılmıştır ve M80 düzeyinden itibaren varsayılan olarak devre dışıdır. Bu politika, bu özelliklerin M84'e kadar seçilerek yeniden etkinleştirilmesine olanak tanır.
 
       Bu politika True (Doğru) değerine ayarlanırsa Web Bileşenleri v0 özellikleri tüm siteler için etkinleştirilir.
@@ -6101,14 +6084,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Politika etkinleştirilirse veya ayarlanmadan bırakılırsa Bil bakalım birim dönüşümü etkinleştirilir.
       Politika devre dışı bırakılırsa Bil bakalım birim dönüşümü devre dışı bırakılır.</translation>
 <translation id="7587345076013230465">Otomatik seçim politikası, oturum açma ekranında birden fazla sertifikayla eşleştiğinde kullanıcıdan istemci sertifikasını seçmesini iste</translation>
-<translation id="7590188804371204512">Harici uzantıların yüklenmesini kontrol eder.
-
-      Bu ayar etkinleştirilirse harici uzantıların yüklenmesi engellenir.
-
-      Bu ayar devre dışı bırakılır veya ayarlanmazsa harici uzantıların yüklenmesine izin verilir.
-
-      Harici uzantılar ve yüklenmeleri hakkında bilgiyi https://developer.chrome.com/apps/external_extensions adresinde bulabilirsiniz.
-      </translation>
 <translation id="759957074386651883">Güvenli Tarama ayarları</translation>
 <translation id="7604169113182304895">Android uygulamaları, kendi tercihleriyle bu listeye uymaya karar verebilir. Bu uygulamaları listeye uymaya zorlayamazsınız.</translation>
 <translation id="7612157962821894603"><ph name="PRODUCT_NAME" /> başlatılırken uygulanan sistem genelindeki işaretler</translation>

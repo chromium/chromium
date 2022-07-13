@@ -1258,6 +1258,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fiని జోడించండి...</translation>
 <translation id="2162155940152307086">మీరు ఒకసారి సింక్ సెట్టింగ్‌ల పేజీని వదిలివెళ్లినప్పటి నుండి సింక్ ప్రారంభమవుతుంది</translation>
+<translation id="2162705204091149050">మీ బ్రౌజర్, OS, పరికరం, ఇన్‌స్టాల్ చేసిన సాఫ్ట్‌వేర్, ఫైళ్ల గురించి సమాచారాన్ని చదవండి</translation>
 <translation id="2162926944953615670">eSIM ప్రొఫైల్స్ ఏవీ అందుబాటులో లేవు</translation>
 <translation id="2163470535490402084">మీ <ph name="DEVICE_TYPE" />కు సైన్ ఇన్ చేయడానికి దయచేసి ఇంటర్నెట్‌కు కనెక్ట్ చేయండి.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, మరో 1 స్విచ్</translation>
@@ -2507,6 +2508,7 @@
 <translation id="3359256513598016054">సర్టిఫికెట్ విధాన పరిమితులు</translation>
 <translation id="3360297538363969800">ముద్రణ విఫలమైంది. దయచేసి మీ ప్రింటర్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> మీతో <ph name="ATTACHMENTS" />ని షేర్ చేస్తోంది.}other{<ph name="DEVICE_NAME" /> మీతో <ph name="ATTACHMENTS" />ని షేర్ చేస్తోంది.}}</translation>
+<translation id="3363202073972776113">ఈ కొత్త ప్రొఫైల్‌ను మీ సంస్థ మేనేజ్ చేస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">మీ నిర్వాహకుడి నుండి: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl లేదా Altను ఉపయోగించండి</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
@@ -2541,6 +2543,7 @@
 <translation id="339722927132407568">స్తంభనలు</translation>
 <translation id="3399432415385675819">నోటిఫికేషన్‌లు నిలిపివేయబడతాయి</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> హెర్జ్) - అంతర్గత అల్లిక చేయబడింది</translation>
+<translation id="3401484564516348917">మీ బ్రౌజర్, OS, పరికరం, ఇన్‌స్టాల్ చేసిన సాఫ్ట్‌వేర్, రిజిస్ట్రీ విలువలు, ఫైళ్ల గురించి సమాచారాన్ని చదవండి</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{{COUNT} పాస్‌వర్డ్ ఈ పరికరంలో స్టోర్ అయ్యింది.}other{{COUNT} పాస్‌వర్డ్‌లు ఈ పరికరంలో స్టోర్ అయ్యాయి}}</translation>
 <translation id="3402255108239926910">ఒక అవతార్‌ను ఎంచుకోండి</translation>
 <translation id="3402585168444815892">డెమో మోడ్‌కు ఎన్‌రోల్ అవుతోంది</translation>
@@ -2787,6 +2790,7 @@
 <translation id="3627879631695760395"><ph name="APP" />ను ఇన్‌స్టాల్ చేయి...</translation>
 <translation id="3628275722731025472">బ్లూటూత్‌ను ఆపివేయండి</translation>
 <translation id="3629631988386925734">Smart Lockను ప్రారంభించడానికి మీ పాస్‌వర్డ్‌‌ను నమోదు చేయండి. తదుపరిసారి, మీ ఫోన్ మీ <ph name="DEVICE_TYPE" />‌ను అన్‌లాక్ చేస్తుంది. సెట్టింగ్‌లలో మీరు Smart Lockను ఆఫ్ చేయవచ్చు.</translation>
+<translation id="3629664892718440872">ఈ ఎంపికను గుర్తుపెట్టుకోండి</translation>
 <translation id="3630132874740063857">మీ ఫోన్</translation>
 <translation id="3630995161997703415">ఈ సైట్‌ను ఏ సమయంలో అయినా ఉపయోగించడం కోసం దీనిని మీ 'అర'కు జోడించండి</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />ఆటోమేటిక్ రిపోర్ట్‌లను పంపడానికి మీ ChromeOS పరికరాలను అనుమతించడం ద్వారా, ChromeOSలో దేనిని ముందుగా పరిష్కరించి, మెరుగుపరచాలనే అంశం గురించి నిర్ణయం తీసుకోవడంలో మాకు సహాయపడుతుంది. ChromeOS ఎప్పుడు క్రాష్ అవుతుంది మీరు ఏ ఫీచర్‌లను ఉపయోగిస్తున్నారు, సాధారణంగా మీరు ఎంత మెమరీని ఉపయోగిస్తారు, వంటి అంశాలను ఈ రిపోర్ట్‌లు కలిగి ఉండవచ్చు.<ph name="END_PARAGRAPH1" />
@@ -3276,6 +3280,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI డివైజ్‌ల పూర్తి కంట్రోల్ తిరస్కరించబడింది</translation>
+<translation id="4087328411748538168">కుడి వైపునకు చూడండి</translation>
 <translation id="4089235344645910861">సెట్టింగ్ సేవ్ చేయబడింది. సింక్‌ ప్రారంభించబడింది.</translation>
 <translation id="4090103403438682346">ధృవీకృత యాక్సెస్‌ను ప్రారంభించండి</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> యొక్క సైట్ అనుమతులను రీసెట్ చేయాలా?</translation>
@@ -3969,6 +3974,7 @@
 <translation id="4779766576531456629">eSIM సెల్యులర్ నెట్‌వర్క్‌కు పేరుమార్చండి</translation>
 <translation id="4780321648949301421">ఇలా పేజీని సేవ్ చేయి...</translation>
 <translation id="4781443161433589743">మీరు అత్యంత సురక్షితమైన Chrome సెక్యూరిటీని కలిగి ఉన్నారు</translation>
+<translation id="4782861709165039462">పరికరాల హార్డ్‌వేర్ స్విచ్ ద్వారా అన్ని మైక్రోఫోన్‌లు డిజేబుల్‌ చేయబడ్డాయి</translation>
 <translation id="4785719467058219317">మీరు ఈ వెబ్‌సైట్‌తో నమోదు కాని సెక్యూరిటీ కీని ఉపయోగిస్తున్నారు</translation>
 <translation id="4785914069240823137">కత్తిరింపును రద్దు చేయండి</translation>
 <translation id="4788092183367008521">దయచేసి మీ నెట్‌వర్క్ కనెక్షన్‌ను తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
@@ -4237,7 +4243,6 @@
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />అనుకూలంగా మార్చిన Chromeలో<ph name="END_LINK" /> అన్ని కార్డ్ ఆప్షన్‌లను చూడండి</translation>
 <translation id="5056950756634735043">కంటైనర్‌కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="5057110919553308744">మీరు ఎక్స్‌టెన్షన్ క్లిక్ చేసినప్పుడు</translation>
-<translation id="505776528429481161">సమీపంలోని ఉన్న పరికరాలకు సులభంగా కనెక్ట్ అయి, వాటిని సెటప్ చేయండి</translation>
 <translation id="5059241099014281248">సైన్ ఇన్‌ను పరిమితం చేయండి</translation>
 <translation id="5059526285558225588">ఏమి షేర్ చేయాలో ఎంచుకోండి</translation>
 <translation id="5060332552815861872">సేవ్ చేయాల్సిన 1 ప్రింటర్ అందుబాటులో ఉంది.</translation>
@@ -4736,6 +4741,7 @@
 <translation id="5548075230008247516">అన్ని ఐటెమ్‌ల ఎంపిక రద్దు చేయబడింది, ఎంపిక మోడ్ నుండి నిష్క్రమించారు.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ఇంకా 1 వేరే ట్యాబ్}other{"<ph name="TAB_TITLE" />" ఇంకా # వేరే ట్యాబ్‌లు}}</translation>
 <translation id="5548606607480005320">భద్రతా చెక్-అప్</translation>
+<translation id="5548644592758170183">ఎడమ వైపునకు చూడండి</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">కీబోర్డ్ మరియు వచన ఇన్‌పుట్</translation>
 <translation id="5553089923092577885">సర్టిఫికెట్ విధాన మ్యాపింగ్‌లు</translation>
@@ -8214,6 +8220,7 @@
 <translation id="8980345560318123814">Feedback రిపోర్ట్‌లు</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - క్రాష్ అయ్యింది</translation>
 <translation id="8981825781894055334">పేపర్‌లు తక్కువగా ఉన్నాయి</translation>
+<translation id="8983018820925880511">ఈ కొత్త ప్రొఫైల్‌ను <ph name="DOMAIN" /> మేనేజ్ చేస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="FILENAME" />ను <ph name="ORIGIN" /> సవరించగలదు</translation>
 <translation id="8984694057134206124">మీరు <ph name="MINUTES" /> నిమిషాల పాటు ప్రతి ఒక్కరికి కనిపిస్తారు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook కోసం ఉద్దేశించిన Steamకు స్వాగతం</translation>
@@ -8310,6 +8317,7 @@
 <translation id="9075413375877487220">మెరుగైన సురక్షిత బ్రౌజింగ్ ద్వారా ఈ ఎక్స్‌టెన్షన్ విశ్వసించబడదు.</translation>
 <translation id="9076283476770535406">ఇందులో పెద్దలకు మాత్రమే తగిన కంటెంట్ ఉండవచ్చు</translation>
 <translation id="9076523132036239772">క్షమించండి, మీ ఈమెయిల్‌ లేదా పాస్‌వర్డ్ ధృవీకరించబడలేదు. మొదట నెట్‌వర్క్‌కి కనెక్ట్ చేయడానికి ప్రయత్నించండి.</translation>
+<translation id="9076821103818989526">సైడ్ ప్యానెల్</translation>
 <translation id="9076977315710973122">SMB షేర్</translation>
 <translation id="9078193189520575214">మార్పులు వర్తించేలా చేయడం జరుగుతోంది...</translation>
 <translation id="9078316009970372699">తక్షణ టెథెరింగ్ డిజేబుల్ చేయడం</translation>

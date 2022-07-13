@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">‏Parallels ڈیسک ٹاپ کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="1439919885608649279">پھول لیے ہوئے شخص</translation>
 <translation id="1471718551822868769">سلاواکی</translation>
-<translation id="1474339897586437869">‏"<ph name="FILENAME" />" کو اپ لوڈ نہیں کیا گیا۔ آپ کے Google Drive میں کافی خالی جگہ نہیں ہے۔</translation>
 <translation id="1482884275703521657">فنّش</translation>
 <translation id="148466539719134488">سوئس</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" کا نام بدلنے سے قاصر۔ <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">محفوظ ہے</translation>
 <translation id="2638942478653899953">‏Google Drive تک رسائی حاصل نہیں ہو سکی۔ براہ کرم <ph name="BEGIN_LINK" />لاگ آؤٹ کریں<ph name="END_LINK" /> اور دوبارہ لاگ ان کریں۔</translation>
 <translation id="2649120831653069427">رینبو فش</translation>
+<translation id="2653059201992392941">آپ کے پاس <ph name="RETRIES" /> کوششیں بچی ہیں۔</translation>
 <translation id="2663066752008346276">میانسان کی بورڈ کے ساتھ برمی/میانمار</translation>
 <translation id="2664412712123763093">فائل کا مقام</translation>
 <translation id="2718540689505416944">‏Linux والی ایپ انسٹال کریں</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">کوڑے دان خالی کریں</translation>
 <translation id="5163869187418756376">اشتراک ناکام ہو گیا۔ اپنا کنکشن چیک کریں او بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="516592729076796170">‏US پروگرامر ڈووراک</translation>
-<translation id="5170477580121653719">‏Google Drive کی باقی جگہ: <ph name="SPACE_AVAILABLE" />۔</translation>
 <translation id="5177526793333269655">تھمب نیل کا منظر</translation>
 <translation id="5194713942430106590">صعودی ترتیب میں کالم کو ترتیب دینے کے لیے کلک کریں۔</translation>
 <translation id="5211614973734216083">فروئز</translation>
@@ -529,6 +528,7 @@
 <translation id="5489067830765222292">لیٹویائی</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> فلٹر آف ہے۔</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
+<translation id="5500104704744051184">‏جب تک آپ PUK درج نہیں کرتے ہیں تب تک آپ اس نیٹ ورک کا استعمال نہیں کر سکیں گے</translation>
 <translation id="5500122897333236901">آئس لینڈک</translation>
 <translation id="5508696409934741614">نقطے</translation>
 <translation id="5522908512596376669">فائل کی فہرست کو فہرست منظر پر تبدیل کر دیا گيا ہے۔</translation>
@@ -634,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> آئٹمز</translation>
 <translation id="642282551015776456">یہ نام کسی فائل یا فولڈر نام کے بطور استعمال نہیں کیا جا سکتا ہے</translation>
 <translation id="6423031066725912715">‏TCVN کی بورڈ کے ساتھ ویتنامی</translation>
+<translation id="6430271654280079150">آپ کے پاس 1 کوشش بچی ہے۔</translation>
 <translation id="6485131920355264772">اسپیس کی معلومات کی بازيابی میں ناکام ہوگیا</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں اخذ کیا جا رہا ہے</translation>
@@ -900,6 +901,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> آئٹمز کی مطابقت پذیری ہو رہی ہے…</translation>
 <translation id="8600173386174225982">فائل فہرست کو تھمب نیل منظر میں تبدیل کر دیا گیا ہے۔</translation>
 <translation id="8601932370724196034">‏Crostini تصویر فائل</translation>
+<translation id="8608515571837163082">‏ایک غلط PIN کئی مرتبہ درج کیا گیا۔ کیرئیر کے ذریعے فراہم کردہ 8 ہندسوں کی غیر مسدود کرنے کی ذاتی کلید (PUK) درج کریں۔</translation>
 <translation id="8609695766746872526">آئس لینڈک</translation>
 <translation id="863903787380594467">‏غلط PIN۔ آپ کے پاس <ph name="RETRIES" /> کوششیں بچی ہیں۔</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - پورٹ</translation>

@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Ibahagi ang folder sa Parallels Desktop</translation>
 <translation id="1439919885608649279">Taong may mga bulaklak</translation>
 <translation id="1471718551822868769">Slovak</translation>
-<translation id="1474339897586437869">Hindi na-upload ang "<ph name="FILENAME" />." Walang sapat na bakanteng espasyo sa iyong Google Drive.</translation>
 <translation id="1482884275703521657">Finnish</translation>
 <translation id="148466539719134488">Swiss</translation>
 <translation id="1497522201463361063">Hindi mapalatan ang pangalan "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Secured</translation>
 <translation id="2638942478653899953">Hindi maabot ang Google Drive. Mangyaring <ph name="BEGIN_LINK" />mag-log out<ph name="END_LINK" /> at mag-log in muli.</translation>
 <translation id="2649120831653069427">Rainbowfish</translation>
+<translation id="2653059201992392941">Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="2663066752008346276">Burmese/Myanmar na may Myansan keyboard</translation>
 <translation id="2664412712123763093">Lokasyon ng file</translation>
 <translation id="2718540689505416944">I-install ang app gamit ang Linux</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Alisin ang laman ng Trash</translation>
 <translation id="5163869187418756376">Nabigo ang pagbabahagi. Suriin ang iyong koneksyon at subukang muli sa ibang pagkakataon.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5170477580121653719">Natitirang espasyo sa Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">View na thumbnail</translation>
 <translation id="5194713942430106590">I-click para pagbukud-bukurin ang column sa pataas na pagkakasunud-sunod.</translation>
 <translation id="5211614973734216083">Faroese</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">Latvian</translation>
 <translation id="5489965683297092283">Naka-off ang filter na <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
+<translation id="5500104704744051184">Hindi mo magagamit ang network na ito hanggang sa ilagay mo ang PUK</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Mga Dot</translation>
 <translation id="5522908512596376669">Naging list view ang listahan ng file.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> (na) item</translation>
 <translation id="642282551015776456">Hindi maaaring gamitin ang pangalang ito bilang isang pangalan ng file o folder</translation>
 <translation id="6423031066725912715">Vietnamese na may TCVN keyboard</translation>
+<translation id="6430271654280079150">Mayroon ka na lang 1 natitirang pagsubok.</translation>
 <translation id="6485131920355264772">Nabigong kunin ang impormasyon ng espasyo</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
 <translation id="649877868557234318">Ine-extract ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903">Nagsi-sync ng <ph name="NUMBER_OF_FILES" /> (na) item...</translation>
 <translation id="8600173386174225982">Naging thumbnail view ang listahan ng file.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
+<translation id="8608515571837163082">Napakaraming beses nang naglagay ng maling PIN. Ilagay ang 8 digit na Personal Unblocking Key (PUK) na ibinigay ng carrier.</translation>
 <translation id="8609695766746872526">Icelandic</translation>
 <translation id="863903787380594467">Mali ang PIN. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

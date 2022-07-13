@@ -165,6 +165,7 @@
 <translation id="1882897271359938046">Հայելապատճենվում է <ph name="DISPLAY_NAME" />-ին</translation>
 <translation id="1885785240814121742">Ապակողպում մատնահետքով</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> սարքում չի աջակցվում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը (<ph name="SPECIFIED_REFRESH_RATE" /> Հց)։ Լուծաչափը դարձել է <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />)։ Փոփոխությունը պահպանելու համար սեղմեք «Հաստատել»։ Նախորդ կարգավորումները կվերականգնվեն <ph name="TIMEOUT_SECONDS" /> վայրկյան հետո։</translation>
+<translation id="1908992311423394684">Նոր տեղադրում</translation>
 <translation id="1915307458270490472">Փակել</translation>
 <translation id="1918022425394817322">Տեսախցիկի պատկերն ամրացված է վերևի աջ անկյունում</translation>
 <translation id="1919743966458266018">Խնդիրների կառավարիչը բացելու դյուրանցումը փոխվել է: <ph name="OLD_SHORTCUT" />-ի փոխարեն օգտագործեք <ph name="NEW_SHORTCUT" />:</translation>

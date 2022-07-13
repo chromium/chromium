@@ -1249,6 +1249,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2159488579268505102">USB‑C</translation>
 <translation id="216169395504480358">Pridať Wi‑Fi…</translation>
 <translation id="2162155940152307086">Synchronizácia sa spustí, keď opustíte nastavenia synchronizácie</translation>
+<translation id="2162705204091149050">Čítanie informácií o prehliadači, operačnom systéme, zariadení, nainštalovanom softvéri a súboroch</translation>
 <translation id="2162926944953615670">Nie sú k dispozícii žiadne profily eSIM</translation>
 <translation id="2163470535490402084">Ak sa chcete prihlásiť do zariadenia <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 ďalší prepínač</translation>
@@ -2495,6 +2496,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3359256513598016054">Obmedzenia certifikačnej politiky</translation>
 <translation id="3360297538363969800">Tlač zlyhala. Skontrolujte tlačiareň a skúste to znova.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> s vami zdieľa <ph name="ATTACHMENTS" />.}few{<ph name="DEVICE_NAME" /> s vami zdieľa <ph name="ATTACHMENTS" />.}many{<ph name="DEVICE_NAME" /> s vami zdieľa <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> s vami zdieľa <ph name="ATTACHMENTS" />.}}</translation>
+<translation id="3363202073972776113">Tento nový profil bude spravovať vaša organizácia. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Od správcu: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Použite Ctrl alebo Alt</translation>
 <translation id="3368922792935385530">Pripojené</translation>
@@ -2529,6 +2531,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="339722927132407568">Zamŕza</translation>
 <translation id="3399432415385675819">Upozornenia budú zakázané</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – prekladané</translation>
+<translation id="3401484564516348917">Čítanie informácií o prehliadači, operačnom systéme, zariadení, nainštalovanom softvéri, hodnotách databázy Registry a súboroch</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{V tomto zariadení je uložené {COUNT} heslo}few{V tomto zariadení sú uložené {COUNT} heslá}many{{COUNT} passwords are stored on this device}other{V tomto zariadení je uložených {COUNT} hesiel}}</translation>
 <translation id="3402255108239926910">Vyberte si avatar</translation>
 <translation id="3402585168444815892">Prebieha registrácia do ukážkového režimu</translation>
@@ -2775,6 +2778,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3627879631695760395">Inštalovať aplikáciu <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Vypnúť rozhranie Bluetooth</translation>
 <translation id="3629631988386925734">Aktivujte Smart Lock zadaním hesla. Zariadenie <ph name="DEVICE_TYPE" /> nabudúce odomknete telefónom. Smart Lock vypnete v Nastaveniach.</translation>
+<translation id="3629664892718440872">Zapamätať túto voľbu</translation>
 <translation id="3630132874740063857">Váš telefón</translation>
 <translation id="3630995161997703415">Ak chcete tento web kedykoľvek použiť, pridajte si ho na poličku</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Ak povolíte zariadeniam so systémom Chrome OS odosielať automatické hlásenia, pomôžete nám tým určiť, čo treba v systéme Chrome OS prioritne opraviť a zlepšiť. Tieto hlásenia môžu obsahovať informácie, napríklad kedy Chrome OS padá, aké používate funkcie a koľko pamäte zvyčajne využívate.<ph name="END_PARAGRAPH1" />
@@ -3264,6 +3268,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Úplné ovládanie zariadení MIDI bolo odmietnuté</translation>
+<translation id="4087328411748538168">Zobraziť vpravo</translation>
 <translation id="4089235344645910861">Nastavenia boli uložené. Synchronizácia sa začala.</translation>
 <translation id="4090103403438682346">Povolí overený prístup</translation>
 <translation id="4090947011087001172">Chcete resetovať povolenia webu <ph name="SITE" />?</translation>
@@ -3956,6 +3961,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4779766576531456629">Premenovať mobilnú sieť eSIM</translation>
 <translation id="4780321648949301421">Uložiť stránku ako...</translation>
 <translation id="4781443161433589743">Používate najsilnejšie zabezpečenie Chromu</translation>
+<translation id="4782861709165039462">Všetky mikrofóny boli deaktivované hardvérovým prepínačom zariadení</translation>
 <translation id="4785719467058219317">Používate bezpečnostný kľúč, ktorý nie je registrovaný s týmto webom</translation>
 <translation id="4785914069240823137">Zrušiť orezanie</translation>
 <translation id="4788092183367008521">Skontrolujte pripojenie k sieti a skúste to znova.</translation>
@@ -4224,7 +4230,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5054374119096692193">Prezrite si všetky možnosti karty v sekcii <ph name="BEGIN_LINK" />Prispôsobenie Chromu<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Pripája sa ku kontajneru</translation>
 <translation id="5057110919553308744">Keď kliknete na rozšírenie</translation>
-<translation id="505776528429481161">Ľahko sa pripájajte a nastavujte zariadenia v okolí</translation>
 <translation id="5059241099014281248">Obmedziť prihlásenie</translation>
 <translation id="5059526285558225588">Vyberte, čo sa má zdieľať</translation>
 <translation id="5060332552815861872">Môžete si uložiť jednu tlačiareň.</translation>
@@ -4723,6 +4728,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5548075230008247516">Bol zrušený výber všetkých položiek a ukončený režim výberu.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a jedna ďalšia karta}few{„<ph name="TAB_TITLE" />“ a # ďalšie karty}many{"<ph name="TAB_TITLE" />" and # Other Tabs}other{„<ph name="TAB_TITLE" />“ a # ďalších kariet}}</translation>
 <translation id="5548606607480005320">Kontrola bezpečnosti</translation>
+<translation id="5548644592758170183">Zobraziť vľavo</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Klávesnica a textový vstup</translation>
 <translation id="5553089923092577885">Priraďovanie politiky certifikátu</translation>
@@ -8210,6 +8216,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8980345560318123814">Hlásenia spätnej väzby</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Zlyhanie</translation>
 <translation id="8981825781894055334">Čoskoro sa minie papier</translation>
+<translation id="8983018820925880511">Tento nový profil bude spravovať doména <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Web <ph name="ORIGIN" /> môže upravovať súbor <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Všetci vás budú vidieť <ph name="MINUTES" /> min. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Víta vás Steam pre Chromebook</translation>
@@ -8306,6 +8313,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9075413375877487220">Zlepšené bezpečné prehliadanie nepovažuje toto rozšírenie za dôveryhodné.</translation>
 <translation id="9076283476770535406">Môže zahŕňať obsah pre dospelých</translation>
 <translation id="9076523132036239772">Je nám ľúto, e-mailovú adresu alebo heslo sa nepodarilo overiť. Skúste sa najprv pripojiť k sieti.</translation>
+<translation id="9076821103818989526">Bočný panel</translation>
 <translation id="9076977315710973122">Zdieľané úložisko SMB</translation>
 <translation id="9078193189520575214">Ukladajú sa zmeny...</translation>
 <translation id="9078316009970372699">Deaktivovať dynamický tethering</translation>

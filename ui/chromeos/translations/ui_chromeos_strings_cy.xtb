@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Rhannu'r ffolder gyda Parallels Desktop</translation>
 <translation id="1439919885608649279">Person â blodau</translation>
 <translation id="1471718551822868769">Slofac</translation>
-<translation id="1474339897586437869">Ni chafodd "<ph name="FILENAME" />" ei uwchlwytho. Nid oes digon o le ar gael yn eich Google Drive.</translation>
 <translation id="1482884275703521657">Ffineg</translation>
 <translation id="148466539719134488">Y Swistir</translation>
 <translation id="1497522201463361063">Methu ag ailenwi "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Diogel</translation>
 <translation id="2638942478653899953">Ni ellid cyrraedd Google Drive. <ph name="BEGIN_LINK" />Allgofnodwch<ph name="END_LINK" /> a mewngofnodwch eto.</translation>
 <translation id="2649120831653069427">Pysgodyn seithliw</translation>
+<translation id="2653059201992392941">Mae gennych <ph name="RETRIES" /> ymgais ar ôl.</translation>
 <translation id="2663066752008346276">Byrmaneg/Myanmar gyda bysellfwrdd Myansan</translation>
 <translation id="2664412712123763093">Lleoliad ffeil</translation>
 <translation id="2718540689505416944">Gosod yr ap gyda Linux</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Gwagio'r Bin Sbwriel</translation>
 <translation id="5163869187418756376">Wedi methu â rhannu. Gwiriwch eich cysylltiad a rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="516592729076796170">Dvorak Rhaglennwr UDA</translation>
-<translation id="5170477580121653719">Lle storio Google Drive sydd ar ôl: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Gwedd fân-lun</translation>
 <translation id="5194713942430106590">Cliciwch i drefnu'r golofn mewn trefn esgynnol.</translation>
 <translation id="5211614973734216083">Ffaroes</translation>
@@ -529,6 +528,7 @@
 <translation id="5489067830765222292">Latfieg</translation>
 <translation id="5489965683297092283">Mae'r hidlydd <ph name="FILTER_NAME" /> wedi'i ddiffodd.</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
+<translation id="5500104704744051184">Ni fyddwch yn gallu defnyddio'r rhwydwaith hwn nes i chi roi'r PUK</translation>
 <translation id="5500122897333236901">Islandeg</translation>
 <translation id="5508696409934741614">Dotiau</translation>
 <translation id="5522908512596376669">Mae'r rhestr ffeiliau wedi newid i wedd rhestr.</translation>
@@ -634,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> eitem</translation>
 <translation id="642282551015776456">Ni chaniateir defnyddio'r enw hwn fel enw ffeil neu ffolder</translation>
 <translation id="6423031066725912715">Fietnameg gyda bysellfwrdd TCVN</translation>
+<translation id="6430271654280079150">Mae gennych 1 ymgais ar ôl.</translation>
 <translation id="6485131920355264772">Methwyd ag adfer gwybodaeth am le</translation>
 <translation id="6495925982925244349">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rheolir gan eich Gweinyddwr, Manylion</translation>
 <translation id="649877868557234318">Yn echdynnu <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>
@@ -900,6 +901,7 @@
 <translation id="8579285237314169903">Wrthi'n cysoni <ph name="NUMBER_OF_FILES" /> o eitemau…</translation>
 <translation id="8600173386174225982">Mae'r rhestr ffeiliau wedi newid i olwg mân-luniau.</translation>
 <translation id="8601932370724196034">Ffeil llun Crostini</translation>
+<translation id="8608515571837163082">Rhoddwyd y PIN anghywir gormod o weithiau. Rhowch yr Allwedd Ddadrwystro Bersonol (PUK) 8-digid a ddarperir gan y cludwr.</translation>
 <translation id="8609695766746872526">Islandeg</translation>
 <translation id="863903787380594467">PIN anghywir. Mae gennych <ph name="RETRIES" /> ymgais ar ôl.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porth</translation>

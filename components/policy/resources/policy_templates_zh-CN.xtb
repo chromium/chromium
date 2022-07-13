@@ -916,17 +916,6 @@
 <translation id="1962864958436828230">设定数据大小下限以与旨在预防数据泄露的剪贴板限制规则搭配使用</translation>
 <translation id="1964634611280150550">隐身模式已停用</translation>
 <translation id="1964802606569741174">此政策对 Android 版 YouTube 应用没有任何影响。如果应在 YouTube 中强制启用安全模式，则应禁止安装 Android 版 YouTube 应用。</translation>
-<translation id="1965363065727209968">setTimeout(…, 0) 通常用于中断耗时较长的 JavaScript 任务。
-          如果此政策设为 Enabled，系统不会主动将时间间隔小于 4 毫秒的 setTimeout 和 setInterval 强制设为下限值。
-          这可以提升短时间内的性能，但如果网站滥用该 API，其 setTimeout 最终仍会被强制设为下限值。
-
-          这可能会改变网页上的任务排序，从而导致以某种方式依赖于特定顺序的网站上出现意外行为。
-          这可能还会影响大量使用超时设为 0 毫秒的 setTimeout() 的网站，例如增加 CPU 负载。
-
-          对于未设置此政策的用户，<ph name="PRODUCT_NAME" /> 将在稳定渠道上逐步推出相应变更。
-
-          这是一项暂时性政策，我们计划在 <ph name="PRODUCT_NAME" /> 107 中将其移除。如果众多企业需要此政策，这个期限可能会延长。
-          </translation>
 <translation id="1967334955994230472">停用投影仪</translation>
 <translation id="1969212217917526199">覆盖与远程访问主机的调试版本号相关的政策。
 
@@ -1697,6 +1686,9 @@
 <translation id="274769314493317695">如果为 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" />，您便可通过设置 <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
 
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />。</translation>
+<translation id="2751959596774212778">自 M107 起，不安全情境中的 WebSQL 默认处于关闭状态，并将在 M110 中被完全移除。
+          如果此政策设为 false 或未设置，不安全情境中的 WebSQL 将保持开启状态至 M106 结束时，然后自 M107 起会默认处于关闭状态。
+          如果此政策设为 true，系统将启用不安全情境中的 WebSQL。</translation>
 <translation id="2752046642026416564">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 便可使用在用户级安装的本地消息传递主机。
 
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将只能使用在系统级安装的本地消息传递主机。</translation>
@@ -4068,7 +4060,6 @@
 <translation id="5475361623548884387">启用打印功能</translation>
 <translation id="547601067149622666">不允许含侵扰性广告的网站展示广告</translation>
 <translation id="5476152378885134514">禁止这些网站使用剪贴板</translation>
-<translation id="5478734531226638813">如果设置此政策，系统将禁止在会话期间更新自助服务终端 Chrome 应用（此类更新使用扩展程序清单中的更新网址），仅保留 CRX 预提取作为更新机制。</translation>
 <translation id="5480380613778757009">如果此政策已停用或未设置，系统将会在受管理访客会话完成后立即重置该会话中已设置的所有显示设置。如果此政策设为 True，系统将会在退出受管理访客会话后保留该会话的显示属性。</translation>
 <translation id="5483065054530244863">允许使用由本地信任锚颁发的 SHA-1 签名证书</translation>
 <translation id="5487758664517243511">如果启用此设置，已选择启用 Phone Hub 功能的用户将能够在 Chrome 操作系统中继续执行尚未在手机中完成的任务（例如查看手机中的网页）。
@@ -4308,11 +4299,6 @@
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="5749396052108288586">此政策已被弃用。请改用 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="574983287620584622">在登录屏幕上启用无障碍功能快捷方式</translation>
-<translation id="5749873635525257317">此政策已被弃用，请考虑改用 BrowserSignin。
-
-      允许用户登录 <ph name="PRODUCT_NAME" />。
-
-      如果您设置了此政策，则可配置是否允许用户登录 <ph name="PRODUCT_NAME" />。如果此政策设为“False”，使用 chrome.identity API 的应用和扩展程序将无法正常运行，所以您最好改用 <ph name="SYNC_DISABLED_POLICY_NAME" />。</translation>
 <translation id="5755002458331714762"> Web Components v0 API（Shadow DOM v0、Custom Elements v0 和 HTML Imports）已于 2018 年被弃用，并且从 M80 起就已默认处于停用状态。此政策允许有选择地重新启用这些功能直至 M84。
 
       如果此政策设为 True，系统会为所有网站启用 Web Components v0 功能。
@@ -5486,6 +5472,7 @@
       如果选择“U2F”，集成的双重身份验证将会按照 FIDO U2F 规范发挥作用。
 
       如果选择“U2F_EXTENDED”，集成的双重身份验证将不仅会提供 U2F 功能，还会提供一些扩展功能以便进行个人验证。</translation>
+<translation id="6998179760789945134">停用不安全情境中的 WebSQL，除非已通过 Chrome flag 启用。</translation>
 <translation id="6999948519306285655">此政策已被弃用，请改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
        通过设置此政策，您可以指定代理 .pac 文件的网址。此政策仅在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未被指定并且您选择了 <ph name="PROXY_MODE_POLICY_NAME" /> 中的 <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> 时生效。
@@ -6039,14 +6026,6 @@
       如果此政策已启用或未设置，系统将启用快速解答单位换算功能。
       如果此政策已停用，系统将停用快速解答单位换算功能。</translation>
 <translation id="7587345076013230465">当登录屏幕上有多份客户端证书与自动选择政策匹配时，提示用户做出选择</translation>
-<translation id="7590188804371204512">控制外部扩展程序的安装。
-
-      启用此设置会禁止安装外部扩展程序。
-
-      停用或不设定此设置则会允许安装外部扩展程序。
-
-      要查看外部扩展程序及其安装方法，请参阅 https://developer.chrome.com/apps/external_extensions 上的文档。
-      </translation>
 <translation id="759957074386651883">安全浏览设置</translation>
 <translation id="7604169113182304895">Android 应用可能会主动选择采纳该列表。您无法强制此类应用采纳该列表。</translation>
 <translation id="7612157962821894603">在 <ph name="PRODUCT_NAME" /> 启动时应用于整个系统的设置</translation>
@@ -7231,6 +7210,7 @@
 <translation id="8919100556245407184">如果 <ph name="PRODUCT_OS_NAME" />版本低于指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />，系统会在自动更新到期日已过多少天后强制用户退出登录</translation>
 <translation id="8919369436496201075">允许设备接收 LTS 更新</translation>
 <translation id="8921669704201370845">为受管理个人资料启用 <ph name="PRODUCT_NAME" /> 云报告功能</translation>
+<translation id="8922494933893518624">强制启用不安全情境中的 WebSQL。</translation>
 <translation id="8930064580550462145">在用户通过锁定屏幕登录期间，<ph name="PRODUCT_OS_NAME" />可通过服务器（在线）或使用缓存的密码（离线）来验证用户的身份。
 
       如果设为 -2，此政策会与登录屏幕离线登录时间限制（来自 <ph name="POLICY" />）的值相匹配。

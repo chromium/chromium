@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Parallels Desktopతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="1439919885608649279">పూలను పట్టుకున్న వ్యక్తి</translation>
 <translation id="1471718551822868769">స్లోవాక్</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" అప్‌లోడ్ కాలేదు. మీ Google Driveలో తగినంత ఖాళీ స్థలం లేదు.</translation>
 <translation id="1482884275703521657">ఫిన్నిష్</translation>
 <translation id="148466539719134488">స్విస్</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" పేరు మార్చడం సాధ్యపడలేదు. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">సురక్షితమైంది</translation>
 <translation id="2638942478653899953">Google Driveను చేరుకోవడం సాధ్యపడలేదు. దయచేసి <ph name="BEGIN_LINK" />లాగ్ అవుట్<ph name="END_LINK" /> చేసి, తిరిగి లాగిన్ చేయండి.</translation>
 <translation id="2649120831653069427">రెయిన్‌బోఫిష్</translation>
+<translation id="2653059201992392941">మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
 <translation id="2663066752008346276">మయన్‌సన్ కీబోర్డ్‌తో బర్మీస్/మయన్మార్</translation>
 <translation id="2664412712123763093">ఫైల్ లొకేషన్</translation>
 <translation id="2718540689505416944">Linuxతో యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">ట్రాష్‌ను ఖాళీ చేయి</translation>
 <translation id="5163869187418756376">షేర్ చేయడం విఫలమైంది. మీ కనెక్షన్‌ను తనిఖీ చేసి, తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="516592729076796170">US ప్రోగ్రామర్ డ్వోరక్</translation>
-<translation id="5170477580121653719">Google Driveలో మిగిలి ఉన్న ఖాళీ: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">సూక్ష్మచిత్ర వీక్షణ</translation>
 <translation id="5194713942430106590">నిలువు వరుసను ఆరోహణ క్రమంలో వర్గీకరించడానికి క్లిక్ చేయండి.</translation>
 <translation id="5211614973734216083">ఫారోస్</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">లాత్వియన్</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ఫిల్టర్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
+<translation id="5500104704744051184">మీరు PUKను ఎంటర్ చేసే వరకు మీరు ఈ నెట్‌వర్క్‌ను ఉపయోగించలేరు</translation>
 <translation id="5500122897333236901">ఐస్‌లాండిక్</translation>
 <translation id="5508696409934741614">చుక్కలు</translation>
 <translation id="5522908512596376669">ఫైల్ లిస్ట్‌, "లిస్ట్‌ వీక్షణ"కు మార్చబడింది.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> అంశాలు</translation>
 <translation id="642282551015776456">ఈ పేరును ఫైల్ యొక్క ఫోల్డర్ పేరుగా ఉపయోగించలేము.</translation>
 <translation id="6423031066725912715">TCVN కీబోర్డ్‌తో వియత్నామీస్</translation>
+<translation id="6430271654280079150">మీకు 1 ప్రయత్నం మిగిలి ఉంది.</translation>
 <translation id="6485131920355264772">ఖాళీ సమాచారాన్ని తిరిగి పొందడం విఫలమైంది</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" />‌కు సంగ్రహించబడుతోంది</translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> అంశాలను సింక్ చేస్తోంది...</translation>
 <translation id="8600173386174225982">ఫైల్ లిస్ట్‌, "సూక్ష్మచిత్ర వీక్షణ"కు మార్చబడింది.</translation>
 <translation id="8601932370724196034">Crostini చిత్రం ఫైల్</translation>
+<translation id="8608515571837163082">చాలా ఎక్కువ సార్లు తప్పు PIN ఎంటర్ చేయబడింది. క్యారియర్ అందించిన 8-అంకెల వ్యక్తిగత అన్‌బ్లాకింగ్ కీ (PUK)ని ఎంటర్ చేయండి.</translation>
 <translation id="8609695766746872526">ఐస్‌లాండిక్</translation>
 <translation id="863903787380594467">పిన్ తప్పు. మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - పోర్ట్</translation>

@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Partekatu karpeta Parallels Desktop aplikazioarekin</translation>
 <translation id="1439919885608649279">Pertsona bat loreekin</translation>
 <translation id="1471718551822868769">Eslovakiarra</translation>
-<translation id="1474339897586437869">Ez da kargatu "<ph name="FILENAME" />". Ez dago leku nahikorik Google Drive-n.</translation>
 <translation id="1482884275703521657">Finlandiarra</translation>
 <translation id="148466539719134488">Suitzarra</translation>
 <translation id="1497522201463361063">Ezin da "<ph name="FILE_NAME" />" fitxategiaren izena aldatu. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Babestuta</translation>
 <translation id="2638942478653899953">Ezin izan da Google Drive-rekin konektatu. <ph name="BEGIN_LINK" />Amaitu saioa<ph name="END_LINK" /> eta hasi saioa berriro.</translation>
 <translation id="2649120831653069427">Arrain koloretsua</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="2663066752008346276">Birmaniarra, MyanSan teklatuarekin</translation>
 <translation id="2664412712123763093">Fitxategiaren kokapena</translation>
 <translation id="2718540689505416944">Instalatu aplikazioa Linux-ekin</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Hustu zaborrontzia</translation>
 <translation id="5163869187418756376">Ezin izan da partekatu. Egiaztatu konektatuta zaudela eta saiatu berriro geroago.</translation>
 <translation id="516592729076796170">AEBko programatzaileen Dvorak teklatua</translation>
-<translation id="5170477580121653719">Google Drive-n gelditzen den tokia: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Irudi txikien ikuspegia</translation>
 <translation id="5194713942430106590">Egin klik zutabea goranzko ordenan ezartzeko.</translation>
 <translation id="5211614973734216083">Faroetarra</translation>
@@ -529,6 +528,7 @@
 <translation id="5489067830765222292">Letoniarra</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> iragazkia inaktibo dago.</translation>
 <translation id="5494920125229734069">Hautatu guztiak</translation>
+<translation id="5500104704744051184">Ezingo duzu erabili sarea PUKa idatzi arte</translation>
 <translation id="5500122897333236901">Islandiarra</translation>
 <translation id="5508696409934741614">Puntuak</translation>
 <translation id="5522908512596376669">Zerrenda-ikuspegira aldatu da fitxategi-zerrenda.</translation>
@@ -634,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementu</translation>
 <translation id="642282551015776456">Izena ezin da erabili fitxategi- edo karpeta-izen gisa</translation>
 <translation id="6423031066725912715">Vietnamdarra, TCVN teklatuarekin</translation>
+<translation id="6430271654280079150">Saiakera bat gelditzen zaizu.</translation>
 <translation id="6485131920355264772">Ezin izan da berreskuratu zuriuneei buruzko informazioa</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />; <ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetara ateratzen</translation>
@@ -900,6 +901,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elementu sinkronizatzen…</translation>
 <translation id="8600173386174225982">Irudi txikiko ikuspegira aldatu da fitxategi-zerrenda.</translation>
 <translation id="8601932370724196034">Crostini motako irudi-fitxategia</translation>
+<translation id="8608515571837163082">PINa gehiegitan idatzi da oker. Idatzi operadoreak emandako zortzi digituko desblokeatzeko gako pertsonala (PUKa).</translation>
 <translation id="8609695766746872526">Islandiarra</translation>
 <translation id="863903787380594467">PINa okerra da. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Ataka</translation>

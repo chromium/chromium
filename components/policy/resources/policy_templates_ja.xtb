@@ -879,17 +879,6 @@
 <translation id="1962864958436828230">データ漏洩防止のクリップボード制限の最小サイズを設定する</translation>
 <translation id="1964634611280150550">シークレット モードを無効にする</translation>
 <translation id="1964802606569741174">このポリシーは Android YouTube アプリには適用されません。YouTube でセーフモードを有効にする場合は、Android YouTube アプリのインストールを禁止する必要があります。</translation>
-<translation id="1965363065727209968">setTimeout(…, 0) は、一般的に長い JavaScript タスクを分割する目的で使用されます。
-          このポリシーを有効に設定した場合、4 ミリ秒未満の間隔が指定された setTimeouts と setIntervals は積極的にはクランプされません。
-          これにより短期的および水平的なパフォーマンスは向上しますが、API を誤用しているウェブサイトでは引き続き setTimeouts がクランプされることになります。
-
-          ウェブページによってはタスクの実行順序が変更され、特定の実行順序でのみ機能するサイトでは予期しない動作が発生することがあります。
-          また、タイムアウトを 0 ミリ秒に設定した setTimeout() が多く使用されているサイトでも影響が生じる可能性があります（CPU の負荷が増加するなど）。
-
-          このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> の Stable チャンネルで段階的に変更が適用されます。
-
-          これは、<ph name="PRODUCT_NAME" /> 107 で削除が計画されている一時的なポリシーです。企業からのニーズがある場合、この期限は延長される可能性があります。
-          </translation>
 <translation id="1967334955994230472">プロジェクターを無効にする</translation>
 <translation id="1969212217917526199">リモート アクセス ホストの Debug ビルドでポリシーをオーバーライドします。
 
@@ -1616,6 +1605,9 @@
 <translation id="274769314493317695"><ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_WHITELIST" /> が選択されている場合、<ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> を使用してください。</translation>
+<translation id="2751959596774212778">セキュアでないコンテキストでの WebSQL は M107 の時点ではデフォルトでオフになっており、M110 では完全に削除されます。
+          このポリシーを false に設定するか未設定のままにした場合、セキュアでないコンテキストでの WebSQL は M106 の終了時までオンのままになり、M107 からオフになります。
+          このポリシーを true に設定した場合、セキュアでないコンテキストでの WebSQL は有効になります。</translation>
 <translation id="2752046642026416564">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> はユーザーレベルでインストールされたネイティブ メッセージング ホストを使用できます。
 
       このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> はシステムレベルでインストールされたネイティブ メッセージング ホストのみを使用できます。</translation>
@@ -3902,7 +3894,6 @@
 <translation id="5475361623548884387">印刷を有効にする</translation>
 <translation id="547601067149622666">煩わしい広告を含むサイトで広告の表示を許可しない</translation>
 <translation id="5476152378885134514">クリップボードの使用をブロックするサイトを指定する</translation>
-<translation id="5478734531226638813">このポリシーを設定すると、セッション中のキオスク Chrome アプリの更新（拡張機能マニフェストの更新 URL を使用）が無効になり、有効な更新メカニズムは CRX プリフェッチのみとなります。</translation>
 <translation id="5480380613778757009">このポリシーを無効にするか未設定のままにした場合、管理対象のゲスト セッションで設定されたディスプレイ設定はすべてセッションの終了時にリセットされます。このポリシーを True に設定した場合、管理対象のゲスト セッションが終了した後もディスプレイ プロパティが保持されます。</translation>
 <translation id="5483065054530244863">ローカルの信頼済みアンカーが発行した SHA-1 署名証明書を許可する</translation>
 <translation id="5487758664517243511">この設定を有効にした場合、スマートフォン ハブをすでにオプトインしているユーザーは、スマートフォンでのウェブページの閲覧などの作業を Chrome OS で継続できます。この設定を無効にした場合、ユーザーはこの機能を使用できません。PhoneHubAllowed ポリシーを無効にした場合も、ユーザーはこの機能を使用できません。このポリシーを未設定のままにした場合、デフォルトでは、企業の管理対象ユーザーと管理対象外ユーザーのいずれもこの機能を使用できます。</translation>
@@ -4139,11 +4130,6 @@
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
 <translation id="5749396052108288586">このポリシーはサポートを終了しました。代わりに <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> を使用してください。</translation>
 <translation id="574983287620584622">ログイン画面でユーザー補助機能のショートカットを有効にする</translation>
-<translation id="5749873635525257317">このポリシーはサポートが終了しています。代わりに BrowserSignin の使用をご検討ください。
-
-      ユーザーによる <ph name="PRODUCT_NAME" /> へのログインを許可します。
-
-      このポリシーでは、ユーザーによる <ph name="PRODUCT_NAME" /> へのログインを許可するかどうかを設定できます。このポリシーを「False」に設定すると、chrome.identity API を使用するアプリや拡張機能が機能しなくなるため、代わりに <ph name="SYNC_DISABLED_POLICY_NAME" /> の使用をおすすめします。</translation>
 <translation id="5755002458331714762"> Web Components v0 API（Shadow DOM v0、Custom Elements v0、HTML Imports）は 2018 年にサポートが終了し、M80 以降ではデフォルトで無効となっていますが、このポリシーにより M84 までこれらの機能を再度有効にできるようにしました。
 
       このポリシーを True に設定した場合、Web Components v0 の機能はすべてのサイトで有効になります。このポリシーを False に設定するか未設定のままにした場合、Web Components v0 の機能は M80 以降においてデフォルトで無効になります。
@@ -5257,6 +5243,7 @@
       [U2F] を選択した場合は、統合 2 段階認証プロセスが FIDO U2F 仕様に沿って適用されます。
 
       [U2F_EXTENDED] を選択した場合は、統合 2 段階認証プロセスで U2F の機能と個人認証用の拡張機能を使用できます。</translation>
+<translation id="6998179760789945134">Chrome フラグで有効になっていない限り、セキュアでないコンテキストでの WebSQL を無効にする</translation>
 <translation id="6999948519306285655">このポリシーはサポートが終了しています。代わりに <ph name="PROXY_SETTINGS_POLICY_NAME" /> を使用してください。
 
        このポリシーでは、プロキシ .pac ファイルへの URL を指定できます。このポリシーは、<ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを指定せずに、<ph name="PROXY_MODE_POLICY_NAME" /> で <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> を選択した場合のみ適用されます。
@@ -5790,14 +5777,6 @@
       このポリシーを有効にした場合、または設定しない場合、クイック アンサーの単位変換が有効になります。
       このポリシーを無効にした場合、クイック アンサーの単位変換が無効になります。</translation>
 <translation id="7587345076013230465">ログイン画面で自動選択ポリシーが複数の証明書と一致した場合に、クライアント証明書を選択するよう求めるメッセージを常にユーザーに表示する</translation>
-<translation id="7590188804371204512">外部拡張機能のインストールを管理します。
-
-      この設定を有効にした場合、外部拡張機能のインストールはブロックされます。
-
-      この設定を無効にするか未設定のままにした場合、外部拡張機能のインストールは許可されます。
-
-      外部拡張機能とそのインストール方法については、https://developer.chrome.com/apps/external_extensions をご覧ください。
-      </translation>
 <translation id="759957074386651883">セーフ ブラウジングの設定</translation>
 <translation id="7604169113182304895">このリストを使用するかどうかは Android アプリ側の選択となります。Android アプリにリストの使用を強制することはできません。</translation>
 <translation id="7612157962821894603"><ph name="PRODUCT_NAME" /> 起動時にシステム全体のフラグを適用</translation>
@@ -6946,6 +6925,7 @@
 <translation id="8919100556245407184"><ph name="PRODUCT_OS_NAME" /> のバージョンが指定の <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> よりも前の場合に、自動更新の有効期限の通知後、ユーザーがログアウトされるまでの期間（日）</translation>
 <translation id="8919369436496201075">デバイスで LTS のアップデートを受信できるようにする</translation>
 <translation id="8921669704201370845">管理対象プロファイルの <ph name="PRODUCT_NAME" /> クラウド レポートを有効にする</translation>
+<translation id="8922494933893518624">セキュアでないコンテキストでの WebSQL を強制的に有効にする。</translation>
 <translation id="8930064580550462145"><ph name="PRODUCT_OS_NAME" /> では、ロック画面でのログイン時に、サーバーに対して（オンラインで）、またはキャッシュに保存されたパスワードを使用して（オフラインで）、認証を行うことができます。
 
       このポリシーの値を -2 に設定した場合は、<ph name="POLICY" /> で指定されたログイン画面でのオフラインのログインの時間制限と同じ値が適用されます。

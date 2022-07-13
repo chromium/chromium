@@ -1244,6 +1244,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi थप्नुहोस्...</translation>
 <translation id="2162155940152307086">तपाईंले सिंकसम्बन्धी सेटिङहरूको पृष्ठ छोडेपछि सिंक सुरु हुने छ</translation>
+<translation id="2162705204091149050">तपाईंका ब्राउजर, OS, डिभाइस, इन्स्टल गरिएका सफ्टवेयर र फाइलहरूसम्बन्धी जानकारी पढ्नुहोस्</translation>
 <translation id="2162926944953615670">कुनै पनि eSIM प्रोफाइल उपलब्ध छैन</translation>
 <translation id="2163470535490402084">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्न कृपया इन्टरनेट कनेक्ट गर्नुहोस्।</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र थप एउटा स्विच</translation>
@@ -1264,6 +1265,7 @@
 <translation id="2180620921879609685">कुनै पनि पेजमा भएका सामग्री ब्लक गर्न</translation>
 <translation id="2182058453334755893">तपाईंको क्लिपबोर्डमा प्रतिलिपि गरियो</translation>
 <translation id="2184515124301515068">साइटहरूले ध्वनि कहिले प्ले गर्न सक्छन् भन्ने कुरा Chrome लाई छनौट गर्न दिनुहोस् (सिफारिस गरिएको)</translation>
+<translation id="2186206192313702726">Google लेन्स</translation>
 <translation id="2186711480981247270">अर्को डिभाइसबाट पेज सेयर गरिएको छ</translation>
 <translation id="2187675480456493911">तपाईंको खाता साइन इन गरिएका अन्य यन्त्रमा सिंक गरिएको छ। अन्य प्रयोगकर्ताहरूले परिमार्जन गरेका सेटिङ सिंक गरिने छैनन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">सर्भर सर्टिफिकेट आयात त्रुटि</translation>
@@ -2491,6 +2493,7 @@
 <translation id="3359256513598016054">प्रमाणपत्र नीति अवरोधहरू</translation>
 <translation id="3360297538363969800">प्रिन्टिङ असफल भयो। कृपया तपाइँको मुद्रक जाँच्नुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ले तपाईंसँग <ph name="ATTACHMENTS" /> सेयर गर्ने प्रयास गर्दै छ।}other{<ph name="DEVICE_NAME" /> ले तपाईंसँग <ph name="ATTACHMENTS" /> सेयर गर्ने प्रयास गर्दै छ।}}</translation>
+<translation id="3363202073972776113">तपाईंको सङ्गठनले यो नयाँ प्रोफाइल व्यवस्थापन गर्ने छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">तपाईंका प्रशासकको सन्देश: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl वा Alt मध्ये कुनै एक प्रयोग गर्नुहोस्</translation>
 <translation id="3368922792935385530">जडित</translation>
@@ -2525,6 +2528,7 @@
 <translation id="339722927132407568">भिडियो अड्किन्छ</translation>
 <translation id="3399432415385675819">सूचनाहरू प्राप्त गर्ने सुविधालाई असक्षम पारिनेछ</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - अन्तर्गर्भित</translation>
+<translation id="3401484564516348917">तपाईंका ब्राउजर, OS, डिभाइस, इन्स्टल गरिएका सफ्टवेयर, रेजिस्ट्री मान र फाइलहरूसम्बन्धी जानकारी पढ्नुहोस्</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{यो डिभाइसमा {COUNT} पासवर्ड भण्डारण गरिएको छ}other{यो डिभाइसमा {COUNT} वटा पासवर्ड भण्डारण गरिएका छन्}}</translation>
 <translation id="3402255108239926910">कुनै अवतार रोज्नुहोस्</translation>
 <translation id="3402585168444815892">डेमो मोडमा दर्ता गर्दै</translation>
@@ -2771,6 +2775,7 @@
 <translation id="3627879631695760395"><ph name="APP" />स्थापना गर्नु...</translation>
 <translation id="3628275722731025472">ब्लुटुथ अफ गर्नुहोस्</translation>
 <translation id="3629631988386925734">Smart Lock सक्षम पार्न आफ्नो पासवर्ड प्रविष्टि गर्नुहोस्। अर्को पटकदेखि तपाईंको फोनले तपाईंको <ph name="DEVICE_TYPE" /> अनलक गर्ने छ। तपाईं सेटिङहरूमा गई Smart Lock निष्क्रिय पार्न सक्नुहुन्छ।</translation>
+<translation id="3629664892718440872">यो रोजाइ याद राखियोस्</translation>
 <translation id="3630132874740063857">तपाईंको फोन</translation>
 <translation id="3630995161997703415">यो साइट जुनसुकै बेला प्रयोग गर्न यसलाई आफ्नो सेल्फमा थप्नुहोस्</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />तपाईंले ChromeOS डिभाइसहरूलाई रिपोर्ट स्वतः पठाउने अनुमति दिनुभयो भने हामी ChromeOS मा सबैभन्दा पहिले समाधान गर्नु पर्ने समस्याका बारेमा थाहा पाउनुका साथै ChromeOS को गुणस्तर सुधार्न सक्छौँ। यी रिपोर्टमा ChromeOS क्र्यास भएको समय, तपाईंले प्रयोग गर्ने सेवाहरू र तपाईं सामान्यतया कति मेमोरी प्रयोग गर्नुहुन्छ भन्ने कुराको जानकारीलगायतका कुराहरू समावेश हुन सक्छ।<ph name="END_PARAGRAPH1" />
@@ -3259,6 +3264,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">यो साइटलाई MIDI यन्त्रहरू पूर्ण रूपमा नियन्त्रण गर्न दिइएन</translation>
+<translation id="4087328411748538168">दायाँपट्टि देखाइयोस्</translation>
 <translation id="4089235344645910861">सेटिङहरू सेभ गरियो। सिंक सुरु भयो।</translation>
 <translation id="4090103403438682346">रुजू गरिएको पहुँच सक्षम बनाउनुहोस्</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> का साइटसम्बन्धी अनुमतिहरू रिसेट गर्ने हो?</translation>
@@ -3951,6 +3957,7 @@
 <translation id="4779766576531456629">eSIM मोबाइल नेटवर्कको नाम बदल्नुहोस्</translation>
 <translation id="4780321648949301421">पृष्ठलाई निम्न रूपमा बचत गर्नुहोस्...</translation>
 <translation id="4781443161433589743">तपाईं Chrome को सबैभन्दा भरपर्दो सुरक्षा प्रयोग गर्दै हुनुहुन्छ</translation>
+<translation id="4782861709165039462">डिभाइसहरूको हार्डवेयर स्विचले सबै माइक्रोफोन अफ गरेको छ</translation>
 <translation id="4785719467058219317">तपाईं यस वेबसाइटमा दर्ता नगरिएको सुरक्षा साँचो प्रयोग गर्दै हुनुहुन्छ</translation>
 <translation id="4785914069240823137">क्रप गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="4788092183367008521">कृपया आफ्नो इन्टरनेटको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -4219,7 +4226,6 @@
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome कस्टमाइज गर्नुहोस्<ph name="END_LINK" /> मा गई कार्डसम्बन्धी सबै विकल्पहरू हेर्नुहोस्</translation>
 <translation id="5056950756634735043">कन्टेनरमा कनेक्ट गरिँदै छ</translation>
 <translation id="5057110919553308744">तपाईंले विस्तारमा क्लिक गर्दा</translation>
-<translation id="505776528429481161">नजिकै रहेका डिभाइसहरू सजिलै कनेक्ट तथा सेटअप गर्नुहोस्</translation>
 <translation id="5059241099014281248">साइन इन गर्ने कार्य प्रतिबन्धित गर्नुहोस्</translation>
 <translation id="5059526285558225588">सेयर गरिनु पर्ने जानकारी छनौट गर्नुहोस्</translation>
 <translation id="5060332552815861872">सुरक्षित गर्नका लागि १ प्रिन्टर उपलब्ध छ।</translation>
@@ -4718,6 +4724,7 @@
 <translation id="5548075230008247516">सबै वस्तुहरूको चयन रद्द गरियो, छनौट मोडबाट बाहिरियो।</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" र अरू १ ट्याब}other{"<ph name="TAB_TITLE" />" र अरू # ट्याबहरू}}</translation>
 <translation id="5548606607480005320">सुरक्षा जाँच</translation>
+<translation id="5548644592758170183">बायाँपट्टि देखाइयोस्</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">किबोर्ड र पाठ इनपुट</translation>
 <translation id="5553089923092577885">प्रमाणपत्र नीति मानचित्रहरू</translation>
@@ -8198,6 +8205,7 @@
 <translation id="8980345560318123814">प्रतिक्रियासम्बन्धी रिपोर्टहरू</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - क्र्याश भएको छ</translation>
 <translation id="8981825781894055334">प्रिन्टरको कागज सकिनै लागेको छ</translation>
+<translation id="8983018820925880511"><ph name="DOMAIN" /> ले यो नयाँ प्रोफाइल व्यवस्थापन गर्ने छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> सम्पादन गर्न सक्छ</translation>
 <translation id="8984694057134206124">तपाईंको यन्त्र <ph name="MINUTES" /> मिनेटसम्म सबै जनाले देख्नु हुने छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook को Steam मा स्वागत छ</translation>
@@ -8294,6 +8302,7 @@
 <translation id="9075413375877487220">परिष्कृत Safe Browsing का अनुसार यो एक्स्टेन्सन सुरक्षित छैन।</translation>
 <translation id="9076283476770535406">यसमा वयस्क सम्बन्धी सामग्री हुन सक्छ</translation>
 <translation id="9076523132036239772">माफ गर्नुहोस्, तपाइँको इमेल वा पासवर्ड रुजू गर्न सकिएन। पहिला एक सञ्जालमा जडान गर्ने प्रयास गर्नुहोस्।</translation>
+<translation id="9076821103818989526">साइड प्यानल</translation>
 <translation id="9076977315710973122">SMB मार्फत सेयर गर्ने सेटिङ</translation>
 <translation id="9078193189520575214">परिवर्तनहरू लागू गरिँदै छन्...</translation>
 <translation id="9078316009970372699">तात्कालिक टेदरिङ असक्षम पार्नुहोस्</translation>

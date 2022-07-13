@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">Оқу тізімі</translation>
 <translation id="1264309058268477500">Басқа</translation>
 <translation id="1264974993859112054">Спорт</translation>
+<translation id="1266469291454105242">Құрылғының құлпын ашу</translation>
 <translation id="1269516672602708785">Google Sites-та жылдам жаңа сайт жасау</translation>
 <translation id="1270502636509132238">Таңдау әдісі</translation>
 <translation id="1281476433249504884">1-жинастырушы</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">Танысу және оған қатысты хабарландырулар</translation>
 <translation id="1753706481035618306">Бет нөмірі</translation>
 <translation id="1755621011177747277">Бала асырап алу</translation>
+<translation id="1756026472674246267">Сілтемені жаңа қойындыда ашу</translation>
 <translation id="175656076281618225">Сиқыр</translation>
 <translation id="1757773103848038814">Monospace қарпі</translation>
 <translation id="1763864636252898013">Бұл сервер оның <ph name="DOMAIN" /> екендігін дәлелдей алмайды; оның қауіпсіздік сертификаты құрылғының операциялық жүйесі арқылы тексерілмеген. Бұған конфигурация ақаулығы немесе қаскүнемнің қосылымыңызды тоқтатуы себеп болуы мүмкін.</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">Төлемнен бас тарту</translation>
 <translation id="2148613324460538318">Картаны енгізу</translation>
 <translation id="2149968176347646218">Байланыс қауіпсіз емес</translation>
+<translation id="2153609454945889823">Google Play Services for AR қолданбасын орнату керек пе?</translation>
 <translation id="2154054054215849342">Синхрондау функциясы доменіңіз үшін қолжетімді емес</translation>
 <translation id="2154484045852737596">Карта мәліметін өңдеу</translation>
 <translation id="2161656808144014275">Мәтін</translation>
@@ -831,6 +834,7 @@
 <translation id="3229277193950731405">Нұсқа жолын көшіру</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> картасының CVC кодын енгізіңіз</translation>
 <translation id="3234666976984236645">Әрқашан осы сайттағы маңызды мазмұнды анықтау</translation>
+<translation id="3238395604961564389">Сілтемені инкогнито терезесінде ашу</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Браузер көрінісін реттеу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3240791268468473923">Қауіпсіз төлемге арналған деректердің сәйкес келмейтіндігі көрсетілген парақ ашылды.</translation>
 <translation id="324180406144491771">"<ph name="HOST_NAME" />" сілтемелері бөгелген</translation>
@@ -944,6 +948,7 @@
 <translation id="3531780078352352885">Тапсырма парақтары</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> хосты микрофоныңызды пайдаланғысы келеді</translation>
 <translation id="3533328374079021623">5-ші пошта жәшігі</translation>
+<translation id="3542768452570884558">Сілтемені жаңа терезеде ашу</translation>
 <translation id="3550112004925580947">Қонақ үй индустриясы</translation>
 <translation id="3552297013052089404">Sans-serif қарпі</translation>
 <translation id="3558573058928565255">Күн, уақыт</translation>
@@ -1114,11 +1119,13 @@
 <translation id="4040350669425716613">Колледждер мен университеттер</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" кілті: <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Карталарды жылдамырақ растау үшін құрылғының құлпын ашу функциясын пайдаланыңыз.</translation>
 <translation id="4067098466788473230">Оқу гранттары мен шәкіртақылары</translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">Жарамды мекенжайды енгізу</translation>
 <translation id="4072193657607981494">Саясаттар жүктелуде</translation>
 <translation id="4072486802667267160">Төлем жасау кезінде қате кетті. Әрекетті қайталаңыз.</translation>
+<translation id="4073376909608563327">Құрылғының құлпын ашу функциясын пайдалану мүмкін болмады</translation>
 <translation id="4073797364926776829">Картаны көру</translation>
 <translation id="4075732493274867456">Клиент пен сервер ортақ SSL протоколының нұсқасын немесе шифрлар жиынтығын қолдамайды.</translation>
 <translation id="4079302484614802869">Прокси конфигурациясы бекітілген прокси серверлерді емес, .pac сценарий URL мекенжайын пайдалануға орнатылған.</translation>
@@ -1411,6 +1418,7 @@
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> және т. б. дүкендердің жеңілдіктерін алыңыз</translation>
+<translation id="484988093836683706">Құрылғының құлпын ашу функциясын пайдалану</translation>
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="4852429274334674023">Операциялық жүйелер</translation>
 <translation id="485316830061041779">неміс</translation>
@@ -1798,6 +1806,7 @@
 <translation id="5921185718311485855">Қосулы</translation>
 <translation id="5921639886840618607">Картаны Google аккаунтына сақтау қажет пе?</translation>
 <translation id="5922853866070715753">Аяқтап қалдыңыз</translation>
+<translation id="5923492272538889093">CVC-дің орнына құрылғының құлпын ашу функциясын пайдалану керек пе?</translation>
 <translation id="5928444777041341328">Үй және бақша</translation>
 <translation id="5932224571077948991">Сайтта мазалайтын не жалған ақпаратты жарнамалар көрсетіледі</translation>
 <translation id="5937560539988385583">Бет аударылды.</translation>
@@ -1971,6 +1980,7 @@
 <translation id="643051589346665201">Google құпия сөзін өзгерту</translation>
 <translation id="6433490469411711332">Байланыс ақпаратын өңдеу</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> байланыстан бас тартты.</translation>
+<translation id="6433797564277305076">Құрылғының құлпын ашу функциясы арқылы карталарды жылдамырақ растаңыз.</translation>
 <translation id="6440503408713884761">Еленбейді</translation>
 <translation id="6443406338865242315">қай кеңейтімдер мен плагиндерді орнатқаныңызды;</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -2177,6 +2187,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Бұл карта қазір сақталмайды}other{Бұл карталар қазір сақталмайды}}</translation>
 <translation id="7053983685419859001">Бөгеу</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> браузері <ph name="ISSUER" /> осы веб-сайттың сертификатын шығарғанын растады.</translation>
+<translation id="7058774143982824355">CSV құпия сөзін талдау қызметі</translation>
 <translation id="7061777300866737982">Үй қауіпсіздігі</translation>
 <translation id="7062635574500127092">Көкшіл жасыл</translation>
 <translation id="706295145388601875">Chrome параметрлері арқылы мекенжайларды қосу және басқару</translation>
@@ -2441,6 +2452,7 @@
 <translation id="7696089921647603491">Классикалық рок және ескі туындылар</translation>
 <translation id="7697066736081121494">Prc8 (Envelope)</translation>
 <translation id="769721561045429135">Осы құрылғыда ғана пайдаланылатын карталар бар. Карталарды қарап шығу үшін "Жалғастыру" түймесін басыңыз.</translation>
+<translation id="7698864304447945242">Google Play Services for AR қолданбасын жаңарту керек пе?</translation>
 <translation id="7699293099605015246">Дәл қазір мақалалар жоқ</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> сайтына өту (қауіпті)<ph name="END_LINK" /></translation>
@@ -2453,6 +2465,7 @@
 <translation id="7723047071702270851">Карта мәліметін өңдеу</translation>
 <translation id="7734285854693414638">Google Forms-да жылдам жаңа үлгі жасау</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер әрқашан аударылсын</translation>
+<translation id="7736959720849233795">Сілтеме мекенжайын көшіру</translation>
 <translation id="7740996059027112821">Стандартты</translation>
 <translation id="77424286611022110">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Қауіпті мазмұн бөгелді.</translation>

@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Parallels Desktop மூலம் ஃபோல்டரைப் பகிருங்கள்</translation>
 <translation id="1439919885608649279">பூக்களுடன் இருக்கும் நபர்</translation>
 <translation id="1471718551822868769">ஸ்லோவாக்</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" ஏற்றப்படவில்லை. உங்கள் Google இயக்ககத்தில் போதுமான காலியிடம் இல்லை.</translation>
 <translation id="1482884275703521657">ஃபின்னிஷ்</translation>
 <translation id="148466539719134488">சுவிஸ்</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" க்கு மறுபெயரிட முடியவில்லை. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">பாதுகாக்கப்பட்ட வைஃபை நெட்வொர்க்</translation>
 <translation id="2638942478653899953">Google இயக்ககத்தை அடைய முடியவில்லை. <ph name="BEGIN_LINK" />வெளியேறி<ph name="END_LINK" /> திரும்பவும் உள்நுழையவும்.</translation>
 <translation id="2649120831653069427">ரெய்ன்போஃபிஷ்</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> வாய்ப்புகள் மீதமுள்ளன.</translation>
 <translation id="2663066752008346276">பர்மீஸ்/மியான்மர் - மியான்சன் கீபோர்டு</translation>
 <translation id="2664412712123763093">ஃபைலின் இடம்</translation>
 <translation id="2718540689505416944">Linux ஆப்ஸை நிறுவுதல்</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">‘நீக்கியவையில்’ உள்ளவற்றை நீக்கு</translation>
 <translation id="5163869187418756376">பகிர்வு தோல்வியடைந்தது. உங்கள் இணைப்பைச் சரிபார்த்து, பிறகு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="516592729076796170">US புரோகிராமர் டிவோரக்</translation>
-<translation id="5170477580121653719">Google இயக்ககத்தில் காலியாக உள்ள இடம்: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">சிறுபட காட்சி</translation>
 <translation id="5194713942430106590">நெடுவரிசையை ஏறுவரிசைப்படுத்த கிளிக் செய்யவும்.</translation>
 <translation id="5211614973734216083">ஃபாரோசே</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">லாட்வியன்</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> வடிப்பான் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
+<translation id="5500104704744051184">PUKவை வழங்கினால் மட்டுமே இந்த நெட்வொர்க்கைப் பயன்படுத்த முடியும்</translation>
 <translation id="5500122897333236901">ஐஸ்லாண்டிக்</translation>
 <translation id="5508696409934741614">புள்ளிகள்</translation>
 <translation id="5522908512596376669">ஃபைல் பட்டியல் 'பட்டியல் காட்சிக்கு' மாறியுள்ளது.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ஃபைல்கள் </translation>
 <translation id="642282551015776456">ஃபோல்டர் பெயரின் ஃபைலாக இந்தப் பெயரைப் பயன்பட முடியாமல் போகக்கூடும்</translation>
 <translation id="6423031066725912715">வியட்நாமிஸ் - TCVN கீபோர்டு</translation>
+<translation id="6430271654280079150">1 வாய்ப்பு மீதமுள்ளது.</translation>
 <translation id="6485131920355264772">இடத் தகவலை மீட்டெடுப்பதில் தோல்வி</translation>
 <translation id="6495925982925244349">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ஃபைல் <ph name="FOLDER_NAME" /> ஃபோல்டருக்குப் பிரித்தெடுக்கப்படுகிறது</translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> உருப்படிகளை ஒத்திசைக்கிறது...</translation>
 <translation id="8600173386174225982">ஃபைல் பட்டியல் சிறுபடக் காட்சிக்கு மாறியுள்ளது.</translation>
 <translation id="8601932370724196034">Crostini பட ஃபைல்</translation>
+<translation id="8608515571837163082">பலமுறை தவறான பின்னை (PIN) வழங்கிவிட்டீர்கள். மொபைல் நெட்வொர்க் நிறுவனம் வழங்கிய, தடுப்பை நீக்குவதற்கான 8 இலக்கத் தனிப்பட்ட குறியீட்டை (PUK) வழங்கவும்.</translation>
 <translation id="8609695766746872526">ஐஸ்லாண்டிக்</translation>
 <translation id="863903787380594467">தவறான பின். <ph name="RETRIES" /> முயற்சிகள் மீதமுள்ளன.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - போர்ட்</translation>

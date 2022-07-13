@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
 <translation id="1439919885608649279">拿著花的人</translation>
 <translation id="1471718551822868769">斯洛伐克文</translation>
-<translation id="1474339897586437869">尚未上載 <ph name="FILENAME" />。「Google 雲端硬碟」沒有足夠空間。</translation>
 <translation id="1482884275703521657">芬蘭文</translation>
 <translation id="148466539719134488">瑞士文</translation>
 <translation id="1497522201463361063">無法重新命名「<ph name="FILE_NAME" />」。<ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">已受保護</translation>
 <translation id="2638942478653899953">無法連上「Google 雲端硬碟」。請<ph name="BEGIN_LINK" />登出<ph name="END_LINK" />並重新登入帳戶。</translation>
 <translation id="2649120831653069427">彩虹魚</translation>
+<translation id="2653059201992392941">你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="2663066752008346276">緬甸文，Myansan 鍵盤</translation>
 <translation id="2664412712123763093">檔案位置</translation>
 <translation id="2718540689505416944">透過 Linux 安裝應用程式</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">清空垃圾桶</translation>
 <translation id="5163869187418756376">共用失敗。請檢查連線狀態，然後再試一次。</translation>
 <translation id="516592729076796170">Programmer Dvorak 美式</translation>
-<translation id="5170477580121653719">「Google 雲端硬碟」剩餘空間：<ph name="SPACE_AVAILABLE" />。</translation>
 <translation id="5177526793333269655">縮圖檢視</translation>
 <translation id="5194713942430106590">按一下即可遞增排序欄位。</translation>
 <translation id="5211614973734216083">法羅文</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">拉脫維亞文</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" />篩選器閂咗。</translation>
 <translation id="5494920125229734069">全部選取</translation>
+<translation id="5500104704744051184">你必須先輸入 PUK，才能使用這個網路</translation>
 <translation id="5500122897333236901">冰島文</translation>
 <translation id="5508696409934741614">圓點</translation>
 <translation id="5522908512596376669">檔案清單改咗做清單檢視模式。</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個項目</translation>
 <translation id="642282551015776456">無法使用這個名稱作為檔案名稱或資料夾名稱</translation>
 <translation id="6423031066725912715">越南文 (TCVN 鍵盤)</translation>
+<translation id="6430271654280079150">你只剩 1 次重試機會。</translation>
 <translation id="6485131920355264772">無法擷取空間資料</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，詳情</translation>
 <translation id="649877868557234318">正在將「<ph name="FILE_NAME" />」解壓縮至「<ph name="FOLDER_NAME" />」</translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903">正在同步處理 <ph name="NUMBER_OF_FILES" /> 個項目…</translation>
 <translation id="8600173386174225982">檔案清單改咗做縮圖檢視模式。</translation>
 <translation id="8601932370724196034">Crostini 圖像檔案</translation>
+<translation id="8608515571837163082">輸入錯誤 PIN 碼的次數太多。輸入電信業者提供的 8 位數個人解鎖金鑰 (PUK)。</translation>
 <translation id="8609695766746872526">冰島文</translation>
 <translation id="863903787380594467">PIN 不正確。您還可嘗試 <ph name="RETRIES" /> 次。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 連接埠</translation>

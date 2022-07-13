@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Zdieľanie priečinka aplikáciou Parallels Desktop</translation>
 <translation id="1439919885608649279">Osoba s kvetinami</translation>
 <translation id="1471718551822868769">Slovenská klávesnica</translation>
-<translation id="1474339897586437869">Súbor <ph name="FILENAME" /> nebol nahraný. Na Disku Google nemáte dostatok voľného miesta.</translation>
 <translation id="1482884275703521657">Fínska klávesnica</translation>
 <translation id="148466539719134488">Švajčiarska klávesnica</translation>
 <translation id="1497522201463361063">Súbor <ph name="FILE_NAME" /> sa nepodarilo premenovať. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Zabezpečená</translation>
 <translation id="2638942478653899953">Disk Google je nedostupný. <ph name="BEGIN_LINK" />Odhláste sa<ph name="END_LINK" /> a znova sa prihláste.</translation>
 <translation id="2649120831653069427">Dúhovka</translation>
+<translation id="2653059201992392941">Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Mjanmarská klávesnica s rozložením Myansan</translation>
 <translation id="2664412712123763093">Umiestnenie súboru</translation>
 <translation id="2718540689505416944">Inštalovať aplikáciu pomocou systému Linux</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Vyprázdniť kôš</translation>
 <translation id="5163869187418756376">Zdieľanie zlyhalo. Skontrolujte pripojenie a skúste to neskôr.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5170477580121653719">Voľné miesto v službe Disk Google: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5177526793333269655">Zobrazenie miniatúr</translation>
 <translation id="5194713942430106590">Kliknutím zoradíte stĺpec vo vzostupnom poradí.</translation>
 <translation id="5211614973734216083">Faerská klávesnica</translation>
@@ -530,6 +529,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5489067830765222292">Lotyšská klávesnica</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> je vypnutý.</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
+<translation id="5500104704744051184">Túto sieť budete môcť používať, až keď zadáte PUK</translation>
 <translation id="5500122897333236901">Islandčina</translation>
 <translation id="5508696409934741614">Bodky</translation>
 <translation id="5522908512596376669">Zoznam súborov sa zmenil na zobrazenie zoznamu.</translation>
@@ -635,6 +635,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6395575651121294044">Počet položiek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Tento názov nie je možné použiť na pomenovanie súboru ani priečinka.</translation>
 <translation id="6423031066725912715">Vietnamská klávesnica s rozložením TCVN</translation>
+<translation id="6430271654280079150">Zostáva vám jeden pokus.</translation>
 <translation id="6485131920355264772">Nepodarilo sa získať informácie o voľnom mieste</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> ovládaná správcom, podrobnosti</translation>
 <translation id="649877868557234318">Rozbaľuje sa súbor <ph name="FILE_NAME" /> do priečinka <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8579285237314169903">Synchronizujú sa položky (počet: <ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Zoznam súborov sa zmenil na zobrazenie miniatúr.</translation>
 <translation id="8601932370724196034">Súbor obrázka Crostini</translation>
+<translation id="8608515571837163082">Príliš veľakrát bol zadaný nesprávny PIN. Zadajte osemmiestny PUK od operátora.</translation>
 <translation id="8609695766746872526">Islandská klávesnica</translation>
 <translation id="863903787380594467">Nesprávny kód PIN. Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

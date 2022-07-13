@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Қалтаны Parallels Desktop арқылы бөлісу</translation>
 <translation id="1439919885608649279">Гүл ұстаған адам</translation>
 <translation id="1471718551822868769">Словак</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" жүктелген жоқ. Google Drive дискінде жеткілікті орын жоқ.</translation>
 <translation id="1482884275703521657">Фин</translation>
 <translation id="148466539719134488">Швейцария</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" атын өзгерту мүмкін емес. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Қорғалған</translation>
 <translation id="2638942478653899953">Google Drive мазмұнына қол жеткізу мүмкін емес. <ph name="BEGIN_LINK" />Жүйеден шығып<ph name="END_LINK" />, қайта кіріңіз.</translation>
 <translation id="2649120831653069427">Түрлі түсті балық</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> мүмкіндік қалды.</translation>
 <translation id="2663066752008346276">Бирма/Мьянма (Myansan пернетақтасымен)</translation>
 <translation id="2664412712123763093">Файлдың орналасқан жері</translation>
 <translation id="2718540689505416944">Қолданбаны Linux жүйесі арқылы орнату</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Себетті босату</translation>
 <translation id="5163869187418756376">Бөлісу сәтсіз аяқталды. Байланысты тексеріңіз және кейінірек қайталап көріңіз.</translation>
 <translation id="516592729076796170">АҚШ Бағдарламашы Дворак</translation>
-<translation id="5170477580121653719">Google Drive қалған бос орны: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Нобай көрінісі</translation>
 <translation id="5194713942430106590">Бағанды өсу ретімен сұрыптау үшін басыңыз.</translation>
 <translation id="5211614973734216083">Фарер</translation>
@@ -529,6 +528,7 @@
 <translation id="5489067830765222292">Латыш</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> сүзгісі өшірулі.</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
+<translation id="5500104704744051184">PUK кодын енгізбейінше, бұл желіні пайдалана алмайсыз.</translation>
 <translation id="5500122897333236901">исланд</translation>
 <translation id="5508696409934741614">Нүктелер</translation>
 <translation id="5522908512596376669">Файлдар тізім ретінде көрсетілді.</translation>
@@ -634,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> элемент</translation>
 <translation id="642282551015776456">Бұл атауды файл немесе қалта атауы ретінде пайдалануға болмайды</translation>
 <translation id="6423031066725912715">Вьетнам (TCVN пернетақтасымен)</translation>
+<translation id="6430271654280079150">1 мүмкіндік қалды.</translation>
 <translation id="6485131920355264772">Бос орын ақпаратын шығарып алу сәтсіз аяқталды</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші:<ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> қалтасына көшірілуде</translation>
@@ -900,6 +901,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> элемент синхрондалуда…</translation>
 <translation id="8600173386174225982">Файлдар нобай ретінде көрсетілді.</translation>
 <translation id="8601932370724196034">Crostini кескін файлы</translation>
+<translation id="8608515571837163082">PIN коды бірнеше рет қате енгізілді. Оператор берген 8 цифрлы Жеке бөгеуден шығару кодын (PUK кодын) енгізіңіз.</translation>
 <translation id="8609695766746872526">Исланд</translation>
 <translation id="863903787380594467">PIN коды дұрыс емес. <ph name="RETRIES" /> әрекет қалды.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – ұяшық</translation>

@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Bagikan folder ke Parallels Desktop</translation>
 <translation id="1439919885608649279">Orang dengan bunga</translation>
 <translation id="1471718551822868769">Slovakia</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" tidak diupload. Ruang di Google Drive Anda tidak cukup.</translation>
 <translation id="1482884275703521657">Finlandia</translation>
 <translation id="148466539719134488">Swiss</translation>
 <translation id="1497522201463361063">Tidak dapat mengubah nama "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Aman</translation>
 <translation id="2638942478653899953">Google Drive tidak dapat dibuka. <ph name="BEGIN_LINK" />Keluar<ph name="END_LINK" /> dan masuk lagi.</translation>
 <translation id="2649120831653069427">Ikan Pelangi</translation>
+<translation id="2653059201992392941">Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="2663066752008346276">Burma/Myanmar dengan keyboard Myansan</translation>
 <translation id="2664412712123763093">Lokasi file</translation>
 <translation id="2718540689505416944">Instal aplikasi dengan Linux</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Kosongkan Sampah</translation>
 <translation id="5163869187418756376">Gagal berbagi. Periksa sambungan Anda dan coba lagi nanti.</translation>
 <translation id="516592729076796170">Programmer Dvorak AS</translation>
-<translation id="5170477580121653719">Sisa ruang Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Tampilan thumbnail</translation>
 <translation id="5194713942430106590">Klik untuk mengurutkan kolom dari atas ke bawah.</translation>
 <translation id="5211614973734216083">Faroe</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">Latvia</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> nonaktif.</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
+<translation id="5500104704744051184">Anda tidak akan dapat menggunakan jaringan ini hingga Anda memasukkan PUK</translation>
 <translation id="5500122897333236901">Islandia</translation>
 <translation id="5508696409934741614">Titik</translation>
 <translation id="5522908512596376669">Daftar file telah berubah menjadi tampilan daftar.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
 <translation id="642282551015776456">Nama ini tidak dapat digunakan sebagai nama file atau folder</translation>
 <translation id="6423031066725912715">Vietnam dengan keyboard TCVN</translation>
+<translation id="6430271654280079150">Tersisa 1 upaya lagi.</translation>
 <translation id="6485131920355264772">Gagal mengambil info ruang</translation>
 <translation id="6495925982925244349">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Detail</translation>
 <translation id="649877868557234318">Mengekstrak <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903">Menyinkronkan <ph name="NUMBER_OF_FILES" /> item...</translation>
 <translation id="8600173386174225982">Daftar file telah diubah menjadi tampilan thumbnail.</translation>
 <translation id="8601932370724196034">File gambar Crostini</translation>
+<translation id="8608515571837163082">Terlalu sering memasukkan PIN yang salah. Masukkan Kunci Pembuka Blokir Pribadi (PUK) 8 digit yang diberikan oleh operator.</translation>
 <translation id="8609695766746872526">Islandia</translation>
 <translation id="863903787380594467">PIN salah. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>

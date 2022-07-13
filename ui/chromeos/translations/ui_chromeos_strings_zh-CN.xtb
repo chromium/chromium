@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">与 Parallels Desktop 共享文件夹</translation>
 <translation id="1439919885608649279">一个人捧着鲜花</translation>
 <translation id="1471718551822868769">斯洛伐克语</translation>
-<translation id="1474339897586437869">未上传“<ph name="FILENAME" />”，因为您的 Google 云端硬盘没有足够的可用空间。</translation>
 <translation id="1482884275703521657">芬兰语</translation>
 <translation id="148466539719134488">瑞士语</translation>
 <translation id="1497522201463361063">无法重命名“<ph name="FILE_NAME" />”。<ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">受保护</translation>
 <translation id="2638942478653899953">无法访问 Google 云端硬盘。请先<ph name="BEGIN_LINK" />退出<ph name="END_LINK" />，然后再重新登录。</translation>
 <translation id="2649120831653069427">彩虹鱼</translation>
+<translation id="2653059201992392941">您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="2663066752008346276">缅甸语 Myansan 键盘</translation>
 <translation id="2664412712123763093">文件位置</translation>
 <translation id="2718540689505416944">通过 Linux 安装应用</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">清空回收站</translation>
 <translation id="5163869187418756376">共享失败。请检查连接是否正常，然后重试。</translation>
 <translation id="516592729076796170">美式 Programmer Dvorak 键盘</translation>
-<translation id="5170477580121653719">Google 云端硬盘可用存储空间：<ph name="SPACE_AVAILABLE" />。</translation>
 <translation id="5177526793333269655">缩略图视图</translation>
 <translation id="5194713942430106590">点击即可按升序对此列排序。</translation>
 <translation id="5211614973734216083">法罗语</translation>
@@ -525,6 +524,7 @@
 <translation id="5489067830765222292">拉脱维亚语</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" />过滤器已关闭。</translation>
 <translation id="5494920125229734069">全选</translation>
+<translation id="5500104704744051184">在输入正确的 PUK 之前，您将无法使用此网络</translation>
 <translation id="5500122897333236901">冰岛语</translation>
 <translation id="5508696409934741614">圆点</translation>
 <translation id="5522908512596376669">文件列表已切换到列表视图。</translation>
@@ -630,6 +630,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 项内容</translation>
 <translation id="642282551015776456">该名称可能无法用作文件名或文件夹名</translation>
 <translation id="6423031066725912715">越南语 TCVN 键盘</translation>
+<translation id="6430271654280079150">您还有 1 次尝试机会。</translation>
 <translation id="6485131920355264772">检索存储空间信息失败</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="649877868557234318">正在将文件“<ph name="FILE_NAME" />”提取到文件夹“<ph name="FOLDER_NAME" />”</translation>
@@ -896,6 +897,7 @@
 <translation id="8579285237314169903">正在同步 <ph name="NUMBER_OF_FILES" /> 个文件…</translation>
 <translation id="8600173386174225982">文件列表已切换到缩略图视图。</translation>
 <translation id="8601932370724196034">Crostini 映像文件</translation>
+<translation id="8608515571837163082">您输错 PIN 码的次数过多。请输入运营商提供的 8 位数个人解锁密钥 (PUK)。</translation>
 <translation id="8609695766746872526">冰岛语</translation>
 <translation id="863903787380594467">PIN 码不正确。您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 端口</translation>

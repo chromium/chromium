@@ -1249,6 +1249,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Ավելացնել Wi-Fi…</translation>
 <translation id="2162155940152307086">Համաժամացումը կսկսվի, երբ դուրս գաք համաժամացման կարգավորումներից</translation>
+<translation id="2162705204091149050">Կարդալ տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի, սարքի, տեղադրված ծրագրերի և ֆայլերի մասին</translation>
 <translation id="2162926944953615670">Հասանելի eSIM պրոֆիլներ չկան։</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> սարք մուտք գործելու համար միացեք համացանցին:</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ու ևս 1 փոխանջատիչ</translation>
@@ -2493,6 +2494,7 @@
 <translation id="3359256513598016054">Վկայագրերի քաղաքականության սահմանափակումներ</translation>
 <translation id="3360297538363969800">Չհաջողվեց տպել: Ստուգեք ձեր տպիչը և կրկին փորձեք:</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}one{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}other{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}}</translation>
+<translation id="3363202073972776113">Այս նոր պրոֆիլը կկառավարվի ձեր կազմակերպության կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Ձեր ադմինիստրատորից. «<ph name="ADMIN_MESSAGE" />»</translation>
 <translation id="3365598184818502391">Օգտագործեք Ctrl կամ Alt</translation>
 <translation id="3368922792935385530">Միացված է</translation>
@@ -2527,6 +2529,7 @@
 <translation id="339722927132407568">Կախում է</translation>
 <translation id="3399432415385675819">Ծանուցումները կանջատվեն</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Հց), միահյուսված</translation>
+<translation id="3401484564516348917">Կարդալ տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի, սարքի, տեղադրված ծրագրերի, գրանցամատյանի արժեքների և ֆայլերի մասին</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{Այս սարքում պահված է {COUNT} գաղտնաբառ}one{Այս սարքում պահված է {COUNT} գաղտնաբառ}other{Այս սարքում պահված է {COUNT} գաղտնաբառ}}</translation>
 <translation id="3402255108239926910">Ընտրեք ավատար</translation>
 <translation id="3402585168444815892">Գրանցում դեմո ռեժիմում</translation>
@@ -2773,6 +2776,7 @@
 <translation id="3627879631695760395">Տեղադրել «<ph name="APP" />» հավելվածը…</translation>
 <translation id="3628275722731025472">Անջատել Bluetooth-ը</translation>
 <translation id="3629631988386925734">Smart Lock-ը միացնելու համար մուտքագրեք ձեր գաղտնաբառը։ Դրանից հետո ձեր հեռախոսով կարող եք ապակողպել <ph name="DEVICE_TYPE" /> սարքը։ Smart Lock-ը կարող եք անջատել կարգավորումներում։</translation>
+<translation id="3629664892718440872">Հիշել այս ընտրությունը</translation>
 <translation id="3630132874740063857">Հեռախոս</translation>
 <translation id="3630995161997703415">Ավելացրեք այս կայքը ձեր դարակում՝ այն ցանկացած ժամանակ օգտագործելու համար</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Դուք կարող եք թույլ տալ, որ ձեր ChromeOS սարքերն ավտոմատ կերպով հաշվետվություններ ուղարկեն Google-ին։ Դա մեզ կօգնի որոշել, թե ինչն առաջնահերթ բարելավման կարիք ունի։ Նման հաշվետվությունները կարող են պարունակել տեղեկություններ այն մասին, թե ինչ գործառույթներից եք օգտվում, որքան հիշողություն եք սովորաբար սպառում, ինչպես նաև տվյալներ ChromeOS-ի խափանումների մասին։<ph name="END_PARAGRAPH1" />
@@ -3262,6 +3266,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI սարքերի նկատմամբ ամբողջական վերահսկողությունն արգելվել է</translation>
+<translation id="4087328411748538168">Ցուցադրել աջ կողմում</translation>
 <translation id="4089235344645910861">Կարգավորումները պահվեցին: Համաժամացումը սկսվեց:</translation>
 <translation id="4090103403438682346">Միացնել ստուգված մուտքի ծառայությունը</translation>
 <translation id="4090947011087001172">Վերակայե՞լ թույլտվությունները <ph name="SITE" /> կայքի համար:</translation>
@@ -3953,6 +3958,7 @@
 <translation id="4779766576531456629">Վերանվանել eSIM-ի բջջային ցանցը</translation>
 <translation id="4780321648949301421">Save Page As...</translation>
 <translation id="4781443161433589743">Կիրառվում է Chrome-ի ամենաուժեղ պաշտպանությունը</translation>
+<translation id="4782861709165039462">Բոլոր խոսափողներն անջատված են սարքի ապարատային փոխանջատիչի միջոցով</translation>
 <translation id="4785719467058219317">Դուք օգտագործում եք անվտանգության բանալի, որը գրանցված չէ այս կայքում</translation>
 <translation id="4785914069240823137">Չեղարկել եզրատումը</translation>
 <translation id="4788092183367008521">Ստուգեք կապը և նորից փորձեք:</translation>
@@ -4222,7 +4228,6 @@
 <translation id="5054374119096692193">Տեսեք քարտերի բոլոր տարբերակները <ph name="BEGIN_LINK" />Անհատականացնել Chrome-ը<ph name="END_LINK" /> բաժնում</translation>
 <translation id="5056950756634735043">Միացում կոնտեյներին</translation>
 <translation id="5057110919553308744">Երբ դուք սեղմում եք ընդլայնման վրա</translation>
-<translation id="505776528429481161">Հեշտությամբ միացեք մոտակայքում գտնվող սարքերին և կարգավորեք դրանք</translation>
 <translation id="5059241099014281248">Սահմանափակ մուտք</translation>
 <translation id="5059526285558225588">Ինչ տվյալներ հասանելի դարձնել</translation>
 <translation id="5060332552815861872">Կա 1 տպիչ, որը կարող եք պահել։</translation>
@@ -4723,6 +4728,7 @@
 <translation id="5548075230008247516">Բոլոր տարրերի նշումը չեղարկվեց, և դուք դուրս եկաք նշման ռեժիմից։</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{«<ph name="TAB_TITLE" />»}=1{«<ph name="TAB_TITLE" />» ու ևս 1 ներդիր}one{«<ph name="TAB_TITLE" />» ու ևս # ներդիր}other{«<ph name="TAB_TITLE" />» ու ևս # ներդիր}}</translation>
 <translation id="5548606607480005320">Անվտանգության ստուգում</translation>
+<translation id="5548644592758170183">Ցուցադրել ձախ կողմում</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Ստեղնաշար և տեքստի մուտքագրում</translation>
 <translation id="5553089923092577885">Վկայագրի քաղաքականությունների համադրում</translation>
@@ -8202,6 +8208,7 @@
 <translation id="8980345560318123814">Հաշվետվություններ</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Խափանվել է</translation>
 <translation id="8981825781894055334">Թուղթը սպառվում է</translation>
+<translation id="8983018820925880511">Այս նոր պրոֆիլը կկառավարվի <ph name="DOMAIN" /> տիրույթի կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> կայքը կարող է փոփոխել <ph name="FILENAME" /> ֆայլը</translation>
 <translation id="8984694057134206124">Ձեր սարքը <ph name="MINUTES" /> րոպե տեսանելի կլինի բոլոր օգտատերերին։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Բարի գալուստ Steam Chromebook-ի համար</translation>
@@ -8298,6 +8305,7 @@
 <translation id="9075413375877487220">Այս ընդլայնումը վստահելի չէ բարելավված Ապահով դիտարկման համար։</translation>
 <translation id="9076283476770535406">Այն կարող է մեծահասակների համար բովանդակություն պարունակել</translation>
 <translation id="9076523132036239772">Ձեր էլփոստը կամ գաղտնաբառը չհաստատվեցին: Նախ կապակցվեք ցանցին:</translation>
+<translation id="9076821103818989526">Կողային վահանակ</translation>
 <translation id="9076977315710973122">SMB պահեստ</translation>
 <translation id="9078193189520575214">Փոփոխությունների կիրառում…</translation>
 <translation id="9078316009970372699">Անջատել ակնթարթային մուտքի կետը</translation>

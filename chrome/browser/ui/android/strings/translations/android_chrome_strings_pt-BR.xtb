@@ -97,6 +97,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="1428770807407000502">Desativar a sincronização?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1436784010935106834">Removido</translation>
+<translation id="1437543266176261764">Em execução no app <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organize seus produtos monitorados nos favoritos</translation>
 <translation id="1450753235335490080">Falha no compartilhamento de <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Idioma do Chrome</translation>
@@ -223,7 +224,6 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="2172688499998841696">As descrições de imagens estão desativadas</translation>
 <translation id="2172905120685242547">Fechar a janela?</translation>
 <translation id="2175927920773552910">Código QR</translation>
-<translation id="2176767904800337188">O cartão virtual encobre o real para proteger você contra possíveis tentativas de fraude. <ph name="BEGIN_LINK1" />Saiba mais sobre os cartões virtuais<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Compartilhamento</translation>
 <translation id="2189903024544168260">Interesse removido</translation>
 <translation id="2194856509914051091">Considerações</translation>
@@ -272,7 +272,6 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="2496180316473517155">Histórico de navegação</translation>
 <translation id="2497852260688568942">A sincronização foi desativada pelo administrador</translation>
 <translation id="250020030759455918">Seu status de login, dados de navegação e dados do site para <ph name="SITE_NAME" /> serão exibidos no Chrome</translation>
-<translation id="2512164632052122970">Idiomas do conteúdo</translation>
 <translation id="2513403576141822879">Para ver mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google e de sincronização<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2523184218357549926">Envia URLs das páginas que você visita para o Google</translation>

@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
 <translation id="1439919885608649279">Personne avec des fleurs</translation>
 <translation id="1471718551822868769">Slovaque</translation>
-<translation id="1474339897586437869">Le fichier "<ph name="FILENAME" />" n'a pas été importé, car l'espace disponible sur Google Drive est insuffisant.</translation>
 <translation id="1482884275703521657">Finnois</translation>
 <translation id="148466539719134488">Suisse</translation>
 <translation id="1497522201463361063">Impossible de renommer "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -488,7 +487,6 @@
 <translation id="5159560892333415631">Vider la corbeille</translation>
 <translation id="5163869187418756376">Échec du partage. Veuillez vérifier la connexion, puis réessayer.</translation>
 <translation id="516592729076796170">Dvorak américain pour programmeurs</translation>
-<translation id="5170477580121653719">Espace Google Drive disponible : <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5177526793333269655">Afficher les vignettes</translation>
 <translation id="5194713942430106590">Cliquez pour trier la colonne par ordre croissant.</translation>
 <translation id="5211614973734216083">Féroïen</translation>

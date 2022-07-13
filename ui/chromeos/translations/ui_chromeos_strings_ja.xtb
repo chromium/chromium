@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
 <translation id="1439919885608649279">花を持っている人</translation>
 <translation id="1471718551822868769">スロバキア語</translation>
-<translation id="1474339897586437869">「<ph name="FILENAME" />」はアップロードされていません。Google ドライブに十分な空き容量がありません。</translation>
 <translation id="1482884275703521657">フィンランド語</translation>
 <translation id="148466539719134488">スイス語</translation>
 <translation id="1497522201463361063">ファイル「<ph name="FILE_NAME" />」の名前を変更することができません。<ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">保護あり</translation>
 <translation id="2638942478653899953">Google ドライブにアクセスできませんでした。<ph name="BEGIN_LINK" />ログアウト<ph name="END_LINK" />してもう一度ログインしてください。</translation>
 <translation id="2649120831653069427">熱帯魚</translation>
+<translation id="2653059201992392941">入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="2663066752008346276">ビルマ語 / ミャンマー語（Myansan）キーボード</translation>
 <translation id="2664412712123763093">ファイルの場所</translation>
 <translation id="2718540689505416944">Linux でアプリをインストール</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">ゴミ箱を空にする</translation>
 <translation id="5163869187418756376">共有できませんでした。接続を確認し、しばらくしてからもう一度お試しください。</translation>
 <translation id="516592729076796170">US Programmer Dvorak 配列</translation>
-<translation id="5170477580121653719">Google ドライブの残容量: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5177526793333269655">サムネイル ビュー</translation>
 <translation id="5194713942430106590">クリックすると、列が昇順で並べ替えられます。</translation>
 <translation id="5211614973734216083">フェロー語</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">ラトビア語</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> フィルタがオフになりました。</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
+<translation id="5500104704744051184">PUK を入力するまでこのネットワークは使用できません。</translation>
 <translation id="5500122897333236901">アイスランド語</translation>
 <translation id="5508696409934741614">ドット</translation>
 <translation id="5522908512596376669">ファイルの一覧がリスト表示に切り替わりました。</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個のアイテム</translation>
 <translation id="642282551015776456">この名前はフォルダのファイル名として使用できません</translation>
 <translation id="6423031066725912715">ベトナム語（TCVN）キーボード</translation>
+<translation id="6430271654280079150">入力できるのはあと 1 回です。</translation>
 <translation id="6485131920355264772">空き容量情報を取得できませんでした</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> に展開しています</translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> 個のアイテムを同期しています...</translation>
 <translation id="8600173386174225982">ファイルの一覧がサムネイル表示に切り替わりました。</translation>
 <translation id="8601932370724196034">Crostini 画像ファイル</translation>
+<translation id="8608515571837163082">間違った PIN が繰り返し入力されました。携帯通信会社が提供する 8 桁の PIN ブロック解除キー（PUK）を入力してください。</translation>
 <translation id="8609695766746872526">アイスランド語</translation>
 <translation id="863903787380594467">PIN が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ポート</translation>

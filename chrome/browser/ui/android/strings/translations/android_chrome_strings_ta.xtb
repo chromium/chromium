@@ -97,6 +97,7 @@
 <translation id="1428770807407000502">ஒத்திசைவை முடக்கவா?</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1436784010935106834">அகற்றப்பட்டது</translation>
+<translation id="1437543266176261764"><ph name="APP_NAME" /> ஆப்ஸில் இயங்குகிறது</translation>
 <translation id="1448440926884431741">நீங்கள் கண்காணிக்கும் தயாரிப்புகளை Bookmarksஸில் ஒழுங்கமைக்கலாம்</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />ஐப் பகிர முடியவில்லை</translation>
 <translation id="1466383950273130737">Chromeமிற்கான மொழியைத் தேர்வுசெய்யுங்கள்</translation>
@@ -223,7 +224,6 @@
 <translation id="2172688499998841696">'பட விளக்கங்கள்' முடக்கப்பட்டது</translation>
 <translation id="2172905120685242547">சாளரத்தை மூட வேண்டுமா?</translation>
 <translation id="2175927920773552910">QR குறியீடு</translation>
-<translation id="2176767904800337188">மோசடி அபாயங்களில் இருந்து உங்கள் அசல் கார்டைப் பாதுகாக்க விர்ச்சுவல் கார்டு உதவுகிறது. <ph name="BEGIN_LINK1" />விர்ச்சுவல் கார்டுகள் குறித்து மேலும் அறிக<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">பகிர்தல்</translation>
 <translation id="2189903024544168260">ஆர்வம் அகற்றப்பட்டது</translation>
 <translation id="2194856509914051091">கருத்தில்கொள்ள வேண்டியவை</translation>
@@ -272,7 +272,6 @@
 <translation id="2496180316473517155">உலாவல் வரலாறு</translation>
 <translation id="2497852260688568942">உங்கள் நிர்வாகி ஒத்திசைவை முடக்கியுள்ளார்</translation>
 <translation id="250020030759455918"><ph name="SITE_NAME" /> என்ற தளம் தொடர்பான உங்களின் உள்நுழைவு நிலை, உலாவிய தரவு, தளத்தின் தரவு ஆகியவை Chromeமில் காட்டப்படும்</translation>
-<translation id="2512164632052122970">உள்ளடக்க மொழிகள்</translation>
 <translation id="2513403576141822879">தனியுரிமை, பாதுகாப்பு, தரவுச் சேகரிப்பு ஆகியவற்றுடன் தொடர்புடைய மேலும் பல அமைப்புகளுக்கு, <ph name="BEGIN_LINK" />ஒத்திசைவும் Google சேவைகளும்<ph name="END_LINK" /> என்பதைப் பார்க்கவும்</translation>
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2523184218357549926">நீங்கள் பார்வையிடும் பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்</translation>

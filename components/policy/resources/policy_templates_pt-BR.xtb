@@ -941,17 +941,6 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="1962864958436828230">Definir o limite mínimo para a prevenção contra vazamento de dados de acordo com a restrição da área de transferência</translation>
 <translation id="1964634611280150550">Modo de navegação anônima desativado</translation>
 <translation id="1964802606569741174">Esta política não tem nenhum efeito sobre o app YouTube para Android. Se o modo de segurança do YouTube precisar ser aplicado, a instalação desse app será bloqueada.</translation>
-<translation id="1965363065727209968">setTimeout(…, 0) normalmente é usado para dividir tarefas longas de JavaScript.
-          Quando a política for ativada, as funções setTimeouts e setIntervals com um intervalo menor que 4ms não serão ajustadas de forma tão agressiva.
-          Isso melhora a performance no curto prazo, mas os sites que abusam da API ainda têm os setTimeouts ajustados.
-
-          É possível que a ordem das tarefas em uma página da Web mude, levando a um comportamento inesperado em sites que dependem de uma ordem específica.
-          Também é possível que isso afete sites com muitas funções setTimeout() com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
-
-          Para usuários em que essa política não está definida, o <ph name="PRODUCT_NAME" /> vai lançar a mudança gradualmente no Canal Stable.
-
-          Essa é uma política temporária e tem remoção planejada para a versão 107 do <ph name="PRODUCT_NAME" />. Esse prazo pode ser prorrogado caso as empresas precisem de mais tempo.
-          </translation>
 <translation id="1967334955994230472">Desativar Projector</translation>
 <translation id="1969212217917526199">Modifica as políticas sobre versões de depuração do host de acesso remoto.
 
@@ -1734,6 +1723,9 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="274769314493317695">Se <ph name="PRINTERS_WHITELIST" /> for escolhida para <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> especificará quais impressoras os usuários podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para o usuário. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Esta política está suspensa. Use a <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="2751959596774212778">Da versão M107 em diante, o WebSQL em contextos não seguros fica desativado por padrão. Na versão M110, ele vai ser totalmente removido.
+          Se esta política for definida como falsa ou deixada sem definição, o WebSQL em contextos não seguros vai continuar ativado até o fim da versão M106 e será desativado na M107.
+          Se a política for definida como verdadeira, o WebSQL em contextos não seguros vai ser ativado.</translation>
 <translation id="2752046642026416564">Se a política for definida como "Ativada" ou não for definida, o <ph name="PRODUCT_NAME" /> poderá usar hosts de mensagens nativas instalados no nível do usuário.
 
       Se a política for definida como "Desativada", o <ph name="PRODUCT_NAME" /> só poderá usar esses hosts se eles estiverem instalados no nível do sistema.</translation>
@@ -4124,7 +4116,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5475361623548884387">Ativar impressão</translation>
 <translation id="547601067149622666">Não permitir anúncios em sites com anúncios invasivos</translation>
 <translation id="5476152378885134514">Bloquear a área de transferência nesses sites</translation>
-<translation id="5478734531226638813">Se a política for definida, a atualização de apps do Chrome para quiosque, que usa o URL de atualização do manifesto de extensão, será desativada durante a sessão e o único mecanismo de atualização será a pré-busca de CRX.</translation>
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
 <translation id="5487758664517243511">Se esta configuração estiver ativada, os usuários que já ativaram o recurso "Seu smartphone" poderão continuar tarefas no ChromeOS, como visualizar as páginas da Web do smartphone.
@@ -4373,11 +4364,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="5749396052108288586">Essa política está obsoleta. Use a <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Ativar atalhos de recursos de acessibilidade na tela de login</translation>
-<translation id="5749873635525257317">Esta política foi descontinuada. É recomendável usar a BrowserSignin.
-
-      Permite que o usuário faça login no <ph name="PRODUCT_NAME" />.
-
-      Se a política for definida, será possível configurar se o usuário poderá fazer login no <ph name="PRODUCT_NAME" />. Se ela for definida como "Falsa", o funcionamento de apps e extensões que usam a API chrome.identity será impedido. Por isso, é recomendável usar a política <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
 <translation id="5755002458331714762"> As APIs Web Components v0 (Shadow DOM v0, Custom Elements v0 e HTML Imports) se tornaram obsoletas em 2018 e estão desativadas por padrão desde o M80. Esta política permite que esses recursos sejam seletivamente reativados até o M84.
 
       Se esta política for definida como verdadeira, os recursos da Web Components v0 serão ativados para todos os sites.
@@ -5576,6 +5562,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a opção U2F for selecionada, o segundo fator integrado se comportará de acordo com a especificação FIDO U2F.
 
       Se a opção U2F_EXTENDED for selecionada, o segundo fator integrado fornecerá as funções de U2F, além de algumas extensões para declaração individual.</translation>
+<translation id="6998179760789945134">Desativar o WebSQL em contextos não seguros, a menos que ele seja ativado pela Sinalização do Chrome.</translation>
 <translation id="6999948519306285655">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Se a política for definida, você poderá especificar um URL de um arquivo proxy .pac. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -6127,14 +6114,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se ela estiver ativada ou for deixada sem definição, a conversão de unidades das Respostas rápidas ficará ativada.
       Se a política for desativada, a conversão de unidades das Respostas rápidas ficará desativada.</translation>
 <translation id="7587345076013230465">Pedir para o usuário selecionar o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados na tela de login</translation>
-<translation id="7590188804371204512">Controla a instalação de extensões externas.
-
-      Ativar essa configuração impede a instalação de extensões externas.
-
-      Desativar essa configuração ou deixá-la indefinida permite a instalação de extensões externas.
-
-      As extensões externas e a instalação estão documentadas em https://developer.chrome.com/apps/external_extensions.
-      </translation>
 <translation id="759957074386651883">Configurações da política Safe Browsing</translation>
 <translation id="7604169113182304895">Os apps Android podem optar voluntariamente por respeitar essa lista. Não é possível forçá-los a respeitá-la.</translation>
 <translation id="7612157962821894603">Sinalizações amplas do sistema que devem ser aplicadas na inicialização do <ph name="PRODUCT_NAME" /></translation>
@@ -7334,6 +7313,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8919100556245407184">O tempo, em dias, após a postagem de expiração da atualização automática até o usuário ser desconectado se a versão do <ph name="PRODUCT_OS_NAME" /> for menor que a <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada.</translation>
 <translation id="8919369436496201075">Permitir que o dispositivo receba atualizações de LTS</translation>
 <translation id="8921669704201370845">Ativar os relatórios de nuvem do <ph name="PRODUCT_NAME" /> do perfil gerenciado</translation>
+<translation id="8922494933893518624">Forçar a ativação do WebSQL em contextos não seguros.</translation>
 <translation id="8930064580550462145">Durante o login pela tela de bloqueio, o <ph name="PRODUCT_OS_NAME" /> pode fazer a autenticação por um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
 
       Quando esta política é definida como -2, ela corresponde ao valor do limite de tempo de login off-line da tela de login definido pela <ph name="POLICY" />.

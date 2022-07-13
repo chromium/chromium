@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Parallels Desktopৰ জৰিয়তে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
 <translation id="1439919885608649279">ফুলৰ সৈতে ব্যক্তিৰ ছবি</translation>
 <translation id="1471718551822868769">শ্ল’ভাক</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" আপল'ড কৰা হোৱা নাই। Google Driveত পর্যাপ্ত পৰিমাণৰ খালী ঠাই নাই।</translation>
 <translation id="1482884275703521657">ফিনিশ্ব</translation>
 <translation id="148466539719134488">ছুইচ্ছ</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />"ৰ নাম সলনি কৰিব পৰা নগ'ল।<ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">সুৰক্ষিত</translation>
 <translation id="2638942478653899953">Google Drive পাব পৰা অৱস্থাত নাই। অনুগ্ৰহ কৰি <ph name="BEGIN_LINK" />লগ আউট কৰক<ph name="END_LINK" /> আৰু পুনৰ লগ ইন কৰক।</translation>
 <translation id="2649120831653069427">Rainbowfish</translation>
+<translation id="2653059201992392941">আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="2663066752008346276">Myansan কীব’ৰ্ডৰ সৈতে বাৰ্মীজ/ম্যানমাৰ</translation>
 <translation id="2664412712123763093">ফাইলৰ অৱস্থান</translation>
 <translation id="2718540689505416944">Linuxৰ জৰিয়তে এপ্ ইনষ্টল কৰক</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">ট্ৰেশ্ব খালী কৰক</translation>
 <translation id="5163869187418756376">শ্বেয়াৰ কৰিব পৰা নগ'ল। ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="516592729076796170">ইউ.এছ. প্ৰ‘গ্ৰামাৰ ডভ‘ৰাক</translation>
-<translation id="5170477580121653719">Google Driveৰ খালী ঠাই: <ph name="SPACE_AVAILABLE" />।</translation>
 <translation id="5177526793333269655">থাম্বনেইল ভিউ</translation>
 <translation id="5194713942430106590">স্তম্ভটো ঊৰ্ধ্বক্ৰমিক ভাৱে সজাবলৈ ক্লিক কৰক।</translation>
 <translation id="5211614973734216083">ফেৰ’ইজ</translation>
@@ -529,6 +528,7 @@
 <translation id="5489067830765222292">লাটভিয়ান</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ফিল্টাৰটো অফ হৈ আছে।</translation>
 <translation id="5494920125229734069">সকলো বাছনি কৰক</translation>
+<translation id="5500104704744051184">আপুনি PUKটো নিদিয়া পৰ্যন্ত এই নেটৱৰ্কটো ব্যৱহাৰ কৰিব নোৱাৰিব</translation>
 <translation id="5500122897333236901">আইচলেণ্ডীয়</translation>
 <translation id="5508696409934741614">ডট্‌</translation>
 <translation id="5522908512596376669">ফাইলৰ সূচীখন সূচী ভিউ ম'ডলৈ সলনি কৰা হৈছে।</translation>
@@ -634,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টা বস্তু</translation>
 <translation id="642282551015776456">এই নামটো ফ'ল্ডাৰ নামৰ ফাইল হিচাপে ব্যৱহাৰ কৰা নহ'ব পাৰে</translation>
 <translation id="6423031066725912715">TCVN কীব’ৰ্ডৰ সৈতে ভিয়েটনামিজ</translation>
+<translation id="6430271654280079150">আপোনাৰ ১ টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="6485131920355264772">খালী ঠাইৰ বিষয়ে তথ্য সংগ্ৰহ কৰিব পৰা নগ’ল</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে, সবিশেষ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ক <ph name="FOLDER_NAME" />ত আহৰণ কৰি থকা হৈছে</translation>
@@ -900,6 +901,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />টা বস্তু ছিংক কৰি থকা হৈছে...</translation>
 <translation id="8600173386174225982">ফাইলৰ সূচীখন থাম্বনেইল ভিউ ম'ডলৈ সলনি কৰা হৈছে।</translation>
 <translation id="8601932370724196034">Crostini প্ৰতিচ্ছবিৰ ফাইল</translation>
+<translation id="8608515571837163082">বহুবাৰ এটা ভুল পিন দিয়া হৈছে। বাহকে প্ৰদান কৰা ৮ টা অংকৰ অৱৰোধৰ পৰা আঁতৰোৱাৰ ব্যক্তিগত কীটো (PUK) দিয়ক।</translation>
 <translation id="8609695766746872526">আইচলেণ্ডীয়</translation>
 <translation id="863903787380594467">ভুল পিন। আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - প’ৰ্ট</translation>

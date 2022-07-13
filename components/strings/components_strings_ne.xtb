@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1264309058268477500">वैकल्पिक</translation>
 <translation id="1264974993859112054">खेलकुद</translation>
+<translation id="1266469291454105242">डिभाइस अनलक</translation>
 <translation id="1269516672602708785">Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउनुहोस्</translation>
 <translation id="1270502636509132238">पिकअपको विधि</translation>
 <translation id="1281476433249504884">स्ट्याकर १</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">डेटिङ तथा व्यक्तिगत कुराहरू</translation>
 <translation id="1753706481035618306">पृष्ठ संख्या</translation>
 <translation id="1755621011177747277">धर्मसन्तान ग्रहण</translation>
+<translation id="1756026472674246267">यो लिंक नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="175656076281618225">जादु</translation>
 <translation id="1757773103848038814">मोनोस्पेस फन्ट</translation>
 <translation id="1763864636252898013">यो सर्भर हो भनेर प्रमाणित गर्न सकेन <ph name="DOMAIN" />; यसको सुरक्षा प्रमाणपत्रलाई तपाईंको डिभाइसको अपरेटिङ सिस्टमले विश्वास गरेन। यो एक गलत कन्फिगुरेसन वा तपाईंको जडान अवरोध गर्न खोज्ने आक्रमणकारीको हुनसक्छ।</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">भुक्तानी रद्द गर्नुहोस्</translation>
 <translation id="2148613324460538318">कार्ड थप्नुहोस्</translation>
 <translation id="2149968176347646218">इन्टरनेट सुरक्षित छैन</translation>
+<translation id="2153609454945889823">Google Play Services for AR इन्स्टल गर्ने हो?</translation>
 <translation id="2154054054215849342">तपाईंको डोमेनको लागि सिंंक उपलब्ध छैन</translation>
 <translation id="2154484045852737596">कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="2161656808144014275">पाठ</translation>
@@ -829,6 +832,7 @@
 <translation id="3229277193950731405">संस्करणको स्ट्रिङ कपी गर्नुहोस्</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> को CVC प्रविष्टि गर्नुहोस्</translation>
 <translation id="3234666976984236645">सधैं यस साइटमा महत्वपूर्ण सामग्री पत्ता लगाउनुहोस्</translation>
+<translation id="3238395604961564389">यो लिंक इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3240791268468473923">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल खोलियो</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” का लिंकहरू ब्लक गरिएका छन्</translation>
@@ -942,6 +946,7 @@
 <translation id="3531780078352352885">कार्य पानाहरू</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> तपाईंको माइक्रोफोन प्रयोग गर्न चाहन्छ</translation>
 <translation id="3533328374079021623">मेलबक्स ५</translation>
+<translation id="3542768452570884558">यो लिंक नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="3550112004925580947">आतिथ्य उद्योग</translation>
 <translation id="3552297013052089404">Sans Serif फन्ट</translation>
 <translation id="3558573058928565255">दिउँसो</translation>
@@ -1112,11 +1117,13 @@
 <translation id="4040350669425716613">कलेज तथा विश्वविद्यालयहरू</translation>
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4058922952496707368">कुञ्जी "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्न डिभाइस अनलक प्रयोग गर्नुहोस्</translation>
 <translation id="4067098466788473230">शैक्षिक अनुदान तथा छात्रवृत्तिहरू</translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
 <translation id="4072193657607981494">नीतिहरू लोड गरिँदै छन्</translation>
 <translation id="4072486802667267160">तपाईंको भुक्तानीको प्रक्रियालाई अघि बढाउँदा कुनै त्रुटि भयो, कृपया फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="4073376909608563327">डिभाइस अनलक प्रयोग गर्न सकिएन</translation>
 <translation id="4073797364926776829">कार्ड हेर्नुहोस्</translation>
 <translation id="4075732493274867456">ग्राहक र सर्भरले एउटा साधारण SSL प्रोटोकल संस्करण वा साइफर सुइटलाई समर्थन गर्दैनन्।</translation>
 <translation id="4079302484614802869">प्रोक्सी विन्यासले .प्याक स्क्रिप्ट युआरएल प्रयोग गर्न सेट गरिएको छ, निश्चित प्रोक्सी सर्भरहरू होइन।</translation>
@@ -1409,6 +1416,7 @@
 <translation id="4840250757394056958">Chrome को ब्राउजिङ इतिहास हेर्नुहोस्</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> र अन्य स्टोरहरूमा छुट प्राप्त गर्नुहोस्</translation>
+<translation id="484988093836683706">डिभाइस अनलक प्रयोग गर्नुहोस्</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="4852429274334674023">अपरेटिङ सिस्टमहरू</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -1796,6 +1804,7 @@
 <translation id="5921185718311485855">सक्रिय छ</translation>
 <translation id="5921639886840618607">कार्डलाई Google खातामा सुरक्षित गर्ने हो?</translation>
 <translation id="5922853866070715753">लगभग सकियो</translation>
+<translation id="5923492272538889093">CVC को साटो डिभाइस अनलक प्रयोग गर्ने हो?</translation>
 <translation id="5928444777041341328">घर तथा उद्यान</translation>
 <translation id="5932224571077948991">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ</translation>
 <translation id="5937560539988385583">पेज अनुवाद गरिएको छ</translation>
@@ -1969,6 +1978,7 @@
 <translation id="643051589346665201">Google खाताको पासवर्ड बदल्नुहोस्</translation>
 <translation id="6433490469411711332">सम्पर्क सम्बन्धी जानकारीलाई सम्पादन गर्नुहोस्</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ले जडान गर्न अस्वीकार गर्यो।</translation>
+<translation id="6433797564277305076">अबदेखि डिभाइस अनलक प्रयोग गरेर आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्नुहोस्</translation>
 <translation id="6440503408713884761">उपेक्षित</translation>
 <translation id="6443406338865242315">तपाईंले स्थापना गर्नुभएका विस्तार र प्लगइनहरू</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -2175,6 +2185,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{यो कार्ड अहिले सुरक्षित गर्न सकिँदैन}other{यी कार्डहरू अहिले सुरक्षित गर्न सकिँदैन}}</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ले यस वेबसाइटको सर्टिफिकेट <ph name="ISSUER" /> ले जारी गरेको हो भन्ने कुरा पुष्टि गरेको छ।</translation>
+<translation id="7058774143982824355">CSV पासवर्ड पार्सर सेवा</translation>
 <translation id="7061777300866737982">घरको सुरक्षा</translation>
 <translation id="7062635574500127092">गाढा निलो र हरियो</translation>
 <translation id="706295145388601875">Chrome का सेटिङमा गई ठेगानाहरू थप्नुहोस् तथा व्यवस्थापन गर्नुहोस्</translation>
@@ -2439,6 +2450,7 @@
 <translation id="7696089921647603491">क्लासिक रक तथा ओल्डिज</translation>
 <translation id="7697066736081121494">Prc8 (Envelope)</translation>
 <translation id="769721561045429135">यस बेला, तपाईंसँग यस यन्त्रमा मात्र प्रयोग गर्न मिल्ने कार्डहरू छन्। कार्डहरूको समीक्षा गर्न जारी राख्नुहोस् नामक बटनमा क्लिक गर्नुहोस्।</translation>
+<translation id="7698864304447945242">Google Play Services for AR अपडेट गर्ने हो?</translation>
 <translation id="7699293099605015246">अहिले लेखहरू उपलब्ध छैनन्</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> मा अगाडि बढ्नु (असुरक्षित छ)<ph name="END_LINK" /></translation>
@@ -2451,6 +2463,7 @@
 <translation id="7723047071702270851">कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="7734285854693414638">Google Forms प्रयोग गरी तुरुन्तै नयाँ फाराम बनाउनुहोस्</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> मा रहेका पृष्ठहरूलाई सधैँ अनुवाद गर्नुहोस्‌</translation>
+<translation id="7736959720849233795">यो लिंक कपी गर्नुहोस्</translation>
 <translation id="7740996059027112821">मानक</translation>
 <translation id="77424286611022110">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ। <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">खतरनाक सामग्रीमाथि रोक लगाइयो।</translation>

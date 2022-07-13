@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="1439919885608649279">फूल बोकिरहेका व्यक्ति</translation>
 <translation id="1471718551822868769">स्लोभाकियाली</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />"अपलोड गरिएको थिएन। तपाईँको Google ड्राइभमा पर्याप्त खाली ठाउँ छैन।</translation>
 <translation id="1482884275703521657">फिनिस</translation>
 <translation id="148466539719134488">स्विस</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" पुन: नामकरण गर्न असक्षम। <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">सुरक्षित पारियो</translation>
 <translation id="2638942478653899953">Google ड्राइभमा पुग्न सकिएन। कृपया <ph name="BEGIN_LINK" />लग आउट<ph name="END_LINK" /> गर्नुहोस् र फेरि लग इन गर्नुहोस्।</translation>
 <translation id="2649120831653069427">रेनबोफिस</translation>
+<translation id="2653059201992392941">तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="2663066752008346276">बर्मेली/म्यान्मार म्यान्सन किबोर्ड</translation>
 <translation id="2664412712123763093">फाइल रहेको स्थान</translation>
 <translation id="2718540689505416944">Linux प्रयोग गरी एप इन्स्टल गर्नुहोस्</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">ट्र्यास खाली गर्नुहोस्</translation>
 <translation id="5163869187418756376">साझा गर्न असफल। आफ्नो जडान जाँच गर्नुहोस् र पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="516592729076796170">अमेरिकी प्रोग्रामर भोराक किबोर्ड</translation>
-<translation id="5170477580121653719">Google ड्राइभ स्थान बाँकी: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5177526793333269655">थम्बनेल दृश्य</translation>
 <translation id="5194713942430106590">स्तम्भलाई बढ्दो क्रममा क्रमबद्ध गर्न क्लिक गर्नुहोस्।</translation>
 <translation id="5211614973734216083">फारोज</translation>
@@ -529,6 +528,7 @@
 <translation id="5489067830765222292">लात्भियाली</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> फिल्टर अफ छ।</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
+<translation id="5500104704744051184">तपाईंले PUK हालेपछि मात्र तपाईं यो नेटवर्क प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="5500122897333236901">आइसलैंडको</translation>
 <translation id="5508696409934741614">डटहरू</translation>
 <translation id="5522908512596376669">फाइलको सूचीको दृश्य परिवर्तन गरी सूची दृश्य बनाइयो।</translation>
@@ -634,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> वस्तुहरू</translation>
 <translation id="642282551015776456">नामलाई फाइल वा फोल्डर नामको रूपमा प्रयोग गर्न सकिँदैन</translation>
 <translation id="6423031066725912715">भियतनामी TCVN किबोर्ड</translation>
+<translation id="6430271654280079150">तपाईं अझै १ पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="6485131920355264772">स्पेज जानकारी पुनर्प्राप्त गर्न असफल भयो</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="SECURITY_STATUS" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> मा एक्स्ट्रयाक्ट गरिँदै छ</translation>
@@ -900,6 +901,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> वस्तुहरू समक्रमण गर्दै...</translation>
 <translation id="8600173386174225982">फाइलको सूचीको दृश्य परिवर्तन गरी थम्बनेल दृश्य बनाइयो।</translation>
 <translation id="8601932370724196034">Crostini छवि फाइल</translation>
+<translation id="8608515571837163082">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो। तपाईंको मोबाइल सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नुहोस्।</translation>
 <translation id="8609695766746872526">आइसल्यान्डिक</translation>
 <translation id="863903787380594467">PIN मिलेन। तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>

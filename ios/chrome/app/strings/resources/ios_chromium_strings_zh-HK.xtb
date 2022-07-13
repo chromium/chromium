@@ -74,6 +74,7 @@
 <translation id="5945387852661427312">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chromium 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chromium，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
 <translation id="5983312940147103417">讓 Chromium 更臻完美</translation>
 <translation id="602807004951640891">使用 Chromium 即表示您同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
+<translation id="6062449165341879460">貴機構 <ph name="DOMAIN" /> 將可存取你儲存在這個帳戶中的 Chromium 資料、書籤、歷史記錄、密碼和其他設定。登出帳戶後，系統會清除這部裝置中的資料。不過，你的資料仍會儲存在受管理 Google 帳戶中，並可供貴機構使用。貴機構也可以設定該帳戶專屬的使用者政策，這些政策可以變更 Chromium 的行為。</translation>
 <translation id="6119647025869519954">如何將 Chromium 設定為預設瀏覽器：
 1. 開啟「設定」
 2. 輕按 [預設瀏覽器應用程式]

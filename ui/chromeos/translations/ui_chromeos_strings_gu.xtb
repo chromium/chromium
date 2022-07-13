@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Parallels ડેસ્કટૉપ સાથે ફોલ્ડર શેર કરો</translation>
 <translation id="1439919885608649279">ફૂલો લઈને ઉભેલી વ્યક્તિ</translation>
 <translation id="1471718551822868769">સ્લોવાક</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" ને અપલોડ કરવામાં આવી ન હતી. તમારી Google ડ્રાઇવમાં પૂરતી ખાલી જગ્યા નથી.</translation>
 <translation id="1482884275703521657">ફિનિશ</translation>
 <translation id="148466539719134488">સ્વીસ</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" નું નામ બદલવામાં અક્ષમ. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="2638942478653899953">Google ડ્રાઇવ પર પહોંચી શકાયું નથી. કૃપા કરીને <ph name="BEGIN_LINK" />લૉગ આઉટ કરો<ph name="END_LINK" /> અને પાછા લૉગ ઇન કરો.</translation>
 <translation id="2649120831653069427">રેન્બોફીશ</translation>
+<translation id="2653059201992392941">તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="2663066752008346276">બર્મીઝ/મ્યાનમાર, Myansan કીબોર્ડ સાથે</translation>
 <translation id="2664412712123763093">ફાઇલનું સ્થાન</translation>
 <translation id="2718540689505416944">Linux વડે ઍપ ઇન્સ્ટૉલ કરો</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">ટ્રેશ ખાલી કરો</translation>
 <translation id="5163869187418756376">શેરિંગ નિષ્ફળ થયું. તમારું કનેક્શન તપાસો અને થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="516592729076796170">યુએસ પ્રોગ્રામર ડ્વોરેક</translation>
-<translation id="5170477580121653719">Google ડ્રાઇવ સ્થાન બાકી: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">થંબનેલ દૃશ્ય</translation>
 <translation id="5194713942430106590">કૉલમને ચઢતા ક્રમમાં સૉર્ટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="5211614973734216083">ફૅરોઇઝ</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">લૅતવિયન</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> ફિલ્ટર બંધ છે.</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
+<translation id="5500104704744051184">જ્યાં સુધી તમે PUK દાખલ નહીં કરો, ત્યાં સુધી તમે આ નેટવર્કનો ઉપયોગ કરી શકશો નહીં</translation>
 <translation id="5500122897333236901">આઇસલેન્ડિક</translation>
 <translation id="5508696409934741614">બિંદુઓ</translation>
 <translation id="5522908512596376669">ફાઇલ સૂચિને સૂચિ દૃશ્યમાં બદલી છે.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> આઇટમ</translation>
 <translation id="642282551015776456">આ નામનો ઉપયોગ ફોલ્ડર નામની કોઈ ફાઇલ તરીકે થઈ શકશે નહીં</translation>
 <translation id="6423031066725912715">વિયેતનામીઝ, TCVN કીબોર્ડ સાથે</translation>
+<translation id="6430271654280079150">તમારો 1 પ્રયાસ બાકી છે.</translation>
 <translation id="6485131920355264772">સ્થાન માહિતી પુનર્પ્રાપ્ત કરવામાં નિષ્ફળ</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ને <ph name="FOLDER_NAME" />માં એક્સટ્રેક્ટ કરી રહ્યાં છીએ</translation>
@@ -899,6 +900,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> આઇટમ્સ સમન્વયિત કરી રહ્યાં છે...</translation>
 <translation id="8600173386174225982">ફાઇલ સૂચિને થંબનેલ દૃશ્યમાં બદલી છે.</translation>
 <translation id="8601932370724196034">Crostini છબી ફાઇલ</translation>
+<translation id="8608515571837163082">ઘણી બધી વખત કોઈ ખોટો પિન દાખલ કરવામાં આવ્યો છે. મોબાઇલ ઑપરેટર દ્વારા આપવામાં આવેલો 8-અંકનો પર્સનલ અનબ્લૉકિંગ કી (PUK) દાખલ કરો.</translation>
 <translation id="8609695766746872526">આઇસલેન્ડિક</translation>
 <translation id="863903787380594467">ખોટો પિન. તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - પોર્ટ</translation>

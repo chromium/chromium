@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Share folder with Parallels Desktop</translation>
 <translation id="1439919885608649279">Person with flowers</translation>
 <translation id="1471718551822868769">Slovak</translation>
-<translation id="1474339897586437869">"<ph name="FILENAME" />" was not uploaded. There is not enough free space in your Google Drive.</translation>
 <translation id="1482884275703521657">Finnish</translation>
 <translation id="148466539719134488">Swiss</translation>
 <translation id="1497522201463361063">Unable to rename "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -489,7 +488,6 @@
 <translation id="5159560892333415631">Empty bin</translation>
 <translation id="5163869187418756376">Sharing failed. Please check your connection and try again later.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5170477580121653719">Google Drive space left: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Thumbnail view</translation>
 <translation id="5194713942430106590">Click to sort the column in ascending order.</translation>
 <translation id="5211614973734216083">Faroese</translation>

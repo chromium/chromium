@@ -1259,6 +1259,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">வைஃபை ஐச் சேர்...</translation>
 <translation id="2162155940152307086">நீங்கள் ஒத்திசைவு அமைப்புகளை விட்டு வெளியேறியவுடன் ஒத்திசைவு தொடங்கும்</translation>
+<translation id="2162705204091149050">உங்கள் உலாவி, OS, சாதனம், நிறுவப்பட்டுள்ள மென்பொருள், ஃபைல்கள் ஆகியவற்றைப் பற்றிய தகவல்களைப் படிப்பது</translation>
 <translation id="2162926944953615670">eSIM சுயவிவரங்கள் கிடைக்கவில்லை</translation>
 <translation id="2163470535490402084">உங்கள் <ph name="DEVICE_TYPE" /> இல் உள்நுழைய இணையத்துடன் இணைக்கவும்.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, மேலும் 1 ஸ்விட்ச்</translation>
@@ -2144,7 +2145,7 @@
 <translation id="2966937470348689686">Android விருப்பத்தேர்வுகளை நிர்வகி</translation>
 <translation id="2967926928600500959">இந்த விதிகளுக்குப் பொருந்தும் URLகள் குறிப்பிட்ட உலாவியில் திறக்கப்படும்.</translation>
 <translation id="2972581237482394796">&amp;மீண்டும் செய்</translation>
-<translation id="2973324205039581528">தளத்தில் ஒலி இயக்கு</translation>
+<translation id="2973324205039581528">தளத்தின் ஒலியை இயக்கு</translation>
 <translation id="2973537811036309675">பக்கவாட்டுப் பேனல்</translation>
 <translation id="2976557544729462544">சரியாக அல்லது முழுச் செயல்திறனுடன் செயல்பட இதை முடக்குமாறு சில சாதனங்கள் கோரும்.</translation>
 <translation id="2977480621796371840">குழுவிலிருந்து அகற்று</translation>
@@ -2508,6 +2509,7 @@
 <translation id="3359256513598016054">சான்றிதழ் கொள்கைக் கட்டுப்பாடுகள்</translation>
 <translation id="3360297538363969800">அச்சிடுவதில் தோல்வி. உங்கள் பிரிண்டரைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> உங்களுடன் <ph name="ATTACHMENTS" /> ஐப் பகிர்கிறது.}other{<ph name="DEVICE_NAME" /> உங்களுடன் <ph name="ATTACHMENTS" /> ஐப் பகிர்கிறது.}}</translation>
+<translation id="3363202073972776113">இந்தப் புதிய சுயவிவரத்தை உங்கள் நிறுவனம் நிர்வகிக்கும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">உங்கள் நிர்வாகியிடமிருந்து: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">கன்ட்ரோல் அல்லது ஆல்ட் விசையைப் பயன்படுத்தவும்</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
@@ -2542,6 +2544,7 @@
 <translation id="339722927132407568">பிளே ஆகாமல் நிற்கிறது</translation>
 <translation id="3399432415385675819">அறிவிப்புகள் முடக்கப்படும்</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ஹெர்ட்ஸ்) - பிணைக்கப்பட்டுள்ளது</translation>
+<translation id="3401484564516348917">உங்கள் உலாவி, OS, சாதனம், நிறுவப்பட்டுள்ள மென்பொருள், ரெஜிஸ்ட்ரி மதிப்புகள், ஃபைல்கள் ஆகியவற்றைப் பற்றிய தகவல்களைப் படிப்பது</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{இந்தச் சாதனத்தில் {COUNT} கடவுச்சொல் சேமிக்கப்பட்டுள்ளது}other{இந்தச் சாதனத்தில் {COUNT} கடவுச்சொற்கள் சேமிக்கப்பட்டுள்ளன}}</translation>
 <translation id="3402255108239926910">தோற்றப்படத்தைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="3402585168444815892">டெமோ பயன்முறையில் பதிவுசெய்கிறது</translation>
@@ -2788,6 +2791,7 @@
 <translation id="3627879631695760395"><ph name="APP" />ஐ நிறுவு...</translation>
 <translation id="3628275722731025472">புளூடூத்தை முடக்குதல்</translation>
 <translation id="3629631988386925734">Smart Lockகை இயக்க, கடவுச்சொல்லை உள்ளிடவும். அடுத்த முறை <ph name="DEVICE_TYPE" />ஐ உங்கள் மொபைல் அன்லாக் ஆகும். அமைப்புகளில் Smart Lockகை முடக்கலாம்.</translation>
+<translation id="3629664892718440872">இந்த விருப்பத்தை நினைவில்கொள்</translation>
 <translation id="3630132874740063857">உங்கள் ஃபோன்</translation>
 <translation id="3630995161997703415">இந்தத் தளத்தை எந்த நேரத்திலும் பயன்படுத்த அதனை உங்கள் ஷெல்ஃபில் சேர்க்கவும்</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />தானியங்கு அறிக்கைகளை அனுப்ப ChromeOS சாதனங்களை அனுமதிப்பது ChromeOSஸில் எதை முதலில் சரிசெய்ய வேண்டும், மேம்படுத்த வேண்டும் என்பதை நாங்கள் தீர்மானிக்க உதவுகிறது. ChromeOS எப்போது செயலிழந்தது, என்னென்ன அம்சங்களை நீங்கள் பயன்படுத்தினீர்கள், வழக்கமாக எவ்வளவு நினைவகத்தைப் பயன்படுத்துகிறீர்கள் போன்ற தகவல்கள் இந்த அறிக்கைகளில் இருக்கும்.<ph name="END_PARAGRAPH1" />
@@ -3277,6 +3281,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">MIDI சாதனங்களுக்கான முழுக் கட்டுப்பாட்டையும் பெறுவது மறுக்கப்பட்டது</translation>
+<translation id="4087328411748538168">வலதுபுறம் காட்டு</translation>
 <translation id="4089235344645910861">அமைப்புகள் சேமிக்கப்பட்டன. ஒத்திசைவு தொடங்கியது.</translation>
 <translation id="4090103403438682346">சரிபார்க்கப்பட்ட அணுகலை இயக்கு</translation>
 <translation id="4090947011087001172"><ph name="SITE" />க்கான தள அனுமதிகளை மீட்டமைக்கவா?</translation>
@@ -3970,6 +3975,7 @@
 <translation id="4779766576531456629">eSIM மொபைல் நெட்வொர்க்கின் பெயரை மாற்றுதல்</translation>
 <translation id="4780321648949301421">பக்கத்தை இவ்வாறு சேமி...</translation>
 <translation id="4781443161433589743">Chromeமின் வலுவான பாதுகாப்பைப் பெற்றுள்ளீர்கள்</translation>
+<translation id="4782861709165039462">சாதனங்களின் வன்பொருள் ஸ்விட்ச் மூலம் மைக்ரோஃபோன்கள் அனைத்தும் முடக்கப்பட்டுள்ளன</translation>
 <translation id="4785719467058219317">இந்த இணையதளத்தில் பதிவுசெய்யப்படாத பாதுகாப்பு விசையைப் பயன்படுத்துகிறீர்கள்</translation>
 <translation id="4785914069240823137">செதுக்கியதை ரத்துசெய்யும்</translation>
 <translation id="4788092183367008521">நெட்வொர்க் இணைப்பைச் சரிபார்த்து, மீண்டும் முயலவும்.</translation>
@@ -4238,7 +4244,6 @@
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chromeமைப் பிரத்தியேகமாக்கு<ph name="END_LINK" /> என்பதில் உள்ள அனைத்துக் கார்டுகளையும் பாருங்கள்</translation>
 <translation id="5056950756634735043">கண்டெய்னருடன் இணைக்கிறது</translation>
 <translation id="5057110919553308744">நீங்கள் நீட்டிப்பைக் கிளிக் செய்யும்போது</translation>
-<translation id="505776528429481161">எளிதாக இணைத்து அருகிலுள்ள சாதனங்களை அமைக்கலாம்</translation>
 <translation id="5059241099014281248">உள்நுழைவைக் கட்டுப்படுத்துதல்</translation>
 <translation id="5059526285558225588">எதைப் பகிர்வது எனத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="5060332552815861872">சேமிப்பதற்கு ஒரு பிரிண்டர் உள்ளது.</translation>
@@ -4737,6 +4742,7 @@
 <translation id="5548075230008247516">அனைத்தும் தேர்வுநீக்கப்பட்டன, தேர்வுப் பயன்முறையிலிருந்து வெளியேறிவிட்டீர்கள்</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" மேலும் ஒரு தாவல்}other{"<ph name="TAB_TITLE" />" மேலும் # தாவல்கள்}}</translation>
 <translation id="5548606607480005320">பாதுகாப்புச் சரிபார்ப்பு</translation>
+<translation id="5548644592758170183">இடதுபுறம் காட்டு</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">கீபோர்டு மற்றும் உரை உள்ளீடு</translation>
 <translation id="5553089923092577885">சான்றிதழ் கொள்கை மேப்பிங்ஸ்</translation>
@@ -8220,6 +8226,7 @@
 <translation id="8980345560318123814">கருத்து அறிக்கைகள்</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - சிதைந்துவிட்டது</translation>
 <translation id="8981825781894055334">காகிதம் குறைவாக உள்ளது</translation>
+<translation id="8983018820925880511">இந்தப் புதிய சுயவிவரத்தை <ph name="DOMAIN" /> நிர்வகிக்கும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="FILENAME" /> ஃபைலை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="8984694057134206124">அருகிலுள்ள அனைவருக்கும் <ph name="MINUTES" /> நிமிடங்களுக்கு உங்கள் சாதனம் காட்டப்படும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebookகிற்கான Steam ஆப்ஸிற்கு வரவேற்கிறோம்</translation>
@@ -8316,6 +8323,7 @@
 <translation id="9075413375877487220">இந்த நீட்டிப்பை மேம்பட்ட பாதுகாப்பு உலாவல் நம்பவில்லை.</translation>
 <translation id="9076283476770535406">இதில் பெரியவர்களுக்கான உள்ளடக்கம் இருக்கக்கூடும்</translation>
 <translation id="9076523132036239772">மன்னிக்கவும், உங்கள் மின்னஞ்சல் அல்லது கடவுச்சொல்லைச் சரிபார்க்க முடியவில்லை. முதலில் நெட்வொர்க்குடன் இணைய முயலவும்.</translation>
+<translation id="9076821103818989526">பக்கவாட்டுப் பேனல்</translation>
 <translation id="9076977315710973122">SMB பகிர்வு</translation>
 <translation id="9078193189520575214">மாற்றங்களைச் செயல்படுத்துகிறது...</translation>
 <translation id="9078316009970372699">உடனடி இணைப்பு முறையை முடக்கு</translation>

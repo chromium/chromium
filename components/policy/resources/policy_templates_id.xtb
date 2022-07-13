@@ -948,17 +948,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1962864958436828230">Menyetel batas ukuran minimal untuk batasan papan klip pencegahan kebocoran data</translation>
 <translation id="1964634611280150550">Mode samaran dinonaktifkan</translation>
 <translation id="1964802606569741174">Kebijakan ini tidak memengaruhi aplikasi YouTube Android. Jika Mode Perlindungan di YouTube harus diterapkan, pemasangan aplikasi YouTube Android harus dilarang.</translation>
-<translation id="1965363065727209968">setTimeout(…, 0) biasa digunakan untuk menguraikan tugas JavaScript panjang.
-          Jika kebijakan disetel ke Aktif, setTimeout dan setInterval dengan interval yang lebih kecil dari 4 md tidak akan dibatasi dengan sangat cepat.
-          Hal ini meningkatkan performa jangka pendek. Namun, situs yang menyalahgunakan API pada akhirnya akan memiliki setTimeout terbatas.
-
-          Hal ini dapat mengubah urutan tugas di suatu halaman web, yang menyebabkan perilaku tak terduga di situs yang bergantung pada urutan tertentu dengan cara tertentu pula.
-          Kebijakan ini juga dapat memengaruhi situs yang menggunakan banyak setTimeout() dengan waktu tunggu 0 md, misalnya penambahan beban CPU.
-
-          Bagi pengguna yang tidak menyetel kebijakan ini, <ph name="PRODUCT_NAME" /> akan meluncurkan perubahan secara bertahap pada saluran Stabil.
-
-          Kebijakan ini bersifat sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> 107. Batas waktu ini dapat diperpanjang jika diperlukan di antara perusahaan.
-          </translation>
 <translation id="1967334955994230472">Nonaktifkan Projector</translation>
 <translation id="1969212217917526199">Menggantikan kebijakan pada versi Debug untuk host akses jarak jauh.
 
@@ -1741,6 +1730,9 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="274769314493317695">Jika <ph name="PRINTERS_WHITELIST" /> dipilih untuk <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="2751959596774212778">WebSQL di konteks tidak aman akan nonaktif secara default mulai M107 dan akan sepenuhnya dihapus di M110.
+          Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL di konteks tidak aman akan tetap aktif hingga akhir M106, lalu nonaktif mulai M107.
+          Jika kebijakan ini disetel ke benar (true), WebSQL di konteks tidak aman akan diaktifkan.</translation>
 <translation id="2752046642026416564">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> dapat menggunakan host pesan native yang diinstal di tingkat pengguna.
 
       Menyetel kebijakan ke Nonaktif berarti <ph name="PRODUCT_NAME" /> hanya dapat menggunakan host ini jika diinstal di tingkat sistem.</translation>
@@ -3834,7 +3826,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
       * Ketat, Mode Terbatas Ketat di YouTube selalu aktif.
 
-      * Sedang, pengguna hanya dapat memilih Mode Terbatas Sedang atau Ketat di YouTube tetapi tidak dapat menonaktifkan Mode terbatas.
+      * Menengah, pengguna hanya dapat memilih Mode Terbatas Menengah atau Ketat di YouTube tetapi tidak dapat menonaktifkan Mode terbatas.
 
       * Nonaktif atau jika tidak ada nilai yang ditetapkan, Chrome tidak akan menerapkan Mode Terbatas di YouTube. Kebijakan eksternal seperti kebijakan YouTube tetap dapat memberlakukan Mode Terbatas.</translation>
 <translation id="5191476996923842491">'Perilaku default untuk penundaan minimum fungsi setTimeout().</translation>
@@ -4143,7 +4135,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5475361623548884387">Aktifkan pencetakan</translation>
 <translation id="547601067149622666">Jangan izinkan iklan di situs yang menayangkan iklan mengganggu</translation>
 <translation id="5476152378885134514">Memblokir papan klip di situs ini</translation>
-<translation id="5478734531226638813">Menyetel kebijakan akan menonaktifkan update aplikasi Kiosk Chrome (yang menggunakan URL update dari manifes ekstensi) dalam sesi dan hanya akan menggunakan pra-pengambilan CRX sebagai mekanisme update.</translation>
 <translation id="5480380613778757009">Jika kebijakan ini dinonaktifkan atau tidak disetel, semua setelan tampilan yang disetel di Sesi tamu terkelola akan direset segera setelah sesi selesai. Jika kebijakan ini disetel ke Benar (True), properti tampilan akan tetap tersimpan setelah keluar dari sesi tamu terkelola.</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh trust anchor lokal</translation>
 <translation id="5487758664517243511">Jika setelan ini diaktifkan, pengguna yang telah memilih untuk menggunakan Phone Hub akan dapat melanjutkan tugas seperti melihat halaman web ponsel di ChromeOS.
@@ -4394,11 +4385,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="5749396052108288586">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Mengaktifkan pintasan fitur aksesibilitas di layar login</translation>
-<translation id="5749873635525257317">Kebijakan ini tidak digunakan lagi. Sebaiknya gunakan BrowserSignin.
-
-      Mengizinkan pengguna untuk login ke <ph name="PRODUCT_NAME" />.
-
-      Jika kebijakan ini disetel, Anda dapat mengonfigurasi apakah pengguna diizinkan untuk login ke <ph name="PRODUCT_NAME" />. Jika kebijakan ini disetel ke 'Salah' (False), aplikasi dan ekstensi yang menggunakan chrome.identity API tidak akan berfungsi. Sebagai gantinya, sebaiknya gunakan <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
 <translation id="5755002458331714762"> Web Components v0 API (Shadow DOM v0, Custom Elements v0, dan HTML Imports) sudah tidak digunakan lagi pada tahun 2018, dan telah dinonaktifkan secara default mulai dari M80. Kebijakan ini akan memungkinkan fitur ini diaktifkan ulang secara selektif hingga M84.
 
       Jika kebijakan ini ditetapkan ke True, fitur Web Components v0 akan diaktifkan untuk semua situs.
@@ -5602,6 +5588,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika 'U2F' dipilih, faktor kedua yang diintegrasikan akan melakukan proses sesuai spesifikasi FIDO U2F.
 
       Jika 'U2F_EXTENDED' dipilih, faktor kedua yang diintegrasikan akan memberikan fungsi U2F, ditambah beberapa ekstensi untuk masing-masing pengesahan.</translation>
+<translation id="6998179760789945134">Nonaktifkan WebSQL di konteks tidak aman kecuali jika diaktifkan oleh tanda Chrome.</translation>
 <translation id="6999948519306285655">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Menyetel kebijakan memungkinkan Anda menentukan URL untuk file .pac proxy. Kebijakan ini hanya berlaku jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan dan Anda memilih <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> dengan <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -6154,14 +6141,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan ini disetel ke aktif atau tidak disetel, konversi unit Jawaban Instan akan diaktifkan.
       Jika kebijakan ini disetel ke nonaktif, konversi unit Jawaban Instan akan dinonaktifkan.</translation>
 <translation id="7587345076013230465">Minta pengguna memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat di layar login</translation>
-<translation id="7590188804371204512">Mengontrol penginstalan ekstensi eksternal.
-
-      Jika setelan ini diaktifkan, ekstensi eksternal akan diblokir sehingga tidak dapat diinstal.
-
-      Jika setelan ini dinonaktifkan atau tidak ditetapkan, ekstensi eksternal akan dapat diinstal.
-
-      Ekstensi eksternal dan penginstalannya didokumentasikan di https://developer.chrome.com/apps/external_extensions.
-      </translation>
 <translation id="759957074386651883">Setelan Safe Browsing</translation>
 <translation id="7604169113182304895">Aplikasi Android dapat memilih untuk menerima daftar ini secara sukarela. Anda tidak dapat memaksa aplikasi untuk menerimanya.</translation>
 <translation id="7612157962821894603">Tanda di seluruh sistem yang akan diterapkan pada waktu mulai <ph name="PRODUCT_NAME" /></translation>
@@ -7360,6 +7339,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8919100556245407184">Waktu dalam satuan hari, jika perangkat telah mencapai kedaluwarsa update otomatis, sebelum pengguna logout jika versi <ph name="PRODUCT_OS_NAME" /> lebih rendah dari <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> yang ditentukan.</translation>
 <translation id="8919369436496201075">Mengizinkan perangkat menerima update LTS</translation>
 <translation id="8921669704201370845">Mengaktifkan pelaporan cloud <ph name="PRODUCT_NAME" /> untuk profil terkelola</translation>
+<translation id="8922494933893518624">Paksa pengaktifan WebSQL di konteks tidak aman.</translation>
 <translation id="8930064580550462145">Saat login melalui layar kunci, <ph name="PRODUCT_OS_NAME" /> dapat melakukan autentikasi terhadap server (online) atau menggunakan sandi yang tersimpan di cache (offline).
 
       Jika kebijakan ini disetel ke -2, kebijakan akan mencocokkan nilai batas waktu login offline layar login yang berasal dari <ph name="POLICY" />.

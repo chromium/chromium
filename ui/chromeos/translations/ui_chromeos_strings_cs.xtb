@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Sdílení složky s nástrojem Parallels Desktop</translation>
 <translation id="1439919885608649279">Člověk s květinami</translation>
 <translation id="1471718551822868769">slovenština</translation>
-<translation id="1474339897586437869">Soubor <ph name="FILENAME" /> nelze nahrát. Na Disku Google je nedostatek místa.</translation>
 <translation id="1482884275703521657">finština</translation>
 <translation id="148466539719134488">Švýcarská klávesnice</translation>
 <translation id="1497522201463361063">Soubor „<ph name="FILE_NAME" />“ se nepodařilo přejmenovat. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Zabezpečeno</translation>
 <translation id="2638942478653899953">Disk Google nelze použít. <ph name="BEGIN_LINK" />Odhlaste se prosím<ph name="END_LINK" /> a opět se přihlaste.</translation>
 <translation id="2649120831653069427">Duhovka</translation>
+<translation id="2653059201992392941">Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">barmština/myanmarština s myansanskou klávesnicí</translation>
 <translation id="2664412712123763093">Umístění souboru</translation>
 <translation id="2718540689505416944">Nainstalujte aplikaci pro Linux</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Vysypat koš</translation>
 <translation id="5163869187418756376">Sdílení se nezdařilo. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="516592729076796170">Americká klávesnice Dvorak</translation>
-<translation id="5170477580121653719">Volné místo na Disku Google: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Zobrazení miniatur</translation>
 <translation id="5194713942430106590">Kliknutím sloupec seřadíte vzestupně.</translation>
 <translation id="5211614973734216083">faerština</translation>
@@ -529,6 +528,7 @@
 <translation id="5489067830765222292">lotyština</translation>
 <translation id="5489965683297092283">Filtr <ph name="FILTER_NAME" /> je vypnutý.</translation>
 <translation id="5494920125229734069">Vybrat vše</translation>
+<translation id="5500104704744051184">Tuto síť budete moci používat až po zadání kódu PUK</translation>
 <translation id="5500122897333236901">islandština</translation>
 <translation id="5508696409934741614">Tečky</translation>
 <translation id="5522908512596376669">Seznam souborů byl změněn na seznamové zobrazení.</translation>
@@ -634,6 +634,7 @@
 <translation id="6395575651121294044">Počet položek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Tento název nelze použít k pojmenování souboru ani složky.</translation>
 <translation id="6423031066725912715">vietnamština s klávesnicí TCVN</translation>
+<translation id="6430271654280079150">Zbývá vám jeden pokus.</translation>
 <translation id="6485131920355264772">Informace o volném místě se nepodařilo načíst</translation>
 <translation id="6495925982925244349">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>
 <translation id="649877868557234318">Rozbalování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
@@ -900,6 +901,7 @@
 <translation id="8579285237314169903">Synchronizace <ph name="NUMBER_OF_FILES" /> položek...</translation>
 <translation id="8600173386174225982">Seznam souborů se změnil na zobrazení miniatur.</translation>
 <translation id="8601932370724196034">Soubor obrazu Crostini</translation>
+<translation id="8608515571837163082">Příliš mnohokrát jste zadali nesprávný PIN. Zadejte osmimístný kód PUK, který vám poskytl operátor.</translation>
 <translation id="8609695766746872526">islandština</translation>
 <translation id="863903787380594467">Nesprávný PIN. Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

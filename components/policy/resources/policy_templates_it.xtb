@@ -943,17 +943,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="1962864958436828230">Imposta le dimensioni minime dei dati per la limitazione relativa agli appunti, al fine di impedire la fuga di dati</translation>
 <translation id="1964634611280150550">Modalità di navigazione in incognito non attiva</translation>
 <translation id="1964802606569741174">Questa norma non ha effetto sull'app YouTube per Android. Se è necessario applicare la modalità di protezione di YouTube, l'installazione dell'app YouTube per Android non deve essere consentita.</translation>
-<translation id="1965363065727209968">setTimeout(…, 0) viene comunemente utilizzato per suddividere le attività JavaScript lunghe.
-          Se il criterio viene impostato su Enabled, i valori di setTimeouts e setIntervals con un intervallo inferiore a 4 ms non vengono limitati in modo aggressivo.
-          Ciò migliora le prestazioni a breve termine, ma in definitiva i valori di setTimeouts dei siti web che abusano dell'API verranno fatti rientrare nei limiti.
-
-          L'operazione potrebbe modificare l'ordine delle attività su una pagina web, causando comportamenti imprevisti sui siti che dipendono in qualche misura da un ordine specifico.
-          Potrebbe anche incidere sui siti che utilizzano spesso setTimeout() con timeout di 0 ms, ad es. causando un aumento del carico della CPU.
-
-          Per gli utenti per i quali il criterio non è stato impostato, <ph name="PRODUCT_NAME" /> renderà disponibile gradualmente la modifica sul canale stabile.
-
-          Si tratta di un criterio temporaneo di cui è prevista la rimozione in <ph name="PRODUCT_NAME" /> 107. Questo termine potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
-          </translation>
 <translation id="1967334955994230472">Disattiva Proiettore</translation>
 <translation id="1969212217917526199">Sostituisce le build di debug dell'host di accesso remoto.
 
@@ -4122,7 +4111,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5475361623548884387">Attiva la stampa</translation>
 <translation id="547601067149622666">Non consentire gli annunci su siti con annunci invasivi</translation>
 <translation id="5476152378885134514">Blocca gli appunti su questi siti</translation>
-<translation id="5478734531226638813">L'impostazione del criterio disattiverà l'aggiornamento delle app di Chrome Kiosk all'interno della sessione (che utilizza l'URL di aggiornamento dal manifest dell'estensione) e lascerà solo il precaricamento CRX come meccanismo di aggiornamento.</translation>
 <translation id="5480380613778757009">Se questo criterio viene disattivato o se non viene configurato, tutte le impostazioni di visualizzazione configurate nella sessione Ospite gestita verranno reimpostate al termine della sessione. Se questo criterio viene impostato su Vero, le proprietà di visualizzazione verranno memorizzate dopo la chiusura della sessione Ospite gestita.</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
 <translation id="5487758664517243511">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub possono continuare attività su Chrome OS, come ad esempio la visualizzazione di pagine web che avevano iniziato a consultare sul telefono.
@@ -4362,11 +4350,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="5749396052108288586">Questo criterio è deprecato. Usa il criterio <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Attiva le scorciatoie delle funzioni di accessibilità nella schermata di accesso</translation>
-<translation id="5749873635525257317">Questo criterio è deprecato; potresti usare il criterio BrowserSignin.
-
-      Consente all'utente di accedere a <ph name="PRODUCT_NAME" />.
-
-      La configurazione di questo criterio ti consente di stabilire se un utente può accedere o meno a <ph name="PRODUCT_NAME" />. Se questo criterio viene impostato su "Falso", le app e le estensioni che utilizzano l'API chrome.identity non funzioneranno, pertanto è consigliabile utilizzare il criterio <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
 <translation id="5755002458331714762"> Le API Web Components v0 (Shadow DOM v0, Custom Elements v0 e HTML Imports) sono state ritirate nel 2018 e sono state disattivate per impostazione predefinita a partire dalla versione M80. Questo criterio consente di riattivare selettivamente queste funzionalità fino alla versione M84.
 
       Se questo criterio viene impostato su True, le funzionalità Web Components v0 verranno attivate per tutti i siti.
@@ -6111,14 +6094,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio è attivato o non impostato, la funzionalità di conversione delle unità di Risposte rapide sarà attiva.
       Se il criterio è disattivato, la funzionalità di conversione delle unità di Risposte rapide sarà disattivata.</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
-<translation id="7590188804371204512">Controlla l'installazione delle estensioni esterne.
-
-      L'attivazione di questa impostazione blocca l'installazione delle estensioni esterne.
-
-      Se l'impostazione è disattivata o non viene impostata, l'installazione delle estensioni esterne è consentita.
-
-      Le estensioni esterne e le relative modalità di installazione sono illustrate alla pagina https://developer.chrome.com/apps/external_extensions.
-      </translation>
 <translation id="759957074386651883">Impostazioni di Navigazione sicura</translation>
 <translation id="7604169113182304895">Le app Android potrebbero decidere volontariamente se rispettare o meno questo elenco. Non è possibile imporre il rispetto dell'elenco.</translation>
 <translation id="7612157962821894603">Contrassegni a livello di sistema da applicare all'avvio di <ph name="PRODUCT_NAME" /></translation>

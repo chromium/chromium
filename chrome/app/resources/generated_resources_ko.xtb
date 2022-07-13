@@ -1259,6 +1259,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi 추가</translation>
 <translation id="2162155940152307086">동기화 설정을 종료하면 동기화가 시작됩니다.</translation>
+<translation id="2162705204091149050">브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보 읽기</translation>
 <translation id="2162926944953615670">사용 가능한 eSIM 프로필 없음</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 1개</translation>
@@ -2509,6 +2510,7 @@
 <translation id="3359256513598016054">인증서 정책 제약조건</translation>
 <translation id="3360297538363969800">인쇄에 실패했습니다. 프린터를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}}</translation>
+<translation id="3363202073972776113">이 새 프로필은 조직에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">관리자의 메시지: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl 또는 Alt 키 중에 하나만 사용하세요</translation>
 <translation id="3368922792935385530">연결됨</translation>
@@ -2543,6 +2545,7 @@
 <translation id="339722927132407568">정지됨</translation>
 <translation id="3399432415385675819">알림이 사용 중지됩니다.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" />(<ph name="REFRESH_RATE" />Hz) - 인터레이스</translation>
+<translation id="3401484564516348917">브라우저, OS, 기기, 설치된 소프트웨어, 레지스트리 값, 파일에 관한 정보 읽기</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{기기에 비밀번호 {COUNT}개가 저장되어 있습니다.}other{기기에 비밀번호 {COUNT}개가 저장되어 있습니다.}}</translation>
 <translation id="3402255108239926910">아바타 선택</translation>
 <translation id="3402585168444815892">데모 모드에 등록</translation>
@@ -2789,6 +2792,7 @@
 <translation id="3627879631695760395"><ph name="APP" /> 설치...</translation>
 <translation id="3628275722731025472">블루투스 사용 중지</translation>
 <translation id="3629631988386925734">비밀번호를 입력하여 Smart Lock을 사용 설정하세요. 다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
+<translation id="3629664892718440872">이 선택사항 저장</translation>
 <translation id="3630132874740063857">휴대전화</translation>
 <translation id="3630995161997703415">이 사이트를 언제든지 사용할 수 있도록 실행기에 추가합니다</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상 종료되는지, 어떤 기능을 사용하는지, 일반적으로 메모리를 얼마나 많이 사용하는지 등의 정보가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
@@ -3276,6 +3280,7 @@
 <translation id="4085298594534903246">이 페이지에서 자바스크립트가 차단되었습니다.</translation>
 <translation id="4087089424473531098">확장 프로그램(파일: <ph name="EXTENSION_FILE" />)을 만들었습니다.</translation>
 <translation id="408721682677442104">MIDI 기기 전체 제어 거부됨</translation>
+<translation id="4087328411748538168">오른쪽에 표시</translation>
 <translation id="4089235344645910861">설정이 저장되었으며, 동기화가 시작되었습니다.</translation>
 <translation id="4090103403438682346">인증 액세스 서비스 사용</translation>
 <translation id="4090947011087001172"><ph name="SITE" />의 사이트 권한을 재설정하시겠습니까?</translation>
@@ -3969,6 +3974,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4779766576531456629">eSIM 셀룰러 네트워크 이름 바꾸기</translation>
 <translation id="4780321648949301421">페이지를 다른 이름으로 저장...</translation>
 <translation id="4781443161433589743">Chrome의 가장 강력한 보안 기능으로 보호되고 있습니다.</translation>
+<translation id="4782861709165039462">기기 하드웨어 스위치로 인해 모든 마이크가 사용 중지됨</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
 <translation id="4785914069240823137">자르기 취소</translation>
 <translation id="4788092183367008521">네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
@@ -4237,7 +4243,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome 맞춤설정<ph name="END_LINK" />에서 모든 카드 옵션을 확인하세요.</translation>
 <translation id="5056950756634735043">컨테이너에 연결 중입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
-<translation id="505776528429481161">간편하게 근처 기기 연결 및 설정</translation>
 <translation id="5059241099014281248">로그인 제한</translation>
 <translation id="5059526285558225588">공유할 정보 선택</translation>
 <translation id="5060332552815861872">저장할 수 있는 프린터가 1대 있습니다.</translation>
@@ -4736,6 +4741,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5548075230008247516">모든 항목이 선택 해제되었으며 선택 모드가 종료되었습니다.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
 <translation id="5548606607480005320">안전 확인</translation>
+<translation id="5548644592758170183">왼쪽에 표시</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">키보드 및 텍스트 입력</translation>
 <translation id="5553089923092577885">인증서 정책 매핑</translation>
@@ -8219,6 +8225,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8980345560318123814">의견 보고서</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 비정상 종료됨</translation>
 <translation id="8981825781894055334">용지 부족</translation>
+<translation id="8983018820925880511">이 새 프로필은 <ph name="DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />에서 <ph name="FILENAME" />을(를) 수정할 수 있습니다.</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" />분 동안 모든 사용자에게 공개됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Chromebook용 Steam 시작하기</translation>
@@ -8315,6 +8322,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9075413375877487220">향상된 세이프 브라우징에서 신뢰하지 않는 확장 프로그램입니다.</translation>
 <translation id="9076283476770535406">성인용 콘텐츠가 포함되어 있을 수 있습니다.</translation>
 <translation id="9076523132036239772">이메일이나 비밀번호를 확인할 수 없습니다. 먼저 네트워크에 연결해 주세요.</translation>
+<translation id="9076821103818989526">측면 패널</translation>
 <translation id="9076977315710973122">SMB 공유</translation>
 <translation id="9078193189520575214">변경사항 적용 중...</translation>
 <translation id="9078316009970372699">인스턴트 테더링 사용 중지</translation>

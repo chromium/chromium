@@ -769,7 +769,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Počet cyklů</translation>
-<translation id="7747039790905080783">Předsdílený klíč</translation>
+<translation id="7747039790905080783">Předem sdílený klíč</translation>
 <translation id="7762130827864645708">Změna hesla byla úspěšná. Odteď používejte nové heslo.</translation>
 <translation id="7762839321248874531">Odesílat <ph name="BEGIN_LINK1" />informace o systému a aplikacích<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
 <translation id="7763470514545477072">Shoda přípon domén</translation>
@@ -865,10 +865,11 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
 <translation id="8655295600908251630">Kanál</translation>
+<translation id="8655828773034788261">Sdílet adresu URL:</translation>
 <translation id="8660881923941176839">libry</translation>
 <translation id="8662671328352114214">Připojení k síti <ph name="TYPE" /></translation>
 <translation id="8671972493856476349">Aktualizovat na verzi <ph name="VERSION_NUMBER" /> a restartovat</translation>
-<translation id="8675354002693747642">Předsdílený klíč</translation>
+<translation id="8675354002693747642">Předem sdílený klíč</translation>
 <translation id="8677859815076891398">Žádná alba. Vytvořte album ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="8680431479333800907">Zařízení zůstane stejnému uživateli</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tuto funkci můžete spravovat šipkami doleva nebo doprava.</translation>

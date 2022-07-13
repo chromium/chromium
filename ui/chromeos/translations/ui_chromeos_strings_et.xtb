@@ -54,7 +54,6 @@
 <translation id="1435838927755162558">Kausta jagamine üksusega Parallels Desktop</translation>
 <translation id="1439919885608649279">Lilledega inimene</translation>
 <translation id="1471718551822868769">slovaki</translation>
-<translation id="1474339897586437869">Faili „<ph name="FILENAME" />” ei laaditud üles. Teie Google Drive’is ei ole piisavalt vaba ruumi.</translation>
 <translation id="1482884275703521657">soome</translation>
 <translation id="148466539719134488">Šveitsi</translation>
 <translation id="1497522201463361063">Faili „<ph name="FILE_NAME" />” ei saa ümber nimetada. <ph name="ERROR_MESSAGE" /></translation>
@@ -194,6 +193,7 @@
 <translation id="2621713457727696555">Kaitstud</translation>
 <translation id="2638942478653899953">Google Drive'iga ei saadud ühendust. <ph name="BEGIN_LINK" />Logige välja<ph name="END_LINK" /> ja tagasi sisse.</translation>
 <translation id="2649120831653069427">Vikerkaarekala</translation>
+<translation id="2653059201992392941">Teil on veel <ph name="RETRIES" /> katset.</translation>
 <translation id="2663066752008346276">birma (Myanmar), Myansani klaviatuuriga</translation>
 <translation id="2664412712123763093">Faili asukoht</translation>
 <translation id="2718540689505416944">Rakenduse installimine Linuxiga</translation>
@@ -488,7 +488,6 @@
 <translation id="5159560892333415631">Tühjenda prügikast</translation>
 <translation id="5163869187418756376">Jagamine ebaõnnestus. Kontrollige ühendust ja proovige uuesti.</translation>
 <translation id="516592729076796170">USA programmeerija Dvorak</translation>
-<translation id="5170477580121653719">Google Drive'i allesjäänud ruum: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Pisipildi kuva</translation>
 <translation id="5194713942430106590">Klõpsake, et veerg kasvavas järjestuses sortida.</translation>
 <translation id="5211614973734216083">fääri</translation>
@@ -530,6 +529,7 @@
 <translation id="5489067830765222292">läti</translation>
 <translation id="5489965683297092283">Filter <ph name="FILTER_NAME" /> on välja lülitatud.</translation>
 <translation id="5494920125229734069">Valige kõik</translation>
+<translation id="5500104704744051184">Te ei saa seda võrku kasutada enne, kui sisestate PUK-i</translation>
 <translation id="5500122897333236901">islandi keel</translation>
 <translation id="5508696409934741614">Punktid</translation>
 <translation id="5522908512596376669">Faililoendi jaoks aktiveeriti loendikuva.</translation>
@@ -635,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> üksust</translation>
 <translation id="642282551015776456">Seda nime ei saa faili või kausta nimena kasutada</translation>
 <translation id="6423031066725912715">vietnami, klaviatuuriga TCVN</translation>
+<translation id="6430271654280079150">Teil on veel 1 katse.</translation>
 <translation id="6485131920355264772">Talletusruumi teabe toomine ebaõnnestus</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, üksikasjad</translation>
 <translation id="649877868557234318">Faili <ph name="FILE_NAME" /> ekstraktimine kausta <ph name="FOLDER_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> üksuse sünkroonimine ...</translation>
 <translation id="8600173386174225982">Faililoendi jaoks aktiveeriti pisipildikuva.</translation>
 <translation id="8601932370724196034">Crostini pildifail</translation>
+<translation id="8608515571837163082">Vale PIN-kood sisestati liiga mitu korda. Sisestage operaatorilt saadud kaheksakohaline isiklik avamisvõti (PUK).</translation>
 <translation id="8609695766746872526">islandi</translation>
 <translation id="863903787380594467">Vale PIN-kood. Teil on veel <ph name="RETRIES" /> katset.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>

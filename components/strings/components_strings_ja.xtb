@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
+<translation id="1266469291454105242">デバイスのロック解除</translation>
 <translation id="1269516672602708785">Google サイトで新しいサイトをすばやく作成します</translation>
 <translation id="1270502636509132238">受け取り方法</translation>
 <translation id="1281476433249504884">スタッカー 1</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">出会い</translation>
 <translation id="1753706481035618306">ページ番号</translation>
 <translation id="1755621011177747277">養子縁組</translation>
+<translation id="1756026472674246267">新しいタブでリンクを開く</translation>
 <translation id="175656076281618225">手品</translation>
 <translation id="1757773103848038814">Monospace フォント</translation>
 <translation id="1763864636252898013">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のデバイスのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">支払いをキャンセル</translation>
 <translation id="2148613324460538318">カードを追加</translation>
 <translation id="2149968176347646218">接続は安全ではありません</translation>
+<translation id="2153609454945889823">Google Play 開発者サービス（AR）をインストールしますか？</translation>
 <translation id="2154054054215849342">お使いのドメインでは同期機能をご利用いただけません</translation>
 <translation id="2154484045852737596">カードを編集</translation>
 <translation id="2161656808144014275">テキスト</translation>
@@ -832,6 +835,7 @@
 <translation id="3229277193950731405">バージョン文字列をコピー</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> の CVC を入力</translation>
 <translation id="3234666976984236645">このサイトの重要なコンテンツを常に検出</translation>
+<translation id="3238395604961564389">シークレット ウインドウでリンクを開く</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3240791268468473923">保護されたお支払い認証情報（認証情報の一致なし）シートが開いています</translation>
 <translation id="324180406144491771">「<ph name="HOST_NAME" />」リンクはブロックされています</translation>
@@ -945,6 +949,7 @@
 <translation id="3531780078352352885">ジョブシート</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> から、マイクの使用許可を求められています</translation>
 <translation id="3533328374079021623">用紙受け 5</translation>
+<translation id="3542768452570884558">新しいウィンドウでリンクを開く</translation>
 <translation id="3550112004925580947">サービス業</translation>
 <translation id="3552297013052089404">Sans Serif フォント</translation>
 <translation id="3558573058928565255">日中</translation>
@@ -1115,11 +1120,13 @@
 <translation id="4040350669425716613">大学</translation>
 <translation id="4056223980640387499">セピア</translation>
 <translation id="4058922952496707368">キー「<ph name="SUBKEY" />」: <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">デバイスのロック解除を使用してカードをすばやく確認する</translation>
 <translation id="4067098466788473230">奨学金</translation>
 <translation id="4067263367174615723">C1（封筒）</translation>
 <translation id="4067947977115446013">有効なアドレスの追加</translation>
 <translation id="4072193657607981494">ポリシーを読み込んでいます</translation>
 <translation id="4072486802667267160">ご注文の処理中にエラーが発生しました。もう一度お試しください。</translation>
+<translation id="4073376909608563327">デバイスのロック解除を使用できませんでした</translation>
 <translation id="4073797364926776829">カードを表示</translation>
 <translation id="4075732493274867456">クライアントとサーバーで、共通の SSL プロトコル バージョンまたは暗号スイートがサポートされていません。</translation>
 <translation id="4079302484614802869">プロキシは固定プロキシ サーバーではなく .pac スクリプト URL を使用するように設定されています。</translation>
@@ -1412,6 +1419,7 @@
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> などの割引を取得</translation>
+<translation id="484988093836683706">デバイスのロック解除を使用</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="4852429274334674023">オペレーティング システム</translation>
 <translation id="485316830061041779">ドイツ語</translation>
@@ -1799,6 +1807,7 @@
 <translation id="5921185718311485855">オン</translation>
 <translation id="5921639886840618607">カードを Google アカウントに保存しますか？</translation>
 <translation id="5922853866070715753">ほぼ完了です</translation>
+<translation id="5923492272538889093">CVC の代わりにデバイスのロック解除を使用しますか？</translation>
 <translation id="5928444777041341328">家庭、園芸</translation>
 <translation id="5932224571077948991">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="5937560539988385583">ページが翻訳されました</translation>
@@ -1972,6 +1981,7 @@
 <translation id="643051589346665201">Google のパスワードを変更</translation>
 <translation id="6433490469411711332">連絡先情報の編集</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> で接続が拒否されました。</translation>
+<translation id="6433797564277305076">今後はデバイスのロック解除を使用して、カードの確認をより迅速に行います</translation>
 <translation id="6440503408713884761">除外されました</translation>
 <translation id="6443406338865242315">インストールした拡張機能とプラグイン</translation>
 <translation id="6446163441502663861">Kahu（封筒）</translation>
@@ -2178,6 +2188,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{現在、このカードは保存できません}other{現在、これらのカードは保存できません}}</translation>
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> で、このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであると確認されました。</translation>
+<translation id="7058774143982824355">CSV パスワード パーサー サービス</translation>
 <translation id="7061777300866737982">ホーム セキュリティ</translation>
 <translation id="7062635574500127092">青緑</translation>
 <translation id="706295145388601875">Chrome の設定で住所を追加、管理する</translation>
@@ -2442,6 +2453,7 @@
 <translation id="7696089921647603491">クラシック ロック、オールディーズ</translation>
 <translation id="7697066736081121494">Prc8（封筒）</translation>
 <translation id="769721561045429135">現在、このデバイスでのみ使用できるカードがあります。カードを確認するには [続行] をクリックしてください。</translation>
+<translation id="7698864304447945242">Google Play 開発者サービス（AR）を更新しますか？</translation>
 <translation id="7699293099605015246">記事は現在利用できません</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> にアクセスする（安全ではありません）<ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@
 <translation id="7723047071702270851">カードの編集</translation>
 <translation id="7734285854693414638">Google フォームで新しいフォームをすばやく作成します</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" />のページを常に翻訳する</translation>
+<translation id="7736959720849233795">リンクのアドレスをコピー</translation>
 <translation id="7740996059027112821">標準</translation>
 <translation id="77424286611022110">このサイトでは煩わしい広告または誤解を招く広告が表示されます。<ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">危険なコンテンツがブロックされました。</translation>
