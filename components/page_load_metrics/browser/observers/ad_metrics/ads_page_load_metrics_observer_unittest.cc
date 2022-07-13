@@ -764,7 +764,7 @@ class AdsPageLoadMetricsObserverTest
     return frame_remote_tester_.PopLastInterventionReportMessage();
   }
 
-  void OverrideVisibilityTrackerWithMockClock() {
+  void OverrideWithMockClock() {
     clock_ = std::make_unique<base::SimpleTestTickClock>();
     clock_->SetNowTicks(base::TimeTicks::Now());
   }
@@ -828,6 +828,7 @@ class AdsPageLoadMetricsObserverTest
   bool WithFencedFrames() { return GetParam(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<PageLoadMetricsObserverTester> tester_;
 
  private:
   // SubresourceFilterTestHarness::
@@ -870,11 +871,11 @@ class AdsPageLoadMetricsObserverTest
   std::unique_ptr<heavy_ad_intervention::HeavyAdBlocklist> test_blocklist_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-  std::unique_ptr<PageLoadMetricsObserverTester> tester_;
   FrameRemoteTester frame_remote_tester_;
   mojom::PageLoadTiming timing_;
 
-  // The clock used by the ui::ScopedVisibilityTracker, assigned if non-null.
+  // The clock used by the ui::ScopedVisibilityTracker and PageAdDensityTracker,
+  // assigned if non-null.
   std::unique_ptr<base::SimpleTestTickClock> clock_;
 
   // A pointer to the AdsPageLoadMetricsObserver used by the tests.
@@ -1624,7 +1625,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, ZeroBytesNonZeroCpuFrame_Recorded) {
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowUnactivated) {
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
@@ -1674,8 +1675,60 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowUnactivated) {
       1);
 }
 
+TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  OverrideWithMockClock();
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
+
+  page_load_metrics::mojom::FrameMetadata metadata1;
+  metadata1.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 100);
+  metadata1.main_frame_viewport_rect = gfx::Rect(0, 0, 1, 100);
+  tester_->SimulateMetadataUpdate(metadata1, main_frame);
+
+  // Add some ad resource so that ad density metrics are recorded in the end.
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached,
+                     /*resource_size_in_kbyte=*/10,
+                     /*mime_type=*/"",
+                     /*is_ad_resource=*/true);
+
+  page_load_metrics::mojom::FrameMetadata metadata2;
+  metadata2.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 10);
+  tester_->SimulateMetadataUpdate(metadata2, ad_frame);
+  AdvancePageDuration(base::Seconds(3));
+
+  metadata2.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 50);
+  tester_->SimulateMetadataUpdate(metadata2, ad_frame);
+  AdvancePageDuration(base::Seconds(1));
+
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  ukm_recorder.ExpectEntryMetric(
+      entries.front(),
+      ukm::builders::AdPageLoadCustomSampling::kAverageViewportAdDensityName,
+      20);
+  ukm_recorder.ExpectEntryMetric(
+      entries.front(),
+      ukm::builders::AdPageLoadCustomSampling::kVarianceViewportAdDensityName,
+      /*ukm::GetExponentialBucketMin(300, 1.3)=*/248);
+  ukm_recorder.ExpectEntryMetric(
+      entries.front(),
+      ukm::builders::AdPageLoadCustomSampling::kSkewnessViewportAdDensityName,
+      /*ukm::GetExponentialBucketMin(std::llround(1.1547), 1.3)=*/1);
+  ukm_recorder.ExpectEntryMetric(
+      entries.front(),
+      ukm::builders::AdPageLoadCustomSampling::kKurtosisViewportAdDensityName,
+      /*-ukm::GetExponentialBucketMin(-std::llround(-0.666667), 1.3)=*/-1);
+}
+
 TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowedActivated) {
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
@@ -1724,7 +1777,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsWindowedActivated) {
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsNoActivation) {
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* non_ad_frame =
       CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
@@ -1775,7 +1828,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsNoActivation) {
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsOnActivation) {
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* non_ad_frame =
       CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
@@ -2017,7 +2070,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
   feature_list.InitWithFeatures(
       {}, {heavy_ad_intervention::features::kHeavyAdIntervention,
            heavy_ad_intervention::features::kHeavyAdInterventionWarning});
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame_none =
@@ -2154,7 +2207,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdCpuInterventionInBackground) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       heavy_ad_intervention::features::kHeavyAdIntervention);
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2332,7 +2385,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       heavy_ad_intervention::features::kHeavyAdIntervention);
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
@@ -2387,7 +2440,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdTotalCpuUsage_InterventionFired) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       heavy_ad_intervention::features::kHeavyAdIntervention);
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2429,7 +2482,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       heavy_ad_intervention::features::kHeavyAdIntervention);
-  OverrideVisibilityTrackerWithMockClock();
+  OverrideWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);

@@ -8,7 +8,11 @@
 #include <set>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/page_ad_density_tracker.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/univariate_stats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -29,7 +33,7 @@ class PageAdDensityTracker {
     absl::optional<int> ad_density_by_area;
   };
 
-  PageAdDensityTracker();
+  explicit PageAdDensityTracker(base::TickClock* clock = nullptr);
   ~PageAdDensityTracker();
 
   PageAdDensityTracker(const PageAdDensityTracker&) = delete;
@@ -60,16 +64,18 @@ class PageAdDensityTracker {
   // calculation fails (i.e. no main frame size), this returns -1.
   int MaxPageAdDensityByArea() const;
 
-  // Returns the moving average of viewport ad density by area, as a value from
-  // 0-100. If the density calculation fails (i.e. elapsed time is 0), this
-  // returns -1. If the density calculation didn't happen (i.e. no main frame
-  // viewport), this returns 0.
-  int AverageViewportAdDensityByArea() const;
+  // Returns the distribution moments of the viewport ad density by area.
+  // Returns default value (i.e. 0s) if the density calculation didn't happen
+  // (i.e. no main frame viewport) or if the elapsed time is 0.
+  UnivariateStats::DistributionMoments GetAdDensityByAreaStats() const;
 
   // Returns the last calculated viewport ad density by area, as a value from
   // 0-100. If the density calculation didn't happen (i.e. no main frame
   // viewport), this returns 0.
   int ViewportAdDensityByArea() const;
+
+  // Called at the end of the page load to finalize metrics measurement.
+  void Finalize();
 
  private:
   // An event to process corresponding to the top or bottom of each rect.
@@ -99,6 +105,12 @@ class PageAdDensityTracker {
     std::set<RectEvent>::const_iterator bottom_it;
   };
 
+  // Accumulate `last_viewport_ad_density_by_area_` and its weight (i.e. the
+  // elapsed time since `last_viewport_density_accumulate_time_`) into
+  // `viewport_ad_density_by_area_stats_`. This can be invoked either when a
+  // new density is calculated, or during `Finalize()`.
+  void AccumulateOutstandingViewportAdDensity();
+
   void CalculatePageAdDensity();
   void CalculateViewportAdDensity();
 
@@ -126,18 +138,22 @@ class PageAdDensityTracker {
   // coordinate system.
   gfx::Rect last_main_frame_viewport_rect_;
 
-  // The time when this `PageAdDensityTracker` is created.
-  base::TimeTicks start_time_;
-
-  // The last time when `last_viewport_ad_density_by_area_` is recorded/checked
-  // and `cumulative_viewport_ad_density_by_area_` is updated.
-  base::TimeTicks last_viewport_density_recording_time_;
+  // The last time when `last_viewport_ad_density_by_area_` is accumulated into
+  // `viewport_ad_density_by_area_stats_`. Set to the current time at the start
+  // of the page.
+  base::TimeTicks last_viewport_density_accumulate_time_;
 
   // The last calculated ad density within the main frame viewport.
   int last_viewport_ad_density_by_area_ = 0;
 
-  // The time cumulative ad density within the main frame viewport.
-  double cumulative_viewport_ad_density_by_area_ = 0;
+  // Keep observing `last_viewport_ad_density_by_area_` before each time it gets
+  // an update, to derive the distribution statistics in the end.
+  UnivariateStats viewport_ad_density_by_area_stats_;
+
+  bool finalize_called_ = false;
+
+  // The tick clock used to get the current time. Can be replaced by tests.
+  raw_ptr<const base::TickClock> clock_;
 };
 
 }  // namespace page_load_metrics

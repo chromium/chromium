@@ -14,6 +14,8 @@ source_set("ad_metrics") {
     "frame_tree_data.h",
     "page_ad_density_tracker.cc",
     "page_ad_density_tracker.h",
+    "univariate_stats.cc",
+    "univariate_stats.h",
   ]
   deps = [
     "//components/blocklist/opt_out_blocklist",
@@ -50,6 +52,7 @@ source_set("unit_tests") {
   sources = [
     "ads_page_load_metrics_observer_unittest.cc",
     "page_ad_density_tracker_unittest.cc",
+    "univariate_stats_unittest.cc",
   ]
   deps = [
     ":ad_metrics",

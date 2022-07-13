@@ -148,6 +148,16 @@ blink::mojom::HeavyAdReason GetHeavyAdReason(HeavyAdStatus status) {
   }
 }
 
+int64_t GetExponentialBucketForDistributionMoment(double sample) {
+  constexpr static double kBucketSpacing = 1.3;
+
+  base::ClampedNumeric<int64_t> rounded = base::ClampRound<int64_t>(sample);
+
+  // If sample is negative, we need to first bucket it as a positive value.
+  return (sample >= 0 ? 1 : -1) *
+         ukm::GetExponentialBucketMin(rounded.Abs(), kBucketSpacing);
+}
+
 }  // namespace
 
 // static
@@ -236,7 +246,8 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
           heavy_ad_intervention::features::kHeavyAdPrivacyMitigations)),
       heavy_ad_threshold_noise_provider_(
           std::make_unique<HeavyAdThresholdNoiseProvider>(
-              heavy_ad_privacy_mitigations_enabled_ /* use_noise */)) {
+              heavy_ad_privacy_mitigations_enabled_ /* use_noise */)),
+      page_ad_density_tracker_(clock) {
   // Manual setting of the heavy ad blocklist should be used only as a
   // convenience for tests that don't create HeavyAdService.
   DCHECK(!heavy_ad_service_ || !heavy_ad_blocklist_);
@@ -878,10 +889,22 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
       aggregate_frame_data_->total_ad_cpu_usage().InMilliseconds());
   builder.Record(ukm_recorder->Get());
 
-  // Record custom sampling metrics
+  // Record custom sampling metrics.
   ukm::builders::AdPageLoadCustomSampling custom_sampling_builder(source_id);
+
+  page_ad_density_tracker_.Finalize();
+
+  UnivariateStats::DistributionMoments moments =
+      page_ad_density_tracker_.GetAdDensityByAreaStats();
+
   custom_sampling_builder.SetAverageViewportAdDensity(
-      page_ad_density_tracker_.AverageViewportAdDensityByArea());
+      std::llround(moments.mean));
+  custom_sampling_builder.SetVarianceViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.variance));
+  custom_sampling_builder.SetSkewnessViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.skewness));
+  custom_sampling_builder.SetKurtosisViewportAdDensity(
+      GetExponentialBucketForDistributionMoment(moments.excess_kurtosis));
   custom_sampling_builder.Record(ukm_recorder->Get());
 }
 

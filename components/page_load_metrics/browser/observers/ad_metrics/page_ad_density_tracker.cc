@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/ad_metrics/page_ad_density_tracker.h"
+
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/time/default_tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace page_load_metrics {
@@ -172,9 +174,9 @@ PageAdDensityTracker::RectEventSetIterators::RectEventSetIterators(
 PageAdDensityTracker::RectEventSetIterators::RectEventSetIterators(
     const RectEventSetIterators& other) = default;
 
-PageAdDensityTracker::PageAdDensityTracker() {
-  start_time_ = base::TimeTicks::Now();
-  last_viewport_density_recording_time_ = start_time_;
+PageAdDensityTracker::PageAdDensityTracker(base::TickClock* clock)
+    : clock_(clock ? clock : base::DefaultTickClock::GetInstance()) {
+  last_viewport_density_accumulate_time_ = clock_->NowTicks();
 }
 
 PageAdDensityTracker::~PageAdDensityTracker() = default;
@@ -187,22 +189,10 @@ int PageAdDensityTracker::MaxPageAdDensityByArea() const {
   return max_page_ad_density_by_area_;
 }
 
-int PageAdDensityTracker::AverageViewportAdDensityByArea() const {
-  base::TimeTicks now = base::TimeTicks::Now();
-
-  base::TimeDelta total_elapsed_time = now - start_time_;
-  if (total_elapsed_time == base::TimeDelta())
-    return -1;
-
-  base::TimeDelta last_elapsed_time =
-      now - last_viewport_density_recording_time_;
-
-  double total_viewport_ad_density_by_area =
-      cumulative_viewport_ad_density_by_area_ +
-      (last_viewport_ad_density_by_area_ * last_elapsed_time.InMicrosecondsF());
-
-  return std::lround(total_viewport_ad_density_by_area /
-                     total_elapsed_time.InMicrosecondsF());
+UnivariateStats::DistributionMoments
+PageAdDensityTracker::GetAdDensityByAreaStats() const {
+  DCHECK(finalize_called_);
+  return viewport_ad_density_by_area_stats_.CalculateStats();
 }
 
 int PageAdDensityTracker::ViewportAdDensityByArea() const {
@@ -266,6 +256,27 @@ void PageAdDensityTracker::UpdateMainFrameViewportRect(const gfx::Rect& rect) {
   CalculateViewportAdDensity();
 }
 
+void PageAdDensityTracker::Finalize() {
+  DCHECK(!finalize_called_);
+
+  AccumulateOutstandingViewportAdDensity();
+
+  finalize_called_ = true;
+}
+
+void PageAdDensityTracker::AccumulateOutstandingViewportAdDensity() {
+  base::TimeTicks now = clock_->NowTicks();
+  base::TimeDelta elapsed_time = now - last_viewport_density_accumulate_time_;
+
+  if (elapsed_time.is_zero())
+    return;
+
+  viewport_ad_density_by_area_stats_.Accumulate(
+      last_viewport_ad_density_by_area_, elapsed_time.InMicrosecondsF());
+
+  last_viewport_density_accumulate_time_ = now;
+}
+
 void PageAdDensityTracker::CalculatePageAdDensity() {
   AdDensityCalculationResult result =
       CalculateDensityWithin(last_main_frame_rect_);
@@ -285,14 +296,7 @@ void PageAdDensityTracker::CalculateViewportAdDensity() {
   if (!result.ad_density_by_area)
     return;
 
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta elapsed_time = now - last_viewport_density_recording_time_;
-
-  cumulative_viewport_ad_density_by_area_ +=
-      last_viewport_ad_density_by_area_ * elapsed_time.InMicrosecondsF();
-
-  last_viewport_density_recording_time_ = now;
-
+  AccumulateOutstandingViewportAdDensity();
   last_viewport_ad_density_by_area_ = result.ad_density_by_area.value();
 }
 
