@@ -49,7 +49,7 @@ using testing::_;
 
 const char kTestCdmName[] = "Test CDM";
 const char kAlternateCdmName[] = "Alternate CDM";
-const media::CdmType kTestCdmType{base::Token{1234, 5678}, "file_system_id"};
+const media::CdmType kTestCdmType{1234, 5678};
 const char kTestPath[] = "/aa/bb";
 const char kVersion1[] = "1.1.1.1";
 const char kVersion2[] = "1.1.1.2";
@@ -181,7 +181,7 @@ class CdmRegistryImplTest : public testing::Test {
   std::vector<std::string> GetVersions(const media::CdmType& cdm_type) {
     std::vector<std::string> versions;
     for (const auto& cdm : cdm_registry_.GetRegisteredCdms()) {
-      if (cdm.type.id == cdm_type.id)
+      if (cdm.type == cdm_type)
         versions.push_back(cdm.version.GetString());
     }
     return versions;

@@ -36,7 +36,7 @@ using CdmFileIdAndContents = MediaLicenseManager::CdmFileIdAndContents;
 
 namespace {
 
-const media::CdmType kTestCdmType{base::Token{1234, 5678}, "test_file_system"};
+const media::CdmType kTestCdmType{1234, 5678};
 
 const char kTestOrigin[] = "http://www.test.com";
 

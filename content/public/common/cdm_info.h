@@ -23,12 +23,9 @@
 namespace content {
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-// TODO(crbug.com/1231162): Remove the string identifier once we've migrated off
-// of the PluginPrivateFileSystem.
 // CdmType for Chrome OS.
-const CONTENT_EXPORT media::CdmType kChromeOsCdmType{
-    base::Token{0xa6ecd3fc63b3ded2ull, 0x9306d3270227ce5full},
-    "application_chromeos-cdm-factory-daemon"};
+const CONTENT_EXPORT media::CdmType kChromeOsCdmType{0xa6ecd3fc63b3ded2ull,
+                                                     0x9306d3270227ce5full};
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
 // Represents a Content Decryption Module implementation and its capabilities.

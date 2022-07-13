@@ -44,9 +44,8 @@ const char kWidevineCdmDisplayName[] = "Widevine Content Decryption Module";
 // the CDM running as a pepper plugin, this ID is based on the pepper plugin
 // MIME type. Changing this will result in any existing saved files becoming
 // inaccessible.
-const media::CdmType kWidevineCdmType{
-    base::Token{0x05d908e5dcca9960ull, 0xcd92d30eac98157aull},
-    "application_x-ppapi-widevine-cdm"};
+const media::CdmType kWidevineCdmType{0x05d908e5dcca9960ull,
+                                      0xcd92d30eac98157aull};
 
 // Constants specific to Windows MediaFoundation-based Widevine CDM library.
 #if BUILDFLAG(IS_WIN)
@@ -55,8 +54,8 @@ const char kMediaFoundationWidevineCdmDisplayName[] =
     "Google Widevine Windows CDM";
 // TODO(crbug.com/1231162): Remove the string identifier once we've migrated off
 // of the PluginPrivateFileSystem.
-const media::CdmType kMediaFoundationWidevineCdmType{
-    base::Token{0x8e73dec793bf5adcull, 0x27e572c9a1fd930eull}, ""};
+const media::CdmType kMediaFoundationWidevineCdmType{0x8e73dec793bf5adcull,
+                                                     0x27e572c9a1fd930eull};
 #endif  // BUILDFLAG(IS_WIN)
 
 #endif  // WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_

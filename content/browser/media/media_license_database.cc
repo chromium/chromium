@@ -55,7 +55,7 @@ absl::optional<std::vector<uint8_t>> MediaLicenseDatabase::ReadFile(
   DCHECK(db_.IsSQLValid(kSelectSql));
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
-  statement.BindString(0, cdm_type.id.ToString());
+  statement.BindString(0, cdm_type.ToString());
   statement.BindString(1, file_name);
 
   if (!statement.Step()) {
@@ -91,7 +91,7 @@ bool MediaLicenseDatabase::WriteFile(const media::CdmType& cdm_type,
   DCHECK(db_.IsSQLValid(kInsertSql));
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-  statement.BindString(0, cdm_type.id.ToString());
+  statement.BindString(0, cdm_type.ToString());
   statement.BindString(1, file_name);
   statement.BindBlob(2, data);
   bool success = statement.Run();
@@ -114,7 +114,7 @@ bool MediaLicenseDatabase::DeleteFile(const media::CdmType& cdm_type,
   DCHECK(db_.IsSQLValid(kDeleteSql));
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  statement.BindString(0, cdm_type.id.ToString());
+  statement.BindString(0, cdm_type.ToString());
   statement.BindString(1, file_name);
   bool success = statement.Run();
 

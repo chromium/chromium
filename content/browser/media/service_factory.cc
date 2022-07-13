@@ -229,7 +229,7 @@ media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
                                         const GURL& site,
                                         const CdmInfo& cdm_info) {
   return GetService<media::mojom::CdmService>(
-      cdm_info.type.id, browser_context, site, cdm_info.name, cdm_info.path);
+      cdm_info.type, browser_context, site, cdm_info.name, cdm_info.path);
 }
 
 #if BUILDFLAG(IS_WIN)

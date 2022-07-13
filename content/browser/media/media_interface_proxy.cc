@@ -165,7 +165,7 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
   void CreateCdmStorage(
       mojo::PendingReceiver<media::mojom::CdmStorage> receiver) override {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-    if (cdm_type_.id.is_zero())
+    if (cdm_type_.is_zero())
       return;
 
     MediaLicenseManager* media_license_manager =
