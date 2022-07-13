@@ -280,6 +280,9 @@
     <message name="IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE_NEW" desc="Window title of editor for new bookmark folders">
       New folder
     </message>
+    <message name="IDS_UNNAMED_BOOKMARK_FOLDER" desc="Tooltip for unnamed bookmark folders">
+      Unnamed folder
+    </message>
     <message name="IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE" desc="The title of the Bookmark All Tabs dialog.">
       Bookmark all tabs
     </message>
@@ -296,6 +299,9 @@
     </message>
     <message name="IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE_NEW" desc="In Title Case: Window title of editor for new bookmark folders">
       New Folder
+    </message>
+    <message name="IDS_UNNAMED_BOOKMARK_FOLDER" desc="In Title Case: Tooltip for unnamed bookmark folders">
+      Unnamed Folder
     </message>
     <message name="IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE" desc="In Title Case: The title of the Bookmark All Tabs dialog.">
       Bookmark All Tabs

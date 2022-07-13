@@ -306,9 +306,17 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
 
+  // Returns an accessible name for the folder. If the folder is unnamed, it
+  // will use a default, otherwise it will use the user-supplied folder name.
+  std::u16string GetAccessibleName() const {
+    return GetText().empty()
+               ? l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER)
+               : GetText();
+  }
+
   std::u16string GetTooltipText(const gfx::Point& p) const override {
     return label()->GetPreferredSize().width() > label()->size().width()
-               ? GetText()
+               ? GetAccessibleName()
                : std::u16string();
   }
 
@@ -325,6 +333,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     BookmarkMenuButtonBase::GetAccessibleNodeData(node_data);
+    node_data->SetName(GetAccessibleName());
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
         l10n_util::GetStringUTF8(
