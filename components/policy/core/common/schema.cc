@@ -13,6 +13,7 @@
 #include <memory>
 #include <ostream>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -23,6 +24,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "components/policy/core/common/json_schema_constants.h"
 #include "components/policy/core/common/schema_internal.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -1212,8 +1214,12 @@ bool Schema::Validate(const base::Value& value,
       return true;
     }
 
-    SchemaErrorFound(out_error_path, out_error,
-                     "The value type doesn't match the schema type.");
+    SchemaErrorFound(
+        out_error_path, out_error,
+        base::StringPrintf(
+            "Policy type mismatch: expected: \"%s\", actual: \"%s\".",
+            base::Value::GetTypeName(type()),
+            base::Value::GetTypeName(value.type())));
     return false;
   }
 
@@ -1305,8 +1311,12 @@ bool Schema::Normalize(base::Value* value,
       return true;
     }
 
-    SchemaErrorFound(out_error_path, out_error,
-                     "The value type doesn't match the schema type.");
+    SchemaErrorFound(
+        out_error_path, out_error,
+        base::StringPrintf(
+            "Policy type mismatch: expected: \"%s\", actual: \"%s\".",
+            base::Value::GetTypeName(type()),
+            base::Value::GetTypeName(value->type())));
     return false;
   }
 

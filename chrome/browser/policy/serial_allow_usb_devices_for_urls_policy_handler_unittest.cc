@@ -218,9 +218,8 @@ TEST_F(SerialAllowUsbDevicesForUrlsPolicyHandlerTest, DevicesMustBeList) {
   EXPECT_EQ(1ul, errors.size());
 
   constexpr char16_t kExpected[] =
-      u"Schema validation error at \"items[0].devices\": The value type "
-      u"doesn't "
-      u"match the schema type.";
+      u"Schema validation error at \"items[0].devices\": Policy type mismatch: "
+      u"expected: \"list\", actual: \"integer\".";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kSerialAllowUsbDevicesForUrls));
 
   // Now try to apply the policy, it should have no effect.
@@ -261,8 +260,8 @@ TEST_F(SerialAllowUsbDevicesForUrlsPolicyHandlerTest, UrlsMustBeList) {
   EXPECT_EQ(1ul, errors.size());
 
   constexpr char16_t kExpected[] =
-      u"Schema validation error at \"items[0].urls\": The value type doesn't "
-      u"match the schema type.";
+      u"Schema validation error at \"items[0].urls\": Policy type mismatch: "
+      u"expected: \"list\", actual: \"integer\".";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kSerialAllowUsbDevicesForUrls));
 
   // Now try to apply the policy, it should have no effect.
@@ -298,7 +297,7 @@ TEST_F(SerialAllowUsbDevicesForUrlsPolicyHandlerTest, VendorIdMustBeInt) {
 
   constexpr char16_t kExpected[] =
       u"Schema validation error at \"items[0].devices.items[0].vendor_id\": "
-      u"The value type doesn't match the schema type.";
+      u"Policy type mismatch: expected: \"integer\", actual: \"string\".";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kSerialAllowUsbDevicesForUrls));
 
   // Now try to apply the policy, it should have no effect.
@@ -412,7 +411,7 @@ TEST_F(SerialAllowUsbDevicesForUrlsPolicyHandlerTest, ProductIdMustBeInt) {
 
   constexpr char16_t kExpected[] =
       u"Schema validation error at \"items[0].devices.items[0].product_id\": "
-      u"The value type doesn't match the schema type.";
+      u"Policy type mismatch: expected: \"integer\", actual: \"string\".";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kSerialAllowUsbDevicesForUrls));
 
   // Now try to apply the policy, it should have no effect.

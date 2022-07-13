@@ -155,8 +155,9 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidValue) {
   std::string localized_error = l10n_util::GetStringFUTF8(
       IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
   EXPECT_EQ(
-      "Policy parsing error: Invalid policy value: The value type doesn't "
-      "match the schema type. (at url)",
+      "Policy parsing error: Invalid policy value: "
+      "Policy type mismatch: expected: \"string\", actual: \"integer\". (at "
+      "url)",
       localized_error);
 }
 
