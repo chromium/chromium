@@ -71,6 +71,10 @@ source_set("bridges") {
     "card_expiration_date_fix_flow_view_bridge.mm",
     "card_name_fix_flow_view_bridge.h",
     "card_name_fix_flow_view_bridge.mm",
+    "card_unmask_prompt_view_bridge.h",
+    "card_unmask_prompt_view_bridge.mm",
+    "card_unmask_prompt_view_controller.h",
+    "card_unmask_prompt_view_controller.mm",
     "legacy_card_unmask_prompt_view_bridge.h",
     "legacy_card_unmask_prompt_view_bridge.mm",
   ]
@@ -90,7 +94,10 @@ source_set("bridges") {
     "//ios/web",
     "//ui/base",
   ]
-  public_deps = [ "//ios/chrome/browser/ui/collection_view" ]
+  public_deps = [
+    "//ios/chrome/browser/ui/collection_view",
+    "//ios/chrome/browser/ui/table_view",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
