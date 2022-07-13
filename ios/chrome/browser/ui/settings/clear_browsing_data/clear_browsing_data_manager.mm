@@ -580,43 +580,31 @@ static NSDictionary* imageNamesByItemTypes = @{
 }
 
 - (TableViewLinkHeaderFooterItem*)footerGoogleAccountAndMyActivityItem {
-  UIImage* image = ios::provider::GetBrandedImage(
-      ios::provider::BrandedImage::kClearBrowsingDataAccountActivity);
-
   return [self
       footerItemWithType:ItemTypeFooterGoogleAccountAndMyActivity
                  titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT_AND_HISTORY
-                     URL:kClearBrowsingDataMyActivityUrlInFooterURL
-                   image:image];
+                     URL:kClearBrowsingDataMyActivityUrlInFooterURL];
 }
 
 - (TableViewLinkHeaderFooterItem*)footerSavedSiteDataItem {
-  UIImage* image = ios::provider::GetBrandedImage(
-      ios::provider::BrandedImage::kClearBrowsingDataSiteData);
-
   return [self
       footerItemWithType:ItemTypeFooterSavedSiteData
                  titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SAVED_SITE_DATA
-                     URL:kClearBrowsingDataLearnMoreURL
-                   image:image];
+                     URL:kClearBrowsingDataLearnMoreURL];
 }
 
 - (TableViewLinkHeaderFooterItem*)footerClearSyncAndSavedSiteDataItem {
-  UIImage* infoIcon = [ChromeIcon infoIcon];
-  UIImage* image = TintImage(infoIcon, [[MDCPalette greyPalette] tint500]);
   return [self
       footerItemWithType:ItemTypeFooterClearSyncAndSavedSiteData
                  titleID:
                      IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_CLEAR_SYNC_AND_SAVED_SITE_DATA
-                     URL:kClearBrowsingDataLearnMoreURL
-                   image:image];
+                     URL:kClearBrowsingDataLearnMoreURL];
 }
 
 - (TableViewLinkHeaderFooterItem*)footerItemWithType:
                                       (ClearBrowsingDataItemType)itemType
                                              titleID:(int)titleMessageID
-                                                 URL:(const char[])URL
-                                               image:(UIImage*)image {
+                                                 URL:(const char[])URL {
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:itemType];
   footerItem.text = l10n_util::GetNSString(titleMessageID);
