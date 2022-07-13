@@ -65,7 +65,6 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/follow:tab_helper",
     "//ios/chrome/browser/geolocation",

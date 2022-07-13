@@ -7,8 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#import "components/feature_engagement/public/feature_constants.h"
-#import "components/feature_engagement/public/tracker.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
@@ -41,23 +39,16 @@ FollowTabHelper::~FollowTabHelper() {
 }
 
 // static
-void FollowTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    feature_engagement::Tracker* feature_engagement_tracker) {
+void FollowTabHelper::CreateForWebState(web::WebState* web_state) {
   DCHECK(web_state);
   if (!FromWebState(web_state)) {
     web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new FollowTabHelper(
-                               web_state, feature_engagement_tracker)));
+                           base::WrapUnique(new FollowTabHelper(web_state)));
   }
 }
 
-FollowTabHelper::FollowTabHelper(
-    web::WebState* web_state,
-    feature_engagement::Tracker* feature_engagement_tracker)
-    : web_state_(web_state),
-      feature_engagement_tracker_(feature_engagement_tracker),
-      weak_ptr_factory_(this) {
+FollowTabHelper::FollowTabHelper(web::WebState* web_state)
+    : web_state_(web_state), weak_ptr_factory_(this) {
   DCHECK(web_state_);
   web_state_observation_.Observe(web_state_);
 }
@@ -98,14 +89,6 @@ void FollowTabHelper::PageLoaded(
   // Do not show follow IPH when browsing Chrome URLs, such as NTP, flags,
   // version, sad tab, etc.
   if (UrlHasChromeScheme(web_state->GetVisibleURL())) {
-    return;
-  }
-
-  // Do not show follow IPH if the feature engament tracker conditions aren't
-  // been fulfilled. The feature_engagement_tracker_ could be null when testing.
-  if (!feature_engagement_tracker_ ||
-      !feature_engagement_tracker_->WouldTriggerHelpUI(
-          feature_engagement::kIPHFollowWhileBrowsingFeature)) {
     return;
   }
 

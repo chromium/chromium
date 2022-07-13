@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/download/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
@@ -254,11 +253,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   }
 
   if (IsWebChannelsEnabled()) {
-    feature_engagement::Tracker* feature_engagement_tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            ChromeBrowserState::FromBrowserState(browser_state));
-
-    FollowTabHelper::CreateForWebState(web_state, feature_engagement_tracker);
+    FollowTabHelper::CreateForWebState(web_state);
   }
 
   CaptivePortalTabHelper::CreateForWebState(web_state);
