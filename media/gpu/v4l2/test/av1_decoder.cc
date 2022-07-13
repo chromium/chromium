@@ -638,6 +638,13 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   FillGlobalMotionParams(&v4l2_frame_params.global_motion,
                          current_frame_header.global_motion);
 
+  struct v4l2_ext_control ext_ctrl = {.id = V4L2_CID_STATELESS_AV1_FRAME_HEADER,
+                                      .size = sizeof(v4l2_frame_params),
+                                      .ptr = &v4l2_frame_params};
+
+  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, ext_ctrl))
+    LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
+
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
     LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
 
