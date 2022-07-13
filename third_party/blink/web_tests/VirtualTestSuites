@@ -337,7 +337,7 @@
     "prefix": "percent-based-scrolling",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/scrolling/scrollbars"],
-    "args": ["--enable-features=PercentBasedScrolling",
+    "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text",
              "--disable-features=CompositorThreadedScrollbarScrolling"]
@@ -348,7 +348,7 @@
     "bases": ["fast/events/wheel",
               "fast/scrolling",
               "virtual/percent-based-scrolling"],
-    "args": ["--enable-features=PercentBasedScrolling"]
+    "args": ["--enable-features=WindowsScrollingPersonality"]
   },
   {
     "prefix": "compositor-threaded-percent-based-scrolling",
@@ -356,7 +356,7 @@
     "bases": ["fast/events/wheel",
               "fast/scrolling",
               "virtual/percent-based-scrolling"],
-    "args": ["--enable-features=PercentBasedScrolling",
+    "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"]
   },
@@ -365,7 +365,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/scrolling/scrollbars/dsf-ready",
               "virtual/percent-based-scrolling"],
-    "args": ["--enable-features=PercentBasedScrolling",
+    "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text",
              "--force-device-scale-factor=2"]
@@ -915,7 +915,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/scrolling/scrollbars"],
     "args": ["--enable-features=ScrollUnification",
-             "--enable-features=PercentBasedScrolling",
+             "--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text",
              "--disable-features=CompositorThreadedScrollbarScrolling"]

@@ -1612,11 +1612,6 @@ const char kImprovedKeyboardShortcutsDescription[] =
     "Ensure keyboard shortcuts work consistently with international keyboard "
     "layouts and deprecate legacy shortcuts.";
 
-const char kImpulseScrollAnimationsName[] = "Impulse-style scroll animations";
-const char kImpulseScrollAnimationsDescription[] =
-    "Replaces the default scroll animation with Impulse-style scroll "
-    "animations.";
-
 const char kIncognitoBrandConsistencyForAndroidName[] =
     "Enable Incognito brand consistency in Android.";
 const char kIncognitoBrandConsistencyForAndroidDescription[] =
@@ -2186,10 +2181,11 @@ const char kForcedColorsName[] = "Forced Colors";
 const char kForcedColorsDescription[] =
     "Enables forced colors mode for web content.";
 
-const char kPercentBasedScrollingName[] = "Percent-based Scrolling";
-const char kPercentBasedScrollingDescription[] =
+const char kWindowsScrollingPersonalityName[] = "Windows Scrolling Personality";
+const char kWindowsScrollingPersonalityDescription[] =
     "If enabled, mousewheel and keyboard scrolls will scroll by a percentage "
-    "of the scroller size.";
+    "of the scroller size and the default scroll animation is replaced with "
+    "Impulse-style scroll animations.";
 
 const char kPermissionChipName[] = "Permissions Chip Experiment";
 const char kPermissionChipDescription[] =

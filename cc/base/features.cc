@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "ui/base/ui_base_features.h"
 
 namespace features {
 
@@ -20,17 +21,8 @@ namespace features {
 const base::Feature kAnimatedImageResume = {"AnimatedImageResume",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables impulse-style scroll animations in place of the default ones.
-//
-// Note: Do not enable this on the Mac. The animation does not match the system
-// scroll animation curve to such an extent that it makes Chromium stand out in
-// a bad way.
-const base::Feature kImpulseScrollAnimations = {
-    "ImpulseScrollAnimations",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 bool IsImpulseScrollAnimationEnabled() {
-  return base::FeatureList::IsEnabled(features::kImpulseScrollAnimations);
+  return base::FeatureList::IsEnabled(features::kWindowsScrollingPersonality);
 }
 
 // Whether the compositor should attempt to sync with the scroll handlers before

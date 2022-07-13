@@ -142,10 +142,10 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     if (enable_percent_based_scrolling.has_value() &&
         *enable_percent_based_scrolling) {
       scoped_feature_list.InitAndEnableFeature(
-          features::kPercentBasedScrolling);
+          features::kWindowsScrollingPersonality);
     } else {
       scoped_feature_list.InitAndDisableFeature(
-          features::kPercentBasedScrolling);
+          features::kWindowsScrollingPersonality);
     }
   }
 

@@ -12,7 +12,6 @@
 namespace features {
 
 CC_BASE_EXPORT extern const base::Feature kAnimatedImageResume;
-CC_BASE_EXPORT extern const base::Feature kImpulseScrollAnimations;
 CC_BASE_EXPORT extern bool IsImpulseScrollAnimationEnabled();
 CC_BASE_EXPORT extern const base::Feature kSynchronizedScrolling;
 

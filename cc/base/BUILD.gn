@@ -56,6 +56,7 @@ cc_component("base") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//skia",
+    "//ui/base:features",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",

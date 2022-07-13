@@ -56537,6 +56537,7 @@ from previous Chrome versions.
   <int value="-1344375439" label="ServiceWorkerPaymentApps:disabled"/>
   <int value="-1343259222" label="RegionalLocalesAsDisplayUI:disabled"/>
   <int value="-1342961844" label="InlineUpdateFlow:disabled"/>
+  <int value="-1342536303" label="WindowsScrollingPersonality:enabled"/>
   <int value="-1342039126" label="AshNewSystemMenu:enabled"/>
   <int value="-1341685799" label="AutofillAssistantDirectActions:enabled"/>
   <int value="-1341092934" label="enable-accelerated-overflow-scroll"/>
@@ -61438,6 +61439,7 @@ from previous Chrome versions.
   <int value="1839005510" label="MutingCompromisedCredentials:enabled"/>
   <int value="1839740266" label="LocationHardReload:disabled"/>
   <int value="1840087820" label="NtpRealboxMatchSearchboxTheme:enabled"/>
+  <int value="1841051176" label="WindowsScrollingPersonality:disabled"/>
   <int value="1841793150" label="TwoPanesStartSurfaceAndroid:enabled"/>
   <int value="1841976850" label="FeedLoadingPlaceholder:enabled"/>
   <int value="1842219851" label="enable-incognito-window-counter"/>

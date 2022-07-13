@@ -382,7 +382,8 @@ TEST(WebInputEventTest, TestMakeWebMouseWheelEvent) {
 #if !BUILDFLAG(IS_MAC)
 TEST(WebInputEventTest, TestPercentMouseWheelScroll) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPercentBasedScrolling);
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWindowsScrollingPersonality);
 
   base::TimeTicks timestamp = EventTimeForNow();
   MouseWheelEvent ui_event(gfx::Vector2d(0, -MouseWheelEvent::kWheelDelta),
@@ -428,7 +429,8 @@ TEST(WebInputEventTest, KeyEvent) {
 
 TEST(WebInputEventTest, WheelEvent) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPercentBasedScrolling);
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWindowsScrollingPersonality);
   const int kDeltaX = 14;
   const int kDeltaY = -3;
   ui::MouseWheelEvent ui_event(

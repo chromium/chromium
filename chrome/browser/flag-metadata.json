@@ -3775,11 +3775,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "impulse-scroll-animations",
-    "owners": [ "arakeri@microsoft.com", "gerchiko@microsoft.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "in-product-help-demo-mode-choice",
     "owners": [ "dtrainor", "nyquist" ],
     // This flag is used by teams as they develop in-product help integrations,
@@ -5064,11 +5059,6 @@
     "name": "per-desk-wallpaper",
     "owners": ["xiaohuic", "skau", "janetmac"],
     "expiry_milestone": 107
-  },
-  {
-    "name": "percent-based-scrolling",
-    "owners": [ "arakeri@microsoft.com", "gerchiko@microsoft.com" ],
-    "expiry_milestone": 100
   },
   {
     "name": "performant-split-view-resizing",
@@ -6568,6 +6558,11 @@
     "name": "win-10-tab-search-caption-button",
     "owners": [ "tluk@google.com", "chrome-cros@google.com" ],
     "expiry_milestone": 99
+  },
+  {
+    "name": "windows-scrolling-personality",
+    "owners": [ "arakeri@microsoft.com", "gastonr@microsoft.com" ],
+    "expiry_milestone": 115
   },
   {
     "name": "xsurface-metrics-reporting",

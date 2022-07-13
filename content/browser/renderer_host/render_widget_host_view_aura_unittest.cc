@@ -1737,14 +1737,16 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
 TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPercentBasedScrolling);
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWindowsScrollingPersonality);
   RunTimerBasedWheelEventPhaseInfoTest(false);
 }
 
 TEST_F(RenderWidgetHostViewAuraTest,
        TimerBasedWheelEventPhaseInfoWithPercentBasedScrolling) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPercentBasedScrolling);
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWindowsScrollingPersonality);
   RunTimerBasedWheelEventPhaseInfoTest(true);
 }
 

@@ -41,10 +41,10 @@ class SyntheticInputTest : public ContentBrowserTest,
   SyntheticInputTest() {
     if (GetParam()) {
       scoped_feature_list.InitAndEnableFeature(
-          features::kPercentBasedScrolling);
+          features::kWindowsScrollingPersonality);
     } else {
       scoped_feature_list.InitAndDisableFeature(
-          features::kPercentBasedScrolling);
+          features::kWindowsScrollingPersonality);
     }
   }
 

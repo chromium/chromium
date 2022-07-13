@@ -902,9 +902,6 @@ extern const char kImprovedKeyboardShortcutsDescription[];
 extern const char kCompositorThreadedScrollbarScrollingName[];
 extern const char kCompositorThreadedScrollbarScrollingDescription[];
 
-extern const char kImpulseScrollAnimationsName[];
-extern const char kImpulseScrollAnimationsDescription[];
-
 extern const char kIncognitoBrandConsistencyForAndroidName[];
 extern const char kIncognitoBrandConsistencyForAndroidDescription[];
 
@@ -1226,8 +1223,8 @@ extern const char kAutoWebContentsDarkModeDescription[];
 extern const char kForcedColorsName[];
 extern const char kForcedColorsDescription[];
 
-extern const char kPercentBasedScrollingName[];
-extern const char kPercentBasedScrollingDescription[];
+extern const char kWindowsScrollingPersonalityName[];
+extern const char kWindowsScrollingPersonalityDescription[];
 
 extern const char kPermissionChipName[];
 extern const char kPermissionChipDescription[];

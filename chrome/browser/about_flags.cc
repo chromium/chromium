@@ -6724,14 +6724,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kClosedTabCache)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"impulse-scroll-animations",
-     flag_descriptions::kImpulseScrollAnimationsName,
-     flag_descriptions::kImpulseScrollAnimationsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kImpulseScrollAnimations)},
-
-    {"percent-based-scrolling", flag_descriptions::kPercentBasedScrollingName,
-     flag_descriptions::kPercentBasedScrollingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPercentBasedScrolling)},
+    {"windows-scrolling-personality",
+     flag_descriptions::kWindowsScrollingPersonalityName,
+     flag_descriptions::kWindowsScrollingPersonalityDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kWindowsScrollingPersonality)},
 
     {"scroll-unification", flag_descriptions::kScrollUnificationName,
      flag_descriptions::kScrollUnificationDescription, kOsAll,

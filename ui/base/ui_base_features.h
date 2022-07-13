@@ -28,7 +28,7 @@ extern const base::Feature kSettingsShowsPerKeyboardSettings;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kInputMethodSettingsUiUpdate;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kPercentBasedScrolling;
+extern const base::Feature kWindowsScrollingPersonality;
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsPercentBasedScrollingEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kPointerLockOptions;
