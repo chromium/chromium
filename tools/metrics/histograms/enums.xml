@@ -35050,6 +35050,8 @@ Called by update_extension_histograms.py.-->
   <int value="1683" label="OFFSCREEN_CLOSEDOCUMENT"/>
   <int value="1684" label="WMDESKSPRIVATE_SETWINDOWPROPERTIES"/>
   <int value="1685" label="AUTOTESTPRIVATE_LAUNCHFILESAPPTOPATH"/>
+  <int value="1686" label="SIDEPANEL_GETOPTIONS"/>
+  <int value="1687" label="SIDEPANEL_SETOPTIONS"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -35680,6 +35682,7 @@ Called by update_extension_permission.py.-->
   <int value="238" label="kSharedStoragePrivate"/>
   <int value="239" label="kEnterpriseRemoteApps"/>
   <int value="240" label="kOffscreen"/>
+  <int value="241" label="kSidePanel"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

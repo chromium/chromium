@@ -50,6 +50,7 @@ schema_sources_ = [
   "search.idl",
   "sessions.json",
   "settings_private.idl",
+  "side_panel.idl",
   "system_private.json",
   "tab_capture.idl",
   "tab_groups.json",

@@ -114,4 +114,8 @@ const base::Feature kExtensionsOffscreenDocuments{
 const base::Feature kNewWebstoreDomain{"NewWebstoreDomain",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Side panel API availability.
+const base::Feature kExtensionSidePanelIntegration{
+    "ExtensionSidePanelIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace extensions_features

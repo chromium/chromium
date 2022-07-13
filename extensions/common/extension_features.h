@@ -43,6 +43,8 @@ extern const base::Feature kExtensionsOffscreenDocuments;
 
 extern const base::Feature kNewWebstoreDomain;
 
+extern const base::Feature kExtensionSidePanelIntegration;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

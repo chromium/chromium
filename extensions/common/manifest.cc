@@ -284,7 +284,7 @@ bool Manifest::ValidateManifest(
     std::vector<InstallWarning>* warnings) const {
   *error = "";
 
-  // Check every feature to see if its in the manifest. Note that this means
+  // Check every feature to see if it's in the manifest. Note that this means
   // we will ignore keys that are not features; we do this for forward
   // compatibility.
 

@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/omnibox/omnibox_handler.h"
+#include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/api/storage/storage_schema_manifest_handler.h"
 #include "chrome/common/extensions/api/system_indicator/system_indicator_handler.h"
@@ -52,6 +53,7 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<OmniboxHandler>());
   registry->RegisterHandler(std::make_unique<OptionsPageManifestHandler>());
   registry->RegisterHandler(std::make_unique<SettingsOverridesHandler>());
+  registry->RegisterHandler(std::make_unique<SidePanelManifestHandler>());
   registry->RegisterHandler(std::make_unique<StorageSchemaManifestHandler>());
   registry->RegisterHandler(std::make_unique<SystemIndicatorHandler>());
   registry->RegisterHandler(std::make_unique<ThemeHandler>());

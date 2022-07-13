@@ -210,6 +210,11 @@
     "channel": "stable",
     "extension_types": "all"
   },
+  "side_panel": {
+    "channel": "canary",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
   "storage": {
     "channel": "stable",
     "extension_types": [

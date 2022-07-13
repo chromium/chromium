@@ -109,6 +109,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kScripting, "scripting",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kSessions, "sessions"},
+    {APIPermissionID::kSidePanel, "sidePanel"},
     {APIPermissionID::kTabGroups, "tabGroups",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kTab, "tabs",

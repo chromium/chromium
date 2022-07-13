@@ -764,6 +764,10 @@
       "chrome://settings/*"
     ]
   }],
+  "sidePanel": {
+    "dependencies": ["permission:sidePanel"],
+    "contexts": ["blessed_extension"]
+  },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["blessed_extension"]

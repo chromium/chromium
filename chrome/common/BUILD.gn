@@ -282,6 +282,8 @@ static_library("common_lib") {
       "extensions/api/notifications/notification_style.h",
       "extensions/api/omnibox/omnibox_handler.cc",
       "extensions/api/omnibox/omnibox_handler.h",
+      "extensions/api/side_panel/side_panel_info.cc",
+      "extensions/api/side_panel/side_panel_info.h",
       "extensions/api/speech/tts_engine_manifest_handler.cc",
       "extensions/api/speech/tts_engine_manifest_handler.h",
       "extensions/api/storage/storage_schema_manifest_handler.cc",

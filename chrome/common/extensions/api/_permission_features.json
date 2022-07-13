@@ -829,6 +829,11 @@
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // https://crbug.com/839189
     ]
   }],
+  "sidePanel": {
+    "channel": "canary",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
   "speechRecognitionPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
