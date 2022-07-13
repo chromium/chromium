@@ -16,4 +16,4 @@ PREFIX="$2"
 
 mv raw_source_0.tar.gz $PACKAGE_NAME.pkg
 pkgutil --expand-full $PACKAGE_NAME.pkg output
-cp -r output/$PACKAGE_NAME-package.pkg/Payload/* "$PREFIX"
+cp -R output/$PACKAGE_NAME-package.pkg/Payload/* "$PREFIX"
