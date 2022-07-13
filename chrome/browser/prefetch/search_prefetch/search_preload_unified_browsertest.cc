@@ -906,6 +906,49 @@ IN_PROC_BROWSER_TEST_F(HTTPCacheSearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url_1));
 }
 
+// Tests the started prerender is destroyed after prefetch request expired.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
+                       PrerenderGetDestroyedAfterPrefetchExpired) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  // Trigger prerender and prefetch.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  std::string search_query = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  ChangeAutocompleteResult(search_query, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+  registry_observer.WaitForTrigger(expected_prerender_url);
+  EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
+  auto prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(prerender_query));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(prerender_query),
+                           {SearchPrefetchStatus::kPrerendered});
+
+  // Fire the timer to make all prefetch requests expire.
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), expected_prerender_url);
+  search_prefetch_service()->FireAllExpiryTimerForTesting();
+  prerender_observer.WaitForDestroyed();
+  prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(prerender_query));
+  EXPECT_FALSE(prefetch_status.has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
+      SearchPrefetchStatus::kPrerendered, 1);
+}
+
 // TODO(https://cubug.com/1282624): This test should run on Android after we're
 // able to interact with Android UI.
 // TODO(https://crbug.com/1342481): On LacrOS, the window's bound changes
@@ -966,6 +1009,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace

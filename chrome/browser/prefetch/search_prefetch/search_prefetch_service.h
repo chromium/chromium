@@ -181,6 +181,9 @@ class SearchPrefetchService : public KeyedService,
   // for |match|. |index| is the location within the omnibox drop down.
   void MaybePrefetchLikelyMatch(size_t index, const AutocompleteMatch& match);
 
+  // Fires all timers.
+  void FireAllExpiryTimerForTesting();
+
  private:
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url, bool navigation_prefetch);

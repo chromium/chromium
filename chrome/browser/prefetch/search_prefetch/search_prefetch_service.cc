@@ -873,3 +873,10 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
 
   return iter;
 }
+
+void SearchPrefetchService::FireAllExpiryTimerForTesting() {
+  while (!prefetch_expiry_timers_.empty()) {
+    auto prefetch_expiry_timer_it = prefetch_expiry_timers_.begin();
+    prefetch_expiry_timer_it->second->FireNow();
+  }
+}

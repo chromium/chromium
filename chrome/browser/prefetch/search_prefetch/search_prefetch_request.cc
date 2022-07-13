@@ -117,7 +117,9 @@ SearchPrefetchRequest::SearchPrefetchRequest(
       navigation_prefetch_(navigation_prefetch),
       report_error_callback_(std::move(report_error_callback)) {}
 
-SearchPrefetchRequest::~SearchPrefetchRequest() = default;
+SearchPrefetchRequest::~SearchPrefetchRequest() {
+  StopPrerender();
+}
 
 // static
 net::NetworkTrafficAnnotationTag
