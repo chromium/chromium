@@ -4970,18 +4970,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.WindowManager.Lock.Success" units="ms" expires_after="M77">
-  <owner>jdufault@chromium.org</owner>
+<histogram name="Ash.WindowManager.Lock.Success" units="ms"
+    expires_after="2023-02-01">
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     How long it took for the screen lock process to complete. This does not
-    include timeouts.
+    include timeouts. Warning: this histogram was expired from M78 till M104.
   </summary>
 </histogram>
 
-<histogram name="Ash.WindowManager.Lock.Timeout" units="ms" expires_after="M77">
-  <owner>jdufault@chromium.org</owner>
+<histogram name="Ash.WindowManager.Lock.Timeout" units="ms"
+    expires_after="2023-02-01">
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     How long it took for the screen lock process to complete, for timeouts only.
+    Warning: this histogram was expired from M78 till M104.
   </summary>
 </histogram>
 
