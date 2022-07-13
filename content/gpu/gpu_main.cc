@@ -411,12 +411,24 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
   // SandboxLinux::InitializeSandbox() must always be called
   // with only one thread.
   sandbox::policy::SandboxLinux::Options sandbox_options;
-  sandbox_options.use_amd_specific_policies =
-      gpu_info && angle::IsAMD(gpu_info->active_gpu().vendor_id);
-  sandbox_options.use_intel_specific_policies =
-      gpu_info && angle::IsIntel(gpu_info->active_gpu().vendor_id);
-  sandbox_options.use_nvidia_specific_policies =
-      gpu_info && angle::IsNVIDIA(gpu_info->active_gpu().vendor_id);
+  if (gpu_info) {
+    // We have to enable sandbox settings for all GPUs in the system
+    // for Chrome to be able to access/use them.
+    sandbox_options.use_amd_specific_policies =
+        angle::IsAMD(gpu_info->active_gpu().vendor_id);
+    sandbox_options.use_intel_specific_policies =
+        angle::IsIntel(gpu_info->active_gpu().vendor_id);
+    sandbox_options.use_nvidia_specific_policies =
+        angle::IsNVIDIA(gpu_info->active_gpu().vendor_id);
+    for (const auto& gpu : gpu_info->secondary_gpus) {
+      if (angle::IsAMD(gpu.vendor_id))
+        sandbox_options.use_amd_specific_policies = true;
+      else if (angle::IsIntel(gpu.vendor_id))
+        sandbox_options.use_intel_specific_policies = true;
+      else if (angle::IsNVIDIA(gpu.vendor_id))
+        sandbox_options.use_nvidia_specific_policies = true;
+    }
+  }
   sandbox_options.accelerated_video_decode_enabled =
       !gpu_prefs.disable_accelerated_video_decode;
   sandbox_options.accelerated_video_encode_enabled =

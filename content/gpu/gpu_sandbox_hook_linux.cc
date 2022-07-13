@@ -398,6 +398,7 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
   AddVulkanICDPermissions(&permissions);
 
   if (IsChromeOS()) {
+    // Permissions are additive, there can be multiple GPUs in the system.
     AddStandardChromeOsPermissions(&permissions);
     if (UseV4L2Codec())
       AddV4L2GpuPermissions(&permissions, options);
@@ -406,16 +407,18 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
       AddArmGpuPermissions(&permissions);
       // Add standard DRM permissions for snapdragon:
       AddDrmGpuPermissions(&permissions);
-      return permissions;
+      // Following discrete GPUs can be plugged in via USB4 on ARM systems.
     }
     if (options.use_amd_specific_policies) {
       AddAmdGpuPermissions(&permissions);
-      return permissions;
     }
     if (options.use_intel_specific_policies) {
       AddIntelGpuPermissions(&permissions);
-      return permissions;
     }
+    if (options.use_nvidia_specific_policies) {
+      AddStandardGpuPermissions(&permissions);
+    }
+    return permissions;
   }
 
   if (UseChromecastSandboxAllowlist()) {
@@ -555,19 +558,20 @@ bool LoadLibrariesForGpu(
       LoadV4L2Libraries(options);
     if (IsArchitectureArm()) {
       LoadArmGpuLibraries();
-      return true;
     }
-    if (options.use_amd_specific_policies)
-      return LoadAmdGpuLibraries();
+    if (options.use_amd_specific_policies) {
+      if (!LoadAmdGpuLibraries())
+        return false;
+    }
   } else {
     if (UseChromecastSandboxAllowlist() && IsArchitectureArm()) {
       LoadArmGpuLibraries();
       if (UseV4L2Codec())
         LoadChromecastV4L2Libraries();
     }
-    if (options.use_nvidia_specific_policies)
-      return LoadNvidiaLibraries();
   }
+  if (options.use_nvidia_specific_policies)
+    return LoadNvidiaLibraries();
   return true;
 }
 
