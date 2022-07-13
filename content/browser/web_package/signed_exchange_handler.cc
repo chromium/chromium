@@ -186,12 +186,12 @@ SignedExchangeHandler::SignedExchangeHandler(
       headers_callback_(std::move(headers_callback)),
       source_(std::move(body)),
       cert_fetcher_factory_(std::move(cert_fetcher_factory)),
+      devtools_proxy_(std::move(devtools_proxy)),
       network_isolation_key_(network_isolation_key),
       outer_request_isolation_info_(std::move(outer_request_isolation_info)),
       load_flags_(load_flags),
       remote_endpoint_(remote_endpoint),
       request_matcher_(std::move(request_matcher)),
-      devtools_proxy_(std::move(devtools_proxy)),
       reporter_(reporter),
       frame_tree_node_id_(frame_tree_node_id) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),

@@ -185,6 +185,11 @@ class CONTENT_EXPORT SignedExchangeHandler {
   absl::optional<SignedExchangeEnvelope> envelope_;
 
   std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory_;
+
+  std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
+
+  // `cert_fetcher_` borrows reference from `devtools_proxy_`, so it needs to be
+  // declared last, so that it is destroyed first.
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher_;
   const net::NetworkIsolationKey network_isolation_key_;
   absl::optional<net::IsolationInfo> outer_request_isolation_info_;
@@ -195,8 +200,6 @@ class CONTENT_EXPORT SignedExchangeHandler {
 
   std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher_;
   mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager_;
-
-  std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
 
   // This is owned by SignedExchangeLoader which is the owner of |this|.
   raw_ptr<SignedExchangeReporter, DanglingUntriaged> reporter_;
