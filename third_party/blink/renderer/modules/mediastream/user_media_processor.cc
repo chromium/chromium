@@ -1121,33 +1121,34 @@ void UserMediaProcessor::OnStreamGenerated(
     return;
   }
 
-  // TODO(crbug.com/1336564): Remove the assumption that all devices support
-  // the same video formats.
-  if (stream_devices_set->stream_devices[0]->video_device.has_value()) {
-    const MediaStreamDevice& video_device =
-        stream_devices_set->stream_devices[0]->video_device.value();
+  for (const blink::mojom::blink::StreamDevicesPtr& stream_devices_ptr :
+       stream_devices_set->stream_devices) {
+    if (stream_devices_ptr->video_device.has_value()) {
+      const MediaStreamDevice& video_device =
+          stream_devices_ptr->video_device.value();
 
-    Vector<String> video_device_ids;
-    for (const mojom::blink::StreamDevicesPtr& stream_devices :
-         stream_devices_set->stream_devices) {
-      if (stream_devices->video_device.has_value()) {
-        video_device_ids.push_back(
-            stream_devices->video_device.value().id.data());
+      Vector<String> video_device_ids;
+      for (const mojom::blink::StreamDevicesPtr& stream_devices :
+           stream_devices_set->stream_devices) {
+        if (stream_devices->video_device.has_value()) {
+          video_device_ids.push_back(
+              stream_devices->video_device.value().id.data());
+        }
       }
-    }
 
-    SendLogMessage(base::StringPrintf(
-        "OnStreamGenerated({request_id=%d}, {label=%s}, {device=[id: %s, "
-        "name: %s]}) => (Requesting video device formats)",
-        request_id, label.Utf8().c_str(), video_device.id.c_str(),
-        video_device.name.c_str()));
-    String video_device_id(video_device.id.data());
-    GetMediaDevicesDispatcher()->GetAllVideoInputDeviceFormats(
-        video_device_id,
-        WTF::Bind(&UserMediaProcessor::GotAllVideoInputFormatsForDevice,
-                  WrapWeakPersistent(this),
-                  WrapPersistent(current_request_info_->request()), label,
-                  video_device_ids));
+      SendLogMessage(base::StringPrintf(
+          "OnStreamGenerated({request_id=%d}, {label=%s}, {device=[id: %s, "
+          "name: %s]}) => (Requesting video device formats)",
+          request_id, label.Utf8().c_str(), video_device.id.c_str(),
+          video_device.name.c_str()));
+      String video_device_id(video_device.id.data());
+      GetMediaDevicesDispatcher()->GetAllVideoInputDeviceFormats(
+          video_device_id,
+          WTF::Bind(&UserMediaProcessor::GotAllVideoInputFormatsForDevice,
+                    WrapWeakPersistent(this),
+                    WrapPersistent(current_request_info_->request()), label,
+                    video_device_ids));
+    }
   }
 }
 

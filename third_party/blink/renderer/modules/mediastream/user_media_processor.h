@@ -145,6 +145,7 @@ class MODULES_EXPORT UserMediaProcessor
                            TiltConstraintRequestPanTiltZoomPermission);
   FRIEND_TEST_ALL_PREFIXES(UserMediaClientTest,
                            ZoomConstraintRequestPanTiltZoomPermission);
+  FRIEND_TEST_ALL_PREFIXES(UserMediaClientTest, MultiDeviceOnStreamGenerated);
   class RequestInfo;
   using LocalStreamSources = HeapVector<Member<MediaStreamSource>>;
 

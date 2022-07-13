@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
@@ -174,6 +176,68 @@ const char kFakeAudioInputDeviceId1[] = "fake_audio_input 1";
 const char kFakeAudioInputDeviceId2[] = "fake_audio_input 2";
 const char kFakeVideoInputDeviceId1[] = "fake_video_input 1";
 const char kFakeVideoInputDeviceId2[] = "fake_video_input 2";
+
+class MediaDevicesDispatcherHostMock
+    : public mojom::blink::MediaDevicesDispatcherHost {
+ public:
+  explicit MediaDevicesDispatcherHostMock() {}
+  void EnumerateDevices(bool request_audio_input,
+                        bool request_video_input,
+                        bool request_audio_output,
+                        bool request_video_input_capabilities,
+                        bool request_audio_input_capabilities,
+                        EnumerateDevicesCallback callback) override {
+    NOTREACHED();
+  }
+
+  void GetVideoInputCapabilities(
+      GetVideoInputCapabilitiesCallback client_callback) override {
+    NOTREACHED();
+  }
+
+  void GetAudioInputCapabilities(
+      GetAudioInputCapabilitiesCallback client_callback) override {
+    NOTREACHED();
+  }
+
+  void AddMediaDevicesListener(
+      bool subscribe_audio_input,
+      bool subscribe_video_input,
+      bool subscribe_audio_output,
+      mojo::PendingRemote<blink::mojom::blink::MediaDevicesListener> listener)
+      override {
+    NOTREACHED();
+  }
+
+  void SetCaptureHandleConfig(mojom::blink::CaptureHandleConfigPtr) override {
+    NOTREACHED();
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  void CloseFocusWindowOfOpportunity(const String& label) override {
+    NOTREACHED();
+  }
+
+  void ProduceCropId(ProduceCropIdCallback callback) override { NOTREACHED(); }
+#endif
+
+  void GetAllVideoInputDeviceFormats(
+      const String& device_id,
+      GetAllVideoInputDeviceFormatsCallback callback) override {
+    devices_count_++;
+  }
+
+  void GetAvailableVideoInputDeviceFormats(
+      const String& device_id,
+      GetAvailableVideoInputDeviceFormatsCallback callback) override {
+    devices_count_++;
+  }
+
+  size_t devices_count() const { return devices_count_; }
+
+ private:
+  size_t devices_count_ = 0;
+};
 
 class MockMediaDevicesDispatcherHost
     : public mojom::blink::MediaDevicesDispatcherHost {
@@ -1509,6 +1573,38 @@ TEST_F(UserMediaClientTest, ZoomConstraintRequestPanTiltZoomPermission) {
   exact_advanced.zoom.SetIsPresent(true);
   EXPECT_TRUE(UserMediaProcessor::IsPanTiltZoomPermissionRequested(
       advanced_factory.CreateMediaConstraints()));
+}
+
+TEST_F(UserMediaClientTest, MultiDeviceOnStreamGenerated) {
+  const size_t devices_count = 5u;
+  const int32_t request_id = 0;
+  std::unique_ptr<blink::MediaDevicesDispatcherHostMock>
+      media_devices_dispatcher_host_mock =
+          std::make_unique<blink::MediaDevicesDispatcherHostMock>();
+  blink::Member<blink::UserMediaRequest> user_media_request =
+      blink::UserMediaRequest::CreateForTesting(CreateDefaultConstraints(),
+                                                CreateDefaultConstraints());
+  user_media_request->set_request_id(request_id);
+  user_media_processor_->ProcessRequest(user_media_request, base::DoNothing());
+  user_media_processor_->media_devices_dispatcher_cb_ =
+      base::BindLambdaForTesting(
+          [&media_devices_dispatcher_host_mock]()
+              -> blink::mojom::blink::MediaDevicesDispatcherHost* {
+            return media_devices_dispatcher_host_mock.get();
+          });
+
+  blink::mojom::blink::StreamDevicesSetPtr stream_devices_set =
+      blink::mojom::blink::StreamDevicesSet::New();
+  for (size_t stream_index = 0; stream_index < devices_count; ++stream_index) {
+    stream_devices_set->stream_devices.emplace_back(
+        blink::mojom::blink::StreamDevices::New(absl::nullopt,
+                                                blink::MediaStreamDevice()));
+  }
+  user_media_processor_->OnStreamGenerated(
+      request_id, blink::mojom::MediaStreamRequestResult::OK, "",
+      std::move(stream_devices_set), /*pan_tilt_zoom_allowed=*/false);
+  base::RunLoop run_loop;
+  DCHECK_EQ(devices_count, media_devices_dispatcher_host_mock->devices_count());
 }
 
 }  // namespace blink
