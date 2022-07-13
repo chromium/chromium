@@ -42,6 +42,7 @@
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/fake_sync_gcm_driver_for_instance_id.h"
 #include "chrome/browser/sync/test/integration/invalidations/fake_sync_instance_id_driver.h"
+#include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
@@ -93,6 +94,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
@@ -1314,6 +1316,21 @@ bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
       return false;
     }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, default about:blank page is loaded by default. Wait for
+  // Session to be committed to prevent unexpected commit requests during
+  // test. It shouldn't be called when custom passphrase is enabled because
+  // SessionHierarchyMatchChecker doesn't support custom passphrases.
+  DCHECK(client_decryption_passphrases_.find(profile_index) ==
+         client_decryption_passphrases_.end());
+  if (!SessionHierarchyMatchChecker(
+           fake_server::SessionsHierarchy({{url::kAboutBlankURL}}),
+           GetSyncService(profile_index), GetFakeServer())
+           .Wait()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Wait for any other locally nudged changes to be committed.
   if (!CommittedAllNudgedChangesChecker(GetSyncService(profile_index)).Wait()) {

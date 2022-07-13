@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
   ASSERT_TRUE(AddURL(/*profile=*/0, title, page_url));
 
   CommittedBookmarkEntityNameObserver observer(GetFakeServer());
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
 
   ASSERT_TRUE(WaitForNigori(PassphraseType::kCustomPassphrase));
   // If WaitForEncryptedServerBookmarks() succeeds, that means that a
