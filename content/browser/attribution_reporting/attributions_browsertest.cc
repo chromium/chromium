@@ -1050,8 +1050,16 @@ class AttributionsPrerenderBrowserTest : public AttributionsBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
-                       NoConversionsOnPrerender) {
+// TODO(crbug.com/1344264): these tests are flaky on most release bots.
+#if defined(NDEBUG)
+#define ATTRIBUTION_PRERENDER_BROWSER_TEST(TEST_NAME) \
+  IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest, DISABLED_##TEST_NAME)
+#else
+#define ATTRIBUTION_PRERENDER_BROWSER_TEST(TEST_NAME) \
+  IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest, TEST_NAME)
+#endif
+
+ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsOnPrerender) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
@@ -1108,8 +1116,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   EXPECT_FALSE(expected_report.HasRequest());
 }
 
-IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
-                       ConversionsRegisteredOnActivatedPrerender) {
+ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
