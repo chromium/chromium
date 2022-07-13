@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -148,8 +149,8 @@ void AccountProfileMapper::GetAccountsMap(MapAccountsCallback callback) {
       unassigned_accounts.erase(gaia_id);
     }
   }
-  for (const auto& pair : unassigned_accounts)
-    accounts_map[base::FilePath()].push_back(pair.second);
+  for (const auto& [gaia_id, account] : unassigned_accounts)
+    accounts_map[base::FilePath()].push_back(account);
   std::move(callback).Run(accounts_map);
 }
 
@@ -249,8 +250,6 @@ void AccountProfileMapper::OnAccountUpserted(
     if (profiles_with_updated_account.empty())
       profiles_with_updated_account.push_back(base::FilePath());
 
-    // TODO(https://crbug.com/1262946): Update this code when
-    // OnAccountUpserted() takes multiple paths.
     for (const base::FilePath& profile_path : profiles_with_updated_account) {
       for (auto& obs : observers_)
         obs.OnAccountUpserted(profile_path, account);
@@ -302,16 +301,16 @@ void AccountProfileMapper::OnProfileWillBeRemoved(
   base::ranges::set_difference(freed_account_ids, assigned_account_ids,
                                std::back_inserter(unassigned_account_ids));
 
-  // Notify observers about accounts that became unassiged.
-  for (const std::string& unassiged_account_id : unassigned_account_ids) {
+  // Notify observers about accounts that became unassigned.
+  for (const std::string& unassigned_account_id : unassigned_account_ids) {
     const account_manager::Account* account =
-        account_cache_.FindAccountByGaiaId(unassiged_account_id);
+        account_cache_.FindAccountByGaiaId(unassigned_account_id);
     // `account_cache_` might be outdated.
     if (!account)
       continue;
 
     for (auto& obs : observers_)
-      obs.OnAccountUpserted(base::FilePath(), *account);
+      obs.OnAccountRemoved(profile_path, *account);
   }
 }
 
@@ -534,7 +533,6 @@ void AccountProfileMapper::OnGetAccountsCompleted(
   // Accounts that were removed.
   std::vector<std::pair<base::FilePath, std::string>> removed_ids =
       RemoveStaleAccounts();
-  // Accounts that were added.
   ProfileAttributesEntry* entry_for_new_accounts =
       MaybeGetProfileForNewAccounts();
 
@@ -546,6 +544,7 @@ void AccountProfileMapper::OnGetAccountsCompleted(
     AccountCache::AccountIdSet old_account_ids = base::MakeFlatSet<std::string>(
         old_cache, {},
         [](const auto& mapped_pair) { return mapped_pair.first; });
+    // Accounts that were added.
     std::vector<const account_manager::Account*> added_accounts =
         AddNewGaiaAccounts(system_accounts, std::move(old_account_ids),
                            entry_for_new_accounts);
@@ -554,19 +553,31 @@ void AccountProfileMapper::OnGetAccountsCompleted(
     base::FilePath path_for_new_accounts;
     if (entry_for_new_accounts)
       path_for_new_accounts = entry_for_new_accounts->GetPath();
-    for (auto& obs : observers_) {
-      for (const auto* account : added_accounts) {
-        DCHECK_EQ(account->key.account_type(),
-                  account_manager::AccountType::kGaia);
+    // Accounts added (either to a profile or unassigned).
+    for (const auto* account : added_accounts) {
+      DCHECK_EQ(account->key.account_type(),
+                account_manager::AccountType::kGaia);
+      for (auto& obs : observers_)
         obs.OnAccountUpserted(path_for_new_accounts, *account);
+    }
+    // Accounts removed that were assigned to a profile: pass the profile path.
+    base::flat_set<std::string> removed_accounts_notified;
+    for (const auto& [profile_path, gaia_id] : removed_ids) {
+      auto it = old_cache.find(gaia_id);
+      if (it == old_cache.cend()) {
+        NOTREACHED() << "Account " << gaia_id << " missing.";
+        continue;
       }
-      for (const auto& pair : removed_ids) {
-        auto it = old_cache.find(pair.second);
-        if (it == old_cache.cend()) {
-          NOTREACHED() << "Account " << pair.second << " missing.";
-          continue;
-        }
-        obs.OnAccountRemoved(pair.first, it->second);
+      removed_accounts_notified.insert(gaia_id);
+      for (auto& obs : observers_)
+        obs.OnAccountRemoved(profile_path, it->second);
+    }
+    // Unassigned accounts removed: pass the empty path.
+    for (const auto& [gaia_id, account] : old_cache) {
+      if (!base::Contains(system_accounts, account) &&
+          !removed_accounts_notified.contains(account.key.id())) {
+        for (auto& obs : observers_)
+          obs.OnAccountRemoved(base::FilePath(), account);
       }
     }
   } else {

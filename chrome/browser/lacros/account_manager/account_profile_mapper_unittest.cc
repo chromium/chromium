@@ -705,14 +705,12 @@ TEST_F(AccountProfileMapperTest, NonGaia) {
   TestMapperUpdate(mapper, {AccountFromGaiaID("A"), NonGaiaAccountFromID("B")},
                    /*expected_accounts_upserted=*/{},
                    /*expected_accounts_removed=*/{},
-                   /*expected_accounts_in_prefs=*/
-                   {{main_path(), {"A"}}});
+                   /*expected_accounts_in_prefs=*/{{main_path(), {"A"}}});
   // Removal is ignored as well.
   TestMapperUpdate(mapper, {AccountFromGaiaID("A")},
                    /*expected_accounts_upserted=*/{},
                    /*expected_accounts_removed=*/{},
-                   /*expected_accounts_in_prefs=*/
-                   {{main_path(), {"A"}}});
+                   /*expected_accounts_in_prefs=*/{{main_path(), {"A"}}});
 }
 
 // Tests that observers are notified when an existing account receives an
@@ -762,6 +760,14 @@ TEST_F(AccountProfileMapperTest, ObserveAccountUpdate_Unassigned) {
 
   ExpectOnAccountUpserted(&mock_observer, {{base::FilePath(), {"C"}}});
   mapper->OnAccountUpserted(AccountFromGaiaID("C"));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  TestMapperUpdateGaia(
+      mapper,
+      /*accounts_in_facade=*/{"A", "B"},
+      /*expected_accounts_upserted=*/{},
+      /*expected_accounts_removed=*/{{base::FilePath(), {"C"}}},
+      /*expected_accounts_in_prefs=*/
+      {{main_path(), {"A", "B"}}, {other_path, {"B"}}});
 }
 
 // Tests that observers are notified when an existing account receives an
@@ -837,8 +843,8 @@ TEST_F(AccountProfileMapperTest,
   TestMapperUpdateGaia(
       mapper,
       /*accounts_in_facade=*/{"A", "C", "D"},
-      /*expected_accounts_upserted=*/{{base::FilePath(), {"C"}}},
-      /*expected_accounts_removed=*/{{second_path, {"B"}}},
+      /*expected_accounts_upserted=*/{},
+      /*expected_accounts_removed=*/{{second_path, {"B", "C"}}},
       /*expected_accounts_in_prefs=*/
       {{main_path(), {"A"}}, {third_path, {"D"}}, {base::FilePath(), {"C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
@@ -883,8 +889,7 @@ TEST_F(AccountProfileMapperTest,
                        /*accounts_in_facade=*/{"A"},
                        /*expected_accounts_upserted=*/{},
                        /*expected_accounts_removed=*/{{second_path, {"B"}}},
-                       /*expected_accounts_in_prefs=*/
-                       {{main_path(), {"A"}}});
+                       /*expected_accounts_in_prefs=*/{{main_path(), {"A"}}});
 
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(second_path);
@@ -1003,8 +1008,7 @@ TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromPrimaryProfile) {
                        /*accounts_in_facade=*/{"B"},
                        /*expected_accounts_upserted=*/{},
                        /*expected_accounts_removed=*/{{main_path(), {"A"}}},
-                       /*expected_accounts_in_prefs=*/
-                       {{main_path(), {"B"}}});
+                       /*expected_accounts_in_prefs=*/{{main_path(), {"B"}}});
 }
 
 // Tests removing all accounts from a secondary profile (User signed out from
@@ -1130,7 +1134,7 @@ TEST_F(
   base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
       observation{&mock_observer};
   observation.Observe(mapper);
-  ExpectOnAccountRemoved(&mock_observer, {});
+  ExpectOnAccountRemoved(&mock_observer, {{other_path, {"C"}}});
   mapper->RemoveAllAccounts(other_path);
   CompleteFacadeGetAccountsGaia({"A", "C"});
   VerifyAccountsInPrefs({{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
@@ -1149,8 +1153,7 @@ TEST_F(AccountProfileMapperTest, DeleteProfile) {
   base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
       observation{&mock_observer};
   observation.Observe(mapper);
-  ExpectOnAccountUpserted(&mock_observer, {{base::FilePath(), {"B", "C"}}});
-  ExpectOnAccountRemoved(&mock_observer, {});
+  ExpectOnAccountRemoved(&mock_observer, {{other_path, {"B", "C"}}});
 
   testing_profile_manager()->DeleteTestingProfile("Other");
   VerifyAccountsInPrefs({{main_path(), {"A"}}, {base::FilePath(), {"B", "C"}}});

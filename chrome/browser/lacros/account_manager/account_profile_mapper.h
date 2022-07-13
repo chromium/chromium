@@ -76,6 +76,10 @@ class AccountProfileMapper
   class Observer : public base::CheckedObserver {
    public:
     // `profile_path` is empty if the account is not assigned to a profile.
+    // Note: to avoid sending too many notifications, the notification with an
+    // empty path may not always be sent. For example if an account is added to
+    // the facade and to a profile at the same time, only the notification with
+    // a non-empty path is sent.
     virtual void OnAccountUpserted(const base::FilePath& profile_path,
                                    const account_manager::Account& account) {}
     virtual void OnAccountRemoved(const base::FilePath& profile_path,
