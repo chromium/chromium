@@ -151,6 +151,10 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   SetTitle(l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE));
   SetShowTitle(false);
   SetAccessibleRole(ax::mojom::Role::kDialog);
+  // For handling the case when Esc key is pressed.
+  SetCancelCallback(
+      base::BindOnce(&ArcSplashScreenDialogView::OnCloseButtonClicked,
+                     weak_ptr_factory_.GetWeakPtr()));
   set_color(background_color);
   set_adjust_if_offscreen(false);
   set_close_on_deactivate(false);
