@@ -212,6 +212,9 @@
   "CloudPolicyOverridesPlatformPolicy": {
     "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
+  "CloudUserPolicyOverridesCloudMachinePolicy": {
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
+  },
   "ComponentUpdatesEnabled": {
     "os": [
       "ios"
@@ -441,6 +444,15 @@
         }
       }
     ]
+  },
+  "PolicyAtomicGroupsEnabled": {
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
+  },
+  "PolicyDictionaryMultipleSourceMergeList": {
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
+  },
+  "PolicyListMultipleSourceMergeList": {
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
   "PolicyRefreshRate": {
     "os": [

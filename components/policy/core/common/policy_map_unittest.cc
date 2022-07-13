@@ -982,11 +982,11 @@ TEST_F(PolicyMapTest, MergeValuesGroup) {
 
   PolicyMap policy_not_merged;
   policy_not_merged.Set(kTestPolicyName1, platform_user_mandatory.DeepCopy());
-  policy_not_merged.Set(policy::key::kExtensionInstallBlocklist,
+  policy_not_merged.Set(policy::key::kPopupsAllowedForUrls,
                         platform_machine_mandatory.DeepCopy());
-  policy_not_merged.Set(policy::key::kExtensionInstallAllowlist,
+  policy_not_merged.Set(policy::key::kPopupsBlockedForUrls,
                         cloud_machine_mandatory.DeepCopy());
-  policy_not_merged.Set(policy::key::kExtensionInstallForcelist,
+  policy_not_merged.Set(policy::key::kDefaultPopupsSetting,
                         platform_machine_recommended.DeepCopy());
 
   PolicyMap group_merged = policy_not_merged.Clone();
@@ -996,11 +996,11 @@ TEST_F(PolicyMapTest, MergeValuesGroup) {
   PolicyMap expected_group_merged;
   expected_group_merged.Set(kTestPolicyName1,
                             platform_user_mandatory.DeepCopy());
-  expected_group_merged.Set(policy::key::kExtensionInstallBlocklist,
+  expected_group_merged.Set(policy::key::kPopupsAllowedForUrls,
                             platform_machine_mandatory.DeepCopy());
-  expected_group_merged.Set(policy::key::kExtensionInstallAllowlist,
+  expected_group_merged.Set(policy::key::kPopupsBlockedForUrls,
                             cloud_machine_mandatory_ignored.DeepCopy());
-  expected_group_merged.Set(policy::key::kExtensionInstallForcelist,
+  expected_group_merged.Set(policy::key::kDefaultPopupsSetting,
                             platform_machine_recommended.DeepCopy());
 
   EXPECT_TRUE(group_merged.Equals(expected_group_merged));

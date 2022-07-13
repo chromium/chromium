@@ -86,9 +86,11 @@ const PolicyToPreferenceMapEntry kDefaultSearchPolicyDataMap[] = {
      base::Value::Type::STRING},
     {key::kDefaultSearchProviderImageURLPostParams,
      DefaultSearchManager::kImageURLPostParams, base::Value::Type::STRING},
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     {key::kDefaultSearchProviderContextMenuAccessAllowed,
      prefs::kDefaultSearchProviderContextMenuAccessAllowed,
      base::Value::Type::BOOLEAN},
+#endif
 };
 
 // DefaultSearchPolicyHandler implementation -----------------------------------
@@ -111,7 +113,9 @@ bool DefaultSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     for (const auto& policy_map_entry : kDefaultSearchPolicyDataMap) {
       const char* policy_name = policy_map_entry.policy_name;
       if (policy_name != key::kDefaultSearchProviderEnabled &&
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
           policy_name != key::kDefaultSearchProviderContextMenuAccessAllowed &&
+#endif
           HasDefaultSearchPolicy(policies, policy_name)) {
         errors->AddError(policy_name, IDS_POLICY_DEFAULT_SEARCH_DISABLED);
       }
@@ -182,11 +186,15 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                   DefaultSearchManager::kSuggestionsURLPostParams, dict);
   SetStringInPref(policies, key::kDefaultSearchProviderImageURLPostParams,
                   DefaultSearchManager::kImageURLPostParams, dict);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   SetBooleanInPref(policies,
                    key::kDefaultSearchProviderContextMenuAccessAllowed,
                    prefs::kDefaultSearchProviderContextMenuAccessAllowed, dict);
-
   size_t policyCount = 14;
+#else
+  size_t policyCount = 13;
+#endif
+
   CHECK_EQ(policyCount, std::size(kDefaultSearchPolicyDataMap));
 
   // Set the fields which are not specified by the policy to default values.

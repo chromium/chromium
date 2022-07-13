@@ -159,8 +159,6 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<policy::NewTabPageLocationPolicyHandler>());
   handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
       policy::key::kURLBlocklist));
-  handlers->AddHandler(std::make_unique<policy::HttpsOnlyModePolicyHandler>(
-      prefs::kHttpsOnlyModeEnabled));
 
   return handlers;
 }

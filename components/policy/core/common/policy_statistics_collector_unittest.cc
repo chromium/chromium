@@ -35,7 +35,7 @@ using testing::ReturnRef;
 // Arbitrary policy names used for testing.
 const char kTestPolicy1[] = "Test Policy 1";
 const char kTestPolicy2[] = "Test Policy 2";
-const char* kTestPolicy3 = key::kExtensionInstallBlocklist;
+const char* kTestPolicy3 = key::kDefaultSearchProviderEncodings;
 
 const char kEnrollmentTokenPolicy[] = "CloudManagementEnrollmentToken";
 const char kEnrollmentOptionPolicy[] = "CloudManagementEnrollmentMandatory";
@@ -52,7 +52,7 @@ const char kTestChromeSchema[] = R"(
       "properties": {
         "Test Policy 1": { "type": "boolean" },
         "Test Policy 2": { "type": "boolean" },
-        "ExtensionInstallBlocklist": { "type": "boolean" },
+        "DefaultSearchProviderEncodings": { "type": "boolean" },
         "CloudManagementEnrollmentToken": { "type": "boolean" },
         "CloudManagementEnrollmentMandatory": { "type": "boolean" },
       }

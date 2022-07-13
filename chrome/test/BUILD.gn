@@ -5253,11 +5253,8 @@ test("unit_tests") {
     "../browser/plugins/pdf_iframe_navigation_throttle_unittest.cc",
     "../browser/policy/boolean_disabling_policy_handler_unittest.cc",
     "../browser/policy/chrome_browser_policy_connector_unittest.cc",
-    "../browser/policy/cloud/cloud_policy_invalidator_unittest.cc",
     "../browser/policy/cloud/remote_commands_invalidator_unittest.cc",
     "../browser/policy/cloud/user_policy_signin_service_unittest.cc",
-    "../browser/policy/developer_tools_policy_handler_unittest.cc",
-    "../browser/policy/file_selection_dialogs_policy_handler_unittest.cc",
     "../browser/policy/homepage_location_policy_handler_unittest.cc",
     "../browser/policy/javascript_policy_handler_unittest.cc",
     "../browser/policy/messaging_layer/public/report_client_test_util.cc",
@@ -5317,7 +5314,6 @@ test("unit_tests") {
     "../browser/privacy_sandbox/privacy_sandbox_service_unittest.cc",
     "../browser/privacy_sandbox/privacy_sandbox_settings_delegate_unittest.cc",
     "../browser/profiles/gaia_info_update_service_unittest.cc",
-    "../browser/profiles/guest_mode_policy_handler_unittest.cc",
     "../browser/profiles/incognito_mode_policy_handler_unittest.cc",
     "../browser/profiles/profile_attributes_storage_unittest.cc",
     "../browser/profiles/profile_downloader_unittest.cc",
@@ -6470,7 +6466,6 @@ test("unit_tests") {
       "../browser/performance_manager/test_support/site_data_utils.cc",
       "../browser/performance_manager/test_support/site_data_utils.h",
       "../browser/platform_util_unittest.cc",
-      "../browser/policy/local_sync_policy_handler_unittest.cc",
       "../browser/policy/policy_path_parser_unittest.cc",
       "../browser/policy/serial_allow_usb_devices_for_urls_policy_handler_unittest.cc",
       "../browser/policy/webhid_device_policy_handler_unittest.cc",
@@ -6547,7 +6542,6 @@ test("unit_tests") {
       "../browser/task_manager/test_task_manager.cc",
       "../browser/task_manager/test_task_manager.h",
       "../browser/themes/browser_theme_pack_unittest.cc",
-      "../browser/themes/theme_color_policy_handler_unittest.cc",
       "../browser/themes/theme_properties_unittest.cc",
       "../browser/themes/theme_service_test_utils.cc",
       "../browser/themes/theme_service_test_utils.h",
@@ -7821,7 +7815,10 @@ test("unit_tests") {
     ]
 
     if (is_linux || is_mac || is_win) {
-      sources += [ "../common/extensions/api/system_indicator/system_indicator_handler_unittest.cc" ]
+      sources += [
+        "../browser/policy/local_sync_policy_handler_unittest.cc",
+        "../common/extensions/api/system_indicator/system_indicator_handler_unittest.cc",
+      ]
     }
 
     allow_circular_includes_from = [
@@ -8015,6 +8012,14 @@ test("unit_tests") {
       "../browser/ui/startup/startup_browser_creator_impl_unittest.cc",
       "../browser/ui/startup/startup_browser_creator_unittest.cc",
       "../browser/ui/startup/startup_tab_provider_unittest.cc",
+    ]
+  }
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "../browser/policy/cloud/cloud_policy_invalidator_unittest.cc",
+      "../browser/policy/developer_tools_policy_handler_unittest.cc",
+      "../browser/profiles/guest_mode_policy_handler_unittest.cc",
     ]
   }
 
@@ -8352,6 +8357,12 @@ test("unit_tests") {
   if (enable_rlz) {
     sources += [ "../browser/rlz/chrome_rlz_tracker_delegate_unittest.cc" ]
     deps += [ "//rlz:test_support" ]
+  }
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "../browser/policy/file_selection_dialogs_policy_handler_unittest.cc",
+      "../browser/themes/theme_color_policy_handler_unittest.cc",
+    ]
   }
   if (!is_android && !is_chromeos_ash) {
     sources += [

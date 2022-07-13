@@ -93,6 +93,17 @@ base::flat_set<std::string> GetStringListPolicyItems(
       bundle.Get(space).GetValue(policy, base::Value::Type::LIST));
 }
 
+bool IsUserCloudMergingAllowed(const PolicyMap& policies) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
+  return false;
+#else
+  const base::Value* cloud_user_policy_merge_value =
+      policies.GetValue(key::kCloudUserPolicyMerge, base::Value::Type::BOOLEAN);
+  return cloud_user_policy_merge_value &&
+         cloud_user_policy_merge_value->GetBool();
+#endif
+}
+
 }  // namespace
 
 PolicyServiceImpl::PolicyServiceImpl(Providers providers, Migrators migrators)
@@ -328,10 +339,8 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 
   // Pass affiliation and CloudUserPolicyMerge values to both mergers.
   const bool is_user_affiliated = chrome_policies.IsUserAffiliated();
-  const base::Value* cloud_user_policy_merge_value = chrome_policies.GetValue(
-      key::kCloudUserPolicyMerge, base::Value::Type::BOOLEAN);
   const bool is_user_cloud_merging_enabled =
-      cloud_user_policy_merge_value && cloud_user_policy_merge_value->GetBool();
+      IsUserCloudMergingAllowed(chrome_policies);
   policy_list_merger.SetAllowUserCloudPolicyMerging(
       is_user_affiliated && is_user_cloud_merging_enabled);
   policy_dictionary_merger.SetAllowUserCloudPolicyMerging(

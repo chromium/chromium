@@ -11,4 +11,7 @@ declare_args() {
 
   # Use Policy component to manage preferences.
   headless_use_policy = true
+
+  #Platforms where headless mode is supported.
+  headless_mode_policy_supported = !is_android && !is_ios && !is_chromeos
 }

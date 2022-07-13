@@ -122,6 +122,18 @@ bool PerProfileMatches(bool policy_per_profile,
   }
 }
 
+bool UseExternalDataFetcher(const char* policy_name,
+                            StringPolicyType policy_type) {
+  if (policy_type == StringPolicyType::EXTERNAL)
+    return true;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (strcmp(policy_name, key::kWebAppInstallForceList) == 0)
+    return true;
+#endif
+  return false;
+}
+
 }  // namespace
 
 void DecodeProtoFields(
@@ -186,8 +198,7 @@ void DecodeProtoFields(
     // needs an ExternalDataFetcher. If we ever create a second such policy,
     // create a new type for it instead of special-casing the policies here.
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher =
-        (access.type == StringPolicyType::EXTERNAL ||
-         strcmp(access.policy_key, key::kWebAppInstallForceList) == 0)
+        UseExternalDataFetcher(access.policy_key, access.type)
             ? std::make_unique<ExternalDataFetcher>(external_data_manager,
                                                     access.policy_key)
             : nullptr;

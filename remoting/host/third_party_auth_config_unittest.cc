@@ -153,6 +153,7 @@ TEST(ThirdPartyAuthConfig, ExtractUnknown) {
   EXPECT_FALSE(ThirdPartyAuthConfig::ExtractStrings(dict, &url1, &url2, &cert));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 TEST(ThirdPartyAuthConfig, ExtractAll) {
   base::DictionaryValue dict;
   dict.SetString(key::kRemoteAccessHostTokenUrl, "test1");
@@ -176,6 +177,8 @@ TEST(ThirdPartyAuthConfig, ExtractPartial) {
   EXPECT_EQ("test2", url2);
   EXPECT_EQ("", cert);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_IOS)
 
 TEST(ThirdPartyAuthConfig, Output) {
   ThirdPartyAuthConfig third_party_auth_config;

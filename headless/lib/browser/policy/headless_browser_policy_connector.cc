@@ -48,7 +48,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       base::BindRepeating(&GetChromePolicyDetails),
       /*allow_future_policies=*/false);
 
+#if !BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<HeadlessModePolicyHandler>());
+#endif
 
   handlers->AddHandler(
       std::make_unique<URLBlocklistPolicyHandler>(key::kURLBlocklist));

@@ -13,9 +13,6 @@ namespace policy {
 class AutoLaunchProtocolsPolicyHandler
     : public policy::SchemaValidatingPolicyHandler {
  public:
-  static const char kProtocolNameKey[];
-  static const char kOriginListKey[];
-
   explicit AutoLaunchProtocolsPolicyHandler(
       const policy::Schema& chrome_schema);
 

@@ -4,6 +4,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
+#include "chrome/browser/external_protocol/constants.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,12 +33,12 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // in a list.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol list with a matching protocol.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set origins list with a wildcard origin matching pattern.
   base::ListValue origins;
   origins.Append(kWildcardOrigin);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   PolicyMap policies;
   policies.Set(key::kAutoLaunchProtocolsFromOrigins, POLICY_LEVEL_MANDATORY,
@@ -59,12 +60,12 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with the wildcard origin matching pattern.
   base::ListValue origins;
   origins.Append(kWildcardOrigin);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -95,11 +96,11 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol list with a matching protocol.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an empty origins list.
   base::ListValue origins;
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -122,12 +123,12 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol to match the test.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with the wildcard origin matching pattern.
   base::ListValue origins;
   origins.Append(kWildcardOrigin);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -160,26 +161,26 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
 
   // Set invalid protocols, each with the wildcard origin matching pattern.
   protocol_origins_map1.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kInvalidProtocol1);
+      policy::external_protocol::kProtocolNameKey, kInvalidProtocol1);
   base::ListValue origins1;
   origins1.Append(kWildcardOrigin);
-  protocol_origins_map1.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map1.SetKey(policy::external_protocol::kOriginListKey,
                                std::move(origins1));
   protocol_origins_map_list.Append(std::move(protocol_origins_map1));
 
   protocol_origins_map2.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kInvalidProtocol2);
+      policy::external_protocol::kProtocolNameKey, kInvalidProtocol2);
   base::ListValue origins2;
   origins2.Append(kWildcardOrigin);
-  protocol_origins_map2.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map2.SetKey(policy::external_protocol::kOriginListKey,
                                std::move(origins2));
   protocol_origins_map_list.Append(std::move(protocol_origins_map2));
 
   protocol_origins_map3.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kInvalidProtocol3);
+      policy::external_protocol::kProtocolNameKey, kInvalidProtocol3);
   base::ListValue origins3;
   origins3.Append(kWildcardOrigin);
-  protocol_origins_map3.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map3.SetKey(policy::external_protocol::kOriginListKey,
                                std::move(origins3));
   protocol_origins_map_list.Append(std::move(protocol_origins_map3));
 
@@ -205,13 +206,13 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol to match the test.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with an origin matching pattern that matches but is
   // only the host name.
   base::ListValue origins;
   origins.Append(kHost);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -250,13 +251,13 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol to match the test.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with an origin matching pattern that matches exactly
   // but has no scheme.
   base::ListValue origins;
   origins.Append(kExactHostName);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -295,13 +296,13 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol to match the test.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with an origin matching pattern that is the parent
   // domain but should match subdomains.
   base::ListValue origins;
   origins.Append(kParentDomain);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -328,13 +329,13 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol to match the test.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with an origin matching pattern that matches the scheme
   // and all hosts.
   base::ListValue origins;
   origins.Append(kProtocolWithWildcardHostname);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -367,13 +368,13 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol to match the test.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with an origin matching pattern that matches the full
   // origin exactly.
   base::ListValue origins;
   origins.Append(kFullOrigin);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -412,13 +413,13 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol to match the test.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with an origin matching pattern that doesn't match
   // because it is a parent domain that does not match subdomains.
   base::ListValue origins;
   origins.Append(kExactParentDomain);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;
@@ -444,13 +445,13 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolPolicyBrowserTest,
   // Single dictionary in the list for this test case.
   base::DictionaryValue protocol_origins_map;
   // Set a protocol to match the test.
-  protocol_origins_map.SetStringKey(
-      AutoLaunchProtocolsPolicyHandler::kProtocolNameKey, kExampleScheme);
+  protocol_origins_map.SetStringKey(policy::external_protocol::kProtocolNameKey,
+                                    kExampleScheme);
   // Set an origins list with an origin matching pattern that doesn't match
   // because it contains a [/path] element.
   base::ListValue origins;
   origins.Append(kFullUrlWithPath);
-  protocol_origins_map.SetKey(AutoLaunchProtocolsPolicyHandler::kOriginListKey,
+  protocol_origins_map.SetKey(policy::external_protocol::kOriginListKey,
                               std::move(origins));
   protocol_origins_map_list.Append(std::move(protocol_origins_map));
   PolicyMap policies;

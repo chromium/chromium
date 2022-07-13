@@ -17,6 +17,7 @@ namespace policy {
 
 namespace {
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 constexpr const char* kDictionaryPoliciesToMerge[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     key::kExtensionSettings,       key::kDeviceLoginScreenPowerManagement,
@@ -24,8 +25,9 @@ constexpr const char* kDictionaryPoliciesToMerge[] = {
     key::kScreenBrightnessPercent, key::kScreenLockDelays,
 #else
     key::kExtensionSettings,
-#endif
+#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
 };
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -180,10 +182,15 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
 
 PolicyDictionaryMerger::PolicyDictionaryMerger(
     base::flat_set<std::string> policies_to_merge)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+    : policies_to_merge_(std::move(policies_to_merge)){}
+#else
     : policies_to_merge_(std::move(policies_to_merge)),
       allowed_policies_(std::begin(kDictionaryPoliciesToMerge),
-                        std::end(kDictionaryPoliciesToMerge)) {}
-PolicyDictionaryMerger::~PolicyDictionaryMerger() = default;
+                        std::end(kDictionaryPoliciesToMerge)) {
+}
+#endif
+      PolicyDictionaryMerger::~PolicyDictionaryMerger() = default;
 
 void PolicyDictionaryMerger::Merge(PolicyMap* policies) const {
   DCHECK(policies);

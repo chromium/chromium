@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
+#include "chrome/browser/external_protocol/constants.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -267,11 +268,11 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
     const base::DictionaryValue& protocol_origins_map =
         base::Value::AsDictionaryValue(entry);
     const std::string* protocol = protocol_origins_map.FindStringKey(
-        policy::AutoLaunchProtocolsPolicyHandler::kProtocolNameKey);
+        policy::external_protocol::kProtocolNameKey);
     DCHECK(protocol);
     if (*protocol == scheme) {
       origin_patterns = protocol_origins_map.FindListKey(
-          policy::AutoLaunchProtocolsPolicyHandler::kOriginListKey);
+          policy::external_protocol::kOriginListKey);
       break;
     }
   }

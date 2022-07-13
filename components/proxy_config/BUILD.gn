@@ -15,8 +15,6 @@ component("proxy_config") {
     "proxy_config_export.h",
     "proxy_config_pref_names.cc",
     "proxy_config_pref_names.h",
-    "proxy_policy_handler.cc",
-    "proxy_policy_handler.h",
     "proxy_prefs.cc",
     "proxy_prefs.h",
   ]
@@ -43,6 +41,13 @@ component("proxy_config") {
   } else {
     deps += [ "//components/pref_registry" ]
   }
+
+  if (!is_ios) {
+    sources += [
+      "proxy_policy_handler.cc",
+      "proxy_policy_handler.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -50,7 +55,6 @@ source_set("unit_tests") {
   sources = [
     "pref_proxy_config_tracker_impl_unittest.cc",
     "proxy_config_dictionary_unittest.cc",
-    "proxy_policy_handler_unittest.cc",
     "proxy_prefs_unittest.cc",
   ]
   deps = [
@@ -68,4 +72,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
+
+  if (!is_ios) {
+    sources += [ "proxy_policy_handler_unittest.cc" ]
+  }
 }

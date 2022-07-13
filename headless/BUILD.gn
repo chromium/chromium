@@ -34,6 +34,10 @@ config("headless_defines_config") {
   if (headless_use_policy) {
     defines += [ "HEADLESS_USE_POLICY" ]
   }
+
+  if (headless_mode_policy_supported) {
+    defines += [ "HEADLESS_MODE_POLICY_SUPPORTED" ]
+  }
 }
 
 # For code inside the build component "headless".

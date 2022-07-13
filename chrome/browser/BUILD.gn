@@ -515,8 +515,8 @@ static_library("browser") {
     "enterprise/util/managed_browser_utils.cc",
     "enterprise/util/managed_browser_utils.h",
     "expired_flags_list.h",
-    "external_protocol/auto_launch_protocols_policy_handler.cc",
-    "external_protocol/auto_launch_protocols_policy_handler.h",
+    "external_protocol/constants.cc",
+    "external_protocol/constants.h",
     "external_protocol/external_protocol_handler.cc",
     "external_protocol/external_protocol_handler.h",
     "external_protocol/external_protocol_observer.cc",
@@ -1152,8 +1152,6 @@ static_library("browser") {
     "plugins/pdf_iframe_navigation_throttle.h",
     "policy/boolean_disabling_policy_handler.cc",
     "policy/boolean_disabling_policy_handler.h",
-    "policy/browsing_history_policy_handler.cc",
-    "policy/browsing_history_policy_handler.h",
     "policy/chrome_browser_policy_connector.cc",
     "policy/chrome_browser_policy_connector.h",
     "policy/chrome_policy_conversions_client.cc",
@@ -1172,14 +1170,10 @@ static_library("browser") {
     "policy/cloud/user_cloud_policy_invalidator_factory.h",
     "policy/configuration_policy_handler_list_factory.cc",
     "policy/configuration_policy_handler_list_factory.h",
-    "policy/developer_tools_policy_handler.cc",
-    "policy/developer_tools_policy_handler.h",
     "policy/device_management_service_configuration.cc",
     "policy/device_management_service_configuration.h",
     "policy/dm_token_utils.cc",
     "policy/dm_token_utils.h",
-    "policy/file_selection_dialogs_policy_handler.cc",
-    "policy/file_selection_dialogs_policy_handler.h",
     "policy/homepage_location_policy_handler.cc",
     "policy/homepage_location_policy_handler.h",
     "policy/javascript_policy_handler.cc",
@@ -1407,8 +1401,6 @@ static_library("browser") {
     "profiles/force_safe_search_policy_handler.h",
     "profiles/force_youtube_safety_mode_policy_handler.cc",
     "profiles/force_youtube_safety_mode_policy_handler.h",
-    "profiles/guest_mode_policy_handler.cc",
-    "profiles/guest_mode_policy_handler.h",
     "profiles/incognito_mode_policy_handler.cc",
     "profiles/incognito_mode_policy_handler.h",
     "profiles/keep_alive/profile_keep_alive_types.cc",
@@ -4023,8 +4015,6 @@ static_library("browser") {
       "permissions/attestation_permission_request.h",
       "policy/device_account_initializer.cc",
       "policy/device_account_initializer.h",
-      "policy/local_sync_policy_handler.cc",
-      "policy/local_sync_policy_handler.h",
       "policy/managed_account_policy_handler.cc",
       "policy/managed_account_policy_handler.h",
       "policy/webhid_device_policy_handler.cc",
@@ -4332,8 +4322,6 @@ static_library("browser") {
       "themes/custom_theme_supplier.cc",
       "themes/increased_contrast_theme_supplier.cc",
       "themes/increased_contrast_theme_supplier.h",
-      "themes/theme_color_policy_handler.cc",
-      "themes/theme_color_policy_handler.h",
       "themes/theme_helper.cc",
       "themes/theme_helper.h",
       "themes/theme_properties.cc",
@@ -4496,6 +4484,12 @@ static_library("browser") {
       sources += [
         "apps/app_service/app_service_proxy_desktop.cc",
         "apps/app_service/app_service_proxy_desktop.h",
+        "external_protocol/auto_launch_protocols_policy_handler.cc",
+        "external_protocol/auto_launch_protocols_policy_handler.h",
+        "policy/file_selection_dialogs_policy_handler.cc",
+        "policy/file_selection_dialogs_policy_handler.h",
+        "themes/theme_color_policy_handler.cc",
+        "themes/theme_color_policy_handler.h",
       ]
     }
     if (!is_chromeos_ash) {
@@ -4514,8 +4508,6 @@ static_library("browser") {
         "lifetime/switch_utils.h",
         "metrics/upgrade_metrics_provider.cc",
         "metrics/upgrade_metrics_provider.h",
-        "net/disk_cache_dir_policy_handler.cc",
-        "net/disk_cache_dir_policy_handler.h",
         "platform_util.cc",
         "policy/cbcm_invalidations_initializer.cc",
         "policy/cbcm_invalidations_initializer.h",
@@ -4604,6 +4596,19 @@ static_library("browser") {
 
     if (is_posix || is_fuchsia) {
       sources += [ "task_manager/sampling/shared_sampler_stub.cc" ]
+    }
+
+    if (!is_ios) {
+      sources += [
+        "net/disk_cache_dir_policy_handler.cc",
+        "net/disk_cache_dir_policy_handler.h",
+        "policy/browsing_history_policy_handler.cc",
+        "policy/browsing_history_policy_handler.h",
+        "policy/developer_tools_policy_handler.cc",
+        "policy/developer_tools_policy_handler.h",
+        "profiles/guest_mode_policy_handler.cc",
+        "profiles/guest_mode_policy_handler.h",
+      ]
     }
 
     if (is_chrome_branded) {
@@ -6219,6 +6224,8 @@ static_library("browser") {
       "enterprise/signals/user_delegate_impl.h",
       "enterprise/signals/user_permission_service_factory.cc",
       "enterprise/signals/user_permission_service_factory.h",
+      "policy/local_sync_policy_handler.cc",
+      "policy/local_sync_policy_handler.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",

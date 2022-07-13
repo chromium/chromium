@@ -10092,7 +10092,7 @@
       'owners': ['ydago@chromium.org', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:78-', 'chrome_os:78-'],
+      'supported_on': ['chrome.*:78-', 'chrome_os:78-', 'android:105-', 'ios:105-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10119,6 +10119,7 @@
         'chrome.*:75-',
         'chrome_os:75-',
         'android:97-',
+        'ios:105-'
       ],
       'features': {
         'dynamic_refresh': True,
@@ -10190,7 +10191,7 @@
           'caption': '''Screen lock delays''',
         },
       ],
-      'supported_on': ['chrome.*:76-', 'chrome_os:76-'],
+      'supported_on': ['chrome.*:76-', 'chrome_os:76-', 'android:105-', 'ios:105-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -18173,7 +18174,7 @@
       'owners': ['file://components/update_client/OWNERS', 'sorin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:54-', 'chrome_os:54-'],
+      'supported_on': ['chrome.*:54-', 'chrome_os:54-', 'android:105-', 'ios:105-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -20097,7 +20098,7 @@
       'owners': ['igorruvinov@chromium.org', 'zmin@chromium.org', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:96-', 'android:97-'],
+      'supported_on': ['chrome.*:96-', 'android:97-', 'ios:105-'],
       'items': [
         {
           'value': True,

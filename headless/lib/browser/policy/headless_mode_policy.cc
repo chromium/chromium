@@ -13,8 +13,10 @@ namespace policy {
 
 // static
 void HeadlessModePolicy::RegisterLocalPrefs(PrefRegistrySimple* registry) {
+#if defined(HEADLESS_MODE_POLICY_SUPPORTED)
   registry->RegisterIntegerPref(headless::prefs::kHeadlessMode,
                                 static_cast<int>(HeadlessMode::kDefaultValue));
+#endif
 }
 
 // static
@@ -25,6 +27,7 @@ HeadlessModePolicy::HeadlessMode HeadlessModePolicy::GetPolicy(
   if (!pref_service)
     return HeadlessMode::kDefaultValue;
 
+#if defined(HEADLESS_MODE_POLICY_SUPPORTED)
   int value = pref_service->GetInteger(headless::prefs::kHeadlessMode);
   if (value < static_cast<int>(HeadlessMode::kMinValue) ||
       value > static_cast<int>(HeadlessMode::kMaxValue)) {
@@ -37,6 +40,9 @@ HeadlessModePolicy::HeadlessMode HeadlessModePolicy::GetPolicy(
   }
 
   return static_cast<HeadlessMode>(value);
+#else
+  return HeadlessMode::kDefaultValue;
+#endif
 }
 
 // static
@@ -44,6 +50,7 @@ bool HeadlessModePolicy::IsHeadlessDisabled(const PrefService* pref_service) {
   return GetPolicy(pref_service) != HeadlessMode::kEnabled;
 }
 
+#if defined(HEADLESS_MODE_POLICY_SUPPORTED)
 HeadlessModePolicyHandler::HeadlessModePolicyHandler()
     : IntRangePolicyHandler(
           key::kHeadlessMode,
@@ -53,5 +60,6 @@ HeadlessModePolicyHandler::HeadlessModePolicyHandler()
           false) {}
 
 HeadlessModePolicyHandler::~HeadlessModePolicyHandler() = default;
+#endif
 
 }  // namespace policy
