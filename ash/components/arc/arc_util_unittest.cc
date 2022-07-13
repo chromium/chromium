@@ -322,15 +322,6 @@ TEST_F(ArcUtilTest, IsArcVmDevConfIgnored) {
   EXPECT_TRUE(IsArcVmDevConfIgnored());
 }
 
-TEST_F(ArcUtilTest, GetShouldMountVmDebugFs) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({""});
-  EXPECT_FALSE(ShouldMountVmDebugFs());
-
-  command_line->InitFromArgv({"", "--arcvm-mount-debugfs"});
-  EXPECT_TRUE(ShouldMountVmDebugFs());
-}
-
 TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
   constexpr char kArcMemProfile4GbName[] = "4G";
   constexpr char kArcMemProfile8GbName[] = "8G";

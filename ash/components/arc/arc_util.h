@@ -128,9 +128,6 @@ bool ShouldArcAlwaysStartWithNoPlayStore();
 // manually in tests using autotest API |startArc|.
 bool ShouldArcStartManually();
 
-// Returns true if the debugfs file system should me mounted in ARCVM.
-bool ShouldMountVmDebugFs();
-
 // Returns true if ARC OptIn ui needs to be shown for testing.
 bool ShouldShowOptInForTesting();
 
