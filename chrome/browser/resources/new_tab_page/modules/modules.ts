@@ -64,15 +64,23 @@ export class ModulesElement extends PolymerElement {
 
   static get properties() {
     return {
+      disabledModules_: {
+        type: Object,
+        value: () => ({all: true, ids: []}),
+      },
+
       dismissedModules_: {
         type: Array,
         value: () => [],
       },
 
-      disabledModules_: {
-        type: Object,
-        value: () => ({all: true, ids: []}),
+      dragEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
+        reflectToAttribute: true,
       },
+
+      moduleImpressionDetected_: Boolean,
 
       modulesFreRemoved_: {
         type: Boolean,
@@ -97,17 +105,7 @@ export class ModulesElement extends PolymerElement {
         value: false,
       },
 
-      /** Data about the most recently removed module. */
-      removedModuleData_: {
-        type: Object,
-        value: null,
-      },
-
-      moduleImpressionDetected_: Boolean,
-
       modulesLoaded_: Boolean,
-
-      modulesVisibilityDetermined_: Boolean,
 
       modulesLoadedAndVisibilityDetermined_: {
         type: Boolean,
@@ -117,22 +115,23 @@ export class ModulesElement extends PolymerElement {
         observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
       },
 
-      modulesShownToUser: {
-        type: Boolean,
-        notify: true,
-      },
-
-      /** @private {boolean} */
       modulesRedesignedLayoutEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('modulesRedesignedLayoutEnabled'),
         reflectToAttribute: true,
       },
 
-      dragEnabled_: {
+      modulesShownToUser: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
-        reflectToAttribute: true,
+        notify: true,
+      },
+
+      modulesVisibilityDetermined_: Boolean,
+
+      /** Data about the most recently removed module. */
+      removedModuleData_: {
+        type: Object,
+        value: null,
       },
     };
   }
@@ -143,16 +142,17 @@ export class ModulesElement extends PolymerElement {
 
   private dismissedModules_: string[];
   private disabledModules_: {all: boolean, ids: string[]};
-  private removedModuleData_: {message: string, undo: () => void}|null;
+  private dragEnabled_: boolean;
+  private moduleImpressionDetected_: boolean;
   private modulesFreRemoved_: boolean;
   private modulesFreShown: boolean;
   private modulesFreVisible_: boolean;
-  private moduleImpressionDetected_: boolean;
   private modulesLoaded_: boolean;
-  private modulesVisibilityDetermined_: boolean;
   private modulesLoadedAndVisibilityDetermined_: boolean;
+  private modulesRedesignedLayoutEnabled_: boolean;
   private modulesShownToUser: boolean;
-  private dragEnabled_: boolean;
+  private modulesVisibilityDetermined_: boolean;
+  private removedModuleData_: {message: string, undo: () => void}|null;
 
   private setDisabledModulesListenerId_: number|null = null;
   private setModulesFreVisibilityListenerId_: number|null = null;
@@ -201,7 +201,7 @@ export class ModulesElement extends PolymerElement {
       if (!moduleContainer.hidden) {
         this.modulesShownToUser = !moduleContainer.hidden;
       }
-      if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
+      if (this.modulesRedesignedLayoutEnabled_) {
         // Remove short module sibling container class name from short modules
         // that were in a sibling container before.
         moduleContainer.classList.toggle(SHORT_MODULE_SIBLING_1, false);
@@ -284,7 +284,7 @@ export class ModulesElement extends PolymerElement {
         });
         const moduleContainer = this.ownerDocument.createElement('div');
         moduleContainer.classList.add('module-container');
-        if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
+        if (this.modulesRedesignedLayoutEnabled_) {
           if (module.descriptor.height === ModuleHeight.SHORT) {
             moduleContainer.classList.add(SHORT_CLASS_NAME);
           }
