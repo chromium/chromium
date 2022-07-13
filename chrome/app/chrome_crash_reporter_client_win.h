@@ -53,6 +53,8 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
   bool ShouldMonitorCrashHandlerExpensively() override;
 
   bool EnableBreakpadForProcess(const std::string& process_type) override;
+
+  std::wstring GetWerRuntimeExceptionModule() override;
 };
 
 #endif  // CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_

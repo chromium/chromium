@@ -113,6 +113,7 @@ static_library("crash") {
     "crash/crash_helper.h",
   ]
   deps = [
+    ":constants",
     ":hook_util",
     "//base",  # This needs to go.  DEP of app, crash_keys, client.
     "//base:base_static",  # pe_image

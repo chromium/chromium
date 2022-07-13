@@ -58,6 +58,15 @@ if (is_win) {
   source_set("chrome_exe_main_exports") {
     sources = [ "chrome_exe_main_win.h" ]
   }
+  source_set("crash_reporter_client_win_unit_tests") {
+    testonly = true
+    sources = [ "chrome_crash_reporter_client_win_unittest.cc" ]
+    deps = [
+      "//base:base",
+      "//chrome/chrome_elf:crash",
+      "//testing/gtest:gtest",
+    ]
+  }
 }
 
 if (is_mac) {

@@ -154,6 +154,7 @@ if (current_cpu == "x86") {
     check_includes = false
 
     deps = [
+      "//chrome/chrome_elf:constants",
       "//chrome/common:constants",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",

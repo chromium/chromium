@@ -23,6 +23,8 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/current_module.h"
+#include "chrome/chrome_elf/chrome_elf_constants.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/user_data_dir.h"
@@ -213,4 +215,28 @@ bool ChromeCrashReporterClient::EnableBreakpadForProcess(
   // This is not used by Crashpad (at least on Windows).
   NOTREACHED();
   return true;
+}
+
+std::wstring ChromeCrashReporterClient::GetWerRuntimeExceptionModule() {
+  // We require that chrome_wer.dll is installed next to chrome_elf.dll. This
+  // approach means we don't need to check for the dll's existence on disk early
+  // in the process lifetime - we never load this dll ourselves - it is only
+  // loaded by WerFault.exe after certain crashes. We do not use base::FilePath
+  // and friends as chrome_elf will eventually not depend on //base.
+
+  wchar_t elf_file[MAX_PATH];
+  DWORD len = GetModuleFileName(CURRENT_MODULE(), elf_file, MAX_PATH);
+  // On error return an empty path to indicate than a module is not to be
+  // registered. This is harmless.
+  if (len == 0 || len == MAX_PATH)
+    return std::wstring();
+
+  wchar_t elf_dir[MAX_PATH];
+  wchar_t* file_start = nullptr;
+  DWORD dir_len = GetFullPathName(elf_file, MAX_PATH, elf_dir, &file_start);
+  if (dir_len == 0 || dir_len > len || !file_start)
+    return std::wstring();
+
+  // file_start points to the start of the filename in the elf_dir buffer.
+  return std::wstring(elf_dir, file_start).append(chrome::kWerDll);
 }

@@ -4,6 +4,12 @@
 
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 
+namespace chrome {
+
+const wchar_t kWerDll[] = L"chrome_wer.dll";
+
+}  // namespace chrome
+
 namespace elf_sec {
 
 const wchar_t kRegBrowserExtensionPointKeyName[] =

@@ -81,7 +81,11 @@ bool CrashReporterClient::GetIsPerUserInstall() {
 int CrashReporterClient::GetResultCodeRespawnFailed() {
   return 0;
 }
-#endif
+
+std::wstring CrashReporterClient::GetWerRuntimeExceptionModule() {
+  return std::wstring();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC))
 bool CrashReporterClient::GetShouldDumpLargerDumps() {

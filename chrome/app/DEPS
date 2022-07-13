@@ -4,6 +4,7 @@ include_rules = [
   "+chrome/browser",
   "+chrome/child",
   "+chrome/chrome_elf/chrome_elf_main.h",
+  "+chrome/chrome_elf/chrome_elf_constants.h",
   "+chrome/installer/util",
   "+chrome/install_static",
   "+chrome/gpu/chrome_content_gpu_client.h",
@@ -52,4 +53,3 @@ include_rules = [
   "+third_party/breakpad/breakpad",
   "+third_party/crashpad/crashpad",
 ]
-

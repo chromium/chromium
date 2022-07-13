@@ -82,6 +82,11 @@ class CrashReporterClient {
   // Returns the result code to return when breakpad failed to respawn a
   // crashed process.
   virtual int GetResultCodeRespawnFailed();
+
+  // Returns the fully-qualified path for a registered out of process exception
+  // helper module. The module is optional. Return an empty string to indicate
+  // that no module should be registered.
+  virtual std::wstring GetWerRuntimeExceptionModule();
 #endif
 
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC))
