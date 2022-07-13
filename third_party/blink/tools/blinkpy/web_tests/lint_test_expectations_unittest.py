@@ -406,6 +406,52 @@ class LintTest(LoggingTestCase):
         self.assertRegexpMatches(failures[2], ':9 Only one of')
         self.assertRegexpMatches(failures[3], ':11 .*must override')
 
+    def test_lint_stable_webexposed_disabled(self):
+        options = optparse.Values({
+            'additional_expectations': [],
+            'platform': 'test',
+            'debug_rwt_logging': False
+        })
+        host = MockHost()
+
+        port = host.port_factory.get(options.platform, options=options)
+        port.virtual_test_suites = lambda: [
+            VirtualTestSuite(prefix='stable',
+                             platforms=['Linux', 'Mac', 'Win'],
+                             bases=['test', 'webexposed'],
+                             args=['--foo'])
+        ]
+        test_expectations = (
+            '# tags: [ mac win ]\n'
+            '# results: [ Skip Pass Failure ]\n'
+            'test/* [ Skip ]\n'
+            '[ mac ] webexposed/* [ Skip ]\n'
+            'test/sub/* [ Pass ]\n'
+            'test/test1.html [ Pass ]\n'
+            'webexposed/foo/* [ Pass ]\n'
+            'webexposed/test2.html [ Failure ]\n'
+            'virtual/test/test/* [ Failure ]\n'
+            'virtual/test/foo.html [ Pass ]\n'
+            'virtual/stable/webexposed/test1/* [ Pass ]\n'
+            'virtual/stable/webexposed/test2/* [ Skip ]\n'
+            'virtual/stable/webexposed/api.html [ Pass Failure ]\n')
+        port.expectations_dict = lambda: {
+            'TestExpectations': test_expectations
+        }
+        port.test_exists = lambda test: True
+        host.port_factory.get = lambda platform=None, options=None: port
+        host.port_factory.all_port_names = lambda platform=None: [port.name()]
+
+        failures, warnings = lint_test_expectations.lint(host, options)
+        print(failures)
+        self.assertEqual(6, len(failures))
+        for i in range(3):
+            self.assertRegexpMatches(failures[0 + 2 * i],
+                                     ".*virtual/stable/webexposed/test2/.*")
+            self.assertRegexpMatches(
+                failures[1 + 2 * i],
+                ".*virtual/stable/webexposed/api\\.html.*")
+
 
 class CheckVirtualSuiteTest(unittest.TestCase):
     def setUp(self):
