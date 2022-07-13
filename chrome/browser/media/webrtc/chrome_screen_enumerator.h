@@ -19,6 +19,9 @@
 namespace aura {
 class Window;
 }
+
+void SetRootWindowsForTesting(std::vector<aura::Window*>* root_windows);
+
 #endif
 
 // Whereas ScreenEnumerator is exposed in content/,
@@ -35,15 +38,6 @@ class ChromeScreenEnumerator : public media::ScreenEnumerator {
 
   void EnumerateScreens(blink::mojom::MediaStreamType stream_type,
                         ScreensCallback screens_callback) const override;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetRootWindowsForTesting(const std::vector<aura::Window*>& root_windows);
-#endif
-
- private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<std::vector<aura::Window*>> root_windows_for_testing_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_CHROME_SCREEN_ENUMERATOR_H_
