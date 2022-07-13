@@ -1697,7 +1697,7 @@ bool CanonicalCookie::IsCookiePartitionedValid(const GURL& url,
   bool result =
       HasValidAttributesForPartitioned(url, secure, path, is_same_party);
   DLOG_IF(WARNING, !result)
-      << "CanonicalCookie has invalid Partitioned attribute ";
+      << "CanonicalCookie has invalid Partitioned attribute";
   return result;
 }
 
