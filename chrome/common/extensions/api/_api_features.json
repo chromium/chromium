@@ -404,6 +404,15 @@
     "dependencies": ["permission:enterprise.reportingPrivate"],
     "contexts": ["blessed_extension"]
   },
+  "enterprise.reportingPrivate.getFileSystemInfo": {
+    "platforms": ["win", "mac", "linux"]
+  },
+  "enterprise.reportingPrivate.getAvInfo": {
+    "platforms": ["win"]
+  },
+  "enterprise.reportingPrivate.getHotfixes": {
+    "platforms": ["win"]
+  },
   "experimental.devtools.audits": {
     "nocompile": true,
     "dependencies": ["permission:experimental", "manifest:devtools_page"],

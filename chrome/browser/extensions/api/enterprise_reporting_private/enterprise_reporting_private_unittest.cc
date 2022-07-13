@@ -50,15 +50,20 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/test/test_reg_util_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_reg_util_win.h"
 #include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "components/device_signals/core/browser/mock_signals_aggregator.h"  // nogncheck
 #include "components/device_signals/core/browser/signals_aggregator.h"  // nogncheck
+#include "components/device_signals/core/browser/signals_types.h"  // nogncheck
+#include "components/device_signals/core/common/common_types.h"    // nogncheck
 #include "components/device_signals/core/common/signals_constants.h"  // nogncheck
 #include "components/device_signals/core/common/signals_features.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/nix/xdg_util.h"
@@ -1343,6 +1348,160 @@ class UserContextGatedTest : public ExtensionApiUnittest {
   base::test::ScopedFeatureList scoped_features_;
   base::HistogramTester histogram_tester_;
 };
+
+// Tests for API enterprise.reportingPrivate.getFileSystemInfo
+class EnterpriseReportingPrivateGetFileSystemInfoTest
+    : public UserContextGatedTest {
+ protected:
+  void SetUp() override {
+    UserContextGatedTest::SetUp();
+
+    SetFeatureFlag();
+
+    function_ = base::MakeRefCounted<
+        EnterpriseReportingPrivateGetFileSystemInfoFunction>();
+  }
+
+  device_signals::SignalName signal_name() {
+    return device_signals::SignalName::kFileSystemInfo;
+  }
+
+  enterprise_reporting_private::GetFileSystemInfoOptions
+  GetFakeFileSystemOptionsParam() const {
+    enterprise_reporting_private::GetFileSystemInfoOptions api_param;
+    api_param.path = "some file path";
+    api_param.compute_sha256 = true;
+    return api_param;
+  }
+
+  std::string GetFakeRequest() const {
+    enterprise_reporting_private::GetFileSystemInfoRequest request;
+    request.user_context = GetFakeUserContext();
+    request.options.push_back(GetFakeFileSystemOptionsParam());
+    base::ListValue params;
+    params.Append(base::Value::FromUniquePtrValue(request.ToValue()));
+    std::string json_value;
+    base::JSONWriter::Write(params, &json_value);
+    return json_value;
+  }
+
+  scoped_refptr<extensions::EnterpriseReportingPrivateGetFileSystemInfoFunction>
+      function_;
+};
+
+TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, Success) {
+  device_signals::FileSystemItem fake_file_item;
+  fake_file_item.file_path = base::FilePath();
+  fake_file_item.presence = device_signals::PresenceValue::kFound;
+  fake_file_item.sha256_hash = "some hashed value";
+
+  device_signals::FileSystemInfoResponse signal_response;
+  signal_response.file_system_items.push_back(fake_file_item);
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.file_system_info_response = signal_response;
+
+  SetFakeResponse(expected_response);
+
+  auto response = api_test_utils::RunFunctionAndReturnSingleResult(
+      function_.get(), GetFakeRequest(), profile());
+
+  EXPECT_EQ(function_->GetError(), kNoError);
+
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_list());
+  const base::Value::List& list_value = response->GetList();
+  ASSERT_EQ(list_value.size(), signal_response.file_system_items.size());
+
+  const base::Value& file_system_value = list_value.front();
+  auto parsed_file_system_signal =
+      enterprise_reporting_private::GetFileSystemInfoResponse::FromValue(
+          file_system_value);
+  ASSERT_TRUE(parsed_file_system_signal);
+  EXPECT_EQ(parsed_file_system_signal->path,
+            fake_file_item.file_path.AsUTF8Unsafe());
+  EXPECT_EQ(parsed_file_system_signal->presence,
+            enterprise_reporting_private::PRESENCE_VALUE_FOUND);
+  EXPECT_EQ(*parsed_file_system_signal->sha256_hash.get(),
+            fake_file_item.sha256_hash.value());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Success", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Success.FileSystemInfo.Items",
+      /*number_of_items=*/1,
+      /*number_of_occurrences=*/1);
+}
+
+TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, TopLevelError) {
+  device_signals::SignalCollectionError expected_error =
+      device_signals::SignalCollectionError::kConsentRequired;
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.top_level_error = expected_error;
+  SetFakeResponse(expected_response);
+
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeRequest(), profile());
+
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure.FileSystemInfo."
+      "TopLevelError",
+      /*error=*/expected_error,
+      /*number_of_occurrences=*/1);
+}
+
+TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, CollectionError) {
+  device_signals::SignalCollectionError expected_error =
+      device_signals::SignalCollectionError::kMissingSystemService;
+
+  device_signals::FileSystemInfoResponse signal_response;
+  signal_response.collection_error = expected_error;
+
+  device_signals::SignalsAggregationResponse expected_response;
+  expected_response.file_system_info_response = signal_response;
+  SetFakeResponse(expected_response);
+
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeRequest(), profile());
+
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Failure.FileSystemInfo."
+      "CollectionLevelError",
+      /*error=*/expected_error,
+      /*number_of_occurrences=*/1);
+}
+
+class EnterpriseReportingPrivateGetFileSystemInfoDisabledTest
+    : public EnterpriseReportingPrivateGetFileSystemInfoTest {
+ protected:
+  // Overwrite this function to disable the feature flag for tests using this
+  // specific fixture.
+  void SetFeatureFlag() override {
+    scoped_features_.InitAndEnableFeatureWithParameters(
+        enterprise_signals::features::kNewEvSignalsEnabled,
+        {{"DisableFileSystemInfo", "true"}});
+  }
+};
+
+TEST_F(EnterpriseReportingPrivateGetFileSystemInfoDisabledTest,
+       FlagDisabled_Test) {
+  auto error = api_test_utils::RunFunctionAndReturnError(
+      function_.get(), GetFakeRequest(), profile());
+  EXPECT_EQ(error, function_->GetError());
+  EXPECT_EQ(error, device_signals::ErrorToString(
+                       device_signals::SignalCollectionError::kUnsupported));
+}
 
 // Tests for API enterprise.reportingPrivate.getAvInfo
 class EnterpriseReportingPrivateGetAvInfoTest : public UserContextGatedTest {

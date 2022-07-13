@@ -162,6 +162,82 @@ namespace enterprise.reportingPrivate {
   [platforms = ("win")]
   callback HotfixesCallback = void(HotfixSignal[] hotfixSignals);
 
+  // Used to indicate whether a given signal was correctly found or not, or
+  // indicate a reason for not being able to find it.
+  [platforms = ("win", "mac", "linux")]
+  enum PresenceValue {
+    // Was unable to determine whether the signal source exists or not. This
+    // typically indicates that a failure occurred before even trying to assess
+    // its presence.
+    UNSPECIFIED,
+
+    // Current user does not have access to the signal's source.
+    ACCESS_DENIED,
+
+    // The resource was not found.
+    NOT_FOUND,
+
+    // The resource was found.
+    FOUND
+  };
+
+  // Parameter used to collect information about a specific file system
+  // resource.
+  [platforms = ("win", "mac", "linux")]
+  dictionary GetFileSystemInfoOptions {
+    DOMString path;
+    boolean computeSha256;
+    boolean computeIsExecutable;
+  };
+
+  [platforms = ("win", "mac", "linux")]
+  dictionary GetFileSystemInfoRequest {
+    // Information about the for whom the signal collection request is for.
+    UserContext userContext;
+
+    // Collection of parameters used to conduct signals collection about
+    // specific file system resources.
+    GetFileSystemInfoOptions[] options;
+  };
+
+  [platforms = ("win", "mac", "linux")]
+  dictionary GetFileSystemInfoResponse {
+    // Path to the file system object for whom those signals were collected.
+    DOMString path;
+
+    // Value indicating whether the specific resource could be found or not.
+    PresenceValue presence;
+
+    // Sha256 hash of a file's bytes. Ignored when path points to a
+    // directory. Collected only when computeSha256 is set to true in the
+    // given signals collection parameters.
+    DOMString? sha256Hash;
+
+    // Set of properties only relevant for executable files. Will only be
+    // collected if computeIsExecutable is set to true in the given signals
+    // collection parameters and if path points to an executable file.
+
+    // Represents whether path points to an executable file or not.
+    boolean? isExecutable;
+
+    // Is true if a currently running process was spawned from this file.
+    boolean? isRunning;
+
+    // Sha256 hash of the public key of the certificate used to sign the
+    // executable.
+    DOMString? publicKeySha256;
+
+    // Product name of this executable.
+    DOMString? productName;
+
+    // Version of this executable.
+    DOMString? version;
+  };
+
+  [platforms = ("win", "mac", "linux")]
+  callback FileSystemInfoCallback =
+      void(GetFileSystemInfoResponse[] fileSystemSignals);
+
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
@@ -213,6 +289,17 @@ namespace enterprise.reportingPrivate {
     static void enqueueRecord(
         EnqueueRecordRequest request,
         optional DoneCallback callback);
+
+    // Gets information about file system resources, specified by the contents
+    // of <code>request</code>, on the current device. <code>request</code> must
+    // hold a user context to be used to verify the affiliation between the
+    // user's organization and the organization managing the browser. If the
+    // management or affiliation states are not suitable, no results will be
+    // returned.
+    [platforms = ("win", "mac", "linux"), supportsPromises]
+    static void getFileSystemInfo(
+        GetFileSystemInfoRequest request,
+        FileSystemInfoCallback callback);
 
     // Gets information about AntiVirus software installed on the current
     // device. <code>userContext</code> is used to verify the affiliation

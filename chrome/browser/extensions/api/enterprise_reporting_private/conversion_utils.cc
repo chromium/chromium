@@ -4,12 +4,23 @@
 
 #include "chrome/browser/extensions/api/enterprise_reporting_private/conversion_utils.h"
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#include <memory>
+#include <utility>
+
+#include "base/files/file_path.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/common/common_types.h"
+#include "extensions/browser/extension_function.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/sys_string_conversions.h"
 #include "components/device_signals/core/common/win/win_types.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 using SignalCollectionError = device_signals::SignalCollectionError;
+using PresenceValue = device_signals::PresenceValue;
 
 namespace extensions {
 
@@ -37,7 +48,102 @@ absl::optional<ParsedSignalsError> TryParseError(
   return absl::nullopt;
 }
 
+api::enterprise_reporting_private::PresenceValue ConvertPresenceValue(
+    PresenceValue presence) {
+  switch (presence) {
+    case PresenceValue::kUnspecified:
+      return api::enterprise_reporting_private::PRESENCE_VALUE_UNSPECIFIED;
+    case PresenceValue::kAccessDenied:
+      return api::enterprise_reporting_private::PRESENCE_VALUE_ACCESS_DENIED;
+    case PresenceValue::kNotFound:
+      return api::enterprise_reporting_private::PRESENCE_VALUE_NOT_FOUND;
+    case PresenceValue::kFound:
+      return api::enterprise_reporting_private::PRESENCE_VALUE_FOUND;
+  }
+}
+
 }  // namespace
+
+std::vector<device_signals::GetFileSystemInfoOptions>
+ConvertFileSystemInfoOptions(
+    const std::vector<
+        api::enterprise_reporting_private::GetFileSystemInfoOptions>&
+        api_options) {
+  std::vector<device_signals::GetFileSystemInfoOptions> converted_options;
+  for (const auto& api_options_param : api_options) {
+    device_signals::GetFileSystemInfoOptions converted_param;
+    converted_param.file_path =
+        base::FilePath::FromUTF8Unsafe(api_options_param.path);
+    converted_param.compute_sha256 = api_options_param.compute_sha256;
+    converted_param.compute_is_executable =
+        api_options_param.compute_is_executable;
+    converted_options.push_back(std::move(converted_param));
+  }
+  return converted_options;
+}
+
+absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
+    const device_signals::SignalsAggregationResponse& response,
+    std::vector<api::enterprise_reporting_private::GetFileSystemInfoResponse>*
+        arg_list) {
+  auto error = TryParseError(response, response.file_system_info_response);
+  if (error) {
+    return error.value();
+  }
+
+  std::vector<api::enterprise_reporting_private::GetFileSystemInfoResponse>
+      api_responses;
+  const auto& file_system_signal_values =
+      response.file_system_info_response.value();
+  for (const auto& file_system_item :
+       file_system_signal_values.file_system_items) {
+    api::enterprise_reporting_private::GetFileSystemInfoResponse response;
+    response.path = file_system_item.file_path.AsUTF8Unsafe();
+    response.presence = ConvertPresenceValue(file_system_item.presence);
+
+    if (file_system_item.sha256_hash) {
+      response.sha256_hash =
+          std::make_unique<std::string>(file_system_item.sha256_hash.value());
+    }
+
+    if (file_system_item.executable_metadata) {
+      response.is_executable = std::make_unique<bool>(
+          file_system_item.executable_metadata->is_executable);
+
+      if (response.is_executable) {
+        const auto& executable_metadata =
+            file_system_item.executable_metadata.value();
+
+        if (executable_metadata.is_running) {
+          response.is_running =
+              std::make_unique<bool>(executable_metadata.is_running.value());
+        }
+
+        if (executable_metadata.public_key_sha256) {
+          response.public_key_sha256 = std::make_unique<std::string>(
+              executable_metadata.public_key_sha256.value());
+        }
+
+        if (executable_metadata.product_name) {
+          response.product_name = std::make_unique<std::string>(
+              executable_metadata.product_name.value());
+        }
+
+        if (executable_metadata.version) {
+          response.version = std::make_unique<std::string>(
+              executable_metadata.version.value());
+        }
+      }
+    }
+
+    api_responses.push_back(std::move(response));
+  }
+
+  *arg_list = std::move(api_responses);
+  return absl::nullopt;
+}
+
+#if BUILDFLAG(IS_WIN)
 
 absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
     const device_signals::SignalsAggregationResponse& response,
@@ -102,6 +208,8 @@ absl::optional<ParsedSignalsError> ConvertHotfixesResponse(
   return absl::nullopt;
 }
 
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace extensions
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
