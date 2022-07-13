@@ -7850,12 +7850,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillShowManualFallbackInContextMenu)},
 
-    {"autofill-suggest-virtual-cards-on-incomplete-form",
-     flag_descriptions::kAutofillSuggestVirtualCardsOnIncompleteFormName,
-     flag_descriptions::kAutofillSuggestVirtualCardsOnIncompleteFormDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillSuggestVirtualCardsOnIncompleteForm)},
     {flag_descriptions::kEnableLensFullscreenSearchFlagId,
      flag_descriptions::kEnableLensFullscreenSearchName,
      flag_descriptions::kEnableLensFullscreenSearchDescription, kOsDesktop,

@@ -560,11 +560,6 @@
     "expiry_milestone": 106
   },
   {
-    "name":"autofill-suggest-virtual-cards-on-incomplete-form",
-    "owners": ["siashah", "siyua"],
-    "expiry_milestone": 105
-  },
-  {
     "name": "autofill-type-specific-popup-width",
     "owners": [ "koerber", "mamir" ],
     "expiry_milestone": 103

@@ -517,14 +517,6 @@ const char kAutofillShowManualFallbackInContextMenuDescription[] =
     "When enabled, users would get address/credit cards/passwords autofilling "
     "options in the context menu if the context menu is opened on a text field";
 
-const char kAutofillSuggestVirtualCardsOnIncompleteFormName[] =
-    "Autofill suggests virtual cards on incomplete forms";
-const char kAutofillSuggestVirtualCardsOnIncompleteFormDescription[] =
-    "When enabled, merchant bound virtual cards will be suggested even if not "
-    "all "
-    "of the card number, exp date and CVC fields are detected in a payment "
-    "form.";
-
 const char kAutofillUpstreamAllowAdditionalEmailDomainsName[] =
     "Allow Autofill credit card upload save for select non-Google-based "
     "accounts";

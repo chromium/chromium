@@ -416,15 +416,6 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
     const CreditCard* candidate_card,
     const FormStructure& form_structure) const {
-  // If the form is an incomplete form and the incomplete form experiment is
-  // disabled, do not offer a virtual card option. We will likely not be able to
-  // fill in all information, and the user doesn't have the info either.
-  if (!IsCompleteCreditCardFormIncludingCvcField(form_structure) &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillSuggestVirtualCardsOnIncompleteForm)) {
-    return false;
-  }
-
   switch (candidate_card->record_type()) {
     case CreditCard::MASKED_SERVER_CARD:
       return candidate_card->virtual_card_enrollment_state() ==

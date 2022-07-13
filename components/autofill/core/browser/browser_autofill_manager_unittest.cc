@@ -8239,10 +8239,6 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_VirtualCard) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillSuggestVirtualCardsOnIncompleteForm);
-
   personal_data().ClearCreditCards();
   CreditCard masked_server_card(CreditCard::MASKED_SERVER_CARD,
                                 /*server_id=*/"a123");
@@ -8311,7 +8307,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   GetAutofillSuggestions(form, field);
 
   CheckSuggestions(
-      kDefaultPageID,
+      kDefaultPageID, virtual_card_suggestion,
       Suggestion("Elvis Presley", label, kVisaCard,
                  browser_autofill_manager_->GetPackedCreditCardID(7)));
 }

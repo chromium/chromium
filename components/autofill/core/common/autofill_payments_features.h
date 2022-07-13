@@ -48,7 +48,6 @@ extern const base::Feature kAutofillSaveCardUiExperiment;
 extern const base::FeatureParam<int>
     kAutofillSaveCardUiExperimentSelectorInNumber;
 extern const base::Feature kAutofillShowUnmaskedCachedCardInManualFillingView;
-extern const base::Feature kAutofillSuggestVirtualCardsOnIncompleteForm;
 extern const base::Feature kAutofillUpstream;
 extern const base::Feature kAutofillUpstreamAllowAdditionalEmailDomains;
 extern const base::Feature kAutofillUpstreamAllowAllEmailDomains;

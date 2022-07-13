@@ -276,9 +276,6 @@ extern const char kAutofillSaveCardUiExperimentEncryptedAndSecure[];
 extern const char kAutofillShowManualFallbackInContextMenuName[];
 extern const char kAutofillShowManualFallbackInContextMenuDescription[];
 
-extern const char kAutofillSuggestVirtualCardsOnIncompleteFormName[];
-extern const char kAutofillSuggestVirtualCardsOnIncompleteFormDescription[];
-
 extern const char kAutofillUpstreamAllowAdditionalEmailDomainsName[];
 extern const char kAutofillUpstreamAllowAdditionalEmailDomainsDescription[];
 
