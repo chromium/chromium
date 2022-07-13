@@ -180,14 +180,15 @@ void PasswordChangeRunView::ShowBasePrompt(
   DCHECK(body_);
   body_->RemoveAllChildViews();
   body_->AddChildView(std::make_unique<views::Separator>());
-
   views::View* button_container = body_->AddChildView(CreateButtonContainer());
   for (size_t index = 0; index < choices.size(); ++index) {
-    button_container->AddChildView(CreateButton(
-        choices[index],
-        base::BindRepeating(
-            &PasswordChangeRunController::OnBasePromptChoiceSelected,
-            controller_, index)));
+    if (!choices[index].text.empty()) {
+      button_container->AddChildView(CreateButton(
+          choices[index],
+          base::BindRepeating(
+              &PasswordChangeRunController::OnBasePromptChoiceSelected,
+              controller_, index)));
+    }
   }
 }
 
