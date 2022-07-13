@@ -7193,3 +7193,4 @@ crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 
 # Sheriff 2022-07-13
 crbug.com/1344128 [ Mac10.14 ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure ]
+crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure Pass ]
