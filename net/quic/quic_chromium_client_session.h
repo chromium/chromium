@@ -312,6 +312,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                          int net_error,
                          quic::QuicErrorCode quic_error,
                          bool port_migration_detected,
+                         bool quic_connection_migration_attempted,
+                         bool quic_connection_migration_successful,
                          LoadTimingInfo::ConnectTiming connect_timing,
                          bool was_ever_used);
 
@@ -336,6 +338,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     int net_error_ = OK;
     quic::QuicErrorCode quic_error_ = quic::QUIC_NO_ERROR;
     bool port_migration_detected_ = false;
+    bool quic_connection_migration_attempted_ = false;
+    bool quic_connection_migration_successful_ = false;
     quic::QuicServerId server_id_;
     quic::ParsedQuicVersion quic_version_;
     LoadTimingInfo::ConnectTiming connect_timing_;
@@ -1017,6 +1021,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool going_away_ = false;
   // True when the session receives a go away from server due to port migration.
   bool port_migration_detected_ = false;
+  bool quic_connection_migration_attempted_ = false;
+  bool quic_connection_migration_successful_ = false;
   // Not owned. |push_delegate_| outlives the session and handles server pushes
   // received by session.
   raw_ptr<ServerPushDelegate> push_delegate_;

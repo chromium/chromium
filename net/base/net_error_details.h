@@ -33,6 +33,8 @@ struct NET_EXPORT NetErrorDetails {
   // True if receives a GoAway frame from the server due to connection
   // migration with port change.
   bool quic_port_migration_detected = false;
+  bool quic_connection_migration_attempted = false;
+  bool quic_connection_migration_successful = false;
 };
 
 }  // namespace net

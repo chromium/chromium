@@ -10924,6 +10924,13 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
       quic::test::TestConnectionId(12345678);
   MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
 
+  NetErrorDetails details;
+  EXPECT_FALSE(details.quic_connection_migration_attempted);
+  EXPECT_FALSE(details.quic_connection_migration_successful);
+  session->PopulateNetErrorDetails(&details);
+  EXPECT_FALSE(details.quic_connection_migration_attempted);
+  EXPECT_FALSE(details.quic_connection_migration_successful);
+
   // Send GET request on stream.
   HttpResponseInfo response;
   HttpRequestHeaders request_headers;
@@ -10994,6 +11001,10 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
+  session->PopulateNetErrorDetails(&details);
+  EXPECT_TRUE(details.quic_connection_migration_attempted);
+  EXPECT_TRUE(details.quic_connection_migration_successful);
+
   // Run the message loop so that data queued in the new socket is read by the
   // packet reader.
   base::RunLoop().RunUntilIdle();
@@ -11009,6 +11020,124 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
   EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
   EXPECT_TRUE(socket_data2.AllReadDataConsumed());
   EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest, ServerMigrationNonMigratableStream) {
+  quic_params_->allow_server_migration = true;
+  SetIetfConnectionMigrationFlagsAndConnectionOptions();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+
+  int packet_num = 1;
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // Hanging Read.
+  if (VersionUsesHttp3(version_.transport_version)) {
+    socket_data.AddWrite(SYNCHRONOUS,
+                         ConstructInitialSettingsPacket(packet_num++));
+  }
+  socket_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(packet_num++,
+                                GetNthClientInitiatedBidirectionalStreamId(0),
+                                true, true));
+  if (VersionUsesHttp3(version_.transport_version)) {
+    socket_data.AddWrite(
+        SYNCHRONOUS, client_maker_.MakeDataPacket(
+                         packet_num++, GetQpackDecoderStreamId(), true, false,
+                         StreamCancellationQpackDecoderInstruction(0)));
+  }
+  socket_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRstPacket(packet_num++, quic::QUIC_STREAM_CANCELLED));
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_EQ(OK, callback_.WaitForResult());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.example.org/");
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+
+  // Disable connection migration on the request streams.
+  QuicChromiumClientStream* chrome_stream =
+      static_cast<QuicChromiumClientStream*>(
+          quic::test::QuicSessionPeer::GetStream(
+              session, GetNthClientInitiatedBidirectionalStreamId(0)));
+  EXPECT_TRUE(chrome_stream);
+  chrome_stream->DisableConnectionMigrationToCellularNetwork();
+
+  NetErrorDetails details;
+  EXPECT_FALSE(details.quic_connection_migration_attempted);
+  EXPECT_FALSE(details.quic_connection_migration_successful);
+  session->PopulateNetErrorDetails(&details);
+  EXPECT_FALSE(details.quic_connection_migration_attempted);
+  EXPECT_FALSE(details.quic_connection_migration_successful);
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  // The specific network isn't important, we just want something !=
+  // kInvalidNetworkHandle to specify a non-default network.
+  constexpr NetworkChangeNotifier::NetworkHandle kNonDefaultNetwork = 1;
+  constexpr uint8_t kTestIpAddress[] = {1, 2, 3, 4};
+  constexpr uint16_t kTestPort = 123;
+  session->Migrate(kNonDefaultNetwork,
+                   IPEndPoint(IPAddress(kTestIpAddress), kTestPort), true);
+
+  // The session should exist but no longer be active since its only stream has
+  // been reset.
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_FALSE(HasActiveSession(scheme_host_port_));
+
+  session->PopulateNetErrorDetails(&details);
+  EXPECT_TRUE(details.quic_connection_migration_attempted);
+  EXPECT_FALSE(details.quic_connection_migration_successful);
+
+  // Run the message loop so that data queued due to the reset is read by the
+  // packet reader.
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the request failed since connection the stream couldn't be
+  // migrated.
+  EXPECT_EQ(ERR_QUIC_PROTOCOL_ERROR,
+            stream->ReadResponseHeaders(callback_.callback()));
+  EXPECT_EQ(nullptr, response.headers);
+
+  stream.reset();
+
+  EXPECT_TRUE(socket_data.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
 TEST_P(QuicStreamFactoryTest, ServerMigrationIPv4ToIPv4) {
