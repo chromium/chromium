@@ -95,16 +95,18 @@ class CecServiceClientTest : public testing::Test {
         .WillByDefault(Return(mock_proxy_.get()));
 
     // Create a client with the mock bus.
-    client_ = CecServiceClient::Create();
-    client_->Init(mock_bus_.get());
+    CecServiceClient::Initialize(mock_bus_.get());
+    client_ = CecServiceClient::Get();
 
     // Run the message loop to run the signal connection result callback.
     base::RunLoop().RunUntilIdle();
   }
 
+  ~CecServiceClientTest() override { CecServiceClient::Shutdown(); }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<CecServiceClient> client_;
+  CecServiceClient* client_ = nullptr;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
 };

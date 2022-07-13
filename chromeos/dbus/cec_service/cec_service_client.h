@@ -23,10 +23,20 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) CecServiceClient
     : public DBusClient {
  public:
+  // Returns the global instance if initialized. May return null.
+  static CecServiceClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   CecServiceClient(const CecServiceClient&) = delete;
   CecServiceClient& operator=(const CecServiceClient&) = delete;
-
-  ~CecServiceClient() override;
 
   enum class PowerState {
     // There was an error when querying the display.
@@ -51,9 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) CecServiceClient
   using PowerStateCallback =
       base::OnceCallback<void(const std::vector<PowerState>&)>;
 
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<CecServiceClient> Create();
-
   // Puts all connected HDMI CEC capable displays into stand-by mode. The effect
   // of calling this method is on a best effort basis, no guarantees of displays
   // going into stand-by is made.
@@ -74,6 +81,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) CecServiceClient
   friend class CecServiceClientTest;
 
   CecServiceClient();
+  ~CecServiceClient() override;
 };
 
 }  // namespace chromeos

@@ -1601,6 +1601,7 @@ source_set("ash") {
     "//chromeos/dbus:metrics_event_proto",
     "//chromeos/dbus:vm_applications_apps_proto",
     "//chromeos/dbus:vm_launch_proto",
+    "//chromeos/dbus/cec_service",
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/cros_disks",

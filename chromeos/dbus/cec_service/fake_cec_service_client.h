@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) FakeCecServiceClient
   void SendWakeUp() override;
   void QueryDisplayCecPowerState(
       CecServiceClient::PowerStateCallback callback) override;
+  void Init(dbus::Bus* bus) override;
 
   int stand_by_call_count() const { return stand_by_call_count_; }
   int wake_up_call_count() const { return wake_up_call_count_; }
@@ -37,9 +38,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) FakeCecServiceClient
   const std::vector<PowerState>& tv_power_states() const {
     return tv_power_states_;
   }
-
- protected:
-  void Init(dbus::Bus* bus) override;
 
  private:
   void SetDisplayPowerState(PowerState new_state);

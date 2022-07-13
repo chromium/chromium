@@ -68,6 +68,7 @@
 #include "chromeos/dbus/arc/arc_obb_mounter_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
@@ -139,6 +140,7 @@ void InitializeDBus() {
   InitializeDBusClient<AuthPolicyClient>(bus);
   InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
   InitializeDBusClient<chromeos::CdmFactoryDaemonClient>(bus);
+  InitializeDBusClient<chromeos::CecServiceClient>(bus);
   InitializeDBusClient<ChunneldClient>(bus);
   InitializeDBusClient<CiceroneClient>(bus);
   // ConciergeClient depends on CiceroneClient.
@@ -297,6 +299,7 @@ void ShutdownDBus() {
   ConciergeClient::Shutdown();
   CiceroneClient::Shutdown();
   ChunneldClient::Shutdown();
+  chromeos::CecServiceClient::Shutdown();
   chromeos::CdmFactoryDaemonClient::Shutdown();
   BiodClient::Shutdown();
   AuthPolicyClient::Shutdown();

@@ -8,16 +8,17 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/cec_service/fake_cec_service_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
 
 namespace {
+
+CecServiceClient* g_instance = nullptr;
 
 // Translates a power state from a D-Bus response to the types exposed by
 // CecServiceClient.
@@ -111,7 +112,6 @@ class CecServiceClientImpl : public CecServiceClient {
         base::BindOnce(&OnGetTvsPowerStatus, std::move(callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     cec_service_proxy_ =
         bus->GetObjectProxy(cecservice::kCecServiceName,
@@ -127,13 +127,36 @@ class CecServiceClientImpl : public CecServiceClient {
 ////////////////////////////////////////////////////////////////////////////////
 // CecServiceClient
 
-CecServiceClient::CecServiceClient() = default;
-
-CecServiceClient::~CecServiceClient() = default;
+// static
+CecServiceClient* CecServiceClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<CecServiceClient> CecServiceClient::Create() {
-  return std::make_unique<CecServiceClientImpl>();
+void CecServiceClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new CecServiceClientImpl())->Init(bus);
+}
+
+// static
+void CecServiceClient::InitializeFake() {
+  (new FakeCecServiceClient())->Init(nullptr);
+}
+
+// static
+void CecServiceClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+CecServiceClient::CecServiceClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+CecServiceClient::~CecServiceClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos

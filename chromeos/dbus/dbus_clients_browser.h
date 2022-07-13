@@ -15,7 +15,6 @@ class Bus;
 
 namespace chromeos {
 
-class CecServiceClient;
 class CrosDisksClient;
 class DebugDaemonClient;
 class EasyUnlockClient;
@@ -42,7 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   friend class DBusThreadManager;
   friend class DBusThreadManagerSetter;
 
-  std::unique_ptr<CecServiceClient> cec_service_client_;
   std::unique_ptr<CrosDisksClient> cros_disks_client_;
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<EasyUnlockClient> easy_unlock_client_;

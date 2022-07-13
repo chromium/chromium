@@ -15,7 +15,6 @@
 namespace chromeos {
 
 // Style Note: Clients are sorted by names.
-class CecServiceClient;
 class CrosDisksClient;
 class DBusClientsBrowser;
 class DBusThreadManagerSetter;
@@ -57,7 +56,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   // pointers after DBusThreadManager has been shut down.
   // TODO(jamescook): Replace this with calls to FooClient::Get().
   // http://crbug.com/647367
-  CecServiceClient* GetCecServiceClient();
   CrosDisksClient* GetCrosDisksClient();
   DebugDaemonClient* GetDebugDaemonClient();
   EasyUnlockClient* GetEasyUnlockClient();

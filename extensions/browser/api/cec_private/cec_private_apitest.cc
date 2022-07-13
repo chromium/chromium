@@ -4,7 +4,6 @@
 
 #include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "chromeos/dbus/cec_service/fake_cec_service_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/switches.h"
@@ -30,8 +29,16 @@ class CecPrivateKioskApiTest : public ShellApiTest {
   ~CecPrivateKioskApiTest() override = default;
 
   void SetUpOnMainThread() override {
+    // Unlike chrome's browser_tests, extensions_browsertests does not
+    // automatically create D-Bus fakes for us.
+    chromeos::CecServiceClient::InitializeFake();
     cec_ = static_cast<chromeos::FakeCecServiceClient*>(
-        chromeos::DBusThreadManager::Get()->GetCecServiceClient());
+        chromeos::CecServiceClient::Get());
+  }
+
+  void TearDownOnMainThread() override {
+    cec_ = nullptr;
+    chromeos::CecServiceClient::Shutdown();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

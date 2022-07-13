@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "extensions/common/api/cec_private.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 
@@ -72,7 +72,7 @@ CecPrivateSendStandByFunction::CecPrivateSendStandByFunction() = default;
 CecPrivateSendStandByFunction::~CecPrivateSendStandByFunction() = default;
 
 ExtensionFunction::ResponseAction CecPrivateSendStandByFunction::Run() {
-  chromeos::DBusThreadManager::Get()->GetCecServiceClient()->SendStandBy();
+  chromeos::CecServiceClient::Get()->SendStandBy();
   return RespondNow(NoArguments());
 }
 
@@ -81,7 +81,7 @@ CecPrivateSendWakeUpFunction::CecPrivateSendWakeUpFunction() = default;
 CecPrivateSendWakeUpFunction::~CecPrivateSendWakeUpFunction() = default;
 
 ExtensionFunction::ResponseAction CecPrivateSendWakeUpFunction::Run() {
-  chromeos::DBusThreadManager::Get()->GetCecServiceClient()->SendWakeUp();
+  chromeos::CecServiceClient::Get()->SendWakeUp();
   return RespondNow(NoArguments());
 }
 
@@ -93,11 +93,8 @@ CecPrivateQueryDisplayCecPowerStateFunction::
 
 ExtensionFunction::ResponseAction
 CecPrivateQueryDisplayCecPowerStateFunction::Run() {
-  chromeos::DBusThreadManager::Get()
-      ->GetCecServiceClient()
-      ->QueryDisplayCecPowerState(base::BindOnce(
-          &CecPrivateQueryDisplayCecPowerStateFunction::HandlePowerStates,
-          this));
+  chromeos::CecServiceClient::Get()->QueryDisplayCecPowerState(base::BindOnce(
+      &CecPrivateQueryDisplayCecPowerStateFunction::HandlePowerStates, this));
   return RespondLater();
 }
 

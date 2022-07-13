@@ -5,8 +5,6 @@
 #include "chromeos/dbus/dbus_clients_browser.h"
 
 #include "base/check.h"
-#include "chromeos/dbus/cec_service/cec_service_client.h"
-#include "chromeos/dbus/cec_service/fake_cec_service_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -32,7 +30,6 @@ namespace chromeos {
 #endif  // USE_REAL_DBUS_CLIENTS
 
 DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
-  cec_service_client_ = CREATE_DBUS_CLIENT(CecServiceClient, use_real_clients);
   cros_disks_client_ = CREATE_DBUS_CLIENT(CrosDisksClient, use_real_clients);
   debug_daemon_client_ =
       CREATE_DBUS_CLIENT(DebugDaemonClient, use_real_clients);
@@ -45,7 +42,6 @@ DBusClientsBrowser::~DBusClientsBrowser() = default;
 void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   DCHECK(DBusThreadManager::IsInitialized());
 
-  cec_service_client_->Init(system_bus);
   cros_disks_client_->Init(system_bus);
   debug_daemon_client_->Init(system_bus);
   easy_unlock_client_->Init(system_bus);

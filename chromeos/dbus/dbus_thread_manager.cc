@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
-#include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_clients_browser.h"
@@ -37,11 +36,6 @@ DBusThreadManager::~DBusThreadManager() {
   return (g_setter && g_setter->name) \
              ? g_setter->name.get()   \
              : (clients_browser_ ? clients_browser_->name.get() : nullptr)
-
-CecServiceClient* DBusThreadManager::GetCecServiceClient() {
-  return clients_browser_ ? clients_browser_->cec_service_client_.get()
-                          : nullptr;
-}
 
 CrosDisksClient* DBusThreadManager::GetCrosDisksClient() {
   RETURN_DBUS_CLIENT(cros_disks_client_);
