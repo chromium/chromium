@@ -186,7 +186,10 @@ class BASE_EXPORT ThreadController {
   // switching MainThreadOnly to thread annotations and annotating all
   // thread-affine ThreadController methods. Without that, this lone annotation
   // would result in an inconsistent set of DCHECKs...
-  raw_ptr<const TickClock> time_source_;  // Not owned.
+  //
+  // TODO(crbug.com/1298696): foo_unittests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<const TickClock, DegradeToNoOpWhenMTE> time_source_;  // Not owned.
 
   // Tracks the state of each run-level (main and nested ones) in its associated
   // ThreadController. It does so using two high-level principles:

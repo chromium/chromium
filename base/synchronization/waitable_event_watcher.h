@@ -117,7 +117,9 @@ class BASE_EXPORT WaitableEventWatcher
   win::ObjectWatcher watcher_;
 
   EventCallback callback_;
-  raw_ptr<WaitableEvent> event_ = nullptr;
+  // TODO(crbug.com/1298696): foo_unittests breaks with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<WaitableEvent, DegradeToNoOpWhenMTE> event_ = nullptr;
 #elif BUILDFLAG(IS_APPLE)
   // Invokes the callback and resets the source. Must be called on the task
   // runner on which StartWatching() was called.
