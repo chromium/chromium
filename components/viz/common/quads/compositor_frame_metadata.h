@@ -93,7 +93,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // This color is usually obtained from the background color of the <body>
   // element. It can be used for filling in gutter areas around the frame when
   // it's too small to fill the box the parent reserved for it.
-  SkColor root_background_color = SK_ColorWHITE;
+  SkColor4f root_background_color = SkColors::kWhite;
 
   std::vector<ui::LatencyInfo> latency_info;
 

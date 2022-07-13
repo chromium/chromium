@@ -13,6 +13,7 @@ import "services/viz/public/mojom/compositing/region_capture_bounds.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
@@ -30,7 +31,7 @@ struct CompositorFrameMetadata {
   bool may_contain_video;
   bool may_throttle_if_undrawn_frames;
   bool is_resourceless_software_draw_with_scroll_or_animation;
-  uint32 root_background_color;
+  skia.mojom.SkColor4f root_background_color;
   array<ui.mojom.LatencyInfo> latency_info;
   array<SurfaceRange> referenced_surfaces;
   FrameDeadline deadline;

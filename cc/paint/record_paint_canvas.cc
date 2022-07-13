@@ -227,8 +227,12 @@ bool RecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
   return GetCanvas()->getDeviceClipBounds(bounds);
 }
 
+void RecordPaintCanvas::drawColor(SkColor4f color, SkBlendMode mode) {
+  push<DrawColorOp>(color, mode);
+}
+
 void RecordPaintCanvas::drawColor(SkColor color, SkBlendMode mode) {
-  push<DrawColorOp>(SkColor4f::FromColor(color), mode);
+  drawColor(SkColor4f::FromColor(color), mode);
 }
 
 void RecordPaintCanvas::clear(SkColor color) {

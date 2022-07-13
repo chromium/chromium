@@ -31,7 +31,7 @@ namespace viz {
 namespace {
 
 constexpr gfx::Rect kSurfaceRect(0, 0, 100, 100);
-constexpr SkColor kOutputColor = SK_ColorRED;
+constexpr SkColor4f kOutputColor = SkColors::kRed;
 
 }  // namespace
 
@@ -131,7 +131,7 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
   SkBitmap expected;
   expected.allocPixels(SkImageInfo::MakeN32Premul(
       output_rect.width(), output_rect.height(), color_space.ToSkColorSpace()));
-  expected.eraseColor(kOutputColor);
+  expected.eraseColor(kOutputColor, /*colorSpace=*/nullptr);
 
   EXPECT_TRUE(cc::MatchesBitmap(result_bitmap, expected,
                                 cc::ExactPixelComparator(false)));

@@ -50,8 +50,16 @@ message SharedQuadState {
   required sint32 sorting_context_id = 9;
 }
 
+// SolidColorDrawQuad defaults to white
+message Color {
+  required float r = 1 [default = 1];
+  required float g = 2 [default = 1];
+  required float b = 3 [default = 1];
+  required float a = 4 [default = 1];
+}
+
 message SolidColorDrawQuad {
-  required fixed32 color = 1 [default = 0xffffffff];
+  required Color color = 1;
   required bool force_anti_aliasing_off = 2;
 }
 
@@ -60,7 +68,7 @@ message TileDrawQuad {
 
   // Allocate an SkBitmap from these values and pass the ResourceId
   // to the TileDrawQuad.
-  required fixed32 texture_color = 2;
+  required Color texture_color = 2;
   required Size texture_size = 3;
 
   // TODO(kylechar): enable fuzzing gfx::RectF

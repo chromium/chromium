@@ -56,7 +56,7 @@ SkBitmap GLScalerTestUtil::CreateSMPTETestImage(const gfx::Size& size) {
 
   // Set all pixels to a color that should not exist in the result. Later, a
   // sanity-check will ensure all pixels have been overwritten.
-  constexpr SkColor kDeadColor = SkColorSetARGB(0xde, 0xad, 0xbe, 0xef);
+  constexpr SkColor4f kDeadColor = SkColor4f{0.678f, 0.745f, 0.937f, 0.871f};
   result.eraseColor(kDeadColor);
 
   // Set the pixels corresponding to each color bar.
@@ -68,7 +68,7 @@ SkBitmap GLScalerTestUtil::CreateSMPTETestImage(const gfx::Size& size) {
   // the color bars.
   for (int y = 0; y < result.height(); ++y) {
     for (int x = 0; x < result.width(); ++x) {
-      if (result.getColor(x, y) == kDeadColor) {
+      if (result.getColor4f(x, y) == kDeadColor) {
         NOTREACHED() << "TEST BUG: Error creating SMPTE test image. Bad size ("
                      << size.ToString() << ")?";
         return result;
@@ -84,7 +84,7 @@ bool GLScalerTestUtil::LooksLikeSMPTETestImage(const SkBitmap& image,
                                                const gfx::Size& src_size,
                                                const gfx::Rect& src_rect,
                                                int fuzzy_pixels,
-                                               int* max_color_diff) {
+                                               float* max_color_diff) {
   if (image.width() <= 0 || image.height() <= 0) {
     return false;
   }
@@ -95,7 +95,7 @@ bool GLScalerTestUtil::LooksLikeSMPTETestImage(const SkBitmap& image,
       static_cast<SkScalar>(image.width()) / src_rect.width();
   const SkScalar scale_y =
       static_cast<SkScalar>(image.height()) / src_rect.height();
-  int measured_max_diff = 0;
+  float measured_max_diff = 0.0f;
   for (const auto& cr : GetScaledSMPTEColorBars(src_size)) {
     const SkIRect offset_rect = cr.rect.makeOffset(-offset_x, -offset_y);
     const SkIRect rect =
@@ -109,17 +109,12 @@ bool GLScalerTestUtil::LooksLikeSMPTETestImage(const SkBitmap& image,
       for (int x = std::max(0, rect.fLeft),
                x_end = std::min(image.width(), rect.fRight);
            x < x_end; ++x) {
-        const SkColor actual = image.getColor(x, y);
+        const SkColor4f actual = image.getColor4f(x, y);
         measured_max_diff =
-            std::max({measured_max_diff,
-                      std::abs(static_cast<int>(SkColorGetR(cr.color)) -
-                               static_cast<int>(SkColorGetR(actual))),
-                      std::abs(static_cast<int>(SkColorGetG(cr.color)) -
-                               static_cast<int>(SkColorGetG(actual))),
-                      std::abs(static_cast<int>(SkColorGetB(cr.color)) -
-                               static_cast<int>(SkColorGetB(actual))),
-                      std::abs(static_cast<int>(SkColorGetA(cr.color)) -
-                               static_cast<int>(SkColorGetA(actual)))});
+            std::max({measured_max_diff, std::abs((cr.color.fR) - (actual.fR)),
+                      std::abs((cr.color.fG) - (actual.fG)),
+                      std::abs((cr.color.fB) - (actual.fB)),
+                      std::abs((cr.color.fA) - (actual.fA))});
       }
     }
   }
@@ -129,14 +124,14 @@ bool GLScalerTestUtil::LooksLikeSMPTETestImage(const SkBitmap& image,
     *max_color_diff = measured_max_diff;
     return measured_max_diff <= threshold;
   }
-  return measured_max_diff == 0;
+  return measured_max_diff == 0.0f;
 }
 
 // static
 SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
     const gfx::Size& size,
     CyclicalPattern pattern,
-    const std::vector<SkColor>& cycle,
+    const std::vector<SkColor4f>& cycle,
     size_t rotation) {
   CHECK(!cycle.empty());
 
@@ -144,11 +139,11 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
   // the rest of the code below.
   std::vector<uint32_t> cycle_as_rgba(cycle.size());
   for (size_t i = 0; i < cycle.size(); ++i) {
-    const SkColor color = cycle[(i + rotation) % cycle.size()];
-    cycle_as_rgba[i] = ((SkColorGetR(color) << kRedShift) |
-                        (SkColorGetG(color) << kGreenShift) |
-                        (SkColorGetB(color) << kBlueShift) |
-                        (SkColorGetA(color) << kAlphaShift));
+    const SkColor4f color = cycle[(i + rotation) % cycle.size()];
+    cycle_as_rgba[i] = ((static_cast<int>(color.fR * 255) << kRedShift) |
+                        (static_cast<int>(color.fG * 255) << kGreenShift) |
+                        (static_cast<int>(color.fB * 255) << kBlueShift) |
+                        (static_cast<int>(color.fA * 255) << kAlphaShift));
   }
 
   SkBitmap result = AllocateRGBABitmap(size);
@@ -399,35 +394,35 @@ SkBitmap GLScalerTestUtil::CreateVerticallyFlippedBitmap(
 // linear gradient bar is defined as half solid 0-level black and half solid
 // full-intensity white).
 const ColorBar GLScalerTestUtil::kSMPTEColorBars[30] = {
-    {{0, 0, 240, 630}, SkColorSetRGB(0x66, 0x66, 0x66)},
-    {{240, 0, 445, 630}, SkColorSetRGB(0xbf, 0xbf, 0xbf)},
-    {{445, 0, 651, 630}, SkColorSetRGB(0xbf, 0xbf, 0x00)},
-    {{651, 0, 857, 630}, SkColorSetRGB(0x00, 0xbf, 0xbf)},
-    {{857, 0, 1063, 630}, SkColorSetRGB(0x00, 0xbf, 0x00)},
-    {{1063, 0, 1269, 630}, SkColorSetRGB(0xbf, 0x00, 0xbf)},
-    {{1269, 0, 1475, 630}, SkColorSetRGB(0xbf, 0x00, 0x00)},
-    {{1475, 0, 1680, 630}, SkColorSetRGB(0x00, 0x00, 0xbf)},
-    {{1680, 0, 1920, 630}, SkColorSetRGB(0x66, 0x66, 0x66)},
-    {{0, 630, 240, 720}, SkColorSetRGB(0x00, 0xff, 0xff)},
-    {{240, 630, 445, 720}, SkColorSetRGB(0x00, 0x21, 0x4c)},
-    {{445, 630, 1680, 720}, SkColorSetRGB(0xbf, 0xbf, 0xbf)},
-    {{1680, 630, 1920, 720}, SkColorSetRGB(0x00, 0x00, 0xff)},
-    {{0, 720, 240, 810}, SkColorSetRGB(0xff, 0xff, 0x00)},
-    {{240, 720, 445, 810}, SkColorSetRGB(0x32, 0x00, 0x6a)},
-    {{445, 720, 1063, 810}, SkColorSetRGB(0x00, 0x00, 0x00)},
-    {{1063, 720, 1680, 810}, SkColorSetRGB(0xff, 0xff, 0xff)},
-    {{1680, 720, 1920, 810}, SkColorSetRGB(0xff, 0x00, 0x00)},
-    {{0, 810, 240, 1080}, SkColorSetRGB(0x26, 0x26, 0x26)},
-    {{240, 810, 549, 1080}, SkColorSetRGB(0x00, 0x00, 0x00)},
-    {{549, 810, 960, 1080}, SkColorSetRGB(0xff, 0xff, 0xff)},
-    {{960, 810, 1131, 1080}, SkColorSetRGB(0x00, 0x00, 0x00)},
-    {{1131, 810, 1200, 1080}, SkColorSetRGB(0x00, 0x00, 0x00)},
-    {{1200, 810, 1268, 1080}, SkColorSetRGB(0x00, 0x00, 0x00)},
-    {{1268, 810, 1337, 1080}, SkColorSetRGB(0x05, 0x05, 0x05)},
-    {{1337, 810, 1405, 1080}, SkColorSetRGB(0x00, 0x00, 0x00)},
-    {{1405, 810, 1474, 1080}, SkColorSetRGB(0x0a, 0x0a, 0x0a)},
-    {{1474, 810, 1680, 1080}, SkColorSetRGB(0x00, 0x00, 0x00)},
-    {{1680, 810, 1920, 1080}, SkColorSetRGB(0x26, 0x26, 0x26)},
+    {{0, 240, 630}, SkColor4f{0.4f, 0.4f, 0.4f, 1.0f}},
+    {{240, 0, 445, 630}, SkColor4f{0.749f, 0.749f, 0.749f, 1.0f}},
+    {{0, 651, 445, 630}, SkColor4f{0.749f, 0.749f, 0.0f, 1.0f}},
+    {{0, 857, 651, 630}, SkColor4f{0.0f, 0.749f, 0.749f, 1.0f}},
+    {{0, 857, 630, 1063}, SkColor4f{0.0f, 0.749f, 0.0f, 1.0f}},
+    {{0, 1269, 630, 1063}, SkColor4f{0.749f, 0.0f, 0.749f, 1.0f}},
+    {{0, 1475, 1269, 630}, SkColor4f{0.749f, 0.0f, 0.0f, 1.0f}},
+    {{0, 1475, 1680, 630}, SkColor4f{0.0f, 0.0f, 0.749f, 1.0f}},
+    {{1680, 0, 1920, 630}, SkColor4f{0.4f, 0.4f, 0.4f, 1.0f}},
+    {{0, 240, 630, 720}, SkColor4f{0.0f, 1.0f, 1.0f, 1.0f}},
+    {{240, 445, 630, 720}, SkColor4f{0.0f, 0.129f, 0.298f, 1.0f}},
+    {{1680, 445, 630, 720}, SkColor4f{0.749f, 0.749f, 0.749f, 1.0f}},
+    {{1680, 1920, 630, 720}, SkColor4f{0.0f, 0.0f, 1.0f, 1.0f}},
+    {{0, 240, 810, 720}, SkColor4f{1.0f, 1.0f, 0.0f, 1.0f}},
+    {{240, 810, 445, 720}, SkColor4f{0.196f, 0.0f, 0.416f, 1.0f}},
+    {{720, 810, 445, 1063}, SkColor4f{0.0f, 0.0f, 0.0f, 1.0f}},
+    {{720, 810, 1680, 1063}, SkColor4f{1.0f, 1.0f, 1.0f, 1.0f}},
+    {{1680, 810, 1920, 720}, SkColor4f{1.0f, 0.0f, 0.0f, 1.0f}},
+    {{0, 240, 810, 1080}, SkColor4f{0.149f, 0.149f, 0.149f, 1.0f}},
+    {{240, 810, 1080, 549}, SkColor4f{0.0f, 0.0f, 0.0f, 1.0f}},
+    {{960, 810, 1080, 549}, SkColor4f{1.0f, 1.0f, 1.0f, 1.0f}},
+    {{960, 810, 1131, 1080}, SkColor4f{0.0f, 0.0f, 0.0f, 1.0f}},
+    {{1200, 810, 1131, 1080}, SkColor4f{0.0f, 0.0f, 0.0f, 1.0f}},
+    {{1200, 810, 1268, 1080}, SkColor4f{0.0f, 0.0f, 0.0f, 1.0f}},
+    {{1080, 1337, 810, 1268}, SkColor4f{0.02f, 0.02f, 0.02f, 1.0f}},
+    {{1080, 1337, 810, 1405}, SkColor4f{0.0f, 0.0f, 0.0f, 1.0f}},
+    {{1080, 1474, 810, 1405}, SkColor4f{0.039f, 0.039f, 0.039f, 1.0f}},
+    {{1680, 1474, 810, 1080}, SkColor4f{0.0f, 0.0f, 0.0f, 1.0f}},
+    {{1680, 810, 1080, 1920}, SkColor4f{0.149f, 0.149f, 0.149f, 1.0f}},
 };
 
 constexpr gfx::Size GLScalerTestUtil::kSMPTEFullSize;

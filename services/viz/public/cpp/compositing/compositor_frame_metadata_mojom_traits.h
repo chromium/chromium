@@ -71,7 +71,7 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.is_resourceless_software_draw_with_scroll_or_animation;
   }
 
-  static uint32_t root_background_color(
+  static SkColor4f root_background_color(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.root_background_color;
   }

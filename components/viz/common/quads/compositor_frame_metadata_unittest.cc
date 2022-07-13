@@ -65,7 +65,7 @@ TEST(CompositorFrameMetadata, Clone) {
   metadata.content_color_usage = gfx::ContentColorUsage::kHDR;
   metadata.may_contain_video = true;
   metadata.is_resourceless_software_draw_with_scroll_or_animation = true;
-  metadata.root_background_color = SK_ColorBLUE;
+  metadata.root_background_color = SkColors::kBlue;
   metadata.latency_info.emplace_back(ui::SourceEventType::KEY_PRESS);
   metadata.referenced_surfaces.emplace_back(
       SurfaceId(frame_sink_id, local_id1), SurfaceId(frame_sink_id, local_id2));

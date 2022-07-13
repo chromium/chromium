@@ -649,11 +649,11 @@ void SurfaceAggregator::HandleSurfaceQuad(
         gfx::IntersectRects(fallback_rect, surface_quad->visible_rect);
 
     // TODO(crbug.com/1308932): CompositorFrameMetadata to SkColor4f
-    EmitGutterQuadsIfNecessary(
-        surface_quad->visible_rect, fallback_rect,
-        surface_quad->shared_quad_state, target_transform, surface_clip_rect,
-        SkColor4f::FromColor(fallback_frame.metadata.root_background_color),
-        dest_pass, mask_filter_info);
+    EmitGutterQuadsIfNecessary(surface_quad->visible_rect, fallback_rect,
+                               surface_quad->shared_quad_state,
+                               target_transform, surface_clip_rect,
+                               fallback_frame.metadata.root_background_color,
+                               dest_pass, mask_filter_info);
   }
 
   EmitSurfaceContent(*resolved_frame, parent_device_scale_factor, surface_quad,

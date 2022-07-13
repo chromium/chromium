@@ -25,7 +25,12 @@ quad_list: [
       height: 400
     }
     solid_color_quad: {
-      color: 0xffffffff
+      color: {
+        r: 1
+        g: 1
+        b: 1
+        a: 1
+      }
       force_anti_aliasing_off: false
     }
     sqs: {
@@ -75,7 +80,12 @@ quad_list: [
     }
     tile_quad: {
       needs_blending: true
-      texture_color: 0xff000000
+      texture_color: {
+        r: 0
+        g: 0
+        b: 0
+        a: 1
+      }
       texture_size: {
         width: 620
         height: 400

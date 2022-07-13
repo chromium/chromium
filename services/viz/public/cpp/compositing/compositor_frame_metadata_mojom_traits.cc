@@ -10,6 +10,7 @@
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
+#include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
@@ -41,13 +42,16 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
 
   if (!data.ReadContentColorUsage(&out->content_color_usage))
     return false;
+
+  if (!data.ReadRootBackgroundColor(&out->root_background_color))
+    return false;
+
   out->may_contain_video = data.may_contain_video();
   out->may_throttle_if_undrawn_frames = data.may_throttle_if_undrawn_frames();
   out->has_shared_element_resources = data.has_shared_element_resources();
   out->is_resourceless_software_draw_with_scroll_or_animation =
       data.is_resourceless_software_draw_with_scroll_or_animation();
   out->send_frame_token_to_embedder = data.send_frame_token_to_embedder();
-  out->root_background_color = data.root_background_color();
   out->min_page_scale_factor = data.min_page_scale_factor();
   if (data.top_controls_visible_height_set()) {
     out->top_controls_visible_height.emplace(

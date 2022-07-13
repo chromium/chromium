@@ -134,6 +134,10 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual bool getLocalClipBounds(SkRect* bounds) const = 0;
   virtual SkIRect getDeviceClipBounds() const = 0;
   virtual bool getDeviceClipBounds(SkIRect* bounds) const = 0;
+  virtual void drawColor(SkColor4f color, SkBlendMode mode) = 0;
+  void drawColor(SkColor4f color) { drawColor(color, SkBlendMode::kSrcOver); }
+  // TODO(crbug.com/1308932): Get rid of the SkColor versions of these
+  // functions. They both end up calling the SkColor4f versions anyway.
   virtual void drawColor(SkColor color, SkBlendMode mode) = 0;
   void drawColor(SkColor color) { drawColor(color, SkBlendMode::kSrcOver); }
 

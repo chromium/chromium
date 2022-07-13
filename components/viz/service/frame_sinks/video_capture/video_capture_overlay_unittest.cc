@@ -83,13 +83,13 @@ class VideoCaptureOverlayTest : public testing::Test {
     // Test colors have been chosen to exercise different opacities,
     // intensities, and color channels; to confirm all aspects of the "SrcOver"
     // image blending algorithms are working properly.
-    constexpr SkColor kTestImageBackground =
-        SkColorSetARGB(0xff, 0xff, 0xff, 0xff);
-    constexpr SkColor kTestImageColors[4] = {
-        SkColorSetARGB(0xaa, 0xff, 0x00, 0x00),
-        SkColorSetARGB(0xbb, 0x00, 0xee, 0x00),
-        SkColorSetARGB(0xcc, 0x00, 0x00, 0x77),
-        SkColorSetARGB(0xdd, 0x66, 0x66, 0x00),
+    constexpr SkColor4f kTestImageBackground =
+        SkColor4f{1.0f, 1.0f, 1.0f, 1.0f};
+    constexpr SkColor4f kTestImageColors[4] = {
+        SkColor4f{1.0f, 0.0f, 0.0f, 0.667f},
+        SkColor4f{0.0f, 0.933f, 0.0f, 0.733f},
+        SkColor4f{0.0f, 0.0f, 0.467f, 0.8f},
+        SkColor4f{0.4f, 0.4f, 0.0f, 0.867f},
     };
     constexpr SkIRect kTestImageColorRects[4] = {
         SkIRect::MakeXYWH(4, 2, 4, 4), SkIRect::MakeXYWH(16, 2, 4, 4),
@@ -107,8 +107,7 @@ class VideoCaptureOverlayTest : public testing::Test {
       const size_t idx = (i + cycle) % std::size(kTestImageColors);
       SkPaint paint;
       paint.setBlendMode(SkBlendMode::kSrc);
-      paint.setColor(SkColor4f::FromColor(kTestImageColors[idx]),
-                     info.colorSpace());
+      paint.setColor(kTestImageColors[idx], info.colorSpace());
       canvas.drawIRect(kTestImageColorRects[i], paint);
     }
 
