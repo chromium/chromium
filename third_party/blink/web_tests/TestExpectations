@@ -6161,12 +6161,10 @@ crbug.com/1231699 [ Linux ] virtual/text-antialias/color-emoji.html [ Failure Pa
 # Other devtools flaky tests outside of http/tests/inspector-protocol/network.
 crbug.com/1228261 http/tests/inspector-protocol/browser-grant-permissions.js [ Failure Pass Timeout ]
 crbug.com/1228261 http/tests/inspector-protocol/network-fetch-content-with-error-status-code.js [ Failure Pass Timeout ]
-crbug.com/1228261 http/tests/inspector-protocol/fetch/request-paused-network-id-cors.js [ Failure Pass Timeout ]
 
 # Flakes that might be caused or aggravated by PlzServiceWorker
 crbug.com/996511 external/wpt/service-workers/cache-storage/window/cache-abort.https.html [ Crash Failure Pass ]
 crbug.com/996511 external/wpt/service-workers/service-worker/getregistrations.https.html [ Crash Failure Pass Timeout ]
-crbug.com/996511 http/tests/inspector-protocol/fetch/fetch-cors-preflight-sw.js [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-07-14
 crbug.com/1229039 [ Linux ] external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Pass Timeout ]

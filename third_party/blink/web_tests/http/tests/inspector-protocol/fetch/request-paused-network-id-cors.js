@@ -2,7 +2,7 @@
   const {session, dp} = await testRunner.startBlank(
       `Tests interoperation of Fetch interception with Network instrumentation for CORS preflight requests.`);
 
-  const url = 'http://localhost:8000/inspector-protocol/network/resources/post-echo.pl';
+  const url = 'http://localhost:8000/inspector-protocol/fetch/resources/post-echo.pl';
 
   await dp.Network.enable();
   await dp.Fetch.enable();
