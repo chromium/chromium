@@ -102,7 +102,8 @@ LayoutUnit ResolveInlineLengthInternal(
     const NGBoxStrut& border_padding,
     const absl::optional<MinMaxSizes>& min_max_sizes,
     const Length& length,
-    LayoutUnit override_available_size) {
+    LayoutUnit override_available_size,
+    const Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
@@ -123,8 +124,8 @@ LayoutUnit ResolveInlineLengthInternal(
           constraint_space.PercentageResolutionInlineSize();
       DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize)
           << length.ToString();
-      LayoutUnit value =
-          MinimumValueForLength(length, percentage_resolution_size);
+      LayoutUnit value = MinimumValueForLength(
+          length, percentage_resolution_size, anchor_evaluator);
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.InlineSum(), value);
@@ -177,7 +178,8 @@ LayoutUnit ResolveBlockLengthInternal(
     const Length& length,
     LayoutUnit intrinsic_size,
     LayoutUnit override_available_size,
-    const LayoutUnit* override_percentage_resolution_size) {
+    const LayoutUnit* override_percentage_resolution_size,
+    const Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
@@ -199,8 +201,8 @@ LayoutUnit ResolveBlockLengthInternal(
               ? *override_percentage_resolution_size
               : constraint_space.PercentageResolutionBlockSize();
       DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize);
-      LayoutUnit value =
-          MinimumValueForLength(length, percentage_resolution_size);
+      LayoutUnit value = MinimumValueForLength(
+          length, percentage_resolution_size, anchor_evaluator);
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.BlockSum(), value);
@@ -588,15 +590,21 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
                                               &table_grid_min_max_sizes);
 }
 
-MinMaxSizes ComputeMinMaxBlockSizes(const NGConstraintSpace& space,
-                                    const ComputedStyle& style,
-                                    const NGBoxStrut& border_padding,
-                                    LayoutUnit override_available_size) {
+MinMaxSizes ComputeMinMaxBlockSizes(
+    const NGConstraintSpace& space,
+    const ComputedStyle& style,
+    const NGBoxStrut& border_padding,
+    LayoutUnit override_available_size,
+    const Length::AnchorEvaluator* anchor_evaluator) {
   MinMaxSizes sizes = {
       ResolveMinBlockLength(space, style, border_padding,
-                            style.LogicalMinHeight(), override_available_size),
+                            style.LogicalMinHeight(), override_available_size,
+                            /* override_percentage_resolution_size */ nullptr,
+                            anchor_evaluator),
       ResolveMaxBlockLength(space, style, border_padding,
-                            style.LogicalMaxHeight(), override_available_size)};
+                            style.LogicalMaxHeight(), override_available_size,
+                            /* override_percentage_resolution_size */ nullptr,
+                            anchor_evaluator)};
   sizes.max_size = std::max(sizes.max_size, sizes.min_size);
   return sizes;
 }
@@ -857,7 +865,8 @@ LogicalSize ComputeReplacedSize(
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding,
     absl::optional<LogicalSize> override_available_size,
-    ReplacedSizeMode mode) {
+    ReplacedSizeMode mode,
+    const Length::AnchorEvaluator* anchor_evaluator) {
   DCHECK(node.IsReplaced());
 
   LogicalSize size_override = node.GetReplacedSizeOverrideIfAny(space);
@@ -898,11 +907,12 @@ LogicalSize ComputeReplacedSize(
     block_min_max_sizes = {
         ResolveMinBlockLength(
             space, style, border_padding, style.LogicalMinHeight(),
-            override_available_block_size, &min_max_percentage_resolution_size),
-        ResolveMaxBlockLength(space, style, border_padding,
-                              style.LogicalMaxHeight(),
-                              override_available_block_size,
-                              &min_max_percentage_resolution_size)};
+            override_available_block_size, &min_max_percentage_resolution_size,
+            anchor_evaluator),
+        ResolveMaxBlockLength(
+            space, style, border_padding, style.LogicalMaxHeight(),
+            override_available_block_size, &min_max_percentage_resolution_size,
+            anchor_evaluator)};
 
     if (space.IsFixedBlockSize()) {
       replaced_block = space.AvailableSize().block_size;
@@ -926,7 +936,7 @@ LogicalSize ComputeReplacedSize(
         replaced_block = ResolveMainBlockLength(
             space, style, border_padding, block_length_to_resolve,
             /* intrinsic_size */ kIndefiniteSize, override_available_block_size,
-            &main_percentage_resolution_size);
+            &main_percentage_resolution_size, anchor_evaluator);
         DCHECK_GE(*replaced_block, LayoutUnit());
         replaced_block =
             block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
@@ -956,7 +966,8 @@ LogicalSize ComputeReplacedSize(
             NOTREACHED();
             return MinMaxSizesResult();
           },
-          Length::FillAvailable(), override_available_inline_size);
+          Length::FillAvailable(), override_available_inline_size,
+          anchor_evaluator);
     }
 
     // If stretch-fit applies we must have an aspect-ratio.
@@ -981,9 +992,9 @@ LogicalSize ComputeReplacedSize(
                                        *replaced_block);
     } else if (natural_size) {
       DCHECK_NE(mode, ReplacedSizeMode::kIgnoreInlineLengths);
-      size = ComputeReplacedSize(node, space, border_padding,
-                                 override_available_size,
-                                 ReplacedSizeMode::kIgnoreInlineLengths)
+      size = ComputeReplacedSize(
+                 node, space, border_padding, override_available_size,
+                 ReplacedSizeMode::kIgnoreInlineLengths, anchor_evaluator)
                  .inline_size;
     } else {
       // We don't have a natural size - default to stretching.
@@ -1005,10 +1016,12 @@ LogicalSize ComputeReplacedSize(
     inline_min_max_sizes = {
         ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMinWidth(),
-                               override_available_inline_size),
+                               override_available_inline_size,
+                               anchor_evaluator),
         ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMaxWidth(),
-                               override_available_inline_size)};
+                               override_available_inline_size,
+                               anchor_evaluator)};
 
     if (space.IsFixedInlineSize()) {
       replaced_inline = space.AvailableSize().inline_size;
@@ -1025,7 +1038,8 @@ LogicalSize ComputeReplacedSize(
       if (!InlineLengthUnresolvable(space, inline_length_to_resolve)) {
         replaced_inline = ResolveMainInlineLength(
             space, style, border_padding, MinMaxSizesFunc,
-            inline_length_to_resolve, override_available_inline_size);
+            inline_length_to_resolve, override_available_inline_size,
+            anchor_evaluator);
         DCHECK_GE(*replaced_inline, LayoutUnit());
         replaced_inline =
             inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);

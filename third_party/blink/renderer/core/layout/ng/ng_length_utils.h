@@ -76,7 +76,8 @@ CORE_EXPORT LayoutUnit ResolveInlineLengthInternal(
     const NGBoxStrut& border_padding,
     const absl::optional<MinMaxSizes>&,
     const Length&,
-    LayoutUnit override_available_size = kIndefiniteSize);
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
 // Same as ResolveInlineLengthInternal, except here |intrinsic_size| roughly
 // plays the part of |MinMaxSizes|.
@@ -87,7 +88,8 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     const Length&,
     LayoutUnit intrinsic_size,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr);
+    const LayoutUnit* override_percentage_resolution_size = nullptr,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
 // In this file the template parameter MinMaxSizesFunc should have the
 // following form:
@@ -106,7 +108,8 @@ inline LayoutUnit ResolveMinInlineLength(
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(length.IsAuto() ||
              InlineLengthUnresolvable(constraint_space, length)))
     return border_padding.InlineSum();
@@ -121,7 +124,7 @@ inline LayoutUnit ResolveMinInlineLength(
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
                                      min_max_sizes, length,
-                                     override_available_size);
+                                     override_available_size, anchor_evaluator);
 }
 
 // Used for resolving max inline lengths, (|ComputedStyle::MaxLogicalWidth|).
@@ -132,7 +135,8 @@ inline LayoutUnit ResolveMaxInlineLength(
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(length.IsNone() ||
              InlineLengthUnresolvable(constraint_space, length)))
     return LayoutUnit::Max();
@@ -147,7 +151,7 @@ inline LayoutUnit ResolveMaxInlineLength(
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
                                      min_max_sizes, length,
-                                     override_available_size);
+                                     override_available_size, anchor_evaluator);
 }
 
 // Used for resolving main inline lengths, (|ComputedStyle::LogicalWidth|).
@@ -158,7 +162,8 @@ inline LayoutUnit ResolveMainInlineLength(
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
   absl::optional<MinMaxSizes> min_max_sizes;
   if (length.IsContentOrIntrinsic()) {
@@ -170,7 +175,7 @@ inline LayoutUnit ResolveMainInlineLength(
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
                                      min_max_sizes, length,
-                                     override_available_size);
+                                     override_available_size, anchor_evaluator);
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).
@@ -180,14 +185,16 @@ inline LayoutUnit ResolveMinBlockLength(
     const NGBoxStrut& border_padding,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
+    const LayoutUnit* override_percentage_resolution_size = nullptr,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(BlockLengthUnresolvable(constraint_space, length,
                                      override_percentage_resolution_size)))
     return border_padding.BlockSum();
 
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, kIndefiniteSize,
-      override_available_size, override_percentage_resolution_size);
+      override_available_size, override_percentage_resolution_size,
+      anchor_evaluator);
 }
 
 // Used for resolving max block lengths, (|ComputedStyle::MaxLogicalHeight|).
@@ -197,14 +204,16 @@ inline LayoutUnit ResolveMaxBlockLength(
     const NGBoxStrut& border_padding,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
+    const LayoutUnit* override_percentage_resolution_size = nullptr,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(BlockLengthUnresolvable(constraint_space, length,
                                      override_percentage_resolution_size)))
     return LayoutUnit::Max();
 
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, kIndefiniteSize,
-      override_available_size, override_percentage_resolution_size);
+      override_available_size, override_percentage_resolution_size,
+      anchor_evaluator);
 }
 
 // Used for resolving main block lengths, (|ComputedStyle::LogicalHeight|).
@@ -215,7 +224,8 @@ inline LayoutUnit ResolveMainBlockLength(
     const Length& length,
     LayoutUnit intrinsic_size,
     LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
+    const LayoutUnit* override_percentage_resolution_size = nullptr,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
   if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(constraint_space, length,
@@ -224,7 +234,8 @@ inline LayoutUnit ResolveMainBlockLength(
 
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, intrinsic_size,
-      override_available_size, override_percentage_resolution_size);
+      override_available_size, override_percentage_resolution_size,
+      anchor_evaluator);
 }
 
 template <typename IntrinsicBlockSizeFunc>
@@ -234,7 +245,8 @@ inline LayoutUnit ResolveMainBlockLength(
     const NGBoxStrut& border_padding,
     const Length& length,
     const IntrinsicBlockSizeFunc& intrinsic_block_size_func,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
   if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(constraint_space, length)))
@@ -244,9 +256,10 @@ inline LayoutUnit ResolveMainBlockLength(
   if (length.IsContentOrIntrinsic())
     intrinsic_block_size = intrinsic_block_size_func();
 
-  return ResolveBlockLengthInternal(constraint_space, style, border_padding,
-                                    length, intrinsic_block_size,
-                                    override_available_size);
+  return ResolveBlockLengthInternal(
+      constraint_space, style, border_padding, length, intrinsic_block_size,
+      override_available_size,
+      /* override_percentage_resolution_size */ nullptr, anchor_evaluator);
 }
 
 // For the given |child|, computes the min and max content contribution
@@ -290,7 +303,8 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const NGConstraintSpace&,
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
-    LayoutUnit override_available_size = kIndefiniteSize);
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
 MinMaxSizes ComputeTransferredMinMaxInlineSizes(
     const LogicalSize& ratio,
@@ -319,15 +333,18 @@ MinMaxSizes ComputeMinMaxInlineSizes(
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length* opt_min_length = nullptr,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   const ComputedStyle& style = node.Style();
   const Length& min_length =
       opt_min_length ? *opt_min_length : style.LogicalMinWidth();
   MinMaxSizes sizes = {
       ResolveMinInlineLength(space, style, border_padding, min_max_sizes_func,
-                             min_length, override_available_size),
+                             min_length, override_available_size,
+                             anchor_evaluator),
       ResolveMaxInlineLength(space, style, border_padding, min_max_sizes_func,
-                             style.LogicalMaxWidth(), override_available_size)};
+                             style.LogicalMaxWidth(), override_available_size,
+                             anchor_evaluator)};
 
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
@@ -424,7 +441,8 @@ CORE_EXPORT LogicalSize ComputeReplacedSize(
     const NGConstraintSpace&,
     const NGBoxStrut& border_padding,
     absl::optional<LogicalSize> override_available_size = absl::nullopt,
-    ReplacedSizeMode = ReplacedSizeMode::kNormal);
+    ReplacedSizeMode = ReplacedSizeMode::kNormal,
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-count.

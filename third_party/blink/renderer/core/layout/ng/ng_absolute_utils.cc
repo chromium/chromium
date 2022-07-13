@@ -364,6 +364,7 @@ bool ComputeOutOfFlowInlineDimensions(
     const LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
+    const Length::AnchorEvaluator* anchor_evaluator,
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
   bool depends_on_min_max_sizes = false;
@@ -389,7 +390,8 @@ bool ComputeOutOfFlowInlineDimensions(
       ComputeOutOfFlowBlockDimensions(node, space, insets, border_padding,
                                       static_position, computed_available_size,
                                       /* replaced_size */ absl::nullopt,
-                                      container_writing_direction, dimensions);
+                                      container_writing_direction,
+                                      anchor_evaluator, dimensions);
     }
 
     // Create a new space, setting the fixed block-size.
@@ -443,10 +445,10 @@ bool ComputeOutOfFlowInlineDimensions(
 
     LayoutUnit main_inline_size = ResolveMainInlineLength(
         space, style, border_padding, MinMaxSizesFunc, main_inline_length,
-        computed_available_size.inline_size);
+        computed_available_size.inline_size, anchor_evaluator);
     MinMaxSizes min_max_inline_sizes = ComputeMinMaxInlineSizes(
         space, node, border_padding, MinMaxSizesFunc, &min_inline_length,
-        computed_available_size.inline_size);
+        computed_available_size.inline_size, anchor_evaluator);
 
     inline_size = min_max_inline_sizes.ClampSizeToMinAndMax(main_inline_size);
   }
@@ -485,6 +487,7 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
+    const Length::AnchorEvaluator* anchor_evaluator,
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
 
@@ -548,9 +551,10 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
 
     LayoutUnit main_block_size = ResolveMainBlockLength(
         space, style, border_padding, main_block_length, IntrinsicBlockSizeFunc,
-        computed_available_size.block_size);
+        computed_available_size.block_size, anchor_evaluator);
     MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
-        space, style, border_padding, computed_available_size.block_size);
+        space, style, border_padding, computed_available_size.block_size,
+        anchor_evaluator);
 
     // Manually resolve any intrinsic/content min/max block-sizes.
     // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.

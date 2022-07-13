@@ -111,7 +111,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
     blink::ComputeOutOfFlowInlineDimensions(
         node, space, insets, border_padding, static_position,
         computed_available_size, absl::nullopt, container_writing_direction,
-        dimensions);
+        /* anchor_evaluator */ nullptr, dimensions);
   }
 
   void ComputeOutOfFlowBlockDimensions(
@@ -133,7 +133,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
     blink::ComputeOutOfFlowBlockDimensions(
         node, space, insets, border_padding, static_position,
         computed_available_size, absl::nullopt, container_writing_direction,
-        dimensions);
+        /* anchor_evaluator */ nullptr, dimensions);
   }
 
   Persistent<Element> element_;

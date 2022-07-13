@@ -65,7 +65,7 @@ float FloatValueForLength(const Length& length, float maximum_value) {
 LayoutUnit MinimumValueForLengthInternal(
     const Length& length,
     LayoutUnit maximum_value,
-    Length::AnchorEvaluator* anchor_evaluator) {
+    const Length::AnchorEvaluator* anchor_evaluator) {
   switch (length.GetType()) {
     case Length::kPercent:
       // Don't remove the extra cast to float. It is needed for rounding on

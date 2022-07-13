@@ -46,12 +46,12 @@ PLATFORM_EXPORT float FloatValueForLength(const Length&, float maximum_value);
 PLATFORM_EXPORT LayoutUnit
 MinimumValueForLengthInternal(const Length&,
                               LayoutUnit maximum_value,
-                              Length::AnchorEvaluator*);
+                              const Length::AnchorEvaluator*);
 
 inline LayoutUnit MinimumValueForLength(
     const Length& length,
     LayoutUnit maximum_value,
-    Length::AnchorEvaluator* anchor_evaluator = nullptr) {
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   if (LIKELY(length.IsFixed()))
     return LayoutUnit(length.Value());
 

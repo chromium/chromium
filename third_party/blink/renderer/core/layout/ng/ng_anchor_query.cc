@@ -54,4 +54,42 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
   return value;
 }
 
+absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateSize(
+    const AtomicString& anchor_name,
+    AnchorSizeValue anchor_size_value,
+    WritingMode container_writing_mode,
+    WritingMode self_writing_mode) const {
+  const auto it = anchor_references.find(anchor_name);
+  if (it == anchor_references.end())
+    return absl::nullopt;  // No targets.
+
+  const LogicalSize& anchor = it->value.size;
+  switch (anchor_size_value) {
+    case AnchorSizeValue::kInline:
+      return anchor.inline_size;
+    case AnchorSizeValue::kBlock:
+      return anchor.block_size;
+    case AnchorSizeValue::kWidth:
+      return IsHorizontalWritingMode(container_writing_mode)
+                 ? anchor.inline_size
+                 : anchor.block_size;
+    case AnchorSizeValue::kHeight:
+      return IsHorizontalWritingMode(container_writing_mode)
+                 ? anchor.block_size
+                 : anchor.inline_size;
+    case AnchorSizeValue::kSelfInline:
+      return IsHorizontalWritingMode(container_writing_mode) ==
+                     IsHorizontalWritingMode(self_writing_mode)
+                 ? anchor.inline_size
+                 : anchor.block_size;
+    case AnchorSizeValue::kSelfBlock:
+      return IsHorizontalWritingMode(container_writing_mode) ==
+                     IsHorizontalWritingMode(self_writing_mode)
+                 ? anchor.block_size
+                 : anchor.inline_size;
+  }
+  NOTREACHED();
+  return absl::nullopt;
+}
+
 }  // namespace blink

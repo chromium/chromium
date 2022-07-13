@@ -1456,18 +1456,47 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
       ComputeBorders(node_info.constraint_space, node_info.node) +
       ComputePadding(node_info.constraint_space, candidate_style);
 
+  struct AnchorSizeEvaluatorImpl : public Length::AnchorEvaluator {
+    STACK_ALLOCATED();
+
+   public:
+    AnchorSizeEvaluatorImpl(const NGLogicalAnchorQuery& anchor_query,
+                            const WritingMode container_writing_mode,
+                            const WritingMode self_writing_mode)
+        : anchor_query(anchor_query),
+          container_writing_mode(container_writing_mode),
+          self_writing_mode(self_writing_mode) {}
+
+    absl::optional<LayoutUnit> EvaluateAnchorSize(
+        const AtomicString& anchor_name,
+        AnchorSizeValue anchor_size_value) const override {
+      has_anchor_functions = true;
+      return anchor_query.EvaluateSize(anchor_name, anchor_size_value,
+                                       container_writing_mode,
+                                       self_writing_mode);
+    }
+
+    const NGLogicalAnchorQuery& anchor_query;
+    const WritingMode container_writing_mode;
+    const WritingMode self_writing_mode;
+    mutable bool has_anchor_functions = false;
+  } anchor_evaluator(container_builder_->AnchorQuery(),
+                     container_writing_direction.GetWritingMode(),
+                     candidate_writing_direction.GetWritingMode());
+
   absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
-    replaced_size =
-        ComputeReplacedSize(node_info.node, node_info.constraint_space,
-                            border_padding, computed_available_size);
+    replaced_size = ComputeReplacedSize(
+        node_info.node, node_info.constraint_space, border_padding,
+        computed_available_size, ReplacedSizeMode::kNormal, &anchor_evaluator);
   }
 
   offset_info.inline_size_depends_on_min_max_sizes =
       ComputeOutOfFlowInlineDimensions(
           node_info.node, node_info.constraint_space, insets, border_padding,
           node_info.static_position, computed_available_size, replaced_size,
-          container_writing_direction, &offset_info.node_dimensions);
+          container_writing_direction, &anchor_evaluator,
+          &offset_info.node_dimensions);
 
   // We may have already pre-computed our block-dimensions when determining
   // our min/max sizes, only run if needed.
@@ -1475,8 +1504,10 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     offset_info.initial_layout_result = ComputeOutOfFlowBlockDimensions(
         node_info.node, node_info.constraint_space, insets, border_padding,
         node_info.static_position, computed_available_size, replaced_size,
-        container_writing_direction, &offset_info.node_dimensions);
+        container_writing_direction, &anchor_evaluator,
+        &offset_info.node_dimensions);
   }
+  offset_info.disable_first_tier_cache |= anchor_evaluator.has_anchor_functions;
   offset_info.block_estimate = offset_info.node_dimensions.size.block_size;
 
   // In some cases we will need the fragment size in order to calculate the

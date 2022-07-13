@@ -70,6 +70,7 @@ CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
     const LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
+    const Length::AnchorEvaluator* anchor_evaluator,
     NGLogicalOutOfFlowDimensions* dimensions);
 
 // If layout was performed to determine the position, this will be returned
@@ -83,6 +84,7 @@ CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
+    const Length::AnchorEvaluator* anchor_evaluator,
     NGLogicalOutOfFlowDimensions* dimensions);
 
 CORE_EXPORT void AdjustOffsetForSplitInline(

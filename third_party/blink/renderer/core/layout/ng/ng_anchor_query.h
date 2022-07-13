@@ -38,6 +38,11 @@ struct NGLogicalAnchorQuery {
       bool is_y_axis,
       bool is_right_or_bottom) const;
 
+  absl::optional<LayoutUnit> EvaluateSize(const AtomicString& anchor_name,
+                                          AnchorSizeValue anchor_size_value,
+                                          WritingMode container_writing_mode,
+                                          WritingMode self_writing_mode) const;
+
   HashMap<AtomicString, LogicalRect> anchor_references;
 };
 
