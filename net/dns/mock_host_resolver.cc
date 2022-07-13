@@ -1116,10 +1116,10 @@ std::unique_ptr<HostResolver> MockHostResolverFactory::CreateStandaloneResolver(
 //-----------------------------------------------------------------------------
 
 RuleBasedHostResolverProc::Rule::Rule(ResolverType resolver_type,
-                                      const std::string& host_pattern,
+                                      base::StringPiece host_pattern,
                                       AddressFamily address_family,
                                       HostResolverFlags host_resolver_flags,
-                                      const std::string& replacement,
+                                      base::StringPiece replacement,
                                       std::vector<std::string> dns_aliases,
                                       int latency_ms)
     : resolver_type(resolver_type),
@@ -1141,16 +1141,16 @@ RuleBasedHostResolverProc::RuleBasedHostResolverProc(
     bool allow_fallback)
     : HostResolverProc(std::move(previous), allow_fallback) {}
 
-void RuleBasedHostResolverProc::AddRule(const std::string& host_pattern,
-                                        const std::string& replacement) {
+void RuleBasedHostResolverProc::AddRule(base::StringPiece host_pattern,
+                                        base::StringPiece replacement) {
   AddRuleForAddressFamily(host_pattern, ADDRESS_FAMILY_UNSPECIFIED,
                           replacement);
 }
 
 void RuleBasedHostResolverProc::AddRuleForAddressFamily(
-    const std::string& host_pattern,
+    base::StringPiece host_pattern,
     AddressFamily address_family,
-    const std::string& replacement) {
+    base::StringPiece replacement) {
   DCHECK(!replacement.empty());
   HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY;
   Rule rule(Rule::kResolverTypeSystem, host_pattern, address_family, flags,
@@ -1159,8 +1159,8 @@ void RuleBasedHostResolverProc::AddRuleForAddressFamily(
 }
 
 void RuleBasedHostResolverProc::AddRuleWithFlags(
-    const std::string& host_pattern,
-    const std::string& replacement,
+    base::StringPiece host_pattern,
+    base::StringPiece replacement,
     HostResolverFlags flags,
     std::vector<std::string> dns_aliases) {
   DCHECK(!replacement.empty());
@@ -1170,9 +1170,9 @@ void RuleBasedHostResolverProc::AddRuleWithFlags(
 }
 
 void RuleBasedHostResolverProc::AddIPLiteralRule(
-    const std::string& host_pattern,
-    const std::string& ip_literal,
-    const std::string& canonical_name) {
+    base::StringPiece host_pattern,
+    base::StringPiece ip_literal,
+    base::StringPiece canonical_name) {
   // Literals are always resolved to themselves by HostResolverImpl,
   // consequently we do not support remapping them.
   IPAddress ip_address;
@@ -1191,8 +1191,8 @@ void RuleBasedHostResolverProc::AddIPLiteralRule(
 }
 
 void RuleBasedHostResolverProc::AddIPLiteralRuleWithDnsAliases(
-    const std::string& host_pattern,
-    const std::string& ip_literal,
+    base::StringPiece host_pattern,
+    base::StringPiece ip_literal,
     std::vector<std::string> dns_aliases) {
   // Literals are always resolved to themselves by HostResolverImpl,
   // consequently we do not support remapping them.
@@ -1209,8 +1209,8 @@ void RuleBasedHostResolverProc::AddIPLiteralRuleWithDnsAliases(
 }
 
 void RuleBasedHostResolverProc::AddRuleWithLatency(
-    const std::string& host_pattern,
-    const std::string& replacement,
+    base::StringPiece host_pattern,
+    base::StringPiece replacement,
     int latency_ms) {
   DCHECK(!replacement.empty());
   HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY;
@@ -1220,7 +1220,7 @@ void RuleBasedHostResolverProc::AddRuleWithLatency(
 }
 
 void RuleBasedHostResolverProc::AllowDirectLookup(
-    const std::string& host_pattern) {
+    base::StringPiece host_pattern) {
   HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY;
   Rule rule(Rule::kResolverTypeSystem, host_pattern, ADDRESS_FAMILY_UNSPECIFIED,
             flags, std::string(), /*dns_aliases=*/{}, 0);
@@ -1228,7 +1228,7 @@ void RuleBasedHostResolverProc::AllowDirectLookup(
 }
 
 void RuleBasedHostResolverProc::AddSimulatedFailure(
-    const std::string& host_pattern,
+    base::StringPiece host_pattern,
     HostResolverFlags flags) {
   Rule rule(Rule::kResolverTypeFail, host_pattern, ADDRESS_FAMILY_UNSPECIFIED,
             flags, std::string(), /*dns_aliases=*/{}, 0);
@@ -1236,7 +1236,7 @@ void RuleBasedHostResolverProc::AddSimulatedFailure(
 }
 
 void RuleBasedHostResolverProc::AddSimulatedTimeoutFailure(
-    const std::string& host_pattern,
+    base::StringPiece host_pattern,
     HostResolverFlags flags) {
   Rule rule(Rule::kResolverTypeFailTimeout, host_pattern,
             ADDRESS_FAMILY_UNSPECIFIED, flags, std::string(),
