@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/compositor/layer.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
@@ -50,8 +51,7 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
 
   std::vector<gfx::Rect> opaque_region;
   if (showing_frame) {
-    float corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-        views::Emphasis::kHigh);
+    const float corner_radius = chromeos::kTopCornerRadiusWhenRestored;
     GetContentWindow()->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));
     GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
