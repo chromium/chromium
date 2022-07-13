@@ -9,7 +9,6 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/logging.gni")
-import("//build_overrides/build.gni")
 
 # Add partition_alloc.gni and import it for partition_alloc configs.
 
@@ -323,72 +322,68 @@ target(partition_alloc_target_type, "partition_alloc") {
   }
 }
 
-if (build_with_chromium) {
-  source_set("test_support") {
-    sources = [
-      "extended_api.cc",
-      "extended_api.h",
-      "partition_alloc_base/threading/platform_thread_for_testing.h",
+source_set("test_support") {
+  sources = [
+    "extended_api.cc",
+    "extended_api.h",
+    "partition_alloc_base/threading/platform_thread_for_testing.h",
+  ]
+  if (is_posix) {
+    sources += [
+      "partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
     ]
-    if (is_posix) {
-      sources += [
-        "partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
-      ]
-    }
-    if (is_fuchsia) {
-      sources += [
-        "partition_alloc_base/threading/platform_thread_fuchsia_for_testing.cc",
-        "partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
-      ]
-    }
-    if (is_win) {
-      sources += [
-        "partition_alloc_base/threading/platform_thread_win_for_testing.cc",
-      ]
-    }
-    if (is_mac || is_ios) {
-      sources += [
-        "partition_alloc_base/threading/platform_thread_mac_for_testing.mm",
-      ]
-    }
-    if (is_linux || is_chromeos) {
-      sources += [
-        "partition_alloc_base/threading/platform_thread_linux_for_testing.cc",
-      ]
-    }
-    if (is_android) {
-      sources += [
-        "partition_alloc_base/threading/platform_thread_android_for_testing.cc",
-      ]
-    }
-    public_deps = [
-      ":chromecast_buildflags",
-      ":chromeos_buildflags",
-      ":debugging_buildflags",
-      ":logging_buildflags",
-      ":partition_alloc_buildflags",
-      "//build:branding_buildflags",
-      "//build/config/compiler:compiler_buildflags",
+  }
+  if (is_fuchsia) {
+    sources += [
+      "partition_alloc_base/threading/platform_thread_fuchsia_for_testing.cc",
+      "partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
     ]
-    public_configs = []
-    if (is_fuchsia) {
-      public_deps += [
-        "//third_party/fuchsia-sdk/sdk/pkg/fit",
-        "//third_party/fuchsia-sdk/sdk/pkg/sync",
-        "//third_party/fuchsia-sdk/sdk/pkg/zx",
-      ]
+  }
+  if (is_win) {
+    sources +=
+        [ "partition_alloc_base/threading/platform_thread_win_for_testing.cc" ]
+  }
+  if (is_mac || is_ios) {
+    sources +=
+        [ "partition_alloc_base/threading/platform_thread_mac_for_testing.mm" ]
+  }
+  if (is_linux || is_chromeos) {
+    sources += [
+      "partition_alloc_base/threading/platform_thread_linux_for_testing.cc",
+    ]
+  }
+  if (is_android) {
+    sources += [
+      "partition_alloc_base/threading/platform_thread_android_for_testing.cc",
+    ]
+  }
+  public_deps = [
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":logging_buildflags",
+    ":partition_alloc_buildflags",
+    "//build:branding_buildflags",
+    "//build/config/compiler:compiler_buildflags",
+  ]
+  public_configs = []
+  if (is_fuchsia) {
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/pkg/fit",
+      "//third_party/fuchsia-sdk/sdk/pkg/sync",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
 
-      # Needed for users of spinning_mutex.h, which for performance reasons,
-      # contains inlined calls to `libsync` inside the header file.
-      # It appends an entry to the "libs" section of the dependent target.
-      public_configs += [ ":fuchsia_sync_lib" ]
-    }
-    deps = [ "//base:base" ]
+    # Needed for users of spinning_mutex.h, which for performance reasons,
+    # contains inlined calls to `libsync` inside the header file.
+    # It appends an entry to the "libs" section of the dependent target.
+    public_configs += [ ":fuchsia_sync_lib" ]
+  }
+  deps = [ "//base:base" ]
 
-    if (!is_debug) {
-      configs -= [ "//build/config/compiler:default_optimization" ]
-      configs += [ "//build/config/compiler:optimize_speed" ]
-    }
+  if (!is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_speed" ]
   }
 }
 
