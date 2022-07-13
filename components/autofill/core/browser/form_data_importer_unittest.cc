@@ -104,7 +104,10 @@ constexpr char kThirdDependentLocality[] = "Down Town";
 constexpr char kThirdState[] = "Oregon";
 constexpr char kThirdPhone[] = "+1 851-777-2222";
 
+constexpr char kDefaultCreditCardName[] = "Biggie Smalls";
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
+constexpr char kDefaultCreditCardExpMonth[] = "01";
+constexpr char kDefaultCreditCardExpYear[] = "2999";
 
 // For a given ServerFieldType |type| returns a pair of field name and label
 // that should be parsed into this type by our field type parsers.
@@ -125,7 +128,10 @@ std::pair<std::string, std::string> GetLabelAndNameForType(
           {ADDRESS_HOME_DEPENDENT_LOCALITY, {"Neighborhood:", "neighborhood"}},
           {ADDRESS_HOME_COUNTRY, {"Country:", "country"}},
           {PHONE_HOME_WHOLE_NUMBER, {"Phone:", "phone"}},
+          {CREDIT_CARD_NAME_FULL, {"Name on card:", "name_on_card"}},
           {CREDIT_CARD_NUMBER, {"Credit Card Number:", "card_number"}},
+          {CREDIT_CARD_EXP_MONTH, {"Exp Month:", "exp_month"}},
+          {CREDIT_CARD_EXP_4_DIGIT_YEAR, {"Exp Year:", "exp_year"}},
       };
   auto it = name_type_map.find(type);
   if (it == name_type_map.end()) {
@@ -281,6 +287,17 @@ GetThirdProfileTypeValuePairs() {
   };
 }
 
+// Same as `GetDefaultProfileTypeValuePairs()`, but for credit cards.
+std::vector<std::pair<ServerFieldType, std::string>>
+GetDefaultCreditCardTypeValuePairs() {
+  return {
+      {CREDIT_CARD_NAME_FULL, kDefaultCreditCardName},
+      {CREDIT_CARD_NUMBER, kDefaultCreditCardNumber},
+      {CREDIT_CARD_EXP_MONTH, kDefaultCreditCardExpMonth},
+      {CREDIT_CARD_EXP_4_DIGIT_YEAR, kDefaultCreditCardExpYear},
+  };
+}
+
 // Returns the default AutofillProfile used in this test file.
 AutofillProfile ConstructDefaultProfile() {
   return ConstructProfileFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
@@ -335,6 +352,12 @@ std::unique_ptr<FormStructure> ConstructSecondProfileFormStructure() {
 std::unique_ptr<FormStructure> ConstructThirdProfileFormStructure() {
   return ConstructFormStructureFromTypeValuePairs(
       GetThirdProfileTypeValuePairs());
+}
+
+// Same as `ConstructDefaultFormStructure()` but for credit cards.
+std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure() {
+  return ConstructFormStructureFromTypeValuePairs(
+      GetDefaultCreditCardTypeValuePairs());
 }
 
 // Constructs a |FormData| instance that carries the information of the default
@@ -2082,18 +2105,11 @@ TEST_P(FormDataImporterTest,
 
 // Tests that a valid credit card is extracted.
 TEST_P(FormDataImporterTest, ImportCreditCard_Valid) {
-  // Add a single valid credit card form.
-  FormData form;
-  form.url = GURL("https://wwww.foo.com");
-
-  AddFullCreditCardForm(&form, "Biggie Smalls", "4111-1111-1111-1111", "01",
-                        "2999");
-
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
   std::unique_ptr<CreditCard> imported_credit_card;
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(ImportCreditCard(form_structure, false, &imported_credit_card));
+  EXPECT_TRUE(ImportCreditCard(*form_structure, false, &imported_credit_card));
   ASSERT_TRUE(imported_credit_card);
   histogram_tester.ExpectUniqueSample(
       "Autofill.SubmittedCardState",
@@ -2213,16 +2229,10 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MonthSelectInvalidText) {
 
 TEST_P(FormDataImporterTest, ImportCreditCard_TwoValidCards) {
   // Start with a single valid credit card form.
-  FormData form1;
-  form1.url = GURL("https://wwww.foo.com");
-
-  AddFullCreditCardForm(&form1, "Biggie Smalls", "4111-1111-1111-1111", "01",
-                        "2999");
-
-  FormStructure form_structure1(form1);
-  form_structure1.DetermineHeuristicTypes(nullptr, nullptr);
+  std::unique_ptr<FormStructure> form_structure1 =
+      ConstructDefaultCreditCardFormStructure();
   std::unique_ptr<CreditCard> imported_credit_card;
-  EXPECT_TRUE(ImportCreditCard(form_structure1, false, &imported_credit_card));
+  EXPECT_TRUE(ImportCreditCard(*form_structure1, false, &imported_credit_card));
   ASSERT_TRUE(imported_credit_card);
   personal_data_manager_->OnAcceptedLocalCreditCardSave(*imported_credit_card);
 
@@ -3618,19 +3628,12 @@ TEST_P(FormDataImporterTest, ImportFormData_HiddenCreditCardFormAfterEntered) {
 // UPI ID.
 TEST_P(FormDataImporterTest,
        ImportFormData_DontSetUpiIdWhenOnlyCreditCardExists) {
-  // Simulate a form submission with a new credit card.
-  FormData form;
-  form.url = GURL("https://wwww.foo.com");
-
-  AddFullCreditCardForm(&form, "Biggie Smalls", "4111 1111 1111 1111", "01",
-                        "2999");
-
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
   std::unique_ptr<CreditCard> imported_credit_card;
   absl::optional<std::string> imported_upi_id;
   EXPECT_TRUE(ImportFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/true,
+      *form_structure, /*profile_autofill_enabled=*/true,
       /*credit_card_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
@@ -4453,8 +4456,8 @@ class FormDataImporterNonParameterizedTest : public FormDataImporterTestBase,
 TEST_F(FormDataImporterNonParameterizedTest,
        ProcessCreditCardImportCandidate_EmptyCreditCard) {
   std::unique_ptr<CreditCard> imported_credit_card;
-  FormData form;
-  AddFullCreditCardForm(&form, "Clyde Barrow", "378282246310005", "04", "2999");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
 
   // |form_data_importer_|'s |imported_credit_card_record_type_| is set to
   // LOCAL_CARD because we need to make sure we do not return early in the
@@ -4469,7 +4472,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
   personal_data_manager_->OnSyncServiceInitialized(&sync_service);
 
   EXPECT_FALSE(form_data_importer_->ProcessCreditCardImportCandidate(
-      FormStructure(form), std::move(imported_credit_card),
+      *form_structure, std::move(imported_credit_card),
       /*detected_upi_id=*/"",
       /*credit_card_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
