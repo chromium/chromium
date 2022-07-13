@@ -445,6 +445,46 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_CorpBlocked) {
                                        cross_origin_embedder_policy));
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_VaryHeaderAcceptEncoding) {
+  // The `/echoheadercache` handler sends `Vary: foo` header.
+  ResourceRequest request = CreateRequest("/echoheadercache?Accept-Encoding");
+  request.headers.SetHeader("accept-encoding", "gzip");
+
+  StoreResponseToMemoryCache(request);
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+
+  // Stored response should not be served when the header that is specified in
+  // `Vary` has different value.
+  request.headers.SetHeader("accept-encoding", "br");
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+
+  // Specifying the net::LOAD_SKIP_VARY_CHECK flag skips Vary header checks.
+  request.load_flags |= net::LOAD_SKIP_VARY_CHECK;
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+}
+
+// TODO(https://crbug.com/1339708): Change the test name and the expectation
+// once we implement appropriate Vary checks.
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedVaryHeaderCookie) {
+  ResourceRequest request = CreateRequest("/echoheadercache?Cookie");
+  request.headers.SetHeader("cookie", "foo");
+
+  StoreResponseToMemoryCache(request);
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
+// TODO(https://crbug.com/1339708): Change the test name and the expectation
+// once we implement appropriate Vary checks.
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedMultipleVaryHeader) {
+  ResourceRequest request =
+      CreateRequest("/echoheadercache?Accept-Encoding,Origin");
+  request.headers.SetHeader("accept-encoding", "gzip");
+  request.headers.SetHeader("origin", "https://a.test");
+
+  StoreResponseToMemoryCache(request);
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
 TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
   ResourceRequest request = CreateRequest("/cacheable");
 

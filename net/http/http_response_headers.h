@@ -64,6 +64,7 @@ class NET_EXPORT HttpResponseHeaders
 
   static const char kContentRange[];
   static const char kLastModified[];
+  static const char kVary[];
 
   HttpResponseHeaders() = delete;
 

@@ -536,7 +536,7 @@ NetworkContext::NetworkContext(
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
 
   if (base::FeatureList::IsEnabled(features::kNetworkServiceMemoryCache))
-    memory_cache_ = std::make_unique<NetworkServiceMemoryCache>();
+    memory_cache_ = std::make_unique<NetworkServiceMemoryCache>(this);
 
   if (params_->http_auth_static_network_context_params) {
     http_auth_merged_preferences_.SetAllowDefaultCredentials(

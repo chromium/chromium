@@ -69517,6 +69517,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="NotInCache"/>
   <int value="1" label="Stale"/>
   <int value="2" label="Used"/>
+  <int value="3" label="VaryMismatch"/>
 </enum>
 
 <enum name="NetworkServiceSandboxGrantResult">

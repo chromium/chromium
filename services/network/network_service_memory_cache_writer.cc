@@ -7,6 +7,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "net/url_request/url_request.h"
 #include "services/network/network_service_memory_cache.h"
 
 namespace network {
@@ -54,6 +55,7 @@ void NetworkServiceMemoryCacheWriter::OnCompleted(
 
   if (cache_) {
     cache_->StoreResponse(cache_key_, status, request_destination_,
+                          url_request_->response_info().vary_data,
                           std::move(response_head_), std::move(received_data_));
   }
   // `this` will be deleted by the owner.

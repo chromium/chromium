@@ -252,7 +252,8 @@ class NET_EXPORT HttpResponseInfo {
   scoped_refptr<HttpResponseHeaders> headers;
 
   // The "Vary" header data for this response.
-  // Initialized and used only by HttpCache::Transaction.
+  // Initialized and used by HttpCache::Transaction. May also be passed to an
+  // auxiliary in-memory cache in the network service.
   HttpVaryData vary_data;
 
   // Any DNS aliases for the remote endpoint. Includes all known aliases, e.g.

@@ -24,6 +24,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+class HttpVaryData;
 class NetLogWithSource;
 class NetworkIsolationKey;
 class URLRequest;
@@ -31,6 +32,7 @@ class URLRequest;
 
 namespace network {
 
+class NetworkContext;
 class NetworkServiceMemoryCacheURLLoader;
 class NetworkServiceMemoryCacheWriter;
 struct CrossOriginEmbedderPolicy;
@@ -41,7 +43,7 @@ struct ResourceRequest;
 // service starts serving response from the in-memory cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
  public:
-  NetworkServiceMemoryCache();
+  explicit NetworkServiceMemoryCache(NetworkContext* network_context);
   ~NetworkServiceMemoryCache();
 
   NetworkServiceMemoryCache(const NetworkServiceMemoryCache&) = delete;
@@ -65,6 +67,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   void StoreResponse(const std::string& cache_key,
                      const URLLoaderCompletionStatus& status,
                      mojom::RequestDestination request_destination,
+                     const net::HttpVaryData& vary_data,
                      mojom::URLResponseHeadPtr response_head,
                      std::vector<unsigned char> data);
 
@@ -117,6 +120,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
+
+  // `network_context_` onws `this`.
+  const raw_ptr<NetworkContext> network_context_;
 
   uint32_t next_trace_id_ = 0;
 

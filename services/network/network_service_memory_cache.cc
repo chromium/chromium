@@ -13,10 +13,13 @@
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_cache.h"
+#include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "net/http/http_vary_data.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service_memory_cache_url_loader.h"
 #include "services/network/network_service_memory_cache_writer.h"
@@ -45,7 +48,8 @@ enum class EntryStatus {
   kNotInCache = 0,
   kStale = 1,
   kUsed = 2,
-  kMaxValue = kUsed,
+  kVaryMismatch = 3,
+  kMaxValue = kVaryMismatch,
 };
 
 void RecordEntryStatus(EntryStatus result) {
@@ -64,12 +68,43 @@ std::string GenerateCacheKeyForResourceRequest(
       /*use_single_keyed_cache=*/false, /*single_key_checksum=*/"");
 }
 
+bool MatchVaryHeader(const ResourceRequest& resource_request,
+                     const net::HttpVaryData& vary_data,
+                     const net::HttpResponseHeaders& cached_response_headers,
+                     bool enable_brotli) {
+  if ((resource_request.load_flags & net::LOAD_SKIP_VARY_CHECK) ||
+      !vary_data.is_valid()) {
+    return true;
+  }
+
+  std::string vary_value;
+  // There should be Vary header when `vary_data` is valid.
+  CHECK(cached_response_headers.GetNormalizedHeader(
+      net::HttpResponseHeaders::kVary, &vary_value));
+
+  // Currently the in-memory cache can only handle Accept-Encoding header.
+  // TODO(https://crbug.com/1339708): Support more headers. We need to extract
+  // some header calculations from net::URLRequestHttpJob.
+  if (vary_value != net::HttpRequestHeaders::kAcceptEncoding)
+    return false;
+
+  net::HttpRequestInfo request_info;
+  request_info.extra_headers = resource_request.headers;
+  request_info.extra_headers.SetAcceptEncodingIfMissing(
+      resource_request.url, resource_request.devtools_accepted_stream_types,
+      enable_brotli);
+  return vary_data.MatchesRequest(request_info, cached_response_headers);
+}
+
 }  // namespace
 
 struct NetworkServiceMemoryCache::Entry {
-  Entry(mojom::URLResponseHeadPtr response_head,
+  Entry(const net::HttpVaryData& vary_data,
+        mojom::URLResponseHeadPtr response_head,
         scoped_refptr<base::RefCountedBytes> content)
-      : response_head(std::move(response_head)), content(std::move(content)) {}
+      : vary_data(vary_data),
+        response_head(std::move(response_head)),
+        content(std::move(content)) {}
   ~Entry() = default;
 
   // Movable.
@@ -78,14 +113,18 @@ struct NetworkServiceMemoryCache::Entry {
   Entry(const Entry&) = delete;
   Entry& operator=(const Entry&) = delete;
 
+  net::HttpVaryData vary_data;
   mojom::URLResponseHeadPtr response_head;
   scoped_refptr<base::RefCountedBytes> content;
 };
 
-NetworkServiceMemoryCache::NetworkServiceMemoryCache()
-    : entries_(CacheMap::NO_AUTO_EVICT),
+NetworkServiceMemoryCache::NetworkServiceMemoryCache(
+    NetworkContext* network_context)
+    : network_context_(network_context),
+      entries_(CacheMap::NO_AUTO_EVICT),
       max_total_bytes_(kNetworkServiceMemoryCacheMaxTotalSize.Get()),
       max_per_entry_bytes_(kNetworkServiceMemoryCacheMaxPerEntrySize.Get()) {
+  DCHECK(network_context_);
   DCHECK_GE(max_total_bytes_, max_per_entry_bytes_);
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE,
@@ -169,6 +208,7 @@ void NetworkServiceMemoryCache::StoreResponse(
     const std::string& cache_key,
     const URLLoaderCompletionStatus& status,
     mojom::RequestDestination request_destination,
+    const net::HttpVaryData& vary_data,
     mojom::URLResponseHeadPtr response_head,
     std::vector<unsigned char> data) {
   // TODO(https://crbug.com/1339708): Consider caching a response that doesn't
@@ -199,8 +239,8 @@ void NetworkServiceMemoryCache::StoreResponse(
 
   scoped_refptr<base::RefCountedBytes> content =
       base::RefCountedBytes::TakeVector(&data);
-  auto entry =
-      std::make_unique<Entry>(std::move(response_head), std::move(content));
+  auto entry = std::make_unique<Entry>(vary_data, std::move(response_head),
+                                       std::move(content));
   entries_.Put(cache_key, std::move(entry));
 
   ShrinkToTotalBytes();
@@ -248,6 +288,13 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
           /*reporter=*/nullptr);
   if (blocked_reason.has_value())
     return absl::nullopt;
+
+  if (!MatchVaryHeader(
+          resource_request, it->second->vary_data, *response->headers,
+          network_context_->url_request_context()->enable_brotli())) {
+    RecordEntryStatus(EntryStatus::kVaryMismatch);
+    return absl::nullopt;
+  }
 
   net::ValidationType validation_type = response->headers->RequiresValidation(
       response->request_time, response->response_time, GetCurrentTime());

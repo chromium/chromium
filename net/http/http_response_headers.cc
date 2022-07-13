@@ -140,6 +140,7 @@ void CheckDoesNotHaveEmbeddedNulls(base::StringPiece str) {
 
 const char HttpResponseHeaders::kContentRange[] = "Content-Range";
 const char HttpResponseHeaders::kLastModified[] = "Last-Modified";
+const char HttpResponseHeaders::kVary[] = "Vary";
 
 struct HttpResponseHeaders::ParsedHeader {
   // A header "continuation" contains only a subsequent value for the
