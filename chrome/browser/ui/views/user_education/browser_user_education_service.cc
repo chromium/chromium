@@ -215,7 +215,11 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHIntentChipFeature
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
       feature_engagement::kIPHIntentChipFeature, kIntentChipElementId,
-      IDS_INTENT_CHIP_IPH, IDS_INTENT_CHIP_IPH,
+#if BUILDFLAG(IS_CHROMEOS)
+      IDS_INTENT_CHIP_IPH_CHROME_OS, IDS_INTENT_CHIP_IPH_CHROME_OS,
+#else
+      IDS_INTENT_CHIP_IPH_GENERIC, IDS_INTENT_CHIP_IPH_GENERIC,
+#endif
       FeaturePromoSpecification::AcceleratorInfo()));
 
   // kIPHReadingListInSidePanelFeature:
