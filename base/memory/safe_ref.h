@@ -47,30 +47,56 @@ template <typename T>
 class SafeRef {
  public:
   // No default constructor, since there's no null state. Use an optional
-  // SafeRef if the pointer can not always be present.
+  // SafeRef if the pointer may not be present.
 
   // Copy construction and assignment.
-  //
-  // Note there is no move-construction since this type can not be null, and we
-  // have decided that it should support moved-from as a valid state that does
-  // not crash on use, since it is a non-owning smart pointer.
-  SafeRef(const SafeRef& p) : w_(p.w_) {}
+  SafeRef(const SafeRef& p) : w_(p.w_) {
+    // Avoid use-after-move.
+    CHECK(w_);
+  }
   SafeRef& operator=(const SafeRef& p) {
     w_ = p.w_;
+    // Avoid use-after-move.
+    CHECK(w_);
     return *this;
   }
 
-  // Conversion copy from SafeRef<U>.
-  //
-  // Note there is no move-construction since this type can not be null, and we
-  // have decided that it should support moved-from as a valid state that does
-  // not crash on use, since it is a non-owning smart pointer.
+  // Move construction and assignment.
+  SafeRef(SafeRef&& p) : w_(std::move(p.w_)) { CHECK(w_); }
+  SafeRef& operator=(SafeRef&& p) {
+    w_ = std::move(p.w_);
+    // Avoid use-after-move.
+    CHECK(w_);
+    return *this;
+  }
+
+  // Copy conversion from SafeRef<U>.
   template <typename U>
-  SafeRef(const SafeRef<U>& p)  // NOLINTNEXTLINE(google-explicit-constructor)
-      : w_(p.w_) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  SafeRef(const SafeRef<U>& p) : w_(p.w_) {
+    // Avoid use-after-move.
+    CHECK(w_);
+  }
   template <typename U>
   SafeRef& operator=(const SafeRef<U>& p) {
     w_ = p.w_;
+    // Avoid use-after-move.
+    CHECK(w_);
+    return *this;
+  }
+
+  // Move conversion from SafeRef<U>.
+  template <typename U>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  SafeRef(SafeRef<U>&& p) : w_(std::move(p.w_)) {
+    // Avoid use-after-move.
+    CHECK(w_);
+  }
+  template <typename U>
+  SafeRef& operator=(SafeRef<U>&& p) {
+    w_ = std::move(p.w_);
+    // Avoid use-after-move.
+    CHECK(w_);
     return *this;
   }
 

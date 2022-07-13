@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,10 +16,13 @@
 namespace base {
 namespace {
 
-struct BaseClass {};
+struct ReallyBaseClass {};
+struct BaseClass : ReallyBaseClass {};
 
 struct WithWeak : BaseClass {
   ~WithWeak() { self = nullptr; }
+
+  void Method() {}
 
   int i = 1;
   WithWeak* self{this};
@@ -47,14 +52,6 @@ TEST(SafeRefTest, CanCopyAndMove) {
   EXPECT_EQ(safe->self->i, 1);                // Will crash if not live.
   SafeRef<WithWeak> safe3 = std::move(safe);  // Move.
   EXPECT_EQ(safe3->self->i, 1);               // Will crash if not live.
-}
-
-TEST(SafeRefTest, StillValidAfterMove) {
-  WithWeak with;
-  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<WithWeak> safe2 = std::move(safe);  // Move.
-  EXPECT_EQ(safe->self->i, 1);                // Will crash if not live.
-  EXPECT_EQ(safe2->self->i, 1);               // Will crash if not live.
 }
 
 TEST(SafeRefTest, AssignCopyAndMove) {
@@ -137,6 +134,133 @@ TEST(SafeRefTest, CanDerefConst) {
   const SafeRef<WithWeak> safe(with.factory.GetSafeRef());
   EXPECT_EQ(safe->self->i, 1);
   EXPECT_EQ((*safe).self->i, 1);
+}
+
+TEST(SafeRefTest, InvalidAfterMoveConstruction) {
+  WithWeak with;
+  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
+  SafeRef<WithWeak> safe2 = std::move(safe);
+  // Will crash if not live.
+  EXPECT_EQ(safe2->self->i, 1);
+  // `safe` was previously moved-from, so using it in any way should crash now.
+  { EXPECT_CHECK_DEATH(SafeRef<WithWeak> safe3(safe)); }
+  {
+    SafeRef<WithWeak> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = safe);
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<WithWeak> safe3(std::move(safe))); }
+  {
+    SafeRef<WithWeak> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = std::move(safe));
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<BaseClass> safe3(safe)); }
+  {
+    SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = safe);
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<BaseClass> safe3(std::move(safe))); }
+  {
+    SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = std::move(safe));
+  }
+  EXPECT_CHECK_DEATH((void)safe->self->i);
+}
+
+TEST(SafeRefTest, InvalidAfterMoveAssignment) {
+  WithWeak with;
+  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
+  SafeRef<WithWeak> safe2(with.factory.GetSafeRef());
+  safe2 = std::move(safe);
+  // Will crash if not live.
+  EXPECT_EQ(safe2->self->i, 1);
+  // `safe` was previously moved-from, so using it in any way should crash now.
+  { EXPECT_CHECK_DEATH(SafeRef<WithWeak> safe3(safe)); }
+  {
+    SafeRef<WithWeak> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = safe);
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<WithWeak> safe3(std::move(safe))); }
+  {
+    SafeRef<WithWeak> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = std::move(safe));
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<BaseClass> safe3(safe)); }
+  {
+    SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = safe);
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<BaseClass> safe3(std::move(safe))); }
+  {
+    SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = std::move(safe));
+  }
+  EXPECT_CHECK_DEATH((void)safe->self->i);
+}
+
+TEST(SafeRefTest, InvalidAfterMoveConversionConstruction) {
+  WithWeak with;
+  SafeRef<BaseClass> safe(with.factory.GetSafeRef());
+  SafeRef<BaseClass> safe2 = std::move(safe);
+  // Will crash if not live.
+  EXPECT_EQ(static_cast<WithWeak*>(&*safe2)->self->i, 1);
+  // `safe` was previously moved-from, so using it in any way should crash now.
+  { EXPECT_CHECK_DEATH(SafeRef<BaseClass> safe3(safe)); }
+  {
+    SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = safe);
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<BaseClass> safe3(std::move(safe))); }
+  {
+    SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = std::move(safe));
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<ReallyBaseClass> safe3(safe)); }
+  {
+    SafeRef<ReallyBaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = safe);
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<ReallyBaseClass> safe3(std::move(safe))); }
+  {
+    SafeRef<ReallyBaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = std::move(safe));
+  }
+  EXPECT_CHECK_DEATH((void)static_cast<WithWeak*>(&*safe)->self->i);
+}
+
+TEST(SafeRefTest, InvalidAfterMoveConversionAssignment) {
+  WithWeak with;
+  SafeRef<BaseClass> safe(with.factory.GetSafeRef());
+  SafeRef<BaseClass> safe2(with.factory.GetSafeRef());
+  safe2 = std::move(safe);
+  //  // Will crash if not live.
+  EXPECT_EQ(static_cast<WithWeak*>(&*safe2)->self->i, 1);
+  // `safe` was previously moved-from, so using it in any way should crash now.
+  { EXPECT_CHECK_DEATH(SafeRef<BaseClass> safe3(safe)); }
+  {
+    SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = safe);
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<BaseClass> safe3(std::move(safe))); }
+  {
+    SafeRef<BaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = std::move(safe));
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<ReallyBaseClass> safe3(safe)); }
+  {
+    SafeRef<ReallyBaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = safe);
+  }
+  { EXPECT_CHECK_DEATH(SafeRef<ReallyBaseClass> safe3(std::move(safe))); }
+  {
+    SafeRef<ReallyBaseClass> safe3(with.factory.GetSafeRef());
+    EXPECT_CHECK_DEATH(safe3 = std::move(safe));
+  }
+  EXPECT_CHECK_DEATH((void)static_cast<WithWeak*>(&*safe)->self->i);
+}
+
+TEST(SafeRefTest, Bind) {
+  WithWeak with;
+  BindOnce(&WithWeak::Method, with.factory.GetSafeRef()).Run();
 }
 
 }  // namespace
