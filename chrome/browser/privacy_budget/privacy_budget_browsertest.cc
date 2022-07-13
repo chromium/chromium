@@ -131,6 +131,7 @@ class PrivacyBudgetBrowserTestBase : public SyncTest {
     std::unique_ptr<ukm::Report> report_to_discard =
         ukm_test_helper.GetUkmReport();
 
+    ukm_service()->SetSamplingForTesting(1);
     return ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled();
   }
 
@@ -503,14 +504,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
   }
 }
 
-// Fails on Window, see https://crbug.com/1268787
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_IncludesMetadata DISABLED_IncludesMetadata
-#else
-#define MAYBE_IncludesMetadata IncludesMetadata
-#endif
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithScopedConfig,
-                       MAYBE_IncludesMetadata) {
+                       IncludesMetadata) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
   ASSERT_TRUE(EnableUkmRecording());
 
