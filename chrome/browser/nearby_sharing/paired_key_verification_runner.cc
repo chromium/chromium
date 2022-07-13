@@ -298,6 +298,9 @@ PairedKeyVerificationRunner::VerifyPairedKeyEncryptionFrame(
   if (!certificate_->VerifySignature(
           PadPrefix(remote_prefix_, raw_token_),
           frame->get_paired_key_encryption()->signed_data)) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Unable to verify remote paired key encryption frame. "
+                       "Signature verification failed.";
     return PairedKeyVerificationResult::kFail;
   }
 
