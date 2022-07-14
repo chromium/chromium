@@ -57,8 +57,9 @@ AutocompleteMatch::Type GetTypeForShortcut(AutocompleteMatch::Type type) {
       return type;
 
     default:
-      return AutocompleteMatch::IsSearchType(type) ?
-          AutocompleteMatchType::SEARCH_HISTORY : type;
+      return AutocompleteMatch::IsSearchType(type)
+                 ? AutocompleteMatchType::SEARCH_HISTORY
+                 : type;
   }
 }
 
@@ -206,6 +207,15 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
 #if DCHECK_IS_ON()
   match.Validate();
 #endif  // DCHECK_IS_ON()
+
+  // TODO(manukh): If we decide to launch history cluster suggestions, adding
+  //  them to the shortcuts provider would be useful to help users get to
+  //  repeat journeys but would require some logic to limit the joint history
+  //  cluster provider and shortcuts provider history cluster suggestions to
+  //  just 1. Until then, don't add history cluster suggestions to the shortcuts
+  //  DB to avoid showing more than 1 history cluster suggestion.
+  if (match.type == AutocompleteMatchType::HISTORY_CLUSTER)
+    return;
 
   // Trim `text` since `ExpandToFullWord()` trims the shortcut text; otherwise,
   // inputs with trailing whitespace wouldn't match a shortcut even if the user
