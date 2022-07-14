@@ -221,8 +221,10 @@ export class EmojiSearch extends PolymerElement {
           // search will be " fa" and will match " smile face", but not "
           // infant".
           emoji.base.name = ' ' + emoji.base.name;
-          emoji.base.keywords =
-              emoji.base.keywords.map(keyword => ' ' + keyword);
+          if (emoji.base.keywords && emoji.base.keywords.length > 0) {
+            emoji.base.keywords = emoji.base.keywords.map(
+              keyword => ' ' + keyword);
+          }
           return [emoji.base.string, emoji];
         })).values());
   }
