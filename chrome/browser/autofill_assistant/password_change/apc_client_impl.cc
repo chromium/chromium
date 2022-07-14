@@ -15,6 +15,7 @@
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/apc_scrim_manager.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/channel_info.h"
@@ -73,6 +74,7 @@ void ApcClientImpl::Stop(bool success) {
   GetRuntimeManager()->SetUIState(autofill_assistant::UIState::kNotShown);
   onboarding_coordinator_.reset();
   external_script_controller_.reset();
+  scrim_manager_.reset();
   is_running_ = false;
   std::exchange(result_callback_, base::DoNothing()).Run(success);
 }
@@ -116,6 +118,8 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
                    : base::NumberToString(kSourcePasswordChangeSettings)}};
 
   external_script_controller_ = CreateHeadlessScriptController();
+  scrim_manager_ = CreateApcScrimManager();
+  scrim_manager_->Show();
   external_script_controller_->StartScript(
       params_map,
       base::BindOnce(&ApcClientImpl::OnRunComplete, base::Unretained(this)));
@@ -164,6 +168,10 @@ ApcClientImpl::CreateHeadlessScriptController() {
 autofill_assistant::RuntimeManager* ApcClientImpl::GetRuntimeManager() {
   return autofill_assistant::RuntimeManager::GetOrCreateForWebContents(
       &GetWebContents());
+}
+
+std::unique_ptr<ApcScrimManager> ApcClientImpl::CreateApcScrimManager() {
+  return ApcScrimManager::Create(&GetWebContents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ApcClientImpl);

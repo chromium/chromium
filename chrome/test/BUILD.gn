@@ -6670,6 +6670,7 @@ test("unit_tests") {
       "../browser/ui/views/autofill/edit_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
+      "../browser/ui/views/autofill_assistant/password_change/apc_scrim_manager_impl_unittest.cc",
       "../browser/ui/views/autofill_assistant/password_change/assistant_side_panel_coordinator_impl_unittest.cc",
       "../browser/ui/views/autofill_assistant/password_change/password_change_run_progress_unittest.cc",
       "../browser/ui/views/autofill_assistant/password_change/password_change_run_view_unittest.cc",

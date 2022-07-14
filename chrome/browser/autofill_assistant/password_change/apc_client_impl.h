@@ -20,6 +20,7 @@
 #include "url/gurl.h"
 
 class ApcExternalActionDelegate;
+class ApcScrimManager;
 
 // TODO(crbug.com/1322419): Observe the SidePanel so that we can destruct
 // Onboarding, ScriptExecution, etc. on close.
@@ -62,6 +63,10 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // password manager, translation dialogs and permissions. Protected to allow
   // for overrides by test classes.
   virtual autofill_assistant::RuntimeManager* GetRuntimeManager();
+
+  // Creates the ApcScrimManager used to apply a scrim over the webcontent
+  // during script runs.
+  virtual std::unique_ptr<ApcScrimManager> CreateApcScrimManager();
 
   explicit ApcClientImpl(content::WebContents* web_contents);
 
@@ -112,6 +117,9 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
 
   // The coordinator for the side panel.
   std::unique_ptr<AssistantSidePanelCoordinator> side_panel_coordinator_;
+
+  // Manages the scrim shown during a password change run.
+  std::unique_ptr<ApcScrimManager> scrim_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

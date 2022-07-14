@@ -12,6 +12,7 @@
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator_impl.h"
 #include "chrome/browser/autofill_assistant/password_change/mock_apc_onboarding_coordinator.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_side_panel_coordinator.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/mock_scrim_manager.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
@@ -63,6 +64,10 @@ class TestApcClientImpl : public ApcClientImpl {
     return runtime_manager_;
   }
 
+  std::unique_ptr<ApcScrimManager> CreateApcScrimManager() override {
+    return std::move(scrim_manager_);
+  }
+
   // Allows setting an onboarding coordinator that is returned by the factory
   // function. Must be called at least once before every expected call to
   // `CreateOnboardingCoordinator()`.
@@ -90,12 +95,19 @@ class TestApcClientImpl : public ApcClientImpl {
     runtime_manager_ = runtime_manager;
   }
 
+  // Allows setting an ApcScrimManager.
+  void InjectApcScrimManagerForTesting(
+      std::unique_ptr<ApcScrimManager> scrim_manager) {
+    scrim_manager_ = std::move(scrim_manager);
+  }
+
  private:
   std::unique_ptr<ApcOnboardingCoordinator> coordinator_;
   std::unique_ptr<AssistantSidePanelCoordinator> side_panel_;
   std::unique_ptr<autofill_assistant::HeadlessScriptController>
       external_script_controller_;
   raw_ptr<autofill_assistant::RuntimeManager> runtime_manager_;
+  std::unique_ptr<ApcScrimManager> scrim_manager_;
 };
 
 // static
@@ -144,11 +156,17 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
     // Prepare the RunTimeManager.
     test_apc_client_->InjectRunTimeManagerForTesting(
         mock_runtime_manager_.get());
+
+    // Prepare the ApcScrimManager.
+    auto scrim_manager = std::make_unique<MockApcScrimManager>();
+    scrim_manager_ref_ = scrim_manager.get();
+    test_apc_client_->InjectApcScrimManagerForTesting(std::move(scrim_manager));
   }
 
   TestApcClientImpl* apc_client() { return test_apc_client_; }
   MockApcOnboardingCoordinator* coordinator() { return coordinator_ref_; }
   MockAssistantSidePanelCoordinator* side_panel() { return side_panel_ref_; }
+  MockApcScrimManager* scrim_manager() { return scrim_manager_ref_; }
   AssistantSidePanelCoordinator::Observer* side_panel_observer() {
     return side_panel_observer_;
   }
@@ -169,6 +187,7 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<MockAssistantSidePanelCoordinator> side_panel_ref_ = nullptr;
   raw_ptr<autofill_assistant::MockHeadlessScriptController>
       external_script_controller_ref_ = nullptr;
+  raw_ptr<MockApcScrimManager> scrim_manager_ref_ = nullptr;
 
   // The last registered side panel observer - may be null or dangling.
   raw_ptr<AssistantSidePanelCoordinator::Observer> side_panel_observer_ =
@@ -199,8 +218,11 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
       .WillOnce(MoveArg<0>(&coordinator_callback));
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kShown));
+  EXPECT_CALL(*scrim_manager(), Show());
+
   client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
                 result_callback1.Get());
+
   EXPECT_TRUE(client->IsRunning());
 
   // We cannot start a second flow.
