@@ -4797,6 +4797,7 @@ class ColorTransformPixelTest
     }
 
     gfx::ColorTransform::Options options;
+    options.tone_map_pq_and_hlg_to_dst = true;
     options.sdr_max_luminance_nits = gfx::ColorSpace::kDefaultSDRWhiteLevel;
     std::unique_ptr<gfx::ColorTransform> transform =
         gfx::ColorTransform::NewColorTransform(this->src_color_space_,

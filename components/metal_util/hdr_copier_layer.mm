@@ -146,6 +146,10 @@ MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer) {
       return MTLPixelFormatRGBA16Float;
     case kCVPixelFormatType_ARGB2101010LEPacked:
       return MTLPixelFormatBGR10A2Unorm;
+    case kCVPixelFormatType_32BGRA:
+      return MTLPixelFormatBGRA8Unorm;
+    case kCVPixelFormatType_32RGBA:
+      return MTLPixelFormatRGBA8Unorm;
     default:
       break;
   }
@@ -207,6 +211,7 @@ API_AVAILABLE(macos(10.15))
 API_AVAILABLE(macos(10.15))
 @interface HDRCopierLayer : CAMetalLayer {
   base::scoped_nsprotocol<id<MTLRenderPipelineState>> _render_pipeline_state;
+  gfx::ColorSpace _color_space;
 }
 - (id)init;
 - (void)setHDRContents:(IOSurfaceRef)buffer
@@ -239,10 +244,30 @@ API_AVAILABLE(macos(10.15))
     return;
   }
 
+  // Set metadata for tone mapping.
+  if (_color_space != color_space) {
+    CAEDRMetadata* edr_metadata = nil;
+    switch (color_space.GetTransferID()) {
+      case gfx::ColorSpace::TransferID::PQ:
+        edr_metadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0
+                                                       maxLuminance:10000
+                                                 opticalOutputScale:100];
+        break;
+      case gfx::ColorSpace::TransferID::HLG:
+        edr_metadata = [CAEDRMetadata HLGMetadata];
+        break;
+      default:
+        [self setEDRMetadata:nil];
+        break;
+    }
+    [self setEDRMetadata:edr_metadata];
+    _color_space = color_space;
+  }
+
   // Migrate to the MTLDevice on which the CAMetalLayer is being composited, if
   // known.
   if ([self respondsToSelector:@selector(preferredDevice)]) {
-    id<MTLDevice> preferred_device = nil;
+    id<MTLDevice> preferred_device = [self preferredDevice];
     if (preferred_device)
       [self setDevice:preferred_device];
   }

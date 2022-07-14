@@ -2160,7 +2160,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   const gfx::ColorSpace& src_color_space =
       resource_provider()->GetColorSpace(quad->resource_id());
   const bool needs_color_conversion_filter =
-      quad->is_video_frame && src_color_space.IsHDR();
+      (quad->is_video_frame && src_color_space.IsHDR()) ||
+      src_color_space.IsToneMappedByDefault();
 
   sk_sp<SkColorSpace> override_color_space;
   if (needs_color_conversion_filter)
@@ -2282,6 +2283,16 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     }
   }
 
+  if (needs_color_conversion_filter) {
+    // Skia won't perform color conversion.
+    const gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
+    DCHECK(SkColorSpace::Equals(image->colorSpace(),
+                                CurrentRenderPassSkColorSpace().get()));
+    sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
+        src_color_space, quad->hdr_metadata, dst_color_space);
+    paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
+  }
+
   // From gl_renderer, the final src color will be
   // vertexAlpha * (textureColor + backgroundColor * (1 - textureAlpha)), where
   // vertexAlpha is the quad's alpha * interpolated per-vertex alpha
@@ -2299,16 +2310,6 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     // |cf| could be null if alpha in |quad->background_color| is 0.
     if (cf)
       paint.setColorFilter(cf->makeComposed(paint.refColorFilter()));
-  }
-
-  if (needs_color_conversion_filter) {
-    // Skia won't perform color conversion.
-    const gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
-    DCHECK(SkColorSpace::Equals(image->colorSpace(),
-                                CurrentRenderPassSkColorSpace().get()));
-    sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
-        src_color_space, quad->hdr_metadata, dst_color_space);
-    paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
   }
 
   if (!rpdq_params) {
