@@ -33,17 +33,18 @@ source_set("updater_executable") {
   ]
 
   deps = [
-    "//build/win:default_exe_manifest",
     "//chrome/updater:base",
     "//chrome/updater/win/ui/resources",
   ]
+
+  public_configs = [ "//build/config/win:windowed" ]
+  public_deps = [ "//build/win:default_exe_manifest" ]
 
   data_deps = [ ":uninstall.cmd" ]
 }
 
 executable("updater") {
   configs -= [ "//build/config/compiler:cet_shadow_stack" ]
-  configs += [ "//build/config/win:windowed" ]
 
   deps = [
     ":updater_executable",
@@ -54,7 +55,6 @@ executable("updater") {
 
 executable("updater_test") {
   configs -= [ "//build/config/compiler:cet_shadow_stack" ]
-  configs += [ "//build/config/win:windowed" ]
 
   deps = [
     ":updater_executable",
