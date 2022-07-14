@@ -294,20 +294,6 @@ int QtUi::GetCursorThemeSize() {
   return 0;
 }
 
-std::vector<std::string> QtUi::GetAvailableSystemThemeNamesForTest() const {
-  // In QT, themes are binary plugins that are loaded on start and can't be
-  // changed at runtime.  The style may change, but there's no common interface
-  // for doing this from a client.  Return a single empty theme here to
-  // represent the current theme.
-  return {std::string()};
-}
-
-void QtUi::SetSystemThemeByNameForTest(const std::string& theme_name) {
-  // Ensure we only get passed the "current theme" name that we returned from
-  // GetAvailableSystemThemeNamesForTest() above.
-  DCHECK(theme_name.empty());
-}
-
 ui::NativeTheme* QtUi::GetNativeTheme() const {
   return native_theme_.get();
 }

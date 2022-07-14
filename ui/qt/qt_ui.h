@@ -74,8 +74,6 @@ class QtUi : public ui::LinuxUi, QtInterface::Delegate {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
-  std::vector<std::string> GetAvailableSystemThemeNamesForTest() const override;
-  void SetSystemThemeByNameForTest(const std::string& theme_name) override;
   ui::NativeTheme* GetNativeTheme() const override;
 
   // ui::TextEditKeybindingDelegate:

@@ -16,8 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/debug/leak_annotations.h"
 #include "base/environment.h"
-#include "base/files/dir_reader_linux.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/nix/mime_util_xdg.h"
 #include "base/nix/xdg_util.h"
@@ -199,23 +197,6 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
     default:
       NOTREACHED();
       return nullptr;
-  }
-}
-
-void ListGtkThemes(const base::FilePath path,
-                   std::vector<std::string>& themes) {
-  std::string gtk_version =
-      "gtk-" + base::NumberToString(GtkVersion().components()[0]) + ".0";
-  base::DirReaderLinux dir_reader(path.value().c_str());
-
-  if (!dir_reader.IsValid())
-    return;
-
-  while (dir_reader.Next()) {
-    std::string theme_name = dir_reader.name();
-    base::FilePath theme_path = path.Append(theme_name).Append(gtk_version);
-    if (base::PathExists(theme_path))
-      themes.emplace_back(theme_name);
   }
 }
 
@@ -613,23 +594,6 @@ int GtkUi::GetCursorThemeSize() {
   g_object_get(gtk_settings_get_default(), "gtk-cursor-theme-size", &size,
                nullptr);
   return size;
-}
-
-std::vector<std::string> GtkUi::GetAvailableSystemThemeNamesForTest() const {
-  std::vector<std::string> themes;
-  const gchar* const* dirs = g_get_system_data_dirs();
-  for (std::size_t i = 0; dirs[i]; i++)
-    ListGtkThemes(base::FilePath(dirs[i]).Append("themes"), themes);
-
-  return themes;
-}
-
-void GtkUi::SetSystemThemeByNameForTest(const std::string& theme_name) {
-  GValue theme = G_VALUE_INIT;
-  g_value_init(&theme, G_TYPE_STRING);
-  g_value_set_string(&theme, theme_name.c_str());
-  g_object_set_property(G_OBJECT(gtk_settings_get_default()), "gtk-theme-name",
-                        &theme);
 }
 
 ui::NativeTheme* GtkUi::GetNativeTheme() const {
