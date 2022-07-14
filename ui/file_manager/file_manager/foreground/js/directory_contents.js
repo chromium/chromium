@@ -668,6 +668,10 @@ export class FileListContext {
          i++) {
       set[constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES[i]] = true;
     }
+    for (let i = 0; i < constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES.length;
+         i++) {
+      set[constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES[i]] = true;
+    }
     return Object.keys(set);
   }
 }

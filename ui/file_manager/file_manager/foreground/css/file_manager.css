@@ -2024,6 +2024,20 @@ li[renaming=''] .badge {
   width: 24px;
 }
 
+/* The managed icon in the details list for DLP restricted files. */
+.dlp-managed-icon {
+  -webkit-mask-image: url(chrome://resources/images/business.svg);
+  -webkit-mask-position: right center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
+  background-color: currentColor;
+  color: var(--cros-icon-color-primary);
+  height: 24px;
+  margin-inline-end: 10px;
+  margin-inline-start: auto;
+  width: 24px;
+}
+
 body.files-ng #list-container list li .detail-icon {
   color: var(--cros-icon-color-primary);
   height: 40px;

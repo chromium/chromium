@@ -3206,6 +3206,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (HandleDlpCommands(name, value, output)) {
+    return;
+  }
+
   FAIL() << "Unknown test message: " << name;
 }
 
@@ -3259,6 +3263,14 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     registry->Get(id)->Unmount();
     return true;
   }
+  return false;
+}
+
+bool FileManagerBrowserTestBase::HandleDlpCommands(
+    const std::string& name,
+    const base::Value::Dict& value,
+    std::string* output) {
+  // DLP commands are only handled by the DlpFilesAppBrowserTest.
   return false;
 }
 

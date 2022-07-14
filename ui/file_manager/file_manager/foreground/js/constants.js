@@ -74,6 +74,17 @@ constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
 ];
 
 /**
+ * Metadata properties used to inform the user about DLP (Data Leak Prevention)
+ * Files restrictions. These metadata is expected to be cached.
+ *
+ * @const {!Array<string>}
+ */
+constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
+  'isDlpRestricted',
+  'sourceUrl',
+];
+
+/**
  * Path for files_quick_view.html file.  Allow override for testing.
  * @type {string}
  */

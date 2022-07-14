@@ -858,9 +858,9 @@ export class FileTable extends Table {
     const label = /** @type {!HTMLDivElement} */
         (this.ownerDocument.createElement('div'));
 
-    const mimeType =
-        this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
-            .contentMimeType;
+    const metadata = this.metadataModel_.getCache(
+        [entry], ['contentMimeType', 'isDlpRestricted'])[0];
+    const mimeType = metadata.contentMimeType;
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const icon = filelist.renderFileTypeIcon(
         this.ownerDocument, entry, locationInfo, mimeType);
@@ -878,6 +878,10 @@ export class FileTable extends Table {
         filelist.renderFileNameLabel(this.ownerDocument, entry, locationInfo));
     if (locationInfo.isDriveBased) {
       label.appendChild(filelist.renderPinned(this.ownerDocument));
+    }
+    const isDlpRestricted = !!metadata.isDlpRestricted;
+    if (isDlpRestricted) {
+      label.appendChild(this.renderDlpManagedIcon_());
     }
     return label;
   }
@@ -1215,6 +1219,18 @@ export class FileTable extends Table {
         (this.ownerDocument.createElement('div'));
     checkmark.className = 'detail-checkmark';
     return checkmark;
+  }
+
+  /**
+   * Renders the DLP managed icon in the detail table.
+   * @return {!HTMLDivElement} Created element.
+   * @private
+   */
+  renderDlpManagedIcon_() {
+    const icon = /** @type {!HTMLDivElement} */
+        (this.ownerDocument.createElement('div'));
+    icon.className = 'dlp-managed-icon';
+    return icon;
   }
 
   /**

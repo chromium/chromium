@@ -562,7 +562,8 @@ export class DirectoryItem extends FilesTreeItem {
           }
           this.parentTree_.metadataModel_.get(
               this.entries_,
-              constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES);
+              constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
+                  constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
         },
         () => {
           this.expanded = false;

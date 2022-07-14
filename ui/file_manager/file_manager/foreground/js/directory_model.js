@@ -743,7 +743,8 @@ export class DirectoryModel extends EventTarget {
       if (!util.isFakeEntry(currentEntry)) {
         this.metadataModel_.get(
             [currentEntry],
-            constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES);
+            constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
+                constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
       }
     }
 

@@ -205,6 +205,12 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
                              const base::Value::Dict& value,
                              std::string* output);
 
+  // Checks if the command is a DLP one. If so, handles it and returns true,
+  // otherwise it returns false.
+  virtual bool HandleDlpCommands(const std::string& name,
+                                 const base::Value::Dict& value,
+                                 std::string* output);
+
   // Called during setup if needed, to create a drive integration service for
   // the given |profile|. Caller owns the return result.
   drive::DriveIntegrationService* CreateDriveIntegrationService(
