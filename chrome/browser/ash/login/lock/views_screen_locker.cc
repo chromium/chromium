@@ -40,6 +40,10 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 
+// TODO(b/228873153): Remove after figuring out the root cause of the bug
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 
 ViewsScreenLocker::ViewsScreenLocker(ScreenLocker* screen_locker)
@@ -58,6 +62,7 @@ ViewsScreenLocker::~ViewsScreenLocker() {
 }
 
 void ViewsScreenLocker::Init() {
+  VLOG(1) << "b/228873153 : ViewsScreenLocker::Init()";
   lock_time_ = base::TimeTicks::Now();
   user_selection_screen_->Init(screen_locker_->GetUsersToShow());
 
