@@ -1848,15 +1848,11 @@
     "BrowsingDataLifetimeManager": [
         {
             "platforms": [
-                "linux",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "BrowsingDataLifetimeManager",
+                    "name": "Enabled",
                     "enable_features": [
                         "BrowsingDataLifetimeManager"
                     ]
