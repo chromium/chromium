@@ -42,7 +42,7 @@ class NewTabPageTest : public InProcessBrowserTest,
   NewTabPageTest() {
     features_.InitWithFeatures(
         {}, {ntp_features::kNtpOneGoogleBar, ntp_features::kNtpShortcuts,
-             ntp_features::kNtpMiddleSlotPromo, ntp_features::kModules});
+             ntp_features::kNtpMiddleSlotPromo});
   }
 
   ~NewTabPageTest() override = default;

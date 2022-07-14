@@ -4512,11 +4512,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "ntp-modules",
-    "owners": [ "mahmadi", "tiborg" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "ntp-modules-drag-and-drop",
     "owners": [ "lydialam", "mahmadi", "tiborg" ],
     "expiry_milestone": 105

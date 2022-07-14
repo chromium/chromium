@@ -60,7 +60,7 @@ class CartServiceBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeatures(
-        {ntp_features::kModules, ntp_features::kNtpChromeCartModule,
+        {ntp_features::kNtpChromeCartModule,
          optimization_guide::features::kOptimizationHints},
         {});
   }

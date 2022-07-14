@@ -18,7 +18,9 @@ TEST(NTPFeaturesTest, ModulesLoadTimeout) {
 
   // The default value can be overridden.
   scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kModules, {{kNtpModulesLoadTimeoutMillisecondsParam, "123"}}}}, {});
+      {{kNtpModulesLoadTimeoutMilliseconds,
+        {{kNtpModulesLoadTimeoutMillisecondsParam, "123"}}}},
+      {});
   base::TimeDelta timeout = GetModulesLoadTimeout();
   EXPECT_EQ(123, timeout.InMilliseconds());
 
@@ -26,7 +28,9 @@ TEST(NTPFeaturesTest, ModulesLoadTimeout) {
   // used.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kModules, {{kNtpModulesLoadTimeoutMillisecondsParam, "j"}}}}, {});
+      {{kNtpModulesLoadTimeoutMilliseconds,
+        {{kNtpModulesLoadTimeoutMillisecondsParam, "j"}}}},
+      {});
   timeout = GetModulesLoadTimeout();
   EXPECT_EQ(3, timeout.InSeconds());
 }
@@ -36,13 +40,13 @@ TEST(NTPFeaturesTest, ModulesOrder) {
 
   // Can process list.
   scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kModules, {{kNtpModulesOrderParam, "foo,bar"}}}}, {});
+      {{kNtpModulesOrder, {{kNtpModulesOrderParam, "foo,bar"}}}}, {});
   EXPECT_THAT(GetModulesOrder(), ElementsAre("foo", "bar"));
 
   // Can process empty param.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kModules, {{kNtpModulesOrderParam, ""}}}}, {});
+      {{kNtpModulesOrder, {{kNtpModulesOrderParam, ""}}}}, {});
   EXPECT_TRUE(GetModulesOrder().empty());
 }
 

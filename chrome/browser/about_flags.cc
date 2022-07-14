@@ -5517,10 +5517,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpModulesRedesignedLayoutDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesignedLayout)},
 
-    {"ntp-modules", flag_descriptions::kNtpModulesName,
-     flag_descriptions::kNtpModulesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kModules)},
-
     {"ntp-photos-module", flag_descriptions::kNtpPhotosModuleName,
      flag_descriptions::kNtpPhotosModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpPhotosModule,
