@@ -13,7 +13,7 @@
   const gotAllEvents = new Promise((resolve) => {
     let eventHandler = (event) => {
       events.push(event);
-      if (events.length == 9) {
+      if (events.length == 10) {
         resolve();
       }
     };
