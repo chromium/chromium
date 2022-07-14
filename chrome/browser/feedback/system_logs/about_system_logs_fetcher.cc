@@ -11,6 +11,11 @@
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
+#include "net/net_buildflags.h"
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "chrome/browser/feedback/system_logs/log_sources/chrome_root_store_log_source.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_logs/bluetooth_log_source.h"
@@ -36,6 +41,10 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
 
   fetcher->AddSource(std::make_unique<ChromeInternalLogSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  fetcher->AddSource(std::make_unique<ChromeRootStoreLogSource>());
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // These sources rely on scrubbing in SystemLogsFetcher.

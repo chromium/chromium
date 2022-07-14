@@ -33,8 +33,10 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "net/cert/internal/parse_name.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
+#include "net/der/input.h"
 #endif
 
 namespace cert_verifier {
@@ -444,6 +446,80 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
     // Request should be OK because root store update was ignored.
     ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
   }
+}
+
+void GetRootStoreInfo(cert_verifier::mojom::ChromeRootStoreInfoPtr* return_ptr,
+                      base::RepeatingClosure quit_closure,
+                      cert_verifier::mojom::ChromeRootStoreInfoPtr info) {
+  *return_ptr = std::move(info);
+  quit_closure.Run();
+}
+
+TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
+  // Create leaf and root certs.
+  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<net::CertBuilder> leaf, root;
+  net::CertBuilder::CreateSimpleChain(&leaf, &root);
+
+  base::Time now = base::Time::Now();
+  leaf->SetValidity(now - base::Days(1), now + base::Days(1));
+
+  // Create updated Chrome Root Store with just the root cert from above.
+  chrome_root_store::RootStore root_store_proto;
+  root_store_proto.set_version_major(net::CompiledChromeRootStoreVersion() + 1);
+  chrome_root_store::TrustAnchor* anchor = root_store_proto.add_trust_anchors();
+  anchor->set_der(root->GetDER());
+  std::string proto_serialized;
+  root_store_proto.SerializeToString(&proto_serialized);
+  cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
+      cert_verifier::mojom::ChromeRootStore::New(
+          base::as_bytes(base::make_span(proto_serialized)));
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  // Feed factory the new Chrome Root Store.
+  cv_service_factory_impl.UpdateChromeRootStore(std::move(root_store_ptr));
+
+  cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
+  base::RunLoop request_completed_run_loop;
+  cv_service_factory_remote->GetChromeRootStoreInfo(base::BindOnce(
+      &GetRootStoreInfo, &info_ptr, request_completed_run_loop.QuitClosure()));
+  request_completed_run_loop.Run();
+  ASSERT_TRUE(info_ptr);
+  EXPECT_EQ(info_ptr->version, root_store_proto.version_major());
+  ASSERT_EQ(info_ptr->root_cert_info.size(), static_cast<std::size_t>(1));
+
+  net::der::Input subject_tlv(&root->GetSubject());
+  net::RDNSequence subject_rdn;
+  DCHECK(net::ParseName(subject_tlv, &subject_rdn));
+  std::string subject_string;
+  DCHECK(net::ConvertToRFC2253(subject_rdn, &subject_string));
+  EXPECT_EQ(info_ptr->root_cert_info[0]->name, subject_string);
+
+  net::SHA256HashValue root_hash =
+      net::X509Certificate::CalculateFingerprint256(root->GetCertBuffer());
+  EXPECT_EQ(info_ptr->root_cert_info[0]->sha256hash_hex,
+            base::HexEncode(root_hash.data, std::size(root_hash.data)));
+}
+
+TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
+  base::test::TaskEnvironment task_environment;
+  net::ParsedCertificateList anchors = net::CompiledChromeRootStoreAnchors();
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+  cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
+  base::RunLoop request_completed_run_loop;
+  cv_service_factory_remote->GetChromeRootStoreInfo(base::BindOnce(
+      &GetRootStoreInfo, &info_ptr, request_completed_run_loop.QuitClosure()));
+  request_completed_run_loop.Run();
+
+  ASSERT_TRUE(info_ptr);
+  EXPECT_EQ(info_ptr->version, net::CompiledChromeRootStoreVersion());
+  EXPECT_EQ(info_ptr->root_cert_info.size(), anchors.size());
 }
 
 #endif

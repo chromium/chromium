@@ -48,6 +48,13 @@ void TestCertVerifierServiceFactoryImpl::GetNewCertVerifier(
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void TestCertVerifierServiceFactoryImpl::UpdateChromeRootStore(
     mojom::ChromeRootStorePtr new_root_store) {}
+
+void TestCertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
+    GetChromeRootStoreInfoCallback callback) {
+  mojom::ChromeRootStoreInfoPtr info_ptr = mojom::ChromeRootStoreInfo::New();
+  info_ptr->version = 42;
+  std::move(callback).Run(std::move(info_ptr));
+}
 #endif
 
 void TestCertVerifierServiceFactoryImpl::ReleaseAllCertVerifierParams() {

@@ -75,6 +75,19 @@ struct ChromeRootStore {
   mojo_base.mojom.BigBuffer serialized_proto_root_store;
 };
 
+// Information about a certificate in the Chrome Root Store
+struct ChromeRootCertInfo {
+  // Human-readable name for the certificate.
+  string name;
+  string sha256hash_hex;
+};
+
+// Information about the Chrome Root Store
+struct ChromeRootStoreInfo {
+  int64 version;
+  array<ChromeRootCertInfo> root_cert_info;
+};
+
 // Parent interface for the CertVerifierProcess. Hands out new
 // CertVerifierService's, which have their own underlying CertVerifier's
 // underneath.
@@ -88,4 +101,8 @@ interface CertVerifierServiceFactory {
   // new version.
   [EnableIf=is_chrome_root_store_supported]
   UpdateChromeRootStore(ChromeRootStore new_root_store);
+
+  // Returns information about the current Chrome Root Store.
+  [EnableIf=is_chrome_root_store_supported]
+  GetChromeRootStoreInfo() => (ChromeRootStoreInfo root_store_info);
 };
