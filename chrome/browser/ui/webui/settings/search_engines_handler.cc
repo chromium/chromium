@@ -300,8 +300,8 @@ void SearchEnginesHandler::HandleSearchEngineEditStarted(
   int index = args[0].GetInt();
 
   TemplateURL* engine = nullptr;
-  if (index >= 0 && static_cast<size_t>(index) >=
-                        list_controller_.table_model()->RowCount()) {
+  if (index >= 0 &&
+      static_cast<size_t>(index) < list_controller_.table_model()->RowCount()) {
     engine = list_controller_.GetTemplateURL(index);
   } else if (index != kNewSearchEngineIndex) {
     return;
