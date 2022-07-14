@@ -124,15 +124,13 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
     return dispatcher_->proxy_task_runner_;
   }
 
-  void DoLoop(int expected_quit_count) {
-    quit_count_ = expected_quit_count;
+  void DoLoop() {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
   void QuitRunLoop() {
-    quit_count_--;
-    if (quit_count_ == 0 && run_loop_) {
+    if (run_loop_) {
       run_loop_->Quit();
     }
   }
@@ -185,7 +183,6 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
   CameraHalDispatcherImpl* dispatcher_;
   base::WaitableEvent register_client_event_;
   int32_t last_register_client_result_;
-  int quit_count_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -200,10 +197,7 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
   auto mock_server = std::make_unique<MockCameraHalServer>();
   auto mock_client = std::make_unique<MockCameraHalClient>();
 
-  EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
@@ -229,7 +223,7 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
                          base::Unretained(this))));
 
   // Wait until the client gets the established Mojo channel.
-  DoLoop(2);
+  DoLoop();
 
   // The client registration callback may be called after
   // CameraHalClient::SetUpChannel(). Use a waitable event to make sure we have
@@ -242,10 +236,7 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
 
   // Make sure we create a new Mojo channel from the new server to the same
   // client.
-  EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
@@ -261,7 +252,7 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
                          base::Unretained(this))));
 
   // Wait until the clients get the newly established Mojo channel.
-  DoLoop(2);
+  DoLoop();
 }
 
 // Test that the CameraHalDisptcherImpl correctly re-establishes a Mojo channel
@@ -272,10 +263,7 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
   auto mock_server = std::make_unique<MockCameraHalServer>();
   auto mock_client = std::make_unique<MockCameraHalClient>();
 
-  EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
@@ -301,7 +289,7 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
                          base::Unretained(this))));
 
   // Wait until the client gets the established Mojo channel.
-  DoLoop(2);
+  DoLoop();
 
   // The client registration callback may be called after
   // CameraHalClient::SetUpChannel(). Use a waitable event to make sure we have
@@ -314,10 +302,7 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
 
   // Make sure we re-create the Mojo channel from the same server to the new
   // client.
-  EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
-      .Times(1)
-      .WillOnce(
-          InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+  EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
   EXPECT_CALL(*mock_client, DoSetUpChannel(_))
       .Times(1)
       .WillOnce(
@@ -335,7 +320,7 @@ TEST_F(CameraHalDispatcherImplTest, ClientConnectionError) {
                          base::Unretained(this))));
 
   // Wait until the clients gets the newly established Mojo channel.
-  DoLoop(2);
+  DoLoop();
 
   // Make sure the client is still successfully registered.
   register_client_event_.Wait();
@@ -360,10 +345,7 @@ TEST_F(CameraHalDispatcherImplTest, RegisterClientSuccess) {
 
   for (auto type : TokenManager::kTrustedClientTypes) {
     auto mock_client = std::make_unique<MockCameraHalClient>();
-    EXPECT_CALL(*mock_server, DoCreateChannel(_, _))
-        .Times(1)
-        .WillOnce(
-            InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
+    EXPECT_CALL(*mock_server, DoCreateChannel(_, _)).Times(1);
     EXPECT_CALL(*mock_client, DoSetUpChannel(_))
         .Times(1)
         .WillOnce(
@@ -380,7 +362,7 @@ TEST_F(CameraHalDispatcherImplTest, RegisterClientSuccess) {
                            base::Unretained(this))));
 
     // Wait until the client gets the established Mojo channel.
-    DoLoop(2);
+    DoLoop();
 
     // The client registration callback may be called after
     // CameraHalClient::SetUpChannel(). Use a waitable event to make sure we
@@ -440,7 +422,7 @@ TEST_F(CameraHalDispatcherImplTest, CameraActiveClientObserverTest) {
   dispatcher_->CameraDeviceActivityChange(
       /*camera_id=*/0, /*opened=*/true, cros::mojom::CameraClientType::TESTING);
 
-  DoLoop(1);
+  DoLoop();
 
   EXPECT_CALL(observer, DoOnActiveClientChange(
                             cros::mojom::CameraClientType::TESTING, false))
@@ -451,7 +433,7 @@ TEST_F(CameraHalDispatcherImplTest, CameraActiveClientObserverTest) {
       /*camera_id=*/0, /*opened=*/false,
       cros::mojom::CameraClientType::TESTING);
 
-  DoLoop(1);
+  DoLoop();
 }
 
 }  // namespace media
