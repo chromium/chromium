@@ -966,7 +966,7 @@ bool ContentBrowserClient::ShouldOverrideUrlLoading(
     const std::string& request_method,
     bool has_user_gesture,
     bool is_redirect,
-    bool is_main_frame,
+    bool is_outermost_main_frame,
     ui::PageTransition transition,
     bool* ignore_navigation) {
   return true;

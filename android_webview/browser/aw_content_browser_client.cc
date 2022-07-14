@@ -641,7 +641,7 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
     const std::string& request_method,
     bool has_user_gesture,
     bool is_redirect,
-    bool is_main_frame,
+    bool is_outermost_main_frame,
     ui::PageTransition transition,
     bool* ignore_navigation) {
   *ignore_navigation = false;
@@ -664,7 +664,7 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   // Note: about:blank navigations are not received in this path at the moment,
   // they use the old SYNC IPC path as they are not handled by network stack.
   // However, the old path should be removed in future.
-  if (!is_main_frame &&
+  if (!is_outermost_main_frame &&
       (gurl.SchemeIs(url::kHttpScheme) || gurl.SchemeIs(url::kHttpsScheme) ||
        gurl.SchemeIs(url::kAboutScheme)))
     return true;
@@ -693,7 +693,8 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   }
 
   return client_bridge->ShouldOverrideUrlLoading(
-      url, has_user_gesture, is_redirect, is_main_frame, ignore_navigation);
+      url, has_user_gesture, is_redirect, is_outermost_main_frame,
+      ignore_navigation);
 }
 
 bool AwContentBrowserClient::

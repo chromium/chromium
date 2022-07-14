@@ -2084,7 +2084,7 @@ void NavigationRequest::BeginNavigationImpl() {
           frame_tree_node_->frame_tree_node_id(),
           commit_params_->is_browser_initiated, commit_params_->original_url,
           commit_params_->original_method, common_params_->has_user_gesture,
-          false, frame_tree_node_->IsMainFrame(),
+          false, frame_tree_node_->IsOutermostMainFrame(),
           ui::PageTransitionFromInt(common_params_->transition),
           &should_override_url_loading)) {
     // A Java exception was thrown by the embedding application; we
@@ -2623,7 +2623,7 @@ void NavigationRequest::OnRequestRedirected(
           commit_params_->is_browser_initiated, redirect_info.new_url,
           redirect_info.new_method,
           // Redirects are always not counted as from user gesture.
-          false, true, frame_tree_node_->IsMainFrame(),
+          false, true, frame_tree_node_->IsOutermostMainFrame(),
           ui::PageTransitionFromInt(common_params_->transition),
           &should_override_url_loading)) {
     // A Java exception was thrown by the embedding application; we
