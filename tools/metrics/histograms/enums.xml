@@ -55484,6 +55484,7 @@ from previous Chrome versions.
   <int value="-2023673947" label="TabRestoreSubMenus:disabled"/>
   <int value="-2023641192" label="DestroySystemProfiles:enabled"/>
   <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
+  <int value="-2022243258" label="SiteDataImprovements:enabled"/>
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
   <int value="-2020721975" label="smart-virtual-keyboard"/>
   <int value="-2020024440" label="scroll-end-effect"/>
@@ -56537,6 +56538,7 @@ from previous Chrome versions.
   <int value="-1382918690" label="VirtualKeyboardApi:enabled"/>
   <int value="-1382671832" label="OmniboxUIExperimentVerticalMargin:enabled"/>
   <int value="-1378071979" label="CroshSWA:enabled"/>
+  <int value="-1377367284" label="SiteDataImprovements:disabled"/>
   <int value="-1377186702" label="DesktopIOSPromotion:disabled"/>
   <int value="-1376510363" label="ServiceWorkerScriptFullCodeCache:disabled"/>
   <int value="-1376258171" label="InstanceSwitcher:enabled"/>

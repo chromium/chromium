@@ -79,6 +79,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/browser_ui/site_settings/android/features.h"
 #include "components/browsing_data/core/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/flag_descriptions.h"
@@ -7511,6 +7512,12 @@ const FeatureEntry kFeatureEntries[] = {
                                  "ConversionMeasurement,FencedFrames,"
                                  "OverridePrivacySandboxSettingsLocalTesting,"
                                  "SharedStorageAPI")},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"site-data-improvements", flag_descriptions::kSiteDataImprovementsName,
+     flag_descriptions::kSiteDataImprovementsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(browser_ui::kSiteDataImprovements)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,

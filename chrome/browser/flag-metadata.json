@@ -5758,6 +5758,15 @@
     "expiry_milestone": 106
   },
   {
+    "name": "site-data-improvements",
+    "owners": [
+      "andzaytsev@google.com",
+      "sauski@google.com",
+      "chrome-friendly-settings@google.com"
+    ],
+    "expiry_milestone": 109
+  },
+  {
     "_comment1": "Shipping some form of Site Isolation to Android is tracked",
     "_comment2": "in https://crbug.com/849815.",
     "name": "site-isolation-trial-opt-out",
