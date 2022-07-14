@@ -89,6 +89,18 @@ constexpr char kBlockingScansForMalware[] = R"(
 
 constexpr char kNothingEnabled[] = R"({ "service_provider": "google" })";
 
+constexpr char kLocalBlockingScansForDlpAndMalware[] = R"(
+{
+  "service_provider": "local_test",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
 // Helpers to get text with sizes relative to the minimum required size of 100
 // bytes for scans to trigger.
 std::string large_text() {
@@ -1601,6 +1613,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, UnsupportedTypeAndDLPFailure) {
   EXPECT_TRUE(called);
 }
 
+// test params:
+// 0: upload result from binary upload service.
+// 1: whether an cloud analysis is done.
 class ContentAnalysisDelegateResultHandlingTest
     : public BaseTest,
       public testing::WithParamInterface<
@@ -1611,8 +1626,10 @@ class ContentAnalysisDelegateResultHandlingTest
   void SetUp() override {
     BaseTest::SetUp();
     EnableFeatures();
-    safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
-                                        kBlockingScansForDlpAndMalware);
+    safe_browsing::SetAnalysisConnector(
+        profile_->GetPrefs(), FILE_ATTACHED,
+        is_cloud() ? kBlockingScansForDlpAndMalware
+                   : kLocalBlockingScansForDlpAndMalware);
 
     ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
         &FakeContentAnalysisDelegate::Create, run_loop_.QuitClosure(),
@@ -1620,11 +1637,14 @@ class ContentAnalysisDelegateResultHandlingTest
             &ContentAnalysisDelegateResultHandlingTest::ConnectorStatusCallback,
             base::Unretained(this)),
         kDmToken));
+    FakeContentAnalysisDelegate::ResetDialogFlags();
   }
 
   safe_browsing::BinaryUploadService::Result result() const {
     return std::get<0>(GetParam());
   }
+
+  bool is_cloud() const { return std::get<1>(GetParam()); }
 
   ContentAnalysisResponse ConnectorStatusCallback(const base::FilePath& path) {
     return FakeContentAnalysisDelegate::SuccessfulResponse({"dlp", "malware"});
@@ -1662,6 +1682,9 @@ TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
           }));
   RunUntilDone();
   EXPECT_TRUE(called);
+
+  EXPECT_EQ(is_cloud(), FakeContentAnalysisDelegate::WasDialogShown());
+  EXPECT_NE(is_cloud(), FakeContentAnalysisDelegate::WasDialogCanceled());
 }
 
 INSTANTIATE_TEST_SUITE_P(

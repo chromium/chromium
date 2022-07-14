@@ -25,6 +25,8 @@ base::TimeDelta response_delay = base::Seconds(0);
 safe_browsing::BinaryUploadService::Result
     FakeContentAnalysisDelegate::result_ =
         safe_browsing::BinaryUploadService::Result::SUCCESS;
+bool FakeContentAnalysisDelegate::dialog_shown_ = false;
+bool FakeContentAnalysisDelegate::dialog_canceled_ = false;
 
 FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
     base::RepeatingClosure delete_closure,
@@ -50,6 +52,22 @@ FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
 void FakeContentAnalysisDelegate::SetResponseResult(
     safe_browsing::BinaryUploadService::Result result) {
   result_ = result;
+}
+
+// static
+void FakeContentAnalysisDelegate::ResetDialogFlags() {
+  dialog_shown_ = false;
+  dialog_canceled_ = false;
+}
+
+// static
+bool FakeContentAnalysisDelegate::WasDialogShown() {
+  return dialog_shown_;
+}
+
+// static
+bool FakeContentAnalysisDelegate::WasDialogCanceled() {
+  return dialog_canceled_;
 }
 
 // static
@@ -203,7 +221,10 @@ void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
     const base::FilePath& path,
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
   DCHECK(!path.empty());
-  DCHECK_EQ(dm_token_, request->device_token());
+  if (GetDataForTesting()
+          .settings.cloud_or_local_settings.is_cloud_analysis()) {
+    DCHECK_EQ(dm_token_, request->device_token());
+  }
 
   // Simulate a response.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -224,6 +245,16 @@ void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
                      weakptr_factory_.GetWeakPtr(), base::FilePath(),
                      std::move(request)),
       response_delay);
+}
+
+bool FakeContentAnalysisDelegate::ShowFinalResultInDialog() {
+  dialog_shown_ = true;
+  return ContentAnalysisDelegate::ShowFinalResultInDialog();
+}
+
+bool FakeContentAnalysisDelegate::CancelDialog() {
+  dialog_canceled_ = true;
+  return ContentAnalysisDelegate::CancelDialog();
 }
 
 }  // namespace enterprise_connectors

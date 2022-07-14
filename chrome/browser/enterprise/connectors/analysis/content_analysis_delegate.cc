@@ -281,7 +281,6 @@ void ContentAnalysisDelegate::CreateForWebContents(
   // If the UI is enabled, create the modal dialog.
   if (show_ui) {
     ContentAnalysisDelegate* delegate_ptr = delegate.get();
-
     int files_count = delegate_ptr->data_.paths.size();
 
     // This dialog is owned by the constrained_window code.
@@ -397,6 +396,22 @@ void ContentAnalysisDelegate::FilesRequestCallback(
 FilesRequestHandler*
 ContentAnalysisDelegate::GetFilesRequestHandlerForTesting() {
   return files_request_handler_.get();
+}
+
+bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
+  if (!dialog_)
+    return false;
+
+  dialog_->ShowResult(final_result_);
+  return true;
+}
+
+bool ContentAnalysisDelegate::CancelDialog() {
+  if (!dialog_)
+    return false;
+
+  dialog_->CancelDialog();
+  return true;
 }
 
 void ContentAnalysisDelegate::PageRequestCallback(
@@ -553,11 +568,11 @@ void ContentAnalysisDelegate::UploadPageForDeepScanning(
 }
 
 bool ContentAnalysisDelegate::UpdateDialog() {
-  if (!dialog_)
-    return false;
-
-  dialog_->ShowResult(final_result_);
-  return true;
+  // Only show final result UI in the case of a cloud analysis.
+  // In the local case, the local agent does that.
+  return data_.settings.cloud_or_local_settings.is_cloud_analysis()
+             ? ShowFinalResultInDialog()
+             : CancelDialog();
 }
 
 void ContentAnalysisDelegate::MaybeCompleteScanRequest() {

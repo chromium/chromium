@@ -212,6 +212,13 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   FilesRequestHandler* GetFilesRequestHandlerForTesting();
 
+  const Data& GetDataForTesting() { return data_; }
+
+  // Methods to either show the final result in the analysis dialog and to
+  // cancel the dialog.  These methods are protected and virtual for testing.
+  virtual bool ShowFinalResultInDialog();
+  virtual bool CancelDialog();
+
  private:
   // Uploads data for deep scanning.  Returns true if uploading is occurring in
   // the background and false if there is nothing to do. Sets `data_uploaded_`
