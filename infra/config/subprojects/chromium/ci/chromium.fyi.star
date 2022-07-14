@@ -1129,6 +1129,41 @@ ci.builder(
     ssd = True,
 )
 
+# Sync specs with win10_chromium_x64_rel_ng-compilator
+# in chromium/try/tryserver.chromium.win.star
+ci.builder(
+    name = "build-perf-windows",
+    builderless = True,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "buildperf",
+        short_name = "win",
+    ),
+    executable = "recipe:build_perf",
+    execution_timeout = 6 * time.hour,
+    # TODO(b/234807316): Use CQ's RBE instance with a dedicated service account.
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CQ,
+    use_clang_coverage = True,
+    # Target luci-chromium-ci-win10-ssd-32-*.
+    os = os.WINDOWS_DEFAULT,
+    cores = 32,
+    ssd = True,
+)
+
 ci.builder(
     name = "Linux Builder (j-500) (reclient)",
     console_view_entry = consoles.console_view_entry(
