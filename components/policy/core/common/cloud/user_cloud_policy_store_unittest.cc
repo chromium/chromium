@@ -109,8 +109,7 @@ class UserCloudPolicyStoreTest : public testing::Test {
     const PolicyMap::Entry* entry =
         store->policy_map().Get(key::kSearchSuggestEnabled);
     ASSERT_TRUE(entry);
-    EXPECT_TRUE(
-        base::Value(true).Equals(entry->value(base::Value::Type::BOOLEAN)));
+    EXPECT_EQ(true, *entry->value(base::Value::Type::BOOLEAN));
     ASSERT_TRUE(store->policy_map().Get(key::kURLBlocklist));
   }
 

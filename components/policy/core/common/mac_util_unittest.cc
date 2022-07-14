@@ -56,7 +56,7 @@ TEST(PolicyMacUtilTest, PropertyToValue) {
   ASSERT_TRUE(property);
   std::unique_ptr<base::Value> value = PropertyToValue(property);
   ASSERT_TRUE(value);
-  EXPECT_TRUE(root.Equals(value.get()));
+  EXPECT_EQ(root, *value);
 }
 
 }  // namespace policy
