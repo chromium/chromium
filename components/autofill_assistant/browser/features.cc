@@ -16,7 +16,7 @@ const base::Feature kAutofillAssistant{"AutofillAssistant",
 // Controls whether to enable Autofill Assistant's way of annotating DOM. If
 // enabled will create an |AnnotateDomModelService|.
 const base::Feature kAutofillAssistantAnnotateDom{
-    "AutofillAssistantAnnotateDom", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillAssistantAnnotateDom", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable Assistant Autofill in a normal Chrome tab.
 const base::Feature kAutofillAssistantChromeEntry{
