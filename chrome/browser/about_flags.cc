@@ -6337,6 +6337,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          remoting::features::kEnableFrameSinkDesktopCapturerInCrd)},
 
+    {"enable-get-display-media-set", flag_descriptions::kGetDisplayMediaSetName,
+     flag_descriptions::kGetDisplayMediaSetDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kGetDisplayMediaSet)},
+
+    {"enable-get-display-media-set-auto-select-all-screens",
+     flag_descriptions::kGetDisplayMediaSetAutoSelectAllScreensName,
+     flag_descriptions::kGetDisplayMediaSetAutoSelectAllScreensDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kGetDisplayMediaSetAutoSelectAllScreens)},
+
     {"multi-monitors-in-crd", flag_descriptions::kMultiMonitorsInCrdName,
      flag_descriptions::kMultiMonitorsInCrdDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(remoting::features::kEnableMultiMonitorsInCrd)},

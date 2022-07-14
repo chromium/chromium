@@ -2731,6 +2731,12 @@ extern const char kFastPairSavedDevicesDescription[];
 extern const char kFrameSinkDesktopCapturerInCrdName[];
 extern const char kFrameSinkDesktopCapturerInCrdDescription[];
 
+extern const char kGetDisplayMediaSetName[];
+extern const char kGetDisplayMediaSetDescription[];
+
+extern const char kGetDisplayMediaSetAutoSelectAllScreensName[];
+extern const char kGetDisplayMediaSetAutoSelectAllScreensDescription[];
+
 extern const char kMultiMonitorsInCrdName[];
 extern const char kMultiMonitorsInCrdDescription[];
 

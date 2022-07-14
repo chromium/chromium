@@ -4778,6 +4778,17 @@ const char kFrameSinkDesktopCapturerInCrdDescription[] =
     "CRD, "
     "replacing the use of AuraDesktopCapturer";
 
+const char kGetDisplayMediaSetName[] = "GetDisplayMediaSet API";
+const char kGetDisplayMediaSetDescription[] =
+    "When enabled, the getDisplayMediaSet API for capturing multiple surfaces "
+    "at once is available.";
+
+const char kGetDisplayMediaSetAutoSelectAllScreensName[] =
+    "autoSelectAllScreens attribute for GetDisplayMediaSet";
+const char kGetDisplayMediaSetAutoSelectAllScreensDescription[] =
+    "When enabled, the autoSelectAllScreens attribute is available for usage "
+    "with the GetDisplayMediaSet API.";
+
 const char kMultiMonitorsInCrdName[] = "Multi monitor in CRD";
 const char kMultiMonitorsInCrdDescription[] =
     "Enables support for viewing multiple monitors connected to this ChromeOS "
