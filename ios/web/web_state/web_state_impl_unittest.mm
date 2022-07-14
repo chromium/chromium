@@ -148,7 +148,7 @@ void HandleScriptCommand(bool* is_called,
                          bool user_is_interacting,
                          web::WebFrame* sender_frame) {
   *is_called = true;
-  EXPECT_TRUE(expected_value->Equals(&value));
+  EXPECT_EQ(*expected_value, value);
   EXPECT_EQ(expected_url, url);
   EXPECT_EQ(expected_user_is_interacting, user_is_interacting);
   EXPECT_EQ(expected_sender_frame, sender_frame);
