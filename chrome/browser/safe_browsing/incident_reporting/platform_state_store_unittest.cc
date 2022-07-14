@@ -71,7 +71,7 @@ TEST(PlatformStateStoreTest, RoundTrip) {
   PlatformStateStoreLoadResult load_result =
       DeserializeIncidentsSent(data, deserialized.get());
   ASSERT_EQ(PlatformStateStoreLoadResult::SUCCESS, load_result);
-  ASSERT_TRUE(deserialized->Equals(incidents_sent.get()));
+  EXPECT_EQ(*incidents_sent, *deserialized);
 }
 
 }  // namespace platform_state_store
