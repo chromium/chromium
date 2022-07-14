@@ -11,26 +11,37 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_onboarding_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/protocol/user_consent_specifics.pb.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+
+using ::testing::IsEmpty;
+using ::testing::Not;
+using ::testing::SizeIs;
 
 namespace {
 
 constexpr char kUrl[] = "https://www.example.com";
 constexpr char kOtherUrlWithSameDomain[] = "https://www.example.com/login";
+
+using consent_auditor::FakeConsentAuditor;
 
 class TestApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinatorImpl {
  public:
@@ -50,6 +61,14 @@ TestApcOnboardingCoordinatorImpl::TestApcOnboardingCoordinatorImpl(
     content::WebContents* web_contents)
     : ApcOnboardingCoordinatorImpl(web_contents) {}
 
+FakeConsentAuditor* CreateAndUseFakeConsentAuditor(Profile* profile) {
+  return static_cast<FakeConsentAuditor*>(
+      ConsentAuditorFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+          profile, base::BindRepeating([](content::BrowserContext*) {
+            return std::make_unique<FakeConsentAuditor>();
+          })));
+}
+
 }  // namespace
 
 class ApcOnboardingCoordinatorImplTest
@@ -60,14 +79,20 @@ class ApcOnboardingCoordinatorImplTest
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+
+    consent_auditor_ = CreateAndUseFakeConsentAuditor(profile());
     coordinator_ =
         std::make_unique<TestApcOnboardingCoordinatorImpl>(web_contents());
   }
 
+  FakeConsentAuditor* consent_auditor() { return consent_auditor_; }
   TestApcOnboardingCoordinatorImpl* coordinator() { return coordinator_.get(); }
   PrefService* GetPrefs() { return profile()->GetPrefs(); }
 
  private:
+  // Helper objects.
+  raw_ptr<FakeConsentAuditor> consent_auditor_ = nullptr;
+
   // The object to be tested.
   std::unique_ptr<TestApcOnboardingCoordinatorImpl> coordinator_;
 };
@@ -114,11 +139,28 @@ TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndAccept) {
   // And call the controller.
   ASSERT_TRUE(controller_callback);
   EXPECT_CALL(coordinator_callback, Run(true));
-  std::move(controller_callback).Run(true);
+  // Use sample model data for the callback.
+  const AssistantOnboardingInformation model =
+      ApcOnboardingCoordinator::CreateOnboardingInformation();
+  std::move(controller_callback)
+      .Run(true, model.button_accept_text_id,
+           {model.title_id, model.description_id, model.consent_text_id,
+            model.learn_more_title_id});
 
   // Consent is saved in the pref.
   EXPECT_TRUE(
       GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled));
+
+  // Consent is also recorded via the `ConsentAuditor`.
+  ASSERT_THAT(consent_auditor()->recorded_consents(), SizeIs(1));
+  const sync_pb::UserConsentSpecifics& consent_specifics =
+      consent_auditor()->recorded_consents().front();
+  ASSERT_TRUE(consent_specifics.has_autofill_assistant_consent());
+  EXPECT_TRUE(
+      consent_specifics.autofill_assistant_consent().has_confirmation_grd_id());
+  EXPECT_THAT(
+      consent_specifics.autofill_assistant_consent().description_grd_ids(),
+      Not(IsEmpty()));
 }
 
 TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndDecline) {
@@ -146,7 +188,7 @@ TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndDecline) {
   // And call the controller.
   ASSERT_TRUE(controller_callback);
   EXPECT_CALL(coordinator_callback, Run(false));
-  std::move(controller_callback).Run(false);
+  std::move(controller_callback).Run(false, absl::nullopt, {});
 
   // Consent is saved in the pref.
   EXPECT_FALSE(

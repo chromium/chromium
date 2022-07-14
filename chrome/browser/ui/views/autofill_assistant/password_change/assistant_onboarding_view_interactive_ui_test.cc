@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/autofill_assistant/password_change/assistant_onboarding_view.h"
+
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,9 +18,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/autofill_assistant/password_change/assistant_onboarding_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -123,7 +126,9 @@ IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, CancelDialog) {
   ShowUi("Apc");
 
   // We expect the controller to signal back that the dialog was cancelled.
-  EXPECT_CALL(callback(), Run(false));
+  EXPECT_CALL(callback(),
+              Run(false, /*confirmation_grd_id=*/absl::optional<int>(),
+                  /*description_grd_ids=*/std::vector<int>()));
   view()->CancelDialog();
 }
 
@@ -131,7 +136,12 @@ IN_PROC_BROWSER_TEST_F(AssistantOnboardingViewBrowserTest, AcceptDialog) {
   ShowUi("Apc");
 
   // We expect the controller to signal back that the dialog was accepted.
-  EXPECT_CALL(callback(), Run(true));
+  const std::vector<int> description_ids = {
+      model()->title_id, model()->description_id, model()->consent_text_id,
+      model()->learn_more_title_id};
+  EXPECT_CALL(callback(),
+              Run(true, absl::optional<int>(model()->button_accept_text_id),
+                  description_ids));
   view()->AcceptDialog();
 }
 

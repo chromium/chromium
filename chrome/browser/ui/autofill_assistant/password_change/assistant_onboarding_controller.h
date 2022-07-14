@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -52,7 +54,10 @@ class AssistantOnboardingController {
  public:
   // A callback that is called with `true` if consent was given and false
   // otherwise (either by denying explicitly or by closing the prompt).
-  using Callback = base::OnceCallback<void(bool)>;
+  // If consent was given, the resource ids of the confirmation button label
+  // and other text elements are passed as arguments.
+  using Callback = base::OnceCallback<
+      void(bool, absl::optional<int>, const std::vector<int>&)>;
 
   // Factory function to create controller that is defined in the file
   // `assistant_onboarding_controller_impl.cc`.
@@ -68,7 +73,8 @@ class AssistantOnboardingController {
                     Callback callback) = 0;
 
   // Registers that the consent was given.
-  virtual void OnAccept() = 0;
+  virtual void OnAccept(int confirmation_grd_id,
+                        const std::vector<int>& description_grd_ids) = 0;
 
   // Registers that the consent dialog was cancelled, i.e. no consent was given.
   virtual void OnCancel() = 0;

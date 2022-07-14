@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_MOCK_ASSISTANT_ONBOARDING_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_MOCK_ASSISTANT_ONBOARDING_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,7 +21,7 @@ class MockAssistantOnboardingController : public AssistantOnboardingController {
               Show,
               (base::WeakPtr<AssistantOnboardingPrompt>, Callback callback),
               (override));
-  MOCK_METHOD(void, OnAccept, (), (override));
+  MOCK_METHOD(void, OnAccept, (int, const std::vector<int>&), (override));
   MOCK_METHOD(void, OnCancel, (), (override));
   MOCK_METHOD(void, OnClose, (), (override));
   MOCK_METHOD(void, OnLearnMoreClicked, (), (override));

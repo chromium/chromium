@@ -26,6 +26,9 @@ class AssistantOnboardingController;
 // not be deleted manually. In addition, `Show()` should always be called after
 // constructing it.
 // The view and its controller notify each other when one is destroyed.
+//
+// IMPORTANT: If any additional text elements are added, then these must be
+// included in `OnAccept` to ensure that the audit record is complete.
 class AssistantOnboardingView : public views::DialogDelegateView,
                                 public AssistantOnboardingPrompt {
  public:
@@ -60,6 +63,11 @@ class AssistantOnboardingView : public views::DialogDelegateView,
 
   // Creates the content of the dialog by adding the relevant views.
   void InitDialog();
+
+  // Informs the controller that consent was accepted and passes the resource
+  // ids of the strings on the accept button and the other text elements of
+  // the dialog.
+  void OnAccept();
 
   // The controller belonging to this view.
   base::WeakPtr<AssistantOnboardingController> controller_;

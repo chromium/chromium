@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -37,24 +38,28 @@ void AssistantOnboardingControllerImpl::Show(
   prompt_->Show(web_contents_);
 }
 
-void AssistantOnboardingControllerImpl::OnAccept() {
+void AssistantOnboardingControllerImpl::OnAccept(
+    int confirmation_grd_id,
+    const std::vector<int>& description_grd_ids) {
   if (prompt_) {
     prompt_ = nullptr;
-    std::move(callback_).Run(true);
+    std::move(callback_).Run(true, confirmation_grd_id, description_grd_ids);
   }
 }
 
 void AssistantOnboardingControllerImpl::OnCancel() {
   if (prompt_) {
     prompt_ = nullptr;
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(false, /*confirmation_grd_id=*/absl::nullopt,
+                             /*description_grd_ids=*/{});
   }
 }
 
 void AssistantOnboardingControllerImpl::OnClose() {
   if (prompt_) {
     prompt_ = nullptr;
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(false, /*confirmation_grd_id=*/absl::nullopt,
+                             /*description_grd_ids=*/{});
   }
 }
 
@@ -80,7 +85,8 @@ AssistantOnboardingControllerImpl::GetWeakPtr() {
 void AssistantOnboardingControllerImpl::ClosePrompt() {
   if (prompt_) {
     std::exchange(prompt_, nullptr)->OnControllerGone();
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(false, /*confirmation_grd_id=*/absl::nullopt,
+                             /*description_grd_ids=*/{});
   }
 }
 
