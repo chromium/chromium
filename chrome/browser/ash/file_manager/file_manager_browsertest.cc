@@ -522,6 +522,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("zipExtractNotEnoughSpace").ExtractArchive().FilesSwa(),
         TestCase("zipExtractFromReadOnly").ExtractArchive().FilesSwa(),
         TestCase("zipExtractShowPanel").ExtractArchive().FilesSwa(),
+        TestCase("zipExtractShowMultiPanel").ExtractArchive().FilesSwa(),
         TestCase("zipExtractSelectionMenus").ExtractArchive().FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

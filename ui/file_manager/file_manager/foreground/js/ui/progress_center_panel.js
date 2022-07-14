@@ -176,7 +176,9 @@ export class ProgressCenterPanel {
               strf('FILE_ITEMS_COPIED', source);
         }
         if (item.type === ProgressItemType.EXTRACT) {
-          return strf('FILE_ITEMS_EXTRACTED', count);
+          return item.state == ProgressItemState.PROGRESSING ?
+              strf('EXTRACT_ITEMS_REMAINING', count) :
+              strf('FILE_ITEMS_EXTRACTED', count);
         }
         if (item.type === ProgressItemType.MOVE) {
           return hasDestination ?

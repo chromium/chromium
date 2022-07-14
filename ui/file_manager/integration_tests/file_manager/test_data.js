@@ -116,6 +116,18 @@ export const BASIC_ZIP_ENTRY_SET = [
 ];
 
 /**
+ * More complex entry set for the local volume with multiple ZIP archives.
+ * @type {!Array<!TestEntryInfo>}
+ * @const
+ */
+export const COMPLEX_ZIP_ENTRY_SET = [
+  ENTRIES.hello,
+  ENTRIES.world,
+  ENTRIES.zipArchive,
+  ENTRIES.zipSJISArchive,
+];
+
+/**
  * More complex entry set for Drive that includes entries with varying
  * permissions (such as read-only entries).
  *

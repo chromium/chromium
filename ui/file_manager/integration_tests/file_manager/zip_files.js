@@ -6,7 +6,7 @@ import {addEntries, ENTRIES, expectHistogramTotalCount, getCaller, pending, repe
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_ZIP_ENTRY_SET} from './test_data.js';
+import {BASIC_ZIP_ENTRY_SET, COMPLEX_ZIP_ENTRY_SET} from './test_data.js';
 
 /**
  * The name of the UMA to track the zip creation time.
@@ -353,6 +353,79 @@ testcase.zipExtractShowPanel = async () => {
     element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);
     const expectedMsg = `Extracting ${entry.nameText} to Downloads`;
+    const actualMsg = element.attributes['primary-text'];
+
+    if (actualMsg === expectedMsg) {
+      return;
+    }
+
+    return pending(
+        caller,
+        `Expected feedback panel msg: "${expectedMsg}", got "${actualMsg}"`);
+  });
+
+  // Check: a extract archive status histogram value should have been recorded.
+  await expectHistogramTotalCount(ExtractArchiveStatusHistogramName, 1);
+};
+
+/**
+ * Tests that extraction of a multiple ZIP archives produces the correct
+ * feedback panel string.
+ */
+testcase.zipExtractShowMultiPanel = async () => {
+  const entries = COMPLEX_ZIP_ENTRY_SET;
+
+  // Make sure the test extension handles the new window creation(s) properly.
+  let entry = entries[2];  // ENTRIES.zipArchive.
+  let targetDirectoryName = entry.nameText.split('.')[0];
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [targetDirectoryName],
+    openType: 'launch'
+  });
+  entry = entries[3];  // ENTRIES.zipSJISArchive.
+  targetDirectoryName = entry.nameText.split('.')[0];
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [targetDirectoryName],
+    openType: 'launch'
+  });
+
+  // Open files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+
+  // Select two ZIP files.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="archive.zip"]');
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="sjis.zip"]', {shift: true});
+
+  // Right-click the selection.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Tell the background page to never finish the file extraction.
+  await remoteCall.callRemoteTestUtil(
+      'progressCenterNeverNotifyCompleted', appId, []);
+
+  // Click the 'Extract all' menu command.
+  const extract = '[command="#extract-all"]';
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [extract]),
+      'fakeMouseClick failed');
+
+  // Check that the error appears in the feedback panel.
+  let element = {};
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    element = await remoteCall.waitForElement(
+        appId, ['#progress-panel', 'xf-panel-item']);
+    const expectedMsg = `Extracting 2 items…`;
     const actualMsg = element.attributes['primary-text'];
 
     if (actualMsg === expectedMsg) {
