@@ -213,6 +213,9 @@ crbug.com/1320294 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-circumference
 crbug.com/1320294 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-connecting-line.html [ Failure Pass ]
 crbug.com/1320294 virtual/oopr-canvas2d/fast/canvas/canvas-zero-length-lineCap.html [ Failure Pass ]
 
+crbug.com/1344252 svg/W3C-SVG-1.1/pservers-grad-05-b.svg [ Failure Pass ]
+crbug.com/1344252 svg/wicd/test-scalable-background-image2.xhtml [ Failure Pass ]
+
 # --- END Skia roll test suppresions
 
 
