@@ -3339,7 +3339,7 @@
       },
       'ios-simulator-cronet (reclient shadow)': {
         'additional_compile_targets': [
-          'all',
+          'cronet_test',
         ],
         'mixins': [
           'has_native_resultdb_integration',

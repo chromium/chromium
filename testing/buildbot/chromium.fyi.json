@@ -48356,7 +48356,7 @@
   },
   "ios-simulator-cronet (reclient shadow)": {
     "additional_compile_targets": [
-      "all"
+      "cronet_test"
     ]
   },
   "ios-simulator-multi-window": {
