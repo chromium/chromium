@@ -451,6 +451,11 @@ void WindowState::RestoreZOrdering() {
 }
 
 void WindowState::OnWMEvent(const WMEvent* event) {
+  if (event->IsSnapEvent()) {
+    // Snap events should be created as WindowSnapWMEvent.
+    DCHECK(event->IsSnapInfoAvailable());
+  }
+
   current_state_->OnWMEvent(this, event);
 
   MaybeUpdateSnapRatio(event);

@@ -339,12 +339,12 @@ TEST_F(ClientControlledStateTest, SnapWindow) {
   ASSERT_FALSE(window_state()->CanSnap());
 
   // The event should be ignored.
-  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
   EXPECT_FALSE(window_state()->IsSnapped());
   EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
 
-  const WMEvent snap_right_event(WM_EVENT_CYCLE_SNAP_SECONDARY);
+  const WindowSnapWMEvent snap_right_event(WM_EVENT_CYCLE_SNAP_SECONDARY);
   window_state()->OnWMEvent(&snap_right_event);
   EXPECT_FALSE(window_state()->IsSnapped());
   EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
@@ -386,7 +386,7 @@ TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
   widget_delegate()->EnableSnap();
 
   // Make sure the requested bounds for snapped window is local to display.
-  const WMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_left_event(WM_EVENT_CYCLE_SNAP_PRIMARY);
   window_state()->OnWMEvent(&snap_left_event);
 
   EXPECT_EQ(second_display_id, delegate()->display_id());

@@ -155,6 +155,14 @@ class ASH_EXPORT WMEvent {
   // e.g. WM_EVENT_MAXIMIZED.
   bool IsTransitionEvent() const;
 
+  // True if the event is a window snap event.
+  bool IsSnapEvent() const;
+
+  // True if the event has |snap_ratio| value, which is only available for
+  // WindowSnapWMEvent types. Checks that snap events are created with valid
+  // |snap_ratio| to pass ASan tests.
+  virtual bool IsSnapInfoAvailable() const;
+
   // Utility methods to downcast to specific WMEvent types.
   const DisplayMetricsChangedWMEvent* AsDisplayMetricsChangedWMEvent() const;
 
@@ -189,6 +197,32 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
   const int64_t display_id_ = display::kInvalidDisplayId;
   const bool animate_;
   const base::TimeDelta duration_;
+};
+
+// An WMEvent to snap a window.
+class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
+ public:
+  enum class SnapRatio {
+    kOneThirdSnapRatio,
+    kDefaultSnapRatio,
+    kTwoThirdSnapRatio
+  };
+
+  explicit WindowSnapWMEvent(WMEventType type);
+  WindowSnapWMEvent(WMEventType type, SnapRatio snap_ratio);
+
+  WindowSnapWMEvent(const WindowSnapWMEvent&) = delete;
+  WindowSnapWMEvent& operator=(const WindowSnapWMEvent&) = delete;
+
+  ~WindowSnapWMEvent() override;
+
+  // WMEvent:
+  bool IsSnapInfoAvailable() const override;
+
+  SnapRatio snap_ratio() const { return snap_ratio_; }
+
+ private:
+  const SnapRatio snap_ratio_ = SnapRatio::kDefaultSnapRatio;
 };
 
 // A WMEvent sent when display metrics have changed.

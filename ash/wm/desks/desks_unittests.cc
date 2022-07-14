@@ -3190,7 +3190,7 @@ TEST_F(DesksTest, SwitchToDeskWithSnappedActiveWindow) {
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
   WindowState* win0_state = WindowState::Get(win0.get());
-  WMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
+  WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   win0_state->OnWMEvent(&snap_to_left);
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             win0_state->GetStateType());

@@ -3270,7 +3270,7 @@ TEST_F(SavedDeskTest, SnapWindowTest) {
   auto test_window = CreateAppWindow();
 
   WindowState* window_state = WindowState::Get(test_window.get());
-  const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window_state->GetStateType());

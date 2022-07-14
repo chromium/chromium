@@ -1412,7 +1412,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchSnappedWindow) {
   aura::Window* window = browser()->window()->GetNativeWindow();
 
   // Snap the window to the left.
-  const ash::WMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
+  const ash::WindowSnapWMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
   ash::WindowState::Get(window)->OnWMEvent(&left_snap_event);
   ASSERT_EQ(gfx::Rect(1000, 1000), window->GetBoundsInScreen());
 

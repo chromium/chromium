@@ -67,9 +67,9 @@ void SnapControllerImpl::CommitSnap(aura::Window* window,
   window_state->set_snap_action_source(
       WindowSnapActionSource::kUseCaptionButtonToSnap);
 
-  const WMEvent snap_event(snap == chromeos::SnapDirection::kPrimary
-                               ? WM_EVENT_SNAP_PRIMARY
-                               : WM_EVENT_SNAP_SECONDARY);
+  const WindowSnapWMEvent snap_event(snap == chromeos::SnapDirection::kPrimary
+                                         ? WM_EVENT_SNAP_PRIMARY
+                                         : WM_EVENT_SNAP_SECONDARY);
   window_state->OnWMEvent(&snap_event);
 }
 

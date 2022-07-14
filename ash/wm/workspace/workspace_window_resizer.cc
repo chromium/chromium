@@ -886,19 +886,24 @@ void WorkspaceWindowResizer::CompleteDrag() {
     // TODO(oshima): Add event source type to WMEvent and move
     // metrics recording inside WindowState::OnWMEvent.
     WMEventType type;
+    // bool is_snap_event = false;
     switch (snap_type_) {
-      case SnapType::kPrimary:
-        type = WM_EVENT_SNAP_PRIMARY;
+      case SnapType::kPrimary: {
         window_state()->set_snap_action_source(
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeLeft"));
-        break;
-      case SnapType::kSecondary:
-        type = WM_EVENT_SNAP_SECONDARY;
+        const WindowSnapWMEvent snap_primary_event(WM_EVENT_SNAP_PRIMARY);
+        window_state()->OnWMEvent(&snap_primary_event);
+        return;
+      }
+      case SnapType::kSecondary: {
         window_state()->set_snap_action_source(
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeRight"));
-        break;
+        const WindowSnapWMEvent snap_secondary_event(WM_EVENT_SNAP_SECONDARY);
+        window_state()->OnWMEvent(&snap_secondary_event);
+        return;
+      }
       case SnapType::kMaximize:
         type = WM_EVENT_MAXIMIZE;
         base::RecordAction(base::UserMetricsAction("WindowDrag_Maximize"));
@@ -1696,7 +1701,7 @@ void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(
         window_state->set_snap_action_source(
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
-        const WMEvent event(WM_EVENT_SNAP_PRIMARY);
+        const WindowSnapWMEvent event(WM_EVENT_SNAP_PRIMARY);
         window_state->OnWMEvent(&event);
       }
       break;
@@ -1706,7 +1711,7 @@ void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(
         window_state->set_snap_action_source(
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
-        const WMEvent event(WM_EVENT_SNAP_SECONDARY);
+        const WindowSnapWMEvent event(WM_EVENT_SNAP_SECONDARY);
         window_state->OnWMEvent(&event);
       }
       break;

@@ -14,6 +14,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
@@ -157,8 +158,9 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
           window, is_desired_primary_snapped ? SplitViewController::LEFT
                                              : SplitViewController::RIGHT);
     } else {
-      const WMEvent event(is_desired_primary_snapped ? WM_EVENT_SNAP_PRIMARY
-                                                     : WM_EVENT_SNAP_SECONDARY);
+      const WindowSnapWMEvent event(is_desired_primary_snapped
+                                        ? WM_EVENT_SNAP_PRIMARY
+                                        : WM_EVENT_SNAP_SECONDARY);
       window_state->OnWMEvent(&event);
     }
     window_state->ReadOutWindowCycleSnapAction(

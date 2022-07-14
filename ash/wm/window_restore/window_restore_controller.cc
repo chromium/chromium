@@ -528,7 +528,7 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
           *state_type == chromeos::WindowStateType::kSecondarySnapped) {
         base::AutoReset<aura::Window*> auto_reset_to_be_snapped(
             &to_be_snapped_window_, window);
-        const WMEvent snap_event(
+        const WindowSnapWMEvent snap_event(
             *state_type == chromeos::WindowStateType::kPrimarySnapped
                 ? WM_EVENT_SNAP_PRIMARY
                 : WM_EVENT_SNAP_SECONDARY);

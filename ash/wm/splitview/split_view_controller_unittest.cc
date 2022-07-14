@@ -3085,7 +3085,7 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
 
   // Test the functionalities in tablet mode.
   // Sending WM_EVENT_SNAP_SECONDARY to |window1| will snap to left.
-  WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_EQ(split_view_controller()->left_window(), window1.get());
@@ -3096,7 +3096,7 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
 
   // Sending WM_EVENT_SNAP_SECONDARY to |window1| will snap to right.
-  WMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
+  WindowSnapWMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window1.get())->OnWMEvent(&wm_right_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_EQ(split_view_controller()->right_window(), window1.get());
@@ -3214,7 +3214,7 @@ TEST_F(SplitViewControllerTest, WMSnapEventDeviceOrientationMetricsInTablet) {
 
   // 1. Test landscape orientation.
   // Snap |window1| to the left to enter split view overview in tablet mode.
-  WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   OverviewController* overview_controller = Shell::Get()->overview_controller();
@@ -3257,8 +3257,8 @@ TEST_F(SplitViewControllerTest,
   wm::ActivateWindow(window1.get());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
-  const WMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
-  const WMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
+  const WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
+  const WindowSnapWMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
   const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
 
   // 1. Test portrait orientation.

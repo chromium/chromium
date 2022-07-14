@@ -85,6 +85,23 @@ bool WMEvent::IsTransitionEvent() const {
   return false;
 }
 
+bool WMEvent::IsSnapEvent() const {
+  switch (type_) {
+    case WM_EVENT_SNAP_PRIMARY:
+    case WM_EVENT_SNAP_SECONDARY:
+    case WM_EVENT_CYCLE_SNAP_PRIMARY:
+    case WM_EVENT_CYCLE_SNAP_SECONDARY:
+      return true;
+    default:
+      break;
+  }
+  return false;
+}
+
+bool WMEvent::IsSnapInfoAvailable() const {
+  return false;
+}
+
 const DisplayMetricsChangedWMEvent* WMEvent::AsDisplayMetricsChangedWMEvent()
     const {
   DCHECK_EQ(type(), WM_EVENT_DISPLAY_BOUNDS_CHANGED);
@@ -107,6 +124,22 @@ SetBoundsWMEvent::SetBoundsWMEvent(const gfx::Rect& requested_bounds,
       animate_(false) {}
 
 SetBoundsWMEvent::~SetBoundsWMEvent() = default;
+
+WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type) : WMEvent(type) {
+  DCHECK(IsSnapEvent());
+}
+
+WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,
+                                     WindowSnapWMEvent::SnapRatio snap_ratio)
+    : WMEvent(type), snap_ratio_(snap_ratio) {
+  DCHECK(IsSnapEvent());
+}
+
+WindowSnapWMEvent::~WindowSnapWMEvent() = default;
+
+bool WindowSnapWMEvent::IsSnapInfoAvailable() const {
+  return true;
+}
 
 DisplayMetricsChangedWMEvent::DisplayMetricsChangedWMEvent(int changed_metrics)
     : WMEvent(WM_EVENT_DISPLAY_BOUNDS_CHANGED),

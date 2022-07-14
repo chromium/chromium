@@ -850,8 +850,8 @@ void SplitViewController::SnapWindow(aura::Window* window,
                                          .id());
   }
 
-  const WMEvent event(snap_position == LEFT ? WM_EVENT_SNAP_PRIMARY
-                                            : WM_EVENT_SNAP_SECONDARY);
+  const WindowSnapWMEvent event(
+      snap_position == LEFT ? WM_EVENT_SNAP_PRIMARY : WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window)->OnWMEvent(&event);
 
   base::RecordAction(base::UserMetricsAction("SplitView_SnapWindow"));
@@ -2185,11 +2185,11 @@ void SplitViewController::UpdateResizeBackdrop() {
 void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
   // Update the snapped windows' bounds.
   if (IsSnapped(left_window_)) {
-    const WMEvent left_window_event(WM_EVENT_SNAP_PRIMARY);
+    const WindowSnapWMEvent left_window_event(WM_EVENT_SNAP_PRIMARY);
     WindowState::Get(left_window_)->OnWMEvent(&left_window_event);
   }
   if (IsSnapped(right_window_)) {
-    const WMEvent right_window_event(WM_EVENT_SNAP_SECONDARY);
+    const WindowSnapWMEvent right_window_event(WM_EVENT_SNAP_SECONDARY);
     WindowState::Get(right_window_)->OnWMEvent(&right_window_event);
   }
 
