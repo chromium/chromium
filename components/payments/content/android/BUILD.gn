@@ -195,6 +195,7 @@ android_library("full_java") {
     ":feature_list_java",
     ":java_resources",
     ":minimal_java",
+    ":pre_purchase_query_enum_java",
     ":service_java",
     "//base:base_java",
     "//base:jni_java",
@@ -222,10 +223,14 @@ android_library("full_java") {
   ]
   srcjar_deps = [
     ":payments_journey_logger_enum_javagen",
-    ":pre_purchase_query_enum_javagen",
     ":prefs_strings_generated_srcjar",
   ]
   resources_package = "org.chromium.components.payments"
+}
+
+android_library("pre_purchase_query_enum_java") {
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  srcjar_deps = [ ":pre_purchase_query_enum_javagen" ]
 }
 
 # Minimal target that only includes what downstream code depends on.
