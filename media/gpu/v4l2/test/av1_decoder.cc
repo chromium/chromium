@@ -480,6 +480,9 @@ std::set<int> Av1Decoder::RefreshReferenceSlots(
     libgav1::RefCountedBufferPtr current_frame,
     scoped_refptr<MmapedBuffer> buffer,
     uint32_t last_queued_buffer_index) {
+  state_->UpdateReferenceFrames(current_frame,
+                                base::strict_cast<int>(refresh_frame_flags));
+
   static_assert(
       kAv1NumRefFrames == sizeof(refresh_frame_flags) * CHAR_BIT,
       "|refresh_frame_flags| size must be equal to |kAv1NumRefFrames|");
@@ -544,9 +547,6 @@ std::set<int> Av1Decoder::RefreshReferenceSlots(
     }
     ref_frames_[i] = buffer;
   }
-
-  state_->UpdateReferenceFrames(current_frame,
-                                base::strict_cast<int>(refresh_frame_flags));
 
   return reusable_buffer_ids;
 }
