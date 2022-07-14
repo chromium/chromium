@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
+#include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
 
 namespace blink {
 
@@ -12,7 +13,7 @@ VttCueLayoutAlgorithm::VttCueLayoutAlgorithm(VTTCueBox& cue)
     : cue_(cue), snap_to_lines_position_(cue.SnapToLinesPosition()) {}
 
 void VttCueLayoutAlgorithm::Layout() {
-  if (!cue_.GetLayoutBox())
+  if (cue_.IsAdjusted() || !cue_.GetLayoutBox())
     return;
 
   // https://w3c.github.io/webvtt/#apply-webvtt-cue-settings
@@ -27,8 +28,31 @@ void VttCueLayoutAlgorithm::Layout() {
   }
 }
 
+// CueBoundingBox() does not return the geometry from LayoutBox as is because
+// the resultant rectangle should be:
+// - Based on the latest adjusted position even before the box is laid out.
+// - Based on the initial position without adjustment if the function is
+//   called just after style-recalc.
+//
+// static
+gfx::Rect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
+  const LayoutBlock* container = cue_box.ContainingBlock();
+  PhysicalRect border_box =
+      cue_box.LocalToAncestorRect(cue_box.PhysicalBorderBoxRect(), container);
+  const LayoutSize size = container->Size();
+  const auto* cue_dom = To<VTTCueBox>(cue_box.GetNode());
+  if (cue_box.IsHorizontalWritingMode())
+    border_box.SetY(cue_dom->AdjustedPosition(size.Height(), PassKey()));
+  else
+    border_box.SetX(cue_dom->AdjustedPosition(size.Width(), PassKey()));
+  return ToEnclosingRect(border_box);
+}
+
 void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // TODO(crbug.com/1335309): Implement this.
+
+  // This function will make cue_.adjusted_position_ a value other than
+  // LayoutUnit::Min().
 }
 
 void VttCueLayoutAlgorithm::AdjustPositionWithoutSnapToLines() {

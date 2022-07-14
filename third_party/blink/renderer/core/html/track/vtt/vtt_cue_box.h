@@ -34,6 +34,7 @@
 
 namespace blink {
 
+class VttCueLayoutAlgorithm;
 struct VTTDisplayParameters;
 
 // VTTCueBox represents the bounding box of a VTTCue.
@@ -49,6 +50,13 @@ class VTTCueBox final : public HTMLDivElement {
   void ApplyCSSProperties(const VTTDisplayParameters&);
 
   float SnapToLinesPosition() const { return snap_to_lines_position_; }
+  bool IsAdjusted() const { return adjusted_position_ != LayoutUnit::Min(); }
+  // IsAdjusted() becomes false after calling this.
+  void RevertAdjustment();
+  // Returns adjusted_position_ if IsAdjusted(), or the initial position
+  // without adjustment otherwise.
+  LayoutUnit AdjustedPosition(LayoutUnit full_dimention,
+                              base::PassKey<VttCueLayoutAlgorithm>) const;
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
@@ -61,6 +69,13 @@ class VTTCueBox final : public HTMLDivElement {
   // non-snap-to-lines layout where no adjustment should take place.
   // This is set in applyCSSProperties and propagated to LayoutVTTCue.
   float snap_to_lines_position_;
+
+  // Percentage position before adjustment.
+  float original_percent_position_;
+
+  // Pixel position after adjustment. LayoutUnit::Min() means this box is not
+  // adjusted yet.
+  LayoutUnit adjusted_position_ = LayoutUnit::Min();
 };
 
 template <>

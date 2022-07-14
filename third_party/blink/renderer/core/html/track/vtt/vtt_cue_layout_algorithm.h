@@ -5,10 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_LAYOUT_ALGORITHM_H_
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace gfx {
+class Rect;
+}
 
 namespace blink {
 
+class LayoutBox;
 class VTTCueBox;
 
 // VttCueLayoutAlgorithm is responsible to do step 10 of
@@ -17,6 +23,7 @@ class VTTCueBox;
 // This class is used in a ResizeObserver callback for VTTCueBox.
 class VttCueLayoutAlgorithm {
   STACK_ALLOCATED();
+  using PassKey = base::PassKey<VttCueLayoutAlgorithm>;
 
  public:
   explicit VttCueLayoutAlgorithm(VTTCueBox& cue);
@@ -26,6 +33,10 @@ class VttCueLayoutAlgorithm {
  private:
   void AdjustPositionWithSnapToLines();
   void AdjustPositionWithoutSnapToLines();
+
+  // Helpers for AdjustPositionWithSnapToLines():
+
+  static gfx::Rect CueBoundingBox(const LayoutBox& cue_box);
 
   VTTCueBox& cue_;
   float snap_to_lines_position_;

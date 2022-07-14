@@ -87,6 +87,9 @@ void VTTCueBox::ApplyCSSProperties(
                          display_parameters.writing_mode);
 
   const gfx::PointF& position = display_parameters.position;
+  const bool is_horizontal =
+      display_parameters.writing_mode == CSSValueID::kHorizontalTb;
+  original_percent_position_ = is_horizontal ? position.y() : position.x();
 
   // the 'top' property must be set to top,
   SetInlineStyleProperty(CSSPropertyID::kTop, position.y(),
@@ -98,7 +101,7 @@ void VTTCueBox::ApplyCSSProperties(
 
   // the 'width' property must be set to width, and the 'height' property  must
   // be set to height
-  if (display_parameters.writing_mode == CSSValueID::kHorizontalTb) {
+  if (is_horizontal) {
     SetInlineStyleProperty(CSSPropertyID::kWidth, display_parameters.size,
                            CSSPrimitiveValue::UnitType::kPercentage);
     SetInlineStyleProperty(CSSPropertyID::kHeight, CSSValueID::kAuto);
@@ -163,6 +166,7 @@ Node::InsertionNotificationRequest VTTCueBox::InsertedInto(
         ResizeObserver::Create(GetDocument().domWindow(),
                                MakeGarbageCollected<VttCueBoxResizeDelegate>());
     box_size_observer_->observe(this);
+    RevertAdjustment();
   }
   return HTMLDivElement::InsertedInto(insertion_point);
 }
@@ -173,6 +177,18 @@ void VTTCueBox::RemovedFrom(ContainerNode& insertion_point) {
     return;
   box_size_observer_->disconnect();
   box_size_observer_.Clear();
+}
+
+void VTTCueBox::RevertAdjustment() {
+  adjusted_position_ = LayoutUnit::Min();
+}
+
+LayoutUnit VTTCueBox::AdjustedPosition(
+    LayoutUnit full_dimention,
+    base::PassKey<VttCueLayoutAlgorithm>) const {
+  return IsAdjusted()
+             ? adjusted_position_
+             : LayoutUnit(full_dimention * original_percent_position_ / 100);
 }
 
 }  // namespace blink
