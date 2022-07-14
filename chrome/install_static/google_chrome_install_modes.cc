@@ -22,8 +22,6 @@ const size_t kProductPathNameLength = _countof(kProductPathName) - 1;
 
 const char kSafeBrowsingName[] = "googlechrome";
 
-const char kDeviceManagementServerHostName[] = "m.google.com";
-
 const InstallConstants kInstallModes[] = {
     // The primary install mode for stable Google Chrome.
     {

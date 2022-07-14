@@ -60,10 +60,6 @@ extern const size_t kProductPathNameLength;
 // The brand-specific safe browsing client name.
 extern const char kSafeBrowsingName[];
 
-// The brand-specific device management server hostname, or an empty string if
-// the brand does not restrict runtime-configured server URLs.
-extern const char kDeviceManagementServerHostName[];
-
 // A brand's collection of install modes.
 extern const InstallConstants kInstallModes[];
 
