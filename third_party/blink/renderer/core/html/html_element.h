@@ -264,11 +264,13 @@ class CORE_EXPORT HTMLElement : public Element {
       const QualifiedName& attr_name);
 
   void OnDirAttrChanged(const AttributeModificationParams&);
+  void OnFocusgroupAttrChanged(const AttributeModificationParams&);
   void OnFormAttrChanged(const AttributeModificationParams&);
   void OnLangAttrChanged(const AttributeModificationParams&);
   void OnNonceAttrChanged(const AttributeModificationParams&);
-
-  void ReparseAttribute(const AttributeModificationParams&);
+  void OnTabIndexAttrChanged(const AttributeModificationParams&);
+  void OnXMLLangAttrChanged(const AttributeModificationParams&);
+  void OnPopupAttrChanged(const AttributeModificationParams&);
 };
 
 template <typename T>

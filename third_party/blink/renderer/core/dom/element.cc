@@ -3061,60 +3061,6 @@ Element* Element::anchorElement() const {
   return GetTreeScope().getElementById(anchor_id);  // may be null
 }
 
-void Element::MaybeTriggerHoverPopup(Element* popup_element) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (!popup_element || !popup_element->HasValidPopupAttribute())
-    return;
-  // Remove this element from hoverPopupTasks always.
-  popup_element->GetPopupData()->hoverPopupTasks().erase(this);
-  // Only trigger the pop-up if the hoverpopup attribute still points to the
-  // same pop-up, and the pop-up is in the tree and still not showing.
-  if (popup_element->IsInTreeScope() && !popup_element->popupOpen() &&
-      popup_element == GetTreeScope().getElementById(
-                           FastGetAttribute(html_names::kHoverpopupAttr))) {
-    popup_element->showPopUp(ASSERT_NO_EXCEPTION);
-  }
-}
-
-void Element::HandlePopupHovered(bool hovered) {
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
-    return;
-  if (!FastHasAttribute(html_names::kHoverpopupAttr) || !IsInTreeScope())
-    return;
-  Element* popup_element = GetTreeScope().getElementById(
-      FastGetAttribute(html_names::kHoverpopupAttr));
-  if (!popup_element || !popup_element->HasValidPopupAttribute())
-    return;
-  if (hovered) {
-    auto& hover_tasks = popup_element->GetPopupData()->hoverPopupTasks();
-    DCHECK(!hover_tasks.Contains(this));
-
-    // TODO(masonf): Use CSS timeout value instead of this hard-coded timeout.
-    constexpr base::TimeDelta kDelayBeforeShow = base::Milliseconds(100);
-
-    // When we enter an element, we'll post a delayed task for the pop-up we're
-    // targeting. It's possible that multiple nested elements have hoverpopup
-    // attributes pointing to the same pop-up, and in that case, we want to
-    // trigger on the first of them that reaches its timeout threshold.
-    hover_tasks.insert(
-        this,
-        PostDelayedCancellableTask(
-            *GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault),
-            FROM_HERE,
-            WTF::Bind(&Element::MaybeTriggerHoverPopup,
-                      WrapWeakPersistent(this),
-                      WrapWeakPersistent(popup_element)),
-            kDelayBeforeShow));
-  } else {
-    // If we have a task still waiting, cancel it.
-    popup_element->GetPopupData()->hoverPopupTasks().Take(this).Cancel();
-    // TODO(masonf): Still need to implement the code to hide this pop-up after
-    // a configurable delay. That needs to work even if the pop-up wasn't
-    // triggered by a hoverpopup attribute. E.g. a regular pop-up that gets
-    // hidden after it has not been hovered for n seconds.
-  }
-}
-
 void Element::SetNeedsRepositioningForSelectMenu(bool flag) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
@@ -8298,7 +8244,6 @@ void Element::SetHovered(bool hovered) {
     return;
 
   GetDocument().UserActionElements().SetHovered(this, hovered);
-  HandlePopupHovered(hovered);
 
   const ComputedStyle* style = GetComputedStyle();
   if (!style || style->AffectedByHover()) {

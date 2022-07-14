@@ -594,8 +594,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                  HidePopupFocusBehavior,
                                  HidePopupForcingLevel,
                                  HidePopupIndependence);
-  void MaybeTriggerHoverPopup(Element* popup_element);
-  void HandlePopupHovered(bool hovered);
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.
