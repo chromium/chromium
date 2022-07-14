@@ -906,29 +906,46 @@ final class JavaUrlRequest extends UrlRequestBase {
             final Map<String, List<String>> responseHeaders;
             final String negotiatedProtocol;
             final int httpStatusCode;
+            final boolean wasCached;
             if (mUrlResponseInfo != null) {
                 responseHeaders = mUrlResponseInfo.getAllHeaders();
                 negotiatedProtocol = mUrlResponseInfo.getNegotiatedProtocol();
                 httpStatusCode = mUrlResponseInfo.getHttpStatusCode();
+                wasCached = mUrlResponseInfo.wasCached();
             } else {
                 responseHeaders = Collections.emptyMap();
                 negotiatedProtocol = "";
                 httpStatusCode = 0;
+                wasCached = false;
             }
 
-            final long requestHeaderSizeInBytes = estimateHeadersSizeInBytes(mRequestHeaders);
-            // TODO(stefanoduo): Add logic to keep track of body size.
-            final long requestBodySizeInBytes = -1;
+            final long requestHeaderSizeInBytes;
+            final long requestBodySizeInBytes;
+            if (wasCached) {
+                requestHeaderSizeInBytes = 0;
+                requestBodySizeInBytes = 0;
+            } else {
+                requestHeaderSizeInBytes = estimateHeadersSizeInBytes(mRequestHeaders);
+                // TODO(stefanoduo): Add logic to keep track of request body size.
+                requestBodySizeInBytes = -1;
+            }
 
             final long responseBodySizeInBytes;
-            final long responseHeaderSizeInBytes = estimateHeadersSizeInBytesList(responseHeaders);
-            // Content-Length is not mandatory, if missing report a non-valid response body size for
-            // the time being.
-            if (responseHeaders.containsKey("Content-Length")) {
-                responseBodySizeInBytes =
-                        parseContentLengthString(responseHeaders.get("Content-Length").get(0));
+            final long responseHeaderSizeInBytes;
+            if (wasCached) {
+                responseHeaderSizeInBytes = 0;
+                responseBodySizeInBytes = 0;
             } else {
-                responseBodySizeInBytes = -1;
+                responseHeaderSizeInBytes = estimateHeadersSizeInBytesList(responseHeaders);
+                // Content-Length is not mandatory, if missing report a non-valid response body size
+                // for the time being.
+                if (responseHeaders.containsKey("Content-Length")) {
+                    responseBodySizeInBytes =
+                            parseContentLengthString(responseHeaders.get("Content-Length").get(0));
+                } else {
+                    // TODO(stefanoduo): Add logic to keep track of response body size.
+                    responseBodySizeInBytes = -1;
+                }
             }
 
             final Duration headersLatency = Duration.ofSeconds(0);

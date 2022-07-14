@@ -4,6 +4,8 @@
 
 package org.chromium.net.impl;
 
+import static java.lang.Math.max;
+
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -874,14 +876,6 @@ public final class CronetUrlRequest extends UrlRequestBase {
         }
     }
 
-    private static long parseContentLengthString(String contentLength) {
-        try {
-            return Long.parseLong(contentLength);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
     /**
      * Builds the {@link CronetTrafficInfo} associated to this request internal state.
      * This helper methods makes strong assumptions about the state of the request. For this reason
@@ -899,34 +893,49 @@ public final class CronetUrlRequest extends UrlRequestBase {
         final Map<String, List<String>> responseHeaders;
         final String negotiatedProtocol;
         final int httpStatusCode;
+        final boolean wasCached;
         if (mResponseInfo != null) {
             responseHeaders = mResponseInfo.getAllHeaders();
             negotiatedProtocol = mResponseInfo.getNegotiatedProtocol();
             httpStatusCode = mResponseInfo.getHttpStatusCode();
+            wasCached = mResponseInfo.wasCached();
         } else {
             responseHeaders = Collections.emptyMap();
             negotiatedProtocol = "";
             httpStatusCode = 0;
+            wasCached = false;
         }
 
         // TODO(stefanoduo): A better approach might be keeping track of the total length of an
         // upload and use that value as the request body size instead.
         final long requestTotalSizeInBytes = mMetrics.getSentByteCount();
-        final long requestHeaderSizeInBytes = estimateHeadersSizeInBytes(mRequestHeaders);
-        final long requestBodySizeInBytes = requestTotalSizeInBytes - requestHeaderSizeInBytes;
+        final long requestHeaderSizeInBytes;
+        final long requestBodySizeInBytes;
+        // Cached responses might still need to be revalidated over the network before being served
+        // (from UrlResponseInfo#wasCached documentation).
+        if (wasCached && requestTotalSizeInBytes == 0) {
+            // Served from cache without the need to revalidate.
+            requestHeaderSizeInBytes = 0;
+            requestBodySizeInBytes = 0;
+        } else {
+            // Served from cache with the need to revalidate or served from the network directly.
+            requestHeaderSizeInBytes = estimateHeadersSizeInBytes(mRequestHeaders);
+            requestBodySizeInBytes = max(0, requestTotalSizeInBytes - requestHeaderSizeInBytes);
+        }
 
         final long responseTotalSizeInBytes = mMetrics.getReceivedByteCount();
         final long responseBodySizeInBytes;
         final long responseHeaderSizeInBytes;
-        // Content-Length is not mandatory, if missing approximate it by using the response headers
-        // size instead.
-        if (responseHeaders.containsKey("Content-Length")) {
-            responseBodySizeInBytes =
-                    parseContentLengthString(responseHeaders.get("Content-Length").get(0));
-            responseHeaderSizeInBytes = responseTotalSizeInBytes - responseBodySizeInBytes;
+        // Cached responses might still need to be revalidated over the network before being served
+        // (from UrlResponseInfo#wasCached documentation).
+        if (wasCached && responseTotalSizeInBytes == 0) {
+            // Served from cache without the need to revalidate.
+            responseBodySizeInBytes = 0;
+            responseHeaderSizeInBytes = 0;
         } else {
+            // Served from cache with the need to revalidate or served from the network directly.
             responseHeaderSizeInBytes = estimateHeadersSizeInBytes(responseHeaders);
-            responseBodySizeInBytes = responseTotalSizeInBytes - responseHeaderSizeInBytes;
+            responseBodySizeInBytes = max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
         }
 
         final Duration headersLatency;
