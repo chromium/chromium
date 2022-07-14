@@ -36,9 +36,6 @@ export class HoldingSpaceUtil {
    * @return {!Array<?VolumeManagerCommon.VolumeType>}
    */
   static getAllowedVolumeTypes() {
-    // TODO(crbug.com/1228128): Update this to the new configuration style
-    // defined at ../externs/banner.js once fully migrated to the new Banner
-    // framework.
     return [
       VolumeManagerCommon.VolumeType.ANDROID_FILES,
       VolumeManagerCommon.VolumeType.CROSTINI,

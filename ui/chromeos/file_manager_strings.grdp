@@ -1254,9 +1254,6 @@
   <message name="IDS_FILE_BROWSER_PHOTOS_WELCOME_DISMISS" desc="In the Google Photos welcome banner, a text on the button to dismiss the banner.">
     Got it
   </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
-    Touch &amp; hold a file and tap <ph name="ICON">$1</ph>, and select "Pin to shelf" for quick access to your files in shelf.
-  </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE_HTML" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
     Touch &amp; hold a file and tap <ph name="ICON">&lt;span class='icon'&gt;&lt;/span&gt;</ph>, and select "Pin to shelf" for quick access to your files in shelf.
   </message>
