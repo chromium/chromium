@@ -10,7 +10,7 @@
 #if BUILDFLAG(IOS_STACK_PROFILER_ENABLED)
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/profiler/native_unwinder_apple.h"
+#include "base/profiler/frame_pointer_unwinder.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/stack_sampler_impl.h"
 #include "base/profiler/suspendable_thread_delegate_mac.h"
@@ -24,7 +24,7 @@ namespace {
 std::vector<std::unique_ptr<Unwinder>> CreateUnwinders() {
   std::vector<std::unique_ptr<Unwinder>> unwinders;
   if (__builtin_available(iOS 12.0, *)) {
-    unwinders.push_back(std::make_unique<NativeUnwinderApple>());
+    unwinders.push_back(std::make_unique<FramePointerUnwinder>());
   }
   return unwinders;
 }
