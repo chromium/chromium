@@ -15,6 +15,7 @@
 #include "ash/system/network/fake_network_detailed_network_view.h"
 #include "ash/system/network/fake_network_list_mobile_header_view.h"
 #include "ash/system/network/fake_network_list_wifi_header_view.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tri_view.h"
@@ -22,6 +23,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -544,6 +546,8 @@ class NetworkListViewControllerTest : public AshTestBase {
  protected:
   const std::vector<NetworkStatePropertiesPtr> empty_list_;
 
+  base::HistogramTester histogram_tester;
+
  private:
   template <class T>
   T FindViewById(
@@ -576,10 +580,14 @@ class NetworkListViewControllerTest : public AshTestBase {
 TEST_F(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   EXPECT_EQ(nullptr, GetMobileSubHeader());
   EXPECT_EQ(nullptr, GetMobileSeparator());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 0);
 
   AddEuicc();
   SetupCellular();
   EXPECT_NE(nullptr, GetMobileSubHeader());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 1);
 
   // Mobile separator is still null because mobile data is at index 0.
   EXPECT_EQ(nullptr, GetMobileSeparator());
@@ -588,36 +596,50 @@ TEST_F(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   // tether device.
   network_state_helper()->ClearDevices();
   EXPECT_EQ(nullptr, GetMobileSubHeader());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 1);
 
   // Add tether networks
   AddTetherNetworkState();
   EXPECT_NE(nullptr, GetMobileSubHeader());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 2);
 
   // Tether device is prohibited.
   network_state_handler()->SetTetherTechnologyState(
       chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_PROHIBITED);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(nullptr, GetMobileSubHeader());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 2);
 
   // Tether device is uninitialized but is primary user.
   network_state_handler()->SetTetherTechnologyState(
       chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED);
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(nullptr, GetMobileSubHeader());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 3);
 
   // Simulate login as secondary user.
   LoginAsSecondaryUser();
   UpdateNetworkList(empty_list_);
   EXPECT_EQ(nullptr, GetMobileSubHeader());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 3);
 
   // Add tether networks
   AddTetherNetworkState();
   EXPECT_NE(nullptr, GetMobileSubHeader());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 4);
 }
 
 TEST_F(NetworkListViewControllerTest, WifiSectionHeader) {
   EXPECT_EQ(nullptr, GetWifiSubHeader());
   EXPECT_EQ(nullptr, GetWifiSeparator());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kWifiSection, 0);
 
   // Add an enabled wifi device.
   AddWifiDevice();
@@ -628,6 +650,8 @@ TEST_F(NetworkListViewControllerTest, WifiSectionHeader) {
   EXPECT_TRUE(GetWifiSubHeader()->is_toggle_enabled());
   EXPECT_TRUE(GetWifiSubHeader()->is_toggle_on());
   EXPECT_TRUE(GetWifiSubHeader()->is_join_wifi_enabled());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kWifiSection, 1);
 
   // Disable wifi device.
   network_state_handler()->SetTechnologyEnabled(
@@ -639,6 +663,8 @@ TEST_F(NetworkListViewControllerTest, WifiSectionHeader) {
   EXPECT_TRUE(GetWifiSubHeader()->is_toggle_enabled());
   EXPECT_FALSE(GetWifiSubHeader()->is_toggle_on());
   EXPECT_FALSE(GetWifiSubHeader()->is_join_wifi_enabled());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kWifiSection, 1);
 }
 
 TEST_F(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
@@ -750,12 +776,17 @@ TEST_F(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
 
 TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
   std::vector<NetworkStatePropertiesPtr> networks;
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kEthernetSection, 0);
 
   NetworkStatePropertiesPtr ethernet_network =
       CreateStandaloneNetworkProperties(kEthernet, NetworkType::kEthernet,
                                         ConnectionStateType::kNotConnected);
   networks.push_back(std::move(ethernet_network));
   UpdateNetworkList(networks);
+
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kEthernetSection, 1);
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/1,
                            /*mobile_network_count=*/-1,
@@ -775,14 +806,27 @@ TEST_F(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
                            /*mobile_network_count=*/1,
                            /*wifi_network_count=*/0);
 
+  // Metrics is recorded here because when AddEuicc() and SetupCellular() are
+  // called, model()->cros_network_config()->GetNetworkStateList returns an
+  // empty list of networks, this resets the present network list map.
+  // The next call to UpdateNetworkList(networks), the views are re-added and
+  // a metric is recorded.
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kEthernetSection, 2);
+
   // Mobile list item will be at index 3 after ethernet, separator and header.
   CheckNetworkListItem(NetworkType::kCellular, /*index=*/3u,
                        /*guid=*/kCellularName);
-
   ethernet_network = CreateStandaloneNetworkProperties(
       kEthernet2, NetworkType::kEthernet, ConnectionStateType::kNotConnected);
   networks.push_back(std::move(ethernet_network));
   UpdateNetworkList(networks);
+
+  // Metrics is only recorded the first time ethernet section is shown. Here a
+  // new ethernet network was added but the section was already being shown, so
+  // no new metric would be recorded.
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kEthernetSection, 2);
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/2,
                            /*mobile_network_count=*/1,

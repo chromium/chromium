@@ -16,6 +16,7 @@
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tri_view.h"
@@ -202,6 +203,7 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     }
 
     if (!mobile_header_view_) {
+      RecordDetailedViewSection(DetailedViewSection::kMobileSection);
       mobile_header_view_ =
           network_detailed_network_view()->AddMobileSectionHeader();
       mobile_header_view_->SetID(static_cast<int>(
@@ -387,6 +389,7 @@ void NetworkListViewControllerImpl::UpdateMobileSection() {
 
 void NetworkListViewControllerImpl::UpdateWifiSection() {
   if (!wifi_header_view_) {
+    RecordDetailedViewSection(DetailedViewSection::kWifiSection);
     wifi_header_view_ = network_detailed_network_view()->AddWifiSectionHeader();
     wifi_header_view_->SetID(static_cast<int>(
         NetworkListViewControllerViewChildId::kWifiSectionHeader));
@@ -556,6 +559,10 @@ int NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
   NetworkIdToViewMap id_to_view_map;
   NetworkListNetworkItemView* network_view = nullptr;
 
+  // This value is used to determine whether at least one network of |type| type
+  // already existed prior to this method.
+  bool has_reordered_a_network = false;
+
   for (const auto& network : networks) {
     if (!NetworkTypeMatchesType(network->type, type))
       continue;
@@ -566,6 +573,7 @@ int NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
     if (it == previous_views->end()) {
       network_view = network_detailed_network_view()->AddNetworkListItem();
     } else {
+      has_reordered_a_network = true;
       network_view = it->second;
       previous_views->erase(it);
     }
@@ -574,6 +582,14 @@ int NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
     network_view->UpdateViewForNetwork(network);
     network_detailed_network_view()->network_list()->ReorderChildView(
         network_view, index);
+
+    // Only emit ethernet metric each time we show Ethernet section
+    // for the first time. We use |has_reordered_a_network| to determine
+    // if Ethernet networks already exist in network detailed list.
+    if (NetworkTypeMatchesType(network->type, NetworkType::kEthernet) &&
+        !has_reordered_a_network) {
+      RecordDetailedViewSection(DetailedViewSection::kEthernetSection);
+    }
 
     // Increment |index| since this position was taken by |network_view|.
     index++;

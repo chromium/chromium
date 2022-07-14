@@ -9,6 +9,7 @@
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_wifi_header_view_impl.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -22,6 +23,7 @@ NetworkDetailedNetworkViewImpl::NetworkDetailedNetworkViewImpl(
                           NetworkDetailedView::ListType::LIST_TYPE_NETWORK),
       NetworkDetailedNetworkView(delegate) {
   DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
+  RecordDetailedViewSection(DetailedViewSection::kDetailedSection);
 }
 
 NetworkDetailedNetworkViewImpl::~NetworkDetailedNetworkViewImpl() = default;

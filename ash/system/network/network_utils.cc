@@ -13,4 +13,9 @@ void RecordNetworkRowClickedAction(NetworkRowClickedAction action) {
                                 action);
 }
 
+void RecordDetailedViewSection(DetailedViewSection section) {
+  base::UmaHistogramEnumeration("ChromeOS.SystemTray.Network.SectionShown",
+                                section);
+}
+
 }  // namespace ash

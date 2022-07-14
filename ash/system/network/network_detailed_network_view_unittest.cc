@@ -12,8 +12,10 @@
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_wifi_header_view.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -110,6 +112,10 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
     // Wait for network state and device change events to be handled.
     base::RunLoop().RunUntilIdle();
 
+    histogram_tester_.ExpectBucketCount(
+        "ChromeOS.SystemTray.Network.SectionShown",
+        DetailedViewSection::kDetailedSection, 0);
+
     detailed_view_delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
 
@@ -118,6 +124,10 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
             std::make_unique<NetworkDetailedNetworkViewImpl>(
                 detailed_view_delegate_.get(),
                 &fake_network_detailed_network_delagte_);
+
+    histogram_tester_.ExpectBucketCount(
+        "ChromeOS.SystemTray.Network.SectionShown",
+        DetailedViewSection::kDetailedSection, 1);
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
@@ -174,6 +184,7 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
   FakeNetworkDetailedNetworkViewDelegate fake_network_detailed_network_delagte_;
   std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
   NetworkDetailedNetworkViewImpl* network_detailed_network_view_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(NetworkDetailedNetworkViewTest, ViewsAreCreated) {

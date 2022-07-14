@@ -19,7 +19,20 @@ enum class NetworkRowClickedAction {
   kMaxValue = kOpenSimUnlockDialog
 };
 
+// This enum is tied directly to a UMA enum |DetailedViewSection| defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other).
+enum class DetailedViewSection {
+  kWifiSection = 0,
+  kMobileSection = 1,
+  kEthernetSection = 2,
+  kDetailedSection = 3,
+  kMaxValue = kDetailedSection
+};
+
 ASH_EXPORT void RecordNetworkRowClickedAction(NetworkRowClickedAction action);
+
+ASH_EXPORT void RecordDetailedViewSection(DetailedViewSection section);
 
 }  // namespace ash
 

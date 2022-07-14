@@ -24583,6 +24583,13 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="RollbackDisallowed"/>
 </enum>
 
+<enum name="DetailedViewSection">
+  <int value="0" label="WiFi section shown"/>
+  <int value="1" label="Mobile section shown"/>
+  <int value="2" label="Ethernet section shown"/>
+  <int value="3" label="Detailed view shown"/>
+</enum>
+
 <enum name="DeviceActiveClientPsmResponse">
 <!-- This must be kept current with DeviceActivityClient::PsmResponse
         located in ash/components/device_activity/device_activity_client.h -->
