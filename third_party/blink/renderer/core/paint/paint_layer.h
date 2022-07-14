@@ -513,10 +513,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_fixed_position_descendant_;
   }
-  bool HasStickyPositionDescendant() const {
-    DCHECK(!needs_descendant_dependent_flags_update_);
-    return has_sticky_position_descendant_;
-  }
   bool HasNonContainedAbsolutePositionDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_non_contained_absolute_position_descendant_;
@@ -837,7 +833,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // inputs.
   unsigned has_non_isolated_descendant_with_blend_mode_ : 1;
   unsigned has_fixed_position_descendant_ : 1;
-  unsigned has_sticky_position_descendant_ : 1;
   unsigned has_non_contained_absolute_position_descendant_ : 1;
   unsigned has_stacked_descendant_in_current_stacking_context_ : 1;
 

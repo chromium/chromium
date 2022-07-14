@@ -190,7 +190,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       needs_paint_phase_float_(false),
       has_non_isolated_descendant_with_blend_mode_(false),
       has_fixed_position_descendant_(false),
-      has_sticky_position_descendant_(false),
       has_non_contained_absolute_position_descendant_(false),
       has_stacked_descendant_in_current_stacking_context_(false),
       filter_on_effect_node_dirty_(false),
@@ -472,7 +471,6 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     has_visible_self_painting_descendant_ = false;
     has_non_isolated_descendant_with_blend_mode_ = false;
     has_fixed_position_descendant_ = false;
-    has_sticky_position_descendant_ = false;
     has_non_contained_absolute_position_descendant_ = false;
     has_stacked_descendant_in_current_stacking_context_ = false;
     has_self_painting_layer_descendant_ = false;
@@ -507,9 +505,6 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       has_fixed_position_descendant_ |=
           child->HasFixedPositionDescendant() ||
           child_style.GetPosition() == EPosition::kFixed;
-      has_sticky_position_descendant_ |=
-          child->HasStickyPositionDescendant() ||
-          child_style.GetPosition() == EPosition::kSticky;
 
       if (!can_contain_abs) {
         has_non_contained_absolute_position_descendant_ |=
