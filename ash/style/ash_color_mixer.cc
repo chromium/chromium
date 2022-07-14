@@ -20,6 +20,13 @@ namespace ash {
 
 namespace {
 
+constexpr int kAlpha20 = SK_AlphaOPAQUE * 0.2f;
+constexpr int kAlpha40 = SK_AlphaOPAQUE * 0.4f;
+constexpr int kAlpha60 = SK_AlphaOPAQUE * 0.6f;
+constexpr int kAlpha80 = SK_AlphaOPAQUE * 0.8f;
+constexpr int kAlpha90 = SK_AlphaOPAQUE * 0.9f;
+constexpr int kAlpha95 = SK_AlphaOPAQUE * 0.95f;
+
 void AddShieldAndBaseColors(ui::ColorMixer& mixer,
                             const ui::ColorProviderManager::Key& key) {
   const bool use_dark_color =
@@ -32,20 +39,65 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
   // the value of `use_color` here.
   const SkColor background_color =
       key.user_color.value_or(default_background_color);
-  mixer[kColorAshShieldAndBase20] = {
-      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.2f)};
-  mixer[kColorAshShieldAndBase40] = {
-      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.4f)};
-  mixer[kColorAshShieldAndBase60] = {
-      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.6f)};
-  mixer[kColorAshShieldAndBase80] = {
-      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.8f)};
-  mixer[kColorAshShieldAndBase90] = {
-      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.9f)};
-  mixer[kColorAshShieldAndBase95] = {
-      SkColorSetA(background_color, SK_AlphaOPAQUE * 0.95f)};
+  mixer[kColorAshShieldAndBase20] = {SkColorSetA(background_color, kAlpha20)};
+  mixer[kColorAshShieldAndBase40] = {SkColorSetA(background_color, kAlpha40)};
+  mixer[kColorAshShieldAndBase60] = {SkColorSetA(background_color, kAlpha60)};
+  mixer[kColorAshShieldAndBase80] = {SkColorSetA(background_color, kAlpha80)};
+  mixer[kColorAshShieldAndBase90] = {SkColorSetA(background_color, kAlpha90)};
+  mixer[kColorAshShieldAndBase95] = {SkColorSetA(background_color, kAlpha95)};
   mixer[kColorAshShieldAndBaseOpaque] = {
       SkColorSetA(background_color, SK_AlphaOPAQUE)};
+}
+
+// Mappings of Controls Colors for Material 2.
+void AddControlsColors(ui::ColorMixer& mixer,
+                       const ui::ColorProviderManager::Key& key) {
+  const bool use_dark_color =
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+
+  // ControlsLayer colors
+  mixer[kColorAshHairlineBorderColor] =
+      use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x24))
+                     : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x24));
+  mixer[kColorAshControlBackgroundColorActive] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleBlue300)
+                     : ui::ColorTransform(gfx::kGoogleBlue600);
+  mixer[kColorAshControlBackgroundColorInactive] =
+      use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x1A))
+                     : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x0D));
+  mixer[kColorAshControlBackgroundColorAlert] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleRed300)
+                     : ui::ColorTransform(gfx::kGoogleRed600);
+  mixer[kColorAshControlBackgroundColorWarning] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleYellow300)
+                     : ui::ColorTransform(gfx::kGoogleYellow600);
+  mixer[kColorAshControlBackgroundColorPositive] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGreen300)
+                     : ui::ColorTransform(gfx::kGoogleGreen600);
+  mixer[kColorAshFocusAuraColor] =
+      use_dark_color
+          ? ui::ColorTransform(SkColorSetA(gfx::kGoogleBlue300, 0x3D))
+          : ui::ColorTransform(SkColorSetA(gfx::kGoogleBlue600, 0x3D));
+  mixer[ui::kColorAshFocusRing] = use_dark_color
+                                      ? ui::ColorTransform(gfx::kGoogleBlue300)
+                                      : ui::ColorTransform(gfx::kGoogleBlue600);
+
+  mixer[ui::kColorAshSystemUIBorderColor1] =
+      use_dark_color ? ui::ColorTransform(kColorAshShieldAndBase80)
+                     : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x0F));
+  mixer[ui::kColorAshSystemUIBorderColor2] =
+      use_dark_color ? ui::ColorTransform(kColorAshShieldAndBase60)
+                     : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x0F));
+  mixer[ui::kColorAshSystemUIBorderColor3] = {SkColorSetA(SK_ColorBLACK, 0x0F)};
+
+  mixer[ui::kColorAshSystemUIHighlightColor1] =
+      use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x14))
+                     : ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x4C));
+  mixer[ui::kColorAshSystemUIHighlightColor2] =
+      use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x0F))
+                     : ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x33));
+  mixer[ui::kColorAshSystemUIHighlightColor3] = {
+      ui::kColorAshSystemUIHighlightColor1};
 }
 
 }  // namespace
@@ -67,6 +119,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   ui::ColorMixer& mixer = provider->AddMixer();
 
   AddShieldAndBaseColors(mixer, key);
+  AddControlsColors(mixer, key);
 
   mixer[ui::kColorAshActionLabelFocusRingEdit] = {gfx::kGoogleBlue300};
   mixer[ui::kColorAshActionLabelFocusRingError] = {gfx::kGoogleRed300};
@@ -79,8 +132,6 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshAppListSeparator] =
       ui::SetAlpha(gfx::kGoogleGrey900, 0x24);
   mixer[ui::kColorAshArcInputMenuSeparator] = {SK_ColorGRAY};
-  mixer[ui::kColorAshFocusRing] = {ash_color_provider->GetControlsLayerColor(
-      ash::AshColorProvider::ControlsLayerType::kFocusRingColor)};
   mixer[ui::kColorAshEditFinishFocusRing] = {gfx::kGoogleBlue300};
   mixer[ui::kColorAshIconInOobe] = {kIconColorInOobe};
 
@@ -91,39 +142,16 @@ void AddAshColorMixer(ui::ColorProvider* provider,
 
   mixer[ui::kColorAshOnboardingFocusRing] = {gfx::kGoogleBlue300};
 
-  mixer[ui::kColorAshSystemUIBorderColor1] = {
-      ash_color_provider->GetControlsLayerColor(
-          ash::AshColorProvider::ControlsLayerType::kBorderColor1)};
-  mixer[ui::kColorAshSystemUIBorderColor2] = {
-      ash_color_provider->GetControlsLayerColor(
-          ash::AshColorProvider::ControlsLayerType::kBorderColor2)};
-  mixer[ui::kColorAshSystemUIBorderColor3] = {
-      ash_color_provider->GetControlsLayerColor(
-          ash::AshColorProvider::ControlsLayerType::kBorderColor3)};
-  mixer[ui::kColorAshSystemUIHighlightColor1] = {
-      ash_color_provider->GetControlsLayerColor(
-          ash::AshColorProvider::ControlsLayerType::kHighlightColor1)};
-  mixer[ui::kColorAshSystemUIHighlightColor2] = {
-      ash_color_provider->GetControlsLayerColor(
-          ash::AshColorProvider::ControlsLayerType::kHighlightColor2)};
-  mixer[ui::kColorAshSystemUIHighlightColor3] = {
-      ash_color_provider->GetControlsLayerColor(
-          ash::AshColorProvider::ControlsLayerType::kHighlightColor3)};
-
   if (!features::IsDarkLightModeEnabled()) {
     ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
     mixer[ui::kColorAshSystemUILightBorderColor1] = {
-        ash_color_provider->GetControlsLayerColor(
-            ash::AshColorProvider::ControlsLayerType::kBorderColor1)};
+        ui::kColorAshSystemUIBorderColor1};
     mixer[ui::kColorAshSystemUILightBorderColor2] = {
-        ash_color_provider->GetControlsLayerColor(
-            ash::AshColorProvider::ControlsLayerType::kBorderColor1)};
+        ui::kColorAshSystemUIBorderColor2};
     mixer[ui::kColorAshSystemUILightHighlightColor1] = {
-        ash_color_provider->GetControlsLayerColor(
-            ash::AshColorProvider::ControlsLayerType::kHighlightColor1)};
+        ui::kColorAshSystemUIHighlightColor1};
     mixer[ui::kColorAshSystemUILightHighlightColor2] = {
-        ash_color_provider->GetControlsLayerColor(
-            ash::AshColorProvider::ControlsLayerType::kHighlightColor2)};
+        ui::kColorAshSystemUIHighlightColor2};
     return;
   }
 

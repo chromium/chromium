@@ -9,6 +9,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
@@ -17,6 +18,8 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
 
@@ -133,7 +136,8 @@ SkColor AshColorProvider::GetBaseLayerColor(BaseLayerType type) const {
 }
 
 SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
-  return GetControlsLayerColorImpl(type, IsDarkModeEnabled());
+  // TODO(skau): Delete this function
+  return GetControlsLayerColorImpl(type);
 }
 
 SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
@@ -222,43 +226,41 @@ SkColor AshColorProvider::GetBaseLayerColorImpl(BaseLayerType type,
       kAlphas[static_cast<int>(type)]);
 }
 
-SkColor AshColorProvider::GetControlsLayerColorImpl(ControlsLayerType type,
-                                                    bool use_dark_color) const {
+SkColor AshColorProvider::GetControlsLayerColorImpl(
+    ControlsLayerType type) const {
+  // TODO(crbug.com/1292244): Delete this function after all callers migrate.
+  auto* color_provider = GetColorProvider();
+  DCHECK(color_provider);
+
   switch (type) {
     case ControlsLayerType::kHairlineBorderColor:
-      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x24)
-                            : SkColorSetA(SK_ColorBLACK, 0x24);
+      return color_provider->GetColor(kColorAshHairlineBorderColor);
     case ControlsLayerType::kControlBackgroundColorActive:
-      return use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
+      return color_provider->GetColor(kColorAshControlBackgroundColorActive);
     case ControlsLayerType::kControlBackgroundColorInactive:
-      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x1A)
-                            : SkColorSetA(SK_ColorBLACK, 0x0D);
+      return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
     case ControlsLayerType::kControlBackgroundColorAlert:
-      return use_dark_color ? gfx::kGoogleRed300 : gfx::kGoogleRed600;
+      return color_provider->GetColor(kColorAshControlBackgroundColorAlert);
     case ControlsLayerType::kControlBackgroundColorWarning:
-      return use_dark_color ? gfx::kGoogleYellow300 : gfx::kGoogleYellow600;
+      return color_provider->GetColor(kColorAshControlBackgroundColorWarning);
     case ControlsLayerType::kControlBackgroundColorPositive:
-      return use_dark_color ? gfx::kGoogleGreen300 : gfx::kGoogleGreen600;
+      return color_provider->GetColor(kColorAshControlBackgroundColorPositive);
     case ControlsLayerType::kFocusAuraColor:
-      return use_dark_color ? SkColorSetA(gfx::kGoogleBlue300, 0x3D)
-                            : SkColorSetA(gfx::kGoogleBlue600, 0x3D);
+      return color_provider->GetColor(kColorAshFocusAuraColor);
     case ControlsLayerType::kFocusRingColor:
-      return use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
+      return color_provider->GetColor(ui::kColorAshFocusRing);
     case ControlsLayerType::kHighlightColor1:
-    case ControlsLayerType::kHighlightColor3:
-      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x14)
-                            : SkColorSetA(SK_ColorWHITE, 0x4C);
-    case ControlsLayerType::kBorderColor1:
-      return use_dark_color ? GetBaseLayerColor(BaseLayerType::kTransparent80)
-                            : SkColorSetA(SK_ColorBLACK, 0x0F);
+      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor1);
     case ControlsLayerType::kHighlightColor2:
-      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x0F)
-                            : SkColorSetA(SK_ColorWHITE, 0x33);
+      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor2);
+    case ControlsLayerType::kHighlightColor3:
+      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor3);
+    case ControlsLayerType::kBorderColor1:
+      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor1);
     case ControlsLayerType::kBorderColor2:
-      return use_dark_color ? GetBaseLayerColor(BaseLayerType::kTransparent60)
-                            : SkColorSetA(SK_ColorBLACK, 0x0F);
+      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor2);
     case ControlsLayerType::kBorderColor3:
-      return SkColorSetA(SK_ColorBLACK, 0x0F);
+      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor3);
   }
 }
 
@@ -358,6 +360,12 @@ SkColor AshColorProvider::GetBackgroundThemedColorImpl(
                   use_dark_color ? kDarkBackgroundBlendAlpha
                                  : kLightBackgroundBlendAlpha),
       muted_color);
+}
+
+ui::ColorProvider* AshColorProvider::GetColorProvider() const {
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      native_theme->GetColorProviderKey(nullptr));
 }
 
 }  // namespace ash

@@ -18,7 +18,14 @@ namespace ash {
   E_CPONLY(kColorAshShieldAndBase80) \
   E_CPONLY(kColorAshShieldAndBase90) \
   E_CPONLY(kColorAshShieldAndBase95) \
-  E_CPONLY(kColorAshShieldAndBaseOpaque)
+  E_CPONLY(kColorAshShieldAndBaseOpaque) \
+  E_CPONLY(kColorAshHairlineBorderColor) \
+  E_CPONLY(kColorAshControlBackgroundColorActive) \
+  E_CPONLY(kColorAshControlBackgroundColorAlert) \
+  E_CPONLY(kColorAshControlBackgroundColorInactive) \
+  E_CPONLY(kColorAshControlBackgroundColorWarning) \
+  E_CPONLY(kColorAshControlBackgroundColorPositive) \
+  E_CPONLY(kColorAshFocusAuraColor)
 
 #include "ui/color/color_id_macros.inc"
 

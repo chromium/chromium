@@ -11,6 +11,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 
+namespace ui {
+class ColorProvider;
+}
+
 namespace ash {
 
 // TODO(minch): AshColorProvider is not needed to be a class now.
@@ -77,8 +81,7 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   SkColor GetBaseLayerColorImpl(BaseLayerType type, bool inverted) const;
   // Gets the color of |type| of the corresponding layer. Returns the color on
   // dark mode if |use_dark_color| is true.
-  SkColor GetControlsLayerColorImpl(ControlsLayerType type,
-                                    bool use_dark_color) const;
+  SkColor GetControlsLayerColorImpl(ControlsLayerType type) const;
   SkColor GetContentLayerColorImpl(ContentLayerType type,
                                    bool use_dark_color) const;
 
@@ -94,6 +97,10 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   // dark mode if |use_dark_color| is true.
   SkColor GetBackgroundThemedColorImpl(SkColor default_color,
                                        bool use_dark_color) const;
+
+  // Returns a ColorProvider for the current NativeTheme which will correctly
+  // reflect the current ColorMode.
+  ui::ColorProvider* GetColorProvider() const;
 };
 
 }  // namespace ash

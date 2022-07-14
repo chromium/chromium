@@ -9,7 +9,7 @@
 
 namespace ui {
 class ColorProvider;
-}
+}  // namespace ui
 
 namespace ash {
 
