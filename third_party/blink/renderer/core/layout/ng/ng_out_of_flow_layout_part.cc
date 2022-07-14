@@ -1193,13 +1193,14 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     ClearCollectionScope<HeapVector<NodeToLayout>> fragmented_descendants_scope(
         &fragmented_descendants);
     fragmentainer_consumed_block_size_ = LayoutUnit();
-    wtf_size_t num_children = container_builder_->Children().size();
+    auto& children = FragmentationContextChildren();
+    wtf_size_t num_children = children.size();
 
     // Layout the OOF descendants in order of fragmentainer index.
     for (wtf_size_t index = 0; index < descendants_to_layout.size(); index++) {
       const NGPhysicalFragment* fragment = nullptr;
       if (index < num_children)
-        fragment = container_builder_->Children()[index].fragment;
+        fragment = children[index].fragment;
 
       // Skip over any column spanners.
       if (!fragment || fragment->IsFragmentainerBox()) {
@@ -1210,7 +1211,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                                   &fragmented_descendants);
         // Retrieve the updated or newly added fragmentainer, and add its block
         // contribution to the consumed block size.
-        fragment = container_builder_->Children()[index].fragment;
+        fragment = children[index].fragment;
         fragmentainer_consumed_block_size_ +=
             fragment->Size()
                 .ConvertToLogical(container_builder_->Style().GetWritingMode())
@@ -1680,7 +1681,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     wtf_size_t index,
     LogicalOffset fragmentainer_progression,
     HeapVector<NodeToLayout>* fragmented_descendants) {
-  wtf_size_t num_children = container_builder_->Children().size();
+  auto& children = FragmentationContextChildren();
+  wtf_size_t num_children = children.size();
   bool is_new_fragment = index >= num_children;
 
   DCHECK(fragmented_descendants);
@@ -1701,14 +1703,13 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
 
   // If we are a new fragment, find a non-spanner fragmentainer as a basis.
   wtf_size_t original_index = index;
-  while (
-      index >= num_children ||
-      !container_builder_->Children()[index].fragment->IsFragmentainerBox()) {
+  while (index >= num_children ||
+         !children[index].fragment->IsFragmentainerBox()) {
     DCHECK_GT(num_children, 0u);
     index--;
   }
 
-  const auto& fragmentainer = container_builder_->Children()[index];
+  const auto& fragmentainer = children[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
   const NGBlockNode& node = container_builder_->Node();
   const auto* fragment =
@@ -1847,7 +1848,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
       // https://www.w3.org/TR/CSS22/page.html#page-box
       DCHECK(container_builder_->Node().IsPaginatedRoot());
       container = To<NGPhysicalBoxFragment>(
-          container_builder_->Children()[0].fragment.Get());
+          FragmentationContextChildren()[0].fragment.Get());
     }
 
     LogicalOffset legacy_offset =
@@ -1907,12 +1908,13 @@ LogicalOffset NGOutOfFlowLayoutPart::UpdatedFragmentainerOffset(
     LogicalOffset fragmentainer_progression,
     bool create_new_fragment) {
   if (create_new_fragment) {
-    wtf_size_t num_children = container_builder_->Children().size();
-    if (index != num_children - 1 && !container_builder_->Children()[index + 1]
-                                          .fragment->IsFragmentainerBox()) {
+    auto& children = FragmentationContextChildren();
+    wtf_size_t num_children = children.size();
+    if (index != num_children - 1 &&
+        !children[index + 1].fragment->IsFragmentainerBox()) {
       // If we are a new fragment and are separated from other columns by a
       // spanner, compute the correct column offset to use.
-      const auto& spanner = container_builder_->Children()[index + 1];
+      const auto& spanner = children[index + 1];
       DCHECK(spanner.fragment->IsColumnSpanAll());
 
       offset = spanner.offset;
@@ -1929,7 +1931,8 @@ LogicalOffset NGOutOfFlowLayoutPart::UpdatedFragmentainerOffset(
 
 NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
     wtf_size_t index) {
-  wtf_size_t num_children = container_builder_->Children().size();
+  auto& children = FragmentationContextChildren();
+  wtf_size_t num_children = children.size();
   bool is_new_fragment = index >= num_children;
   // Allow margins to be discarded if this is not the first column in the
   // multicol container, and we're not right after a spanner.
@@ -1939,19 +1942,18 @@ NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
   // spanner), and this is the first column in the next outer fragmentainer, we
   // should still discard margins, since there is no explicit break involved.
   bool allow_discard_start_margin =
-      is_new_fragment || (index > 0 && container_builder_->Children()[index - 1]
-                                           .fragment->IsFragmentainerBox());
+      is_new_fragment ||
+      (index > 0 && children[index - 1].fragment->IsFragmentainerBox());
 
   // If we are a new fragment, find a non-spanner fragmentainer to base our
   // constraint space off of.
-  while (
-      index >= num_children ||
-      !container_builder_->Children()[index].fragment->IsFragmentainerBox()) {
+  while (index >= num_children ||
+         !children[index].fragment->IsFragmentainerBox()) {
     DCHECK_GT(num_children, 0u);
     index--;
   }
 
-  const auto& fragmentainer = container_builder_->Children()[index];
+  const auto& fragmentainer = children[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
   const auto& fragment = To<NGPhysicalBoxFragment>(*fragmentainer.fragment);
   const WritingMode container_writing_mode =
@@ -1963,8 +1965,7 @@ NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
   // spanner, compute the correct column block size to use.
   if (is_new_fragment && index != num_children - 1 &&
       original_column_block_size_ != kIndefiniteSize &&
-      !container_builder_->Children()[index + 1]
-           .fragment->IsFragmentainerBox()) {
+      !children[index + 1].fragment->IsFragmentainerBox()) {
     column_size.block_size =
         original_column_block_size_ -
         container_builder_->BlockOffsetForAdditionalColumns();
@@ -2004,9 +2005,10 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   LayoutUnit current_max_block_size;
   // The block size for the last fragmentainer we encountered.
   LayoutUnit fragmentainer_block_size;
+  auto& children = FragmentationContextChildren();
   // TODO(bebeaudr): There is a possible performance improvement here as we'll
   // repeat this for each abspos in a same fragmentainer.
-  for (auto& child : container_builder_->Children()) {
+  for (auto& child : children) {
     if (child.fragment->IsFragmentainerBox()) {
       fragmentainer_block_size = child.fragment->Size()
                                      .ConvertToLogical(default_writing_mode)
@@ -2040,8 +2042,7 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   // If we are a new fragment and are separated from other columns by a
   // spanner, compute the correct fragmentainer_block_size.
   if (original_column_block_size_ != kIndefiniteSize &&
-      !container_builder_->Children()[child_index - 1]
-           .fragment->IsFragmentainerBox()) {
+      !children[child_index - 1].fragment->IsFragmentainerBox()) {
     fragmentainer_block_size =
         original_column_block_size_ -
         container_builder_->BlockOffsetForAdditionalColumns();
@@ -2134,8 +2135,8 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
     DCHECK(!box.IsColumnSpanAll());
     // We're currently laying out |containing_block|, and it's a multicol
     // container. Search inside fragmentainer children in the builder.
-    for (const NGContainerFragmentBuilder::ChildWithOffset& child :
-         container_builder_->Children()) {
+    auto& children = FragmentationContextChildren();
+    for (const NGContainerFragmentBuilder::ChildWithOffset& child : children) {
       if (ReplaceFragmentainerChild(*child.fragment))
         return;
     }

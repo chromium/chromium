@@ -342,6 +342,12 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   NGLogicalStaticPosition ToStaticPositionForLegacy(
       NGLogicalStaticPosition position) const;
 
+  const NGContainerFragmentBuilder::ChildrenVector&
+  FragmentationContextChildren() const {
+    DCHECK(container_builder_->IsBlockFragmentationContextRoot());
+    return container_builder_->Children();
+  }
+
   NGBoxFragmentBuilder* container_builder_;
   ContainingBlockInfo default_containing_block_info_for_absolute_;
   ContainingBlockInfo default_containing_block_info_for_fixed_;
