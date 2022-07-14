@@ -8,10 +8,13 @@
 #include <cstdint>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/debug_utils.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {
@@ -209,7 +212,8 @@ bool BackForwardCacheCanStoreDocumentResult::operator==(
          disabled_reasons() == other.disabled_reasons() &&
          browsing_instance_swap_result() ==
              other.browsing_instance_swap_result() &&
-         disallow_activation_reasons() == other.disallow_activation_reasons();
+         disallow_activation_reasons() == other.disallow_activation_reasons() &&
+         ax_events() == other.ax_events();
 }
 
 bool BackForwardCacheCanStoreDocumentResult::HasNotRestoredReason(
@@ -469,6 +473,17 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToDisallowActivation(
   disallow_activation_reasons_.insert(reason);
 }
 
+void BackForwardCacheCanStoreDocumentResult::NoDueToAXEvents(
+    const std::vector<ui::AXEvent>& events) {
+  DCHECK(base::FeatureList::IsEnabled(features::kEvictOnAXEvents));
+  for (auto& event : events) {
+    ax_events_.insert(event.event_type);
+  }
+  AddNotRestoredReason(
+      BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
+  disallow_activation_reasons_.insert(DisallowActivationReasonId::kAXEvent);
+}
+
 void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
   not_restored_reasons_.PutAll(other.not_restored_reasons_);
@@ -481,6 +496,9 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     browsing_instance_swap_result_ = other.browsing_instance_swap_result_;
   for (const auto reason : other.disallow_activation_reasons()) {
     disallow_activation_reasons_.insert(reason);
+  }
+  for (const auto event : other.ax_events()) {
+    ax_events_.insert(event);
   }
 }
 
