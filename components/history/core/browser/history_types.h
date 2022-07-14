@@ -78,7 +78,14 @@ class VisitRow {
     return visit_time < other.visit_time;
   }
 
-  // ID of this row (visit ID, used a a referrer for other visits).
+  // Row ID of this visit in the table. Some nuances with this ID:
+  //  - Do NOT assume that a higher `visit_id` implies a more recent visit.
+  //    For example: A Mobile phone that recently got back online can sync a
+  //    bunch of older visits onto a Desktop machine all at once.
+  //  - Do NOT assume that `visit_id` for the same synced visit matches across
+  //    devices. This is just a local AUTOINCREMENTed SQL row ID that has no
+  //    special meaning or uniqueness guarantee outside of this local machine.
+  //  - See `originator_cache_guid` and `originator_visit_id` for more details.
   VisitID visit_id = 0;
 
   // Row ID into the URL table of the URL that this page is.
