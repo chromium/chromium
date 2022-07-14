@@ -35,8 +35,16 @@ use_goma = true
 is_debug = false
 dcheck_always_on = true
 use_backup_ref_ptr = true
-use_partition_alloc = true
 enable_dangling_raw_ptr_checks = true
+```
+
+We want to emphasize that `is_debug = false` is important. It is a common
+mistake to set it to true, which in turn turns on component builds, which
+disabled PartitionAlloc-Everywhere. `use_backup_ref_ptr = true` can't be used
+without PartitionAlloc-Everywhere, leading to error:
+```
+ERROR at //base/allocator/allocator.gni:126:3: Assertion failed.
+  assert(!use_backup_ref_ptr || use_allocator == "partition",
 ```
 
 ## Runtime flags
@@ -56,7 +64,7 @@ By default, Chrome will crash on the first dangling raw_ptr detected.
 --enable-features=PartitionAllocBackupRefPtr,PartitionAllocDanglingPtr:mode/crash
 ```
 
-### Record a list of signatures 
+### Record a list of signatures
 
 Example usage:
 ```bash
