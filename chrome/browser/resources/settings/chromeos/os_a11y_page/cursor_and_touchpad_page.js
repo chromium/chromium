@@ -195,6 +195,17 @@ class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
+       * Whether a setting for enabling shelf navigation buttons in tablet mode
+       * should be displayed in the accessibility settings.
+       * @protected
+       */
+      showShelfNavigationButtonsSettings_: {
+        type: Boolean,
+        computed:
+            'computeShowShelfNavigationButtonsSettings_(isKioskModeActive_)',
+      },
+
+      /**
        * Boolean indicating whether shelf navigation buttons should implicitly
        * be enabled in tablet mode - the navigation buttons are implicitly
        * enabled when spoken feedback, automatic clicks, or switch access are

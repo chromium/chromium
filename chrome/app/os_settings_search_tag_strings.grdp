@@ -1269,6 +1269,15 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGHLIGHT_TEXT_CARET_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable highlighting the text caret when it appears or moves. Alternate phrase for: 'Highlight text caret'">
     Text cursor highlighter
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CURSOR_AND_TOUCHPAD_PAGE" desc="Text for search result item which, when clicked, navigates the user to cursor and touchpad accessibility settings. Alternate phrase for: 'Mouse accessibility settings'">
+    Cursor and touchpad
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CURSOR_AND_TOUCHPAD_PAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to cursor and touchpad accessibility settings. Alternate phrase for: 'Cursor and touchpad'">
+    Mouse accessibility settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_CURSOR_AND_TOUCHPAD_PAGE_ALT2" desc="Text for search result item which, when clicked, navigates the user to cursor and touchpad accessibility settings. Alternate phrase for: 'Cursor and touchpad'">
+    Pointer accessibility settings
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable automatically clicking when the cursor stops.">
     Automatically click when cursor stops
   </message>
@@ -1305,6 +1314,19 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_TABLET_NAVIGATION_BUTTONS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable showing navigation buttons (launcher, back, overview) in the shelf when the device is in tablet mode.">
     Tablet navigation buttons
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE" desc="Text for search result item which, when clicked, navigates the user to audio and captions accessibility settings. Alternate phrase for: 'Subtitles'">
+    Audio and captions
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to audio and captions accessibility settings. Alternate phrase for: 'Audio and captions'">
+    Subtitles
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE_ALT2" desc="Text for search result item which, when clicked, navigates the user to audio and captions accessibility settings. Alternate phrase for: 'Audio and captions'">
+    Closed captions
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_AUDIO_AND_CAPTIONS_PAGE_ALT3" desc="Text for search result item which, when clicked, navigates the user to audio and captions accessibility settings. Alternate phrase for: 'Audio and captions'">
+    Text for audio
+  </message>
+
   <message name="IDS_OS_SETTINGS_TAG_A11Y_MONO_AUDIO" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable mono audio (the same sound with all speakers). Alternate phrase for: 'Same audio with all speakers'">
     Mono audio
   </message>
