@@ -1,30 +1,35 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview
- * 'settings-text-to-speech-page' is the accessibility settings subpage
- * for text-to-speech accessibility settings.
+ * 'settings-keyboard-and-text-input-page' is the accessibility settings subpage
+ * for keyboard and text input accessibility settings.
  */
 
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
-import {TextToSpeechPageBrowserProxy, TextToSpeechPageBrowserProxyImpl} from './text_to_speech_page_browser_proxy.js';
+import {KeyboardAndTextInputPageBrowserProxy, KeyboardAndTextInputPageBrowserProxyImpl} from './keyboard_and_text_input_page_browser_proxy.js';
 
 
 /**
@@ -36,7 +41,7 @@ import {TextToSpeechPageBrowserProxy, TextToSpeechPageBrowserProxyImpl} from './
  * @implements {RouteOriginBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
-const SettingsTextToSpeechPageElementBase = mixinBehaviors(
+const SettingsKeyboardAndTextInputPageElementBase = mixinBehaviors(
     [
       DeepLinkingBehavior,
       I18nBehavior,
@@ -47,10 +52,10 @@ const SettingsTextToSpeechPageElementBase = mixinBehaviors(
     PolymerElement);
 
 /** @polymer */
-class SettingsTextToSpeechPageElement extends
-    SettingsTextToSpeechPageElementBase {
+class SettingsKeyboardAndTextInputPageElement extends
+    SettingsKeyboardAndTextInputPageElementBase {
   static get is() {
-    return 'settings-text-to-speech-page';
+    return 'settings-keyboard-and-text-input-page';
   }
 
   static get template() {
@@ -68,11 +73,15 @@ class SettingsTextToSpeechPageElement extends
       },
 
       /**
-       * |hasKeyboard_| starts undefined so observer doesn't trigger until it
-       * has been populated.
-       * @private
+       * Whether the user is in kiosk mode.
+       * @protected
        */
-      hasKeyboard_: Boolean,
+      isKioskModeActive_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isKioskModeActive');
+        },
+      },
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
@@ -81,8 +90,12 @@ class SettingsTextToSpeechPageElement extends
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
-          Setting.kChromeVox,
-          Setting.kSelectToSpeak,
+          Setting.kStickyKeys,
+          Setting.kOnScreenKeyboard,
+          Setting.kDictation,
+          Setting.kHighlightKeyboardFocus,
+          Setting.kHighlightTextCaret,
+          Setting.kEnableSwitchAccess,
         ]),
       },
     };
@@ -93,31 +106,22 @@ class SettingsTextToSpeechPageElement extends
     super();
 
     /** RouteOriginBehavior override */
-    this.route_ = routes.A11Y_TEXT_TO_SPEECH;
+    this.route_ = routes.A11Y_KEYBOARD_AND_TEXT_INPUT;
 
-    /** @private {!TextToSpeechPageBrowserProxy} */
-    this.textToSpeechBrowserProxy_ =
-        TextToSpeechPageBrowserProxyImpl.getInstance();
-
-    /** @private {!DevicePageBrowserProxy} */
-    this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
-    this.addWebUIListener(
-        'has-hardware-keyboard',
-        (hasKeyboard) => this.set('hasKeyboard_', hasKeyboard));
-    this.deviceBrowserProxy_.initializeKeyboardWatcher();
+    /** @private {!KeyboardAndTextInputPageBrowserProxy} */
+    this.keyboardAndTextInputBrowserProxy_ =
+        KeyboardAndTextInputPageBrowserProxyImpl.getInstance();
   }
 
   /** @override */
   ready() {
     super.ready();
+    this.keyboardAndTextInputBrowserProxy_.keyboardAndTextInputPageReady();
 
-    this.addFocusConfig(routes.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
+    const r = routes;
+    this.addFocusConfig(
+        r.MANAGE_SWITCH_ACCESS_SETTINGS, '#switchAccessSubpageButton');
+    this.addFocusConfig(r.KEYBOARD, '#keyboardSubpageButton');
   }
 
   /**
@@ -130,51 +134,40 @@ class SettingsTextToSpeechPageElement extends
     RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, prevRoute);
 
     // Does not apply to this page.
-    if (newRoute !== routes.A11Y_TEXT_TO_SPEECH) {
+    if (newRoute !== routes.A11Y_KEYBOARD_AND_TEXT_INPUT) {
       return;
     }
 
     this.attemptDeepLink();
   }
 
+  /** @private */
+  onSwitchAccessSettingsTap_() {
+    Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
+  }
+
+  /** @private */
+  onKeyboardTap_() {
+    Router.getInstance().navigateTo(
+        routes.KEYBOARD,
+        /* dynamicParams */ null, /* removeSearch */ true);
+  }
+
   /**
-   * Updates the Select-to-Speak description text based on:
-   *    1. Whether Select-to-Speak is enabled.
-   *    2. If it is enabled, whether a physical keyboard is present.
-   * @param {boolean} enabled
-   * @param {boolean} hasKeyboard
+   * @param {!Event} event
    * @private
    */
-  getSelectToSpeakDescription_(enabled, hasKeyboard) {
-    if (!enabled) {
-      return this.i18n('selectToSpeakDisabledDescription');
+  onA11yCaretBrowsingChange_(event) {
+    if (event.target.checked) {
+      chrome.metricsPrivate.recordUserAction(
+          'Accessibility.CaretBrowsing.EnableWithSettings');
+    } else {
+      chrome.metricsPrivate.recordUserAction(
+          'Accessibility.CaretBrowsing.DisableWithSettings');
     }
-    if (hasKeyboard) {
-      return this.i18n('selectToSpeakDescription');
-    }
-    return this.i18n('selectToSpeakDescriptionWithoutKeyboard');
-  }
-
-  /** @private */
-  onManageTtsSettingsTap_() {
-    Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS);
-  }
-
-  /** @private */
-  onChromeVoxSettingsTap_() {
-    this.textToSpeechBrowserProxy_.showChromeVoxSettings();
-  }
-
-  /** @private */
-  onChromeVoxTutorialTap_() {
-    this.textToSpeechBrowserProxy_.showChromeVoxTutorial();
-  }
-
-  /** @private */
-  onSelectToSpeakSettingsTap_() {
-    this.textToSpeechBrowserProxy_.showSelectToSpeakSettings();
   }
 }
 
 customElements.define(
-    SettingsTextToSpeechPageElement.is, SettingsTextToSpeechPageElement);
+    SettingsKeyboardAndTextInputPageElement.is,
+    SettingsKeyboardAndTextInputPageElement);

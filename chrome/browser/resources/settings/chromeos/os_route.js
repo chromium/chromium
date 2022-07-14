@@ -213,11 +213,23 @@ function createOSSettingsRoutes() {
     r.MANAGE_ACCESSIBILITY = createSubpage(
         r.OS_ACCESSIBILITY, mojom.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
         Subpage.kManageAccessibility);
-    r.TEXT_TO_SPEECH = createSubpage(
+    r.A11Y_TEXT_TO_SPEECH = createSubpage(
         r.OS_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_PAGE_PATH,
         Subpage.kTextToSpeechPage);
+    r.A11Y_DISPLAY_AND_MAGNIFICATION = createSubpage(
+        r.OS_ACCESSIBILITY, mojom.DISPLAY_AND_MAGNIFICATION_SUBPAGE_PATH,
+        Subpage.kDisplayAndMagnification);
+    r.A11Y_KEYBOARD_AND_TEXT_INPUT = createSubpage(
+        r.OS_ACCESSIBILITY, mojom.KEYBOARD_AND_TEXT_INPUT_SUBPAGE_PATH,
+        Subpage.kKeyboardAndTextInput);
+    r.A11Y_CURSOR_AND_TOUCHPAD = createSubpage(
+        r.OS_ACCESSIBILITY, mojom.CURSOR_AND_TOUCHPAD_SUBPAGE_PATH,
+        Subpage.kCursorAndTouchpad);
+    r.A11Y_AUDIO_AND_CAPTIONS = createSubpage(
+        r.OS_ACCESSIBILITY, mojom.AUDIO_AND_CAPTIONS_SUBPAGE_PATH,
+        Subpage.kAudioAndCaptions);
     r.MANAGE_TTS_SETTINGS = createSubpage(
-        r.TEXT_TO_SPEECH, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
+        r.A11Y_TEXT_TO_SPEECH, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
         Subpage.kTextToSpeech);
     r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
         r.MANAGE_ACCESSIBILITY, mojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,

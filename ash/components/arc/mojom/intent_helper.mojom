@@ -170,7 +170,12 @@ enum ChromePage {
   PRIVACYHUB = 78,
   TEXTTOSPEECH = 79,
   AUDIO = 80,
-  // Next value to be used is 81.
+  DISPLAYANDMAGNFICATION = 81,
+  KEYBOARDANDTEXTINPUT = 82,
+  CURSORANDTOUCHPAD = 83,
+  AUDIOANDCAPTIONS = 84,
+
+  // Next value to be used is 85.
 };
 
 // Describes an unique chrome app.

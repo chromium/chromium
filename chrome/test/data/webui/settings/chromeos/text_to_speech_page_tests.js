@@ -35,7 +35,7 @@ suite('TextToSpeechPageTests', function() {
     PolymerTest.clearBody();
     loadTimeData.overrideValues(
       {isAccessibilityOSSettingsVisibilityEnabled: true});
-    Router.getInstance().navigateTo(routes.TEXT_TO_SPEECH);
+    Router.getInstance().navigateTo(routes.A11Y_TEXT_TO_SPEECH);
   });
 
   teardown(function() {
@@ -69,7 +69,7 @@ suite('TextToSpeechPageTests', function() {
           await popStateEventPromise;
           await waitBeforeNextRender(page);
 
-          assertEquals(routes.TEXT_TO_SPEECH, router.getCurrentRoute());
+          assertEquals(routes.A11Y_TEXT_TO_SPEECH, router.getCurrentRoute());
           assertEquals(
               subpageButton, page.shadowRoot.activeElement,
               `${selector} should be focused`);

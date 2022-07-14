@@ -146,6 +146,10 @@ enum Subpage {
   kSwitchAccessOptions = 1503,
   kCaptions = 1504,
   kTextToSpeechPage = 1505,
+  kDisplayAndMagnification = 1506,
+  kKeyboardAndTextInput = 1507,
+  kCursorAndTouchpad = 1508,
+  kAudioAndCaptions = 1509,
 
   // Note: Reset section has no subpages.
 
@@ -271,6 +275,10 @@ const string kPrintingDetailsSubpagePath = "cupsPrinters";
 const string kAccessibilitySectionPath = "osAccessibility";
 const string kManageAccessibilitySubpagePath = "manageAccessibility";
 const string kTextToSpeechPagePath = "textToSpeech";
+const string kDisplayAndMagnificationSubpagePath = "displayAndMagnification";
+const string kKeyboardAndTextInputSubpagePath = "keyboardAndTextInput";
+const string kCursorAndTouchpadSubpagePath = "cursorAndTouchpad";
+const string kAudioAndCaptionsSubpagePath = "audioAndCaptions";
 const string kTextToSpeechSubpagePath = "manageAccessibility/tts";
 const string kSwitchAccessOptionsSubpagePath =
     "manageAccessibility/switchAccess";

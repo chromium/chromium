@@ -42,51 +42,48 @@
     </localized-link>
   </div>
 </template>
-<template is="dom-if"
-    if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
-  <h2>$i18n{textToSpeechHeading}</h2>
-  <settings-toggle-button
-      pref="{{prefs.settings.accessibility}}"
-      label="$i18n{chromeVoxLabel}"
-      deep-link-focus-id$="[[Setting.kChromeVox]]">
-  </settings-toggle-button>
-  <iron-collapse opened="[[prefs.settings.accessibility.value]]">
-    <div class="sub-item">
-      <cr-link-row id="chromeVoxSubpageButton"
-          class="settings-box" on-click="onChromeVoxSettingsTap_"
-          label="$i18n{chromeVoxOptionsLabel}" external>
+<h2>$i18n{textToSpeechHeading}</h2>
+<settings-toggle-button
+    pref="{{prefs.settings.accessibility}}"
+    label="$i18n{chromeVoxLabel}"
+    deep-link-focus-id$="[[Setting.kChromeVox]]">
+</settings-toggle-button>
+<iron-collapse opened="[[prefs.settings.accessibility.value]]">
+  <div class="sub-item">
+    <cr-link-row id="chromeVoxSubpageButton"
+        class="settings-box" on-click="onChromeVoxSettingsTap_"
+        label="$i18n{chromeVoxOptionsLabel}" external>
+    </cr-link-row>
+  </div>
+  <div class="sub-item">
+    <cr-link-row id="chromeVoxTutorialButton"
+        class="settings-box" on-click="onChromeVoxTutorialTap_"
+        label="$i18n{chromeVoxTutorialLabel}" external>
+    </cr-link-row>
+  </div>
+</iron-collapse>
+<settings-toggle-button
+    pref="{{prefs.settings.a11y.select_to_speak}}"
+    class="hr"
+    label="$i18n{selectToSpeakTitle}"
+    sub-label="[[getSelectToSpeakDescription_(
+        prefs.settings.a11y.select_to_speak.value, hasKeyboard_)]]"
+    deep-link-focus-id$="[[Setting.kSelectToSpeak]]">
+</settings-toggle-button>
+<iron-collapse opened="[[prefs.settings.a11y.select_to_speak.value]]">
+  <div class="sub-item">
+    <cr-link-row id="selectToSpeakSubpageButton"
+        class="settings-box" on-click="onSelectToSpeakSettingsTap_"
+        label="$i18n{selectToSpeakOptionsLabel}" external>
       </cr-link-row>
-    </div>
-    <div class="sub-item">
-      <cr-link-row id="chromeVoxTutorialButton"
-          class="settings-box" on-click="onChromeVoxTutorialTap_"
-          label="$i18n{chromeVoxTutorialLabel}" external>
-      </cr-link-row>
-    </div>
-  </iron-collapse>
-  <settings-toggle-button
-      pref="{{prefs.settings.a11y.select_to_speak}}"
-      class="hr"
-      label="$i18n{selectToSpeakTitle}"
-      sub-label="[[getSelectToSpeakDescription_(
-          prefs.settings.a11y.select_to_speak.value, hasKeyboard_)]]"
-      deep-link-focus-id$="[[Setting.kSelectToSpeak]]">
-  </settings-toggle-button>
-  <iron-collapse opened="[[prefs.settings.a11y.select_to_speak.value]]">
-    <div class="sub-item">
-      <cr-link-row id="selectToSpeakSubpageButton"
-          class="settings-box" on-click="onSelectToSpeakSettingsTap_"
-          label="$i18n{selectToSpeakOptionsLabel}" external>
-        </cr-link-row>
-    </div>
-  </iron-collapse>
+  </div>
+</iron-collapse>
 
-  <cr-link-row id="ttsSubpageButton" class="hr"
-      label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsTap_"
-      sub-label="$i18n{ttsSettingsLinkDescription}"
-      role-description="$i18n{subpageArrowRoleDescription}" embedded>
-  </cr-link-row>
-</template>
+<cr-link-row id="ttsSubpageButton" class="hr"
+    label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsTap_"
+    sub-label="$i18n{ttsSettingsLinkDescription}"
+    role-description="$i18n{subpageArrowRoleDescription}" embedded>
+</cr-link-row>
 
 <h2>$i18n{displayHeading}</h2>
 <settings-toggle-button
@@ -140,8 +137,12 @@
   </settings-toggle-button>
   <div class="settings-box indented">
     <div class="flex start settings-box-text" id="labelWrapper">
-      <div class="label" aria-hidden="true">$i18n{screenMagnifierZoomLabel}</div>
-      <div class="secondary label" id="screenMagnifierZoomHintLabel">$i18n{screenMagnifierZoomHintLabel}</div>
+      <div class="label" aria-hidden="true">
+        $i18n{screenMagnifierZoomLabel}
+      </div>
+      <div id="screenMagnifierZoomHintLabel" class="secondary label">
+        $i18n{screenMagnifierZoomHintLabel}
+      </div>
     </div>
     <settings-dropdown-menu label="$i18n{screenMagnifierZoomLabel}"
         pref="{{prefs.settings.a11y.screen_magnifier_scale}}"
@@ -217,10 +218,10 @@
     </cr-button>
     <template is="dom-if" if="[[showDictationLocaleMenu_]]" restamp>
       <os-settings-change-dictation-locale-dialog
-        id="changeDictationLocaleDialog"
-        pref="{{prefs.settings.a11y.dictation_locale}}"
-        on-close="onChangeDictationLocalesDialogClosed_"
-        options="[[dictationLocaleOptions_]]">
+          id="changeDictationLocaleDialog"
+          pref="{{prefs.settings.a11y.dictation_locale}}"
+          on-close="onChangeDictationLocalesDialogClosed_"
+          options="[[dictationLocaleOptions_]]">
       </os-settings-change-dictation-locale-dialog>
     </template>
   </div>
@@ -288,22 +289,22 @@
 </div>
 <div class="sub-item">
   <settings-toggle-button class="sub-item"
-    hidden$="[[!prefs.settings.a11y.autoclick.value]]"
-    pref="{{prefs.settings.a11y.autoclick_stabilize_position}}"
-    label="$i18n{autoclickStabilizeCursorPosition}">
+      hidden$="[[!prefs.settings.a11y.autoclick.value]]"
+      pref="{{prefs.settings.a11y.autoclick_stabilize_position}}"
+      label="$i18n{autoclickStabilizeCursorPosition}">
   </settings-toggle-button>
 </div>
 <div class="sub-item">
   <settings-toggle-button class="sub-item"
-    hidden$="[[!prefs.settings.a11y.autoclick.value]]"
-    pref="{{prefs.settings.a11y.autoclick_revert_to_left_click}}"
-    label="$i18n{autoclickRevertToLeftClick}">
+      hidden$="[[!prefs.settings.a11y.autoclick.value]]"
+      pref="{{prefs.settings.a11y.autoclick_revert_to_left_click}}"
+      label="$i18n{autoclickRevertToLeftClick}">
   </settings-toggle-button>
 </div>
 <div class="settings-box continuation"
     hidden$="[[!prefs.settings.a11y.autoclick.value]]">
   <div class="start sub-item settings-box-text" aria-hidden="true">
-    $i18n{autoclickMovementThresholdLabel}
+      $i18n{autoclickMovementThresholdLabel}
   </div>
   <settings-dropdown-menu
       label="$i18n{autoclickMovementThresholdLabel}"

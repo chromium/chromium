@@ -1,0 +1,39 @@
+<style include="settings-shared">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .settings-box,
+  settings-toggle-button,
+  cr-link-row {
+    margin-inline-end: var(--cr-section-padding);
+    margin-inline-start: var(--cr-section-indent-padding);
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
+
+<h2>$i18n{audioAndCaptionsHeading}</h2>
+<template is="dom-if" if="[[!isKioskModeActive_]]">
+  <cr-link-row id="captionsSubpageButton" class="first"
+      label="$i18n{captionsTitle}"
+      on-click="onCaptionsClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.a11y.mono_audio}}"
+    label="$i18n{monoAudioLabel}"
+    deep-link-focus-id$="[[Setting.kMonoAudio]]">
+</settings-toggle-button>
+<div class="settings-box">
+  <div class="start settings-box-text" id="startupSoundEnabledLabel">
+    $i18n{startupSoundLabel}
+  </div>
+  <cr-toggle id="startupSoundEnabled"
+      aria-labelledby="startupSoundEnabledLabel"
+      deep-link-focus-id$="[[Setting.kStartupSound]]"
+      on-change="toggleStartupSoundEnabled_">
+  </cr-toggle>
+</div>

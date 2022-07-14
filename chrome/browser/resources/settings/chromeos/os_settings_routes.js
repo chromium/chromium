@@ -8,6 +8,11 @@ import {Route} from '../router.js';
  * Specifies all possible os routes in settings.
  *
  * @typedef {{
+ *   A11Y_AUDIO_AND_CAPTIONS: !Route,
+ *   A11Y_CURSOR_AND_TOUCHPAD: !Route,
+ *   A11Y_DISPLAY_AND_MAGNIFICATION: !Route,
+ *   A11Y_KEYBOARD_AND_TEXT_INPUT: !Route,
+ *   A11Y_TEXT_TO_SPEECH: !Route,
  *   ABOUT: !Route,
  *   ABOUT_ABOUT: !Route,
  *   ACCOUNTS: !Route,
@@ -96,7 +101,6 @@ import {Route} from '../router.js';
  *   STYLUS: !Route,
  *   SYNC: !Route,
  *   SYNC_ADVANCED: !Route,
- *   TEXT_TO_SPEECH: !Route,
  * }}
  */
 export let OsSettingsRoutes;

@@ -1203,6 +1203,12 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_SPEECH_ENGINES" desc="Text for search result item which, when clicked, navigates the user to text-to-speech voice accessibility settings, with the ability to view installed speech engine extensions.">
     Text-to-speech engines
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_DISPLAY_AND_MAGNIFICATION_PAGE" desc="Text for search result item which, when clicked, navigates the user to display and magnification accessibility settings. Alternate phrase for: 'Low vision display tools'">
+    Display and magnification
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_DISPLAY_AND_MAGNIFICATION_PAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to display and magnification accessibility settings. Alternate phrase for: 'Display and magnification'">
+    Low vision display tools
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGH_CONTRAST" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable high-contrast mode.">
     High contrast mode
   </message>
@@ -1226,6 +1232,9 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_DOCKED_MAGNIFIER_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable docked screen magnification. Alternate phrase for: 'Docked magnifier'">
     Partial magnifier
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_KEYBOARD_AND_TEXT_INPUT_PAGE" desc="Text for search result item which, when clicked, navigates the user to display and magnification accessibility settings. Alternate phrase for: 'Low vision display tools'">
+    Keyboard and text input
   </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_STICKY_KEYS" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable sticky keys.">
     Sticky keys

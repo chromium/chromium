@@ -1,0 +1,125 @@
+<style include="settings-shared">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .sub-item {
+    margin-inline-start: var(--cr-section-indent-width);
+  }
+
+  .settings-box,
+  settings-toggle-button,
+  cr-link-row {
+    margin-inline-end: var(--cr-section-padding);
+    margin-inline-start: var(--cr-section-indent-padding);
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
+
+<h2>$i18n{mouseAndTouchpadHeading}</h2>
+<settings-toggle-button
+    pref="{{prefs.settings.a11y.autoclick}}"
+    label="$i18n{clickOnStopLabel}"
+    deep-link-focus-id$="[[Setting.kAutoClickWhenCursorStops]]">
+</settings-toggle-button>
+<div class="settings-box continuation"
+    hidden$="[[!prefs.settings.a11y.autoclick.value]]">
+  <div class="start sub-item settings-box-text" aria-hidden="true">
+    $i18n{delayBeforeClickLabel}
+  </div>
+  <settings-dropdown-menu label="$i18n{delayBeforeClickLabel}"
+      pref="{{prefs.settings.a11y.autoclick_delay_ms}}"
+      menu-options="[[autoClickDelayOptions_]]"
+      disabled="[[!prefs.settings.a11y.autoclick.value]]">
+  </settings-dropdown-menu>
+</div>
+<div class="sub-item">
+  <settings-toggle-button class="sub-item"
+      hidden$="[[!prefs.settings.a11y.autoclick.value]]"
+      pref="{{prefs.settings.a11y.autoclick_stabilize_position}}"
+      label="$i18n{autoclickStabilizeCursorPosition}">
+  </settings-toggle-button>
+</div>
+<div class="sub-item">
+  <settings-toggle-button class="sub-item"
+      hidden$="[[!prefs.settings.a11y.autoclick.value]]"
+      pref="{{prefs.settings.a11y.autoclick_revert_to_left_click}}"
+      label="$i18n{autoclickRevertToLeftClick}">
+  </settings-toggle-button>
+</div>
+<div class="settings-box continuation"
+    hidden$="[[!prefs.settings.a11y.autoclick.value]]">
+  <div class="start sub-item settings-box-text" aria-hidden="true">
+    $i18n{autoclickMovementThresholdLabel}
+  </div>
+  <settings-dropdown-menu
+      label="$i18n{autoclickMovementThresholdLabel}"
+      pref="{{prefs.settings.a11y.autoclick_movement_threshold}}"
+      menu-options="[[autoClickMovementThresholdOptions_]]"
+      disabled="[[!prefs.settings.a11y.autoclick.value]]">
+  </settings-dropdown-menu>
+</div>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.a11y.large_cursor_enabled}}"
+    label="$i18n{largeMouseCursorLabel}"
+    deep-link-focus-id$="[[Setting.kLargeCursor]]">
+</settings-toggle-button>
+<div class="settings-box continuation"
+    hidden$="[[!prefs.settings.a11y.large_cursor_enabled.value]]">
+  <div class="start sub-item settings-box-text" aria-hidden="true">
+    $i18n{largeMouseCursorSizeLabel}
+  </div>
+  <settings-slider
+      pref="{{prefs.settings.a11y.large_cursor_dip_size}}"
+      min="25" max="64"
+      label-aria="$i18n{largeMouseCursorSizeLabel}"
+      label-min="$i18n{largeMouseCursorSizeDefaultLabel}"
+      label-max="$i18n{largeMouseCursorSizeLargeLabel}">
+  </settings-slider>
+</div>
+<div class="settings-box">
+  <div class="start settings-box-text" id="cursorColorOptionsLabel">
+    $i18n{cursorColorOptionsLabel}
+  </div>
+  <settings-dropdown-menu aria-labeledby="cursorColorOptionsLabel"
+      pref="{{prefs.settings.a11y.cursor_color}}"
+      menu-options="[[cursorColorOptions_]]"
+      on-settings-control-change="onA11yCursorColorChange_"
+      deep-link-focus-id$="[[Setting.kEnableCursorColor]]">
+  </settings-dropdown-menu>
+</div>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.a11y.cursor_highlight}}"
+    label="$i18n{cursorHighlightLabel}"
+    deep-link-focus-id$="[[Setting.kHighlightCursorWhileMoving]]">
+</settings-toggle-button>
+<cr-link-row id="pointerSubpageButton" class="hr"
+    label="$i18n{mouseSettingsTitle}" on-click="onMouseTap_"
+    sub-label="$i18n{mouseSettingsDescription}"
+    role-description="$i18n{subpageArrowRoleDescription}" embedded>
+</cr-link-row>
+<template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>
+  <!-- If shelf navigation buttons are implicitly enabled by other a11y
+      settings (e.g. by spoken feedback), the toggle control should be
+      disabled, and toggled regardless of the actual backing pref value. To
+      handle effective pref value changes, wrap the backing pref in a
+      private property, which changes to a stub pref object when the setting
+      is implicitly enabled. -->
+  <settings-toggle-button
+      id="shelfNavigationButtonsEnabledControl"
+      class="hr"
+      disabled="[[shelfNavigationButtonsImplicitlyEnabled_]]"
+      pref="[[shelfNavigationButtonsPref_]]"
+      no-set-pref
+      on-settings-boolean-control-change=
+          "updateShelfNavigationButtonsEnabledPref_"
+      label="$i18n{tabletModeShelfNavigationButtonsSettingLabel}"
+      sub-label="$i18n{tabletModeShelfNavigationButtonsSettingDescription}"
+      learn-more-url="$i18n{tabletModeShelfNavigationButtonsLearnMoreUrl}"
+      on-learn-more-clicked="onShelfNavigationButtonsLearnMoreClicked_"
+      deep-link-focus-id$="[[Setting.kTabletNavigationButtons]]">
+  </settings-toggle-button>
+</template>

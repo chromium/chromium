@@ -1529,6 +1529,30 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change text-to-speech accessibility features.">
     ChromeVox screen reader and select-to-speak
   </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change display and magnification accessibility features.">
+    Display and magnification
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
+    High-contrast mode, magnifier, and display settings
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
+    Keyboard and text input
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
+    Sticky keys, on-screen keyboard, dictation, switch access, and enhanced highlight
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_CURSOR_AND_TOUCHPAD_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change cursor and touchpad accessibility features.">
+    Cursor and touchpad
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_CURSOR_AND_TOUCHPAD_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change cursor and touchpad accessibility features.">
+    Automatic click, cursor size, cursor color, and highlight cursor
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_AUDIO_AND_CAPTIONS_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change audio and captions accessibility features.">
+    Audio and captions
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_AUDIO_AND_CAPTIONS_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change audio and captions accessibility features.">
+    Mono audio, sounds on startup, and captions
+  </message>
 
   <!-- Account Manager (OS settings) -->
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">

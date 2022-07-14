@@ -114,6 +114,10 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
+      /**
+       * Drop down menu options for auto click delay.
+       * @protected
+       */
       autoClickDelayOptions_: {
         readOnly: true,
         type: Array,
@@ -143,6 +147,10 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
+      /**
+       * Drop down menu options for auto click movement threshold.
+       * @protected
+       */
       autoClickMovementThresholdOptions_: {
         readOnly: true,
         type: Array,
@@ -174,7 +182,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @private {!Array<{name: string, value: number}>} */
+      /** @protected {!Array<{name: string, value: number}>} */
       cursorColorOptions_: {
         readOnly: true,
         type: Array,
@@ -217,7 +225,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @private */
+      /** @protected */
       isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
         type: Boolean,
         value() {
@@ -226,7 +234,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @private */
+      /** @protected */
       isAccessibilityOSSettingsVisibilityEnabled_: {
         type: Boolean,
         value() {
@@ -237,7 +245,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
       /**
        * Whether the user is in kiosk mode.
-       * @private
+       * @protected
        */
       isKioskModeActive_: {
         type: Boolean,
@@ -249,7 +257,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
       /**
        * Whether a setting for enabling shelf navigation buttons in tablet mode
        * should be displayed in the accessibility settings.
-       * @private
+       * @protected
        */
       showShelfNavigationButtonsSettings_: {
         type: Boolean,
@@ -257,7 +265,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
             'computeShowShelfNavigationButtonsSettings_(isKioskModeActive_)',
       },
 
-      /** @private */
+      /** @protected */
       isGuest_: {
         type: Boolean,
         value() {
@@ -265,7 +273,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @private */
+      /** @protected */
       screenMagnifierHintLabel_: {
         type: String,
         value() {
@@ -275,7 +283,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @private */
+      /** @protected */
       dictationSubtitle_: {
         type: String,
         value() {
@@ -283,19 +291,19 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @private */
+      /** @protected */
       dictationLocaleSubtitleOverride_: {
         type: String,
         value: '',
       },
 
-      /** @private */
+      /** @protected */
       useDictationLocaleSubtitleOverride_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
+      /** @protected */
       dictationLocaleMenuSubtitle_: {
         type: String,
         computed: 'computeDictationLocaleSubtitle_(' +
@@ -304,7 +312,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
             'dictationLocaleSubtitleOverride_)',
       },
 
-      /** @private */
+      /** @protected */
       dictationLocaleOptions_: {
         type: Array,
         value() {
@@ -312,7 +320,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @private */
+      /** @protected */
       dictationLocalesList_: {
         type: Array,
         value() {
@@ -320,13 +328,13 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
         },
       },
 
-      /** @private */
+      /** @protected */
       showDictationLocaleMenu_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
+      /** @protected */
       dictationLearnMoreUrl_: {
         type: String,
         value: 'https://support.google.com/chromebook?p=text_dictation_m100',
@@ -336,17 +344,17 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
        * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
        * start undefined so observers don't trigger until they have been
        * populated.
-       * @private
+       * @protected
        */
       hasKeyboard_: Boolean,
 
-      /** @private */
+      /** @protected */
       hasMouse_: Boolean,
 
-      /** @private */
+      /** @protected */
       hasPointingStick_: Boolean,
 
-      /** @private */
+      /** @protected */
       hasTouchpad_: Boolean,
 
       /**
@@ -355,7 +363,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
        * enabled when spoken feedback, automatic clicks, or switch access are
        * enabled. The buttons can also be explicitly enabled by a designated
        * a11y setting.
-       * @private
+       * @protected
        */
       shelfNavigationButtonsImplicitlyEnabled_: {
         type: Boolean,
@@ -369,7 +377,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
        * The effective pref value that indicates whether shelf navigation
        * buttons are enabled in tablet mode.
        * @type {chrome.settingsPrivate.PrefObject}
-       * @private
+       * @protected
        */
       shelfNavigationButtonsPref_: {
         type: Object,
@@ -412,7 +420,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
   static get observers() {
     return [
-      'pointersChanged_(hasMouse_, hasPointingStick_, hasTouchpad_, ' +
+      'pointersChanged(hasMouse_, hasPointingStick_, hasTouchpad_, ' +
           'isKioskModeActive_)',
     ];
   }
@@ -455,8 +463,8 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
 
     this.addWebUIListener(
         'initial-data-ready',
-        (startup_sound_enabled) =>
-            this.onManageAllyPageReady_(startup_sound_enabled));
+        (startupSoundEnabled) =>
+            this.onManageAllyPageReady_(startupSoundEnabled));
     this.addWebUIListener(
         'dictation-locale-menu-subtitle-changed',
         (result) => this.onDictationLocaleMenuSubtitleChanged_(result));
@@ -498,7 +506,7 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
    * @param {boolean} hasTouchpad
    * @private
    */
-  pointersChanged_(hasMouse, hasTouchpad, hasPointingStick, isKioskModeActive) {
+  pointersChanged(hasMouse, hasTouchpad, hasPointingStick, isKioskModeActive) {
     this.$.pointerSubpageButton.hidden =
         (!hasMouse && !hasPointingStick && !hasTouchpad) || isKioskModeActive;
   }
@@ -693,11 +701,11 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
   /**
    * Handles updating the visibility of the shelf navigation buttons setting
    * and updating whether startupSoundEnabled is checked.
-   * @param {boolean} startup_sound_enabled Whether startup sound is enabled.
+   * @param {boolean} startupSoundEnabled Whether startup sound is enabled.
    * @private
    */
-  onManageAllyPageReady_(startup_sound_enabled) {
-    this.$.startupSoundEnabled.checked = startup_sound_enabled;
+  onManageAllyPageReady_(startupSoundEnabled) {
+    this.$.startupSoundEnabled.checked = startupSoundEnabled;
   }
 
   /**

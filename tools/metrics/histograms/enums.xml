@@ -72957,6 +72957,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="1503" label="Switch Access Options"/>
   <int value="1504" label="Captions"/>
   <int value="1505" label="Text-To-Speech Page"/>
+  <int value="1506" label="Display And Magnification Page"/>
+  <int value="1507" label="Keyboard And Text Input Page"/>
+  <int value="1508" label="Cursor And Touchpad Page"/>
+  <int value="1509" label="Audio And Captions Page"/>
   <int value="1700" label="About Chrome OS Details"/>
   <int value="1701" label="Detailed Build Info"/>
   <int value="1800" label="Kerberos Accounts V2"/>
