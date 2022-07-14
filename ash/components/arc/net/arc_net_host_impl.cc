@@ -74,15 +74,6 @@ std::vector<const chromeos::NetworkState*> GetHostActiveNetworks() {
   return active_networks;
 }
 
-bool IsDeviceOwner() {
-  // Check whether the logged-in Chrome OS user is allowed to add or remove WiFi
-  // networks. The user account state changes immediately after boot. There is a
-  // small window when this may return an incorrect state. However, after things
-  // settle down this is guranteed to reflect the correct user account state.
-  return user_manager::UserManager::Get()->GetActiveUser()->GetAccountId() ==
-         user_manager::UserManager::Get()->GetOwnerAccountId();
-}
-
 std::string TranslateEapMethod(arc::mojom::EapMethod method) {
   switch (method) {
     case arc::mojom::EapMethod::kLeap:
@@ -673,12 +664,6 @@ void ArcNetHostImpl::CreateNetworkFailureCallback(
 
 void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
                                    CreateNetworkCallback callback) {
-  if (!IsDeviceOwner()) {
-    NET_LOG(ERROR) << "Only device owner can create WiFi networks";
-    std::move(callback).Run(std::string());
-    return;
-  }
-
   // TODO(b/195653632): Populate the shill EAP properties from the mojo
   // WifiConfiguration object.
   std::unique_ptr<base::DictionaryValue> properties(new base::DictionaryValue);
@@ -749,12 +734,6 @@ bool ArcNetHostImpl::GetNetworkPathFromGuid(const std::string& guid,
 
 void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
                                    ForgetNetworkCallback callback) {
-  if (!IsDeviceOwner()) {
-    NET_LOG(ERROR) << "Only device owner can remove WiFi networks";
-    std::move(callback).Run(mojom::NetworkResult::FAILURE);
-    return;
-  }
-
   std::string path;
   if (!GetNetworkPathFromGuid(guid, &path)) {
     NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
@@ -766,7 +745,7 @@ void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
   // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetManagedConfigurationHandler()->RemoveConfiguration(
+  GetManagedConfigurationHandler()->RemoveConfigurationFromCurrentProfile(
       path,
       base::BindOnce(&ForgetNetworkSuccessCallback,
                      std::move(split_callback.first)),
