@@ -118,7 +118,7 @@ const std::string& GetTerminalHomeUrl();
 // Generate URL to launch terminal.
 GURL GenerateTerminalURL(
     Profile* profile,
-    const std::string& setings_profile,
+    const std::string& settings_profile,
     const guest_os::GuestId& container_id = DefaultContainerId(),
     const std::string& cwd = "",
     const std::vector<std::string>& terminal_args = {});

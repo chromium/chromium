@@ -13,13 +13,15 @@ class CrostiniTerminalProviderTest : public testing::Test {};
 
 TEST_F(CrostiniTerminalProviderTest, Label) {
   guest_os::GuestId id1(kCrostiniDefaultVmType, "vm_name", "container");
-  ASSERT_EQ(CrostiniTerminalProvider(id1).Label(), "vm_name:container");
+  ASSERT_EQ(CrostiniTerminalProvider(nullptr, id1).Label(),
+            "vm_name:container");
 
   guest_os::GuestId id2(kCrostiniDefaultVmType, "termina", "notpenguin");
-  ASSERT_EQ(CrostiniTerminalProvider(id2).Label(), "notpenguin");
+  ASSERT_EQ(CrostiniTerminalProvider(nullptr, id2).Label(), "notpenguin");
 
   // Leave the VM name off the label if it's the default VM.
-  ASSERT_EQ(CrostiniTerminalProvider(DefaultContainerId()).Label(), "penguin");
+  ASSERT_EQ(CrostiniTerminalProvider(nullptr, DefaultContainerId()).Label(),
+            "penguin");
 }
 
 }  // namespace crostini

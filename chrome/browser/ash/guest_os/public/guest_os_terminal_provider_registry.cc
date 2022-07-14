@@ -45,6 +45,16 @@ GuestOsTerminalProvider* GuestOsTerminalProviderRegistry::Get(
   return Get(output);
 }
 
+GuestOsTerminalProvider* GuestOsTerminalProviderRegistry::Get(
+    guest_os::GuestId id) const {
+  for (const auto& pair : providers_) {
+    if (pair.second->GuestId() == id) {
+      return pair.second.get();
+    }
+  }
+  return nullptr;
+}
+
 GuestOsTerminalProviderRegistry::Id GuestOsTerminalProviderRegistry::Register(
     std::unique_ptr<GuestOsTerminalProvider> provider) {
   // We use the range 0->INT_MAX because these IDs can get serialised into

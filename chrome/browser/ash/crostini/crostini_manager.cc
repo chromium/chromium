@@ -3959,7 +3959,7 @@ void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
     auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
                          ->TerminalProviderRegistry();
     terminal_provider_ids_[container_id] = registry->Register(
-        std::make_unique<CrostiniTerminalProvider>(container_id));
+        std::make_unique<CrostiniTerminalProvider>(profile_, container_id));
   }
   if (CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_) &&
       container_id != DefaultContainerId()) {

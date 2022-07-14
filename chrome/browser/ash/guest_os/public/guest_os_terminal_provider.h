@@ -7,7 +7,7 @@
 
 #include <string>
 #include "chrome/browser/ash/guest_os/guest_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace guest_os {
 
@@ -25,9 +25,16 @@ class GuestOsTerminalProvider {
   // TODO(b/233287586): While we're migrating, some Crostini-specific code still
   // needs a guest_os::GuestId. Eventually this should always be nullopt and
   // then removed.
-  virtual absl::optional<guest_os::GuestId> CrostiniContainerId() = 0;
+  virtual guest_os::GuestId GuestId() = 0;
 
- private:
+  // Checks if recovery is required before being able to launch. If so, launches
+  // the recovery flow (e.g. shows a dialog) and returns true, otherwise returns
+  // false.
+  virtual bool RecoveryRequired(int64_t display_id) = 0;
+
+  // Sets up `url` to be the initial working directory of a terminal session,
+  // returning the path inside the guest.
+  virtual std::string PrepareCwd(storage::FileSystemURL path) = 0;
 };
 
 }  // namespace guest_os

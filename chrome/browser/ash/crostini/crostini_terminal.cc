@@ -22,11 +22,10 @@
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
-#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -237,64 +236,65 @@ void LaunchTerminalWithIntent(Profile* profile,
                               int64_t display_id,
                               apps::mojom::IntentPtr intent,
                               CrostiniSuccessCallback callback) {
-  // Check if crostini is installed.
-  if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
-    crostini::CrostiniInstaller::GetForProfile(profile)->ShowDialog(
-        CrostiniUISurface::kAppList);
-    return std::move(callback).Run(false, "Crostini not installed");
-  }
+  // Look for vm_name and container_name in intent->extras, and for backcompat
+  // reasons default to the original crostini container if nothing is specified.
+  guest_os::GuestId guest_id = DefaultContainerId();
 
-  // Look for vm_name and container_name in intent->extras.
-  guest_os::GuestId container_id = DefaultContainerId();
+  // We only have vm and container name, so don't usually know the type. Don't
+  // need it though so leave it as unknown.
+  guest_id.vm_type = guest_os::VmType::UNKNOWN;
   std::string settings_profile;
   if (intent && intent->extras.has_value()) {
     for (const auto& extra : intent->extras.value()) {
       if (extra.first == "vm_name") {
-        container_id.vm_name = extra.second;
+        guest_id.vm_name = extra.second;
       } else if (extra.first == "container_name") {
-        container_id.container_name = extra.second;
+        guest_id.container_name = extra.second;
       } else if (extra.first == kSettingsProfileUrlParam) {
         settings_profile = extra.second;
       }
     }
   }
 
-  // Check if we need to show recovery.
-  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
-  if (crostini_manager->IsUncleanStartup()) {
-    ShowCrostiniRecoveryView(profile, crostini::CrostiniUISurface::kAppList,
-                             kCrostiniTerminalSystemAppId, display_id, {},
-                             base::DoNothing());
+  auto* registry = guest_os::GuestOsService::GetForProfile(profile)
+                       ->TerminalProviderRegistry();
+  auto* provider = registry->Get(guest_id);
+
+  if (!provider) {
+    if (guest_id.vm_name == DefaultContainerId().vm_name &&
+        !CrostiniFeatures::Get()->IsEnabled(profile)) {
+      // It used to be that running the terminal without Crostini installed
+      // would bring up the installer, so keep that behaviour. Only applies to
+      // the default Crostini VM, anything else is only accessible if the target
+      // VM is installed.
+      crostini::CrostiniInstaller::GetForProfile(profile)->ShowDialog(
+          CrostiniUISurface::kAppList);
+      return std::move(callback).Run(false, "Crostini not installed");
+    } else {
+      // Could happen if, e.g. a guest got disabled between listing and
+      // selecting targets.
+      return std::move(callback).Run(false, "Unrecognised Guest Id");
+    }
+  }
+
+  std::string message;
+  if (provider->RecoveryRequired(display_id)) {
     return std::move(callback).Run(false, "Recovery required");
   }
 
   // Use first file (if any) as cwd.
   std::string cwd;
-  CrostiniManager::RestartOptions options;
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
   if (intent && intent->files && intent->files->size()) {
     GURL gurl = intent->files.value()[0]->url;
     storage::ExternalMountPoints* mount_points =
         storage::ExternalMountPoints::GetSystemInstance();
     storage::FileSystemURL url = mount_points->CrackURL(
         gurl, blink::StorageKey(url::Origin::Create(gurl)));
-    base::FilePath path;
-    if (file_manager::util::ConvertFileSystemURLToPathInsideCrostini(
-            profile, url, &path)) {
-      cwd = path.value();
-      if (url.mount_filesystem_id() !=
-              file_manager::util::GetCrostiniMountPointName(profile) &&
-          !share_path->IsPathShared(container_id.vm_name, url.path())) {
-        options.share_paths.push_back(url.path());
-      }
-    } else {
-      LOG(WARNING) << "Failed to parse: " << gurl;
-    }
+
+    cwd = provider->PrepareCwd(url);
   }
 
-  CrostiniManager::GetForProfile(profile)->RestartCrostiniWithOptions(
-      container_id, std::move(options), base::DoNothing());
-  GURL url = GenerateTerminalURL(profile, settings_profile, container_id, cwd,
+  GURL url = GenerateTerminalURL(profile, settings_profile, guest_id, cwd,
                                  /*terminal_args=*/{});
   LaunchTerminalWithUrl(profile, display_id, url);
   std::move(callback).Run(true, "");
@@ -570,7 +570,7 @@ void AddTerminalMenuShortcuts(
     auto* provider = registry->Get(id);
     apps::AddShortcutCommandItem(
         next_command_id++,
-        ShortcutIdFromContainerId(profile, *provider->CrostiniContainerId()),
+        ShortcutIdFromContainerId(profile, provider->GuestId()),
         provider->Label(), crostini_mascot_icon, &menu_items);
   }
 
