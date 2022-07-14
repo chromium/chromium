@@ -159,6 +159,21 @@ class CORE_EXPORT CSSParserToken {
 
   CSSParserToken CopyWithUpdatedString(const StringView&) const;
 
+  static CSSParserTokenType ClosingTokenType(CSSParserTokenType opening_type) {
+    switch (opening_type) {
+      case kFunctionToken:
+      case kLeftParenthesisToken:
+        return kRightParenthesisToken;
+      case kLeftBracketToken:
+        return kRightBracketToken;
+      case kLeftBraceToken:
+        return kRightBraceToken;
+      default:
+        NOTREACHED();
+        return kEOFToken;
+    }
+  }
+
  private:
   void InitValueFromStringView(StringView string) {
     value_length_ = string.length();

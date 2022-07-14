@@ -531,17 +531,21 @@ bool AddCSSPaintArgument(
 Vector<CSSParserToken> ConsumeFunctionArgsOrNot(CSSParserTokenRange& args) {
   Vector<CSSParserToken> argument_tokens;
   if (args.Peek().GetBlockType() == CSSParserToken::kBlockStart) {
-    // Function block.
-    // Push the function name and initial right parenthesis.
-    // Since we don't have any upfront knowledge about the input argument types
-    // here, we should just leave the token as it is and resolve it later in
-    // the variable parsing phase.
+    // A block of some type (maybe a function, maybe (), [], or {}).
+    // Push the block start.
+    //
+    // For functions, we don't have any upfront knowledge about the input
+    // argument types here, we should just leave the token as it is and
+    // resolve it later in the variable parsing phase.
     argument_tokens.push_back(args.Peek());
+    CSSParserTokenType closing_type =
+        CSSParserToken::ClosingTokenType(args.Peek().GetType());
+
     CSSParserTokenRange contents = args.ConsumeBlock();
     while (!contents.AtEnd())
       argument_tokens.push_back(contents.Consume());
     argument_tokens.push_back(
-        CSSParserToken(kRightParenthesisToken, CSSParserToken::kBlockEnd));
+        CSSParserToken(closing_type, CSSParserToken::kBlockEnd));
 
   } else {
     argument_tokens.push_back(args.ConsumeIncludingWhitespace());

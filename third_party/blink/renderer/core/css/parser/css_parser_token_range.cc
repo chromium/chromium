@@ -60,7 +60,8 @@ void CSSParserTokenRange::ConsumeComponentValue() {
 String CSSParserTokenRange::Serialize() const {
   // We're supposed to insert comments between certain pairs of token types
   // as per spec, but since this is currently only used for @supports CSSOM
-  // we just get these cases wrong and avoid the additional complexity.
+  // and CSS Paint API arguments we just get these cases wrong and avoid the
+  // additional complexity.
   StringBuilder builder;
   for (const CSSParserToken* it = first_; it != last_; ++it)
     it->Serialize(builder);

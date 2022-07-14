@@ -37,6 +37,9 @@ importWorklet(CSS.paintWorklet, worklet_code).then(() => {
   test_valid_value("background-image", "paint(mypaint ", "paint(mypaint)");
   test_valid_value("background-image", "paint( mypaint", "paint(mypaint)");
   test_valid_value("background-image", "paint(mypaint, blue)");
+  test_valid_value("background-image", "paint(mypaint, {})");
+  test_valid_value("background-image", "paint(mypaint, [])");
+  test_valid_value("background-image", "paint(mypaint, ())");
 
   done();
 });
