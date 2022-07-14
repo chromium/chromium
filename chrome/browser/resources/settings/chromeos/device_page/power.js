@@ -20,6 +20,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
@@ -337,10 +338,8 @@ class SettingsPowerElement extends SettingsPowerElementBase {
         this.$.adaptiveChargingToggle.checked;
     this.browserProxy_.setAdaptiveCharging(enabled);
     recordSettingChange(
-        chromeos.settings.mojom.Setting.kAdaptiveCharging,
-        /** @type {!chromeos.settings.mojom.SettingChangeValue} */ ({
-          boolValue: enabled,
-        }));
+        Setting.kAdaptiveCharging,
+        /** @type {!SettingChangeValue} */ ({boolValue: enabled}));
   }
 
   /**

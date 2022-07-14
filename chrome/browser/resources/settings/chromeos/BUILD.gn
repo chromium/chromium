@@ -100,13 +100,14 @@ copy("ash_search_mojo_bindings") {
   sources = [
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search.mojom-lite.js",
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-lite.js",
-    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-lite.js",
   ]
   outputs = [ "$root_gen_dir/chrome/browser/ui/webui/settings/chromeos/search/{{source_file_part}}" ]
   deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js" ]
 }
 
 # OS Settings specific mojo files, bundled in optimized builds.
+# TODO(crbug.com/1179821) remove this build rule once these lite bindings
+# have been converted to WebUI bindings
 preprocess_if_expr("preprocess_mojo") {
   deps = [
     ":ash_search_mojo_bindings",
@@ -120,7 +121,6 @@ preprocess_if_expr("preprocess_mojo") {
     "constants/setting.mojom-lite.js",
     "search/search.mojom-lite.js",
     "search/search_result_icon.mojom-lite.js",
-    "search/user_action_recorder.mojom-lite.js",
   ]
 }
 
@@ -850,7 +850,10 @@ js_library("global_scroll_target_behavior") {
 }
 
 js_library("metrics_recorder") {
-  deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile" ]
+  deps = [
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
+  ]
 }
 
 js_library("os_icons") {
@@ -889,7 +892,10 @@ js_library("prefs_behavior") {
 }
 
 js_library("pref_to_setting_metric_converter") {
-  deps = [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile" ]
+  deps = [
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
+  ]
 }
 
 js_library("route_observer_behavior") {

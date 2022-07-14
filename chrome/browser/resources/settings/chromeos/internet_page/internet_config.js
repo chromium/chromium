@@ -17,6 +17,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {HTMLEscape} from 'chrome://resources/js/util.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
 /**
@@ -177,9 +178,7 @@ export class InternetConfigElement extends InternetConfigElementBase {
     if (this.type ===
         OncMojo.getNetworkTypeString(
             chromeos.networkConfig.mojom.NetworkType.kWiFi)) {
-      recordSettingChange(
-          chromeos.settings.mojom.Setting.kWifiAddNetwork,
-          {stringValue: this.guid});
+      recordSettingChange(Setting.kWifiAddNetwork, {stringValue: this.guid});
     } else {
       recordSettingChange();
     }

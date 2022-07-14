@@ -110,7 +110,7 @@ class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
   /** @private */
   onOpenScanningApp_() {
     this.browserProxy_.openScanningApp();
-    recordSettingChange(chromeos.settings.mojom.Setting.kScanningApp);
+    recordSettingChange(Setting.kScanningApp);
   }
 }
 

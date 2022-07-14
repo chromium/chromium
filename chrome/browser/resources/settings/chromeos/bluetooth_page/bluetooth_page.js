@@ -290,8 +290,7 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
   onBluetoothToggledByUser_() {
     // Record that the user manually enabled/disabled Bluetooth.
     recordSettingChange(
-        chromeos.settings.mojom.Setting.kBluetoothOnOff,
-        {boolValue: this.bluetoothToggleState_});
+        Setting.kBluetoothOnOff, {boolValue: this.bluetoothToggleState_});
   }
 
   /** @private */

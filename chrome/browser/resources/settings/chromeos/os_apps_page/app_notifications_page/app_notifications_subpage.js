@@ -182,8 +182,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     this.isDndEnabled_ = !this.isDndEnabled_;
     this.mojoInterfaceProvider_.setQuietMode(this.isDndEnabled_);
     recordSettingChange(
-        chromeos.settings.mojom.Setting.kDoNotDisturbOnOff,
-        {boolValue: this.isDndEnabled_});
+        Setting.kDoNotDisturbOnOff, {boolValue: this.isDndEnabled_});
   }
 
   /**

@@ -339,7 +339,7 @@ class SettingsInternetKnownNetworksPageElement extends
     });
 
     if (this.networkType === chromeos.networkConfig.mojom.NetworkType.kWiFi) {
-      recordSettingChange(chromeos.settings.mojom.Setting.kForgetWifiNetwork);
+      recordSettingChange(Setting.kForgetWifiNetwork);
     } else {
       recordSettingChange();
     }

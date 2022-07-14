@@ -2,36 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import '../constants/setting.mojom-lite.js';
-import '../search/user_action_recorder.mojom-lite.js';
-
 /**
  * @fileoverview
  * Provides functions used for recording user actions within settings.
  * Also provides a way to inject a test implementation for verifying
  * user action recording.
  */
-/** @type {?chromeos.settings.mojom.UserActionRecorderInterface} */
+
+import {SettingChangeValue, UserActionRecorder, UserActionRecorderInterface} from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+
+/** @type {?UserActionRecorderInterface} */
 let userActionRecorder = null;
 
 /**
- * @param {!chromeos.settings.mojom.UserActionRecorderInterface}
- *     testRecorder
+ * @param {!UserActionRecorderInterface} testRecorder
  */
 export function setUserActionRecorderForTesting(testRecorder) {
   userActionRecorder = testRecorder;
 }
 
 /**
- * @return {!chromeos.settings.mojom.UserActionRecorderInterface}
+ * @return {!UserActionRecorderInterface}
  */
 function getRecorder() {
   if (userActionRecorder) {
     return userActionRecorder;
   }
 
-  userActionRecorder = chromeos.settings.mojom.UserActionRecorder.getRemote();
+  userActionRecorder = UserActionRecorder.getRemote();
   return userActionRecorder;
 }
 
@@ -61,8 +60,8 @@ export function recordSearch() {
  * legacy code which has not yet been converted.
  * TODO(https://crbug.com/1133553): make |opt_setting| non-optional when
  * migration is complete.
- * @param {!chromeos.settings.mojom.Setting=} opt_setting
- * @param {!chromeos.settings.mojom.SettingChangeValue=} opt_value
+ * @param {!Setting=} opt_setting
+ * @param {!SettingChangeValue=} opt_value
  */
 export function recordSettingChange(opt_setting, opt_value) {
   if (opt_setting === undefined) {

@@ -29,6 +29,8 @@ import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {Debouncer, html, microTask, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
@@ -394,11 +396,7 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
       return;
     }
 
-    const setting =
-        /** @type {!chromeos.settings.mojom.Setting} */ (settingMetric.setting);
-    const value = /** @type {!chromeos.settings.mojom.SettingChangeValue} */ (
-        settingMetric.value);
-    recordSettingChange(setting, value);
+    recordSettingChange(settingMetric.setting, settingMetric.value);
   }
 
   /**

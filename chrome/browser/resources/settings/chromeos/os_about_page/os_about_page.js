@@ -25,7 +25,6 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import '../../constants/setting.mojom-lite.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -403,14 +402,14 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
   /** @private */
   onDiagnosticsClick_() {
     this.aboutBrowserProxy_.openDiagnostics();
-    recordSettingChange(chromeos.settings.mojom.Setting.kDiagnostics);
+    recordSettingChange(Setting.kDiagnostics);
   }
 
   /** @private */
   onFirmwareUpdatesClick_() {
     assert(this.showFirmwareUpdatesApp_);
     this.aboutBrowserProxy_.openFirmwareUpdatesPage();
-    recordSettingChange(chromeos.settings.mojom.Setting.kFirmwareUpdates);
+    recordSettingChange(Setting.kFirmwareUpdates);
   }
 
   /** @private */

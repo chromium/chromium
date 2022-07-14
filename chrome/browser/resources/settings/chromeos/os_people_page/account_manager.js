@@ -254,8 +254,7 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
    */
   addAccount_(event) {
     recordSettingChange(
-        chromeos.settings.mojom.Setting.kAddAccount,
-        {intValue: this.accounts_.length + 1});
+        Setting.kAddAccount, {intValue: this.accounts_.length + 1});
     this.browserProxy_.addAccount();
   }
 

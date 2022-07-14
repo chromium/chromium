@@ -8,38 +8,35 @@
  * to pref-based settings.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import '../constants/setting.mojom-lite.js';
-import '../search/user_action_recorder.mojom-lite.js';
+import {SettingChangeValue} from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 export class PrefToSettingMetricConverter {
   /**
    * @param {string} prefKey
    * @param {*} prefValue
-   * @return {?{setting: !chromeos.settings.mojom.Setting, value:
-   *     !chromeos.settings.mojom.SettingChangeValue}}
+   * @return {?{setting: !Setting, value: !SettingChangeValue}}
    */
   convertPrefToSettingMetric(prefKey, prefValue) {
     switch (prefKey) {
       // device_page/keyboard.js
       case 'settings.language.send_function_keys':
         return {
-          setting: chromeos.settings.mojom.Setting.kKeyboardFunctionKeys,
+          setting: Setting.kKeyboardFunctionKeys,
           value: {boolValue: /** @type {boolean} */ (prefValue)},
         };
 
       // device_page/pointers.js
       case 'settings.touchpad.sensitivity2':
         return {
-          setting: chromeos.settings.mojom.Setting.kTouchpadSpeed,
+          setting: Setting.kTouchpadSpeed,
           value: {intValue: /** @type {number} */ (prefValue)},
         };
 
       // os_privacy_page/os_privacy_page.js
       case 'cros.device.peripheral_data_access_enabled':
         return {
-          setting:
-              chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection,
+          setting: Setting.kPeripheralDataAccessProtection,
           value: {boolValue: /** @type {boolean} */ (prefValue)},
         };
 
