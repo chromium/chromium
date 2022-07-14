@@ -40,6 +40,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
+#include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/dom/context_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -138,6 +139,18 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
       main_settings.GetPreferredColorScheme());
   page->GetSettings().SetForceDarkModeEnabled(
       main_settings.GetForceDarkModeEnabled());
+
+  const MediaFeatureOverrides* media_feature_overrides =
+      opener_web_view.GetPage()->GetMediaFeatureOverrides();
+  if (media_feature_overrides &&
+      media_feature_overrides->GetPreferredColorScheme().has_value()) {
+    page->SetMediaFeatureOverride(
+        "prefers-color-scheme",
+        media_feature_overrides->GetPreferredColorScheme().value() ==
+                mojom::blink::PreferredColorScheme::kDark
+            ? "dark"
+            : "light");
+  }
   return page;
 }
 
