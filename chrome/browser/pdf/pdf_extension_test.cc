@@ -2069,8 +2069,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   menu_interceptor.Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
-                       ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
+// TODO(crbug.com/1344508): Test is flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(
+    PDFExtensionTest,
+    DISABLED_ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
   content::WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
