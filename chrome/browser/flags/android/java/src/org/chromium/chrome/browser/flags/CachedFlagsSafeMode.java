@@ -42,6 +42,9 @@ class CachedFlagsSafeMode {
     @VisibleForTesting
     static final String PREF_SAFE_VALUES_VERSION = "Chrome.Flags.SafeValuesVersion";
 
+    private Boolean mSafeModeExperimentForcedForTesting;
+    private Boolean mSafeModeExperimentEnabled;
+
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
     @VisibleForTesting
@@ -265,28 +268,57 @@ class CachedFlagsSafeMode {
     }
 
     Boolean isEnabled(String featureName, String preferenceName) {
+        if (!isSafeModeExperimentEnabled()) return null;
+
         // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
         return null;
     }
 
     Boolean getBooleanFieldTrialParam(String preferenceName, boolean defaultValue) {
+        if (!isSafeModeExperimentEnabled()) return null;
+
         // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
         return null;
     }
 
     Integer getIntFieldTrialParam(String preferenceName, int defaultValue) {
+        if (!isSafeModeExperimentEnabled()) return null;
+
         // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
         return null;
     }
 
     Double getDoubleFieldTrialParam(String preferenceName, double defaultValue) {
+        if (!isSafeModeExperimentEnabled()) return null;
+
         // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
         return null;
     }
 
     String getStringFieldTrialParam(String preferenceName, String defaultValue) {
+        if (!isSafeModeExperimentEnabled()) return null;
+
         // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
         return null;
+    }
+
+    void cacheSafeModeForCachedFlagsEnabled() {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED,
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_MODE_FOR_CACHED_FLAGS));
+    }
+
+    private boolean isSafeModeExperimentEnabled() {
+        if (mSafeModeExperimentForcedForTesting != null) {
+            return mSafeModeExperimentForcedForTesting;
+        }
+
+        if (mSafeModeExperimentEnabled == null) {
+            mSafeModeExperimentEnabled = SharedPreferencesManager.getInstance().readBoolean(
+                    ChromePreferenceKeys.FLAGS_SAFE_MODE_ENABLED, false);
+        }
+
+        return mSafeModeExperimentEnabled;
     }
 
     @Behavior
@@ -298,10 +330,15 @@ class CachedFlagsSafeMode {
         mBehavior.set(Behavior.UNKNOWN);
         mStartCheckpointWritten.set(false);
         mEndCheckpointWritten.set(false);
+        mSafeModeExperimentEnabled = null;
     }
 
     @SuppressLint({"ApplySharedPref"})
     static void clearDiskForTesting() {
         getSafeValuePreferences().edit().clear().commit();
+    }
+
+    void setExperimentEnabledForTesting(Boolean value) {
+        mSafeModeExperimentForcedForTesting = value;
     }
 }

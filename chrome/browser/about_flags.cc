@@ -8706,6 +8706,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kLauncherPlayStoreSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"safe-mode-for-cached-flags",
+     flag_descriptions::kSafeModeForCachedFlagsName,
+     flag_descriptions::kSafeModeForCachedFlagsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSafeModeForCachedFlags)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
     {media_router::switches::kAccessCodeCastDeviceDurationSwitch,
      flag_descriptions::kAccessCodeCastDeviceDurationName,

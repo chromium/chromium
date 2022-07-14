@@ -294,6 +294,11 @@ public final class ChromePreferenceKeys {
             "Chrome.Flags.CrashStreakBeforeCache";
 
     /**
+     * Cached value of the native SafeModeForCachedFlags feature flag.
+     */
+    public static final String FLAGS_SAFE_MODE_ENABLED = "Chrome.Flags.SafeModeEnabled";
+
+    /**
      * How many runs of Safe Mode for Cached Flags are left before trying a normal run.
      */
     public static final String FLAGS_SAFE_MODE_RUNS_LEFT = "Chrome.Flags.SafeModeRunsLeft";
@@ -1011,6 +1016,7 @@ public final class ChromePreferenceKeys {
                 FLAGS_CRASH_STREAK_BEFORE_CACHE,
                 FLAGS_FIELD_TRIAL_PARAM_CACHED.pattern(),
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
+                FLAGS_SAFE_MODE_ENABLED,
                 FLAGS_SAFE_MODE_RUNS_LEFT,
                 HOMEPAGE_LOCATION_POLICY,
                 HOMEPAGE_USE_CHROME_NTP,

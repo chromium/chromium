@@ -2099,6 +2099,9 @@ extern const char kRequestDesktopSiteExceptionsDescription[];
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];
 
+extern const char kSafeModeForCachedFlagsName[];
+extern const char kSafeModeForCachedFlagsDescription[];
+
 extern const char kScreenshotsForAndroidV2Name[];
 extern const char kScreenshotsForAndroidV2Description[];
 

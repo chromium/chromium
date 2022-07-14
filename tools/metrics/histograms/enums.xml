@@ -58464,6 +58464,7 @@ from previous Chrome versions.
   <int value="-159877930" label="MaterialDesignUserManager:disabled"/>
   <int value="-158938746" label="NtpRealboxPedals:enabled"/>
   <int value="-158549277" label="enable-embeddedsearch-api"/>
+  <int value="-158161384" label="SafeModeForCachedFlags:disabled"/>
   <int value="-153299083" label="NewProfilePicker:disabled"/>
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
   <int value="-152632720" label="RuntimeHostPermissions:enabled"/>
@@ -59522,6 +59523,7 @@ from previous Chrome versions.
   <int value="517568645" label="AnimatedAppMenuIcon:disabled"/>
   <int value="518419320" label="RemoteCopyProgressNotification:disabled"/>
   <int value="519140642" label="SendWebUIJavaScriptErrorReports:enabled"/>
+  <int value="519623921" label="SafeModeForCachedFlags:enabled"/>
   <int value="520738365" label="OmniboxPedalsBatch2NonEnglish:enabled"/>
   <int value="520982116" label="BuiltInModuleAll:enabled"/>
   <int value="521992655" label="LauncherPlayStoreSearch:disabled"/>

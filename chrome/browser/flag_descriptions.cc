@@ -3695,6 +3695,11 @@ const char kRequestDesktopSiteForTabletsDescription[] =
     " On tablets with small screens a mobile site will be requested by "
     "default.";
 
+const char kSafeModeForCachedFlagsName[] = "Safe Mode for Cached Flags";
+const char kSafeModeForCachedFlagsDescription[] =
+    "Attempts recovery from startup crash loops caused by a bad field trial "
+    "by rolling back to previous known safe flag values.";
+
 const char kScreenshotsForAndroidV2Name[] = "Screenshots for Android V2";
 const char kScreenshotsForAndroidV2Description[] =
     "Adds functionality to the share screenshot panel within Chrome Browser"

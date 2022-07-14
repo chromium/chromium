@@ -41,6 +41,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
 
     @Before
     public void setUp() {
+        CachedFeatureFlags.setSafeModeExperimentEnabledForTesting(true);
         CachedFeatureFlags.resetFlagsForTesting();
         Map<String, Boolean> defaults = makeFeatureMap(false, false);
         mDefaultsSwapped = CachedFeatureFlags.swapDefaultsForTesting(defaults);
@@ -48,6 +49,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
 
     @After
     public void tearDown() {
+        CachedFeatureFlags.setSafeModeExperimentEnabledForTesting(null);
         CachedFeatureFlags.resetFlagsForTesting();
         CachedFeatureFlags.swapDefaultsForTesting(mDefaultsSwapped);
 

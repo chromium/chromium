@@ -266,6 +266,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRelatedSearchesInBar,
     &kRelatedSearchesSimplifiedUx,
     &kRelatedSearchesUi,
+    &kSafeModeForCachedFlags,
     &kSearchEnginePromoExistingDevice,
     &kSearchEnginePromoExistingDeviceV2,
     &kSearchEnginePromoNewDevice,
@@ -767,6 +768,9 @@ const base::Feature kRelatedSearchesSimplifiedUx{
 
 const base::Feature kRelatedSearchesUi{"RelatedSearchesUi",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSafeModeForCachedFlags{"SafeModeForCachedFlags",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kShareButtonInTopToolbar{"ShareButtonInTopToolbar",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

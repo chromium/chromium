@@ -136,6 +136,7 @@ extern const base::Feature kShareButtonInTopToolbar;
 extern const base::Feature kSharingHubLinkToggle;
 extern const base::Feature kShowScrollableMVTOnNTPAndroid;
 extern const base::Feature kFeedPositionAndroid;
+extern const base::Feature kSafeModeForCachedFlags;
 extern const base::Feature kSearchResumptionModuleAndroid;
 extern const base::Feature kSpannableInlineAutocomplete;
 extern const base::Feature kSpecialLocaleWrapper;

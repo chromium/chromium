@@ -258,6 +258,7 @@ public class CachedFeatureFlags {
      */
     public static void cacheAdditionalNativeFlags() {
         cacheNetworkServiceWarmUpEnabled();
+        sSafeMode.cacheSafeModeForCachedFlagsEnabled();
         cacheReachedCodeProfilerTrialGroup();
 
         // Propagate REACHED_CODE_PROFILER feature value to LibraryLoader. This can't be done in
@@ -508,6 +509,11 @@ public class CachedFeatureFlags {
         Map<String, Boolean> swapped = sDefaults;
         sDefaults = testDefaults;
         return swapped;
+    }
+
+    @VisibleForTesting
+    static void setSafeModeExperimentEnabledForTesting(Boolean value) {
+        sSafeMode.setExperimentEnabledForTesting(value);
     }
 
     @NativeMethods
