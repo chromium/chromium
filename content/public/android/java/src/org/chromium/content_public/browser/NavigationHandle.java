@@ -38,7 +38,7 @@ public class NavigationHandle {
     private final boolean mIsPost;
     private boolean mHasUserGesture;
     private boolean mIsRedirect;
-    private final boolean mIsExternalProtocol;
+    private boolean mIsExternalProtocol;
     private final long mNavigationId;
     private final boolean mIsPageActivation;
     private final boolean mIsReload;
@@ -73,9 +73,10 @@ public class NavigationHandle {
      * @param url The new URL.
      */
     @CalledByNative
-    private void didRedirect(GURL url) {
+    private void didRedirect(GURL url, boolean isExternalProtocol) {
         mUrl = url;
         mIsRedirect = true;
+        mIsExternalProtocol = isExternalProtocol;
     }
 
     /**
@@ -85,7 +86,7 @@ public class NavigationHandle {
     public void didFinish(@NonNull GURL url, boolean isErrorPage, boolean hasCommitted,
             boolean isPrimaryMainFrameFragmentNavigation, boolean isDownload,
             boolean isValidSearchFormUrl, @PageTransition int transition, @NetError int errorCode,
-            int httpStatuscode) {
+            int httpStatuscode, boolean isExternalProtocol) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
@@ -95,6 +96,7 @@ public class NavigationHandle {
         mPageTransition = transition;
         mErrorCode = errorCode;
         mHttpStatusCode = httpStatuscode;
+        mIsExternalProtocol = isExternalProtocol;
     }
 
     /**

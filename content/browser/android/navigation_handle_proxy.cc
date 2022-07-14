@@ -50,7 +50,8 @@ void NavigationHandleProxy::DidRedirect() {
   JNIEnv* env = AttachCurrentThread();
   Java_NavigationHandle_didRedirect(
       env, java_navigation_handle_,
-      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()));
+      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+      cpp_navigation_handle_->IsExternalProtocol());
 }
 
 void NavigationHandleProxy::DidFinish() {
@@ -94,7 +95,8 @@ void NavigationHandleProxy::DidFinish() {
       // crbug/690041.
       cpp_navigation_handle_->GetResponseHeaders()
           ? cpp_navigation_handle_->GetResponseHeaders()->response_code()
-          : 200);
+          : 200,
+      cpp_navigation_handle_->IsExternalProtocol());
 }
 
 NavigationHandleProxy::~NavigationHandleProxy() {

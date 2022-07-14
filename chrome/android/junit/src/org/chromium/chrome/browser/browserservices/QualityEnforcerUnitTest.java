@@ -266,8 +266,8 @@ public class QualityEnforcerUnitTest {
                 false /* isReload */);
         navigation.didFinish(url, false /* isErrorPage */, true /* hasCommitted */,
                 false /* isFragmentNavigation */, false /* isDownload */,
-                false /* isValidSearchFormUrl */, 0 /* pageTransition */, errorCode,
-                httpStatusCode);
+                false /* isValidSearchFormUrl */, 0 /* pageTransition */, errorCode, httpStatusCode,
+                false /* isExternalProtocol */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidFinishNavigation(mTab, navigation);
         }

@@ -289,7 +289,7 @@ public class ScopeChangeControllerTest {
             boolean isSameDocument, boolean isReload, boolean didCommit, GURL url) {
         NavigationHandle handle = new NavigationHandle(0, url, null, null, isMainFrame,
                 isSameDocument, true, null, 0, false, false, false, false, -1, false, isReload);
-        handle.didFinish(url, false, didCommit, false, false, false, 0, 0, 0);
+        handle.didFinish(url, false, didCommit, false, false, false, 0, 0, 0, false);
         return handle;
     }
 }
