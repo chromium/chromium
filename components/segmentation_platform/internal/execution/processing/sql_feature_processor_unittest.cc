@@ -136,7 +136,7 @@ TEST_F(SqlFeatureProcessorTest, EmptyBindValues) {
 TEST_F(SqlFeatureProcessorTest, SingleSqlFeatureWithBindValues) {
   // Set up a single empty sql feature.
   SqlFeatureProcessor::QueryList data;
-  constexpr char kSqlQuery[] = "some sql query";
+  constexpr char kSqlQuery[] = "some sql query with three bind value ? ? ?";
   std::vector<float> custom_default_values = {1, 2, 3};
   data[0] = CreateSqlFeature(
       kSqlQuery,
@@ -164,23 +164,25 @@ TEST_F(SqlFeatureProcessorTest, MultipleSqlFeatures) {
   // Set up a single empty sql feature.
   SqlFeatureProcessor::QueryList data;
   constexpr char kSqlQuery[] = "some sql query";
+  constexpr char kSqlQueryWithBindValue[] =
+      "some sql query with one bind value ?";
   std::vector<float> custom_default_values = {1, 2, 3};
   data[0] = CreateSqlFeature(
-      kSqlQuery,
+      kSqlQueryWithBindValue,
       {CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {})});
   data[1] = CreateSqlFeature(kSqlQuery, {});
   data[2] = CreateSqlFeature(
-      kSqlQuery,
+      kSqlQueryWithBindValue,
       {CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {})});
 
   // Construct the expected processed bind values based on the given data.
   base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>
       processed_queries;
   processed_queries[0] =
-      CustomSqlQuery(kSqlQuery, {ProcessedValue(clock_.Now())});
+      CustomSqlQuery(kSqlQueryWithBindValue, {ProcessedValue(clock_.Now())});
   processed_queries[1] = CustomSqlQuery(kSqlQuery, {});
   processed_queries[2] =
-      CustomSqlQuery(kSqlQuery, {ProcessedValue(clock_.Now())});
+      CustomSqlQuery(kSqlQueryWithBindValue, {ProcessedValue(clock_.Now())});
 
   // Construct a result to be returned when the correct processed queries are
   // sent.

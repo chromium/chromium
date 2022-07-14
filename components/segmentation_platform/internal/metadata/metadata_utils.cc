@@ -136,6 +136,7 @@ ValidationResult ValidateMetadataSqlFeature(const proto::SqlFeature& feature) {
   if (feature.sql().empty())
     return ValidationResult::kFeatureSqlQueryEmpty;
 
+  int total_tensor_length = 0;
   for (int i = 0; i < feature.bind_values_size(); ++i) {
     const auto& bind_value = feature.bind_values(i);
     if (!bind_value.has_value() ||
@@ -144,6 +145,12 @@ ValidationResult ValidateMetadataSqlFeature(const proto::SqlFeature& feature) {
             ValidationResult::kValidationSuccess) {
       return ValidationResult::kFeatureBindValuesInvalid;
     }
+    total_tensor_length += bind_value.value().tensor_length();
+  }
+
+  if (total_tensor_length !=
+      std::count(feature.sql().begin(), feature.sql().end(), '?')) {
+    return ValidationResult::kFeatureBindValuesInvalid;
   }
 
   return ValidationResult::kValidationSuccess;

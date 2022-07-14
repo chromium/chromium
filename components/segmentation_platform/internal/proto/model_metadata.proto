@@ -80,9 +80,12 @@ message UMAFeature {
 }
 
 message CustomInput {
-  // If the param is directly used as the input tensor field to the model, then
-  // this specifies the number of columns to fill in the tensor. In this case
-  // the value should be float.
+  // This parameter is required.
+  // 1. If the param is directly used as the input tensor field to the model,
+  // then this specifies the number of columns to fill in the tensor. In this
+  // case the value should be float.
+  // 2. If the param is used as a bind value for sql features, then this
+  // specifies the number of sql bindings to fill in the sql query.
   optional int32 tensor_length = 1;
 
   // Used to distinguish between different types of custom inputs.
