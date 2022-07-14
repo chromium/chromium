@@ -509,7 +509,7 @@ const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
       content::NotificationService::AllSources());
   apps::AppLaunchParams params(
       app->id(), apps::LaunchContainer::kLaunchContainerNone,
-      WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->BrowserAppLauncher()

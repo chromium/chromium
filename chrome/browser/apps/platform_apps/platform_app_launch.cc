@@ -92,7 +92,7 @@ bool OpenExtensionApplicationWindow(Profile* profile,
 
   apps::AppLaunchParams params(app_id, launch_container,
                                WindowOpenDisposition::NEW_WINDOW,
-                               apps::mojom::LaunchSource::kFromCommandLine);
+                               apps::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
 
@@ -119,7 +119,7 @@ bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id) {
       profile,
       apps::AppLaunchParams(app_id, apps::LaunchContainer::kLaunchContainerTab,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            apps::mojom::LaunchSource::kFromCommandLine));
+                            apps::LaunchSource::kFromCommandLine));
   return app_tab != nullptr;
 }
 
@@ -162,10 +162,9 @@ bool OpenExtensionApplicationWithReenablePrompt(
     return false;
 
   RecordCmdLineAppHistogram(extensions::Manifest::TYPE_PLATFORM_APP);
-  apps::AppLaunchParams params(app_id,
-                               apps::LaunchContainer::kLaunchContainerNone,
-                               WindowOpenDisposition::NEW_WINDOW,
-                               apps::mojom::LaunchSource::kFromCommandLine);
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerNone,
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
   ::OpenApplicationWithReenablePrompt(profile, std::move(params));

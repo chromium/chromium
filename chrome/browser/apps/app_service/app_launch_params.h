@@ -25,13 +25,13 @@ struct AppLaunchParams {
   AppLaunchParams(const std::string& app_id,
                   LaunchContainer container,
                   WindowOpenDisposition disposition,
-                  apps::mojom::LaunchSource launch_source,
+                  apps::LaunchSource launch_source,
                   int64_t display_id = display::kInvalidDisplayId);
 
   AppLaunchParams(const std::string& app_id,
                   LaunchContainer container,
                   WindowOpenDisposition disposition,
-                  apps::mojom::LaunchSource launch_source,
+                  apps::LaunchSource launch_source,
                   int64_t display_id,
                   const std::vector<base::FilePath>& files,
                   const IntentPtr& intentPtr);
@@ -79,7 +79,7 @@ struct AppLaunchParams {
 
   // Record where the app is launched from for tracking purpose.
   // Different app may have their own enumeration of sources.
-  apps::mojom::LaunchSource launch_source;
+  apps::LaunchSource launch_source;
 
   // The id of the display from which the app is launched.
   // display::kInvalidDisplayId means that the default display for new windows

@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -112,7 +113,7 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   // TODO(crbug/1113502): Plumb through better launch sources from callsites.
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
       app_id.value(), /*event_flags=*/0,
-      apps::mojom::LaunchSource::kFromChromeInternal, display_id,
+      apps::LaunchSource::kFromChromeInternal, display_id,
       /*fallback_container=*/
       web_app::ConvertDisplayModeToAppLaunchContainer(display_mode));
 

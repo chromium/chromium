@@ -401,7 +401,8 @@ void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
           std::move(callback).Run(LaunchResult());
           return;
         }
-        auto launch_source = params.launch_source;
+        auto launch_source =
+            ConvertLaunchSourceToMojomLaunchSource(params.launch_source);
         // TODO(crbug/1117655): File manager records metrics for apps it
         // launched. So we only record launches from other places. We should
         // eventually move those metrics here, after AppService supports all

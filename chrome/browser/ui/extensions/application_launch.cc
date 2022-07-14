@@ -472,8 +472,7 @@ WebContents* OpenAppShortcutWindow(Profile* profile, const GURL& url) {
   apps::AppLaunchParams launch_params(
       std::string(),  // this is a URL app. No app id.
       apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::LaunchSource::kFromCommandLine);
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromCommandLine);
   launch_params.override_url = url;
 
   WebContents* tab = OpenApplicationWindow(profile, launch_params, url);

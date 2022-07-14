@@ -8,7 +8,6 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -19,7 +18,7 @@ apps::AppLaunchParams CreateAppLaunchParamsUserContainer(
     Profile* profile,
     const extensions::Extension* extension,
     WindowOpenDisposition disposition,
-    apps::mojom::LaunchSource launch_source) {
+    apps::LaunchSource launch_source) {
   // Look up the app preference to find out the right launch container. Default
   // is to launch as a regular tab.
   apps::LaunchContainer container =
@@ -32,7 +31,7 @@ apps::AppLaunchParams CreateAppLaunchParamsWithEventFlags(
     Profile* profile,
     const extensions::Extension* extension,
     int event_flags,
-    apps::mojom::LaunchSource launch_source,
+    apps::LaunchSource launch_source,
     int64_t display_id) {
   apps::LaunchContainer fallback_container =
       extensions::GetLaunchContainer(ExtensionPrefs::Get(profile), extension);

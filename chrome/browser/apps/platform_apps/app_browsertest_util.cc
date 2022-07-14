@@ -163,8 +163,7 @@ void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
       ->BrowserAppLauncher()
       ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::LaunchSource::kFromTest));
+          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
 }
 
 void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
@@ -173,7 +172,7 @@ void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
       ->LaunchAppWithParamsForTesting(CreateAppLaunchParamsUserContainer(
           browser()->profile(), extension,
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::LaunchSource::kFromCommandLine));
+          apps::LaunchSource::kFromCommandLine));
 }
 
 WebContents* PlatformAppBrowserTest::GetFirstAppWindowWebContents() {

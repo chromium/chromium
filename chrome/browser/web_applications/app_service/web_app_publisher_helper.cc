@@ -69,6 +69,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -832,7 +833,8 @@ content::WebContents* WebAppPublisherHelper::Launch(
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
 
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      web_app->app_id(), event_flags, launch_source,
+      web_app->app_id(), event_flags,
+      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
@@ -852,7 +854,9 @@ void WebAppPublisherHelper::LaunchAppWithFiles(
 
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      app_id, event_flags, launch_source, display::kInvalidDisplayId,
+      app_id, event_flags,
+      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
+      display::kInvalidDisplayId,
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
   if (file_paths) {
@@ -1181,7 +1185,7 @@ content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
 
   apps::AppLaunchParams params(
       app_id, ConvertDisplayModeToAppLaunchContainer(display_mode),
-      WindowOpenDisposition::CURRENT_TAB, apps::mojom::LaunchSource::kFromMenu,
+      WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromMenu,
       display_id);
 
   auto menu_item = shortcut_id_map_.find(shortcut_id);
@@ -1546,7 +1550,8 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
   bool is_file_handling_launch = intent->files && !intent->files->empty() &&
                                  !apps_util::IsShareIntent(intent);
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, event_flags, launch_source, display_id,
+      app_id, event_flags,
+      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source), display_id,
       ConvertDisplayModeToAppLaunchContainer(
           registrar().GetAppEffectiveDisplayMode(app_id)),
       std::move(intent), profile_);

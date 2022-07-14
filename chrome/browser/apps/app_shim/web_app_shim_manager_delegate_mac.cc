@@ -222,11 +222,10 @@ void WebAppShimManagerDelegate::LaunchApp(
 
   apps::LaunchContainer launch_container =
       web_app::ConvertDisplayModeToAppLaunchContainer(effective_display_mode);
-  apps::mojom::LaunchSource launch_source =
-      apps::mojom::LaunchSource::kFromCommandLine;
+  apps::LaunchSource launch_source = apps::LaunchSource::kFromCommandLine;
   if (login_item_restore_state !=
       chrome::mojom::AppShimLoginItemRestoreState::kNone) {
-    launch_source = apps::mojom::LaunchSource::kFromOsLogin;
+    launch_source = apps::LaunchSource::kFromOsLogin;
   }
 
   apps::AppLaunchParams params(app_id, launch_container,
@@ -270,7 +269,7 @@ void WebAppShimManagerDelegate::LaunchApp(
     }
 
     params.protocol_handler_launch_url = url;
-    params.launch_source = apps::mojom::LaunchSource::kFromProtocolHandler;
+    params.launch_source = apps::LaunchSource::kFromProtocolHandler;
   }
 
   WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);

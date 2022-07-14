@@ -92,11 +92,11 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
   SYSLOG(INFO) << "Attempt to launch app.";
 
   // Always open the app in a window.
-  ::OpenApplication(profile_, apps::AppLaunchParams(
-                                  extension->id(),
-                                  apps::LaunchContainer::kLaunchContainerWindow,
-                                  WindowOpenDisposition::NEW_WINDOW,
-                                  apps::mojom::LaunchSource::kFromKiosk));
+  ::OpenApplication(
+      profile_,
+      apps::AppLaunchParams(
+          extension->id(), apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromKiosk));
 
   WaitForAppWindow();
 }

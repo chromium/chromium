@@ -30,7 +30,7 @@ class LaunchUtilsTest : public testing::Test {
           apps::LaunchContainer::kLaunchContainerNone) {
     return apps::CreateAppIdLaunchParamsWithEventFlags(
         app_id, apps::GetEventFlags(disposition, preferred_container),
-        apps::mojom::LaunchSource::kFromChromeInternal, display_id,
+        apps::LaunchSource::kFromChromeInternal, display_id,
         fallback_container);
   }
 
@@ -98,9 +98,9 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
 
   auto params = apps::CreateAppLaunchParamsForIntent(
       app_id, apps::GetEventFlags(disposition, true),
-      apps::mojom::LaunchSource::kFromChromeInternal,
-      display::kInvalidDisplayId, apps::LaunchContainer::kLaunchContainerWindow,
-      std::move(intent), &profile_);
+      apps::LaunchSource::kFromChromeInternal, display::kInvalidDisplayId,
+      apps::LaunchContainer::kLaunchContainerWindow, std::move(intent),
+      &profile_);
 
   EXPECT_EQ(url, params.override_url);
 }
@@ -119,9 +119,9 @@ TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
 
   auto params = apps::CreateAppLaunchParamsForIntent(
       app_id, apps::GetEventFlags(disposition, true),
-      apps::mojom::LaunchSource::kFromChromeInternal,
-      display::kInvalidDisplayId, apps::LaunchContainer::kLaunchContainerWindow,
-      std::move(intent), &profile_);
+      apps::LaunchSource::kFromChromeInternal, display::kInvalidDisplayId,
+      apps::LaunchContainer::kLaunchContainerWindow, std::move(intent),
+      &profile_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(params.launch_files.size(), 1U);
@@ -289,8 +289,7 @@ TEST_F(LaunchUtilsTest, FromCrosapiIncomplete) {
   EXPECT_EQ(apps::LaunchContainer::kLaunchContainerNone,
             converted_params.container);
   EXPECT_EQ(WindowOpenDisposition::UNKNOWN, converted_params.disposition);
-  EXPECT_EQ(apps::mojom::LaunchSource::kFromIntentUrl,
-            converted_params.launch_source);
+  EXPECT_EQ(apps::LaunchSource::kFromIntentUrl, converted_params.launch_source);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -331,7 +330,7 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
   EXPECT_EQ(converted_params.disposition,
             WindowOpenDisposition::NEW_FOREGROUND_TAB);
   EXPECT_EQ(converted_params.launch_source,
-            apps::mojom::LaunchSource::kFromSharesheet);
+            apps::LaunchSource::kFromSharesheet);
   EXPECT_EQ(converted_params.display_id, kDisplayId);
 
   EXPECT_EQ(converted_params.launch_files.size(), 1U);

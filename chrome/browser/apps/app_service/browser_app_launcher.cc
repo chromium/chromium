@@ -47,7 +47,7 @@ content::WebContents* LaunchAppWithParamsImpl(
         params.launch_source, params.display_id, params.launch_files,
         params.intent);
     std::string app_id = params.app_id;
-    apps::mojom::LaunchSource launch_source = params.launch_source;
+    apps::LaunchSource launch_source = params.launch_source;
     apps::LaunchContainer container = params.container;
     int restore_id = params.restore_id;
 
@@ -59,8 +59,9 @@ content::WebContents* LaunchAppWithParamsImpl(
         web_app_launch_manager->OpenApplication(std::move(params));
 
     if (!SessionID::IsValidValue(restore_id)) {
-      RecordAppLaunchMetrics(profile, apps::AppType::kWeb, app_id,
-                             launch_source, container);
+      RecordAppLaunchMetrics(
+          profile, apps::AppType::kWeb, app_id,
+          ConvertLaunchSourceToMojomLaunchSource(launch_source), container);
       return web_contents;
     }
 
@@ -108,8 +109,10 @@ content::WebContents* LaunchAppWithParamsImpl(
         std::move(params_for_restore.intent));
     full_restore::SaveAppLaunchInfo(profile->GetPath(), std::move(launch_info));
   } else {
-    RecordAppLaunchMetrics(profile, apps::AppType::kChromeApp, params.app_id,
-                           params.launch_source, params.container);
+    RecordAppLaunchMetrics(
+        profile, apps::AppType::kChromeApp, params.app_id,
+        ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
+        params.container);
   }
 #endif
 
@@ -148,7 +151,7 @@ void BrowserAppLauncher::LaunchPlayStoreWithExtensions() {
   LaunchAppWithParamsImpl(
       CreateAppLaunchParamsUserContainer(
           profile_, extension, WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::LaunchSource::kFromChromeInternal),
+          apps::LaunchSource::kFromChromeInternal),
       profile_, &web_app_launch_manager_);
 }
 #endif

@@ -46,10 +46,9 @@ IN_PROC_BROWSER_TEST_P(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
       ->InstallSystemAppsForTesting();
 
   Profile* profile = browser()->profile();
-  apps::AppLaunchParams params(web_app::kOsSettingsAppId,
-                               apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               apps::mojom::LaunchSource::kFromTest);
+  apps::AppLaunchParams params(
+      web_app::kOsSettingsAppId, apps::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, apps::LaunchSource::kFromTest);
 
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)

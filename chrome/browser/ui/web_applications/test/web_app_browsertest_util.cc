@@ -198,7 +198,7 @@ Browser* LaunchWebAppBrowser(Profile* profile,
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::LaunchContainer::kLaunchContainerWindow,
-              disposition, apps::mojom::LaunchSource::kFromTest));
+              disposition, apps::LaunchSource::kFromTest));
   EXPECT_TRUE(web_contents);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(browser, app_id));
@@ -225,7 +225,7 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::LaunchContainer::kLaunchContainerTab,
               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-              apps::mojom::LaunchSource::kFromTest));
+              apps::LaunchSource::kFromTest));
   DCHECK(web_contents);
 
   EXPECT_EQ(app_id, *WebAppTabHelper::GetAppId(web_contents));

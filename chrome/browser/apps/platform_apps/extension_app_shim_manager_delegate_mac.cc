@@ -195,7 +195,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
   if (extension->is_hosted_app()) {
     auto params = CreateAppLaunchParamsUserContainer(
         profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::mojom::LaunchSource::kFromCommandLine);
+        apps::LaunchSource::kFromCommandLine);
     params.launch_files = files;
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()

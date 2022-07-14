@@ -189,7 +189,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
                            apps::LaunchContainer::kLaunchContainerWindow) {
     web_contents_ = LaunchApplication(
         profile(), app_id, expected_launch_url, launch_container,
-        apps::mojom::LaunchSource::kFromFileManager, files);
+        apps::LaunchSource::kFromFileManager, files);
     destroyed_watcher_ =
         std::make_unique<content::WebContentsDestroyedWatcher>(web_contents_);
   }
@@ -255,8 +255,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
       const GURL& expected_launch_url,
       const apps::LaunchContainer launch_container =
           apps::LaunchContainer::kLaunchContainerWindow,
-      const apps::mojom::LaunchSource launch_source =
-          apps::mojom::LaunchSource::kFromTest,
+      const apps::LaunchSource launch_source = apps::LaunchSource::kFromTest,
       const std::vector<base::FilePath>& files =
           std::vector<base::FilePath>()) {
     apps::AppLaunchParams params(app_id, launch_container,

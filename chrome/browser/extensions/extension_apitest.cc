@@ -149,10 +149,9 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
   if (!url_to_open.is_empty()) {
     OpenURL(url_to_open, run_options.open_in_incognito);
   } else if (run_options.launch_as_platform_app) {
-    apps::AppLaunchParams params(extension->id(),
-                                 apps::LaunchContainer::kLaunchContainerNone,
-                                 WindowOpenDisposition::NEW_WINDOW,
-                                 apps::mojom::LaunchSource::kFromTest);
+    apps::AppLaunchParams params(
+        extension->id(), apps::LaunchContainer::kLaunchContainerNone,
+        WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()

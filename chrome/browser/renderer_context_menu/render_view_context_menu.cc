@@ -3385,7 +3385,7 @@ void RenderViewContextMenu::ExecOpenWebApp() {
 
   apps::AppLaunchParams launch_params(
       *app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::CURRENT_TAB, apps::mojom::LaunchSource::kFromMenu);
+      WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromMenu);
   launch_params.override_url = params_.link_url;
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->LaunchAppWithParams(std::move(launch_params));

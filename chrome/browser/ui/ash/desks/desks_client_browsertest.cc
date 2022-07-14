@@ -239,7 +239,7 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
   web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
   apps::AppLaunchParams params(
       app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
+      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
   params.restore_id = app_type == ash::SystemWebAppType::SETTINGS
                           ? kSettingsWindowId
                           : kHelpWindowId;

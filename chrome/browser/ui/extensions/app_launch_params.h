@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_APP_LAUNCH_PARAMS_H_
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -21,7 +22,7 @@ apps::AppLaunchParams CreateAppLaunchParamsUserContainer(
     Profile* profile,
     const extensions::Extension* extension,
     WindowOpenDisposition disposition,
-    apps::mojom::LaunchSource launch_source);
+    apps::LaunchSource launch_source);
 
 // Helper to create AppLaunchParams, falling back to
 // extensions::GetLaunchContainer() with no modifiers.
@@ -29,7 +30,7 @@ apps::AppLaunchParams CreateAppLaunchParamsWithEventFlags(
     Profile* profile,
     const extensions::Extension* extension,
     int event_flags,
-    apps::mojom::LaunchSource launch_source,
+    apps::LaunchSource launch_source,
     int64_t display_id);
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_APP_LAUNCH_PARAMS_H_

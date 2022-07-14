@@ -1694,10 +1694,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
       last_loaded_extension_id(), extensions::ExtensionRegistry::ENABLED);
   EXPECT_TRUE(extension);
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
-      apps::AppLaunchParams(extension->id(),
-                            apps::LaunchContainer::kLaunchContainerTab,
-                            WindowOpenDisposition::NEW_WINDOW,
-                            apps::mojom::LaunchSource::kFromTest));
+      apps::AppLaunchParams(
+          extension->id(), apps::LaunchContainer::kLaunchContainerTab,
+          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
 
   EXPECT_EQ(++browsers, BrowserShortcutMenuItemCount(false));
   EXPECT_EQ(++tabs, BrowserShortcutMenuItemCount(true));

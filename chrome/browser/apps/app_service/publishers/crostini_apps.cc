@@ -126,9 +126,11 @@ void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
   if (params.intent) {
     LaunchAppWithIntent(
         params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
-        params.launch_source, std::move(window_info), base::DoNothing());
+        ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
+        std::move(window_info), base::DoNothing());
   } else {
-    Launch(params.app_id, event_flags, params.launch_source,
+    Launch(params.app_id, event_flags,
+           ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
            std::move(window_info));
   }
   // TODO(crbug.com/1244506): Add launch return value.

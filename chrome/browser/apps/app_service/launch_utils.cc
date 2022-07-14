@@ -188,7 +188,7 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile) {
 AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     const std::string& app_id,
     int event_flags,
-    apps::mojom::LaunchSource launch_source,
+    apps::LaunchSource launch_source,
     int64_t display_id,
     apps::LaunchContainer fallback_container) {
   WindowOpenDisposition raw_disposition =
@@ -216,7 +216,7 @@ AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
 apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
+    apps::LaunchSource launch_source,
     int64_t display_id,
     apps::LaunchContainer fallback_container,
     apps::mojom::IntentPtr&& intent,
@@ -256,56 +256,56 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
 }
 
 extensions::AppLaunchSource GetAppLaunchSource(
-    apps::mojom::LaunchSource launch_source) {
+    apps::LaunchSource launch_source) {
   switch (launch_source) {
-    case apps::mojom::LaunchSource::kUnknown:
-    case apps::mojom::LaunchSource::kFromAppListGrid:
-    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
-    case apps::mojom::LaunchSource::kFromAppListQuery:
-    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
-    case apps::mojom::LaunchSource::kFromAppListRecommendation:
-    case apps::mojom::LaunchSource::kFromParentalControls:
-    case apps::mojom::LaunchSource::kFromShelf:
-    case apps::mojom::LaunchSource::kFromLink:
-    case apps::mojom::LaunchSource::kFromOmnibox:
-    case apps::mojom::LaunchSource::kFromOtherApp:
-    case apps::mojom::LaunchSource::kFromSharesheet:
+    case apps::LaunchSource::kUnknown:
+    case apps::LaunchSource::kFromAppListGrid:
+    case apps::LaunchSource::kFromAppListGridContextMenu:
+    case apps::LaunchSource::kFromAppListQuery:
+    case apps::LaunchSource::kFromAppListQueryContextMenu:
+    case apps::LaunchSource::kFromAppListRecommendation:
+    case apps::LaunchSource::kFromParentalControls:
+    case apps::LaunchSource::kFromShelf:
+    case apps::LaunchSource::kFromLink:
+    case apps::LaunchSource::kFromOmnibox:
+    case apps::LaunchSource::kFromOtherApp:
+    case apps::LaunchSource::kFromSharesheet:
       return extensions::AppLaunchSource::kSourceAppLauncher;
-    case apps::mojom::LaunchSource::kFromMenu:
+    case apps::LaunchSource::kFromMenu:
       return extensions::AppLaunchSource::kSourceContextMenu;
-    case apps::mojom::LaunchSource::kFromKeyboard:
+    case apps::LaunchSource::kFromKeyboard:
       return extensions::AppLaunchSource::kSourceKeyboard;
-    case apps::mojom::LaunchSource::kFromFileManager:
+    case apps::LaunchSource::kFromFileManager:
       return extensions::AppLaunchSource::kSourceFileHandler;
-    case apps::mojom::LaunchSource::kFromChromeInternal:
-    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
-    case apps::mojom::LaunchSource::kFromFullRestore:
-    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
-    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+    case apps::LaunchSource::kFromChromeInternal:
+    case apps::LaunchSource::kFromReleaseNotesNotification:
+    case apps::LaunchSource::kFromFullRestore:
+    case apps::LaunchSource::kFromSmartTextContextMenu:
+    case apps::LaunchSource::kFromDiscoverTabNotification:
       return extensions::AppLaunchSource::kSourceChromeInternal;
-    case apps::mojom::LaunchSource::kFromInstalledNotification:
+    case apps::LaunchSource::kFromInstalledNotification:
       return extensions::AppLaunchSource::kSourceInstalledNotification;
-    case apps::mojom::LaunchSource::kFromTest:
+    case apps::LaunchSource::kFromTest:
       return extensions::AppLaunchSource::kSourceTest;
-    case apps::mojom::LaunchSource::kFromArc:
+    case apps::LaunchSource::kFromArc:
       return extensions::AppLaunchSource::kSourceArc;
-    case apps::mojom::LaunchSource::kFromManagementApi:
+    case apps::LaunchSource::kFromManagementApi:
       return extensions::AppLaunchSource::kSourceManagementApi;
-    case apps::mojom::LaunchSource::kFromKiosk:
+    case apps::LaunchSource::kFromKiosk:
       return extensions::AppLaunchSource::kSourceKiosk;
-    case apps::mojom::LaunchSource::kFromCommandLine:
+    case apps::LaunchSource::kFromCommandLine:
       return extensions::AppLaunchSource::kSourceCommandLine;
-    case apps::mojom::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromBackgroundMode:
       return extensions::AppLaunchSource::kSourceBackground;
-    case apps::mojom::LaunchSource::kFromNewTabPage:
+    case apps::LaunchSource::kFromNewTabPage:
       return extensions::AppLaunchSource::kSourceNewTabPage;
-    case apps::mojom::LaunchSource::kFromIntentUrl:
+    case apps::LaunchSource::kFromIntentUrl:
       return extensions::AppLaunchSource::kSourceIntentUrl;
-    case apps::mojom::LaunchSource::kFromOsLogin:
+    case apps::LaunchSource::kFromOsLogin:
       return extensions::AppLaunchSource::kSourceRunOnOsLogin;
-    case apps::mojom::LaunchSource::kFromProtocolHandler:
+    case apps::LaunchSource::kFromProtocolHandler:
       return extensions::AppLaunchSource::kSourceProtocolHandler;
-    case apps::mojom::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromUrlHandler:
       return extensions::AppLaunchSource::kSourceUrlHandler;
   }
 }
@@ -405,8 +405,7 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   crosapi_params->app_id = id;
-  crosapi_params->launch_source =
-      ConvertMojomLaunchSourceToLaunchSource(params.launch_source);
+  crosapi_params->launch_source = params.launch_source;
 
   // Both launch_files and override_url will be represent by intent in crosapi
   // launch params. These info will normally represent in the intent field in
@@ -439,8 +438,7 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
       crosapi_params->app_id,
       ConvertCrosapiToAppServiceLaunchContainer(crosapi_params->container),
       ConvertWindowOpenDispositionFromCrosapi(crosapi_params->disposition),
-      ConvertLaunchSourceToMojomLaunchSource(crosapi_params->launch_source),
-      crosapi_params->display_id);
+      crosapi_params->launch_source, crosapi_params->display_id);
   if (!crosapi_params->intent) {
     return params;
   }
@@ -464,7 +462,7 @@ crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
     apps::AppServiceProxy* proxy,
     const std::string& app_id,
     int event_flags,
-    apps::mojom::LaunchSource launch_source,
+    apps::LaunchSource launch_source,
     int64_t display_id) {
   WindowMode window_mode = WindowMode::kUnknown;
   proxy->AppRegistryCache().ForOneApp(

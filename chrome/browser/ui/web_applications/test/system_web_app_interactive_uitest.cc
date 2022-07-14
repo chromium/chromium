@@ -561,7 +561,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     auto launch_params = apps::AppLaunchParams(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
-        apps::mojom::LaunchSource::kFromAppListGrid);
+        apps::LaunchSource::kFromAppListGrid);
 
     content::TestNavigationObserver navigation_observer(
         installation_->GetAppUrl());
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
     auto launch_params = apps::AppLaunchParams(
         app_id2, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
-        apps::mojom::LaunchSource::kFromAppListGrid);
+        apps::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =
         apps::AppServiceProxyFactory::GetForProfile(profile2)
             ->BrowserAppLauncher()
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
     auto launch_params = apps::AppLaunchParams(
         app_id1, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
-        apps::mojom::LaunchSource::kFromAppListGrid);
+        apps::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =
         apps::AppServiceProxyFactory::GetForProfile(profile1)
             ->BrowserAppLauncher()

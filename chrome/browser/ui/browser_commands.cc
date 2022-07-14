@@ -701,7 +701,7 @@ void NewWindow(Browser* browser) {
     }
     apps::AppLaunchParams params = apps::AppLaunchParams(
         app_id, launch_container, WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::LaunchSource::kFromKeyboard);
+        apps::LaunchSource::kFromKeyboard);
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
         ->LaunchAppWithParams(std::move(params));
@@ -714,7 +714,7 @@ void NewWindow(Browser* browser) {
   if (extension && extension->is_hosted_app()) {
     const auto app_launch_params = CreateAppLaunchParamsUserContainer(
         profile, extension, WindowOpenDisposition::NEW_WINDOW,
-        apps::mojom::LaunchSource::kFromKeyboard);
+        apps::LaunchSource::kFromKeyboard);
     OpenApplicationWindow(
         profile, app_launch_params,
         extensions::AppLaunchInfo::GetLaunchWebURL(extension));

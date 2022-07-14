@@ -168,8 +168,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::NEW_WINDOW,
-            apps::mojom::LaunchSource::kFromTest));
+            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;

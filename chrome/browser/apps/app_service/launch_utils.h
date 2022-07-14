@@ -55,21 +55,21 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile);
 AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     const std::string& app_id,
     int event_flags,
-    apps::mojom::LaunchSource source,
+    apps::LaunchSource source,
     int64_t display_id,
     apps::LaunchContainer fallback_container);
 
 apps::AppLaunchParams CreateAppLaunchParamsForIntent(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::LaunchSource source,
+    apps::LaunchSource source,
     int64_t display_id,
     apps::LaunchContainer fallback_container,
     apps::mojom::IntentPtr&& intent,
     Profile* profile);
 
 extensions::AppLaunchSource GetAppLaunchSource(
-    apps::mojom::LaunchSource launch_source);
+    apps::LaunchSource launch_source);
 
 // Returns event flag for |disposition|. If |prefer_container|
 // is true, |disposition| will be ignored. Otherwise, an event flag based on
@@ -115,7 +115,7 @@ crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
     apps::AppServiceProxy* proxy,
     const std::string& app_id,
     int event_flags,
-    apps::mojom::LaunchSource launch_source,
+    apps::LaunchSource launch_source,
     int64_t display_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

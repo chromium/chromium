@@ -137,7 +137,8 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
 
   controller_->Launch(
       CreateCrosapiLaunchParamsWithEventFlags(
-          proxy_, app_id, event_flags, launch_source,
+          proxy_, app_id, event_flags,
+          ConvertMojomLaunchSourceToLaunchSource(launch_source),
           window_info ? window_info->display_id : display::kInvalidDisplayId),
       base::DoNothing());
 }
@@ -155,7 +156,8 @@ void WebAppsCrosapi::LaunchAppWithIntent(
   }
 
   auto params = CreateCrosapiLaunchParamsWithEventFlags(
-      proxy_, app_id, event_flags, launch_source,
+      proxy_, app_id, event_flags,
+      ConvertMojomLaunchSourceToLaunchSource(launch_source),
       window_info ? window_info->display_id : display::kInvalidDisplayId);
 
   params->intent =
@@ -174,7 +176,9 @@ void WebAppsCrosapi::LaunchAppWithFiles(const std::string& app_id,
   }
 
   auto params = CreateCrosapiLaunchParamsWithEventFlags(
-      proxy_, app_id, event_flags, launch_source, display::kInvalidDisplayId);
+      proxy_, app_id, event_flags,
+      ConvertMojomLaunchSourceToLaunchSource(launch_source),
+      display::kInvalidDisplayId);
   params->intent = apps_util::CreateCrosapiIntentForViewFiles(file_paths);
   controller_->Launch(std::move(params), base::DoNothing());
 }

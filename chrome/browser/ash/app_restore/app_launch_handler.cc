@@ -251,8 +251,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
         app_id,
         static_cast<apps::LaunchContainer>(it.second->container.value()),
         static_cast<WindowOpenDisposition>(it.second->disposition.value()),
-        apps::mojom::LaunchSource::kFromFullRestore,
-        it.second->display_id.value(),
+        apps::LaunchSource::kFromFullRestore, it.second->display_id.value(),
         it.second->file_paths.has_value() ? it.second->file_paths.value()
                                           : std::vector<base::FilePath>{},
         it.second->intent ? it.second->intent->Clone() : nullptr);

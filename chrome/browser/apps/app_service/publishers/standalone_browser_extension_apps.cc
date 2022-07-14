@@ -189,7 +189,8 @@ void StandaloneBrowserExtensionApps::Launch(
   // AppType, please make sure to modify the logic if necessary.
   controller_->Launch(
       CreateCrosapiLaunchParamsWithEventFlags(
-          proxy(), app_id, event_flags, launch_source,
+          proxy(), app_id, event_flags,
+          ConvertMojomLaunchSourceToLaunchSource(launch_source),
           window_info ? window_info->display_id : display::kInvalidDisplayId),
       /*callback=*/base::DoNothing());
 

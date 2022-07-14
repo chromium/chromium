@@ -650,7 +650,7 @@ void DemoSession::OnAppUpdate(const apps::AppUpdate& update) {
       apps::AppLaunchParams(update.AppId(),
                             apps::LaunchContainer::kLaunchContainerWindow,
                             WindowOpenDisposition::NEW_WINDOW,
-                            apps::mojom::LaunchSource::kFromChromeInternal));
+                            apps::LaunchSource::kFromChromeInternal));
 }
 
 void DemoSession::OnAppRegistryCacheWillBeDestroyed(

@@ -63,7 +63,7 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
                       extension_app->id(),
                       apps::LaunchContainer::kLaunchContainerWindow,
                       WindowOpenDisposition::CURRENT_TAB,
-                      apps::mojom::LaunchSource::kFromTest)));
+                      apps::LaunchSource::kFromTest)));
 
   Browser* const browser = browser_change_observer.Wait();
   DCHECK(browser);

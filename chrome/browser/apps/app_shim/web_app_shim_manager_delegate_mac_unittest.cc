@@ -144,7 +144,7 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
     apps::AppLaunchParams params(app_id_,
                                  apps::LaunchContainer::kLaunchContainerWindow,
                                  WindowOpenDisposition::NEW_WINDOW,
-                                 apps::mojom::LaunchSource::kFromCommandLine);
+                                 apps::LaunchSource::kFromCommandLine);
 
     params.launch_files = launch_files;
     params.url_handler_launch_url = url_handler_launch_url;
@@ -213,8 +213,7 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolWebPrefix) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(std::vector<base::FilePath>(), absl::nullopt,
                          protocol_handler_launch_url, GURL());
-  expected_results.launch_source =
-      apps::mojom::LaunchSource::kFromProtocolHandler;
+  expected_results.launch_source = apps::LaunchSource::kFromProtocolHandler;
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -236,8 +235,7 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolMailTo) {
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(std::vector<base::FilePath>(), absl::nullopt,
                          protocol_handler_launch_url, GURL());
-  expected_results.launch_source =
-      apps::mojom::LaunchSource::kFromProtocolHandler;
+  expected_results.launch_source = apps::LaunchSource::kFromProtocolHandler;
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -382,8 +380,7 @@ TEST_F(WebAppShimManagerDelegateTest, LaunchApp_ProtocolAndFileHandlerMixed) {
 
   apps::AppLaunchParams expected_results = CreateLaunchParams(
       {}, absl::nullopt, protocol_handler_launch_url, GURL());
-  expected_results.launch_source =
-      apps::mojom::LaunchSource::kFromProtocolHandler;
+  expected_results.launch_source = apps::LaunchSource::kFromProtocolHandler;
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));
@@ -409,8 +406,7 @@ TEST_F(WebAppShimManagerDelegateTest,
 
   apps::AppLaunchParams expected_results = CreateLaunchParams(
       {}, absl::nullopt, protocol_handler_launch_url, GURL());
-  expected_results.launch_source =
-      apps::mojom::LaunchSource::kFromProtocolHandler;
+  expected_results.launch_source = apps::LaunchSource::kFromProtocolHandler;
 
   std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
   WebAppShimManagerDelegate shim_manager(std::move(delegate));

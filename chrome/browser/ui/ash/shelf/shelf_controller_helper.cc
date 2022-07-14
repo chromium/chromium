@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
@@ -191,7 +192,9 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
 
   apps::AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
       profile_, extension, event_flags,
-      ShelfLaunchSourceToAppsLaunchSource(source), display_id);
+      apps::ConvertMojomLaunchSourceToLaunchSource(
+          ShelfLaunchSourceToAppsLaunchSource(source)),
+      display_id);
   if ((source == ash::LAUNCH_FROM_APP_LIST ||
        source == ash::LAUNCH_FROM_APP_LIST_SEARCH) &&
       app_id == extensions::kWebStoreAppId) {

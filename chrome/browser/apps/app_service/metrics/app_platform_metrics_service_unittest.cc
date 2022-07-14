@@ -2152,7 +2152,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
       apps::AppLaunchParams("w2", apps::LaunchContainer::kLaunchContainerTab,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            apps::mojom::LaunchSource::kFromTest));
+                            apps::LaunchSource::kFromTest));
   if (IsLacrosPrimary()) {
     VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kStandaloneBrowser,
                         apps::mojom::LaunchSource::kFromTest);
@@ -2171,7 +2171,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(
       apps::AppLaunchParams("s", apps::LaunchContainer::kLaunchContainerTab,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            apps::mojom::LaunchSource::kFromTest));
+                            apps::LaunchSource::kFromTest));
   VerifyAppsLaunchUkm("app://s", AppTypeName::kSystemWeb,
                       apps::mojom::LaunchSource::kFromTest);
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);

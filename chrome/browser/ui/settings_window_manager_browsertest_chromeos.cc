@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
           ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               settings_app_id, apps::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::NEW_WINDOW,
-              apps::mojom::LaunchSource::kFromCommandLine));
+              apps::LaunchSource::kFromCommandLine));
   ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   EXPECT_EQ(contents,
             settings_browser->tab_strip_model()->GetActiveWebContents());

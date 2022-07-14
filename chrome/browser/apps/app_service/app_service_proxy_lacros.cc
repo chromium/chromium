@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -132,9 +133,10 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
   }
 
   remote_crosapi_app_service_proxy_->Launch(
-      CreateCrosapiLaunchParamsWithEventFlags(this, app_id, event_flags,
-                                              launch_source,
-                                              display::kInvalidDisplayId));
+      CreateCrosapiLaunchParamsWithEventFlags(
+          this, app_id, event_flags,
+          ConvertMojomLaunchSourceToLaunchSource(launch_source),
+          display::kInvalidDisplayId));
 }
 
 void AppServiceProxyLacros::LaunchAppWithFiles(
@@ -155,7 +157,9 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
     return;
   }
   auto params = CreateCrosapiLaunchParamsWithEventFlags(
-      this, app_id, event_flags, launch_source, display::kInvalidDisplayId);
+      this, app_id, event_flags,
+      ConvertMojomLaunchSourceToLaunchSource(launch_source),
+      display::kInvalidDisplayId);
   params->intent = apps_util::CreateCrosapiIntentForViewFiles(file_paths);
   remote_crosapi_app_service_proxy_->Launch(std::move(params));
 }
@@ -182,7 +186,8 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
   }
 
   auto params = CreateCrosapiLaunchParamsWithEventFlags(
-      this, app_id, event_flags, launch_source,
+      this, app_id, event_flags,
+      ConvertMojomLaunchSourceToLaunchSource(launch_source),
       window_info ? window_info->display_id : display::kInvalidDisplayId);
   params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);

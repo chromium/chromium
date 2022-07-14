@@ -34,10 +34,10 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
   EXPECT_EQ(display1, screen->GetDisplayForNewWindows().id());
 
   // Create browser2 on display 2.
-  apps::AppLaunchParams params(
-      "app_id", apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::LaunchSource::kFromAppListGrid, display2);
+  apps::AppLaunchParams params("app_id",
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               WindowOpenDisposition::NEW_WINDOW,
+                               apps::LaunchSource::kFromAppListGrid, display2);
   Browser* browser2 =
       CreateApplicationWindow(browser()->profile(), params, GURL());
   gfx::NativeWindow window2 = browser2->window()->GetNativeWindow();

@@ -46,6 +46,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_util.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -269,7 +270,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
   content::WebContents* LaunchApp(std::vector<base::FilePath> launch_files,
                                   bool wait_for_load = true) {
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
+    params.launch_source = apps::LaunchSource::kFromChromeInternal;
     params.override_url = maybe_installation_->GetAppUrl();
     params.launch_files = std::move(launch_files);
 
@@ -279,7 +280,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
   content::WebContents* LaunchAppWithoutWaiting(
       std::vector<base::FilePath> launch_files) {
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
+    params.launch_source = apps::LaunchSource::kFromChromeInternal;
     params.override_url = maybe_installation_->GetAppUrl();
     params.launch_files = std::move(launch_files);
 
@@ -846,7 +847,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
 
     // Launch the App.
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
+    params.launch_source = apps::LaunchSource::kFromChromeInternal;
     params.launch_files = {temp_file_path};
     params.override_url = GetStartUrl();
 

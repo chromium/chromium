@@ -95,7 +95,7 @@ content::WebContents* LaunchWebAppWithIntent(Profile* profile,
                                              apps::mojom::IntentPtr&& intent) {
   apps::AppLaunchParams params = apps::CreateAppLaunchParamsForIntent(
       app_id,
-      /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
+      /*event_flags=*/0, apps::LaunchSource::kFromSharesheet,
       display::kDefaultDisplayId, apps::LaunchContainer::kLaunchContainerWindow,
       std::move(intent), profile);
 

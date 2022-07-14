@@ -850,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetLink) {
   {
     auto launch_params = apps::CreateCrosapiLaunchParamsWithEventFlags(
         apps::AppServiceProxyFactory::GetForProfile(profile()), app_id,
-        /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
+        /*event_flags=*/0, apps::LaunchSource::kFromSharesheet,
         display::kInvalidDisplayId);
     launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
         apps_util::CreateShareIntentFromText(shared_link, shared_title),
@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareImage) {
 
     auto launch_params = apps::CreateCrosapiLaunchParamsWithEventFlags(
         apps::AppServiceProxyFactory::GetForProfile(profile()), app_id,
-        /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
+        /*event_flags=*/0, apps::LaunchSource::kFromSharesheet,
         display::kInvalidDisplayId);
     launch_params->intent = std::move(crosapi_intent);
 
@@ -969,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ShareMultimedia) {
 
     auto launch_params = apps::CreateCrosapiLaunchParamsWithEventFlags(
         apps::AppServiceProxyFactory::GetForProfile(profile()), app_id,
-        /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
+        /*event_flags=*/0, apps::LaunchSource::kFromSharesheet,
         display::kInvalidDisplayId);
     launch_params->intent = std::move(crosapi_intent);
 

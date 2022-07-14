@@ -193,7 +193,7 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
     auto launch_source = params.launch_source;
     content::WebContents* web_contents = LaunchImpl(std::move(params));
 
-    if (launch_source == apps::mojom::LaunchSource::kFromArc && web_contents) {
+    if (launch_source == apps::LaunchSource::kFromArc && web_contents) {
       // Add a flag to remember this web_contents originated in the ARC context.
       web_contents->SetUserData(
           &arc::ArcWebContentsData::kArcTransitionFlag,
@@ -205,10 +205,10 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
     auto event_flags = apps::GetEventFlags(params.disposition,
                                            /*prefer_container=*/false);
     auto window_info = apps::MakeWindowInfo(params.display_id);
-    LaunchExtension(
-        params.app_id, event_flags, std::move(params.intent),
-        ConvertMojomLaunchSourceToLaunchSource(params.launch_source),
-        ConvertMojomWindowInfoToWindowInfo(window_info), base::DoNothing());
+    LaunchExtension(params.app_id, event_flags, std::move(params.intent),
+                    params.launch_source,
+                    ConvertMojomWindowInfoToWindowInfo(window_info),
+                    base::DoNothing());
   }
 }
 
