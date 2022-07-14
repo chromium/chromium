@@ -22541,6 +22541,27 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="4" label="Checksum out of sync"/>
 </enum>
 
+<enum name="CryptohomeCryptoError">
+  <summary>
+    The error enum defined in platform2/cryptohome/crypto_error.h
+  </summary>
+  <int value="0" label="No error"/>
+  <int value="1" label="TPM fatal error"/>
+  <int value="2" label="TPM communication failure"/>
+  <int value="3" label="TPM is in the defense mode"/>
+  <int value="4" label="TPM crypto error"/>
+  <int value="5" label="TPM state requires reboot"/>
+  <int value="6" label="Scrypt failed"/>
+  <int value="7" label="Other fatal error"/>
+  <int value="8" label="Other crypto error"/>
+  <int value="9" label="No TPM public key hash"/>
+  <int value="10"
+      label="Low Entropy (LE) credential protection is not supported"/>
+  <int value="11" label="The LE secret provided during decryption is invalid"/>
+  <int value="12" label="Flags and policy mismatch"/>
+  <int value="13" label="The LE credential had been locked"/>
+</enum>
+
 <enum name="CryptohomeDeprecatedApiCalled">
   <int value="0" label="InitializeCastKey"/>
   <int value="1" label="GetBootAttribute"/>
