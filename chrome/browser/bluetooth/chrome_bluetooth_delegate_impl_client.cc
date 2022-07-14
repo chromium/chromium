@@ -81,6 +81,7 @@ ChromeBluetoothDelegateImplClient::ShowBluetoothScanningPrompt(
 #endif
 }
 
+// TODO(crbug.com/1309721): Plumb the |pin| from WebBluetoothPairingManagerImpl.
 void ChromeBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
     content::RenderFrameHost* frame,
     const std::u16string& device_identifier,
@@ -97,7 +98,12 @@ void ChromeBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
     case (content::BluetoothDelegate::PairingKind::kConfirmOnly):
       chrome::ShowBluetoothDevicePairConfirmDialog(
           content::WebContents::FromRenderFrameHost(frame), device_identifier,
-          std::move(callback));
+          absl::nullopt, std::move(callback));
+      break;
+    case (content::BluetoothDelegate::PairingKind::kConfirmPinMatch):
+      chrome::ShowBluetoothDevicePairConfirmDialog(
+          content::WebContents::FromRenderFrameHost(frame), device_identifier,
+          u"123456", std::move(callback));
       break;
     default:
       NOTREACHED();

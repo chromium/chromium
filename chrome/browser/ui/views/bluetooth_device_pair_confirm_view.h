@@ -9,19 +9,17 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "content/public/browser/bluetooth_delegate.h"
-#include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"
 
-// A dialog allowing the user to enter Bluetooth credentials (i.e. a PIN).
-class BluetoothDevicePairConfirmView : public views::DialogDelegateView,
-                                       public views::TextfieldController {
+// A dialog allowing the user to confirm Bluetooth device pairing with or
+// without PIN being displayed.
+class BluetoothDevicePairConfirmView : public views::DialogDelegateView {
  public:
   METADATA_HEADER(BluetoothDevicePairConfirmView);
   BluetoothDevicePairConfirmView(
       const std::u16string& device_identifier,
+      const absl::optional<std::u16string> pin,
       content::BluetoothDelegate::PairPromptCallback close_callback);
   BluetoothDevicePairConfirmView(const BluetoothDevicePairConfirmView&) =
       delete;
@@ -30,20 +28,24 @@ class BluetoothDevicePairConfirmView : public views::DialogDelegateView,
   ~BluetoothDevicePairConfirmView() override;
 
   // Initialize the controls on the dialog.
-  void InitControls(const std::u16string& device_identifier);
+  void InitControls(const std::u16string& device_identifier,
+                    const absl::optional<std::u16string> pin);
 
   // View:
   gfx::Size CalculatePreferredSize() const override;
 
+  // WidgetDelegate:
   std::u16string GetWindowTitle() const override;
 
  private:
+  // Runs the |close_callback_| with the PairPromptResult if the dialog is
+  // accepted.
   void OnDialogAccepted();
 
   content::BluetoothDelegate::PairPromptCallback close_callback_;
-  raw_ptr<views::Textfield> passkey_text_ = nullptr;
   raw_ptr<views::View> icon_view_ = nullptr;
   raw_ptr<views::View> contents_wrapper_ = nullptr;
+  bool display_pin_ = false;
   base::WeakPtrFactory<BluetoothDevicePairConfirmView> weak_ptr_factory_{this};
 };
 

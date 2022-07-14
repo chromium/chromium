@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/bluetooth_device_pair_confirm_view.h"
 
-#include <cwctype>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -15,7 +13,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -27,9 +24,10 @@ namespace chrome {
 void ShowBluetoothDevicePairConfirmDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
+    const absl::optional<std::u16string> pin,
     BluetoothDelegate::PairPromptCallback close_callback) {
   // This dialog owns itself. DialogDelegateView will delete |dialog| instance.
-  auto* dialog = new BluetoothDevicePairConfirmView(device_identifier,
+  auto* dialog = new BluetoothDevicePairConfirmView(device_identifier, pin,
                                                     std::move(close_callback));
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
 }
@@ -38,8 +36,10 @@ void ShowBluetoothDevicePairConfirmDialog(
 
 BluetoothDevicePairConfirmView::BluetoothDevicePairConfirmView(
     const std::u16string& device_identifier,
+    const absl::optional<std::u16string> pin,
     BluetoothDelegate::PairPromptCallback close_callback)
-    : close_callback_(std::move(close_callback)) {
+    : close_callback_(std::move(close_callback)),
+      display_pin_(pin.has_value()) {
   SetModalType(ui::MODAL_TYPE_CHILD);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
@@ -54,30 +54,14 @@ BluetoothDevicePairConfirmView::BluetoothDevicePairConfirmView(
   SetCancelCallback(base::BindOnce(canceled, base::Unretained(this)));
   SetCloseCallback(base::BindOnce(canceled, base::Unretained(this)));
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
-  InitControls(device_identifier);
+  InitControls(device_identifier, pin);
 }
 
 BluetoothDevicePairConfirmView::~BluetoothDevicePairConfirmView() = default;
 
 void BluetoothDevicePairConfirmView::InitControls(
-    const std::u16string& device_identifier) {
-  //
-  // Create the following layout:
-  //
-  // ┌───────────────┬──────────────────────────────────────────────────────────────┐
-  // │               │ Pair Confirmation                                            │
-  // │ ┌───────────┐ │                                                              │
-  // │ │           │ │ Bluetooth device <device name> would like permission to pair.│
-  // │ │ Bluetooth │ │                                                              │
-  // │ │    icon   │ │                                                              │
-  // │ │           │ │                                                              │
-  // │ └───────────┘ │                                        ┌──────┐  ┌────────┐  │
-  // │               │                                        │  OK  │  │ Cancel │  │
-  // │               │                                        └──────┘  └────────┘  │
-  // └───────────────┴──────────────────────────────────────────────────────────────┘
-  //
-  //
-
+    const std::u16string& device_identifier,
+    const absl::optional<std::u16string> pin) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
@@ -96,6 +80,7 @@ void BluetoothDevicePairConfirmView::InitControls(
   icon_view_ = AddChildView(std::move(icon_view));
 
   auto contents_wrapper = std::make_unique<views::View>();
+
   contents_wrapper->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(vertical_spacing, horizontal_spacing));
@@ -109,13 +94,20 @@ void BluetoothDevicePairConfirmView::InitControls(
                                views::MaximumFlexSizeRule::kUnbounded));
 
   {
-    auto passkey_prompt_label =
-        std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
-            IDS_BLUETOOTH_DEVICE_PAIR_CONFIRM_LABEL, device_identifier));
+    // Display the pin if provided, so the user can verify if a matching
+    // pin is shown on the device. Otherwise, user verification is solely
+    // based upon recognition of the device identifier.
+    auto prompt_label =
+        display_pin_
+            ? std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
+                  IDS_BLUETOOTH_DEVICE_PASSKEY_CONFIRM_LABEL, pin.value(),
+                  device_identifier))
+            : std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
+                  IDS_BLUETOOTH_DEVICE_PAIR_CONFIRM_LABEL, device_identifier));
 
-    passkey_prompt_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    passkey_prompt_label->SetMultiLine(true);
-    contents_wrapper->AddChildView(std::move(passkey_prompt_label));
+    prompt_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    prompt_label->SetMultiLine(true);
+    contents_wrapper->AddChildView(std::move(prompt_label));
   }
 
   contents_wrapper_ = AddChildView(std::move(contents_wrapper));
@@ -129,7 +121,10 @@ gfx::Size BluetoothDevicePairConfirmView::CalculatePreferredSize() const {
 }
 
 std::u16string BluetoothDevicePairConfirmView::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_PAIR_CONFIRM_TITLE);
+  return display_pin_ ? l10n_util::GetStringUTF16(
+                            IDS_BLUETOOTH_DEVICE_PASSKEY_CONFIRM_TITLE)
+                      : l10n_util::GetStringUTF16(
+                            IDS_BLUETOOTH_DEVICE_PAIR_CONFIRM_TITLE);
 }
 
 void BluetoothDevicePairConfirmView::OnDialogAccepted() {

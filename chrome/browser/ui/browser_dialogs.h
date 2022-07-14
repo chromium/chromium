@@ -139,13 +139,14 @@ void ShowBluetoothDeviceCredentialsDialog(
     const std::u16string& device_identifier,
     content::BluetoothDelegate::PairPromptCallback close_callback);
 
-// Shows the dialog to let user confirm to pair with the device
-// identified by |device_identifier|. |device_identifier| is the most
-// appropriate string to display to the user for device identification
-// (e.g. name, MAC address).
+// Show a user prompt for pairing a Bluetooth device. |device_identifier|
+// is the most appropriate string to display for device identification
+// (e.g. name, MAC address). The |pin| is displayed (if specified),
+// so the user can confirm a matching value is displayed on the device.
 void ShowBluetoothDevicePairConfirmDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
+    const absl::optional<std::u16string> pin,
     content::BluetoothDelegate::PairPromptCallback close_callback);
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 

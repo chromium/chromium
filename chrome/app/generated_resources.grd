@@ -3034,7 +3034,7 @@ are declared in tools/grit/grit_rule.gni.
           Device Credentials
         </message>
         <!--
-          NOTE: As per Bluetooth v4.2 spec. (section 3.2.3.2):
+          NOTE: As per Bluetooth spec. v4.2 [Vol 3, Part C] (section 3.2.3.2):
           > When the Bluetooth PIN is referred to on the UI level, the term
           > 'Bluetooth Passkey' should be used."
         -->
@@ -3046,6 +3046,12 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_BLUETOOTH_DEVICE_PAIR_CONFIRM_LABEL" desc="Label of the text prompt for Bluetooth device pair confirmation.">
           Bluetooth device <ph name="DEVICE">$1</ph> would like permission to pair.
+        </message>
+        <message name="IDS_BLUETOOTH_DEVICE_PASSKEY_CONFIRM_TITLE" desc="Title of the Bluetooth device pair passkey confirmation prompt dialog.">
+          Confirm passkey
+        </message>
+        <message name="IDS_BLUETOOTH_DEVICE_PASSKEY_CONFIRM_LABEL" desc="Label of the text prompt for Bluetooth device pair passkey confirmation.">
+          Please confirm that <ph name="PASSKEY">$1<ex>123456</ex></ph> is the passkey displayed on Bluetooth device <ph name="DEVICE">$2</ph>.
         </message>
       </if>
 

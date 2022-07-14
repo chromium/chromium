@@ -43,6 +43,8 @@ class BluetoothDeviceCredentialsView : public views::DialogDelegateView,
   views::View* GetInitiallyFocusedView() override;
 
  private:
+  // Runs the |close_callback_| with the PairPromptResult if the dialog is
+  // accepted.
   void OnDialogAccepted();
   // TextfieldController:
   void ContentsChanged(views::Textfield* sender,
