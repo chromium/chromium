@@ -352,58 +352,67 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
   auto* controller = WallpaperController::Get();
   auto* client = WallpaperControllerClientImpl::Get();
 
-  ash::WallpaperInfo info = client->GetActiveUserWallpaperInfo();
+  absl::optional<ash::WallpaperInfo> info =
+      client->GetActiveUserWallpaperInfo();
+  if (!info) {
+    DVLOG(1) << "No wallpaper info for active user. This should only happen in "
+                "tests.";
+    NotifyWallpaperChanged(nullptr);
+    return;
+  }
+
   const gfx::ImageSkia& current_wallpaper = controller->GetWallpaperImage();
   const gfx::ImageSkia& current_wallpaper_resized =
       GetResizedImage(current_wallpaper);
   const GURL& wallpaper_data_url =
       GURL(webui::GetBitmapDataUrl(*current_wallpaper_resized.bitmap()));
 
-  switch (info.type) {
+  switch (info->type) {
     case ash::WallpaperType::kDaily:
     case ash::WallpaperType::kOnline: {
-      if (info.collection_id.empty() || !info.asset_id.has_value()) {
+      if (info->collection_id.empty() || !info->asset_id.has_value()) {
         DVLOG(2) << "no collection_id or asset_id found";
         // Older versions of ChromeOS do not store these information, need to
         // look up all collections and match URL.
         FetchCollections(base::BindOnce(
             &PersonalizationAppWallpaperProviderImpl::FindAttribution,
-            attribution_weak_ptr_factory_.GetWeakPtr(), info,
+            attribution_weak_ptr_factory_.GetWeakPtr(), *info,
             wallpaper_data_url));
         return;
       }
 
       backdrop::Collection collection;
-      collection.set_collection_id(info.collection_id);
-      FindAttribution(info, wallpaper_data_url,
+      collection.set_collection_id(info->collection_id);
+      FindAttribution(*info, wallpaper_data_url,
                       std::vector<backdrop::Collection>{collection});
       return;
     }
     case ash::WallpaperType::kCustomized: {
-      base::FilePath file_name = base::FilePath(info.location).BaseName();
+      base::FilePath file_name = base::FilePath(info->location).BaseName();
 
       // Do not show file extension in user-visible selected details text.
       std::vector<std::string> attribution = {
           file_name.RemoveExtension().value()};
 
       // Match selected wallpaper based on full filename including extension.
-      const std::string& key =
-          info.user_file_path.empty() ? file_name.value() : info.user_file_path;
+      const std::string& key = info->user_file_path.empty()
+                                   ? file_name.value()
+                                   : info->user_file_path;
 
       NotifyWallpaperChanged(
           ash::personalization_app::mojom::CurrentWallpaper::New(
-              wallpaper_data_url, std::move(attribution), info.layout,
-              info.type, key));
+              wallpaper_data_url, std::move(attribution), info->layout,
+              info->type, key));
 
       return;
     }
     case ash::WallpaperType::kDailyGooglePhotos:
     case ash::WallpaperType::kOnceGooglePhotos:
       client->FetchGooglePhotosPhoto(
-          GetAccountId(profile_), info.location,
+          GetAccountId(profile_), info->location,
           base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
                              SendGooglePhotosAttribution,
-                         weak_ptr_factory_.GetWeakPtr(), info,
+                         weak_ptr_factory_.GetWeakPtr(), *info,
                          wallpaper_data_url));
       return;
     case ash::WallpaperType::kDefault:
@@ -414,7 +423,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
       NotifyWallpaperChanged(
           ash::personalization_app::mojom::CurrentWallpaper::New(
               wallpaper_data_url, /*attribution=*/std::vector<std::string>(),
-              info.layout, info.type,
+              info->layout, info->type,
               /*key=*/base::UnguessableToken::Create().ToString()));
       return;
     case ash::WallpaperType::kCount:
@@ -606,10 +615,12 @@ void PersonalizationAppWallpaperProviderImpl::UpdateDailyRefreshWallpaper(
   pending_update_daily_refresh_wallpaper_callback_ = std::move(callback);
 
   auto* client = WallpaperControllerClientImpl::Get();
-  ash::WallpaperInfo info = client->GetActiveUserWallpaperInfo();
-  DCHECK(info.type == WallpaperType::kDaily ||
-         info.type == WallpaperType::kDailyGooglePhotos);
-  client->RecordWallpaperSourceUMA(info.type);
+  absl::optional<ash::WallpaperInfo> info =
+      client->GetActiveUserWallpaperInfo();
+  DCHECK(info);
+  DCHECK(info->type == WallpaperType::kDaily ||
+         info->type == WallpaperType::kDailyGooglePhotos);
+  client->RecordWallpaperSourceUMA(info->type);
 
   WallpaperController::Get()->UpdateDailyRefreshWallpaper(base::BindOnce(
       &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperUpdated,

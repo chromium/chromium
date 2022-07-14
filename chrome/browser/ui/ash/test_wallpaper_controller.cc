@@ -273,8 +273,9 @@ bool TestWallpaperController::IsWallpaperControlledByPolicy(
   return false;
 }
 
-ash::WallpaperInfo TestWallpaperController::GetActiveUserWallpaperInfo() const {
-  return wallpaper_info_.value_or(ash::WallpaperInfo());
+absl::optional<ash::WallpaperInfo>
+TestWallpaperController::GetActiveUserWallpaperInfo() const {
+  return wallpaper_info_;
 }
 
 bool TestWallpaperController::ShouldShowWallpaperSetting() {

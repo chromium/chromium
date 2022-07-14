@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -314,9 +315,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual bool IsWallpaperControlledByPolicy(
       const AccountId& account_id) const = 0;
 
-  // Returns a struct with info about the active user's wallpaper; the location
-  // is an empty string and the layout is invalid if there's no active user.
-  virtual WallpaperInfo GetActiveUserWallpaperInfo() const = 0;
+  // Returns a struct with info about the active user's wallpaper if there is an
+  // active user.
+  virtual absl::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const = 0;
 
   // Returns true if the wallpaper setting (used to open the wallpaper picker)
   // should be visible.

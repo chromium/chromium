@@ -154,7 +154,7 @@ class WallpaperControllerClientImpl
   const std::vector<SkColor>& GetWallpaperColors();
   bool IsWallpaperBlurred();
   bool IsActiveUserWallpaperControlledByPolicy();
-  ash::WallpaperInfo GetActiveUserWallpaperInfo();
+  absl::optional<ash::WallpaperInfo> GetActiveUserWallpaperInfo();
   bool ShouldShowWallpaperSetting();
   // Record Ash.Wallpaper.Source metric when a new wallpaper is set,
   // either by built-in Wallpaper app or a third party extension/app.

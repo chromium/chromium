@@ -1197,10 +1197,10 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
 
 std::string WallpaperControllerImpl::GetGooglePhotosDailyRefreshAlbumId(
     const AccountId& account_id) const {
-  WallpaperInfo info = GetActiveUserWallpaperInfo();
-  if (info.type != WallpaperType::kDailyGooglePhotos)
+  absl::optional<WallpaperInfo> info = GetActiveUserWallpaperInfo();
+  if (!info || info->type != WallpaperType::kDailyGooglePhotos)
     return std::string();
-  return info.collection_id;
+  return info->collection_id;
 }
 
 bool WallpaperControllerImpl::SetDailyGooglePhotosWallpaperIdCache(
@@ -1624,13 +1624,13 @@ bool WallpaperControllerImpl::IsWallpaperControlledByPolicy(
          info.type == WallpaperType::kPolicy;
 }
 
-WallpaperInfo WallpaperControllerImpl::GetActiveUserWallpaperInfo() const {
+absl::optional<WallpaperInfo>
+WallpaperControllerImpl::GetActiveUserWallpaperInfo() const {
   WallpaperInfo info;
   const UserSession* const active_user_session = GetActiveUserSession();
   if (!active_user_session ||
       !GetUserWallpaperInfo(active_user_session->user_info.account_id, &info)) {
-    info.location = std::string();
-    info.layout = NUM_WALLPAPER_LAYOUT;
+    return absl::nullopt;
   }
   return info;
 }
@@ -3009,13 +3009,13 @@ bool WallpaperControllerImpl::IsDailyRefreshEnabled() const {
 }
 
 bool WallpaperControllerImpl::IsDailyGooglePhotosWallpaperSelected() {
-  return GetActiveUserWallpaperInfo().type == WallpaperType::kDailyGooglePhotos;
+  auto info = GetActiveUserWallpaperInfo();
+  return (info && info->type == WallpaperType::kDailyGooglePhotos);
 }
 
 bool WallpaperControllerImpl::IsGooglePhotosWallpaperSet() const {
-  WallpaperInfo info;
-  GetUserWallpaperInfo(GetActiveAccountId(), &info);
-  return info.type == WallpaperType::kOnceGooglePhotos;
+  auto info = GetActiveUserWallpaperInfo();
+  return (info && info->type == WallpaperType::kOnceGooglePhotos);
 }
 
 void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(

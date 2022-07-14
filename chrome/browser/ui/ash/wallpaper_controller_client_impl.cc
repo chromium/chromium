@@ -499,7 +499,8 @@ bool WallpaperControllerClientImpl::IsActiveUserWallpaperControlledByPolicy() {
   return wallpaper_controller_->IsActiveUserWallpaperControlledByPolicy();
 }
 
-ash::WallpaperInfo WallpaperControllerClientImpl::GetActiveUserWallpaperInfo() {
+absl::optional<ash::WallpaperInfo>
+WallpaperControllerClientImpl::GetActiveUserWallpaperInfo() {
   return wallpaper_controller_->GetActiveUserWallpaperInfo();
 }
 
