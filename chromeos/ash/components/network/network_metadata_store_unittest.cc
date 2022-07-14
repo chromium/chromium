@@ -4,8 +4,10 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
@@ -166,6 +168,11 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   NetworkStateHandler* network_state_handler() {
     return network_state_handler_;
   }
+
+  base::test::SingleThreadTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
   void ResetStore() {
     metadata_store_ = std::make_unique<NetworkMetadataStore>(
         network_configuration_handler_.get(), network_connection_handler_.get(),
@@ -180,7 +187,8 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   const user_manager::User* secondary_user_;
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
@@ -195,6 +203,7 @@ class NetworkMetadataStoreTest : public ::testing::Test {
 namespace {
 const char* kGuid = "wifi0";
 const char* kGuid1 = "wifi1";
+const char* kGuid3 = "eth0";
 const char* kConfigWifi0Connectable =
     "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
     "  \"Connectable\": true }";
@@ -209,6 +218,9 @@ const char* kConfigWifi1HiddenUser =
 const char* kConfigWifi1Shared =
     "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
     "  \"Connectable\": true, \"Profile\": \"/profile/default\" }";
+const char* kConfigEthernet =
+    "{ \"GUID\": \"eth0\", \"Type\": \"ethernet\", \"State\": \"idle\", "
+    "  \"Connectable\": true }";
 const char kHasFixedHiddenNetworks[] =
     "metadata_store.has_fixed_hidden_networks";
 }  // namespace
@@ -445,6 +457,52 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotFirstLogin) {
   UserManager()->set_is_current_user_owner(true);
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
+}
+
+TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampDefault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kHiddenNetworkMigration);
+  ConfigureService(kConfigWifi0Connectable);
+  EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
+            base::Time::Now().UTCMidnight());
+}
+
+TEST_F(NetworkMetadataStoreTest,
+       NetworkCreationTimestampIsEventuallyOverwritten) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kHiddenNetworkMigration);
+  ConfigureService(kConfigWifi0Connectable);
+  EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
+            base::Time::Now().UTCMidnight());
+  // Fast forward 2 weeks to check that creation timestamp is
+  // overwritten to avoid permanently tracking networks.
+  task_environment()->FastForwardBy(base::Days(14));
+  EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
+            base::Time::UnixEpoch());
+}
+
+TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonWifi) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kHiddenNetworkMigration);
+  ConfigureService(kConfigEthernet);
+  EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid3),
+            base::Time::UnixEpoch());
+}
+
+TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonExistentNetwork) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kHiddenNetworkMigration);
+  EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
+            base::Time::UnixEpoch());
+  // Fast forward 2 weeks to check that creation timestamp is always
+  // base::Time::UnixEpoch() for non-existent networks.
+  task_environment()->FastForwardBy(base::Days(14));
+  EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
+            base::Time::UnixEpoch());
 }
 
 TEST_F(NetworkMetadataStoreTest, FixSyncedHiddenNetworks) {

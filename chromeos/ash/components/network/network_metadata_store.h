@@ -84,6 +84,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   void SetLastConnectedTimestamp(const std::string& network_guid,
                                  const base::TimeDelta& timestamp);
 
+  // Returns the timestamp when the network was created, rounded to the
+  // nearest day. Will clear the timestamp of WiFi networks two weeks
+  // after creation and always return base::Time::UnixEpoch() for non-
+  // WiFi networks.
+  base::Time UpdateAndRetrieveWiFiTimestamp(const std::string& network_guid);
+
   // Networks which were added directly from sync data will return true.
   bool GetIsConfiguredBySync(const std::string& network_guid);
 

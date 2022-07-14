@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/network_metadata_store.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
@@ -26,9 +27,9 @@
 namespace chromeos {
 
 namespace {
-
 const char kNetworkMetadataPref[] = "network_metadata";
 const char kLastConnectedTimestampPref[] = "last_connected_timestamp";
+const char kCreationTimestamp[] = "creation_timestamp";
 const char kIsFromSync[] = "is_from_sync";
 const char kOwner[] = "owner";
 const char kExternalModifications[] = "external_modifications";
@@ -40,6 +41,10 @@ const char kEnableTrafficCountersAutoReset[] =
     "enable_traffic_counters_auto_reset";
 const char kDayOfTrafficCountersAutoReset[] =
     "day_of_traffic_counters_auto_reset";
+
+// Wait two weeks before overwriting the creation timestamp for a given
+// network
+constexpr base::TimeDelta kTwoWeeks = base::Days(14);
 
 std::string GetPath(const std::string& guid, const std::string& subkey) {
   return base::StringPrintf("%s.%s", guid.c_str(), subkey.c_str());
@@ -387,6 +392,37 @@ void NetworkMetadataStore::SetLastConnectedTimestamp(
     const base::TimeDelta& timestamp) {
   double timestamp_f = timestamp.InMillisecondsF();
   SetPref(network_guid, kLastConnectedTimestampPref, base::Value(timestamp_f));
+}
+
+base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
+    const std::string& network_guid) {
+  DCHECK(base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration));
+
+  const NetworkState* network =
+      network_state_handler_->GetNetworkStateFromGuid(network_guid);
+
+  if (!network || network->GetNetworkTechnologyType() !=
+                      NetworkState::NetworkTechnologyType::kWiFi) {
+    return base::Time::UnixEpoch();
+  }
+
+  const base::Value* creation_timestamp =
+      GetPref(network_guid, kCreationTimestamp);
+  const base::Time current_timestamp = base::Time::Now().UTCMidnight();
+
+  if (creation_timestamp &&
+      base::Time::FromDoubleT(creation_timestamp->GetDouble()) + kTwoWeeks <=
+          current_timestamp) {
+    SetPref(network_guid, kCreationTimestamp,
+            base::Value(base::Time::UnixEpoch().ToDoubleT()));
+    return base::Time::UnixEpoch();
+  }
+  if (!creation_timestamp) {
+    SetPref(network_guid, kCreationTimestamp,
+            base::Value(current_timestamp.ToDoubleT()));
+  }
+
+  return current_timestamp;
 }
 
 bool NetworkMetadataStore::GetIsConfiguredBySync(
