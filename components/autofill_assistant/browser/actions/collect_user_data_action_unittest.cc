@@ -2966,11 +2966,6 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
             mappings,
             IsSupersetOf({Pair(field_formatter::Key(7), "John Doe"),
                           Pair(field_formatter::Key(14), "+11234567890")}));
-        // Note: Phone number is still getting split, even if it's added with
-        // "raw=true".
-        EXPECT_THAT(mappings,
-                    Not(AnyOf(Contains(Key(field_formatter::Key(3))),
-                              Contains(Key(field_formatter::Key(5))))));
 
         std::move(collect_user_data_options->confirm_callback)
             .Run(&user_data_, &user_model_);

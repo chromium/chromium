@@ -122,10 +122,10 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 
   // Check for submenu with address details.
   auto* address_details_submenu = address_menu_model->GetSubmenuModelAt(0);
-  ASSERT_EQ(address_details_submenu->GetItemCount(), 6);
+  ASSERT_EQ(address_details_submenu->GetItemCount(), 8);
   static constexpr std::array expected_address_values = {
-      u"666 Erebus St.\nApt 8", u"Elysium",          u"91111", u"",
-      u"16502111111",           u"johndoe@hades.com"};
+      u"John H. Doe", u"", u"666 Erebus St.\nApt 8", u"Elysium",
+      u"91111",       u"", u"16502111111",           u"johndoe@hades.com"};
   for (size_t i = 0; i < expected_address_values.size(); i++) {
     ASSERT_EQ(address_details_submenu->GetLabelAt(i),
               expected_address_values[i]);
