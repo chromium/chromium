@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/shill_property_util.h"
+#include "chromeos/ash/components/network/shill_property_util.h"
 
 #include <stdint.h>
 
@@ -17,10 +17,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/components/onc/onc_utils.h"
-#include "chromeos/network/network_event_log.h"
-#include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/network_ui_data.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {

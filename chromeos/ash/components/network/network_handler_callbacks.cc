@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chromeos/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 
 namespace {
 

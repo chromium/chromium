@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/shill_property_util.h"
+#include "chromeos/ash/components/network/shill_property_util.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chromeos/network/network_ui_data.h"
+#include "chromeos/ash/components/network/network_ui_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

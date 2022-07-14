@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_event_log.h"
 #include "dbus/object_proxy.h"
 
 namespace chromeos {

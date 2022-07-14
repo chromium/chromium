@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace ash {

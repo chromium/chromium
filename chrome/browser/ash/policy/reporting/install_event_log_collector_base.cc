@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 

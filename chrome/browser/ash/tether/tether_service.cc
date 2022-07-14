@@ -22,7 +22,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_connect.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

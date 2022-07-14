@@ -25,7 +25,6 @@ component("network") {
     "//base:i18n",
     "//chromeos/ash/components/network",
     "//chromeos/components/onc",
-    "//chromeos/dbus/common",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
     "//components/device_event_log",
@@ -43,8 +42,6 @@ component("network") {
     "//chromeos/ash/components/network/proxy",
   ]
   sources = [
-    "network_event_log.cc",
-    "network_event_log.h",
     "network_ip_config.cc",
     "network_ip_config.h",
     "network_metadata_observer.cc",
@@ -53,10 +50,6 @@ component("network") {
     "network_name_util.h",
     "network_profile.cc",
     "network_profile.h",
-    "network_type_pattern.cc",
-    "network_type_pattern.h",
-    "network_ui_data.cc",
-    "network_ui_data.h",
     "network_util.cc",
     "network_util.h",
     "policy_applicator.cc",
@@ -66,14 +59,8 @@ component("network") {
     "policy_util.h",
     "profile_policies.cc",
     "profile_policies.h",
-    "shill_property_handler.cc",
-    "shill_property_handler.h",
-    "shill_property_util.cc",
-    "shill_property_util.h",
     "system_token_cert_db_storage.cc",
     "system_token_cert_db_storage.h",
-    "tether_constants.cc",
-    "tether_constants.h",
   ]
 }
 
@@ -81,9 +68,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":network",
-    "//ash/constants",
     "//base",
-    "//base:i18n",
     "//base/test:test_support",
     "//chromeos:test_utils",
     "//chromeos/ash/components/network:test_support",
@@ -91,25 +76,18 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network/metrics:unit_tests",
     "//chromeos/ash/components/network/onc:unit_tests",
     "//chromeos/ash/components/network/proxy:unit_tests",
-    "//chromeos/dbus:test_support",
     "//components/onc",
     "//crypto",
     "//crypto:test_support",
-    "//dbus",
     "//net",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
   sources = [
-    "network_event_log_unittest.cc",
     "network_name_util_unittest.cc",
-    "network_type_pattern_unittest.cc",
-    "network_ui_data_unittest.cc",
     "network_util_unittest.cc",
     "profile_policies_unittest.cc",
-    "shill_property_handler_unittest.cc",
-    "shill_property_util_unittest.cc",
     "system_token_cert_db_storage_unittest.cc",
   ]
 }

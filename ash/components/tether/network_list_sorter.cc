@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 
 namespace ash {
 

@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/quick_pair/fast_pair_support_utils.h"
-#include "chromeos/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "content/public/browser/web_ui.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 

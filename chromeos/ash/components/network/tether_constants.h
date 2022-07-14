@@ -1,8 +1,8 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROMEOS_NETWORK_TETHER_CONSTANTS_H_
-#define CHROMEOS_NETWORK_TETHER_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_TETHER_CONSTANTS_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_TETHER_CONSTANTS_H_
 
 #include "base/component_export.h"
 
@@ -32,4 +32,4 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kTetherDeviceName[];
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_TETHER_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_TETHER_CONSTANTS_H_

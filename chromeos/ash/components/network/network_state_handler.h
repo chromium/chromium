@@ -19,8 +19,8 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/shill_property_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/shill_property_handler.h"
 
 namespace base {
 class Location;

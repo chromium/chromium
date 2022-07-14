@@ -8,8 +8,8 @@
 
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/tether_constants.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/tether_constants.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"

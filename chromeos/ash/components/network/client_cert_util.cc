@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chromeos/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "components/onc/onc_constants.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_database.h"

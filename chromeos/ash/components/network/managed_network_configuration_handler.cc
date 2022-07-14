@@ -7,8 +7,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
-#include "chromeos/network/network_ui_data.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {

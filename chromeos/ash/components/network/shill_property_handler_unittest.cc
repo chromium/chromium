@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/shill_property_handler.h"
+#include "chromeos/ash/components/network/shill_property_handler.h"
 
 #include <stddef.h>
 

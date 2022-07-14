@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_SHILL_PROPERTY_UTIL_H_
-#define CHROMEOS_NETWORK_SHILL_PROPERTY_UTIL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_SHILL_PROPERTY_UTIL_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_SHILL_PROPERTY_UTIL_H_
 
 #include <memory>
 #include <string>
@@ -107,4 +107,4 @@ using ::chromeos::shill_property_util::SetSSID;
 }  // namespace shill_property_util
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_SHILL_PROPERTY_UTIL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_SHILL_PROPERTY_UTIL_H_

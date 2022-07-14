@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 
 namespace {
 const char kSystemProxyService[] = "system-proxy-service";

@@ -15,7 +15,7 @@
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

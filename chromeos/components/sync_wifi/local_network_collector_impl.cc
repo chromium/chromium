@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/guid.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -14,7 +15,6 @@
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "chromeos/components/sync_wifi/network_type_conversions.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_event_log.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
