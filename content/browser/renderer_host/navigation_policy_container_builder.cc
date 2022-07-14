@@ -140,9 +140,7 @@ NavigationPolicyContainerBuilder::DeliveredPoliciesForTesting() const {
   return delivered_policies_;
 }
 
-void NavigationPolicyContainerBuilder::ComputePoliciesForError(
-    bool is_inside_mhtml,
-    network::mojom::WebSandboxFlags frame_sandbox_flags) {
+void NavigationPolicyContainerBuilder::ComputePoliciesForError() {
   // The decision to commit an error page can happen after receiving the
   // response for a regular document. It overrides any previous attempt to
   // |ComputePolicies()|.
@@ -159,8 +157,6 @@ void NavigationPolicyContainerBuilder::ComputePoliciesForError(
   // request (from the unknown/public address space to private). See also
   // crbug.com/1180140.
   policies.ip_address_space = delivered_policies_.ip_address_space;
-
-  ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies);
 
   SetFinalPolicies(std::move(policies));
 

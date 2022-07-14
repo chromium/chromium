@@ -4423,9 +4423,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_FALSE(no_commit_obs.navigation_committed());
 }
 
-// Do sandbox flags apply to error page in sandboxed iframes?
-// Apparently yes.
-// TODO(https://crbug.com/1158370): Reconsider this.
+// Sandbox flags defined by the parent must not apply to Chrome's error page.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromInSandboxedIframe) {
   GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -4446,12 +4444,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromInSandboxedIframe) {
   RenderFrameHostImpl* child_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
 
-  // An error page committed. Apparently, the error page inherited sandbox flags
-  // from its parent.
-  // TODO(https://crbug.com/1158370): Reconsider this.
   EXPECT_TRUE(child_rfh->IsErrorDocument());
-  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll &
-                ~network::mojom::WebSandboxFlags::kOrientationLock,
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
             child_rfh->active_sandbox_flags());
 }
 

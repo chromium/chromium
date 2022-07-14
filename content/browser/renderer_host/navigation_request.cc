@@ -7505,8 +7505,8 @@ void NavigationRequest::ComputePoliciesToCommit() {
 }
 
 void NavigationRequest::ComputePoliciesToCommitForError() {
-  policy_container_builder_->ComputePoliciesForError(
-      IsMhtmlOrSubframe(), commit_params_->frame_policy.sandbox_flags);
+  CHECK(!IsMhtmlOrSubframe());
+  policy_container_builder_->ComputePoliciesForError();
 }
 
 void NavigationRequest::CheckStateTransition(NavigationState state) const {

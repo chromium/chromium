@@ -205,8 +205,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 TEST_F(NavigationPolicyContainerBuilderTest, DefaultFinalPoliciesForErrorPage) {
   NavigationPolicyContainerBuilder builder(nullptr, nullptr, nullptr);
 
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
 
   // Error pages commit with default policies, mostly ignoring the delivered
   // policies and the document's URL.
@@ -219,8 +218,7 @@ TEST_F(NavigationPolicyContainerBuilderTest, ErrorPageIPAddressSpace) {
   NavigationPolicyContainerBuilder builder(nullptr, nullptr, nullptr);
 
   builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
 
   PolicyContainerPolicies expected_policies;
   expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
@@ -242,8 +240,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
                           /*is_anonymous=*/false);
   EXPECT_EQ(builder.FinalPolicies(), expected_policies);
 
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
   EXPECT_EQ(builder.FinalPolicies(), expected_policies);
 }
 
@@ -259,8 +256,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
                           /*is_anonymous=*/false);
   EXPECT_THAT(builder.FinalPolicies().content_security_policies, SizeIs(1));
 
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
   EXPECT_THAT(builder.FinalPolicies().content_security_policies, SizeIs(0));
 }
 
@@ -541,8 +537,7 @@ TEST_F(NavigationPolicyContainerBuilderTest, ComputePoliciesThenError) {
   builder.ComputePolicies(GURL("https://foo.test"), false,
                           network::mojom::WebSandboxFlags::kNone,
                           /*is_anonymous=*/false);
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
 }
 
 // After ComputePolicies() or ComputePoliciesForError(), the initiator policies
@@ -564,8 +559,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   EXPECT_THAT(builder.InitiatorPolicies(),
               Pointee(Eq(ByRef(initiator_policies))));
 
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
   EXPECT_THAT(builder.InitiatorPolicies(),
               Pointee(Eq(ByRef(initiator_policies))));
 }
@@ -586,8 +580,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
                           /*is_anonymous=*/false);
   EXPECT_THAT(builder.ParentPolicies(), Pointee(Eq(ByRef(parent_policies))));
 
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
   EXPECT_THAT(builder.ParentPolicies(), Pointee(Eq(ByRef(parent_policies))));
 }
 

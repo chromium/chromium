@@ -297,8 +297,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
 
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
 
   // Error pages commit with default policies, ignoring the history policies.
   EXPECT_EQ(builder.FinalPolicies(), PolicyContainerPolicies());
@@ -326,8 +325,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
                           /*anonymous=*/false);
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 
-  builder.ComputePoliciesForError(false,
-                                  network::mojom::WebSandboxFlags::kNone);
+  builder.ComputePoliciesForError();
   EXPECT_THAT(builder.HistoryPolicies(), Pointee(Eq(ByRef(history_policies))));
 }
 

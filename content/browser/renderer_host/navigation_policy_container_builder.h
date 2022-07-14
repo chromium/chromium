@@ -123,15 +123,9 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // Sets final policies to defaults suitable for error pages, and builds a
   // policy container host.
   //
-  // `is_inside_mhtml` specifies whether the navigation loads an MHTML document
-  // or a subframe of an MHTML document. This influences computed sandbox flags.
-  // `frame_sandbox_flags` represents the frame's sandbox flags.
-  //
   // This method must only be called once. However it can be called after
   // `ComputePolicies()`.
-  void ComputePoliciesForError(
-      bool is_inside_mhtml,
-      network::mojom::WebSandboxFlags frame_sandbox_flags);
+  void ComputePoliciesForError();
 
   // Sets final policies to their correct values and builds a policy container
   // host.
