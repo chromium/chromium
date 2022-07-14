@@ -89,10 +89,6 @@ class NET_EXPORT TrustStoreChrome : public TrustStore {
 // binary.
 NET_EXPORT int64_t CompiledChromeRootStoreVersion();
 
-// Returns the anchors of the Chrome Root Store that were compiled into the
-// binary.
-NET_EXPORT ParsedCertificateList CompiledChromeRootStoreAnchors();
-
 }  // namespace net
 
 #endif  // NET_CERT_INTERNAL_TRUST_STORE_CHROME_H_

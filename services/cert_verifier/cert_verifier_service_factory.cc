@@ -26,8 +26,6 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "net/cert/internal/parse_name.h"
-#include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -73,26 +71,6 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
                                                std::move(receiver),
                                                std::move(cert_net_fetcher));
 }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-std::string GetName(scoped_refptr<net::ParsedCertificate> cert) {
-  net::RDNSequence subject_rdn;
-  if (!net::ParseName(cert->subject_tlv(), &subject_rdn)) {
-    return "UNKNOWN";
-  }
-  std::string subject_string;
-  if (!net::ConvertToRFC2253(subject_rdn, &subject_string)) {
-    return "UNKNOWN";
-  }
-  return subject_string;
-}
-
-std::string GetHash(scoped_refptr<net::ParsedCertificate> cert) {
-  net::SHA256HashValue hash =
-      net::X509Certificate::CalculateFingerprint256(cert->cert_buffer());
-  return base::HexEncode(hash.data, std::size(hash.data));
-}
-#endif
 
 }  // namespace
 
@@ -169,25 +147,6 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
   // Update the stored Chrome Root Store so that new CertVerifierService
   // instances will start with the updated store.
   root_store_data_ = std::move(root_store_data);
-}
-
-void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
-    GetChromeRootStoreInfoCallback callback) {
-  mojom::ChromeRootStoreInfoPtr info_ptr = mojom::ChromeRootStoreInfo::New();
-  if (root_store_data_) {
-    info_ptr->version = root_store_data_->version();
-    for (auto cert : root_store_data_->anchors()) {
-      info_ptr->root_cert_info.push_back(
-          mojom::ChromeRootCertInfo::New(GetName(cert), GetHash(cert)));
-    }
-  } else {
-    info_ptr->version = net::CompiledChromeRootStoreVersion();
-    for (auto cert : net::CompiledChromeRootStoreAnchors()) {
-      info_ptr->root_cert_info.push_back(
-          mojom::ChromeRootCertInfo::New(GetName(cert), GetHash(cert)));
-    }
-  }
-  std::move(callback).Run(std::move(info_ptr));
 }
 #endif
 
