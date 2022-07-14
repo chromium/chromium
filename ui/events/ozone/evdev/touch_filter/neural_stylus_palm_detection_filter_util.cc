@@ -139,17 +139,16 @@ PalmFilterSample CreatePalmFilterSample(
 }
 
 PalmFilterStroke::PalmFilterStroke(
-    const NeuralStylusPalmDetectionFilterModelConfig& model_config)
-    : max_sample_count_(model_config.max_sample_count),
+    const NeuralStylusPalmDetectionFilterModelConfig& model_config,
+    int tracking_id)
+    : tracking_id_(tracking_id),
+      max_sample_count_(model_config.max_sample_count),
       resample_period_(model_config.resample_period) {}
 PalmFilterStroke::PalmFilterStroke(const PalmFilterStroke& other) = default;
 PalmFilterStroke::PalmFilterStroke(PalmFilterStroke&& other) = default;
 PalmFilterStroke::~PalmFilterStroke() {}
 
 void PalmFilterStroke::ProcessSample(const PalmFilterSample& sample) {
-  if (samples_seen_ == 0) {
-    tracking_id_ = sample.tracking_id;
-  }
   DCHECK_EQ(tracking_id_, sample.tracking_id);
   if (resample_period_.has_value()) {
     Resample(sample);
@@ -226,10 +225,6 @@ int PalmFilterStroke::tracking_id() const {
 
 uint64_t PalmFilterStroke::samples_seen() const {
   return samples_seen_;
-}
-
-void PalmFilterStroke::SetTrackingId(int tracking_id) {
-  tracking_id_ = tracking_id;
 }
 
 float PalmFilterStroke::MaxMajorRadius() const {

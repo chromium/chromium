@@ -58,7 +58,8 @@ PalmFilterSample CreatePalmFilterSample(
 class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
  public:
   explicit PalmFilterStroke(
-      const NeuralStylusPalmDetectionFilterModelConfig& model_config);
+      const NeuralStylusPalmDetectionFilterModelConfig& model_config,
+      int tracking_id);
   PalmFilterStroke(const PalmFilterStroke& other);
   PalmFilterStroke(PalmFilterStroke&& other);
   ~PalmFilterStroke();
@@ -68,7 +69,6 @@ class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
   float BiggestSize() const;
   // If no elements in stroke, returns 0.0;
   float MaxMajorRadius() const;
-  void SetTrackingId(int tracking_id);
   const std::deque<PalmFilterSample>& samples() const;
   uint64_t samples_seen() const;
   int tracking_id() const;
@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
   void Resample(const PalmFilterSample& sample);
 
   std::deque<PalmFilterSample> samples_;
-  int tracking_id_ = 0;
+  const int tracking_id_;
   /**
    * How many total samples have been reported for this stroke. This is
    * different from samples_.size() because samples_ will get pruned to only

@@ -150,8 +150,8 @@ TEST_P(NeuralStylusPalmDetectionFilterUtilTest, LinkTouchscreenSampleTest) {
 }
 
 TEST_P(NeuralStylusPalmDetectionFilterUtilTest, PalmFilterStrokeTest) {
-  PalmFilterStroke stroke(model_config_);
-  EXPECT_EQ(0, stroke.tracking_id());
+  PalmFilterStroke stroke(model_config_, /*tracking_id*/ 55);
+  touch_.tracking_id = 55;
   // With no points, center is 0.
   EXPECT_EQ(gfx::PointF(0., 0.), stroke.GetCentroid());
 
@@ -184,14 +184,13 @@ TEST_P(NeuralStylusPalmDetectionFilterUtilTest, PalmFilterStrokeTest) {
     ASSERT_FLOAT_EQ(expected_centroid.x(), stroke.GetCentroid().x())
         << "failed at i " << i;
   }
-  stroke.SetTrackingId(55);
-  EXPECT_EQ(55, stroke.tracking_id());
 }
 
 TEST_P(NeuralStylusPalmDetectionFilterUtilTest,
        PalmFilterStrokeBiggestSizeTest) {
-  PalmFilterStroke stroke(model_config_);
-  PalmFilterStroke no_minor_stroke(model_config_);
+  PalmFilterStroke stroke(model_config_, /*tracking_id*/ 0);
+  PalmFilterStroke no_minor_stroke(model_config_, /*tracking_id*/ 0);
+  touch_.tracking_id = stroke.tracking_id();
   EXPECT_EQ(0, stroke.BiggestSize());
 
   base::TimeTicks time = base::TimeTicks() + base::Seconds(30);
@@ -235,7 +234,8 @@ TEST_P(NeuralStylusPalmDetectionFilterUtilTest, UnscaledMajorMinorResolution) {
 }
 
 TEST_P(NeuralStylusPalmDetectionFilterUtilTest, StrokeGetMaxMajorTest) {
-  PalmFilterStroke stroke(model_config_);
+  PalmFilterStroke stroke(model_config_, /*tracking_id*/ 0);
+  touch_.tracking_id = stroke.tracking_id();
   EXPECT_FLOAT_EQ(0, stroke.MaxMajorRadius());
   base::TimeTicks time = base::TimeTicks::UnixEpoch() + base::Seconds(30);
   const PalmFilterDeviceInfo nocturne_distilled =
@@ -277,7 +277,7 @@ TEST(PalmFilterStrokeTest, NumberOfResampledValues) {
   model_config_.resample_period = base::Milliseconds(8);
   base::TimeTicks down_time = base::TimeTicks::UnixEpoch() + base::Seconds(30);
 
-  PalmFilterStroke stroke(model_config_);
+  PalmFilterStroke stroke(model_config_, /*tracking_id*/ 0);
   const PalmFilterDeviceInfo device_info;
 
   // Initially, no samples
@@ -286,6 +286,7 @@ TEST(PalmFilterStrokeTest, NumberOfResampledValues) {
 
   // Add first sample at time = T
   InProgressTouchEvdev touch_;
+  touch_.tracking_id = stroke.tracking_id();
   PalmFilterSample sample =
       CreatePalmFilterSample(touch_, down_time, model_config_, device_info);
   stroke.ProcessSample(sample);
@@ -316,12 +317,13 @@ TEST(PalmFilterStrokeTest, ResamplingTest) {
   model_config_.max_sample_count = 3;
   model_config_.resample_period = base::Milliseconds(8);
 
-  PalmFilterStroke stroke(model_config_);
+  PalmFilterStroke stroke(model_config_, /*tracking_id*/ 0);
   PalmFilterDeviceInfo device_info;
   device_info.minor_radius_supported = true;
 
   // Add first sample at time = T
   InProgressTouchEvdev touch_;
+  touch_.tracking_id = stroke.tracking_id();
   touch_.x = 1;
   touch_.y = 2;
   touch_.major = 4;
@@ -371,12 +373,13 @@ TEST(PalmFilterStrokeTest, MultipleResampledValues) {
   model_config_.max_sample_count = 3;
   model_config_.resample_period = base::Milliseconds(8);
 
-  PalmFilterStroke stroke(model_config_);
+  PalmFilterStroke stroke(model_config_, /*tracking_id*/ 0);
   PalmFilterDeviceInfo device_info;
   device_info.minor_radius_supported = true;
 
   // Add first sample at time = T
   InProgressTouchEvdev touch_;
+  touch_.tracking_id = stroke.tracking_id();
   touch_.x = 0;
   touch_.y = 10;
   touch_.major = 200;

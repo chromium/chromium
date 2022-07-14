@@ -147,8 +147,8 @@ void NeuralStylusPalmDetectionFilter::Filter(
       DCHECK(strokes_.count(tracking_id) == 0)
           << " Tracking id " << tracking_id;
 
-      strokes_.emplace(tracking_id, PalmFilterStroke(model_->config()));
-      strokes_.find(tracking_id)->second.SetTrackingId(tracking_id);
+      strokes_.emplace(tracking_id,
+                       PalmFilterStroke(model_->config(), tracking_id));
       tracking_ids_[slot] = tracking_id;
       is_palm_.set(slot, false);
       is_delay_.set(slot, false);
@@ -230,7 +230,7 @@ void NeuralStylusPalmDetectionFilter::Filter(
       LOG(DFATAL) << "Unable to find marked stroke.";
       continue;
     }
-    auto& stroke = lookup->second;
+    const auto& stroke = lookup->second;
     if (stroke.samples_seen() < model_->config().min_sample_count) {
       // in very short strokes: we use a heuristic.
       is_palm_.set(slot, IsHeuristicPalmStroke(stroke));
