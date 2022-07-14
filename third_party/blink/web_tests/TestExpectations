@@ -277,7 +277,6 @@ crbug.com/1126305 virtual/prerender/http/tests/inspector-protocol/prerender/* [ 
 crbug.com/1302831 virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
 crbug.com/1302831 virtual/prerender/http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Skip ]
 crbug.com/1302831 virtual/prerender/wpt_internal/prerender/restriction-web-auth.https.html [ Skip ]
-crbug.com/1302831 [ Mac12-arm64 ] virtual/prerender/wpt_internal/prerender/activate-from-iframe.html [ Failure Pass ]
 crbug.com/1302831 [ Mac10.14 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 crbug.com/1302831 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 
@@ -7155,7 +7154,6 @@ crbug.com/1305302 external/wpt/webidl/ecmascript-binding/global-object-implicit-
 crbug.com/1340981 virtual/conversions-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html [ Timeout ]
 
 # Sheriff 2022-07-05
-crbug.com/1342050 [ Mac10.15 ] virtual/prerender/wpt_internal/prerender/activate-from-iframe.html [ Failure Pass ]
 crbug.com/1340763 external/wpt/pointerevents/pointerevent_capture_mouse.html [ Failure Pass ]
 crbug.com/1341090 external/wpt/webmessaging/with-ports/021.html [ Failure Pass ]
 crbug.com/1341090 external/wpt/webmessaging/without-ports/021.html [ Failure Pass ]
