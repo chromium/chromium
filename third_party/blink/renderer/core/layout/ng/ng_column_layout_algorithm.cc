@@ -715,7 +715,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     // lowest value of those. This will serve as the column stretch amount, if
     // we determine that stretching them is necessary and possible (column
     // balancing).
-    absl::optional<LayoutUnit> minimal_space_shortage;
+    LayoutUnit minimal_space_shortage = kIndefiniteSize;
 
     min_break_appeal = absl::nullopt;
 
@@ -746,11 +746,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 
       absl::optional<LayoutUnit> space_shortage =
           result->MinimalSpaceShortage();
-      if (space_shortage && *space_shortage > LayoutUnit()) {
-        minimal_space_shortage =
-            std::min(minimal_space_shortage.value_or(LayoutUnit::Max()),
-                     *space_shortage);
-      }
+      UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage);
       actual_column_count++;
 
       if (result->ColumnSpannerPath()) {
@@ -859,8 +855,9 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       // duplicated logic). We'll use as much as we're allowed to.
       new_column_block_size = LayoutUnit::Max();
     } else {
-      new_column_block_size = column_size.block_size +
-                              minimal_space_shortage.value_or(LayoutUnit());
+      new_column_block_size = column_size.block_size;
+      if (minimal_space_shortage > LayoutUnit())
+        new_column_block_size += minimal_space_shortage;
     }
     new_column_block_size =
         ConstrainColumnBlockSize(new_column_block_size, row_offset);

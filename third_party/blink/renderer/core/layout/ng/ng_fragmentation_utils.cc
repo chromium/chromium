@@ -726,14 +726,32 @@ void PropagateSpaceShortage(const NGConstraintSpace& space,
                             LayoutUnit fragmentainer_block_offset,
                             NGBoxFragmentBuilder* builder,
                             absl::optional<LayoutUnit> block_size_override) {
+  // Only multicol cares about space shortage.
+  if (space.BlockFragmentationType() != kFragmentColumn)
+    return;
+
+  LayoutUnit space_shortage = CalculateSpaceShortage(
+      space, layout_result, fragmentainer_block_offset, block_size_override);
+
+  // TODO(mstensho): Turn this into a DCHECK, when the engine is ready for
+  // it. Space shortage should really be positive here, or we might ultimately
+  // fail to stretch the columns (column balancing).
+  if (space_shortage > LayoutUnit())
+    builder->PropagateSpaceShortage(space_shortage);
+}
+
+LayoutUnit CalculateSpaceShortage(
+    const NGConstraintSpace& space,
+    const NGLayoutResult* layout_result,
+    LayoutUnit fragmentainer_block_offset,
+    absl::optional<LayoutUnit> block_size_override) {
   // Space shortage is only reported for soft breaks, and they can only exist if
   // we know the fragmentainer block-size.
   DCHECK(space.HasKnownFragmentainerBlockSize());
   DCHECK(layout_result || block_size_override);
 
   // Only multicol cares about space shortage.
-  if (space.BlockFragmentationType() != kFragmentColumn)
-    return;
+  DCHECK_EQ(space.BlockFragmentationType(), kFragmentColumn);
 
   LayoutUnit space_shortage;
   if (block_size_override) {
@@ -742,9 +760,9 @@ void PropagateSpaceShortage(const NGConstraintSpace& space,
   } else if (!layout_result->MinimalSpaceShortage()) {
     // Calculate space shortage: Figure out how much more space would have been
     // sufficient to make the child fragment fit right here in the current
-    // fragmentainer. If layout aborted, though, we can't propagate anything.
+    // fragmentainer. If layout aborted, though, we can't calculate anything.
     if (layout_result->Status() != NGLayoutResult::kSuccess)
-      return;
+      return kIndefiniteSize;
     NGFragment fragment(space.GetWritingDirection(),
                         layout_result->PhysicalFragment());
     space_shortage = fragmentainer_block_offset + fragment.BlockSize() -
@@ -755,12 +773,20 @@ void PropagateSpaceShortage(const NGConstraintSpace& space,
     // shortage for the child as a whole would be impossible and pointless.
     space_shortage = *layout_result->MinimalSpaceShortage();
   }
+  return space_shortage;
+}
 
-  // TODO(mstensho): Turn this into a DCHECK, when the engine is ready for
-  // it. Space shortage should really be positive here, or we might ultimately
-  // fail to stretch the columns (column balancing).
-  if (space_shortage > LayoutUnit())
-    builder->PropagateSpaceShortage(space_shortage);
+void UpdateMinimalSpaceShortage(absl::optional<LayoutUnit> new_space_shortage,
+                                LayoutUnit* minimal_space_shortage) {
+  DCHECK(minimal_space_shortage);
+  if (!new_space_shortage || *new_space_shortage <= LayoutUnit())
+    return;
+  if (*minimal_space_shortage == kIndefiniteSize) {
+    *minimal_space_shortage = *new_space_shortage;
+  } else {
+    *minimal_space_shortage =
+        std::min(*minimal_space_shortage, *new_space_shortage);
+  }
 }
 
 bool MovePastBreakpoint(const NGConstraintSpace& space,

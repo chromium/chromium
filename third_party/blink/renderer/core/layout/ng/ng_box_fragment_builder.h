@@ -371,23 +371,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Report space shortage, i.e. how much more space would have been sufficient
   // to prevent some piece of content from breaking. This information may be
   // used by the column balancer to stretch columns.
-  void PropagateSpaceShortage(absl::optional<LayoutUnit> space_shortage) {
-    if (!space_shortage || *space_shortage <= LayoutUnit())
-      return;
+  void PropagateSpaceShortage(absl::optional<LayoutUnit> space_shortage);
 
-    // Space shortage should only be reported when we already have a tentative
-    // fragmentainer block-size. It's meaningless to talk about space shortage
-    // in the initial column balancing pass, because then we have no
-    // fragmentainer block-size at all, so who's to tell what's too short or
-    // not?
-    DCHECK(!IsInitialColumnBalancingPass());
-    if (minimal_space_shortage_ == kIndefiniteSize) {
-      minimal_space_shortage_ = *space_shortage;
-    } else {
-      minimal_space_shortage_ =
-          std::min(minimal_space_shortage_, *space_shortage);
-    }
-  }
   absl::optional<LayoutUnit> MinimalSpaceShortage() const {
     if (minimal_space_shortage_ == kIndefiniteSize)
       return absl::nullopt;

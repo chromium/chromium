@@ -338,6 +338,17 @@ NGPhysicalFragment::NGBoxType NGBoxFragmentBuilder::BoxType() const {
   return NGPhysicalFragment::NGBoxType::kNormalBox;
 }
 
+void NGBoxFragmentBuilder::PropagateSpaceShortage(
+    absl::optional<LayoutUnit> space_shortage) {
+  // Space shortage should only be reported when we already have a tentative
+  // fragmentainer block-size. It's meaningless to talk about space shortage
+  // in the initial column balancing pass, because then we have no
+  // fragmentainer block-size at all, so who's to tell what's too short or
+  // not?
+  DCHECK(!IsInitialColumnBalancingPass());
+  UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage_);
+}
+
 EBreakBetween NGBoxFragmentBuilder::JoinedBreakBetweenValue(
     EBreakBetween break_before) const {
   return JoinFragmentainerBreakValues(previous_break_after_, break_before);
