@@ -7,11 +7,6 @@
 
 namespace chromeos {
 
-// Feature flag for disable/enable Lacros TTS support.
-// Disable by default before the feature is completedly implemented.
-const base::Feature kLacrosTtsSupport{"LacrosTtsSupport",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
 namespace features {
 
 // Enables or disables more filtering out of phones from the Bluetooth UI.

@@ -55839,6 +55839,7 @@ from previous Chrome versions.
   <int value="-1818947212" label="OutOfBlinkCors:disabled"/>
   <int value="-1818565030"
       label="AutofillUseConsistentPopupSettingsIcons:disabled"/>
+  <int value="-1818135677" label="DisableLacrosTtsSupport:enabled"/>
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
   <int value="-1813088913" label="CCTResizable90MaximumHeight:disabled"/>
@@ -56114,7 +56115,6 @@ from previous Chrome versions.
   <int value="-1625777277"
       label="AutofillUpstreamEditableCardholderName:disabled"/>
   <int value="-1625235210" label="VirtualKeyboardRoundCorners:enabled"/>
-  <int value="-1624992248" label="LacrosTtsSupport:disabled"/>
   <int value="-1624854957" label="enable-es3-apis"/>
   <int value="-1624593106" label="NewTabPageBackgrounds:enabled"/>
   <int value="-1624412478" label="OptimizationGuideModelDownloading:disabled"/>
@@ -57401,6 +57401,7 @@ from previous Chrome versions.
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
+  <int value="-841549378" label="DisableLacrosTtsSupport:disabled"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
   <int value="-838719204"
       label="ForceMajorVersionInMinorPositionInUserAgent:disabled"/>
@@ -61047,7 +61048,6 @@ from previous Chrome versions.
   <int value="1532505461" label="HelpAppLauncherSearch:disabled"/>
   <int value="1532621308" label="UnifiedPasswordManagerDesktop:disabled"/>
   <int value="1533004890" label="CrostiniEnableDlc:enabled"/>
-  <int value="1533106740" label="LacrosTtsSupport:enabled"/>
   <int value="1534222388" label="EnableEphemeralFlashPermission:enabled"/>
   <int value="1534386287" label="SendTabToSelfWhenSignedIn:enabled"/>
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>

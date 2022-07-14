@@ -482,6 +482,12 @@ const base::Feature kDiacriticsOnPhysicalKeyboardLongpress{
 const base::Feature kDisableCryptAuthV1DeviceSync{
     "DisableCryptAuthV1DeviceSync", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Feature flag for disable/enable Lacros TTS support.
+// The flag is enabled by default so that the feature is disabled before it is
+// completedly implemented.
+const base::Feature kDisableLacrosTtsSupport{"DisableLacrosTtsSupport",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables indicators to hint where displays are connected.
 const base::Feature kDisplayAlignAssist{"DisplayAlignAssist",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

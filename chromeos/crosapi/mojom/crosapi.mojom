@@ -836,8 +836,8 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 49
-// Next id: 49
+// Next version: 50
+// Next id: 50
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1139,6 +1139,10 @@ struct BrowserInitParams {
   // behavior.
   [MinVersion=48]
   bool do_not_mux_extension_app_ids@48;
+
+  // When this flag is set to true, Lacros tts support feature will be enabled.
+  [MinVersion=49]
+  bool enable_lacros_tts_support@49;
 };
 
 // Parameters to specify OpenUrl behavior.

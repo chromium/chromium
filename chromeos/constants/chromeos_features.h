@@ -13,9 +13,6 @@
 // in //ash/constants/ash_features.h.
 namespace chromeos {
 
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kLacrosTtsSupport;
-
 namespace features {
 
 // All features in alphabetical order. The features should be documented

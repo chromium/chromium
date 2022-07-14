@@ -16,6 +16,8 @@ crosapi::mojom::TtsEventType ToMojo(content::TtsEventType event_type);
 content::VoiceData FromMojo(const crosapi::mojom::TtsVoicePtr& mojo_voice);
 crosapi::mojom::TtsVoicePtr ToMojo(const content::VoiceData& voice);
 
+bool ShouldEnableLacrosTtsSupport();
+
 }  // namespace tts_crosapi_util
 
 #endif  // CHROME_BROWSER_SPEECH_TTS_CROSAPI_UTIL_H_

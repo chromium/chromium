@@ -30,6 +30,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
@@ -541,6 +542,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->use_floss_bluetooth = floss::features::IsFlossEnabled();
   params->is_current_user_device_owner = GetIsCurrentUserOwner();
   params->do_not_mux_extension_app_ids = !apps::ShouldMuxExtensionIds();
+  params->enable_lacros_tts_support =
+      tts_crosapi_util::ShouldEnableLacrosTtsSupport();
 
   return params;
 }

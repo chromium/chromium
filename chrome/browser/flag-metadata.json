@@ -1309,6 +1309,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-lacros-tts-support",
+    "owners": ["jennyz"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "disable-office-editing-component-app",
     "owners": [
       "quickoffice-chrome-eng@google.com"
@@ -2943,11 +2948,6 @@
     "name": "enable-translate-sub-frames",
     "owners": [ "sclittle", "chrome-language@google.com" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "enable-tts-lacros-support",
-    "owners": ["jennyz"],
-    "expiry_milestone": 120
   },
   {
     "name": "enable-ui-devtools",

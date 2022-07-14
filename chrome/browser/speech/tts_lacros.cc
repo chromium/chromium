@@ -8,7 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_client_lacros.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "chrome/browser/speech/tts_crosapi_util.h"
 
 // static
 TtsPlatformImplLacros* TtsPlatformImplLacros::GetInstance() {
@@ -34,7 +34,7 @@ void TtsPlatformImplLacros::OnProfileManagerDestroying() {
 }
 
 bool TtsPlatformImplLacros::PlatformImplSupported() {
-  return base::FeatureList::IsEnabled(chromeos::kLacrosTtsSupport);
+  return tts_crosapi_util::ShouldEnableLacrosTtsSupport();
 }
 
 bool TtsPlatformImplLacros::PlatformImplInitialized() {

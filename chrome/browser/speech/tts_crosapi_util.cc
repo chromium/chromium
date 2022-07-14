@@ -4,7 +4,17 @@
 
 #include "chrome/browser/speech/tts_crosapi_util.h"
 
+#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace tts_crosapi_util {
 
@@ -91,6 +101,17 @@ crosapi::mojom::TtsVoicePtr ToMojo(const content::VoiceData& voice) {
   mojo_voice->events = std::move(mojo_events);
 
   return mojo_voice;
+}
+
+bool ShouldEnableLacrosTtsSupport() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool lacros_tts_support_enabled =
+      crosapi::browser_util::IsLacrosPrimaryBrowser() &&
+      !base::FeatureList::IsEnabled(ash::features::kDisableLacrosTtsSupport);
+  return lacros_tts_support_enabled;
+#else  // IS_CHROMEOS_LACROS
+  return chromeos::BrowserInitParams::Get()->enable_lacros_tts_support;
+#endif
 }
 
 }  // namespace tts_crosapi_util

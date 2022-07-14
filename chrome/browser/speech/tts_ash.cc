@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/crosapi_tts_engine_delegate_ash.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/tts_controller.h"
@@ -110,8 +109,7 @@ void TtsAsh::OnVoicesChanged() {
 }
 
 void TtsAsh::OnProfileAdded(Profile* profile) {
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      base::FeatureList::IsEnabled(chromeos::kLacrosTtsSupport)) {
+  if (tts_crosapi_util::ShouldEnableLacrosTtsSupport()) {
     content::TtsController::GetInstance()->SetRemoteTtsEngineDelegate(
         CrosapiTtsEngineDelegateAsh::GetInstance());
   }

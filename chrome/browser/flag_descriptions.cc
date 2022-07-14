@@ -5870,10 +5870,6 @@ const char kVaapiAV1DecoderName[] = "VA-API decode acceleration for AV1";
 const char kVaapiAV1DecoderDescription[] =
     "Enable or disable decode acceleration of AV1 videos using the VA-API.";
 
-const char kEnableTtsLacrosSupportName[] = "Enable tts lacros support";
-const char kEnableTtsLacrosSupportDescription[] =
-    "Enable or disable lacros support for text to speech.";
-
 const char kIntentChipSkipsPickerName[] =
     "Link capturing intent chip skips the intent picker bubble";
 const char kIntentChipSkipsPickerDescription[] =
@@ -6180,6 +6176,11 @@ const char kWebKioskEnableLacrosName[] =
 const char kWebKioskEnableLacrosDescription[] =
     "Uses Lacros-chrome as the web browser in the web (PWA) Kiosk session on "
     "ChromeOS. When disabled, the Ash-chrome will be used";
+
+const char kDisableLacrosTtsSupportName[] = "Disable lacros tts support";
+const char kDisableLacrosTtsSupportDescription[] =
+    "Disable lacros support for text to speech.";
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // ============================================================================

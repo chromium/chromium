@@ -3367,9 +3367,6 @@ extern const char kDisableOfficeEditingComponentAppDescription[];
 extern const char kVaapiAV1DecoderName[];
 extern const char kVaapiAV1DecoderDescription[];
 
-extern const char kEnableTtsLacrosSupportName[];
-extern const char kEnableTtsLacrosSupportDescription[];
-
 extern const char kIntentChipSkipsPickerName[];
 extern const char kIntentChipSkipsPickerDescription[];
 
@@ -3571,6 +3568,9 @@ extern const char kChromeKioskEnableLacrosDescription[];
 
 extern const char kWebKioskEnableLacrosName[];
 extern const char kWebKioskEnableLacrosDescription[];
+
+extern const char kDisableLacrosTtsSupportName[];
+extern const char kDisableLacrosTtsSupportDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // ============================================================================
