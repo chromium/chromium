@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 
 class Browser;
@@ -19,7 +20,8 @@ class Browser;
 // LensUnifiedSidePanelEntry.
 class LensSidePanelCoordinator
     : public BrowserUserData<LensSidePanelCoordinator>,
-      public SidePanelViewStateObserver {
+      public SidePanelViewStateObserver,
+      public SidePanelEntryObserver {
  public:
   explicit LensSidePanelCoordinator(Browser* browser);
   LensSidePanelCoordinator(const LensSidePanelCoordinator&) = delete;
@@ -36,6 +38,10 @@ class LensSidePanelCoordinator
 
  private:
   friend class BrowserUserData<LensSidePanelCoordinator>;
+
+  // SidePanelEntryObserver:
+  void OnEntryShown(SidePanelEntry* entry) override;
+  void OnEntryHidden(SidePanelEntry* entry) override;
 
   BrowserView* GetBrowserView();
 

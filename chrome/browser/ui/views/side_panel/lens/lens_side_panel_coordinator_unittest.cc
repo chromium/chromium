@@ -20,6 +20,20 @@
 
 namespace {
 
+constexpr char kNewLensQueryAction[] = "LensUnifiedSidePanel.LensQuery_New";
+constexpr char kLensQueryAction[] = "LensUnifiedSidePanel.LensQuery";
+constexpr char kLensEntryHiddenAction[] =
+    "LensUnifiedSidePanel.LensEntryHidden";
+constexpr char kLensEntryShownAction[] = "LensUnifiedSidePanel.LensEntryShown";
+constexpr char kLensQueryFollowupAction[] =
+    "LensUnifiedSidePanel.LensQuery_Followup";
+constexpr char kLensQuerySidePanelClosedAction[] =
+    "LensUnifiedSidePanel.LensQuery_SidePanelClosed";
+constexpr char kLensQuerySidePanelOpenNonLensAction[] =
+    "LensUnifiedSidePanel.LensQuery_SidePanelOpenNonLens";
+constexpr char kLensQuerySidePanelOpenLensAction[] =
+    "LensUnifiedSidePanel.LensQuery_SidePanelOpenLens";
+
 class LensSidePanelCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
@@ -61,6 +75,7 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
 TEST_F(LensSidePanelCoordinatorTest,
        OpenWithUrlShowsUnifiedSidePanelWithLensSelected) {
   base::UserActionTester user_action_tester;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNewLensQueryAction));
 
   lens_side_panel_coordinator_->RegisterEntryAndShow(
       content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
@@ -71,5 +86,95 @@ TEST_F(LensSidePanelCoordinatorTest,
   EXPECT_EQ(
       GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
       SidePanelEntry::Id::kLens);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kLensQueryAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNewLensQueryAction));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kLensQuerySidePanelClosedAction));
 }
+
+TEST_F(LensSidePanelCoordinatorTest, OpenWithUrlWhenSidePanelOpenShowsLens) {
+  base::UserActionTester user_action_tester;
+  GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kBookmarks);
+  EXPECT_EQ(0, user_action_tester.GetActionCount(kNewLensQueryAction));
+
+  lens_side_panel_coordinator_->RegisterEntryAndShow(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+
+  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_EQ(
+      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
+      SidePanelEntry::Id::kLens);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNewLensQueryAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   kLensQuerySidePanelOpenNonLensAction));
+}
+
+TEST_F(LensSidePanelCoordinatorTest,
+       CallingRegisterTwiceOpensNewUrlAndLogsAction) {
+  base::UserActionTester user_action_tester;
+
+  lens_side_panel_coordinator_->RegisterEntryAndShow(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+  lens_side_panel_coordinator_->RegisterEntryAndShow(
+      content::OpenURLParams(GURL("http://bar.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+
+  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_EQ(
+      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
+      SidePanelEntry::Id::kLens);
+  EXPECT_EQ(2, user_action_tester.GetActionCount(kLensQueryAction));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kLensQuerySidePanelClosedAction));
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount(kLensQuerySidePanelOpenLensAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kLensQueryFollowupAction));
+}
+
+TEST_F(LensSidePanelCoordinatorTest, SwitchToDifferentItemTriggersHideEvent) {
+  base::UserActionTester user_action_tester;
+  lens_side_panel_coordinator_->RegisterEntryAndShow(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+
+  GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kBookmarks);
+
+  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_EQ(
+      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
+      SidePanelEntry::Id::kBookmarks);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kLensQuerySidePanelClosedAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kLensEntryHiddenAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kLensEntryShownAction));
+}
+
+TEST_F(LensSidePanelCoordinatorTest, SwitchBackToLensTriggersShowEvent) {
+  base::UserActionTester user_action_tester;
+  lens_side_panel_coordinator_->RegisterEntryAndShow(
+      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false));
+
+  GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kBookmarks);
+  GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kLens);
+
+  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+  EXPECT_EQ(
+      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
+      SidePanelEntry::Id::kLens);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kLensQueryAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kNewLensQueryAction));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kLensQuerySidePanelClosedAction));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kLensEntryHiddenAction));
+  EXPECT_EQ(2, user_action_tester.GetActionCount(kLensEntryShownAction));
+}
+
 }  // namespace

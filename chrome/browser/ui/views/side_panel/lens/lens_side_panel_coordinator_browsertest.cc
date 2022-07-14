@@ -6,6 +6,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -46,6 +47,8 @@
 #include "ui/views/view_utils.h"
 
 namespace {
+
+constexpr char kCloseAction[] = "LensUnifiedSidePanel.HideSidePanel";
 
 // Maintains image search test state. In particular, note that |menu_observer_|
 // must live until the right-click completes asynchronously.
@@ -167,6 +170,7 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   }
 
   std::unique_ptr<ContextMenuNotificationObserver> menu_observer_;
+  base::UserActionTester user_action_tester;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
@@ -189,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       ClosingSidePanelDeregistersLensView) {
+                       ClosingSidePanelDeregistersLensViewAndLogsCloseMetric) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
 
@@ -203,6 +207,7 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
       GetSidePanelCoordinator()->GetGlobalSidePanelRegistry()->GetEntryForId(
           SidePanelEntry::Id::kLens),
       nullptr);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kCloseAction));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,

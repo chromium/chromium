@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
 
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -121,6 +123,8 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
                                 ui::PAGE_TRANSITION_TYPED,
                                 /*is_renderer_initiated=*/false);
   browser_view_->browser()->OpenURL(params);
+  base::RecordAction(
+      base::UserMetricsAction("LensUnifiedSidePanel.LoadResultsInNewTab"));
   browser_view_->side_panel_coordinator()->Close();
 }
 
@@ -157,6 +161,8 @@ void LensUnifiedSidePanelView::DidOpenRequestedURL(
     params.initiator_origin = url::Origin::Create(url);
 
   browser_view_->browser()->OpenURL(params);
+  base::RecordAction(
+      base::UserMetricsAction("LensUnifiedSidePanel.ResultLinkClick"));
 }
 
 void LensUnifiedSidePanelView::CreateAndInstallFooter() {

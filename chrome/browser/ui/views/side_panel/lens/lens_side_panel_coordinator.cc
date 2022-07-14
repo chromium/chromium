@@ -6,6 +6,8 @@
 #include <iostream>
 
 #include "base/callback.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -44,31 +46,62 @@ void LensSidePanelCoordinator::OnSidePanelDidClose() {
       ->side_panel_coordinator()
       ->GetGlobalSidePanelRegistry()
       ->Deregister(SidePanelEntry::Id::kLens);
+  base::RecordAction(
+      base::UserMetricsAction("LensUnifiedSidePanel.HideSidePanel"));
+}
+
+void LensSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
+  base::RecordAction(
+      base::UserMetricsAction("LensUnifiedSidePanel.LensEntryShown"));
+}
+
+void LensSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+  base::RecordAction(
+      base::UserMetricsAction("LensUnifiedSidePanel.LensEntryHidden"));
 }
 
 void LensSidePanelCoordinator::RegisterEntryAndShow(
     const content::OpenURLParams& params) {
+  base::RecordAction(base::UserMetricsAction("LensUnifiedSidePanel.LensQuery"));
   auto* side_panel_coordinator = GetBrowserView()->side_panel_coordinator();
   auto* global_registry = side_panel_coordinator->GetGlobalSidePanelRegistry();
 
   // check if the view is already registered
   if (global_registry->GetEntryForId(SidePanelEntry::Id::kLens) != nullptr &&
       lens_side_panel_view_ != nullptr) {
+    // The user issued a follow-up Lens query.
+    base::RecordAction(
+        base::UserMetricsAction("LensUnifiedSidePanel.LensQuery_Followup"));
     lens_side_panel_view_->OpenUrl(params);
   } else {
-    global_registry->Register(std::make_unique<SidePanelEntry>(
+    base::RecordAction(
+        base::UserMetricsAction("LensUnifiedSidePanel.LensQuery_New"));
+    auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLens,
         l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMBO_BOX_GOOGLE_LENS_LABEL),
         // leaving the star icon for this CL, will change this to lens icon in a
         // different CL.
         ui::ImageModel::FromVectorIcon(omnibox::kStarIcon, ui::kColorIcon),
         base::BindRepeating(&LensSidePanelCoordinator::CreateLensWebView,
-                            base::Unretained(this), params)));
+                            base::Unretained(this), params));
+    entry->AddObserver(this);
+    global_registry->Register(std::move(entry));
   }
 
   if (side_panel_coordinator->GetCurrentEntryId() !=
       SidePanelEntry::Id::kLens) {
+    if (!side_panel_coordinator->IsSidePanelShowing()) {
+      base::RecordAction(base::UserMetricsAction(
+          "LensUnifiedSidePanel.LensQuery_SidePanelClosed"));
+    } else {
+      base::RecordAction(base::UserMetricsAction(
+          "LensUnifiedSidePanel.LensQuery_SidePanelOpenNonLens"));
+    }
+
     side_panel_coordinator->Show(SidePanelEntry::Id::kLens);
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "LensUnifiedSidePanel.LensQuery_SidePanelOpenLens"));
   }
 }
 

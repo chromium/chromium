@@ -15474,6 +15474,120 @@ should be able to be added at any place in this file.
   <description>The Lens side panel went from hidden to showing.</description>
 </action>
 
+<action name="LensUnifiedSidePanel.HideSidePanel">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>The side panel is hidden when lens was an entry.</description>
+</action>
+
+<action name="LensUnifiedSidePanel.LensEntryHidden">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>
+    The lens entry was hidden in the side panel. User navigated to a different
+    entry in the side panel.
+  </description>
+</action>
+
+<action name="LensUnifiedSidePanel.LensEntryShown">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>The lens entry was shown in the side panel.</description>
+</action>
+
+<action name="LensUnifiedSidePanel.LensQuery">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>The user issued a Lens query.</description>
+</action>
+
+<action name="LensUnifiedSidePanel.LensQuery_Followup">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>The user issued a follow Lens query.</description>
+</action>
+
+<action name="LensUnifiedSidePanel.LensQuery_New">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>The user issued a new Lens query.</description>
+</action>
+
+<action name="LensUnifiedSidePanel.LensQuery_SidePanelClosed">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>
+    Lens query was issued when the side panel is closed. So opening side panel
+    and focusing on lens.
+  </description>
+</action>
+
+<action name="LensUnifiedSidePanel.LensQuery_SidePanelOpenLens">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>
+    Lens query was issued when the side panel is open and lens is focused.
+  </description>
+</action>
+
+<action name="LensUnifiedSidePanel.LensQuery_SidePanelOpenNonLens">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>
+    Lens query was issued when the side panel is open. So focusing on the lens
+    entry in the side panel.
+  </description>
+</action>
+
+<action name="LensUnifiedSidePanel.LoadResultsInNewTab">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>
+    The side panel button to expand results to new tab was clicked.
+  </description>
+</action>
+
+<action name="LensUnifiedSidePanel.ResultLinkClick">
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>
+    The user clicked a result link in the Lens entry in the side panel.
+  </description>
+</action>
+
 <action name="LinkNavigationOpenedInForegroundTab">
   <owner>meiliang@chromium.org</owner>
   <owner>sbirch@chromium.org</owner>
