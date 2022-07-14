@@ -338,21 +338,23 @@ void Blocklist::RemoveObserver(Observer* observer) {
 
 void Blocklist::IsDatabaseReady(DatabaseReadyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!GetDatabaseManager().get()) {
+  auto database_manager = GetDatabaseManager();
+  if (!database_manager) {
     std::move(callback).Run(false);
     return;
-  }
-  if (GetDatabaseManager().get()) {
+  } else {
+    // Check SB database manager IsDatabaseReady on IO thread and after that
+    // additionally check on UI thread if Blocklist is still alive.
     content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
         FROM_HERE,
+        base::BindOnce(&SafeBrowsingDatabaseManager::IsDatabaseReady,
+                       database_manager),
         base::BindOnce(
-            [](base::WeakPtr<Blocklist> blocklist_service) {
-                DCHECK_CURRENTLY_ON(BrowserThread::IO);
-                return blocklist_service && GetDatabaseManager().get() &&
-                        GetDatabaseManager().get()->IsDatabaseReady();
+            [](base::WeakPtr<Blocklist> blocklist_service,
+               DatabaseReadyCallback callback, bool is_ready) {
+              std::move(callback).Run(blocklist_service && is_ready);
             },
-            AsWeakPtr()),
-        base::BindOnce(std::move(callback)));
+            AsWeakPtr(), std::move(callback)));
   }
 }
 
