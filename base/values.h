@@ -630,6 +630,12 @@ class BASE_EXPORT GSL_OWNER Value {
     iterator erase(iterator pos);
     const_iterator erase(const_iterator pos);
 
+    // Remove the values in the range [`first`, `last`). Returns iterator to the
+    // first value following the removed range, which is `last`. If `first` ==
+    // `last`, removes nothing and returns `last`.
+    iterator erase(iterator first, iterator last);
+    const_iterator erase(const_iterator first, const_iterator last);
+
     // Creates a deep copy of this dictionary.
     List Clone() const;
 
