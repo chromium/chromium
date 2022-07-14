@@ -14,6 +14,8 @@ import org.chromium.net.impl.CronetLogger.CronetSource;
  * Takes care of instantiating the correct CronetLogger.
  */
 public final class CronetLoggerFactory {
+    private static final int SAMPLE_RATE_PER_SECOND = 1;
+
     private CronetLoggerFactory() {}
 
     private static final CronetLogger sDefaultLogger = new NoOpLogger();
@@ -35,7 +37,8 @@ public final class CronetLoggerFactory {
         if (cronetLoggerImplClass == null) return sDefaultLogger;
 
         try {
-            return cronetLoggerImplClass.getConstructor().newInstance();
+            return cronetLoggerImplClass.getConstructor(int.class).newInstance(
+                    SAMPLE_RATE_PER_SECOND);
         } catch (Exception e) {
             // Pass - since we dont want any failure, catch any exception that might arise.
         }

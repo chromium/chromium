@@ -30,6 +30,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.net.impl.CronetLogger.CronetSource;
+import org.chromium.net.impl.CronetManifest;
+
 /**
  * Base test class for all CronetSample based tests.
  */
@@ -113,6 +116,21 @@ public class CronetSampleTest {
         });
         done.block();
         onView(withId(R.id.urlView)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetLoggingManifestMetadataNotSet() {
+        Assert.assertFalse(CronetManifest.isAppOptedInForTelemetry(
+                InstrumentationRegistry.getTargetContext(), null));
+        Assert.assertFalse(
+                CronetManifest.isAppOptedInForTelemetry(InstrumentationRegistry.getTargetContext(),
+                        CronetSource.CRONET_SOURCE_STATICALLY_LINKED));
+        Assert.assertFalse(
+                CronetManifest.isAppOptedInForTelemetry(InstrumentationRegistry.getTargetContext(),
+                        CronetSource.CRONET_SOURCE_PLAY_SERVICES));
+        Assert.assertFalse(CronetManifest.isAppOptedInForTelemetry(
+                InstrumentationRegistry.getTargetContext(), CronetSource.CRONET_SOURCE_FALLBACK));
     }
 
     /**

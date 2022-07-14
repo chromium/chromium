@@ -8,19 +8,23 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.net.impl.CronetLogger.CronetSource;
 
 /**
  * Utility class for working with the AndroidManifest flags.
  */
-final class CronetManifest {
+@VisibleForTesting
+public final class CronetManifest {
     private CronetManifest() {}
     // Individual apps can use this meta-data tag in their manifest to opt in for metrics
     // reporting.
     // Todo (colibie): Add this to the android documentation
     static final String METRICS_OPT_IN_META_DATA_STR = "org.chromium.net.CronetMetricsOptIn";
 
-    static boolean isAppOptedInForTelemetry(Context ctx, CronetSource source) {
+    @VisibleForTesting
+    public static boolean isAppOptedInForTelemetry(Context ctx, CronetSource source) {
         try {
             // Check if app is opted in
             ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(
