@@ -2181,7 +2181,9 @@ class ContentScriptApiPrerenderingTest : public ContentScriptApiTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest, Prerendering) {
+// TODO(crbug.com/1344548): Re-enable this test
+IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest,
+                       DISABLED_Prerendering) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
 }

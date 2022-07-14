@@ -641,16 +641,10 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_WorksWithStickyKeys) {
   sm_.Replay();
 }
 
-// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_SelectToSpeakDoesNotDismissTrayBubble \
-  DISABLED_SelectToSpeakDoesNotDismissTrayBubble
-#else
-#define MAYBE_SelectToSpeakDoesNotDismissTrayBubble \
-  SelectToSpeakDoesNotDismissTrayBubble
-#endif
+// TODO(crbug.com/1227368): Flaky on ChromeOS MSAN bots.
+// TODO(crbug.com/1344562): Flaky on other CrOS bots too.
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
-                       MAYBE_SelectToSpeakDoesNotDismissTrayBubble) {
+                       DISABLED_SelectToSpeakDoesNotDismissTrayBubble) {
   // Open tray bubble menu.
   tray_test_api_->ShowBubble();
 

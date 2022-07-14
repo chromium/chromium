@@ -41,7 +41,7 @@ class LinuxSystemSignalsServiceTest : public testing::Test {
 
 // Tests that GetFileSystemSignals forwards the signal collection to
 // FileSystemService.
-TEST_F(LinuxSystemSignalsServiceTest, GetFileSystemSignals) {
+TEST_F(LinuxSystemSignalsServiceTest, DISABLED_GetFileSystemSignals) {
   device_signals::GetFileSystemInfoOptions options;
   options.file_path = base::FilePath::FromUTF8Unsafe("/some/file/path");
 
