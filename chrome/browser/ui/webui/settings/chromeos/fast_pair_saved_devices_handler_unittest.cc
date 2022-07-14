@@ -20,6 +20,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -83,6 +84,9 @@ const char kImageBytes6[] = "11110100011111111010100101001010100101010011";
 const std::vector<uint8_t> kAccountKey6 = {0xB5, 0xB6, 0xF0, 0xBB, 0x95, 0x1F,
                                            0xF7, 0xB8, 0xCF, 0x5E, 0x3F, 0x45,
                                            0x61, 0xC3, 0x36, 0x1D};
+
+const char kSavedDeviceRemoveResultMetricName[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.Remove.Result";
 
 nearby::fastpair::FastPairDevice CreateFastPairDevice(
     const std::string device_name,
@@ -265,8 +269,11 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
                                          &base::Value::AsListValue(args));
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   ash::quick_pair::FakeFastPairRepository fast_pair_repository_;
   gfx::Image test_image_;
   ash::quick_pair::MockFastPairImageDecoder* mock_decoder_;
@@ -520,6 +527,10 @@ TEST_F(FastPairSavedDevicesHandlerTest, RemoveSavedDevice) {
       /*account_key2=*/kAccountKey2, /*device_name3=*/kDeviceName3,
       /*expected_device_url3=*/kDisplayUrlBase64,
       /*account_key3=*/kAccountKey3);
+  histogram_tester().ExpectBucketCount(kSavedDeviceRemoveResultMetricName,
+                                       /*success=*/true, 0);
+  histogram_tester().ExpectBucketCount(kSavedDeviceRemoveResultMetricName,
+                                       /*success=*/false, 0);
 
   RemoveDevice(kAccountKey3);
   base::RunLoop().RunUntilIdle();
@@ -541,6 +552,11 @@ TEST_F(FastPairSavedDevicesHandlerTest, RemoveSavedDevice) {
                          /*expected_device_name=*/kDeviceName2,
                          /*expected_base64_image_url=*/kDisplayUrlBase64,
                          /*expected_account_key=*/kAccountKey2));
+
+  histogram_tester().ExpectBucketCount(kSavedDeviceRemoveResultMetricName,
+                                       /*success=*/true, 1);
+  histogram_tester().ExpectBucketCount(kSavedDeviceRemoveResultMetricName,
+                                       /*success=*/false, 0);
 }
 
 }  // namespace chromeos::settings

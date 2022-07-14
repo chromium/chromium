@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/fast_pair_saved_devices_handler.h"
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
@@ -86,6 +87,7 @@ void FastPairSavedDevicesHandler::HandleRemoveSavedDevice(
 
 void FastPairSavedDevicesHandler::OnSavedDeviceDeleted(bool success) {
   QP_LOG(INFO) << __func__ << ": " << (success ? "success" : "failed");
+  ash::quick_pair::RecordSavedDevicesRemoveResult(/*success=*/success);
 }
 
 void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(

@@ -185,6 +185,8 @@ const char kConfirmPasskeyConfirmTime[] =
     "Bluetooth.ChromeOS.FastPair.ConfirmPasskey.Latency";
 const char kFastPairRetryCount[] =
     "Bluetooth.ChromeOS.FastPair.PairRetry.Count";
+const char kSavedDeviceRemoveResult[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.Remove.Result";
 
 }  // namespace
 
@@ -536,6 +538,10 @@ void RecordConfirmPasskeyAskTime(base::TimeDelta total_ask_time) {
 void RecordPairFailureRetry(int num_retries) {
   base::UmaHistogramExactLinear(kFastPairRetryCount, num_retries,
                                 /*exclusive_max=*/10);
+}
+
+void RecordSavedDevicesRemoveResult(bool success) {
+  base::UmaHistogramBoolean(kSavedDeviceRemoveResult, success);
 }
 
 }  // namespace quick_pair

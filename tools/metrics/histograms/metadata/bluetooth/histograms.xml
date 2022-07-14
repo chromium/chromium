@@ -864,6 +864,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.SavedDevices.Remove.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of removing a Fast Pair device from the
+    Footprints server. Emitted each time a remove attempt completes following
+    user action to &quot;remove&quot; in the Saved Devices Bluetooth Settings
+    sub-page.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.Scanner.StartSession.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
