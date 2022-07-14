@@ -12,11 +12,8 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -119,19 +116,18 @@ class AttributionStorage {
   // report time in storage, if any.
   virtual absl::optional<base::Time> AdjustOfflineReportTimes() = 0;
 
-  // Deletes all data in storage for URLs matching |filter|, between
-  // |delete_begin| and |delete_end| time. More specifically, this:
+  // Deletes all data in storage for storage keys matching `filter`, between
+  // `delete_begin` and `delete_end` time. More specifically, this:
   // 1. Deletes all sources within the time range. If any report is
   //    attributed to this source it is also deleted.
   // 2. Deletes all reports within the time range. All sources
   //    attributed to the report are also deleted.
   //
-  // Note: if |filter| is null, it means that all Origins should match.
-  virtual void ClearData(
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::RepeatingCallback<bool(const url::Origin& origin)> filter,
-      bool delete_rate_limit_data = true) = 0;
+  // Note: if `filter` is null, it means that all storage keys should match.
+  virtual void ClearData(base::Time delete_begin,
+                         base::Time delete_end,
+                         StoragePartition::StorageKeyMatcherFunction filter,
+                         bool delete_rate_limit_data = true) = 0;
 };
 
 }  // namespace content

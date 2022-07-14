@@ -234,9 +234,9 @@ void AccessContextAuditService::Shutdown() {
   ClearSessionOnlyRecords();
 }
 
-void AccessContextAuditService::OnOriginDataCleared(
+void AccessContextAuditService::OnStorageKeyDataCleared(
     uint32_t remove_mask,
-    base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     const base::Time begin,
     const base::Time end) {
   std::set<AccessContextAuditDatabase::StorageAPIType> types;
@@ -263,15 +263,15 @@ void AccessContextAuditService::OnOriginDataCleared(
          "are accounted for when checking |remove_mask|.";
   bool all_origin_storage_types = types.size() == 7;
 
-  if (begin == base::Time() && end == base::Time::Max() && !origin_matcher &&
-      all_origin_storage_types) {
+  if (begin == base::Time() && end == base::Time::Max() &&
+      !storage_key_matcher && all_origin_storage_types) {
     database_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&AccessContextAuditDatabase::RemoveAllRecords,
                                   database_));
     return;
   }
 
-  if (!origin_matcher && all_origin_storage_types) {
+  if (!storage_key_matcher && all_origin_storage_types) {
     database_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -283,7 +283,8 @@ void AccessContextAuditService::OnOriginDataCleared(
   database_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AccessContextAuditDatabase::RemoveStorageApiRecords,
-                     database_, types, std::move(origin_matcher), begin, end));
+                     database_, types, std::move(storage_key_matcher), begin,
+                     end));
 }
 
 void AccessContextAuditService::OnCookieChange(

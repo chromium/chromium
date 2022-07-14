@@ -24,6 +24,7 @@
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -35,10 +36,6 @@ class TimeDelta;
 namespace storage {
 class SpecialStoragePolicy;
 }  // namespace storage
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -103,7 +100,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                            base::OnceClosure done) override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
-                 base::RepeatingCallback<bool(const url::Origin&)> filter,
+                 StoragePartition::StorageKeyMatcherFunction filter,
                  bool delete_rate_limit_data,
                  base::OnceClosure done) override;
 

@@ -51,6 +51,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/attribution_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -62,6 +63,7 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -331,11 +333,12 @@ class AttributionEventHandler : public AttributionObserver {
     DCHECK(!input_values_.empty());
     input_values_.pop_front();
 
-    base::RepeatingCallback<bool(const url::Origin&)> filter;
+    StoragePartition::StorageKeyMatcherFunction filter;
     if (clear.origins.has_value()) {
-      filter = base::BindLambdaForTesting(
-          [origins = std::move(*clear.origins)](const url::Origin& origin) {
-            return origins.contains(origin);
+      filter =
+          base::BindLambdaForTesting([origins = std::move(*clear.origins)](
+                                         const blink::StorageKey& storage_key) {
+            return origins.contains(storage_key.origin());
           });
     }
 

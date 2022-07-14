@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -387,9 +388,9 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
             interest_groups[0].bidding_browser_signals->prev_wins[1]->ad_json);
 
   // Try delete
-  storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&test_origin](const url::Origin& candidate) {
-        return candidate == test_origin;
+  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
+      [&test_origin](const blink::StorageKey& candidate) {
+        return candidate == blink::StorageKey(test_origin);
       }));
 
   origins = storage->GetAllInterestGroupOwners();
@@ -818,9 +819,9 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   EXPECT_THAT(joining_origins,
               UnorderedElementsAre(joining_originA, joining_originB));
 
-  storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&owner_originA](const url::Origin& origin) {
-        return origin == owner_originA;
+  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
+      [&owner_originA](const blink::StorageKey& storage_key) {
+        return storage_key == blink::StorageKey(owner_originA);
       }));
 
   origins = storage->GetAllInterestGroupOwners();
@@ -831,9 +832,9 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
 
   // Delete all interest groups that joined on joining_origin A. We expect that
   // we will be left with the one that joined on joining_origin B.
-  storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&joining_originA](const url::Origin& origin) {
-        return origin == joining_originA;
+  storage->DeleteInterestGroupData(base::BindLambdaForTesting(
+      [&joining_originA](const blink::StorageKey& storage_key) {
+        return storage_key == blink::StorageKey(joining_originA);
       }));
 
   origins = storage->GetAllInterestGroupOwners();

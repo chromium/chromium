@@ -527,9 +527,9 @@ class MockDataRemovalObserver : public StoragePartition::DataRemovalObserver {
     observation_.Observe(partition);
   }
 
-  MOCK_METHOD4(OnOriginDataCleared,
+  MOCK_METHOD4(OnStorageKeyDataCleared,
                void(uint32_t,
-                    base::RepeatingCallback<bool(const url::Origin&)>,
+                    content::StoragePartition::StorageKeyMatcherFunction,
                     base::Time,
                     base::Time));
 
@@ -1826,9 +1826,10 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
   const auto kTestOrigin = GURL("https://example.com");
   const auto kBeginTime = base::Time() + base::Hours(1);
   const auto kEndTime = base::Time() + base::Hours(2);
-  const auto origin_callback_valid =
-      [&](base::RepeatingCallback<bool(const url::Origin&)> callback) {
-        return callback.Run(url::Origin::Create(kTestOrigin));
+  const auto storage_key_callback_valid =
+      [&](content::StoragePartition::StorageKeyMatcherFunction callback) {
+        return callback.Run(
+            blink::StorageKey(url::Origin::Create(kTestOrigin)));
       };
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
@@ -1837,29 +1838,29 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
 
   // Confirm that each of the StoragePartition interfaces for clearing origin
   // based data notify observers appropriately.
-  EXPECT_CALL(
-      observer,
-      OnOriginDataCleared(kTestClearMask, testing::Truly(origin_callback_valid),
-                          base::Time(), base::Time::Max()));
+  EXPECT_CALL(observer,
+              OnStorageKeyDataCleared(
+                  kTestClearMask, testing::Truly(storage_key_callback_valid),
+                  base::Time(), base::Time::Max()));
   base::RunLoop run_loop;
   partition->ClearDataForOrigin(kTestClearMask, kTestQuotaClearMask,
                                 kTestOrigin, run_loop.QuitClosure());
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(&observer);
 
-  EXPECT_CALL(
-      observer,
-      OnOriginDataCleared(kTestClearMask, testing::Truly(origin_callback_valid),
-                          kBeginTime, kEndTime));
+  EXPECT_CALL(observer,
+              OnStorageKeyDataCleared(
+                  kTestClearMask, testing::Truly(storage_key_callback_valid),
+                  kBeginTime, kEndTime));
   partition->ClearData(kTestClearMask, kTestQuotaClearMask,
                        blink::StorageKey(url::Origin::Create(kTestOrigin)),
                        kBeginTime, kEndTime, base::DoNothing());
   testing::Mock::VerifyAndClearExpectations(&observer);
 
-  EXPECT_CALL(
-      observer,
-      OnOriginDataCleared(kTestClearMask, testing::Truly(origin_callback_valid),
-                          kBeginTime, kEndTime));
+  EXPECT_CALL(observer,
+              OnStorageKeyDataCleared(
+                  kTestClearMask, testing::Truly(storage_key_callback_valid),
+                  kBeginTime, kEndTime));
   partition->ClearData(
       kTestClearMask, kTestQuotaClearMask,
       base::BindLambdaForTesting([&](const blink::StorageKey& storage_key,

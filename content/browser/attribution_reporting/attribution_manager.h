@@ -9,14 +9,11 @@
 
 #include "base/callback_forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace base {
 class Time;
 }  // namespace base
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -68,16 +65,15 @@ class AttributionManager {
       const std::vector<AttributionReport::Id>& ids,
       base::OnceClosure done) = 0;
 
-  // Deletes all data in storage for URLs matching |filter|, between
-  // |delete_begin| and |delete_end| time.
+  // Deletes all data in storage for storage keys matching `filter`, between
+  // `delete_begin` and `delete_end` time.
   //
-  // If |filter| is null, then consider all origins in storage as matching.
-  virtual void ClearData(
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::RepeatingCallback<bool(const url::Origin&)> filter,
-      bool delete_rate_limit_data,
-      base::OnceClosure done) = 0;
+  // If `filter` is null, then consider all storage keys in storage as matching.
+  virtual void ClearData(base::Time delete_begin,
+                         base::Time delete_end,
+                         StoragePartition::StorageKeyMatcherFunction filter,
+                         bool delete_rate_limit_data,
+                         base::OnceClosure done) = 0;
 };
 
 }  // namespace content

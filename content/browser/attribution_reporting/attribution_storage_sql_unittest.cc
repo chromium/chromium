@@ -31,6 +31,7 @@
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -328,8 +329,9 @@ TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
   // Use a time range that targets all triggers.
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
-      base::BindRepeating(std::equal_to<url::Origin>(),
-                          source.common_info().impression_origin()));
+      base::BindRepeating(
+          std::equal_to<blink::StorageKey>(),
+          blink::StorageKey(source.common_info().impression_origin())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
@@ -379,8 +381,9 @@ TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
   // Use a time range that only intersects the last trigger.
   storage()->ClearData(
       base::Time::Now(), base::Time::Now(),
-      base::BindRepeating(std::equal_to<url::Origin>(),
-                          source.common_info().impression_origin()));
+      base::BindRepeating(
+          std::equal_to<blink::StorageKey>(),
+          blink::StorageKey(source.common_info().impression_origin())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
@@ -605,7 +608,8 @@ TEST_F(AttributionStorageSqlTest,
       storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
-      base::BindRepeating(std::equal_to<url::Origin>(), impression_origin));
+      base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                          blink::StorageKey(impression_origin)));
 
   CloseDatabase();
   sql::Database raw_db;
@@ -656,7 +660,8 @@ TEST_F(AttributionStorageSqlTest,
       storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
-      base::BindRepeating(std::equal_to<url::Origin>(), conversion_origin));
+      base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                          blink::StorageKey(conversion_origin)));
 
   CloseDatabase();
   sql::Database raw_db;

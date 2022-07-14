@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/cookies/canonical_cookie.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
@@ -134,11 +135,11 @@ class AccessContextAuditDatabase
       const ContentSettingsForOneType& content_settings);
 
   // Remove storage API access records for which the storage type is a member of
-  // |storage_api_types|, the timestamp is between |begin| and |end|, and the
-  // |origin_matcher| callback, if set, returns true for the storage origin.
+  // `storage_api_types`, the timestamp is between `begin` and `end`, and the
+  // `storage_key_matcher` callback, if set, returns true for the storage key.
   void RemoveStorageApiRecords(
       const std::set<StorageAPIType>& storage_api_types,
-      base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
       base::Time begin,
       base::Time end);
 

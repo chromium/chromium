@@ -114,11 +114,11 @@ void ClearCommerceData(Profile* profile,
 }
 #endif
 
-bool DoesOriginMatchPredicate(
-    base::OnceCallback<bool(const url::Origin&)> predicate,
+bool DoesStorageKeyMatchPredicate(
+    content::StoragePartition::StorageKeyMatcherFunction predicate,
     const blink::StorageKey& storage_key,
     storage::SpecialStoragePolicy* policy) {
-  if (!std::move(predicate).Run(storage_key.origin()))
+  if (!std::move(predicate).Run(storage_key))
     return false;
 
   if (policy && policy->IsStorageProtected(storage_key.origin().GetURL()))
@@ -135,8 +135,8 @@ void DeleteStoragePartitionDataWithFilter(
   content::StoragePartition::StorageKeyPolicyMatcherFunction
       storage_key_matcher =
           filter_builder
-              ? base::BindRepeating(&DoesOriginMatchPredicate,
-                                    filter_builder->BuildOriginFilter())
+              ? base::BindRepeating(&DoesStorageKeyMatchPredicate,
+                                    filter_builder->BuildStorageKeyFilter())
               : base::NullCallback();
 
   const uint32_t removal_mask =

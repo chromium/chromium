@@ -22,6 +22,7 @@
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/interest_group_manager.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -173,10 +174,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void GetInterestGroupsForOwner(
       const url::Origin& owner,
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
-  // Clear out storage for the matching owning origin. If the callback is empty
-  // then apply to all origins.
+  // Clear out storage for the matching owning storage key. If the callback is
+  // empty then apply to all storage keys.
   void DeleteInterestGroupData(
-      base::RepeatingCallback<bool(const url::Origin&)> origin_matcher);
+      StoragePartition::StorageKeyMatcherFunction storage_key_matcher);
   // Get the last maintenance time from the underlying InterestGroupStorage.
   void GetLastMaintenanceTimeForTesting(
       base::RepeatingCallback<void(base::Time)> callback) const;

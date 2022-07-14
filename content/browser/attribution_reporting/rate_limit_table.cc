@@ -20,6 +20,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -289,7 +290,7 @@ bool RateLimitTable::ClearDataForOriginsInRange(
     sql::Database* db,
     base::Time delete_begin,
     base::Time delete_end,
-    base::RepeatingCallback<bool(const url::Origin&)> filter) {
+    StoragePartition::StorageKeyMatcherFunction filter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (filter.is_null())
     return ClearAllDataInRange(db, delete_begin, delete_end);
@@ -316,9 +317,12 @@ bool RateLimitTable::ClearDataForOriginsInRange(
 
   while (select_statement.Step()) {
     int64_t rate_limit_id = select_statement.ColumnInt64(0);
-    if (filter.Run(DeserializeOrigin(select_statement.ColumnString(1))) ||
-        filter.Run(DeserializeOrigin(select_statement.ColumnString(2))) ||
-        filter.Run(DeserializeOrigin(select_statement.ColumnString(3)))) {
+    if (filter.Run(blink::StorageKey(
+            DeserializeOrigin(select_statement.ColumnString(1)))) ||
+        filter.Run(blink::StorageKey(
+            DeserializeOrigin(select_statement.ColumnString(2)))) ||
+        filter.Run(blink::StorageKey(
+            DeserializeOrigin(select_statement.ColumnString(3))))) {
       // See https://www.sqlite.org/isolation.html for why it's OK for this
       // DELETE to be interleaved in the surrounding SELECT.
       delete_statement.Reset(/*clear_bound_vars=*/false);

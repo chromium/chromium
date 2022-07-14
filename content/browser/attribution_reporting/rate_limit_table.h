@@ -14,14 +14,11 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace sql {
 class Database;
 }  // namespace sql
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -89,7 +86,7 @@ class CONTENT_EXPORT RateLimitTable {
       sql::Database* db,
       base::Time delete_begin,
       base::Time delete_end,
-      base::RepeatingCallback<bool(const url::Origin&)> filter);
+      StoragePartition::StorageKeyMatcherFunction filter);
   // Returns false on failure.
   [[nodiscard]] bool ClearDataForSourceIds(
       sql::Database* db,

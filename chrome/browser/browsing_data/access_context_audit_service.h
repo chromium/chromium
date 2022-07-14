@@ -119,9 +119,9 @@ class AccessContextAuditService
   void Shutdown() override;
 
   // StoragePartition::DataRemovalObserver:
-  void OnOriginDataCleared(
+  void OnStorageKeyDataCleared(
       uint32_t remove_mask,
-      base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+      content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
       const base::Time begin,
       const base::Time end) override;
 

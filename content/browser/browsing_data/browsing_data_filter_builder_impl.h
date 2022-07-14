@@ -9,6 +9,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/storage_partition.h"
 #include "url/origin.h"
 
 namespace content {
@@ -33,7 +34,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   bool IsCrossSiteClearSiteData() const override;
   bool MatchesAllOriginsAndDomains() override;
   base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() override;
-  base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter()
+  content::StoragePartition::StorageKeyMatcherFunction BuildStorageKeyFilter()
       override;
   network::mojom::ClearDataFilterPtr BuildNetworkServiceFilter() override;
   network::mojom::CookieDeletionFilterPtr BuildCookieDeletionFilter() override;

@@ -16,6 +16,7 @@
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -643,14 +644,16 @@ TEST_F(AccessContextAuditDatabaseTest, RemoveStorageApiRecords) {
   auto kStorageOrigin =
       url::Origin::Create(GURL(kManyContextsStorageAPIOrigin));
 
-  auto origin_matcher = base::BindLambdaForTesting(
-      [&](const url::Origin& origin) { return origin == kStorageOrigin; });
+  auto storage_key_matcher =
+      base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
+        return storage_key == blink::StorageKey(kStorageOrigin);
+      });
 
   auto begin_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(5));
   auto end_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(9));
 
-  database()->RemoveStorageApiRecords(storage_types, origin_matcher, begin_time,
-                                      end_time);
+  database()->RemoveStorageApiRecords(storage_types, storage_key_matcher,
+                                      begin_time, end_time);
   test_records.erase(
       std::remove_if(
           test_records.begin(), test_records.end(),

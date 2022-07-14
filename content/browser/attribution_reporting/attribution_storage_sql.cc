@@ -52,6 +52,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -1584,7 +1585,7 @@ AttributionStorageSql::AdjustOfflineEventLevelReportTimes(
 void AttributionStorageSql::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
-    base::RepeatingCallback<bool(const url::Origin&)> filter,
+    StoragePartition::StorageKeyMatcherFunction filter,
     bool delete_rate_limit_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
@@ -1626,9 +1627,12 @@ void AttributionStorageSql::ClearData(
   int num_reports_deleted = 0;
   while (statement.Step()) {
     if (filter.is_null() ||
-        filter.Run(DeserializeOrigin(statement.ColumnString(0))) ||
-        filter.Run(DeserializeOrigin(statement.ColumnString(1))) ||
-        filter.Run(DeserializeOrigin(statement.ColumnString(2)))) {
+        filter.Run(
+            blink::StorageKey(DeserializeOrigin(statement.ColumnString(0)))) ||
+        filter.Run(
+            blink::StorageKey(DeserializeOrigin(statement.ColumnString(1)))) ||
+        filter.Run(
+            blink::StorageKey(DeserializeOrigin(statement.ColumnString(2))))) {
       source_ids_to_delete.emplace_back(statement.ColumnInt64(3));
       if (statement.GetColumnType(4) != sql::ColumnType::kNull) {
         if (!DeleteReportInternal(AttributionReport::EventLevelData::Id(
@@ -2362,7 +2366,7 @@ bool AttributionStorageSql::DeleteSources(
 bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
     base::Time delete_begin,
     base::Time delete_end,
-    base::RepeatingCallback<bool(const url::Origin&)> filter,
+    StoragePartition::StorageKeyMatcherFunction filter,
     std::vector<StoredSource::Id>& source_ids_to_delete) {
   DCHECK_LE(delete_begin, delete_end);
 
@@ -2387,9 +2391,12 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
 
   while (statement.Step()) {
     if (filter.is_null() ||
-        filter.Run(DeserializeOrigin(statement.ColumnString(0))) ||
-        filter.Run(DeserializeOrigin(statement.ColumnString(1))) ||
-        filter.Run(DeserializeOrigin(statement.ColumnString(2)))) {
+        filter.Run(
+            blink::StorageKey(DeserializeOrigin(statement.ColumnString(0)))) ||
+        filter.Run(
+            blink::StorageKey(DeserializeOrigin(statement.ColumnString(1)))) ||
+        filter.Run(
+            blink::StorageKey(DeserializeOrigin(statement.ColumnString(2))))) {
       source_ids_to_delete.emplace_back(statement.ColumnInt64(3));
       if (statement.GetColumnType(4) != sql::ColumnType::kNull &&
           !DeleteReportInternal(

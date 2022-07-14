@@ -867,7 +867,7 @@ TEST_F(AttributionManagerImplTest, ClearData) {
     attribution_manager_->ClearData(
         start, start + base::Minutes(1),
         base::BindLambdaForTesting(
-            [match_url](const url::Origin& _) { return match_url; }),
+            [match_url](const blink::StorageKey& _) { return match_url; }),
         /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
     run_loop.Run();
 
@@ -1226,7 +1226,7 @@ TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
   base::RunLoop run_loop;
   attribution_manager_->ClearData(
       base::Time::Min(), base::Time::Max(),
-      base::BindRepeating([](const url::Origin& _) { return false; }),
+      base::BindRepeating([](const blink::StorageKey& _) { return false; }),
       /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
   run_loop.Run();
 }

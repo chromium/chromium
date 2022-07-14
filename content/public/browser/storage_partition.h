@@ -229,15 +229,18 @@ class CONTENT_EXPORT StoragePartition {
       base::RepeatingCallback<bool(const blink::StorageKey&,
                                    storage::SpecialStoragePolicy*)>;
 
+  using StorageKeyMatcherFunction =
+      base::RepeatingCallback<bool(const blink::StorageKey&)>;
+
   // Observer interface that is notified of specific data clearing events which
   // which were facilitated by the StoragePartition. Notification occurs on the
   // UI thread, observer life time is not managed by the StoragePartition.
   class DataRemovalObserver : public base::CheckedObserver {
    public:
-    // Called on a deletion event for origin keyed storage APIs.
-    virtual void OnOriginDataCleared(
+    // Called on a deletion event for storage keyed storage APIs.
+    virtual void OnStorageKeyDataCleared(
         uint32_t remove_mask,
-        base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+        StorageKeyMatcherFunction storage_key_matcher,
         const base::Time begin,
         const base::Time end) = 0;
   };

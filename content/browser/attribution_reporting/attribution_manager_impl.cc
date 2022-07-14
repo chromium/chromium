@@ -54,6 +54,7 @@
 #include "content/public/common/content_switches.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -131,13 +132,13 @@ base::LazyThreadPoolSequencedTaskRunner g_storage_task_runner =
                          base::MayBlock(),
                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
 
-bool IsOriginSessionOnly(
+bool IsStorageKeySessionOnly(
     scoped_refptr<storage::SpecialStoragePolicy> storage_policy,
-    const url::Origin& origin) {
+    const blink::StorageKey& storage_key) {
   // TODO(johnidel): This conversion is unfortunate but necessary. Storage
-  // partition clear data logic uses Origin keyed deletion, while the storage
-  // policy uses GURLs. Ideally these would be coalesced.
-  const GURL& url = origin.GetURL();
+  // partition clear data logic uses storage key keyed deletion, while the
+  // storage policy uses GURLs. Ideally these would be coalesced.
+  const GURL& url = storage_key.origin().GetURL();
   if (storage_policy->IsStorageProtected(url))
     return false;
 
@@ -372,12 +373,12 @@ AttributionManagerImpl::~AttributionManagerImpl() {
 
   // Delete stored data for all session only origins given by
   // |special_storage_policy|.
-  base::RepeatingCallback<bool(const url::Origin&)>
-      session_only_origin_predicate = base::BindRepeating(
-          &IsOriginSessionOnly, std::move(special_storage_policy_));
+  StoragePartition::StorageKeyMatcherFunction
+      session_only_storage_key_predicate = base::BindRepeating(
+          &IsStorageKeySessionOnly, std::move(special_storage_policy_));
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(base::Time::Min(), base::Time::Max(),
-                std::move(session_only_origin_predicate),
+                std::move(session_only_storage_key_predicate),
                 /*delete_rate_limit_data=*/true);
 }
 
@@ -639,7 +640,7 @@ void AttributionManagerImpl::SendReportsForWebUI(
 void AttributionManagerImpl::ClearData(
     base::Time delete_begin,
     base::Time delete_end,
-    base::RepeatingCallback<bool(const url::Origin&)> filter,
+    StoragePartition::StorageKeyMatcherFunction filter,
     bool delete_rate_limit_data,
     base::OnceClosure done) {
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)

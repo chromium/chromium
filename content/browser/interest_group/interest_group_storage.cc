@@ -34,6 +34,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "url/origin.h"
 
@@ -1360,7 +1361,7 @@ DoGetInterestGroupNamesForJoiningOrigin(sql::Database& db,
 
 bool DoDeleteInterestGroupData(
     sql::Database& db,
-    const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher) {
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
   const base::Time distant_past = base::Time::Min();
   const base::Time distant_future = base::Time::Max();
   sql::Transaction transaction(&db);
@@ -1375,7 +1376,8 @@ bool DoDeleteInterestGroupData(
   if (!maybe_all_origins)
     return false;
   for (const url::Origin& origin : maybe_all_origins.value()) {
-    if (origin_matcher.is_null() || origin_matcher.Run(origin)) {
+    if (storage_key_matcher.is_null() ||
+        storage_key_matcher.Run(blink::StorageKey(origin))) {
       affected_origins.push_back(origin);
     }
   }
@@ -1397,7 +1399,8 @@ bool DoDeleteInterestGroupData(
   if (!maybe_all_origins)
     return false;
   for (const url::Origin& origin : maybe_all_origins.value()) {
-    if (origin_matcher.is_null() || origin_matcher.Run(origin)) {
+    if (storage_key_matcher.is_null() ||
+        storage_key_matcher.Run(blink::StorageKey(origin))) {
       affected_origins.push_back(origin);
     }
   }
@@ -1942,12 +1945,12 @@ InterestGroupStorage::GetAllInterestGroupJoiningOrigins() {
 }
 
 void InterestGroupStorage::DeleteInterestGroupData(
-    const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher) {
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;
 
-  if (!DoDeleteInterestGroupData(*db_, origin_matcher)) {
+  if (!DoDeleteInterestGroupData(*db_, storage_key_matcher)) {
     DLOG(ERROR) << "Could not delete interest group data: "
                 << db_->GetErrorMessage();
   }

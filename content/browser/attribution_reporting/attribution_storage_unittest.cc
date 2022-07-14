@@ -39,8 +39,10 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -65,9 +67,10 @@ const int kMaxConversions = 3;
 // Default delay for when a report should be sent for testing.
 constexpr base::TimeDelta kReportDelay = base::Milliseconds(5);
 
-base::RepeatingCallback<bool(const url::Origin&)> GetMatcher(
+StoragePartition::StorageKeyMatcherFunction GetMatcher(
     const url::Origin& to_delete) {
-  return base::BindRepeating(std::equal_to<url::Origin>(), to_delete);
+  return base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                             blink::StorageKey(to_delete));
 }
 
 }  // namespace
@@ -710,7 +713,7 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
                                                 .Build()));
   }
 
-  auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
+  auto null_filter = StoragePartition::StorageKeyMatcherFunction();
   storage()->ClearData(base::Time::Now(), base::Time::Now(), null_filter);
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(5));
 }
@@ -797,7 +800,7 @@ TEST_F(AttributionStorageTest, DeleteAll) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
+  auto null_filter = StoragePartition::StorageKeyMatcherFunction();
   storage()->ClearData(base::Time::Min(), base::Time::Max(), null_filter);
 
   // Verify that everything is deleted.
@@ -820,7 +823,7 @@ TEST_F(AttributionStorageTest, DeleteAllNullDeleteBegin) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
+  auto null_filter = StoragePartition::StorageKeyMatcherFunction();
   storage()->ClearData(base::Time(), base::Time::Max(), null_filter);
 
   // Verify that everything is deleted.

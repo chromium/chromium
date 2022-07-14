@@ -31,6 +31,7 @@
 #include "content/public/test/test_storage_partition.h"
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -690,9 +691,9 @@ TEST_F(AccessContextAuditServiceTest, SessionOnlyRecords) {
   ASSERT_EQ(0u, records.size());
 }
 
-TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
+TEST_F(AccessContextAuditServiceTest, OnStorageKeyDataCleared) {
   // Check that providing parameters with varying levels of specificity to the
-  // OnOriginDataCleared function all clear data correctly.
+  // OnStorageKeyDataCleared function all clear data correctly.
   auto kTopFrameOrigin = url::Origin::Create(GURL("https://example.com"));
   auto kTestOrigin1 = url::Origin::Create(GURL("https://test1.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://test2.com"));
@@ -724,10 +725,12 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
   EXPECT_EQ(3U, GetAllAccessRecords().size());
 
   // Provide all parameters such that TestOrigin1's record is removed.
-  auto origin_matcher = base::BindLambdaForTesting(
-      [&](const url::Origin& origin) { return origin == kTestOrigin1; });
-  service()->OnOriginDataCleared(
-      content::StoragePartition::REMOVE_DATA_MASK_WEBSQL, origin_matcher,
+  auto storage_key_matcher =
+      base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
+        return storage_key == blink::StorageKey(kTestOrigin1);
+      });
+  service()->OnStorageKeyDataCleared(
+      content::StoragePartition::REMOVE_DATA_MASK_WEBSQL, storage_key_matcher,
       base::Time() + base::Minutes(50), base::Time() + base::Minutes(80));
 
   auto records = GetAllAccessRecords();
@@ -738,7 +741,7 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
                                 kTopFrameOrigin, kAccessTime2, records);
 
   // Provide more generalised parameters that target TestOrigin2's record.
-  service()->OnOriginDataCleared(
+  service()->OnStorageKeyDataCleared(
       content::StoragePartition::REMOVE_DATA_MASK_ALL, base::NullCallback(),
       base::Time() + base::Minutes(80), base::Time() + base::Minutes(130));
 
@@ -749,7 +752,7 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
 
   // Provide broadest possible parameters which should result in the final
   // record being removed.
-  service()->OnOriginDataCleared(
+  service()->OnStorageKeyDataCleared(
       content::StoragePartition::REMOVE_DATA_MASK_ALL, base::NullCallback(),
       base::Time(), base::Time::Max());
 

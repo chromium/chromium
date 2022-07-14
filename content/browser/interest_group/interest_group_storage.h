@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -119,10 +120,10 @@ class CONTENT_EXPORT InterestGroupStorage {
   // will only appear once.
   std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();
 
-  // Clear out storage for the matching owning origin. If the callback is empty
-  // then apply to all origins.
+  // Clear out storage for the matching owning storage key. If the callback is
+  // empty then apply to all storage keys.
   void DeleteInterestGroupData(
-      const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher);
+      StoragePartition::StorageKeyMatcherFunction storage_key_matcher);
   // Update the interest group priority.
   void SetInterestGroupPriority(const url::Origin& owner,
                                 const std::string& name,

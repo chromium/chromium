@@ -24,10 +24,12 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -517,14 +519,14 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
     const char* desc;
     base::Time delete_min;
     base::Time delete_max;
-    base::RepeatingCallback<bool(const url::Origin&)> filter;
+    StoragePartition::StorageKeyMatcherFunction filter;
     std::vector<int64_t> expect_deleted;
   } kTestCases[] = {
       {
           "no deletions: filter never matches",
           base::Time::Min(),
           base::Time::Max(),
-          base::BindRepeating([](const url::Origin&) { return false; }),
+          base::BindRepeating([](const blink::StorageKey&) { return false; }),
           {},
       },
       {
@@ -538,8 +540,9 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
           "1 deletion: time range and filter match for source origin",
           now + base::Milliseconds(1),
           base::Time::Max(),
-          base::BindRepeating([](const url::Origin& origin) {
-            return origin == url::Origin::Create(GURL("https://a.s1.test"));
+          base::BindRepeating([](const blink::StorageKey& storage_key) {
+            return storage_key == blink::StorageKey::CreateFromStringForTesting(
+                                      "https://a.s1.test");
           }),
           {3},
       },
@@ -547,8 +550,9 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
           "2 deletions: filter matches for destination origin",
           base::Time::Min(),
           base::Time::Max(),
-          base::BindRepeating([](const url::Origin& origin) {
-            return origin == url::Origin::Create(GURL("https://b.d1.test"));
+          base::BindRepeating([](const blink::StorageKey& storage_key) {
+            return storage_key == blink::StorageKey::CreateFromStringForTesting(
+                                      "https://b.d1.test");
           }),
           {2, 4},
       },
@@ -556,8 +560,9 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
           "1 deletion: filter matches for reporting origin",
           base::Time::Min(),
           base::Time::Max(),
-          base::BindRepeating([](const url::Origin& origin) {
-            return origin == url::Origin::Create(GURL("https://c.r.test"));
+          base::BindRepeating([](const blink::StorageKey& storage_key) {
+            return storage_key == blink::StorageKey::CreateFromStringForTesting(
+                                      "https://c.r.test");
           }),
           {3},
       },

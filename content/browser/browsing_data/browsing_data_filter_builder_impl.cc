@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using net::registry_controlled_domains::GetDomainAndRegistry;
 using net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
@@ -33,25 +34,26 @@ bool IsSubdomainOfARegistrableDomain(const std::string& domain) {
 // 3. IsSubdomainOfARegistrableDomain(domain)      - e.g. www.google.com
 // Types 1 and 2 are supported by RegistrableDomainFilterBuilder. Type 3 is not.
 
-// True if the domain of |url| is in the deletelist, or isn't in the
-// preservelist. The deletelist or preservelist is represented as |origins|,
-// |registerable_domains|, and |mode|.
-bool MatchesOrigin(const std::set<url::Origin>& origins,
-                   const std::set<std::string>& registerable_domains,
-                   BrowsingDataFilterBuilder::Mode mode,
-                   const url::Origin& origin) {
+// True if the domain of `url` is in the deletelist, or isn't in the
+// preservelist. The deletelist or preservelist is represented as `origins`,
+// `registerable_domains`, and `mode`.
+bool MatchesStorageKey(const std::set<url::Origin>& origins,
+                       const std::set<std::string>& registerable_domains,
+                       BrowsingDataFilterBuilder::Mode mode,
+                       const blink::StorageKey& storage_key) {
   bool is_delete_list = mode == BrowsingDataFilterBuilder::Mode::kDelete;
-  bool found_origin = base::Contains(origins, origin);
+  bool found_origin = base::Contains(origins, storage_key.origin());
   if (found_origin)
     return is_delete_list;
 
   bool found_domain = false;
   if (!registerable_domains.empty()) {
     std::string registerable_domain =
-        GetDomainAndRegistry(origin, INCLUDE_PRIVATE_REGISTRIES);
-    found_domain = base::Contains(
-        registerable_domains,
-        registerable_domain == "" ? origin.host() : registerable_domain);
+        GetDomainAndRegistry(storage_key.origin(), INCLUDE_PRIVATE_REGISTRIES);
+    found_domain =
+        base::Contains(registerable_domains, registerable_domain == ""
+                                                 ? storage_key.origin().host()
+                                                 : registerable_domain);
   }
   return found_domain == is_delete_list;
 }
@@ -62,8 +64,8 @@ bool MatchesURL(const std::set<url::Origin>& origins,
                 bool is_cross_site_clear_site_data,
                 const GURL& url) {
   DCHECK(!is_cross_site_clear_site_data);
-  return MatchesOrigin(origins, registerable_domains, mode,
-                       url::Origin::Create(url));
+  return MatchesStorageKey(origins, registerable_domains, mode,
+                           blink::StorageKey(url::Origin::Create(url)));
 }
 
 // True if none of the supplied domains matches this plugin's |site| and we're a
@@ -171,13 +173,13 @@ BrowsingDataFilterBuilderImpl::BuildUrlFilter() {
                              IsCrossSiteClearSiteData());
 }
 
-base::RepeatingCallback<bool(const url::Origin&)>
-BrowsingDataFilterBuilderImpl::BuildOriginFilter() {
+content::StoragePartition::StorageKeyMatcherFunction
+BrowsingDataFilterBuilderImpl::BuildStorageKeyFilter() {
   if (!cookie_partition_key_collection_.ContainsAllKeys())
-    return NotReachedFilter<url::Origin>();
+    return NotReachedFilter<blink::StorageKey>();
   if (MatchesAllOriginsAndDomains())
-    return base::BindRepeating([](const url::Origin&) { return true; });
-  return base::BindRepeating(&MatchesOrigin, origins_, domains_, mode_);
+    return base::BindRepeating([](const blink::StorageKey&) { return true; });
+  return base::BindRepeating(&MatchesStorageKey, origins_, domains_, mode_);
 }
 
 network::mojom::ClearDataFilterPtr

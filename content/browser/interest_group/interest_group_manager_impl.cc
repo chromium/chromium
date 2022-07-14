@@ -241,9 +241,9 @@ void InterestGroupManagerImpl::GetInterestGroupsForOwner(
 }
 
 void InterestGroupManagerImpl::DeleteInterestGroupData(
-    base::RepeatingCallback<bool(const url::Origin&)> origin_matcher) {
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
   impl_.AsyncCall(&InterestGroupStorage::DeleteInterestGroupData)
-      .WithArgs(std::move(origin_matcher));
+      .WithArgs(std::move(storage_key_matcher));
 }
 
 void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(

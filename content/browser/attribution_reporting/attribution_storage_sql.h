@@ -21,6 +21,7 @@
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 #include "sql/meta_table.h"
 
 namespace base {
@@ -121,7 +122,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   absl::optional<base::Time> AdjustOfflineReportTimes() override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
-                 base::RepeatingCallback<bool(const url::Origin&)> filter,
+                 StoragePartition::StorageKeyMatcherFunction filter,
                  bool delete_rate_limit_data) override;
 
   void ClearAllDataAllTime(bool delete_rate_limit_data)
@@ -284,9 +285,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   // Aggregate Attribution:
 
-  // Deletes all aggregatable attribution data in storage for URLs matching
-  // `filter`, between `delete_begin` and `delete_end` time. More specifically,
-  // this:
+  // Deletes all aggregatable attribution data in storage for storage keys
+  // matching `filter`, between `delete_begin` and `delete_end` time. More
+  // specifically, this:
   // 1. Deletes all sources within the time range. If any aggregatable
   //    attribution is attributed to this source it is also deleted.
   // 2. Deletes all aggregatable attributions within the time range. All sources
@@ -297,7 +298,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool ClearAggregatableAttributionsForOriginsInRange(
       base::Time delete_begin,
       base::Time delete_end,
-      base::RepeatingCallback<bool(const url::Origin&)> filter,
+      StoragePartition::StorageKeyMatcherFunction filter,
       std::vector<StoredSource::Id>& source_ids_to_delete)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 

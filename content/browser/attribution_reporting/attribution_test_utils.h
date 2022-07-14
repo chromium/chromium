@@ -321,7 +321,7 @@ class MockAttributionManager : public AttributionManager {
               ClearData,
               (base::Time delete_begin,
                base::Time delete_end,
-               base::RepeatingCallback<bool(const url::Origin&)> filter,
+               StoragePartition::StorageKeyMatcherFunction filter,
                bool delete_rate_limit_data,
                base::OnceClosure done),
               (override));

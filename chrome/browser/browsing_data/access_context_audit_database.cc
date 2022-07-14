@@ -18,6 +18,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
 
@@ -734,7 +735,7 @@ AccessContextAuditDatabase::GetAllRecords() {
 
 void AccessContextAuditDatabase::RemoveStorageApiRecords(
     const std::set<StorageAPIType>& storage_api_types,
-    base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+    content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     base::Time begin,
     base::Time end) {
   sql::Transaction transaction(&db_);
@@ -763,7 +764,8 @@ void AccessContextAuditDatabase::RemoveStorageApiRecords(
     auto origin = url::Origin::Create(GURL(select_storage_api.ColumnString(0)));
     auto type = static_cast<StorageAPIType>(select_storage_api.ColumnInt(1));
     if (storage_api_types.count(type) &&
-        (!origin_matcher || origin_matcher.Run(origin))) {
+        (!storage_key_matcher ||
+         storage_key_matcher.Run(blink::StorageKey(origin)))) {
       origin_type_pairs_for_removal.emplace_back(origin, type);
     }
   }

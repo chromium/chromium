@@ -732,7 +732,7 @@ void FinishGenerateNegotiateAuthToken(
 // backends to use this if they can, and additionally we should consider
 // rethinking this approach if / when storage backends move out of process
 // (see crbug.com/1016065 for initial work here).
-base::RepeatingCallback<bool(const url::Origin&)> CreateGenericOriginMatcher(
+StoragePartition::StorageKeyMatcherFunction CreateGenericStorageKeyMatcher(
     const blink::StorageKey& storage_key,
     StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher,
     scoped_refptr<storage::SpecialStoragePolicy> policy) {
@@ -747,15 +747,14 @@ base::RepeatingCallback<bool(const url::Origin&)> CreateGenericOriginMatcher(
         [](StoragePartition::StorageKeyPolicyMatcherFunction
                storage_key_matcher,
            scoped_refptr<storage::SpecialStoragePolicy> policy,
-           const url::Origin& origin) -> bool {
-          return storage_key_matcher.Run(blink::StorageKey(origin),
-                                         policy.get());
+           const blink::StorageKey& storage_key) -> bool {
+          return storage_key_matcher.Run(storage_key, policy.get());
         },
         std::move(storage_key_matcher), std::move(policy));
   }
   DCHECK(!storage_key_origin_empty);
-  return base::BindRepeating(std::equal_to<const url::Origin&>(),
-                             storage_key.origin());
+  return base::BindRepeating(std::equal_to<const blink::StorageKey&>(),
+                             storage_key);
 }
 
 void ClearPluginPrivateDataOnFileTaskRunner(
@@ -2186,9 +2185,10 @@ void StoragePartitionImpl::ClearDataImpl(
   DCHECK(storage_key.origin().opaque() || storage_key_matcher.is_null());
 
   for (auto& observer : data_removal_observers_) {
-    auto filter = CreateGenericOriginMatcher(storage_key, storage_key_matcher,
-                                             special_storage_policy_);
-    observer.OnOriginDataCleared(remove_mask, std::move(filter), begin, end);
+    auto filter = CreateGenericStorageKeyMatcher(
+        storage_key, storage_key_matcher, special_storage_policy_);
+    observer.OnStorageKeyDataCleared(remove_mask, std::move(filter), begin,
+                                     end);
   }
 
   DataDeletionHelper* helper = new DataDeletionHelper(
@@ -2456,8 +2456,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS) {
     if (interest_group_manager) {
       interest_group_manager->DeleteInterestGroupData(
-          CreateGenericOriginMatcher(storage_key, storage_key_matcher,
-                                     storage_policy_ref));
+          CreateGenericStorageKeyMatcher(storage_key, storage_key_matcher,
+                                         storage_policy_ref));
     }
   }
 
@@ -2517,8 +2517,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     }
   }
 
-  auto filter = CreateGenericOriginMatcher(storage_key, storage_key_matcher,
-                                           storage_policy_ref);
+  auto filter = CreateGenericStorageKeyMatcher(storage_key, storage_key_matcher,
+                                               storage_policy_ref);
 
   // It is not expected to only delete internal attribution reporting data.
   DCHECK(!(remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL) ||
