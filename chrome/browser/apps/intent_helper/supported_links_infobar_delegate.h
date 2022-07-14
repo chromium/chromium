@@ -40,6 +40,10 @@ class SupportedLinksInfoBarDelegate : public ConfirmInfoBarDelegate {
   static void MaybeShowSupportedLinksInfoBar(content::WebContents* web_contents,
                                              const std::string& app_id);
 
+  // Removes the supported links infobar (if there is one) from the given
+  // |web_contents|.
+  static void RemoveSupportedLinksInfoBar(content::WebContents* web_contents);
+
   // Returns true if the SetSupportedLinksPreference call is supported by App
   // Service in this browser. Visible for testing.
   static bool IsSetSupportedLinksPreferenceSupported();

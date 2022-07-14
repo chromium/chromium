@@ -62,6 +62,23 @@ void SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
 }
 
 // static
+void SupportedLinksInfoBarDelegate::RemoveSupportedLinksInfoBar(
+    content::WebContents* web_contents) {
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
+    auto* infobar = infobar_manager->infobar_at(i);
+    if (infobar->delegate()->GetIdentifier() ==
+        infobars::InfoBarDelegate::SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS) {
+      // There should only ever be one supported links infobar visible at a
+      // time, so we can just remove it and exit.
+      infobar_manager->RemoveInfoBar(infobar);
+      return;
+    }
+  }
+}
+
+// static
 bool SupportedLinksInfoBarDelegate::IsSetSupportedLinksPreferenceSupported() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return (chromeos::LacrosService::Get()->GetInterfaceVersion(

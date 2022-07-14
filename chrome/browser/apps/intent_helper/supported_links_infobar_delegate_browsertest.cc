@@ -174,3 +174,20 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
     ASSERT_FALSE(GetInfoBar(contents));
   }
 }
+
+IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
+                       InfoBarDismissedWhenOpenedInChrome) {
+  if (!apps::SupportedLinksInfoBarDelegate::
+          IsSetSupportedLinksPreferenceSupported()) {
+    GTEST_SKIP() << "Ash version not supported";
+  }
+
+  Browser* browser = OpenTestWebApp();
+  auto* contents = browser->tab_strip_model()->GetActiveWebContents();
+  apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
+      contents, test_web_app_id());
+  ASSERT_TRUE(GetInfoBar(contents));
+
+  chrome::OpenInChrome(browser);
+  ASSERT_FALSE(GetInfoBar(contents));
+}

@@ -178,6 +178,10 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
+#endif
+
 namespace {
 
 const char kOsOverrideForTabletSite[] = "Linux; Android 9; Chrome tablet";
@@ -1714,8 +1718,13 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
       source_tabstrip->DetachWebContentsAtForInsertion(
           source_tabstrip->active_index()),
       true);
-  apps::MaybeShowIntentPicker(
-      target_browser->tab_strip_model()->GetActiveWebContents());
+  auto* web_contents =
+      target_browser->tab_strip_model()->GetActiveWebContents();
+  apps::MaybeShowIntentPicker(web_contents);
+#if BUILDFLAG(IS_CHROMEOS)
+  apps::SupportedLinksInfoBarDelegate::RemoveSupportedLinksInfoBar(
+      web_contents);
+#endif
   target_browser->window()->Show();
   return target_browser;
 }
