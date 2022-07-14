@@ -1172,7 +1172,6 @@ enum SortDirection {
 
 enum NameFrom {
   kNone,
-  kUninitialized,
   kAttribute,  // E.g. aria-label.
   kAttributeExplicitlyEmpty,
   kCaption,  // E.g. in the case of a table, from a caption element.

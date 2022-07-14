@@ -1604,11 +1604,10 @@ std::string WebAXObjectProxy::Name() {
 
 std::string WebAXObjectProxy::NameFrom() {
   UpdateLayout();
-  ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kUninitialized;
+  ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kNone;
   blink::WebVector<blink::WebAXObject> name_objects;
   accessibility_object_.GetName(name_from, name_objects);
   switch (name_from) {
-    case ax::mojom::NameFrom::kUninitialized:
     case ax::mojom::NameFrom::kNone:
       return "";
     default:

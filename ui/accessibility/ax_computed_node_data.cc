@@ -392,7 +392,6 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
   if (owner_->IsLeaf() && !is_atomic_text_field_with_descendants) {
     switch (owner_->data().GetNameFrom()) {
       case ax::mojom::NameFrom::kNone:
-      case ax::mojom::NameFrom::kUninitialized:
       // The accessible name is not displayed on screen, e.g. aria-label, or is
       // not displayed directly inside the node, e.g. an associated label
       // element.

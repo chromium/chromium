@@ -3350,7 +3350,7 @@ String AXNodeObject::TextAlternative(
     }
   }
 
-  name_from = ax::mojom::blink::NameFrom::kUninitialized;
+  name_from = ax::mojom::blink::NameFrom::kNone;
 
   if (name_sources && found_text_alternative) {
     for (NameSource& name_source : *name_sources) {
@@ -3387,7 +3387,6 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   // spec and with what is done in other user agents.
   switch (last_used_name_from) {
     case ax::mojom::blink::NameFrom::kNone:
-    case ax::mojom::blink::NameFrom::kUninitialized:
     case ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::blink::NameFrom::kContents:
       break;
@@ -3401,7 +3400,6 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   }
   switch (name_from) {
     case ax::mojom::blink::NameFrom::kNone:
-    case ax::mojom::blink::NameFrom::kUninitialized:
     case ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::blink::NameFrom::kContents:
       break;
@@ -3462,7 +3460,7 @@ String AXNodeObject::TextFromDescendants(
   StringBuilder accumulated_text;
   AXObject* previous = nullptr;
   ax::mojom::blink::NameFrom last_used_name_from =
-      ax::mojom::blink::NameFrom::kUninitialized;
+      ax::mojom::blink::NameFrom::kNone;
 
   // Ensure that if this node needs to invalidate its children (e.g. due to
   // included in tree status change), that we do it now, rather than while
@@ -3490,7 +3488,7 @@ String AXNodeObject::TextFromDescendants(
     }
 
     ax::mojom::blink::NameFrom child_name_from =
-        ax::mojom::blink::NameFrom::kUninitialized;
+        ax::mojom::blink::NameFrom::kNone;
     String result;
     if (child->IsPresentational()) {
       result = child->TextFromDescendants(visited,

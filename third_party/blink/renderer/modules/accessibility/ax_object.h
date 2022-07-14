@@ -122,7 +122,7 @@ class NameSource {
   String text;
   bool superseded = false;
   bool invalid = false;
-  ax::mojom::blink::NameFrom type = ax::mojom::blink::NameFrom::kUninitialized;
+  ax::mojom::blink::NameFrom type = ax::mojom::blink::NameFrom::kNone;
   const QualifiedName& attribute;
   AtomicString attribute_value;
   AXTextSource native_source = kAXTextFromNativeSourceUninitialized;

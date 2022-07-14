@@ -444,7 +444,6 @@ chrome.automation.TreeChangeType = {
  * @see https://developer.chrome.com/extensions/automation#type-NameFromType
  */
 chrome.automation.NameFromType = {
-  UNINITIALIZED: 'uninitialized',
   ATTRIBUTE: 'attribute',
   ATTRIBUTE_EXPLICITLY_EMPTY: 'attributeExplicitlyEmpty',
   CAPTION: 'caption',

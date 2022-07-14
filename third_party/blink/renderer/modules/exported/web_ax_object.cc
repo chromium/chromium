@@ -786,7 +786,7 @@ WebURL WebAXObject::Url() const {
 
 WebString WebAXObject::GetName(ax::mojom::NameFrom& out_name_from,
                                WebVector<WebAXObject>& out_name_objects) const {
-  out_name_from = ax::mojom::blink::NameFrom::kUninitialized;
+  out_name_from = ax::mojom::blink::NameFrom::kNone;
 
   if (IsDetached())
     return WebString();

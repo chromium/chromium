@@ -463,7 +463,6 @@
 
   // Where the node's name is from.
   enum NameFromType {
-    uninitialized,
     attribute,
     attributeExplicitlyEmpty,
     caption,

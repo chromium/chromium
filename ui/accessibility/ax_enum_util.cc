@@ -1552,8 +1552,6 @@ const char* ToString(ax::mojom::NameFrom name_from) {
   switch (name_from) {
     case ax::mojom::NameFrom::kNone:
       return "none";
-    case ax::mojom::NameFrom::kUninitialized:
-      return "uninitialized";
     case ax::mojom::NameFrom::kAttribute:
       return "attribute";
     case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
