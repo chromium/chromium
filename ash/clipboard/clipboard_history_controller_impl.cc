@@ -1001,6 +1001,9 @@ gfx::Rect ClipboardHistoryControllerImpl::CalculateAnchorRect() const {
 void ClipboardHistoryControllerImpl::OnMenuClosed() {
   accelerator_target_->OnMenuClosed();
 
+  if (on_menu_closed_callback_for_test_)
+    std::move(on_menu_closed_callback_for_test_).Run();
+
   // Reset `context_menu_` in the asynchronous way. Because the menu may be
   // accessed after `OnMenuClosed()` is called.
   menu_task_timer_.Start(
