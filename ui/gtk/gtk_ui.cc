@@ -167,9 +167,9 @@ gfx::FontRenderParams GetGtkFontRenderParams() {
   return params;
 }
 
-views::LinuxUI::WindowFrameAction GetDefaultMiddleClickAction() {
+ui::LinuxUi::WindowFrameAction GetDefaultMiddleClickAction() {
   if (GtkCheckVersion(3, 14))
-    return views::LinuxUI::WindowFrameAction::kNone;
+    return ui::LinuxUi::WindowFrameAction::kNone;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   switch (base::nix::GetDesktopEnvironment(env.get())) {
     case base::nix::DESKTOP_ENVIRONMENT_KDE4:
@@ -178,9 +178,9 @@ views::LinuxUI::WindowFrameAction GetDefaultMiddleClickAction() {
       // middle mouse button to create tab groups. We don't support that in
       // Chrome, but at least avoid lowering windows in response to middle
       // clicks to avoid surprising users who expect the KDE behavior.
-      return views::LinuxUI::WindowFrameAction::kNone;
+      return ui::LinuxUi::WindowFrameAction::kNone;
     default:
-      return views::LinuxUI::WindowFrameAction::kLower;
+      return ui::LinuxUi::WindowFrameAction::kLower;
   }
 }
 
@@ -259,8 +259,8 @@ bool GtkUi::Initialize() {
   // so this must be done after to avoid the race condition.
   ShellDialogLinux::Initialize();
 
-  using Action = views::LinuxUI::WindowFrameAction;
-  using ActionSource = views::LinuxUI::WindowFrameActionSource;
+  using Action = ui::LinuxUi::WindowFrameAction;
+  using ActionSource = ui::LinuxUi::WindowFrameActionSource;
   window_frame_actions_ = {
       {ActionSource::kDoubleClick, Action::kToggleMaximize},
       {ActionSource::kMiddleClick, GetDefaultMiddleClickAction()},
@@ -463,10 +463,8 @@ void GtkUi::SetWindowButtonOrdering(
   views::WindowButtonOrderProvider::GetInstance()->SetWindowButtonOrder(
       leading_buttons, trailing_buttons);
 
-  for (views::WindowButtonOrderObserver& observer :
-       window_button_order_observer_list()) {
+  for (auto& observer : window_button_order_observer_list())
     observer.OnWindowButtonOrderingChange();
-  }
 }
 
 void GtkUi::SetWindowFrameAction(WindowFrameActionSource source,
@@ -502,7 +500,7 @@ ui::SelectFileDialog* GtkUi::CreateSelectFileDialog(
   return new SelectFileDialogLinuxGtk(listener, std::move(policy));
 }
 
-views::LinuxUI::WindowFrameAction GtkUi::GetWindowFrameAction(
+ui::LinuxUi::WindowFrameAction GtkUi::GetWindowFrameAction(
     WindowFrameActionSource source) {
   return window_frame_actions_[source];
 }
@@ -521,13 +519,13 @@ bool GtkUi::AnimationsEnabled() const {
   return animations_enabled;
 }
 
-std::unique_ptr<views::NavButtonProvider> GtkUi::CreateNavButtonProvider() {
+std::unique_ptr<ui::NavButtonProvider> GtkUi::CreateNavButtonProvider() {
   if (GtkCheckVersion(3, 14))
     return std::make_unique<gtk::NavButtonProviderGtk>();
   return nullptr;
 }
 
-views::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame) {
+ui::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame) {
   if (!GtkCheckVersion(3, 14))
     return nullptr;
   auto& provider =
@@ -942,7 +940,7 @@ void GtkUi::UpdateDeviceScaleFactor() {
   float old_device_scale_factor = device_scale_factor_;
   device_scale_factor_ = GetRawDeviceScaleFactor();
   if (device_scale_factor_ != old_device_scale_factor) {
-    for (views::DeviceScaleFactorObserver& observer :
+    for (ui::DeviceScaleFactorObserver& observer :
          device_scale_factor_observer_list()) {
       observer.OnDeviceScaleFactorChanged();
     }

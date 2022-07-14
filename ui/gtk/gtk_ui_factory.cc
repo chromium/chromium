@@ -6,6 +6,6 @@
 
 #include "ui/gtk/gtk_ui.h"
 
-std::unique_ptr<views::LinuxUI> BuildGtkUi() {
+std::unique_ptr<ui::LinuxUi> BuildGtkUi() {
   return std::make_unique<gtk::GtkUi>();
 }

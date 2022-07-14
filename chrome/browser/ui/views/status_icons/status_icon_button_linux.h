@@ -22,7 +22,7 @@ class WindowTreeHost;
 // A button that is internally mapped as a status icon if the underlaying
 // platform supports that kind of windows. Otherwise, calls
 // OnImplInitializationFailed.
-class StatusIconButtonLinux : public views::StatusIconLinux,
+class StatusIconButtonLinux : public ui::StatusIconLinux,
                               public views::Button,
                               public views::ContextMenuController {
  public:

@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(ImageUtilTest, CheckDefaultToolbarColor) {
   // This test relies on being run with the default light mode system theme.
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
 #if BUILDFLAG(USE_GTK)
-  views::LinuxUI::instance()->SetUseSystemThemeCallback(
+  ui::LinuxUi::instance()->SetUseSystemThemeCallback(
       base::BindRepeating([](aura::Window* window) { return false; }));
 #endif  // BUILDFLAG(USE_GTK)
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();

@@ -219,7 +219,7 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
     // NativeThemeGtk instance will always be returned.
     // TODO(crbug.com/1304441): Remove this once GTK passthrough is fully
     // supported.
-    views::LinuxUI::instance()->SetUseSystemThemeCallback(
+    ui::LinuxUi::instance()->SetUseSystemThemeCallback(
         base::BindRepeating([](aura::Window* window) { return false; }));
     ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 

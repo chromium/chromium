@@ -5,15 +5,15 @@
 #ifndef UI_LINUX_DEVICE_SCALE_FACTOR_OBSERVER_H_
 #define UI_LINUX_DEVICE_SCALE_FACTOR_OBSERVER_H_
 
-namespace views {
+namespace ui {
 
 class DeviceScaleFactorObserver {
  public:
-  virtual ~DeviceScaleFactorObserver() {}
+  virtual ~DeviceScaleFactorObserver() = default;
 
   virtual void OnDeviceScaleFactorChanged() = 0;
 };
 
-}  // namespace views
+}  // namespace ui
 
 #endif  // UI_LINUX_DEVICE_SCALE_FACTOR_OBSERVER_H_

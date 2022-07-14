@@ -14,26 +14,25 @@
 
 namespace gtk {
 
-class NavButtonProviderGtk : public views::NavButtonProvider {
+class NavButtonProviderGtk : public ui::NavButtonProvider {
  public:
   NavButtonProviderGtk();
   ~NavButtonProviderGtk() override;
 
-  // views::NavButtonProvider:
+  // ui::NavButtonProvider:
   void RedrawImages(int top_area_height, bool maximized, bool active) override;
-  gfx::ImageSkia GetImage(views::NavButtonProvider::FrameButtonDisplayType type,
+  gfx::ImageSkia GetImage(ui::NavButtonProvider::FrameButtonDisplayType type,
                           ButtonState state) const override;
   gfx::Insets GetNavButtonMargin(
-      views::NavButtonProvider::FrameButtonDisplayType type) const override;
+      ui::NavButtonProvider::FrameButtonDisplayType type) const override;
   gfx::Insets GetTopAreaSpacing() const override;
   int GetInterNavButtonSpacing() const override;
 
  private:
-  std::map<
-      views::NavButtonProvider::FrameButtonDisplayType,
-      base::flat_map<views::NavButtonProvider::ButtonState, gfx::ImageSkia>>
+  std::map<ui::NavButtonProvider::FrameButtonDisplayType,
+           base::flat_map<ui::NavButtonProvider::ButtonState, gfx::ImageSkia>>
       button_images_;
-  std::map<views::NavButtonProvider::FrameButtonDisplayType, gfx::Insets>
+  std::map<ui::NavButtonProvider::FrameButtonDisplayType, gfx::Insets>
       button_margins_;
   gfx::Insets top_area_spacing_;
   int inter_button_spacing_;

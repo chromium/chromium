@@ -15,8 +15,8 @@
 class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
  public:
   explicit BrowserFrameViewLayoutLinuxNative(
-      views::NavButtonProvider* nav_button_provider,
-      views::WindowFrameProvider* window_frame_provider);
+      ui::NavButtonProvider* nav_button_provider,
+      ui::WindowFrameProvider* window_frame_provider);
 
   BrowserFrameViewLayoutLinuxNative(const BrowserFrameViewLayoutLinuxNative&) =
       delete;
@@ -39,12 +39,12 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
  private:
   // Converts a FrameButton to a FrameButtonDisplayType, taking into
   // consideration the maximized state of the browser window.
-  views::NavButtonProvider::FrameButtonDisplayType GetButtonDisplayType(
+  ui::NavButtonProvider::FrameButtonDisplayType GetButtonDisplayType(
       views::FrameButton button_id) const;
 
   // Owned by BrowserFrameViewLinuxNative.
-  const raw_ptr<views::NavButtonProvider> nav_button_provider_;
-  const raw_ptr<views::WindowFrameProvider> window_frame_provider_;
+  const raw_ptr<ui::NavButtonProvider> nav_button_provider_;
+  const raw_ptr<ui::WindowFrameProvider> window_frame_provider_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LAYOUT_LINUX_NATIVE_H_

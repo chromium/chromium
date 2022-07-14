@@ -21,14 +21,14 @@ BrowserFrameViewLinux::BrowserFrameViewLinux(
     BrowserFrameViewLayoutLinux* layout)
     : OpaqueBrowserFrameView(frame, browser_view, layout), layout_(layout) {
   layout->set_view(this);
-  if (views::LinuxUI* ui = views::LinuxUI::instance()) {
+  if (ui::LinuxUi* ui = ui::LinuxUi::instance()) {
     ui->AddWindowButtonOrderObserver(this);
     OnWindowButtonOrderingChange();
   }
 }
 
 BrowserFrameViewLinux::~BrowserFrameViewLinux() {
-  if (views::LinuxUI* ui = views::LinuxUI::instance())
+  if (ui::LinuxUi* ui = ui::LinuxUi::instance())
     ui->RemoveWindowButtonOrderObserver(this);
 }
 

@@ -12,7 +12,7 @@
 
 namespace gtk {
 
-class WindowFrameProviderGtk : public views::WindowFrameProvider {
+class WindowFrameProviderGtk : public ui::WindowFrameProvider {
  public:
   explicit WindowFrameProviderGtk(bool solid_frame);
 
@@ -21,7 +21,7 @@ class WindowFrameProviderGtk : public views::WindowFrameProvider {
 
   ~WindowFrameProviderGtk() override;
 
-  // views::WindowFrameProvider:
+  // ui::WindowFrameProvider:
   int GetTopCornerRadiusDip() override;
   gfx::Insets GetFrameThicknessDip() override;
   void PaintWindowFrame(gfx::Canvas* canvas,

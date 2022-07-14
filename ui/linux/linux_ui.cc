@@ -15,13 +15,13 @@
 
 namespace {
 
-views::LinuxUI* g_linux_ui = nullptr;
+ui::LinuxUi* g_linux_ui = nullptr;
 
 }  // namespace
 
-namespace views {
+namespace ui {
 
-void LinuxUI::SetInstance(std::unique_ptr<LinuxUI> instance) {
+void LinuxUi::SetInstance(std::unique_ptr<LinuxUi> instance) {
   delete g_linux_ui;
   g_linux_ui = instance.release();
 
@@ -41,57 +41,57 @@ void LinuxUI::SetInstance(std::unique_ptr<LinuxUI> instance) {
   // context factory.
 }
 
-LinuxUI* LinuxUI::instance() {
+LinuxUi* LinuxUi::instance() {
   return g_linux_ui;
 }
 
-LinuxUI::LinuxUI() = default;
+LinuxUi::LinuxUi() = default;
 
-LinuxUI::~LinuxUI() = default;
+LinuxUi::~LinuxUi() = default;
 
-LinuxUI::CmdLineArgs::CmdLineArgs() = default;
+LinuxUi::CmdLineArgs::CmdLineArgs() = default;
 
-LinuxUI::CmdLineArgs::CmdLineArgs(CmdLineArgs&&) = default;
+LinuxUi::CmdLineArgs::CmdLineArgs(CmdLineArgs&&) = default;
 
-LinuxUI::CmdLineArgs& LinuxUI::CmdLineArgs::operator=(CmdLineArgs&&) = default;
+LinuxUi::CmdLineArgs& LinuxUi::CmdLineArgs::operator=(CmdLineArgs&&) = default;
 
-LinuxUI::CmdLineArgs::~CmdLineArgs() = default;
+LinuxUi::CmdLineArgs::~CmdLineArgs() = default;
 
-void LinuxUI::AddWindowButtonOrderObserver(
-    views::WindowButtonOrderObserver* observer) {
+void LinuxUi::AddWindowButtonOrderObserver(
+    WindowButtonOrderObserver* observer) {
   window_button_order_observer_list_.AddObserver(observer);
 }
 
-void LinuxUI::RemoveWindowButtonOrderObserver(
-    views::WindowButtonOrderObserver* observer) {
+void LinuxUi::RemoveWindowButtonOrderObserver(
+    WindowButtonOrderObserver* observer) {
   window_button_order_observer_list_.RemoveObserver(observer);
 }
 
-void LinuxUI::AddDeviceScaleFactorObserver(
-    views::DeviceScaleFactorObserver* observer) {
+void LinuxUi::AddDeviceScaleFactorObserver(
+    DeviceScaleFactorObserver* observer) {
   device_scale_factor_observer_list_.AddObserver(observer);
 }
 
-void LinuxUI::RemoveDeviceScaleFactorObserver(
-    views::DeviceScaleFactorObserver* observer) {
+void LinuxUi::RemoveDeviceScaleFactorObserver(
+    DeviceScaleFactorObserver* observer) {
   device_scale_factor_observer_list_.RemoveObserver(observer);
 }
 
-ui::NativeTheme* LinuxUI::GetNativeTheme(aura::Window* window) const {
+ui::NativeTheme* LinuxUi::GetNativeTheme(aura::Window* window) const {
   return GetNativeTheme(use_system_theme_callback_.is_null() ||
                         use_system_theme_callback_.Run(window));
 }
 
-ui::NativeTheme* LinuxUI::GetNativeTheme(bool use_system_theme) const {
+ui::NativeTheme* LinuxUi::GetNativeTheme(bool use_system_theme) const {
   return use_system_theme ? GetNativeTheme()
                           : ui::NativeTheme::GetInstanceForNativeUi();
 }
 
-void LinuxUI::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {
+void LinuxUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {
   use_system_theme_callback_ = std::move(callback);
 }
 
-bool LinuxUI::GetDefaultUsesSystemTheme() const {
+bool LinuxUi::GetDefaultUsesSystemTheme() const {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
 
   // TODO(https://crbug.com/1317782): This logic won't be necessary after
@@ -114,7 +114,7 @@ bool LinuxUI::GetDefaultUsesSystemTheme() const {
 }
 
 // static
-LinuxUI::CmdLineArgs LinuxUI::CopyCmdLine(
+LinuxUi::CmdLineArgs LinuxUi::CopyCmdLine(
     const base::CommandLine& command_line) {
   const auto& argv = command_line.argv();
   size_t args_chars = 0;
@@ -134,4 +134,4 @@ LinuxUI::CmdLineArgs LinuxUI::CopyCmdLine(
   return cmd_line;
 }
 
-}  // namespace views
+}  // namespace ui

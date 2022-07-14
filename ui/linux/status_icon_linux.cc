@@ -4,7 +4,7 @@
 
 #include "ui/linux/status_icon_linux.h"
 
-namespace views {
+namespace ui {
 
 StatusIconLinux::Delegate::~Delegate() = default;
 
@@ -21,4 +21,4 @@ void StatusIconLinux::SetDelegate(Delegate* delegate) {
   OnSetDelegate();
 }
 
-}  // namespace views
+}  // namespace ui

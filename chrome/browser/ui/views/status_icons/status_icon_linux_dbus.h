@@ -31,7 +31,7 @@ class DbusProperties;
 
 // A status icon following the StatusNotifierItem specification.
 // https://www.freedesktop.org/wiki/Specifications/StatusNotifierItem/StatusNotifierItem/
-class StatusIconLinuxDbus : public views::StatusIconLinux,
+class StatusIconLinuxDbus : public ui::StatusIconLinux,
                             public ui::SimpleMenuModel::Delegate,
                             public base::RefCounted<StatusIconLinuxDbus> {
  public:

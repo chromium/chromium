@@ -259,7 +259,7 @@ gfx::Rect DesktopWindowTreeHostLinux::GetGuessedFullScreenSizeInPx() const {
 void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
     const Widget::InitParams& params,
     ui::PlatformWindowInitProperties* properties) {
-  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  const ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
   properties->prefer_dark_theme = linux_ui && linux_ui->PreferDarkTheme();
 
   // Set the background color on startup to make the initial flickering
@@ -295,7 +295,7 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
 
 base::flat_map<std::string, std::string>
 DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
-  if (auto* linux_ui = LinuxUI::instance())
+  if (auto* linux_ui = ui::LinuxUi::instance())
     return linux_ui->GetKeyboardLayoutMap();
   return WindowTreeHostPlatform::GetKeyboardLayoutMap();
 }

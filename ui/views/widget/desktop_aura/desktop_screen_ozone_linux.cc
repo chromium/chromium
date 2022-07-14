@@ -14,7 +14,7 @@ namespace views {
 // Listens to device scale factor changes that can be provided via "external" to
 // Ozone sources such as toolkits, etc, and provides Ozone with new values.
 class DesktopScreenOzoneLinux : public DesktopScreenOzone,
-                                public DeviceScaleFactorObserver {
+                                public ui::DeviceScaleFactorObserver {
  public:
   DesktopScreenOzoneLinux() = default;
   ~DesktopScreenOzoneLinux() override = default;
@@ -23,7 +23,7 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
   // DeviceScaleFactorObserver:
   void OnDeviceScaleFactorChanged() override {
     SetDeviceScaleFactorToPlatformScreen(
-        LinuxUI::instance()->GetDeviceScaleFactor());
+        ui::LinuxUi::instance()->GetDeviceScaleFactor());
   }
 
   void SetDeviceScaleFactorToPlatformScreen(float scale_factor) {
@@ -40,7 +40,7 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
   // set the display scale factor as early as possible so that list of displays
   // have correct scale factor from the beginning.
   void OnBeforePlatformScreenInit() override {
-    auto* linux_ui = LinuxUI::instance();
+    auto* linux_ui = ui::LinuxUi::instance();
     if (linux_ui) {
       display_scale_factor_observer_.Observe(linux_ui);
       // Send current scale factor as starting to observe doesn't actually
@@ -49,10 +49,10 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
     }
   }
 
-  base::ScopedObservation<LinuxUI,
+  base::ScopedObservation<ui::LinuxUi,
                           DeviceScaleFactorObserver,
-                          &LinuxUI::AddDeviceScaleFactorObserver,
-                          &LinuxUI::RemoveDeviceScaleFactorObserver>
+                          &ui::LinuxUi::AddDeviceScaleFactorObserver,
+                          &ui::LinuxUi::RemoveDeviceScaleFactorObserver>
       display_scale_factor_observer_{this};
 };
 

@@ -99,7 +99,7 @@ void ThemeServiceFactory::RegisterProfilePrefs(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bool default_uses_system_theme = false;
 
-  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  const ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
   if (linux_ui)
     default_uses_system_theme = linux_ui->GetDefaultUsesSystemTheme();
 

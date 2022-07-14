@@ -36,11 +36,10 @@ gfx::ImageSkia GetBestImageRep(const gfx::ImageSkia& image) {
 
 }  // namespace
 
-StatusIconLinuxWrapper::StatusIconLinuxWrapper(
-    views::StatusIconLinux* status_icon,
-    StatusIconType status_icon_type,
-    const gfx::ImageSkia& image,
-    const std::u16string& tool_tip)
+StatusIconLinuxWrapper::StatusIconLinuxWrapper(ui::StatusIconLinux* status_icon,
+                                               StatusIconType status_icon_type,
+                                               const gfx::ImageSkia& image,
+                                               const std::u16string& tool_tip)
     : status_icon_(status_icon),
       status_icon_type_(status_icon_type),
       image_(GetBestImageRep(image)),
@@ -60,7 +59,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
 #endif
 
 StatusIconLinuxWrapper::StatusIconLinuxWrapper(
-    std::unique_ptr<views::StatusIconLinux> status_icon,
+    std::unique_ptr<ui::StatusIconLinux> status_icon,
     StatusIconType status_icon_type,
     const gfx::ImageSkia& image,
     const std::u16string& tool_tip)

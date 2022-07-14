@@ -14,7 +14,7 @@ class ImageSkia;
 class Insets;
 }  // namespace gfx
 
-namespace views {
+namespace ui {
 
 class NavButtonProvider {
  public:
@@ -66,6 +66,6 @@ class NavButtonProvider {
   virtual int GetInterNavButtonSpacing() const = 0;
 };
 
-}  // namespace views
+}  // namespace ui
 
 #endif  // UI_LINUX_NAV_BUTTON_PROVIDER_H_

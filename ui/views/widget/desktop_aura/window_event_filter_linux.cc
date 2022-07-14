@@ -75,23 +75,23 @@ bool WindowEventFilterLinux::HandleMouseEventWithHitTest(
 
 void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
                                               int previous_click_component) {
-  LinuxUI* linux_ui = LinuxUI::instance();
+  ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
 
-  views::LinuxUI::WindowFrameActionSource action_type;
-  views::LinuxUI::WindowFrameAction default_action;
+  ui::LinuxUi::WindowFrameActionSource action_type;
+  ui::LinuxUi::WindowFrameAction default_action;
 
   if (event->IsRightMouseButton()) {
-    action_type = LinuxUI::WindowFrameActionSource::kRightClick;
-    default_action = LinuxUI::WindowFrameAction::kMenu;
+    action_type = ui::LinuxUi::WindowFrameActionSource::kRightClick;
+    default_action = ui::LinuxUi::WindowFrameAction::kMenu;
   } else if (event->IsMiddleMouseButton()) {
-    action_type = LinuxUI::WindowFrameActionSource::kMiddleClick;
-    default_action = LinuxUI::WindowFrameAction::kNone;
+    action_type = ui::LinuxUi::WindowFrameActionSource::kMiddleClick;
+    default_action = ui::LinuxUi::WindowFrameAction::kNone;
   } else if (event->IsLeftMouseButton() &&
              event->flags() & ui::EF_IS_DOUBLE_CLICK) {
     click_component_ = HTNOWHERE;
     if (previous_click_component == HTCAPTION) {
-      action_type = LinuxUI::WindowFrameActionSource::kDoubleClick;
-      default_action = LinuxUI::WindowFrameAction::kToggleMaximize;
+      action_type = ui::LinuxUi::WindowFrameActionSource::kDoubleClick;
+      default_action = ui::LinuxUi::WindowFrameAction::kToggleMaximize;
     } else {
       return;
     }
@@ -101,24 +101,24 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
   }
 
   auto* content_window = desktop_window_tree_host_->GetContentWindow();
-  LinuxUI::WindowFrameAction action =
+  ui::LinuxUi::WindowFrameAction action =
       linux_ui ? linux_ui->GetWindowFrameAction(action_type) : default_action;
   switch (action) {
-    case LinuxUI::WindowFrameAction::kNone:
+    case ui::LinuxUi::WindowFrameAction::kNone:
       break;
-    case LinuxUI::WindowFrameAction::kLower:
+    case ui::LinuxUi::WindowFrameAction::kLower:
       LowerWindow();
       event->SetHandled();
       break;
-    case LinuxUI::WindowFrameAction::kMinimize:
+    case ui::LinuxUi::WindowFrameAction::kMinimize:
       desktop_window_tree_host_->Minimize();
       event->SetHandled();
       break;
-    case LinuxUI::WindowFrameAction::kToggleMaximize:
+    case ui::LinuxUi::WindowFrameAction::kToggleMaximize:
       MaybeToggleMaximizedState(content_window);
       event->SetHandled();
       break;
-    case LinuxUI::WindowFrameAction::kMenu:
+    case ui::LinuxUi::WindowFrameAction::kMenu:
       views::Widget* widget =
           views::Widget::GetWidgetForNativeView(content_window);
       if (!widget)

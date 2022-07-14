@@ -18,9 +18,9 @@ namespace ui {
 class MenuModel;
 }  // namespace ui
 
-namespace views {
+namespace ui {
 
-// Since liblinux_ui cannot have dependencies on any chrome browser components
+// Since linux_ui cannot have dependencies on any chrome browser components
 // we cannot inherit from StatusIcon. So we implement the necessary methods
 // and let a wrapper class implement the StatusIcon interface and defer the
 // callbacks to a delegate. For the same reason, do not use StatusIconMenuModel.
@@ -68,6 +68,6 @@ class COMPONENT_EXPORT(LINUX_UI) StatusIconLinux {
   raw_ptr<Delegate> delegate_ = nullptr;
 };
 
-}  // namespace views
+}  // namespace ui
 
 #endif  // UI_LINUX_STATUS_ICON_LINUX_H_

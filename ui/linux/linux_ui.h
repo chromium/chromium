@@ -47,18 +47,16 @@ class Image;
 }
 
 namespace ui {
-class NativeTheme;
-}
 
-namespace views {
 class DeviceScaleFactorObserver;
+class NativeTheme;
 class NavButtonProvider;
 class WindowButtonOrderObserver;
 class WindowFrameProvider;
 
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
-class COMPONENT_EXPORT(LINUX_UI) LinuxUI
+class COMPONENT_EXPORT(LINUX_UI) LinuxUi
     : public ui::LinuxInputMethodContextFactory,
       public gfx::SkiaFontDelegate,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
@@ -91,19 +89,19 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUI
     kRightClick,
   };
 
-  LinuxUI(const LinuxUI&) = delete;
-  LinuxUI& operator=(const LinuxUI&) = delete;
-  ~LinuxUI() override;
+  LinuxUi(const LinuxUi&) = delete;
+  LinuxUi& operator=(const LinuxUi&) = delete;
+  ~LinuxUi() override;
 
   // Sets the dynamically loaded singleton that draws the desktop native UI.
-  static void SetInstance(std::unique_ptr<LinuxUI> instance);
+  static void SetInstance(std::unique_ptr<LinuxUi> instance);
 
   // Returns a LinuxUI instance for the toolkit used in the user's desktop
   // environment.
   //
   // Can return NULL, in case no toolkit has been set. (For example, if we're
   // running with the "--ash" flag.)
-  static LinuxUI* instance();
+  static LinuxUi* instance();
 
   // Notifies the observer about changes about how window buttons should be
   // laid out.
@@ -206,16 +204,16 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUI
     std::vector<char> args;
   };
 
-  LinuxUI();
+  LinuxUi();
 
   static CmdLineArgs CopyCmdLine(const base::CommandLine& command_line);
 
-  const base::ObserverList<views::WindowButtonOrderObserver>::Unchecked&
+  const base::ObserverList<WindowButtonOrderObserver>::Unchecked&
   window_button_order_observer_list() const {
     return window_button_order_observer_list_;
   }
 
-  const base::ObserverList<views::DeviceScaleFactorObserver>::Unchecked&
+  const base::ObserverList<DeviceScaleFactorObserver>::Unchecked&
   device_scale_factor_observer_list() const {
     return device_scale_factor_observer_list_;
   }
@@ -229,14 +227,14 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUI
   UseSystemThemeCallback use_system_theme_callback_;
 
   // Objects to notify when the window frame button order changes.
-  base::ObserverList<views::WindowButtonOrderObserver>::Unchecked
+  base::ObserverList<WindowButtonOrderObserver>::Unchecked
       window_button_order_observer_list_;
 
   // Objects to notify when the device scale factor changes.
-  base::ObserverList<views::DeviceScaleFactorObserver>::Unchecked
+  base::ObserverList<DeviceScaleFactorObserver>::Unchecked
       device_scale_factor_observer_list_;
 };
 
-}  // namespace views
+}  // namespace ui
 
 #endif  // UI_LINUX_LINUX_UI_H_

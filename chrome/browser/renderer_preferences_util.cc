@@ -160,7 +160,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #endif
 
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
-  views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
   if (linux_ui) {
     if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
       prefs->focus_ring_color = linux_ui->GetFocusRingColor();

@@ -36,7 +36,7 @@ class NativeThemeGtk;
 class SettingsProvider;
 
 // Interface to GTK desktop features.
-class GtkUi : public views::LinuxUI {
+class GtkUi : public ui::LinuxUi {
  public:
   GtkUi();
 
@@ -74,7 +74,7 @@ class GtkUi : public views::LinuxUI {
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) const override;
 
-  // views::LinuxUI:
+  // ui::LinuxUi:
   bool Initialize() override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
@@ -92,8 +92,8 @@ class GtkUi : public views::LinuxUI {
   float GetDeviceScaleFactor() const override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;
-  std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;
-  views::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
+  std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
+  ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
@@ -197,8 +197,8 @@ class GtkUi : public views::LinuxUI {
   // Paints a native window frame.  Typically only one of these will be
   // non-null.  The exception is when the user starts or stops their compositor
   // while Chrome is running.
-  std::unique_ptr<views::WindowFrameProvider> solid_frame_provider_;
-  std::unique_ptr<views::WindowFrameProvider> transparent_frame_provider_;
+  std::unique_ptr<ui::WindowFrameProvider> solid_frame_provider_;
+  std::unique_ptr<ui::WindowFrameProvider> transparent_frame_provider_;
 };
 
 }  // namespace gtk

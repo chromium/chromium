@@ -78,7 +78,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
 };
 
-class TestNavButtonProvider : public views::NavButtonProvider {
+class TestNavButtonProvider : public ui::NavButtonProvider {
  public:
   TestNavButtonProvider() = default;
 
@@ -89,14 +89,14 @@ class TestNavButtonProvider : public views::NavButtonProvider {
   }
 
   gfx::ImageSkia GetImage(
-      views::NavButtonProvider::FrameButtonDisplayType type,
-      views::NavButtonProvider::ButtonState state) const override {
+      ui::NavButtonProvider::FrameButtonDisplayType type,
+      ui::NavButtonProvider::ButtonState state) const override {
     switch (type) {
-      case views::NavButtonProvider::FrameButtonDisplayType::kClose:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
         return GetTestImageForSize(kCloseButtonSize);
-      case views::NavButtonProvider::FrameButtonDisplayType::kMaximize:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kMaximize:
         return GetTestImageForSize(kMaximizeButtonSize);
-      case views::NavButtonProvider::FrameButtonDisplayType::kMinimize:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
         return GetTestImageForSize(kMinimizeButtonSize);
       default:
         NOTREACHED();
@@ -105,13 +105,13 @@ class TestNavButtonProvider : public views::NavButtonProvider {
   }
 
   gfx::Insets GetNavButtonMargin(
-      views::NavButtonProvider::FrameButtonDisplayType type) const override {
+      ui::NavButtonProvider::FrameButtonDisplayType type) const override {
     switch (type) {
-      case views::NavButtonProvider::FrameButtonDisplayType::kClose:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
         return kCloseButtonMargin;
-      case views::NavButtonProvider::FrameButtonDisplayType::kMaximize:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kMaximize:
         return kMaximizeButtonMargin;
-      case views::NavButtonProvider::FrameButtonDisplayType::kMinimize:
+      case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
         return kMinimizeButtonMargin;
       default:
         NOTREACHED();
@@ -126,13 +126,13 @@ class TestNavButtonProvider : public views::NavButtonProvider {
   }
 };
 
-class TestFrameProvider : public views::WindowFrameProvider {
+class TestFrameProvider : public ui::WindowFrameProvider {
  public:
   TestFrameProvider() = default;
 
   ~TestFrameProvider() override = default;
 
-  // views::WindowFrameProvider:
+  // ui::WindowFrameProvider:
   int GetTopCornerRadiusDip() override { return 0; }
   gfx::Insets GetFrameThicknessDip() override { return {}; }
   void PaintWindowFrame(gfx::Canvas* canvas,
@@ -191,25 +191,24 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
   void ResetNativeNavButtonImagesFromButtonProvider() {
     struct {
       views::ImageButton* button;
-      views::NavButtonProvider::FrameButtonDisplayType type;
+      ui::NavButtonProvider::FrameButtonDisplayType type;
     } const kButtons[] = {
         {minimize_button_,
-         views::NavButtonProvider::FrameButtonDisplayType::kMinimize},
+         ui::NavButtonProvider::FrameButtonDisplayType::kMinimize},
         {maximize_button_,
-         views::NavButtonProvider::FrameButtonDisplayType::kMaximize},
-        {close_button_,
-         views::NavButtonProvider::FrameButtonDisplayType::kClose},
+         ui::NavButtonProvider::FrameButtonDisplayType::kMaximize},
+        {close_button_, ui::NavButtonProvider::FrameButtonDisplayType::kClose},
     };
     struct {
       views::Button::ButtonState button_state;
-      views::NavButtonProvider::ButtonState nav_button_provider_state;
+      ui::NavButtonProvider::ButtonState nav_button_provider_state;
     } const kStates[] = {
         {views::Button::STATE_NORMAL,
-         views::NavButtonProvider::ButtonState::kNormal},
+         ui::NavButtonProvider::ButtonState::kNormal},
         {views::Button::STATE_HOVERED,
-         views::NavButtonProvider::ButtonState::kHovered},
+         ui::NavButtonProvider::ButtonState::kHovered},
         {views::Button::STATE_PRESSED,
-         views::NavButtonProvider::ButtonState::kPressed},
+         ui::NavButtonProvider::ButtonState::kPressed},
     };
 
     for (const auto& button : kButtons) {
@@ -231,8 +230,8 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
   raw_ptr<views::View> root_view_ = nullptr;
   raw_ptr<BrowserFrameViewLayoutLinuxNative> layout_manager_ = nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
-  std::unique_ptr<views::NavButtonProvider> nav_button_provider_;
-  std::unique_ptr<views::WindowFrameProvider> frame_provider_;
+  std::unique_ptr<ui::NavButtonProvider> nav_button_provider_;
+  std::unique_ptr<ui::WindowFrameProvider> frame_provider_;
 
   // Widgets:
   raw_ptr<views::ImageButton> minimize_button_ = nullptr;

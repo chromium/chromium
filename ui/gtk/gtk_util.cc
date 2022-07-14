@@ -683,7 +683,7 @@ gfx::Size GetSeparatorSize(bool horizontal) {
 }
 
 float GetDeviceScaleFactor() {
-  views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
   return linux_ui ? linux_ui->GetDeviceScaleFactor() : 1;
 }
 

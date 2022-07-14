@@ -24,9 +24,9 @@ namespace qt {
 class QtNativeTheme;
 
 // Interface to QT desktop features.
-class QtUi : public views::LinuxUI, QtInterface::Delegate {
+class QtUi : public ui::LinuxUi, QtInterface::Delegate {
  public:
-  explicit QtUi(std::unique_ptr<views::LinuxUI> fallback_linux_uik);
+  explicit QtUi(std::unique_ptr<ui::LinuxUi> fallback_linux_uik);
 
   QtUi(const QtUi&) = delete;
   QtUi& operator=(const QtUi&) = delete;
@@ -51,7 +51,7 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) const override;
 
-  // views::LinuxUI:
+  // ui::LinuxUi:
   bool Initialize() override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
@@ -69,8 +69,8 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   float GetDeviceScaleFactor() const override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;
-  std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;
-  views::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
+  std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
+  ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
@@ -101,7 +101,7 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
 
   // TODO(https://crbug.com/1317782): This is a fallback for any unimplemented
   // functionality in the QT backend and should eventually be removed.
-  std::unique_ptr<views::LinuxUI> fallback_linux_ui_;
+  std::unique_ptr<ui::LinuxUi> fallback_linux_ui_;
 
   // QT modifies argc and argv, and they must be kept alive while
   // `shim_` is alive.
@@ -122,8 +122,8 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
 
 // This should be the only symbol exported from this component.
 COMPONENT_EXPORT(QT)
-std::unique_ptr<views::LinuxUI> CreateQtUi(
-    std::unique_ptr<views::LinuxUI> fallback_linux_ui);
+std::unique_ptr<ui::LinuxUi> CreateQtUi(
+    std::unique_ptr<ui::LinuxUi> fallback_linux_ui);
 
 }  // namespace qt
 

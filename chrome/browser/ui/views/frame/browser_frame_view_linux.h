@@ -13,7 +13,7 @@
 // A specialization of OpaqueBrowserFrameView that is also able to
 // render client side decorations (shadow, border, and rounded corners).
 class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
-                              public views::WindowButtonOrderObserver {
+                              public ui::WindowButtonOrderObserver {
  public:
   BrowserFrameViewLinux(BrowserFrame* frame,
                         BrowserView* browser_view,
@@ -36,7 +36,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   static gfx::ShadowValues GetShadowValues();
 
  protected:
-  // views::WindowButtonOrderObserver:
+  // ui::WindowButtonOrderObserver:
   void OnWindowButtonOrderingChange() override;
 
   // views::View:

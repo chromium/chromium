@@ -34,7 +34,7 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view) {
 #if BUILDFLAG(IS_LINUX)
-  auto* linux_ui = views::LinuxUI::instance();
+  auto* linux_ui = ui::LinuxUi::instance();
   auto* profile = browser_view->browser()->profile();
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   auto* app_controller = browser_view->browser()->app_controller();

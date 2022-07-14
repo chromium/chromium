@@ -18,13 +18,13 @@
 
 namespace {
 
-std::unique_ptr<views::LinuxUI> BuildLinuxUI() {
+std::unique_ptr<ui::LinuxUi> BuildLinuxUI() {
   // If the ozone backend hasn't provided a LinuxUiDelegate, don't try to create
   // a LinuxUi instance as this may result in a crash in toolkit initialization.
   if (!ui::LinuxUiDelegate::GetInstance())
     return nullptr;
 
-  return CreateLinuxUi();
+  return ui::CreateLinuxUi();
 }
 
 }  // namespace
@@ -46,7 +46,7 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
           return ThemeServiceAuraLinux::ShouldUseSystemThemeForProfile(
               GetThemeProfileForWindow(window));
         }));
-    views::LinuxUI::SetInstance(std::move(linux_ui));
+    ui::LinuxUi::SetInstance(std::move(linux_ui));
 
     // Cursor theme changes are tracked by LinuxUI (via a CursorThemeManager
     // implementation). Start observing them once it's initialized.

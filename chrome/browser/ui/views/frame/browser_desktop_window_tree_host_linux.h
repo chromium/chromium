@@ -29,7 +29,7 @@ class BrowserDesktopWindowTreeHostLinux
     : public BrowserDesktopWindowTreeHost,
       public views::DesktopWindowTreeHostLinux,
       ui::NativeThemeObserver,
-      views::DeviceScaleFactorObserver {
+      ui::DeviceScaleFactorObserver {
  public:
   BrowserDesktopWindowTreeHostLinux(
       views::internal::NativeWidgetDelegate* native_widget_delegate,
@@ -102,10 +102,10 @@ class BrowserDesktopWindowTreeHostLinux
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
-  base::ScopedObservation<views::LinuxUI,
-                          views::DeviceScaleFactorObserver,
-                          &views::LinuxUI::AddDeviceScaleFactorObserver,
-                          &views::LinuxUI::RemoveDeviceScaleFactorObserver>
+  base::ScopedObservation<ui::LinuxUi,
+                          ui::DeviceScaleFactorObserver,
+                          &ui::LinuxUi::AddDeviceScaleFactorObserver,
+                          &ui::LinuxUi::RemoveDeviceScaleFactorObserver>
       scale_observation_{this};
 };
 

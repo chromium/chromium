@@ -12,22 +12,22 @@
 
 namespace {
 
-views::NavButtonProvider::ButtonState ButtonStateToNavButtonProviderState(
+ui::NavButtonProvider::ButtonState ButtonStateToNavButtonProviderState(
     views::Button::ButtonState state) {
   switch (state) {
     case views::Button::STATE_NORMAL:
-      return views::NavButtonProvider::ButtonState::kNormal;
+      return ui::NavButtonProvider::ButtonState::kNormal;
     case views::Button::STATE_HOVERED:
-      return views::NavButtonProvider::ButtonState::kHovered;
+      return ui::NavButtonProvider::ButtonState::kHovered;
     case views::Button::STATE_PRESSED:
-      return views::NavButtonProvider::ButtonState::kPressed;
+      return ui::NavButtonProvider::ButtonState::kPressed;
     case views::Button::STATE_DISABLED:
-      return views::NavButtonProvider::ButtonState::kDisabled;
+      return ui::NavButtonProvider::ButtonState::kDisabled;
 
     case views::Button::STATE_COUNT:
     default:
       NOTREACHED();
-      return views::NavButtonProvider::ButtonState::kNormal;
+      return ui::NavButtonProvider::ButtonState::kNormal;
   }
 }
 
@@ -43,8 +43,8 @@ BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
     BrowserFrame* frame,
     BrowserView* browser_view,
     BrowserFrameViewLayoutLinux* layout,
-    std::unique_ptr<views::NavButtonProvider> nav_button_provider,
-    views::WindowFrameProvider* window_frame_provider)
+    std::unique_ptr<ui::NavButtonProvider> nav_button_provider,
+    ui::WindowFrameProvider* window_frame_provider)
     : BrowserFrameViewLinux(frame, browser_view, layout),
       nav_button_provider_(std::move(nav_button_provider)),
       window_frame_provider_(window_frame_provider) {}
@@ -85,11 +85,11 @@ void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
   nav_button_provider_->RedrawImages(params.top_area_height, params.maximized,
                                      params.active);
   for (auto type : {
-           views::NavButtonProvider::FrameButtonDisplayType::kMinimize,
+           ui::NavButtonProvider::FrameButtonDisplayType::kMinimize,
            IsMaximized()
-               ? views::NavButtonProvider::FrameButtonDisplayType::kRestore
-               : views::NavButtonProvider::FrameButtonDisplayType::kMaximize,
-           views::NavButtonProvider::FrameButtonDisplayType::kClose,
+               ? ui::NavButtonProvider::FrameButtonDisplayType::kRestore
+               : ui::NavButtonProvider::FrameButtonDisplayType::kMaximize,
+           ui::NavButtonProvider::FrameButtonDisplayType::kClose,
        }) {
     for (size_t state = 0; state < views::Button::STATE_COUNT; state++) {
       views::Button::ButtonState button_state =
@@ -106,15 +106,15 @@ void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
 }
 
 views::Button* BrowserFrameViewLinuxNative::GetButtonFromDisplayType(
-    views::NavButtonProvider::FrameButtonDisplayType type) {
+    ui::NavButtonProvider::FrameButtonDisplayType type) {
   switch (type) {
-    case views::NavButtonProvider::FrameButtonDisplayType::kMinimize:
+    case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
       return minimize_button();
-    case views::NavButtonProvider::FrameButtonDisplayType::kMaximize:
+    case ui::NavButtonProvider::FrameButtonDisplayType::kMaximize:
       return maximize_button();
-    case views::NavButtonProvider::FrameButtonDisplayType::kRestore:
+    case ui::NavButtonProvider::FrameButtonDisplayType::kRestore:
       return restore_button();
-    case views::NavButtonProvider::FrameButtonDisplayType::kClose:
+    case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
       return close_button();
     default:
       NOTREACHED();

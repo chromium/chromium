@@ -5,7 +5,7 @@
 #ifndef UI_LINUX_WINDOW_BUTTON_ORDER_OBSERVER_H_
 #define UI_LINUX_WINDOW_BUTTON_ORDER_OBSERVER_H_
 
-namespace views {
+namespace ui {
 
 // Observer interface to receive the ordering of the min,max,close buttons.
 class WindowButtonOrderObserver {
@@ -17,6 +17,6 @@ class WindowButtonOrderObserver {
   virtual ~WindowButtonOrderObserver() = default;
 };
 
-}  // namespace views
+}  // namespace ui
 
 #endif  // UI_LINUX_WINDOW_BUTTON_ORDER_OBSERVER_H_

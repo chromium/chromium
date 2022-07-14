@@ -198,14 +198,14 @@ class ColorProviderTest
     static bool initialized_mixers = false;
     if (!initialized_mixers) {
 #if BUILDFLAG(IS_LINUX)
-      // Ensures LinuxUI is configured on supported linux platforms.
+      // Ensures LinuxUi is configured on supported linux platforms.
       // Initializing the toolkit also adds the native toolkit ColorMixers.
       ui::OzonePlatform::InitParams ozone_params;
       ozone_params.single_process = true;
       ui::OzonePlatform::InitializeForUI(ozone_params);
-      auto linux_ui = CreateLinuxUi();
+      auto linux_ui = ui::CreateLinuxUi();
       ASSERT_TRUE(linux_ui);
-      views::LinuxUI::SetInstance(std::move(linux_ui));
+      ui::LinuxUi::SetInstance(std::move(linux_ui));
 #endif  // BUILDFLAG(IS_LINUX)
 
       // Add the Chrome ColorMixers after native ColorMixers.
@@ -215,7 +215,7 @@ class ColorProviderTest
       initialized_mixers = true;
     }
 #if BUILDFLAG(IS_LINUX)
-    views::LinuxUI::instance()->SetUseSystemThemeCallback(base::BindRepeating(
+    ui::LinuxUi::instance()->SetUseSystemThemeCallback(base::BindRepeating(
         [](bool use_system_theme, aura::Window* window) {
           return use_system_theme;
         },
@@ -232,7 +232,7 @@ class ColorProviderTest
     native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
 #if BUILDFLAG(IS_LINUX)
     if (system_theme == SystemTheme::kCustom) {
-      const auto* linux_ui = views::LinuxUI::instance();
+      const auto* linux_ui = ui::LinuxUi::instance();
       native_theme_ = linux_ui->GetNativeTheme(nullptr);
     }
 #endif

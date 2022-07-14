@@ -35,13 +35,13 @@ class SystemThemeLinux : public CustomThemeSupplier {
   ~SystemThemeLinux() override;
 
   // These pointers are not owned by us.
-  const raw_ptr<views::LinuxUI> linux_ui_;
+  const raw_ptr<ui::LinuxUi> linux_ui_;
   const raw_ptr<PrefService> pref_service_;
 };
 
 SystemThemeLinux::SystemThemeLinux(PrefService* pref_service)
     : CustomThemeSupplier(ThemeType::kNativeX11),
-      linux_ui_(views::LinuxUI::instance()),
+      linux_ui_(ui::LinuxUi::instance()),
       pref_service_(pref_service) {}
 
 void SystemThemeLinux::StartUsingTheme() {

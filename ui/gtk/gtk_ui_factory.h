@@ -9,13 +9,13 @@
 
 #include "base/component_export.h"
 
-namespace views {
-class LinuxUI;
+namespace ui {
+class LinuxUi;
 }
 
 // Access point to the GTK desktop system.  This should be the only symbol
 // exported from this component.
 COMPONENT_EXPORT(GTK)
-std::unique_ptr<views::LinuxUI> BuildGtkUi();
+std::unique_ptr<ui::LinuxUi> BuildGtkUi();
 
 #endif  // UI_GTK_GTK_UI_FACTORY_H_

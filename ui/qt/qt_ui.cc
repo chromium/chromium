@@ -115,7 +115,7 @@ class QtNativeTheme : public ui::NativeThemeAura {
   raw_ptr<QtInterface> const shim_;
 };
 
-QtUi::QtUi(std::unique_ptr<views::LinuxUI> fallback_linux_ui)
+QtUi::QtUi(std::unique_ptr<ui::LinuxUi> fallback_linux_ui)
     : fallback_linux_ui_(std::move(fallback_linux_ui)) {}
 
 QtUi::~QtUi() = default;
@@ -267,12 +267,12 @@ bool QtUi::AnimationsEnabled() const {
   return shim_->GetAnimationDurationMs() > 0;
 }
 
-std::unique_ptr<views::NavButtonProvider> QtUi::CreateNavButtonProvider() {
+std::unique_ptr<ui::NavButtonProvider> QtUi::CreateNavButtonProvider() {
   // QT prefers server-side decorations.
   return nullptr;
 }
 
-views::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame) {
+ui::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame) {
   // QT prefers server-side decorations.
   return nullptr;
 }
@@ -501,8 +501,8 @@ absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
   }
 }
 
-std::unique_ptr<views::LinuxUI> CreateQtUi(
-    std::unique_ptr<views::LinuxUI> fallback_linux_ui) {
+std::unique_ptr<ui::LinuxUi> CreateQtUi(
+    std::unique_ptr<ui::LinuxUi> fallback_linux_ui) {
   return std::make_unique<QtUi>(std::move(fallback_linux_ui));
 }
 

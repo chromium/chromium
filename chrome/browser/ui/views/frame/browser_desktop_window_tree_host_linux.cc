@@ -62,7 +62,7 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
                                     : views::Widget::FrameType::kForceNative);
 
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-  if (auto* linux_ui = views::LinuxUI::instance())
+  if (auto* linux_ui = ui::LinuxUi::instance())
     scale_observation_.Observe(linux_ui);
 }
 

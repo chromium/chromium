@@ -11,7 +11,7 @@ class Insets;
 class Rect;
 }  // namespace gfx
 
-namespace views {
+namespace ui {
 
 class WindowFrameProvider {
  public:
@@ -33,6 +33,6 @@ class WindowFrameProvider {
                                 bool focused) = 0;
 };
 
-}  // namespace views
+}  // namespace ui
 
 #endif  // UI_LINUX_WINDOW_FRAME_PROVIDER_H_

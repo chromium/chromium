@@ -154,7 +154,7 @@ void ShellBrowserMainParts::ToolkitInitialized() {
     return;
 
 #if BUILDFLAG(IS_LINUX)
-  views::LinuxUI::SetInstance(CreateLinuxUi());
+  ui::LinuxUi::SetInstance(ui::CreateLinuxUi());
 #endif
 }
 
@@ -197,7 +197,7 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
   browser_context_.reset();
   off_the_record_browser_context_.reset();
 #if BUILDFLAG(IS_LINUX)
-  views::LinuxUI::SetInstance(nullptr);
+  ui::LinuxUi::SetInstance(nullptr);
 #endif
   performance_manager_lifetime_.reset();
 }

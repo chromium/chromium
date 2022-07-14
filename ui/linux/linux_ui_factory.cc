@@ -16,12 +16,14 @@
 #include "ui/qt/qt_ui.h"
 #endif
 
-std::unique_ptr<views::LinuxUI> CreateLinuxUi() {
+namespace ui {
+
+std::unique_ptr<LinuxUi> CreateLinuxUi() {
   // TODO(thomasanderson): LinuxUI backend should be chosen depending on the
   // environment.
 #if BUILDFLAG(USE_QT)
   {
-    std::unique_ptr<views::LinuxUI> fallback_linux_ui;
+    std::unique_ptr<LinuxUi> fallback_linux_ui;
 #if BUILDFLAG(USE_GTK)
     fallback_linux_ui = BuildGtkUi();
     if (!fallback_linux_ui->Initialize())
@@ -41,3 +43,5 @@ std::unique_ptr<views::LinuxUI> CreateLinuxUi() {
 #endif
   return nullptr;
 }
+
+}  // namespace ui

@@ -403,7 +403,7 @@ void BrowserFrame::SelectNativeTheme() {
   }
 
 #if BUILDFLAG(IS_LINUX)
-  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  const ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
   // Ignore GTK+ for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:

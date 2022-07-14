@@ -58,7 +58,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     SetThemeMode(ThemeMode::kDefault);
 #if BUILDFLAG(IS_LINUX)
-    views::LinuxUI::instance()->SetUseSystemThemeCallback(
+    ui::LinuxUi::instance()->SetUseSystemThemeCallback(
         base::BindRepeating([](aura::Window* window) { return false; }));
 #endif
   }
