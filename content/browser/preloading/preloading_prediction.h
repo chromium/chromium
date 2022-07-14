@@ -32,8 +32,11 @@ class PreloadingPrediction {
   // is associated with the WebContents primary page that triggered the
   // preloading prediction. This is done to easily analyze the impact of the
   // preloading prediction on the primary visible page.
-  void RecordPreloadingPredictionUKMs(ukm::SourceId navigated_page_source_id,
-                                      const GURL& navigated_url);
+  void RecordPreloadingPredictionUKMs(ukm::SourceId navigated_page_source_id);
+
+  // Sets `is_accurate_prediction_` to true if `navigated_url` matches the URL
+  // predicate.
+  void SetIsAccuratePrediction(const GURL& navigated_url);
 
   explicit PreloadingPrediction(
       PreloadingPredictor predictor,
@@ -56,6 +59,10 @@ class PreloadingPrediction {
   // considered as pointing to the same destination as this varies for different
   // predictors.
   const PreloadingURLMatchCallback url_match_predicate_;
+
+  // Set to true when preloading prediction was correct i.e., when the
+  // navigation happens to the same predicted URL.
+  bool is_accurate_prediction_ = false;
 };
 
 }  // namespace content

@@ -104,13 +104,14 @@ class AutocompleteActionPredictor
   void ClearTransitionalMatches();
 
   // Returns the recommended action given |user_text|, the text the user has
-  // entered in the Omnibox, and |match|, the suggestion from Autocomplete.
-  // This method uses information from the ShortcutsBackend including how much
-  // of the matching entry the user typed, and how long it's been since the user
-  // visited the matching URL, to calculate a score between 0 and 1. This score
-  // is then mapped to an Action.
+  // entered in the Omnibox associated with |web_contents|, and |match|, the
+  // suggestion from Autocomplete. This method uses information from the
+  // ShortcutsBackend including how much of the matching entry the user typed,
+  // and how long it's been since the user visited the matching URL, to
+  // calculate a score between 0 and 1. This score is then mapped to an Action.
   Action RecommendAction(const std::u16string& user_text,
-                         const AutocompleteMatch& match) const;
+                         const AutocompleteMatch& match,
+                         content::WebContents* web_contents) const;
 
   // Begins prerendering or prefetch with `url`. The `size` gives the initial
   // size for the target prefetch. The predictor will run at most one prerender
@@ -129,6 +130,14 @@ class AutocompleteActionPredictor
 
   // Should be called when a URL is opened from the omnibox.
   void OnOmniboxOpenedUrl(const OmniboxLog& log);
+
+  // Uses local caches to calculate an exact percentage prediction that the user
+  // will take a particular match given what they have typed. |is_in_db| is set
+  // to differentiate trivial zero results resulting from a match not being
+  // found from actual zero results where the calculation returns 0.0.
+  double CalculateConfidence(const std::u16string& user_text,
+                             const AutocompleteMatch& match,
+                             bool* is_in_db) const;
 
   bool initialized() { return initialized_; }
 
@@ -224,14 +233,6 @@ class AutocompleteActionPredictor
 
   // Registers for notifications and sets the |initialized_| flag.
   void FinishInitialization();
-
-  // Uses local caches to calculate an exact percentage prediction that the user
-  // will take a particular match given what they have typed. |is_in_db| is set
-  // to differentiate trivial zero results resulting from a match not being
-  // found from actual zero results where the calculation returns 0.0.
-  double CalculateConfidence(const std::u16string& user_text,
-                             const AutocompleteMatch& match,
-                             bool* is_in_db) const;
 
   // Calculates the confidence for an entry in the DBCacheMap.
   double CalculateConfidenceForDbEntry(DBCacheMap::const_iterator iter) const;

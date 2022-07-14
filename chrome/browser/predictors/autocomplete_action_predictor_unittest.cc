@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
@@ -29,13 +30,23 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/preloading_test_util.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_tester.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
+using content::WebContents;
 using predictors::AutocompleteActionPredictor;
+
+using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
+using ukm::builders::Preloading_Prediction;
 
 namespace {
 
@@ -106,6 +117,14 @@ class AutocompleteActionPredictorTest : public testing::Test {
         HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
 
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
+    ukm_entry_builder_ =
+        std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kOmniboxDirectURLInput));
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
     predictor_ = std::make_unique<AutocompleteActionPredictor>(profile_.get());
     profile_->BlockUntilHistoryProcessesPendingRequests();
     content::RunAllTasksUntilIdle();
@@ -116,6 +135,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
   }
 
   ~AutocompleteActionPredictorTest() override {
+    web_contents_.reset();
     // Wait for all pending tasks on the DB sequence.
     content::RunAllTasksUntilIdle();
     // Since we instantiated the predictor instead of going through a factory
@@ -173,6 +193,8 @@ class AutocompleteActionPredictorTest : public testing::Test {
 
     return row.id;
   }
+
+  WebContents* web_contents() { return web_contents_.get(); }
 
   void UpdateRow(const AutocompleteActionPredictorTable::Row& row) {
     AutocompleteActionPredictor::DBCacheKey key = { row.user_text, row.url };
@@ -284,10 +306,24 @@ class AutocompleteActionPredictorTest : public testing::Test {
     return AutocompleteActionPredictor::kMaximumStringLength;
   }
 
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingPredictionUkmEntryBuilder&
+  ukm_entry_builder() {
+    return *ukm_entry_builder_;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AutocompleteActionPredictor> predictor_;
+  std::unique_ptr<content::test::PreloadingPredictionUkmEntryBuilder>
+      ukm_entry_builder_;
+  std::unique_ptr<WebContents> web_contents_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
 
@@ -479,15 +515,53 @@ TEST_F(AutocompleteActionPredictorTest, OnURLsDeletedNonExpired) {
 TEST_F(AutocompleteActionPredictorTest, RecommendActionURL) {
   ASSERT_NO_FATAL_FAILURE(AddAllRows());
 
+  // Navigate to kInitial URL.
+  GURL kInitialUrl("https://example.com");
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(kInitialUrl);
+  content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+      ->InitializeRenderFrameIfNeeded();
+
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::HISTORY_URL;
 
   for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
     match.destination_url = GURL(TestUrlDb()[i].url);
     EXPECT_EQ(TestUrlDb()[i].expected_action,
-              predictor()->RecommendAction(TestUrlDb()[i].user_text, match))
+              predictor()->RecommendAction(TestUrlDb()[i].user_text, match,
+                                           web_contents()))
         << "Unexpected action for " << match.destination_url;
   }
+
+  // Calculate confidence_interval for the first entry to cross-check with
+  // metrics.
+  bool is_in_db = false;
+  match.destination_url = GURL(TestUrlDb()[0].url);
+  double confidence = predictor()->CalculateConfidence(TestUrlDb()[0].user_text,
+                                                       match, &is_in_db);
+
+  // Set the first url in the database as the destination url to cross-check the
+  // metrics for the first Preloading.Prediction UKM.
+  GURL kDestinationUrl(TestUrlDb()[0].url);
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(kDestinationUrl);
+  ukm::SourceId ukm_source_id =
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  // Check that we have recorded Preloading.Prediction for all entries in the
+  // TestUrlDb.
+  auto ukm_entries = test_ukm_recorder()->GetEntries(
+      Preloading_Prediction::kEntryName,
+      content::test::kPreloadingPredictionUkmMetrics);
+  EXPECT_EQ(ukm_entries.size(), std::size(TestUrlDb()));
+  // Cross-check that we have logged the correct metrics for Prediction,
+  // confidence, accurate_prediction on successful activation.
+  UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
+      ukm_source_id, /*confidence=*/confidence * 100,
+      /*accurate_prediction=*/true);
+  EXPECT_EQ(ukm_entries[0], expected_entry)
+      << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[0],
+                                                         expected_entry);
 }
 
 TEST_F(AutocompleteActionPredictorTest, RecommendActionSearch) {
@@ -503,8 +577,8 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionSearch) {
          AutocompleteActionPredictor::ACTION_PRERENDER)
             ? AutocompleteActionPredictor::ACTION_PRECONNECT
             : TestUrlDb()[i].expected_action;
-    EXPECT_EQ(expected_action,
-              predictor()->RecommendAction(TestUrlDb()[i].user_text, match))
+    EXPECT_EQ(expected_action, predictor()->RecommendAction(
+                                   TestUrlDb()[i].user_text, match, nullptr))
         << "Unexpected action for " << match.destination_url;
   }
 }

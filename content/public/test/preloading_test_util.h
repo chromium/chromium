@@ -13,12 +13,13 @@
 
 namespace content::test {
 
-// The set of UKM metric names in the PreloadingAttempt UKM logs. This is
-// useful for calling TestUkmRecorder::GetEntries.
+// The set of UKM metric names in the PreloadingAttempt and PreloadingPrediction
+// UKM logs. This is useful for calling TestUkmRecorder::GetEntries.
 extern const std::vector<std::string> kPreloadingAttemptUkmMetrics;
+extern const std::vector<std::string> kPreloadingPredictionUkmMetrics;
 
 // Utility class to make building expected
-// TestUkmRecorder::HumanReadableUkmEntry for EXPECT_EQ.
+// TestUkmRecorder::HumanReadableUkmEntry for EXPECT_EQ for PreloadingAttempt.
 class PreloadingAttemptUkmEntryBuilder {
  public:
   PreloadingAttemptUkmEntryBuilder(PreloadingType preloading_type,
@@ -34,6 +35,22 @@ class PreloadingAttemptUkmEntryBuilder {
 
  private:
   PreloadingType preloading_type_;
+  PreloadingPredictor predictor_;
+};
+
+// Utility class to make building expected
+// TestUkmRecorder::HumanReadableUkmEntry for EXPECT_EQ for
+// PreloadingPrediction.
+class PreloadingPredictionUkmEntryBuilder {
+ public:
+  explicit PreloadingPredictionUkmEntryBuilder(PreloadingPredictor predictor);
+
+  ukm::TestUkmRecorder::HumanReadableUkmEntry BuildEntry(
+      ukm::SourceId source_id,
+      int64_t confidence,
+      bool accurate_prediction) const;
+
+ private:
   PreloadingPredictor predictor_;
 };
 

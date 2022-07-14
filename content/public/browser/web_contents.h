@@ -100,6 +100,7 @@ class WebContentsDelegate;
 class WebUI;
 struct DropData;
 struct MHTMLGenerationParams;
+class PreloadingAttempt;
 
 // WebContents is the core class in content/. A WebContents renders web content
 // (usually HTML) in a rectangular area.
@@ -1340,17 +1341,19 @@ class WebContents : public PageNavigator,
   // destruction. If the prerendering failed to start (e.g. if prerendering is
   // disabled, failure happened or because this URL is already being
   // prerendered), this function returns a nullptr.
-  // `url_match_predicate` allows embedders to define their own predicates for
-  // matching same-origin URLs during prerendering activation; it would be
-  // useful if embedders want Prerender2 to ignore some parameter mismatches.
-  // Note that if the mismatched prerender URL will be activated due to the
-  // predicate returning true, the last committed URL in the prerendered
-  // RenderFrameHost will be activated.
+  // PreloadingAttempt helps us to log various metrics associated with
+  // particular prerendering attempt. `url_match_predicate` allows embedders to
+  // define their own predicates for matching same-origin URLs during
+  // prerendering activation; it would be useful if embedders want Prerender2 to
+  // ignore some parameter mismatches. Note that if the mismatched prerender URL
+  // will be activated due to the predicate returning true, the last committed
+  // URL in the prerendered RenderFrameHost will be activated.
   virtual std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PrerenderTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       ui::PageTransition page_transition,
+      PreloadingAttempt* preloading_attempt,
       absl::optional<base::RepeatingCallback<bool(const GURL&)>>
           url_match_predicate = absl::nullopt) = 0;
 

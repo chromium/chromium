@@ -4903,7 +4903,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
           kFirstPrerenderingUrl, PrerenderTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
   EXPECT_TRUE(prerender_handle1);
 
   histogram_tester.ExpectBucketCount(
@@ -4918,7 +4919,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
           kSecondPrerenderingUrl, PrerenderTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
   EXPECT_TRUE(prerender_handle2);
 
   histogram_tester.ExpectBucketCount(
@@ -4933,7 +4935,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
           kThirdPrerenderingUrl, PrerenderTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
   EXPECT_FALSE(prerender_handle3);
 
   histogram_tester.ExpectBucketCount(
@@ -4972,7 +4975,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           kSecondPrerenderingUrl, PrerenderTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
   EXPECT_TRUE(prerender_handle2);
 
   histogram_tester.ExpectBucketCount(
@@ -4987,7 +4991,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           kThirdPrerenderingUrl, PrerenderTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
   EXPECT_FALSE(prerender_handle3);
 
   histogram_tester.ExpectBucketCount(
@@ -5002,7 +5007,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       kThirdPrerenderingUrl, PrerenderTriggerType::kEmbedder,
       "EmbedderSuffixForTest",
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      nullptr);
   EXPECT_TRUE(prerender_handle3);
 }
 
@@ -5060,7 +5066,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           kPrerenderingUrl, PrerenderTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *shell()->web_contents(), kPrerenderingUrl);
@@ -5084,7 +5091,8 @@ void PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
           prerendering_url, PrerenderTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(web_contents,
                                                             prerendering_url);

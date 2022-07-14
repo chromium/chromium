@@ -100,6 +100,13 @@ class AnchorElementPreloaderBrowserTest
     }
   }
 
+  void GiveItSomeTime(const base::TimeDelta& t) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), t);
+    run_loop.Run();
+  }
+
   // predictors::PreconnectManager::Observer
   // We observe DNS preresolution instead of preconnect, because test
   // servers all resolve to localhost and Chrome won't preconnect
@@ -316,6 +323,9 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   SimulateMouseDownElementWithId("anchor1");
   EXPECT_EQ(0, preresolve_count_);
+
+  // Give some time for Preloading APIs creation.
+  GiveItSomeTime(base::Milliseconds(100));
 
   histogram_tester()->ExpectTotalCount(
       kPreloadingAnchorElementPreloaderPreloadingTriggered, 0);

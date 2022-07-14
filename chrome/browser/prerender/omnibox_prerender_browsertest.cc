@@ -13,6 +13,7 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -30,10 +31,13 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
@@ -45,6 +49,9 @@
 #endif
 
 namespace {
+
+using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
+using ukm::builders::Preloading_Attempt;
 
 class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
  public:
@@ -65,6 +72,12 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    ukm_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            content::PreloadingType::kPrerender,
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kOmniboxDirectURLInput));
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -94,8 +107,19 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
         profile);
   }
 
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder& ukm_entry_builder() {
+    return *ukm_entry_builder_;
+  }
+
  private:
   content::test::PrerenderTestHelper prerender_helper_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      ukm_entry_builder_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -133,16 +157,21 @@ class OmniboxPrerenderDefaultPrerender2BrowserTest
 
 // Tests that Prerender2 cannot be triggered when preload setting is disabled.
 IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+
   // Disable network prediction.
   PrefService* prefs = GetProfile()->GetPrefs();
   prefetch::SetPreloadPagesState(prefs,
                                  prefetch::PreloadPagesState::kNoPreloading);
   ASSERT_FALSE(prefetch::IsSomePreloadingEnabled(*prefs));
 
+  // Navigate to initial URL.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, kInitialUrl));
+
   // Attempt to prerender a direct URL input.
   auto* predictor = GetAutocompleteActionPredictor();
   ASSERT_TRUE(predictor);
-  content::WebContents* web_contents = GetActiveWebContents();
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
   predictor->StartPrerendering(prerender_url, *web_contents, gfx::Size(50, 50));
 
@@ -150,6 +179,30 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   base::RunLoop().RunUntilIdle();
   int host_id = prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  {
+    // Navigate to a different URL other than the prerender_url to flush the
+    // metrics.
+    GURL kUrl_a = embedded_test_server()->GetURL("a.com", "/title1.html");
+    ASSERT_TRUE(content::NavigateToURL(web_contents, kUrl_a));
+
+    ukm::SourceId ukm_source_id =
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 1u);
+
+    UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
+        ukm_source_id, content::PreloadingEligibility::kPreloadingDisabled,
+        content::PreloadingHoldbackStatus::kUnspecified,
+        content::PreloadingTriggeringOutcome::kUnspecified,
+        content::PreloadingFailureReason::kUnspecified,
+        /*accurate=*/false);
+    EXPECT_EQ(ukm_entries[0], expected_entry)
+        << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[0],
+                                                           expected_entry);
+  }
 
   // Re-enable the setting.
   prefetch::SetPreloadPagesState(
@@ -165,6 +218,30 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   registry_observer.WaitForTrigger(prerender_url);
   host_id = prerender_helper().GetHostForUrl(prerender_url);
   EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  {
+    // Navigate to prerender_url.
+    ASSERT_TRUE(content::NavigateToURL(web_contents, prerender_url));
+
+    ukm::SourceId ukm_source_id =
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+
+    // There should be 2 entries after we attempt Prerender again.
+    EXPECT_EQ(ukm_entries.size(), 2u);
+
+    UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
+        ukm_source_id, content::PreloadingEligibility::kEligible,
+        content::PreloadingHoldbackStatus::kAllowed,
+        content::PreloadingTriggeringOutcome::kSuccess,
+        content::PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true);
+    EXPECT_EQ(ukm_entries[1], expected_entry)
+        << content::test::ActualVsExpectedUkmEntryToString(ukm_entries[1],
+                                                           expected_entry);
+  }
 }
 
 // Verifies that prerendering functions in document are properly exposed.

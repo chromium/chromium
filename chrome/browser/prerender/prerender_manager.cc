@@ -28,12 +28,14 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/replaced_navigation_entry_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace internal {
@@ -44,6 +46,8 @@ const char kHistogramPrerenderPredictionStatusDirectUrlInput[] =
 }  // namespace internal
 
 namespace {
+
+using content::PreloadingTriggeringOutcome;
 
 bool IsJavascriptDisabled(content::WebContents& web_contents, const GURL& url) {
   Profile* profile =
@@ -302,10 +306,29 @@ void PrerenderManager::DidFinishNavigation(
 }
 
 base::WeakPtr<content::PrerenderHandle>
-PrerenderManager::StartPrerenderDirectUrlInput(const GURL& prerendering_url) {
+PrerenderManager::StartPrerenderDirectUrlInput(
+    const GURL& prerendering_url,
+    content::PreloadingAttempt& preloading_attempt) {
   if (direct_url_input_prerender_handle_) {
     if (direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
         prerendering_url) {
+      // In case a prerender is already present for the URL, prerendering is
+      // eligible but mark triggering outcome as a duplicate.
+      preloading_attempt.SetEligibility(
+          content::PreloadingEligibility::kEligible);
+
+      // Check and set the PreloadingHoldbackStatus before setting the
+      // TriggeringOutcome.
+      if (base::GetFieldTrialParamByFeatureAsBool(
+              blink::features::kPrerender2, "prerender_holdback", false)) {
+        preloading_attempt.SetHoldbackStatus(
+            content::PreloadingHoldbackStatus::kHoldback);
+      } else {
+        preloading_attempt.SetHoldbackStatus(
+            content::PreloadingHoldbackStatus::kAllowed);
+      }
+      preloading_attempt.SetTriggeringOutcome(
+          PreloadingTriggeringOutcome::kDuplicate);
       return direct_url_input_prerender_handle_->GetWeakPtr();
     }
 
@@ -318,7 +341,9 @@ PrerenderManager::StartPrerenderDirectUrlInput(const GURL& prerendering_url) {
       prerendering_url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kDirectUrlInputMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      &preloading_attempt);
+
   if (direct_url_input_prerender_handle_) {
     return direct_url_input_prerender_handle_->GetWeakPtr();
   }
@@ -497,13 +522,15 @@ void PrerenderManager::StartPrerenderSearchResultInternal(
       base::BindRepeating(&IsSearchDestinationMatch, search_terms,
                           std::ref(*web_contents()));
 
+  // TODO(crbug.com/1325073): Integrate DSE Prerender logging with Preloading
+  // APIs.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       web_contents()->StartPrerendering(
           prerendering_url, content::PrerenderTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          std::move(url_match_predicate));
+          nullptr, std::move(url_match_predicate));
 
   if (prerender_handle) {
     search_prerender_task_ = std::make_unique<SearchPrerenderTask>(

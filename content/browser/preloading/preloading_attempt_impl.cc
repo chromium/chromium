@@ -111,19 +111,13 @@ PreloadingAttemptImpl::PreloadingAttemptImpl(
 PreloadingAttemptImpl::~PreloadingAttemptImpl() = default;
 
 void PreloadingAttemptImpl::RecordPreloadingAttemptUKMs(
-    ukm::SourceId navigated_page_source_id,
-    const GURL& navigated_url) {
+    ukm::SourceId navigated_page_source_id) {
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-
-  DCHECK(url_match_predicate_);
-  // Use the predicate to match the URLs as the matching logic varies for each
-  // predictor.
-  bool accurate_triggering = url_match_predicate_.Run(navigated_url);
 
   // Ensure that when the `triggering_outcome_` is kSuccess, then the
   // accurate_triggering should be true.
   if (triggering_outcome_ == PreloadingTriggeringOutcome::kSuccess) {
-    DCHECK(accurate_triggering)
+    DCHECK(is_accurate_triggering_)
         << "TriggeringOutcome set to kSuccess without correct prediction\n";
   }
 
@@ -136,7 +130,7 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptUKMs(
         .SetHoldbackStatus(static_cast<int64_t>(holdback_status_))
         .SetTriggeringOutcome(static_cast<int64_t>(triggering_outcome_))
         .SetFailureReason(static_cast<int64_t>(failure_reason_))
-        .SetAccurateTriggering(accurate_triggering)
+        .SetAccurateTriggering(is_accurate_triggering_)
         .Record(ukm_recorder);
   }
 
@@ -149,9 +143,17 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptUKMs(
         .SetHoldbackStatus(static_cast<int64_t>(holdback_status_))
         .SetTriggeringOutcome(static_cast<int64_t>(triggering_outcome_))
         .SetFailureReason(static_cast<int64_t>(failure_reason_))
-        .SetAccurateTriggering(accurate_triggering)
+        .SetAccurateTriggering(is_accurate_triggering_)
         .Record(ukm_recorder);
   }
+}
+
+void PreloadingAttemptImpl::SetIsAccurateTriggering(const GURL& navigated_url) {
+  DCHECK(url_match_predicate_);
+
+  // Use the predicate to match the URLs as the matching logic varies for each
+  // predictor.
+  is_accurate_triggering_ |= url_match_predicate_.Run(navigated_url);
 }
 
 // Used for StateTransitions matching.

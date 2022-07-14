@@ -79,6 +79,12 @@ class CONTENT_EXPORT PreloadingData {
   // details.
   static PreloadingData* GetOrCreateForWebContents(WebContents* web_contents);
 
+  // Helper method to return the PreloadingURLMatchCallback for
+  // `destination_url`. This method will return true only for exact matches to
+  // `destination_url`.
+  static PreloadingURLMatchCallback GetSameURLMatcher(
+      const GURL& destination_url);
+
   // Creates a new PreloadingAttempt and returns a pointer associated with the
   // PreloadingAttempt class. Here callers pass the `url_predicate_callback` to
   // verify if the navigated and triggered URLs match based on callers logic.

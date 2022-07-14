@@ -22,6 +22,7 @@
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +35,7 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents_delegate.h"
 
 namespace {
@@ -194,10 +196,25 @@ void AutocompleteActionPredictor::StartPrerendering(
     const gfx::Size& size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
+    auto* preloading_data =
+        content::PreloadingData::GetOrCreateForWebContents(&web_contents);
+
+    content::PreloadingURLMatchCallback same_url_matcher =
+        content::PreloadingData::GetSameURLMatcher(url);
+
+    // Create new PreloadingAttempt and pass all the values corresponding to
+    // this prerendering attempt.
+    content::PreloadingAttempt* preloading_attempt =
+        preloading_data->AddPreloadingAttempt(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kOmniboxDirectURLInput),
+            content::PreloadingType::kPrerender, std::move(same_url_matcher));
+
     PrerenderManager::CreateForWebContents(&web_contents);
     auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
     direct_url_input_prerender_handle_ =
-        prerender_manager->StartPrerenderDirectUrlInput(url);
+        prerender_manager->StartPrerenderDirectUrlInput(url,
+                                                        *preloading_attempt);
   } else if (base::FeatureList::IsEnabled(
                  features::kOmniboxTriggerForNoStatePrefetch)) {
     content::SessionStorageNamespace* session_storage_namespace =
@@ -229,7 +246,8 @@ void AutocompleteActionPredictor::StartPrerendering(
 AutocompleteActionPredictor::Action
 AutocompleteActionPredictor::RecommendAction(
     const std::u16string& user_text,
-    const AutocompleteMatch& match) const {
+    const AutocompleteMatch& match,
+    content::WebContents* web_contents) const {
   bool is_in_db = false;
   const double confidence = CalculateConfidence(user_text, match, &is_in_db);
   DCHECK(confidence >= 0.0 && confidence <= 1.0);
@@ -254,6 +272,25 @@ AutocompleteActionPredictor::RecommendAction(
   // Downgrade prefetch to preconnect if this is a search match.
   if (action == ACTION_PRERENDER && AutocompleteMatch::IsSearchType(match.type))
     action = ACTION_PRECONNECT;
+
+  // During startup/shutdown it could be possible that the Omnibox doesn't have
+  // an attached WebContents yet. In that case, don't create PreloadingData and
+  // don't add PreloadingPrediction.
+  if (web_contents) {
+    // Create new PreloadingPrediction class and pass all the fields.
+    content::PreloadingURLMatchCallback same_url_matcher =
+        content::PreloadingData::GetSameURLMatcher(match.destination_url);
+
+    auto* preloading_data =
+        content::PreloadingData::GetOrCreateForWebContents(web_contents);
+
+    // We multiply confidence by 100 to pass the percentage and cast it into int
+    // for logs.
+    preloading_data->AddPreloadingPrediction(
+        ToPreloadingPredictor(
+            ChromePreloadingPredictor::kOmniboxDirectURLInput),
+        static_cast<int64_t>(confidence * 100), std::move(same_url_matcher));
+  }
 
   return action;
 }

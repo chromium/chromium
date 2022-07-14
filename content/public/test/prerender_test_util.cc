@@ -338,7 +338,7 @@ PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
   WebContents* web_contents = GetWebContents();
   return web_contents->StartPrerendering(prerendering_url, trigger_type,
                                          embedder_histogram_suffix,
-                                         page_transition);
+                                         page_transition, nullptr);
 }
 
 void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,

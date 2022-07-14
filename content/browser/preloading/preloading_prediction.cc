@@ -23,21 +23,15 @@ PreloadingPrediction::PreloadingPrediction(
 PreloadingPrediction::~PreloadingPrediction() = default;
 
 void PreloadingPrediction::RecordPreloadingPredictionUKMs(
-    ukm::SourceId navigated_page_source_id,
-    const GURL& navigated_url) {
+    ukm::SourceId navigated_page_source_id) {
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-
-  DCHECK(url_match_predicate_);
-  // Use the predicate to match the URLs as the matching logic varies for each
-  // predictor.
-  bool accurate_prediction = url_match_predicate_.Run(navigated_url);
 
   // Don't log when the source id is invalid.
   if (navigated_page_source_id != ukm::kInvalidSourceId) {
     ukm::builders::Preloading_Prediction(navigated_page_source_id)
         .SetPreloadingPredictor(static_cast<int64_t>(predictor_type_))
         .SetConfidence(confidence_)
-        .SetAccuratePrediction(accurate_prediction)
+        .SetAccuratePrediction(is_accurate_prediction_)
         .Record(ukm_recorder);
   }
 
@@ -46,9 +40,17 @@ void PreloadingPrediction::RecordPreloadingPredictionUKMs(
         triggered_primary_page_source_id_)
         .SetPreloadingPredictor(static_cast<int64_t>(predictor_type_))
         .SetConfidence(confidence_)
-        .SetAccuratePrediction(accurate_prediction)
+        .SetAccuratePrediction(is_accurate_prediction_)
         .Record(ukm_recorder);
   }
+}
+
+void PreloadingPrediction::SetIsAccuratePrediction(const GURL& navigated_url) {
+  DCHECK(url_match_predicate_);
+
+  // Use the predicate to match the URLs as the matching logic varies for each
+  // predictor.
+  is_accurate_prediction_ |= url_match_predicate_.Run(navigated_url);
 }
 
 }  // namespace content

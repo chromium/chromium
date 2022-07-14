@@ -76,10 +76,13 @@ class PrerenderManager : public content::WebContentsObserver,
   // to the cancellation of the previous prerender if the given url is different
   // from the on-going one. If the url given is already on-going, this function
   // will return the weak pointer to the on-going prerender handle.
+  // PreloadingAttempt represents the attempt corresponding to this prerender to
+  // log the necessary metrics.
   // TODO(https://crbug.com/1278634): Merge the start method with DSE interface
   // using AutocompleteMatch as the parameter instead of GURL.
   base::WeakPtr<content::PrerenderHandle> StartPrerenderDirectUrlInput(
-      const GURL& prerendering_url);
+      const GURL& prerendering_url,
+      content::PreloadingAttempt& preloading_attempt);
 
   // Returns true if the current tab prerendered a search result for omnibox
   // inputs.

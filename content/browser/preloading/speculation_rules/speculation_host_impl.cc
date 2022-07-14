@@ -237,6 +237,8 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     Referrer referrer(*(it->referrer));
     WebContents* web_contents =
         WebContents::FromRenderFrameHost(&render_frame_host());
+    // TODO(crbug.com/1325073): Update the PreloadingAttempt when integrating
+    // speculation rules logging with Preloading APIs.
     int prerender_host_id = registry_->CreateAndStartHost(
         PrerenderAttributes(it->url, PrerenderTriggerType::kSpeculationRule,
                             /*embedder_histogram_suffix=*/"", referrer,
@@ -246,7 +248,7 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
                             rfhi.GetFrameTreeNodeId(),
                             rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
                             /*url_match_predicate=*/absl::nullopt),
-        *web_contents);
+        *web_contents, /*preloading_attempt=*/nullptr);
     started_prerenders_.insert(end, {.url = it->url,
                                      .referrer = referrer,
                                      .prerender_host_id = prerender_host_id});

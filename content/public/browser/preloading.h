@@ -72,12 +72,36 @@ enum class PreloadingEligibility {
   // predictor.
   kEligible = 1,
 
+  // Preloading operation could be ineligible if it is not triggered
+  // because some precondition was not satisfied. Preloading here could
+  // be ineligible due to various reasons subjective to the preloading
+  // operation like the following.
+  // These values are used in both //chrome and //content after integration with
+  // various preloading features.
+
   // Preloading operation was ineligible because preloading was disabled.
   kPreloadingDisabled = 2,
+
+  // Preloading operation was ineligible because it was triggered from the
+  // background or a hidden page.
+  kHidden = 3,
+
+  // Preloading operation was ineligible because it was invoked for cross origin
+  // navigation while preloading was restricted to same-origin navigations.
+  // (It's plausible that some preloading mechanisms in the future could work
+  // for cross-origin navigations as well.)
+  kCrossOrigin = 4,
+
+  // Preloading was ineligible due to low memory restrictions.
+  kLowMemory = 5,
+
+  // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
+  // each preloading operation
 };
 
 // This constant is used to define the value from which embedders can add more
-// enums beyond this value.
+// enums beyond this value. This constant determines the value of enumerations
+// persisted into logs so should not be changed.
 static constexpr int64_t kPreloadingEligibilityContentEnd = 100;
 
 // The outcome of the holdback check. This is not part of eligibility status to
@@ -139,6 +163,8 @@ enum class PreloadingTriggeringOutcome {
   kTriggeredButOutcomeUnknown = 7,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class PreloadingFailureReason {
   // The failure reason is unspecified if the triggering outcome is not
   // kFailure.
@@ -152,7 +178,7 @@ enum class PreloadingFailureReason {
 // prerender, but "the user already had cookies for a cross-origin prefetch" for
 // prefetch). This constant determines the value of enumerations persisted into
 // logs so should not be changed.
-static constexpr int64_t kPreloadingFailureReasonContentEnd = 100;
+static constexpr int64_t kPreloadingFailureReasonCommonEnd = 100;
 
 }  // namespace content
 

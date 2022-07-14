@@ -63,6 +63,12 @@ bool AreHttpRequestHeadersCompatible(
          potential_activation_headers.ToString();
 }
 
+PreloadingFailureReason ToPreloadingFailureReason(
+    PrerenderHost::FinalStatus status) {
+  return static_cast<PreloadingFailureReason>(
+      static_cast<int>(status) + kPreloadingFailureReasonCommonEnd);
+}
+
 }  // namespace
 
 class PrerenderHost::PageHolder : public FrameTree::Delegate,
@@ -328,8 +334,9 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 };
 
 PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
-                             WebContents& web_contents)
-    : attributes_(attributes) {
+                             WebContents& web_contents,
+                             PreloadingAttemptImpl* attempt)
+    : attributes_(attributes), attempt_(attempt) {
   DCHECK(blink::features::IsPrerender2Enabled());
   // If the prerendering is browser-initiated, it is expected to have no
   // initiator. All initiator related information should be null or invalid. On
@@ -379,6 +386,9 @@ bool PrerenderHost::StartPrerendering() {
 
   // Observe events about the prerendering contents.
   Observe(page_holder_->GetWebContents());
+
+  // Since prerender started we mark it as eligible and set it to running.
+  SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
 
   // Start prerendering navigation.
   NavigationController::LoadURLParams load_url_params(
@@ -440,14 +450,12 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (navigation_request->IsSameDocument())
     return;
 
+  const bool is_inside_prerender_frame_tree =
+      navigation_request->frame_tree_node()->frame_tree() ==
+      page_holder_->frame_tree();
   // Observe navigation only in the prerendering frame tree.
-  if (navigation_request->frame_tree_node()->frame_tree() !=
-      page_holder_->frame_tree()) {
+  if (!is_inside_prerender_frame_tree)
     return;
-  }
-
-  const bool is_prerender_main_frame =
-      navigation_request->GetFrameTreeNodeId() == frame_tree_node_id_;
 
   // Cancel prerendering on navigation request failure.
   //
@@ -455,6 +463,8 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // blocking occurs before NavigationThrottles so cannot be observed in
   // NavigationThrottle::WillFailRequest().
   net::Error net_error = navigation_request->GetNetErrorCode();
+  const bool is_prerender_main_frame =
+      navigation_request->GetFrameTreeNodeId() == frame_tree_node_id_;
   absl::optional<FinalStatus> status;
   if (net_error == net::Error::ERR_BLOCKED_BY_CSP) {
     status = FinalStatus::kNavigationRequestBlockedByCsp;
@@ -475,6 +485,9 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (is_prerender_main_frame) {
     DCHECK(!is_ready_for_activation_);
     is_ready_for_activation_ = true;
+
+    // Prerender is ready to activate. Set the status to kReady.
+    SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
   }
 }
 
@@ -518,6 +531,10 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // source ID.
   RecordFinalStatus(FinalStatus::kActivated, attributes_.initiator_ukm_id,
                     navigation_request.GetNextPageUkmSourceId());
+
+  // Prerender is activated. Set the status to kSuccess.
+  SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
+
   devtools_instrumentation::DidActivatePrerender(navigation_request);
   return page;
 }
@@ -815,6 +832,10 @@ void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
                                       FinalStatus status) {
   RecordFinalStatus(status, attributes_.initiator_ukm_id,
                     ukm::kInvalidSourceId);
+
+  // Set failure reason for this PreloadingAttempt specific to the
+  // FinalStatus.
+  SetFailureReason(status);
 }
 
 void PrerenderHost::CreatePageHolder(WebContentsImpl& web_contents) {
@@ -861,6 +882,70 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
   // relevant comments in AreCommonNavigationParamsCompatibleWithNavigation().
   DCHECK_EQ(common_params_->should_check_main_world_csp,
             network::mojom::CSPDisposition::CHECK);
+}
+
+void PrerenderHost::SetTriggeringOutcome(PreloadingTriggeringOutcome outcome) {
+  if (!attempt_)
+    return;
+
+  attempt_->SetTriggeringOutcome(outcome);
+}
+
+void PrerenderHost::SetEligibility(PreloadingEligibility eligibility) {
+  if (!attempt_)
+    return;
+
+  attempt_->SetEligibility(eligibility);
+}
+
+void PrerenderHost::SetFailureReason(FinalStatus status) {
+  if (!attempt_)
+    return;
+
+  switch (status) {
+    // When adding a new failure reason, consider whether it should be
+    // propagated to `attempt_`. Most values should be propagated, but we
+    // explicitly do not propagate failure reasons if the prerender was actually
+    // successful (kActivated), or if prerender was successfully prepared but
+    // then destroyed because it wasn't needed for a subsequent navigation
+    // (kTriggerDestroyed, kEmbedderTriggeredAndDestroyed).
+    case FinalStatus::kActivated:
+    case FinalStatus::kEmbedderTriggeredAndDestroyed:
+    case FinalStatus::kTriggerDestroyed:
+      return;
+    case FinalStatus::kDestroyed:
+    case FinalStatus::kLowEndDevice:
+    case FinalStatus::kCrossOriginRedirect:
+    case FinalStatus::kCrossOriginNavigation:
+    case FinalStatus::kInvalidSchemeRedirect:
+    case FinalStatus::kInvalidSchemeNavigation:
+    case FinalStatus::kInProgressNavigation:
+    case FinalStatus::kNavigationRequestBlockedByCsp:
+    case FinalStatus::kMainFrameNavigation:
+    case FinalStatus::kMojoBinderPolicy:
+    case FinalStatus::kRendererProcessCrashed:
+    case FinalStatus::kRendererProcessKilled:
+    case FinalStatus::kDownload:
+    case FinalStatus::kNavigationNotCommitted:
+    case FinalStatus::kNavigationBadHttpStatus:
+    case FinalStatus::kClientCertRequested:
+    case FinalStatus::kNavigationRequestNetworkError:
+    case FinalStatus::kMaxNumOfRunningPrerendersExceeded:
+    case FinalStatus::kCancelAllHostsForTesting:
+    case FinalStatus::kDidFailLoad:
+    case FinalStatus::kStop:
+    case FinalStatus::kSslCertificateError:
+    case FinalStatus::kLoginAuthRequested:
+    case FinalStatus::kUaChangeRequiresReload:
+    case FinalStatus::kBlockedByClient:
+    case FinalStatus::kAudioOutputDeviceRequested:
+    case FinalStatus::kMixedContent:
+    case FinalStatus::kTriggerBackgrounded:
+    case FinalStatus::kEmbedderTriggeredAndSameOriginRedirected:
+    case FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
+      attempt_->SetFailureReason(ToPreloadingFailureReason(status));
+      return;
+  }
 }
 
 bool PrerenderHost::IsUrlMatch(const GURL& url) const {

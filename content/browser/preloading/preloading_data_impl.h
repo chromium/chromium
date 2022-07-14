@@ -49,6 +49,7 @@ class CONTENT_EXPORT PreloadingDataImpl
       PreloadingURLMatchCallback url_match_predicate) override;
 
   // WebContentsObserver override.
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(Page& page) override;
   void WebContentsDestroyed() override;
 
@@ -57,10 +58,10 @@ class CONTENT_EXPORT PreloadingDataImpl
   friend class WebContentsUserData<PreloadingDataImpl>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  void RecordUKMForPreloadingAttempts(ukm::SourceId navigated_page_source_id,
-                                      const GURL& navigated_url);
-  void RecordUKMForPreloadingPredictions(ukm::SourceId navigated_page_source_id,
-                                         const GURL& navigated_url);
+  void RecordUKMForPreloadingAttempts(ukm::SourceId navigated_page_source_id);
+  void RecordUKMForPreloadingPredictions(
+      ukm::SourceId navigated_page_source_id);
+  void SetIsAccurateTriggeringAndPrediction(const GURL& navigated_url);
 
   // Stores all the preloading attempts that are happening for the next
   // navigation until the navigation takes place.

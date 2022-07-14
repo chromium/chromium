@@ -109,7 +109,8 @@ void OmniboxPrerender::PrerenderMaybe(
   action_predictor->
       RegisterTransitionalMatches(url_string, *autocomplete_result);
   AutocompleteActionPredictor::Action recommended_action =
-      action_predictor->RecommendAction(url_string, *default_match);
+      action_predictor->RecommendAction(url_string, *default_match,
+                                        web_contents);
 
   GURL current_url = GURL(current_url_string);
   // Ask for prerendering if the destination URL is different than the

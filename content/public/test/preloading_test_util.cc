@@ -11,6 +11,7 @@ namespace content::test {
 
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using Preloading_Attempt = ukm::builders::Preloading_Attempt;
+using Preloading_Prediction = ukm::builders::Preloading_Prediction;
 
 const std::vector<std::string> kPreloadingAttemptUkmMetrics{
     Preloading_Attempt::kPreloadingTypeName,
@@ -20,6 +21,12 @@ const std::vector<std::string> kPreloadingAttemptUkmMetrics{
     Preloading_Attempt::kTriggeringOutcomeName,
     Preloading_Attempt::kFailureReasonName,
     Preloading_Attempt::kAccurateTriggeringName,
+};
+
+const std::vector<std::string> kPreloadingPredictionUkmMetrics{
+    Preloading_Prediction::kPreloadingPredictorName,
+    Preloading_Prediction::kConfidenceName,
+    Preloading_Prediction::kAccuratePredictionName,
 };
 
 PreloadingAttemptUkmEntryBuilder::PreloadingAttemptUkmEntryBuilder(
@@ -51,6 +58,24 @@ UkmEntry PreloadingAttemptUkmEntryBuilder::BuildEntry(
            static_cast<int64_t>(failure_reason)},
           {Preloading_Attempt::kAccurateTriggeringName, accurate ? 1 : 0},
       }};
+}
+
+PreloadingPredictionUkmEntryBuilder::PreloadingPredictionUkmEntryBuilder(
+    PreloadingPredictor predictor)
+    : predictor_(predictor) {}
+
+UkmEntry PreloadingPredictionUkmEntryBuilder::BuildEntry(
+    ukm::SourceId source_id,
+    int64_t confidence,
+    bool accurate_prediction) const {
+  return UkmEntry{source_id,
+                  {
+                      {Preloading_Prediction::kPreloadingPredictorName,
+                       static_cast<int64_t>(predictor_)},
+                      {Preloading_Prediction::kConfidenceName, confidence},
+                      {Preloading_Prediction::kAccuratePredictionName,
+                       accurate_prediction ? 1 : 0},
+                  }};
 }
 
 std::string UkmEntryToString(const UkmEntry& entry) {

@@ -15,6 +15,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "build/build_config.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -73,7 +74,8 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
 
 int PrerenderHostRegistry::CreateAndStartHost(
     const PrerenderAttributes& attributes,
-    WebContents& web_contents) {
+    WebContents& web_contents,
+    PreloadingAttempt* attempt) {
   std::string recorded_url =
       attributes.initiator_origin.has_value()
           ? attributes.initiator_origin.value().GetURL().spec()
@@ -95,6 +97,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
     WebContentsDelegate* web_contents_delegate = web_contents.GetDelegate();
     if (!web_contents_delegate ||
         !web_contents_delegate->IsPrerender2Supported(web_contents)) {
+      if (attempt)
+        attempt->SetEligibility(PreloadingEligibility::kPreloadingDisabled);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
@@ -103,6 +107,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
       RecordPrerenderHostFinalStatus(
           PrerenderHost::FinalStatus::kTriggerBackgrounded, attributes,
           ukm::kInvalidSourceId);
+      if (attempt)
+        attempt->SetEligibility(PreloadingEligibility::kHidden);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
@@ -112,6 +118,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
     if (!DeviceHasEnoughMemoryForPrerender()) {
       RecordPrerenderHostFinalStatus(PrerenderHost::FinalStatus::kLowEndDevice,
                                      attributes, ukm::kInvalidSourceId);
+      if (attempt)
+        attempt->SetEligibility(PreloadingEligibility::kLowMemory);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
@@ -125,26 +133,57 @@ int PrerenderHostRegistry::CreateAndStartHost(
       RecordPrerenderHostFinalStatus(
           PrerenderHost::FinalStatus::kCrossOriginNavigation, attributes,
           ukm::kInvalidSourceId);
+      if (attempt)
+        attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
+    // Once all eligibility checks are completed, set the status to kEligible.
+    if (attempt)
+      attempt->SetEligibility(PreloadingEligibility::kEligible);
+
+    // Check for the HoldbackStatus after checking the eligibility.
+    if (base::GetFieldTrialParamByFeatureAsBool(blink::features::kPrerender2,
+                                                "prerender_holdback", false)) {
+      if (attempt)
+        attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+    if (attempt)
+      attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+
     // Ignore prerendering requests for the same URL.
     for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-      if (iter.second->GetInitialUrl() == attributes.prerendering_url)
+      if (iter.second->GetInitialUrl() == attributes.prerendering_url) {
+        if (attempt) {
+          attempt->SetTriggeringOutcome(
+              PreloadingTriggeringOutcome::kDuplicate);
+        }
+
         return RenderFrameHost::kNoFrameTreeNodeId;
+      }
     }
 
     // TODO(crbug.com/1197133): Cancel the started prerender and start a new
     // one if the score of the new candidate is higher than the started one's.
     if (!IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type)) {
+      if (attempt) {
+        // The reason we don't consider limit exceeded as an ineligibility
+        // reason is because we can't replicate the behavior in our other
+        // experiment groups for analysis. To prevent this we set
+        // TriggeringOutcome to kFailure and look into the failure reason to
+        // learn more.
+        attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kFailure);
+      }
       RecordPrerenderHostFinalStatus(
           PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded,
           attributes, ukm::kInvalidSourceId);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
+    auto* attempt_impl = static_cast<PreloadingAttemptImpl*>(attempt);
     auto prerender_host =
-        std::make_unique<PrerenderHost>(attributes, web_contents);
+        std::make_unique<PrerenderHost>(attributes, web_contents, attempt_impl);
     frame_tree_node_id = prerender_host->frame_tree_node_id();
 
     CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,

@@ -6,11 +6,22 @@
 
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_prediction.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
+
+// static
+PreloadingURLMatchCallback PreloadingData::GetSameURLMatcher(
+    const GURL& destination_url) {
+  return base::BindRepeating(
+      [](const GURL& predicted_url, const GURL& navigated_url) {
+        return predicted_url == navigated_url;
+      },
+      destination_url);
+}
 
 // static
 PreloadingData* PreloadingData::GetOrCreateForWebContents(
@@ -76,16 +87,38 @@ PreloadingDataImpl::~PreloadingDataImpl() = default;
 void PreloadingDataImpl::PrimaryPageChanged(Page& page) {
   ukm::SourceId navigated_page_source_id =
       page.GetMainDocument().GetPageUkmSourceId();
-  GURL navigated_url = page.GetMainDocument().GetLastCommittedURL();
 
   // Log the UKMs also on navigation when the user ends up navigating. Please
   // note that we currently log the metrics on the primary page to analyze
   // preloading impact on user-visible primary pages.
-  RecordUKMForPreloadingAttempts(navigated_page_source_id, navigated_url);
-  RecordUKMForPreloadingPredictions(navigated_page_source_id, navigated_url);
+  RecordUKMForPreloadingAttempts(navigated_page_source_id);
+  RecordUKMForPreloadingPredictions(navigated_page_source_id);
 
   // Delete the user data after logging.
   web_contents()->RemoveUserData(UserDataKey());
+}
+
+void PreloadingDataImpl::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
+
+  // Only observe for the navigation in the primary frame tree to log the
+  // metrics after which this class will be deleted.
+  if (!navigation_request->IsInPrimaryMainFrame())
+    return;
+
+  // Ignore same-document navigations as preloading is not served for these
+  // cases.
+  if (navigation_request->IsSameDocument())
+    return;
+
+  // Match the preloading based on the URL the frame is navigating to rather
+  // than the committed URL as they could be different because of redirects. We
+  // set accurate triggering and prediction bits in DidStartNavigation before
+  // PrimaryPageChanged is invoked where the metrics are logged to capture if
+  // the prediction/triggering was accurate. This doesn't imply that the user
+  // navigated to the predicted URL.
+  SetIsAccurateTriggeringAndPrediction(navigation_request->GetURL());
 }
 
 void PreloadingDataImpl::WebContentsDestroyed() {
@@ -93,32 +126,35 @@ void PreloadingDataImpl::WebContentsDestroyed() {
   // in case the user doesn't end up navigating. When the WebContents is
   // destroyed before navigation, we pass ukm::kInvalidSourceId and empty URL to
   // avoid the UKM associated to wrong page.
-  RecordUKMForPreloadingAttempts(ukm::kInvalidSourceId, GURL());
-  RecordUKMForPreloadingPredictions(ukm::kInvalidSourceId, GURL());
+  RecordUKMForPreloadingAttempts(ukm::kInvalidSourceId);
+  RecordUKMForPreloadingPredictions(ukm::kInvalidSourceId);
 
   // Delete the user data after logging.
   web_contents()->RemoveUserData(UserDataKey());
 }
 
-void PreloadingDataImpl::RecordUKMForPreloadingAttempts(
-    ukm::SourceId navigated_page_source_id,
+void PreloadingDataImpl::SetIsAccurateTriggeringAndPrediction(
     const GURL& navigated_url) {
-  for (auto& attempt : preloading_attempts_) {
-    attempt->RecordPreloadingAttemptUKMs(navigated_page_source_id,
-                                         navigated_url);
-  }
+  for (auto& attempt : preloading_attempts_)
+    attempt->SetIsAccurateTriggering(navigated_url);
+
+  for (auto& prediction : preloading_predictions_)
+    prediction->SetIsAccuratePrediction(navigated_url);
+}
+
+void PreloadingDataImpl::RecordUKMForPreloadingAttempts(
+    ukm::SourceId navigated_page_source_id) {
+  for (auto& attempt : preloading_attempts_)
+    attempt->RecordPreloadingAttemptUKMs(navigated_page_source_id);
 
   // Clear all records once we record the UKMs.
   preloading_attempts_.clear();
 }
 
 void PreloadingDataImpl::RecordUKMForPreloadingPredictions(
-    ukm::SourceId navigated_page_source_id,
-    const GURL& navigated_url) {
-  for (auto& prediction : preloading_predictions_) {
-    prediction->RecordPreloadingPredictionUKMs(navigated_page_source_id,
-                                               navigated_url);
-  }
+    ukm::SourceId navigated_page_source_id) {
+  for (auto& prediction : preloading_predictions_)
+    prediction->RecordPreloadingPredictionUKMs(navigated_page_source_id);
 
   // Clear all records once we record the UKMs.
   preloading_predictions_.clear();

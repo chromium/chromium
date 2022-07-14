@@ -29,11 +29,14 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // Only difference is that the Preloading_Attempt_PreviousPrimaryPage UKM is
   // associated with the WebContents primary page that triggered the preloading
   // attempt. This is done to easily analyze the impact of the preloading
-  // attempt on the primary visible page. Here `navigated_page` and
-  // `navigated_url` represent the ukm::SourceId and URL of the navigated page.
-  // If the navigation doesn't happen these could be invalid/ empty.
-  void RecordPreloadingAttemptUKMs(ukm::SourceId navigated_page,
-                                   const GURL& navigated_url);
+  // attempt on the primary visible page. Here `navigated_page` represent the
+  // ukm::SourceId of the navigated page. If the navigation doesn't happen this
+  // could be invalid.
+  void RecordPreloadingAttemptUKMs(ukm::SourceId navigated_page);
+
+  // Sets `is_accurate_triggering_` to true if `navigated_url` matches the
+  // predicate URL logic.
+  void SetIsAccurateTriggering(const GURL& navigated_url);
 
   explicit PreloadingAttemptImpl(
       PreloadingPredictor predictor,
@@ -72,6 +75,9 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // Triggers can specify their own predicate for judging whether two URLs are
   // considered as pointing to the same destination.
   const PreloadingURLMatchCallback url_match_predicate_;
+
+  // Set to true if this PreloadingAttempt was used for the next navigation.
+  bool is_accurate_triggering_ = false;
 };
 
 // Used when DCHECK_STATE_TRANSITION triggers.
