@@ -18,6 +18,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -87,6 +88,13 @@ gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
 class SystemNudge::SystemNudgeView : public views::View {
  public:
   explicit SystemNudgeView(const SystemNudge* nudge) : nudge_(nudge) {
+    auto layout = std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        /*inside_border_insect=*/gfx::Insets(nudge_->params_.nudge_padding),
+        /*between_child_spacing=*/nudge_->params_.icon_label_spacing);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
+    SetLayoutManager(std::move(layout));
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     if (features::IsBackgroundBlurEnabled())
       layer()->SetBackgroundBlur(kNudgeBlurRadius);
@@ -96,9 +104,7 @@ class SystemNudge::SystemNudgeView : public views::View {
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetPaintToLayer();
     icon_->layer()->SetFillsBoundsOpaquely(false);
-    icon_->SetBounds(nudge_->params_.nudge_padding,
-                     nudge_->params_.nudge_padding, nudge_->params_.icon_size,
-                     nudge_->params_.icon_size);
+    icon_->SetSize({nudge_->params_.icon_size, nudge_->params_.icon_size});
     icon_->SetImage(ui::ImageModel::FromImageGenerator(
         base::BindRepeating(
             [](const SystemNudge* nudge, const ui::ColorProvider*) {
@@ -112,10 +118,6 @@ class SystemNudge::SystemNudgeView : public views::View {
     label_ = AddChildView(nudge->CreateLabelView());
     label_->SetPaintToLayer();
     label_->layer()->SetFillsBoundsOpaquely(false);
-    label_->SetPosition(gfx::Point(nudge_->params_.nudge_padding +
-                                       nudge_->params_.icon_size +
-                                       nudge_->params_.icon_label_spacing,
-                                   nudge_->params_.nudge_padding));
   }
 
   ~SystemNudgeView() override = default;
@@ -206,19 +208,11 @@ void SystemNudge::CalculateAndSetWidgetBounds() {
   gfx::Rect display_bounds = root_window_->bounds();
   ::wm::ConvertRectToScreen(root_window_, &display_bounds);
 
-  // Calculate the nudge's size to ensure the label text and the icon accurately
-  // fit.
-  const int nudge_height =
-      2 * params_.nudge_padding +
-      std::max(nudge_view_->label_->bounds().height(), params_.icon_size);
-  const int nudge_width = 2 * params_.nudge_padding + params_.icon_size +
-                          params_.icon_label_spacing +
-                          nudge_view_->label_->bounds().width();
-
+  gfx::Size nudge_size = nudge_view_->GetPreferredSize();
   Shelf* shelf = RootWindowController::ForWindow(root_window_)->shelf();
   gfx::Rect widget_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, nudge_width, nudge_height,
-                            params_.anchor_status_area);
+      CalculateWidgetBounds(display_bounds, shelf, nudge_size.width(),
+                            nudge_size.height(), params_.anchor_status_area);
 
   // Only run the widget bounds animation if the widget's bounds have already
   // been initialized.

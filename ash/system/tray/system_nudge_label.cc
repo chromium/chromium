@@ -8,15 +8,16 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
 SystemNudgeLabel::SystemNudgeLabel(std::u16string text, int fixed_width)
     : styled_label_(AddChildView(std::make_unique<views::StyledLabel>())) {
+  SetLayoutManager(std::make_unique<views::BoxLayout>());
   styled_label_->SetDisplayedOnBackgroundColor(SK_ColorTRANSPARENT);
   styled_label_->SetText(std::move(text));
   styled_label_->SizeToFit(fixed_width);
-  SetSize(styled_label_->size());
 }
 
 SystemNudgeLabel::~SystemNudgeLabel() = default;
