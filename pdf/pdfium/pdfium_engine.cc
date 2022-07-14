@@ -1897,7 +1897,8 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
   for (size_t i = 0; i < page_text.size(); i++) {
     // Filter out characters outside the page bounds, which are semantically not
     // part of the page.
-    if (!pages_[current_page]->IsCharInPageBounds(i, page_bounds)) {
+    if (!pages_[current_page]->IsCharInPageBounds(
+            character_to_start_searching_from + i, page_bounds)) {
       removed_indices.push_back(adjusted_page_text.size());
       continue;
     }
@@ -1925,6 +1926,9 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
     else
       adjusted_page_text.push_back(SimplifyForSearch(c));
   }
+
+  if (adjusted_page_text.empty())
+    return;
 
   std::vector<PDFEngine::Client::SearchStringResult> results =
       client_->SearchString(adjusted_page_text.c_str(), adjusted_term.c_str(),
