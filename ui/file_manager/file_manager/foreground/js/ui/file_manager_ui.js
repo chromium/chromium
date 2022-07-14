@@ -374,6 +374,13 @@ export class FileManagerUI {
         queryRequiredElement('#file-type-filter-container', this.element);
 
     /**
+     * Empty folder element inside the file list container.
+     * @type {!HTMLElement}
+     * @const
+     */
+    this.emptyFolder = queryRequiredElement('#empty-folder', this.element);
+
+    /**
      * A hidden div that can be used to announce text to screen
      * reader/ChromeVox.
      * @private {!HTMLElement}

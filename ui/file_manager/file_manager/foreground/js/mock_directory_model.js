@@ -10,6 +10,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
+import {FileListModel} from './file_list_model.js';
 
 /**
  * @returns {!FileFilter} fake for unittests.
@@ -82,6 +83,13 @@ export function createFakeDirectoryModel() {
      * @returns {?VolumeManagerCommon.RootType}
      */
     getCurrentRootType() {
+      return null;
+    }
+
+    /**
+     * @returns {?FileListModel}
+     */
+    getFileList() {
       return null;
     }
 

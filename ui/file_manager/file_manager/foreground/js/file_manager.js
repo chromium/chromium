@@ -44,6 +44,7 @@ import {DirectoryModel} from './directory_model.js';
 import {DirectoryTreeNamingController} from './directory_tree_naming_controller.js';
 import {DriveDialogController} from './drive_dialog_controller.js';
 import {importElements} from './elements_importer.js';
+import {EmptyFolderController} from './empty_folder_controller.js';
 import {CommandHandler, CommandUtil} from './file_manager_commands.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
@@ -349,6 +350,12 @@ export class FileManager extends EventTarget {
 
     /** @private {?FileTypeFiltersController} */
     this.fileTypeFiltersController_ = null;
+
+    /**
+     * Empty folder controller.
+     * @private {?EmptyFolderController}
+     */
+    this.emptyFolderController_ = null;
 
     /**
      * Records histograms of directory-changed event.
@@ -1303,6 +1310,8 @@ export class FileManager extends EventTarget {
       this.fileTypeFiltersController_ = new FileTypeFiltersController(
           this.ui_.fileTypeFilterContainer, this.directoryModel_,
           this.recentEntry_, /** @type {!A11yAnnounce} */ (this.ui_));
+      this.emptyFolderController_ = new EmptyFolderController(
+          this.ui_.emptyFolder, this.directoryModel_, this.recentEntry_);
     }
 
     return directoryTreePromise;

@@ -306,3 +306,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfBreadcrumbs) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileGridTest) {
   RunTestURL("foreground/js/ui/file_grid_unittest.js");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, EmptyFolderControllerTest) {
+  RunTestURL("foreground/js/empty_folder_controller_unittest.js");
+}

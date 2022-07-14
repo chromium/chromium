@@ -1336,6 +1336,47 @@ body.check-select #read-only-indicator {
   position: relative;
 }
 
+#empty-folder {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#empty-folder > .image {
+  --empty-folder-svg-dot-color: var(--google-blue-300);
+  --empty-folder-svg-file-color: var(--google-grey-200);
+  --empty-folder-svg-ellipse-color: var(--google-blue-500);
+  --empty-folder-svg-folder-color: var(--google-blue-100);
+  margin-top: 64px;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  #empty-folder > .image {
+    --empty-folder-svg-dot-color: #1E3A5F;
+    --empty-folder-svg-file-color: #5C5D60;
+    --empty-folder-svg-ellipse-color: var(--google-blue-400);
+    --empty-folder-svg-folder-color: #404D64;
+  }
+}
+
+.list-view #empty-folder > .image {
+  /* The list view has a .table-header at the top, the margin-top should also
+  cover that, hence the desired margin plus the .table-header height. */
+  margin-top: calc(64px + 48px);
+}
+
+#empty-folder > .label {
+  color: var(--cros-text-color-secondary);
+  font: var(--cros-body-2-font);
+  margin-top: 16px;
+  text-align: center;
+}
+
 #detail-table {
   display: flex;
   flex: auto;
