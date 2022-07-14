@@ -602,58 +602,80 @@ AuctionRunner::ScoredBid* AuctionRunner::Auction::top_bid() {
 void AuctionRunner::Auction::OnInterestGroupRead(
     std::vector<StorageInterestGroup> interest_groups) {
   ++num_owners_loaded_;
-  if (!interest_groups.empty()) {
-    size_t size_limit = config_->non_shared_params.all_buyers_group_limit;
-    const url::Origin& owner = interest_groups[0].interest_group.owner;
-    post_auction_update_owners_.push_back(owner);
-    const auto limit_iter =
-        config_->non_shared_params.per_buyer_group_limits.find(owner);
-    if (limit_iter !=
-        config_->non_shared_params.per_buyer_group_limits.cend()) {
-      size_limit = static_cast<size_t>(limit_iter->second);
+  if (interest_groups.empty()) {
+    OnOneLoadCompleted();
+    return;
+  }
+  const url::Origin& owner = interest_groups[0].interest_group.owner;
+  post_auction_update_owners_.push_back(owner);
+  for (const auto& bidder : interest_groups) {
+    // Report freshness metrics.
+    if (bidder.interest_group.daily_update_url.has_value()) {
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Ads.InterestGroup.Auction.GroupFreshness.WithDailyUpdates",
+          (base::Time::Now() - bidder.last_updated).InMinutes(),
+          kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
+          kGroupFreshnessBuckets);
+    } else {
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Ads.InterestGroup.Auction.GroupFreshness.NoDailyUpdates",
+          (base::Time::Now() - bidder.last_updated).InMinutes(),
+          kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
+          kGroupFreshnessBuckets);
     }
-    StorageInterestGroupDescByPriority cmp;
-    std::sort(interest_groups.begin(), interest_groups.end(), cmp);
-    // Randomize order of interest groups with lowest allowed priority. This
-    // effectively performs a random sample among interest groups with the same
-    // priority.
-    size_limit = std::min(interest_groups.size(), size_limit);
-    if (size_limit > 0) {
-      double min_priority =
-          interest_groups[size_limit - 1].interest_group.priority.value();
-      auto rand_begin = std::lower_bound(
-          interest_groups.begin(), interest_groups.end(), min_priority, cmp);
-      auto rand_end = std::upper_bound(rand_begin, interest_groups.end(),
-                                       min_priority, cmp);
-      base::RandomShuffle(rand_begin, rand_end);
-    }
-    interest_groups.resize(size_limit);
-    for (auto& bidder : interest_groups) {
-      // Report freshness metrics.
-      if (bidder.interest_group.daily_update_url.has_value()) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Ads.InterestGroup.Auction.GroupFreshness.WithDailyUpdates",
-            (base::Time::Now() - bidder.last_updated).InMinutes(),
-            kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
-            kGroupFreshnessBuckets);
-      } else {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Ads.InterestGroup.Auction.GroupFreshness.NoDailyUpdates",
-            (base::Time::Now() - bidder.last_updated).InMinutes(),
-            kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
-            kGroupFreshnessBuckets);
-      }
+  }
 
-      // Ignore interest groups with no bidding script or no ads.
-      if (!bidder.interest_group.bidding_url)
-        continue;
-      if (bidder.interest_group.ads->empty())
-        continue;
-      bidder.interest_group.priority.reset();
-      bid_states_.emplace_back(BidState());
-      bid_states_.back().bidder = std::move(bidder);
-    }
-    ++num_owners_with_interest_groups_;
+  // Ignore interest groups with no bidding script or no ads.
+  interest_groups.erase(
+      std::remove_if(interest_groups.begin(), interest_groups.end(),
+                     [](const StorageInterestGroup& bidder) {
+                       return !bidder.interest_group.bidding_url ||
+                              bidder.interest_group.ads->empty();
+                     }),
+      interest_groups.end());
+
+  // If there are no interest groups with both a bidding script and ads, nothing
+  // else to do.
+  if (interest_groups.empty()) {
+    OnOneLoadCompleted();
+    return;
+  }
+
+  // Only count owners with interest groups theoretically capable of making
+  // bids as participating in this auction.
+  ++num_owners_with_interest_groups_;
+
+  size_t size_limit = config_->non_shared_params.all_buyers_group_limit;
+  const auto limit_iter =
+      config_->non_shared_params.per_buyer_group_limits.find(owner);
+  if (limit_iter != config_->non_shared_params.per_buyer_group_limits.cend()) {
+    size_limit = static_cast<size_t>(limit_iter->second);
+  }
+  size_limit = std::min(interest_groups.size(), size_limit);
+  if (size_limit == 0) {
+    OnOneLoadCompleted();
+    return;
+  }
+
+  StorageInterestGroupDescByPriority cmp;
+  std::sort(interest_groups.begin(), interest_groups.end(), cmp);
+  // Randomize order of interest groups with lowest allowed priority. This
+  // effectively performs a random sample among interest groups with the same
+  // priority.
+  double min_priority =
+      interest_groups[size_limit - 1].interest_group.priority.value();
+  auto rand_begin = std::lower_bound(interest_groups.begin(),
+                                     interest_groups.end(), min_priority, cmp);
+  auto rand_end =
+      std::upper_bound(rand_begin, interest_groups.end(), min_priority, cmp);
+  base::RandomShuffle(rand_begin, rand_end);
+  interest_groups.resize(size_limit);
+
+  // Set up remaining interest groups to generate bids.
+  for (auto& bidder : interest_groups) {
+    bidder.interest_group.priority.reset();
+    bid_states_.emplace_back();
+    bid_states_.back().bidder = std::move(bidder);
   }
   OnOneLoadCompleted();
 }

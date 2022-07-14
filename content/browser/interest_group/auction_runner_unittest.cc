@@ -99,9 +99,9 @@ std::string MakeBidScript(const url::Origin& seller,
                           int num_ad_components,
                           const url::Origin& interest_group_owner,
                           const std::string& interest_group_name,
-                          bool has_signals,
-                          const std::string& signal_key,
-                          const std::string& signal_val,
+                          bool has_signals = false,
+                          const std::string& signal_key = "",
+                          const std::string& signal_val = "",
                           bool report_post_auction_signals = false,
                           const std::string& debug_loss_report_url = "",
                           const std::string& debug_win_report_url = "") {
@@ -2171,7 +2171,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoAds) {
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
-                  /*expected_interest_groups=*/0, /*expected_owners=*/1,
+                  /*expected_interest_groups=*/0, /*expected_owners=*/0,
                   /*expected_sellers=*/0);
 }
 
@@ -2195,7 +2195,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneInterestGroupNoAds) {
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
-                  /*expected_interest_groups=*/0, /*expected_owners=*/1,
+                  /*expected_interest_groups=*/0, /*expected_owners=*/0,
                   /*expected_sellers=*/0);
 }
 
@@ -2219,7 +2219,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoBidScript) {
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
   CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
-                  /*expected_interest_groups=*/0, /*expected_owners=*/1,
+                  /*expected_interest_groups=*/0, /*expected_owners=*/0,
                   /*expected_sellers=*/0);
 }
 
@@ -6891,6 +6891,38 @@ TEST_F(AuctionRunnerTest, ThreeWayTie) {
       ++total_seen_results;
     }
   }
+}
+
+// Test the case where there's one IG with two groups, a size limit of 1, and
+// the highest priority group has no bid script. The lower priority group should
+// get a chance to bid, rather than being filtered out.
+TEST_F(AuctionRunnerTest, SizeLimitHighestPriorityGroupHasNoBidScript) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  // Low priority group with a bidding URL.
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  bidders.back().interest_group.priority = 0;
+
+  // High priority group without a bidding URL.
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, "other-interest-group-name", /*bidding_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+  bidders.back().interest_group.priority = 10;
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
 }
 
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and
