@@ -330,8 +330,15 @@ std::unique_ptr<ProcessDataSnapshot> SystemInformationSampler::TakeSnapshot() {
         // If |pi| has the targeted process name, add its data to the snapshot.
         if (wcsncmp(target_process_name_filter(), pi->ImageName.Buffer,
                     lstrlen(target_process_name_filter())) == 0) {
-          snapshot->processes.insert(
-              std::make_pair(pi->ProcessId, GetProcessData(pi)));
+          // Special case System so that it must be an exact match instead of a
+          // prefix match, since otherwise there is no way to get reports for
+          // the system process without also recording SystemSettings.exe. For
+          // most processes you can solve this by adding .exe to the filter name
+          // but the System process doesn't have that suffix.
+          if (wcscmp(target_process_name_filter(), L"System") != 0 ||
+              wcslen(pi->ImageName.Buffer) == 6)
+            snapshot->processes.insert(
+                std::make_pair(pi->ProcessId, GetProcessData(pi)));
         }
       }
     }
