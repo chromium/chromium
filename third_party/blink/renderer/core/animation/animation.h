@@ -474,7 +474,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   // TODO(crbug.com/960944): Consider reintroducing kPause and cleanup use of
   // mutually exclusive pending_play_ and pending_pause_ flags.
-  enum CompositorAction { kNone, kStart };
+  enum class CompositorAction { kNone, kStart };
 
   class CompositorState {
     USING_FAST_MALLOC(CompositorState);
@@ -493,7 +493,8 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
                         : absl::nullopt),
           playback_rate(animation.EffectivePlaybackRate()),
           effect_changed(false),
-          pending_action(animation.start_time_ ? kNone : kStart) {}
+          pending_action(animation.start_time_ ? CompositorAction::kNone
+                                               : CompositorAction::kStart) {}
     CompositorState(const CompositorState&) = delete;
     CompositorState& operator=(const CompositorState&) = delete;
 

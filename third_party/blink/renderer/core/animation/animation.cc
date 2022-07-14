@@ -91,7 +91,7 @@ bool SupportedTimeValue(double time_in_ms) {
                                     1000;
 }
 
-enum PseudoPriority { kNone, kMarker, kBefore, kOther, kAfter };
+enum class PseudoPriority { kNone, kMarker, kBefore, kOther, kAfter };
 
 unsigned NextSequenceNumber() {
   static unsigned next = 0;
@@ -595,7 +595,7 @@ bool Animation::PreCommit(
   // notified yet.
   if (!compositor_property_animations_had_no_effect && start_on_compositor &&
       should_cancel && should_start && compositor_state_ &&
-      compositor_state_->pending_action == kStart &&
+      compositor_state_->pending_action == CompositorAction::kStart &&
       !compositor_state_->effect_changed) {
     // Restarting but still waiting for a start time.
     return false;
@@ -654,14 +654,16 @@ bool Animation::PreCommit(
 void Animation::PostCommit() {
   compositor_pending_ = false;
 
-  if (!compositor_state_ || compositor_state_->pending_action == kNone)
+  if (!compositor_state_ ||
+      compositor_state_->pending_action == CompositorAction::kNone) {
     return;
+  }
 
-  DCHECK_EQ(kStart, compositor_state_->pending_action);
+  DCHECK_EQ(CompositorAction::kStart, compositor_state_->pending_action);
   if (compositor_state_->start_time) {
     DCHECK(IsWithinAnimationTimeEpsilon(start_time_.value().InSecondsF(),
                                         compositor_state_->start_time.value()));
-    compositor_state_->pending_action = kNone;
+    compositor_state_->pending_action = CompositorAction::kNone;
   }
 }
 
@@ -722,7 +724,7 @@ bool Animation::HasLowerCompositeOrdering(
 
     // The following if statement is not reachable, but the implementation
     // matches the specification for composite ordering
-    if (priority1 == kOther && pseudo1 != pseudo2) {
+    if (priority1 == PseudoPriority::kOther && pseudo1 != pseudo2) {
       return CodeUnitCompareLessThan(
           PseudoElement::PseudoElementNameForEvents(pseudo1),
           PseudoElement::PseudoElementNameForEvents(pseudo2));
@@ -764,9 +766,10 @@ void Animation::NotifyReady(AnimationTimeDelta ready_time) {
   else if (pending_pause_)
     CommitPendingPause(ready_time);
 
-  if (compositor_state_ && compositor_state_->pending_action == kStart) {
+  if (compositor_state_ &&
+      compositor_state_->pending_action == CompositorAction::kStart) {
     DCHECK(!compositor_state_->start_time);
-    compositor_state_->pending_action = kNone;
+    compositor_state_->pending_action = CompositorAction::kNone;
     compositor_state_->start_time =
         start_time_ ? absl::make_optional(start_time_.value().InSecondsF())
                     : absl::nullopt;
