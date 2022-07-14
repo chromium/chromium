@@ -17,6 +17,7 @@
 #include "ipcz/fragment_descriptor.h"
 #include "ipcz/fragment_ref.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/ref_counted_fragment.h"
 #include "ipcz/router_link_state.h"
 #include "ipcz/sublink_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -101,6 +102,15 @@ class NodeLinkMemory : public RefCounted {
   // with the same BufferId and dimensions as `descriptor`.
   Fragment GetFragment(const FragmentDescriptor& descriptor);
 
+  // Adopts an existing reference to a RefCountedFragment within `fragment`.
+  // This does NOT increment the ref count of the RefCountedFragment.
+  template <typename T>
+  FragmentRef<T> AdoptFragmentRef(const Fragment& fragment) {
+    ABSL_ASSERT(sizeof(T) <= fragment.size());
+    return FragmentRef<T>(RefCountedFragment::kAdoptExistingRef,
+                          WrapRefCounted(this), fragment);
+  }
+
   // Adds a new buffer to the underlying BufferPool to use as additional
   // allocation capacity for blocks of size `block_size`. Note that the
   // contents of the mapped region must already be initialized as a
@@ -117,6 +127,21 @@ class NodeLinkMemory : public RefCounted {
   // true on success. Returns false if `fragment` does not represent an
   // allocated fragment within this NodeLinkMemory.
   bool FreeFragment(const Fragment& fragment);
+
+  // Allocates a fragment to store a new RouterLinkState and initializes a new
+  // RouterLinkState instance there. If no capacity is currently available to
+  // allocate an appropriate fragment, this may return null.
+  FragmentRef<RouterLinkState> TryAllocateRouterLinkState();
+
+  // Allocates a fragment to store a new RouterLinkState and initializes a new
+  // RouterLinkState instance there. Calls `callback` with a reference to the
+  // new fragment once allocated. Unlike TryAllocateRouterLinkState(), this
+  // allocation always succeeds eventually unless driver memory allocation
+  // itself begins to fail unrecoverably. If the allocation can succeed
+  // synchronously, `callback` may be called before this method returns.
+  using RouterLinkStateCallback =
+      std::function<void(FragmentRef<RouterLinkState>)>;
+  void AllocateRouterLinkState(RouterLinkStateCallback callback);
 
   // Runs `callback` as soon as the identified buffer is added to the underlying
   // BufferPool. If the buffer is already present here, `callback` is run
@@ -141,6 +166,10 @@ class NodeLinkMemory : public RefCounted {
   void RequestBlockCapacity(size_t block_size,
                             RequestBlockCapacityCallback callback);
   void OnCapacityRequestComplete(size_t block_size, bool success);
+
+  // Initializes `fragment` as a new RouterLinkState and returns a ref to it.
+  FragmentRef<RouterLinkState> InitializeRouterLinkStateFragment(
+      const Fragment& fragment);
 
   const Ref<Node> node_;
 

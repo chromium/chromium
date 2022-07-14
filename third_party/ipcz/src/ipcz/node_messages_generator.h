@@ -117,6 +117,14 @@ IPCZ_MSG_BEGIN(RouteClosed, IPCZ_MSG_ID(22), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM(SequenceNumber, sequence_length)
 IPCZ_MSG_END()
 
+// Notifies a node that the Router it has bound to `sublink` (on the
+// transmitting NodeLink) now has an allocated RouterLinkState in the fragment
+// identified by `descriptor`.
+IPCZ_MSG_BEGIN(SetRouterLinkState, IPCZ_MSG_ID(23), IPCZ_MSG_VERSION(0))
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+  IPCZ_MSG_PARAM(FragmentDescriptor, descriptor)
+IPCZ_MSG_END()
+
 // Hints to the target router that it should flush its state. Generally sent to
 // catalyze route reduction or elicit some other state change which was blocked
 // on some other work being done first by the sender of this message.

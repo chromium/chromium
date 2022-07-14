@@ -266,6 +266,19 @@ bool NodeLink::OnRouteClosed(msg::RouteClosed& route_closed) {
       sublink->router_link->GetType(), route_closed.params().sequence_length);
 }
 
+bool NodeLink::OnSetRouterLinkState(msg::SetRouterLinkState& set) {
+  if (set.params().descriptor.is_null()) {
+    return false;
+  }
+
+  if (absl::optional<Sublink> sublink = GetSublink(set.params().sublink)) {
+    auto fragment = memory().GetFragment(set.params().descriptor);
+    sublink->router_link->SetLinkState(
+        memory().AdoptFragmentRef<RouterLinkState>(fragment));
+  }
+  return true;
+}
+
 bool NodeLink::OnFlushRouter(msg::FlushRouter& flush) {
   if (Ref<Router> router = GetRouter(flush.params().sublink)) {
     router->Flush();

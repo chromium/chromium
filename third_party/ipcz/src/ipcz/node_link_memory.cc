@@ -282,6 +282,39 @@ bool NodeLinkMemory::FreeFragment(const Fragment& fragment) {
   return buffer_pool_.FreeBlock(fragment);
 }
 
+FragmentRef<RouterLinkState> NodeLinkMemory::TryAllocateRouterLinkState() {
+  Fragment fragment = buffer_pool_.AllocateBlock(sizeof(RouterLinkState));
+  if (!fragment.is_null()) {
+    return InitializeRouterLinkStateFragment(fragment);
+  }
+
+  // Unlike with the more generic AllocateFragment(), we unconditionally lobby
+  // for additional capacity when RouterLinkState allocation fails.
+  RequestBlockCapacity(sizeof(RouterLinkState), [](bool ok) {});
+  return {};
+}
+
+void NodeLinkMemory::AllocateRouterLinkState(RouterLinkStateCallback callback) {
+  Fragment fragment = buffer_pool_.AllocateBlock(sizeof(RouterLinkState));
+  if (!fragment.is_null()) {
+    callback(InitializeRouterLinkStateFragment(fragment));
+    return;
+  }
+
+  RequestBlockCapacity(sizeof(RouterLinkState),
+                       [memory = WrapRefCounted(this),
+                        callback = std::move(callback)](bool ok) mutable {
+                         if (!ok) {
+                           DLOG(ERROR)
+                               << "Could not allocate a new RouterLinkState";
+                           callback({});
+                           return;
+                         }
+
+                         memory->AllocateRouterLinkState(std::move(callback));
+                       });
+}
+
 void NodeLinkMemory::WaitForBufferAsync(
     BufferId id,
     BufferPool::WaitForBufferCallback callback) {
@@ -366,6 +399,15 @@ void NodeLinkMemory::OnCapacityRequestComplete(size_t block_size,
   for (auto& callback : callbacks) {
     callback(success);
   }
+}
+
+FragmentRef<RouterLinkState> NodeLinkMemory::InitializeRouterLinkStateFragment(
+    const Fragment& fragment) {
+  ABSL_ASSERT(!fragment.is_null());
+  FragmentRef<RouterLinkState> ref =
+      AdoptFragmentRef<RouterLinkState>(fragment);
+  RouterLinkState::Initialize(ref.get());
+  return ref;
 }
 
 }  // namespace ipcz

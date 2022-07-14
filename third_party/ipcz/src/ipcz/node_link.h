@@ -135,6 +135,7 @@ class NodeLink : public msg::NodeMessageListener {
   bool OnAddBlockBuffer(msg::AddBlockBuffer& add) override;
   bool OnAcceptParcel(msg::AcceptParcel& accept) override;
   bool OnRouteClosed(msg::RouteClosed& route_closed) override;
+  bool OnSetRouterLinkState(msg::SetRouterLinkState& set) override;
   bool OnFlushRouter(msg::FlushRouter& flush) override;
   void OnTransportError() override;
 

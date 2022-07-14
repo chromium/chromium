@@ -48,6 +48,23 @@ class RemoteRouterLink : public RouterLink {
   const Ref<NodeLink>& node_link() const { return node_link_; }
   SublinkId sublink() const { return sublink_; }
 
+  // Sets this link's RouterLinkState.
+  //
+  // If `state` is null and this link is on side B, this call is a no-op. If
+  // `state` is null and this link is on side A, this call will kick off an
+  // asynchronous allocation of a new RouterLinkState. When that completes, the
+  // new state will be adopted by side A and shared with side B.
+  //
+  // If `state` references a pending fragment and this link is on side A, the
+  // call is a no-op. If `state` references a pending fragment and this link
+  // is on side B, this operation will be automatically deferred until the
+  // NodeLink acquires a mapping of the buffer referenced by `state` and the
+  // fragment can be resolved to an addressable one.
+  //
+  // Finally, if `state` references a valid, addressable fragment, it is
+  // adopted as-is.
+  void SetLinkState(FragmentRef<RouterLinkState> state);
+
   // RouterLink:
   LinkType GetType() const override;
   RouterLinkState* GetLinkState() const override;
@@ -73,6 +90,8 @@ class RemoteRouterLink : public RouterLink {
 
   ~RemoteRouterLink() override;
 
+  void AllocateAndShareLinkState();
+
   const Ref<NodeLink> node_link_;
   const SublinkId sublink_;
   const LinkType type_;
@@ -87,7 +106,19 @@ class RemoteRouterLink : public RouterLink {
   // shared by both ends of this RouterLink. Always null for non-central links,
   // and may be null for a central links if its RouterLinkState has not yet been
   // allocated or shared.
-  FragmentRef<RouterLinkState> link_state_;
+  //
+  // Must be set at most once and is only retained by this object to keep the
+  // fragment allocated. Access is unguarded and is restricted to
+  // SetLinkState(), and only allowed while `link_state_` below is still null.
+  // Any other access is unsafe. Use GetLinkState() to get a usable reference to
+  // the RouterLinkState instance.
+  FragmentRef<RouterLinkState> link_state_fragment_;
+
+  // Cached address of the shared RouterLinkState referenced by
+  // `link_state_fragment_`. Once this is set to a non-null value it retains
+  // that value indefinitely, so any non-null value loaded from this field is
+  // safe to dereference for the duration of the RemoteRouterLink's lifetime.
+  std::atomic<RouterLinkState*> link_state_{nullptr};
 };
 
 }  // namespace ipcz
