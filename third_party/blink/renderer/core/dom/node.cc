@@ -2243,8 +2243,9 @@ Node::InsertionNotificationRequest Node::InsertedInto(
   }
   if (ParentOrShadowHostNode()->IsInShadowTree())
     SetFlag(kIsInShadowTreeFlag);
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
-    cache->ChildrenChanged(&insertion_point);
+  if (GetDocument().HasAXObjectCache()) {
+    GetDocument().ExistingAXObjectCache()->ChildrenChanged(&insertion_point);
+  }
   return kInsertionDone;
 }
 
@@ -2261,8 +2262,9 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
   }
   if (IsInShadowTree() && !ContainingTreeScope().RootNode().IsShadowRoot())
     ClearFlag(kIsInShadowTreeFlag);
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
-    cache->Remove(this);
+  if (GetDocument().HasAXObjectCache()) {
+    GetDocument().ExistingAXObjectCache()->Remove(this);
+  }
 }
 
 String Node::DebugName() const {
