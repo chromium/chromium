@@ -186,9 +186,13 @@ bool ExtensionMatched(const std::string& file_name,
                       const std::string& filter_extension);
 
 // Check if the intent only mean to share to Google Drive.
+// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
+// AppService.
 bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent);
 
 // Check the if the intent is valid, e.g. action matches content.
+// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
+// AppService.
 bool IsIntentValid(const apps::mojom::IntentPtr& intent);
 
 // Converts |intent| to base::Value, e.g.:

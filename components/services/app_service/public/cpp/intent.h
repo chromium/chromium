@@ -94,6 +94,12 @@ struct Intent {
   // Returns true if `intent` corresponds to a share intent.
   bool IsShareIntent();
 
+  // Check if the intent only mean to share to Google Drive.
+  bool OnlyShareToDrive();
+
+  // Check the if the intent is valid, e.g. action matches content.
+  bool IsIntentValid();
+
   // Intent action. e.g. view, send.
   std::string action;
   // The URL of the intent. e.g. https://www.google.com/.

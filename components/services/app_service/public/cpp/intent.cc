@@ -219,6 +219,21 @@ bool Intent::IsShareIntent() {
          action == apps_util::kIntentActionSendMultiple;
 }
 
+bool Intent::OnlyShareToDrive() {
+  return IsShareIntent() && drive_share_url && !share_text && files.empty();
+}
+
+bool Intent::IsIntentValid() {
+  // TODO(crbug.com/853604):Add more checks here to make this a general intent
+  // validity check. Return false if this is a share intent with no file or
+  // text.
+  if (IsShareIntent()) {
+    return share_text || !files.empty();
+  }
+
+  return true;
+}
+
 IntentFilePtr ConvertMojomIntentFileToIntentFile(
     const apps::mojom::IntentFilePtr& mojom_intent_file) {
   if (!mojom_intent_file) {

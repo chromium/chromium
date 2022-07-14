@@ -195,7 +195,8 @@ bool SharesheetService::OnAcceleratorPressed(
 bool SharesheetService::HasShareTargets(const apps::mojom::IntentPtr& intent,
                                         bool contains_hosted_document) {
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
-      app_service_proxy_->GetAppsForIntent(intent);
+      app_service_proxy_->GetAppsForIntent(
+          apps::ConvertMojomIntentToIntent(intent));
 
   return share_action_cache_->HasVisibleActions(intent,
                                                 contains_hosted_document) ||
@@ -251,7 +252,8 @@ void SharesheetService::PrepareToShowBubble(
 
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
       contains_hosted_document ? std::vector<apps::IntentLaunchInfo>()
-                               : app_service_proxy_->GetAppsForIntent(intent);
+                               : app_service_proxy_->GetAppsForIntent(
+                                     apps::ConvertMojomIntentToIntent(intent));
   SharesheetMetrics::RecordSharesheetAppCount(intent_launch_info.size());
   LoadAppIcons(
       std::move(intent_launch_info), std::move(targets), 0,

@@ -241,14 +241,14 @@ class AppServiceProxyBase : public KeyedService,
   // exclude the browser apps. If |exclude_browser_tab_apps| is true then
   // exclude apps that open in browser tabs.
   std::vector<IntentLaunchInfo> GetAppsForIntent(
-      const apps::mojom::IntentPtr& intent,
+      const apps::IntentPtr& intent,
       bool exclude_browsers = false,
       bool exclude_browser_tab_apps = true);
 
   // Returns a list of apps (represented by their ids) and activities (if
   // applied) which can handle |files|.
   std::vector<IntentLaunchInfo> GetAppsForFiles(
-      std::vector<apps::mojom::IntentFilePtr> files);
+      std::vector<apps::IntentFilePtr> files);
 
   // Adds a preferred app for |url|.
   void AddPreferredApp(const std::string& app_id, const GURL& url);

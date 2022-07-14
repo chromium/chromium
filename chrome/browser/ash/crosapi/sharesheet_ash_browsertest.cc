@@ -49,7 +49,7 @@ bool IsIntentAcceptedByApp(const crosapi::mojom::IntentPtr& intent,
                            const std::string& app_id) {
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
       apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppsForIntent(
-          apps_util::ConvertCrosapiToAppServiceIntent(intent, profile));
+          apps_util::CreateAppServiceIntentFromCrosapi(intent, profile));
   return std::any_of(intent_launch_info.begin(), intent_launch_info.end(),
                      [&app_id](const apps::IntentLaunchInfo& launch_entry) {
                        return launch_entry.app_id == app_id;

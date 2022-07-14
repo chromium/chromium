@@ -41,6 +41,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -321,11 +322,11 @@ content::WebContents* MediaAppIntegrationTest::LaunchWithNoFiles() {
 std::vector<apps::IntentLaunchInfo> GetAppsForMimeType(
     apps::AppServiceProxy* proxy,
     const std::string& mime_type) {
-  std::vector<apps::mojom::IntentFilePtr> intent_files;
-  auto file = apps::mojom::IntentFile::New();
-  file->url = GURL("filesystem://path/to/file.bin");
+  std::vector<apps::IntentFilePtr> intent_files;
+  auto file =
+      std::make_unique<apps::IntentFile>(GURL("filesystem://path/to/file.bin"));
   file->mime_type = mime_type;
-  file->is_directory = apps::mojom::OptionalBool::kFalse;
+  file->is_directory = false;
   intent_files.push_back(std::move(file));
   return proxy->GetAppsForFiles(std::move(intent_files));
 }

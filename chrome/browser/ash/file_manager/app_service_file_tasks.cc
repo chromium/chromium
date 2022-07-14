@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -139,15 +140,12 @@ void FindAppServiceTasks(Profile* profile,
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(maybe_original_profile);
 
-  std::vector<apps::mojom::IntentFilePtr> intent_files;
+  std::vector<apps::IntentFilePtr> intent_files;
   intent_files.reserve(entries.size());
   for (size_t i = 0; i < entries.size(); i++) {
-    auto file = apps::mojom::IntentFile::New();
-    file->url = file_urls.at(i);
+    auto file = std::make_unique<apps::IntentFile>(file_urls.at(i));
     file->mime_type = entries[i].mime_type;
-    file->is_directory = entries[i].is_directory
-                             ? apps::mojom::OptionalBool::kTrue
-                             : apps::mojom::OptionalBool::kFalse;
+    file->is_directory = entries[i].is_directory;
     intent_files.push_back(std::move(file));
   }
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
