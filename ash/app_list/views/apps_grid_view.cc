@@ -2111,8 +2111,22 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
   const absl::optional<VisibleItemIndexRange> range =
       GetVisibleItemIndexRange();
 
-  // TODO(https://crbug.com/1289411): handle the case that `range` is null.
-  DCHECK(range);
+  views::AnimationBuilder animation_builder;
+
+  // No items to be sorted are visible - return an empty animation builder that
+  // ends immediately.
+  if (!range) {
+    animation_builder
+        .OnEnded(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,
+                                weak_factory_.GetWeakPtr(), done_callback,
+                                /*abort=*/true))
+        .OnAborted(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,
+                                  weak_factory_.GetWeakPtr(), done_callback,
+                                  /*abort=*/true))
+        .Once()
+        .SetDuration(base::TimeDelta());
+    return animation_builder;
+  }
 
   // Only show the visible items during animation to reduce the cost of painting
   // that is triggered by view bounds changes due to reorder.
@@ -2121,7 +2135,6 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
     view_model_.view_at(visible_view_index)->SetVisible(true);
   }
 
-  views::AnimationBuilder animation_builder;
   grid_animation_abort_handle_ = animation_builder.GetAbortHandle();
   animation_builder
       .OnEnded(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,

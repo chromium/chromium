@@ -50,16 +50,20 @@ class AppListBubbleAppsPageTest : public AshTestBase {
   }
 
   void OnReorderAnimationDone(base::OnceClosure closure,
+                              bool expect_abort,
                               bool aborted,
                               AppListGridAnimationStatus status) {
-    EXPECT_FALSE(aborted);
+    EXPECT_EQ(aborted, expect_abort);
     EXPECT_EQ(AppListGridAnimationStatus::kReorderFadeIn, status);
     std::move(closure).Run();
   }
 
   // Sorts app list with the specified order. If `wait` is true, wait for the
-  // reorder animation to complete.
-  void SortAppList(const absl::optional<AppListSortOrder>& order, bool wait) {
+  // reorder animation to complete. The animation is expected to be aborted if
+  // `expect_abort` is set to true.
+  void SortAppList(const absl::optional<AppListSortOrder>& order,
+                   bool wait,
+                   bool expect_abort = false) {
     AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
         order,
         /*animate=*/true, /*update_position_closure=*/base::DoNothing());
@@ -73,7 +77,7 @@ class AppListBubbleAppsPageTest : public AshTestBase {
         ->scrollable_apps_grid_view()
         ->AddReorderCallbackForTest(base::BindRepeating(
             &AppListBubbleAppsPageTest::OnReorderAnimationDone,
-            base::Unretained(this), run_loop.QuitClosure()));
+            base::Unretained(this), run_loop.QuitClosure(), expect_abort));
     run_loop.Run();
   }
 
@@ -638,6 +642,25 @@ TEST_F(AppListBubbleAppsPageTest, CloseReorderToast) {
   LayerAnimationStoppedWaiter().Wait(toast_container->toast_view()->layer());
 
   EXPECT_FALSE(toast_container->IsToastVisible());
+}
+
+// Verifies that sorting the app list with no app is properly handled.
+TEST_F(AppListBubbleAppsPageTest, SortingAppListWithNoApp) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  // Sort app list that contains no app. The animation should be aborted in this
+  // case.
+  SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true,
+              /*expect_abort=*/true);
+
+  // Make sure the toast container shows up even if the animation is aborted.
+  auto* toast_container =
+      helper->GetBubbleAppsPage()->toast_container_for_test();
+  EXPECT_TRUE(toast_container->IsToastVisible());
 }
 
 }  // namespace
