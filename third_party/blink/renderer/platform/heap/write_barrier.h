@@ -17,7 +17,7 @@ class WriteBarrier {
 
  public:
   template <typename T>
-  static void DispatchForObject(T* element) {
+  ALWAYS_INLINE static void DispatchForObject(T* element) {
     HeapConsistency::WriteBarrierParams params;
     switch (HeapConsistency::GetWriteBarrierType(element, *element, params)) {
       case HeapConsistency::WriteBarrierType::kMarking:

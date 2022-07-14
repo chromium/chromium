@@ -65,12 +65,26 @@ namespace WTF {
 
 // Default hash for hash tables with Member<>-derived elements.
 template <typename T>
-struct MemberHash : PtrHash<T> {
+struct MemberHash
+    : IntHash<cppgc::internal::MemberBase::RawStorage::IntegralType> {
+  using Base = IntHash<cppgc::internal::MemberBase::RawStorage::IntegralType>;
   STATIC_ONLY(MemberHash);
-  template <typename U>
-  static unsigned GetHash(const U& key) {
-    return PtrHash<T>::GetHash(key);
+  // Heap hash containers allow to operate with raw pointers, e.g.
+  //   HeapHashSet<Member<GCed>> set;
+  //   set.find(raw_ptr);
+  // Therefore, provide two hashing functions, one for raw pointers, another for
+  // Member. Prefer compressing raw pointers instead of decompressing Members,
+  // assuming the former is cheaper.
+  static unsigned GetHash(const T* key) {
+    cppgc::internal::MemberBase::RawStorage st(key);
+    return Base::GetHash(st.GetAsInteger());
   }
+  template <typename Member,
+            std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
+  static unsigned GetHash(const Member& m) {
+    return Base::GetHash(m.GetRawStorage().GetAsInteger());
+  }
+
   template <typename U, typename V>
   static bool Equal(const U& a, const V& b) {
     return a == b;

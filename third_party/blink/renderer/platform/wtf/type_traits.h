@@ -115,30 +115,30 @@ template <typename T>
 struct IsWeak : cppgc::internal::IsWeak<T> {};
 
 template <typename T>
-struct IsMemberType : std::integral_constant<bool, cppgc::IsMemberTypeV<T>> {};
+struct IsMemberType : std::bool_constant<cppgc::IsMemberTypeV<T>> {};
 
 template <typename T>
-struct IsWeakMemberType
-    : std::integral_constant<bool, cppgc::IsWeakMemberTypeV<T>> {};
+struct IsWeakMemberType : std::bool_constant<cppgc::IsWeakMemberTypeV<T>> {};
 
 template <typename T>
 struct IsMemberOrWeakMemberType
-    : std::integral_constant<bool,
-                             cppgc::IsMemberTypeV<T> ||
-                                 cppgc::IsWeakMemberTypeV<T>> {};
+    : std::bool_constant<cppgc::IsMemberTypeV<T> ||
+                         cppgc::IsWeakMemberTypeV<T>> {};
+
+template <typename T>
+struct IsAnyMemberType
+    : std::bool_constant<IsMemberOrWeakMemberType<T>::value ||
+                         cppgc::IsUntracedMemberTypeV<T>> {};
 
 template <typename T, typename U>
 struct IsTraceable<std::pair<T, U>>
-    : std::integral_constant<bool,
-                             IsTraceable<T>::value || IsTraceable<U>::value> {};
+    : std::bool_constant<IsTraceable<T>::value || IsTraceable<U>::value> {};
 
 // Convenience template wrapping the IsTraceableInCollection template in
 // Collection Traits. It helps make the code more readable.
 template <typename Traits>
 struct IsTraceableInCollectionTrait
-    : std::integral_constant<
-          bool,
-          Traits::template IsTraceableInCollection<>::value> {};
+    : std::bool_constant<Traits::template IsTraceableInCollection<>::value> {};
 
 enum WeakHandlingFlag {
   kNoWeakHandling,
