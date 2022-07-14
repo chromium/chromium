@@ -7081,21 +7081,21 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // inside the MPArch renderer process, so we need to set it here.
   // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
   if (params->is_unfenced_top_navigation) {
-    GURL validated_url = params->url;
+    const GURL validated_params_url = params->url;
 
     // Check that the IPC parameters are valid and that the navigation
     // is allowed.
     // TODO(crbug.com/1315802): When this handling is refactored into a separate
     // IPC, make sure that the checks from VerifyOpenURLParams above are not
     // unintentionally weakened.
-    if (!ValidateUnfencedTopNavigation(this, validated_url,
+    if (!ValidateUnfencedTopNavigation(this, validated_params_url,
                                        GetProcess()->GetID(), params->post_body,
                                        params->user_gesture)) {
       return;
     }
 
     TRACE_EVENT1("navigation", "RenderFrameHostImpl::OpenURL(_unfencedTop)",
-                 "url", validated_url.possibly_invalid_spec());
+                 "url", validated_params_url.possibly_invalid_spec());
 
     // There are some relevant parameter changes to note:
     // Change the navigation target to the outermost frame.
@@ -7129,7 +7129,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     blink::NavigationDownloadPolicy download_policy;
 
     target_frame->frame_tree_node()->navigator().NavigateFromFrameProxy(
-        target_frame, validated_url,
+        target_frame, validated_params_url,
         base::OptionalOrNullptr(params->initiator_frame_token),
         GetProcess()->GetID(), params->initiator_origin, GetSiteInstance(),
         content::Referrer(), ui::PAGE_TRANSITION_LINK,

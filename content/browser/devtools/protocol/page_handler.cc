@@ -1899,9 +1899,9 @@ CreateNotRestoredExplanation(
   auto reasons = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
 
-  for (BackForwardCacheMetrics::NotRestoredReason reason :
+  for (BackForwardCacheMetrics::NotRestoredReason not_restored_reason :
        not_restored_reasons) {
-    if (reason ==
+    if (not_restored_reason ==
         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
       DCHECK(!blocklisted_features.Empty());
       for (blink::scheduler::WebSchedulerTrackedFeature feature :
@@ -1912,8 +1912,9 @@ CreateNotRestoredExplanation(
                 .SetReason(BlocklistedFeatureToProtocol(feature))
                 .Build());
       }
-    } else if (reason == BackForwardCacheMetrics::NotRestoredReason::
-                             kDisableForRenderFrameHostCalled) {
+    } else if (not_restored_reason ==
+               BackForwardCacheMetrics::NotRestoredReason::
+                   kDisableForRenderFrameHostCalled) {
       for (auto disabled_reason : disabled_reasons) {
         auto reason =
             Page::BackForwardCacheNotRestoredExplanation::Create()
@@ -1929,8 +1930,8 @@ CreateNotRestoredExplanation(
     } else {
       reasons->emplace_back(
           Page::BackForwardCacheNotRestoredExplanation::Create()
-              .SetType(MapNotRestoredReasonToType(reason))
-              .SetReason(NotRestoredReasonToProtocol(reason))
+              .SetType(MapNotRestoredReasonToType(not_restored_reason))
+              .SetReason(NotRestoredReasonToProtocol(not_restored_reason))
               .Build());
     }
   }

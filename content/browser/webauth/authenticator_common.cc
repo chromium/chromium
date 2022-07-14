@@ -600,11 +600,11 @@ void AuthenticatorCommon::MakeCredential(
   absl::optional<std::string> appid_exclude;
   if (options->appid_exclude) {
     appid_exclude = "";
-    auto status = security_checker_->ValidateAppIdExtension(
+    auto add_id_status = security_checker_->ValidateAppIdExtension(
         *options->appid_exclude, caller_origin,
         options->remote_desktop_client_override, &appid_exclude.value());
-    if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-      CompleteMakeCredentialRequest(status);
+    if (add_id_status != blink::mojom::AuthenticatorStatus::SUCCESS) {
+      CompleteMakeCredentialRequest(add_id_status);
       return;
     }
     // `ValidateAppidExtension` must have set a value to use. If not, it would
@@ -918,11 +918,11 @@ void AuthenticatorCommon::GetAssertion(
   if (options->appid) {
     requested_extensions_.insert(RequestExtension::kAppID);
     std::string app_id;
-    auto status = security_checker_->ValidateAppIdExtension(
+    auto add_id_status = security_checker_->ValidateAppIdExtension(
         *options->appid, caller_origin, options->remote_desktop_client_override,
         &app_id);
-    if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-      CompleteGetAssertionRequest(status);
+    if (add_id_status != blink::mojom::AuthenticatorStatus::SUCCESS) {
+      CompleteGetAssertionRequest(add_id_status);
       return;
     }
     // `ValidateAppidExtension` must have set a value to use. If not, it would

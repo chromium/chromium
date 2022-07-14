@@ -2607,10 +2607,11 @@ void MediaStreamManager::FinalizeChangeDevice(const std::string& label,
     }
     const blink::MediaStreamDevice& new_device = new_device_ptr->value();
     MediaStreamDevice old_device;
-    auto& old_devices = old_devices_by_type[static_cast<int>(new_device.type)];
-    if (!old_devices.empty()) {
-      old_device = old_devices.back();
-      old_devices.pop_back();
+    auto& old_devices_of_new_device_type =
+        old_devices_by_type[static_cast<int>(new_device.type)];
+    if (!old_devices_of_new_device_type.empty()) {
+      old_device = old_devices_of_new_device_type.back();
+      old_devices_of_new_device_type.pop_back();
     }
 
     request->device_changed_cb.Run(label, old_device, new_device);
