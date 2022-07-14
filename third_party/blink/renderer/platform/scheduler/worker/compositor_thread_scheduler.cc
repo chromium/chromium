@@ -76,12 +76,6 @@ CompositorThreadScheduler::V8TaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-CompositorThreadScheduler::DefaultTaskRunner() {
-  NOTREACHED();
-  return nullptr;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::InputTaskRunner() {
   return GetHelper().InputTaskRunner();
 }

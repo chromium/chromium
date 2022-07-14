@@ -21,7 +21,6 @@ class WebFakeThreadScheduler : public WebThreadScheduler {
 
   // RendererScheduler implementation.
   std::unique_ptr<Thread> CreateMainThread() override;
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override;
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;

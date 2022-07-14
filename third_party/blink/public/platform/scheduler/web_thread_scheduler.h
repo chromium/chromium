@@ -59,9 +59,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // Returns main thread scheduler for the main thread of the current process.
   static WebThreadScheduler* MainThreadScheduler();
 
-  // Returns the default task runner.
-  virtual scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner();
-
   // Returns the compositor task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner();
 

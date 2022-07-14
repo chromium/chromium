@@ -23,11 +23,6 @@ std::unique_ptr<Thread> WebFakeThreadScheduler::CreateMainThread() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-WebFakeThreadScheduler::DefaultTaskRunner() {
-  return base::ThreadTaskRunnerHandle::Get();
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
 WebFakeThreadScheduler::CompositorTaskRunner() {
   return base::ThreadTaskRunnerHandle::Get();
 }

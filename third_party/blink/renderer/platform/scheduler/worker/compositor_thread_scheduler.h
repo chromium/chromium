@@ -42,7 +42,6 @@ class PLATFORM_EXPORT CompositorThreadScheduler
 
   // WebThreadScheduler:
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override;

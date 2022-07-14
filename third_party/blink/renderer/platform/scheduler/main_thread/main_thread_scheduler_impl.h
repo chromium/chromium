@@ -236,8 +236,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     return back_forward_cache_ipc_tracking_task_runner_;
   }
 
-  // WebThreadScheduler implementation:
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner();
 
   // The following functions are defined in both WebThreadScheduler and
   // ThreadScheduler, and have the same function signatures -- see above.

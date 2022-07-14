@@ -28,10 +28,6 @@ class SimpleMockMainThreadScheduler : public WebMockThreadScheduler {
       : simple_thread_scheduler_(CreateDummyWebThreadScheduler()) {}
   ~SimpleMockMainThreadScheduler() override {}
 
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
   std::unique_ptr<Thread> CreateMainThread() override {
     return simple_thread_scheduler_->CreateMainThread();
   }

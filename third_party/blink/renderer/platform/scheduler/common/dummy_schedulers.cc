@@ -310,11 +310,6 @@ class DummyWebThreadScheduler : public WebThreadScheduler,
   // WebThreadScheduler implementation:
   void Shutdown() override {}
 
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override {
     DCHECK(WTF::IsMainThread());

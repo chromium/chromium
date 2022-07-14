@@ -103,7 +103,8 @@ const base::TickClock* NonMainThreadSchedulerImpl::GetTickClock() const {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 NonMainThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
-  return DefaultTaskRunner();
+  NOTREACHED();
+  return nullptr;
 }
 
 void NonMainThreadSchedulerImpl::AttachToCurrentThread() {
