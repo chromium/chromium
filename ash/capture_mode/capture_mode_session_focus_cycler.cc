@@ -20,7 +20,6 @@
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -82,8 +81,8 @@ bool InRange(int value, int low, int high) {
 }
 
 // Returns a vector of intersection points of two bounds.
-std::vector<gfx::Point> GetIntersectionPoints(gfx::Rect bounds_a,
-                                              gfx::Rect bounds_b) {
+std::vector<gfx::Point> GetIntersectionPoints(const gfx::Rect& bounds_a,
+                                              const gfx::Rect& bounds_b) {
   // Calculate the attributes for the `intersection`.
   const int intersection_x = std::max(bounds_a.x(), bounds_b.x());
   const int intersection_y = std::max(bounds_a.y(), bounds_b.y());
@@ -133,6 +132,10 @@ std::vector<gfx::Point> GetIntersectionPoints(gfx::Rect bounds_a,
 // point falls within the bounds of `window_of_interest`.
 bool IsWindowFullyOccluded(aura::Window* window_of_interest) {
   std::stack<gfx::Point> points_stack;
+  // Create a set to track the points that have been calculated and inserted
+  // into the `points_stack` so that they will not be populated again and cause
+  // unnecessary infinite loop.
+  base::flat_set<gfx::Point> visited_points;
   gfx::Rect window_of_interest_bounds = window_of_interest->GetBoundsInScreen();
   gfx::Rect insetted_win_of_interest_bounds = window_of_interest_bounds;
   insetted_win_of_interest_bounds.Inset(kWindowOfInterestInset);
@@ -146,6 +149,11 @@ bool IsWindowFullyOccluded(aura::Window* window_of_interest) {
   // intersection point.
   base::flat_map<gfx::Point, aura::Window*> point_to_intersecting_window_map;
   base::flat_set<aura::Window*> visited;
+  // Create a map to track the windows that have been compared so that we won't
+  // re-insert the intersection points of the two windows into the
+  // `points_stack` again if it has been calculated and inserted before.
+  base::flat_set<std::pair<aura::Window*, aura::Window*>>
+      compared_window_pair_set;
 
   while (!points_stack.empty()) {
     const gfx::Point point = points_stack.top();
@@ -177,11 +185,23 @@ bool IsWindowFullyOccluded(aura::Window* window_of_interest) {
 
       auto outsetted_associated_win_bounds =
           associated_window->GetBoundsInScreen();
+
+      if (!compared_window_pair_set
+               .insert(std::make_pair(associated_window, top_window))
+               .second ||
+          !compared_window_pair_set
+               .insert(std::make_pair(top_window, associated_window))
+               .second) {
+        continue;
+      }
+
       outsetted_associated_win_bounds.Inset(-kIntersectingWindowOutset);
       for (const auto& p : GetIntersectionPoints(
                outsetted_top_window_bounds, outsetted_associated_win_bounds)) {
-        if (window_of_interest_bounds.Contains(p))
+        if (visited_points.insert(p).second &&
+            window_of_interest_bounds.Contains(p)) {
           points_stack.push(p);
+        }
 
         // We don't need to insert `p` into `point_to_intersecting_window_map`
         // here as `p` is not directly from the `window_of_interest`.
@@ -190,12 +210,23 @@ bool IsWindowFullyOccluded(aura::Window* window_of_interest) {
       continue;
     }
 
+    if (!compared_window_pair_set
+             .insert(std::make_pair(window_of_interest, top_window))
+             .second ||
+        !compared_window_pair_set
+             .insert(std::make_pair(top_window, window_of_interest))
+             .second) {
+      continue;
+    }
+
     for (const auto& p : GetIntersectionPoints(
              outsetted_top_window_bounds, insetted_win_of_interest_bounds)) {
       DCHECK(window_of_interest_bounds.Contains(p));
 
-      point_to_intersecting_window_map.emplace(p, top_window);
-      points_stack.push(p);
+      if (visited_points.insert(p).second) {
+        point_to_intersecting_window_map.emplace(p, top_window);
+        points_stack.push(p);
+      }
     }
   }
   return true;
