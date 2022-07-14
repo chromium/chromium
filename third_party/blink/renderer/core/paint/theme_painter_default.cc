@@ -154,9 +154,6 @@ gfx::Rect ConvertToPaintingRect(const LayoutObject& input_layout_object,
 }
 
 absl::optional<SkColor> GetAccentColor(const ComputedStyle& style) {
-  if (!RuntimeEnabledFeatures::CSSAccentColorEnabled())
-    return absl::nullopt;
-
   absl::optional<Color> css_accent_color = style.AccentColorResolved();
   if (css_accent_color)
     return css_accent_color->Rgb();

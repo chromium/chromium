@@ -486,10 +486,6 @@
       status: "experimental",
     },
     {
-      name: "CSSAccentColor",
-      status: "stable",
-    },
-    {
       // Allows positioning a positioned element relative to another one.
       // https://tabatkins.github.io/specs/css-anchor-position/
       name: "CSSAnchorPositioning",

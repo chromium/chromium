@@ -1371,7 +1371,6 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      runtime_flag: "CSSAccentColor",
       default_value: "StyleAutoColor::AutoColor()",
       style_builder_custom_functions: ["initial", "inherit", "value"],
       computable: true,
