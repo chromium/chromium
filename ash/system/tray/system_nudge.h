@@ -15,6 +15,7 @@
 #include "ash/shell_observer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/system_nudge_label.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -117,6 +118,8 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, ShellObserver {
                           &Shell::AddShellObserver,
                           &Shell::RemoveShellObserver>
       shell_observation_{this};
+
+  base::WeakPtrFactory<SystemNudge> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -87,11 +88,12 @@ gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
 
 class SystemNudge::SystemNudgeView : public views::View {
  public:
-  explicit SystemNudgeView(const SystemNudge* nudge) : nudge_(nudge) {
+  explicit SystemNudgeView(base::WeakPtr<SystemNudge> nudge) {
+    DCHECK(nudge);
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
-        /*inside_border_insect=*/gfx::Insets(nudge_->params_.nudge_padding),
-        /*between_child_spacing=*/nudge_->params_.icon_label_spacing);
+        /*inside_border_insect=*/gfx::Insets(nudge->params_.nudge_padding),
+        /*between_child_spacing=*/nudge->params_.icon_label_spacing);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
     SetLayoutManager(std::move(layout));
@@ -104,17 +106,21 @@ class SystemNudge::SystemNudgeView : public views::View {
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetPaintToLayer();
     icon_->layer()->SetFillsBoundsOpaquely(false);
-    icon_->SetSize({nudge_->params_.icon_size, nudge_->params_.icon_size});
+    icon_->SetSize({nudge->params_.icon_size, nudge->params_.icon_size});
     icon_->SetImage(ui::ImageModel::FromImageGenerator(
         base::BindRepeating(
-            [](const SystemNudge* nudge, const ui::ColorProvider*) {
+            [](base::WeakPtr<SystemNudge> nudge, const ui::ColorProvider*) {
+              // If `nudge` does not exist anymore, no image will be displayed.
+              if (!nudge)
+                return gfx::ImageSkia();
+
               return gfx::CreateVectorIcon(
                   nudge->GetIcon(),
                   AshColorProvider::Get()->GetContentLayerColor(
                       nudge->params_.icon_color_layer_type));
             },
-            nudge_),
-        gfx::Size(nudge_->params_.icon_size, nudge_->params_.icon_size)));
+            nudge),
+        gfx::Size(nudge->params_.icon_size, nudge->params_.icon_size)));
     label_ = AddChildView(nudge->CreateLabelView());
     label_->SetPaintToLayer();
     label_->layer()->SetFillsBoundsOpaquely(false);
@@ -128,7 +134,6 @@ class SystemNudge::SystemNudgeView : public views::View {
     layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor());
   }
 
-  const SystemNudge* const nudge_;
   views::View* label_ = nullptr;
   views::ImageView* icon_ = nullptr;
 };
@@ -186,7 +191,7 @@ void SystemNudge::Show() {
   }
 
   nudge_view_ = widget_->SetContentsView(
-      std::make_unique<SystemNudgeView>(/*nudge=*/this));
+      std::make_unique<SystemNudgeView>(/*nudge=*/weak_factory_.GetWeakPtr()));
   CalculateAndSetWidgetBounds();
   widget_->Show();
 
