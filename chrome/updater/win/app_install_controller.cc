@@ -598,38 +598,40 @@ void AppInstallControllerImpl::InstallAppOffline(
       base::BindOnce(
           [](scoped_refptr<AppInstallControllerImpl> self,
              const base::FilePath& offline_dir) {
-            base::ThreadPool::PostTaskAndReplyWithResult(
-                FROM_HERE, {base::MayBlock()},
-                base::BindOnce(
-                    [](const base::FilePath& offline_dir,
-                       const std::string& app_id) {
-                      // Parse the offline manifest to get the install command
-                      // and install data.
-                      base::FilePath installer_path;
-                      std::string install_args;
-                      std::string install_data;
+            base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+                ->PostTaskAndReplyWithResult(
+                    FROM_HERE,
+                    base::BindOnce(
+                        [](const base::FilePath& offline_dir,
+                           const std::string& app_id) {
+                          // Parse the offline manifest to get the install
+                          // command and install data.
+                          base::FilePath installer_path;
+                          std::string install_args;
+                          std::string install_data;
 
-                      absl::optional<tagging::AppArgs> app_args =
-                          GetAppArgs(app_id);
-                      ReadInstallCommandFromManifest(
-                          offline_dir, app_id,
-                          app_args ? app_args->install_data_index
-                                   : std::string(),
-                          installer_path, install_args, install_data);
-                      return std::make_tuple(installer_path, install_args,
-                                             install_data);
-                    },
-                    offline_dir, self->app_id_),
-                base::BindOnce(
-                    [](scoped_refptr<AppInstallControllerImpl> self,
-                       const std::tuple<base::FilePath /*installer_path*/,
-                                        std::string /*arguments*/,
-                                        std::string /*install_data*/>& result) {
-                      self->DoInstallAppOffline(std::get<0>(result),
-                                                std::get<1>(result),
-                                                std::get<2>(result));
-                    },
-                    self));
+                          absl::optional<tagging::AppArgs> app_args =
+                              GetAppArgs(app_id);
+                          ReadInstallCommandFromManifest(
+                              offline_dir, app_id,
+                              app_args ? app_args->install_data_index
+                                       : std::string(),
+                              installer_path, install_args, install_data);
+                          return std::make_tuple(installer_path, install_args,
+                                                 install_data);
+                        },
+                        offline_dir, self->app_id_),
+                    base::BindOnce(
+                        [](scoped_refptr<AppInstallControllerImpl> self,
+                           const std::tuple<base::FilePath /*installer_path*/,
+                                            std::string /*arguments*/,
+                                            std::string /*install_data*/>&
+                               result) {
+                          self->DoInstallAppOffline(std::get<0>(result),
+                                                    std::get<1>(result),
+                                                    std::get<2>(result));
+                        },
+                        self));
           },
           base::WrapRefCounted(this), offline_dir));
 }
