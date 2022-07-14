@@ -7292,7 +7292,8 @@
                 {
                     "name": "DrDc",
                     "enable_features": [
-                        "EnableDrDc"
+                        "EnableDrDc",
+                        "EnableDrDcVulkan"
                     ],
                     "disable_features": [
                         "RawDraw"
