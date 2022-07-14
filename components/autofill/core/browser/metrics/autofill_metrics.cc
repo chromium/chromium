@@ -1308,13 +1308,42 @@ void AutofillMetrics::LogOfferNotificationInfoBarShown() {
       "Autofill.OfferNotificationInfoBarOffer.CardLinkedOffer", true);
 }
 
-void AutofillMetrics::LogProgressDialogResultMetric(bool is_canceled_by_user) {
-  base::UmaHistogramBoolean("Autofill.ProgressDialog.CardUnmask.Result",
-                            is_canceled_by_user);
+void AutofillMetrics::LogProgressDialogResultMetric(
+    bool is_canceled_by_user,
+    AutofillProgressDialogType autofill_progress_dialog_type) {
+  std::string dialog_type;
+  switch (autofill_progress_dialog_type) {
+    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
+      dialog_type = "AndroidFIDO";
+      break;
+    case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+      dialog_type = "CardUnmask";
+      break;
+    case AutofillProgressDialogType::kUnspecified:
+      NOTREACHED();
+      return;
+  }
+  base::UmaHistogramBoolean(
+      "Autofill.ProgressDialog." + dialog_type + ".Result",
+      is_canceled_by_user);
 }
 
-void AutofillMetrics::LogProgressDialogShown() {
-  base::UmaHistogramBoolean("Autofill.ProgressDialog.CardUnmask.Shown", true);
+void AutofillMetrics::LogProgressDialogShown(
+    AutofillProgressDialogType autofill_progress_dialog_type) {
+  std::string dialog_type;
+  switch (autofill_progress_dialog_type) {
+    case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
+      dialog_type = "AndroidFIDO";
+      break;
+    case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+      dialog_type = "CardUnmask";
+      break;
+    case AutofillProgressDialogType::kUnspecified:
+      NOTREACHED();
+      return;
+  }
+  base::UmaHistogramBoolean("Autofill.ProgressDialog." + dialog_type + ".Shown",
+                            true);
 }
 
 // static

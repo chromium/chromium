@@ -108,6 +108,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.ProgressDialog.FlowType">
+  <variant name="AndroidFIDO"
+      summary="Progress dialog while authenticating with FIDO on Android"/>
   <variant name="CardUnmask"
       summary="Progress dialog for the VCN Card Unmask Flow"/>
 </variants>

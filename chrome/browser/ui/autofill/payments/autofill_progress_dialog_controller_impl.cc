@@ -35,9 +35,7 @@ void AutofillProgressDialogControllerImpl::ShowDialog(
       AutofillProgressDialogView::CreateAndShow(this);
 
   if (autofill_progress_dialog_view_)
-    // TODO(crbug.com/1261529): Pass in the flow type once we have another use
-    // case so that the progress dialog can be shared across multiple use cases.
-    AutofillMetrics::LogProgressDialogShown();
+    AutofillMetrics::LogProgressDialogShown(autofill_progress_dialog_type);
 }
 
 void AutofillProgressDialogControllerImpl::DismissDialog(
@@ -54,12 +52,11 @@ void AutofillProgressDialogControllerImpl::OnDismissed(
     bool is_canceled_by_user) {
   // Dialog is being dismissed so set the pointer to nullptr.
   autofill_progress_dialog_view_ = nullptr;
-  autofill_progress_dialog_type_ = AutofillProgressDialogType::kUnspecified;
   if (is_canceled_by_user)
     std::move(cancel_callback_).Run();
-  // TODO(crbug.com/1261529): Pass in the flow type once we have another use
-  // case so that the progress dialog can be shared across multiple use cases.
-  AutofillMetrics::LogProgressDialogResultMetric(is_canceled_by_user);
+  AutofillMetrics::LogProgressDialogResultMetric(
+      is_canceled_by_user, autofill_progress_dialog_type_);
+  autofill_progress_dialog_type_ = AutofillProgressDialogType::kUnspecified;
   cancel_callback_.Reset();
 }
 

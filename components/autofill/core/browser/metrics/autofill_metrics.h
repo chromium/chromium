@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -1458,8 +1459,11 @@ class AutofillMetrics {
   static void LogOfferNotificationInfoBarResultMetric(
       OfferNotificationInfoBarResultMetric metric);
   static void LogOfferNotificationInfoBarShown();
-  static void LogProgressDialogResultMetric(bool is_canceled_by_user);
-  static void LogProgressDialogShown();
+  static void LogProgressDialogResultMetric(
+      bool is_canceled_by_user,
+      AutofillProgressDialogType autofill_progress_dialog_type);
+  static void LogProgressDialogShown(
+      AutofillProgressDialogType autofill_progress_dialog_type);
   static void LogVirtualCardManualFallbackBubbleShown(bool is_reshow);
   static void LogVirtualCardManualFallbackBubbleResultMetric(
       VirtualCardManualFallbackBubbleResultMetric metric,
