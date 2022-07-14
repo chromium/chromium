@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/barrier_closure.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
+#include "chrome/browser/privacy_budget/privacy_budget_browsertest_util.h"
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
@@ -24,13 +27,9 @@ namespace {
 using testing::IsSupersetOf;
 using testing::Key;
 
-class PrivacyBudgetReidScoreBrowserTest : public PlatformBrowserTest {
+class EnableReidEstimation {
  public:
-  content::WebContents* web_contents() {
-    return chrome_test_utils::GetActiveWebContents(this);
-  }
-
-  PrivacyBudgetReidScoreBrowserTest() {
+  EnableReidEstimation() {
     test::ScopedPrivacyBudgetConfig::Parameters parameters;
 
     parameters.reid_blocks = {
@@ -46,25 +45,16 @@ class PrivacyBudgetReidScoreBrowserTest : public PlatformBrowserTest {
     scoped_config_.Apply(parameters);
   }
 
-  void SetUpOnMainThread() override {
-    // Do an initial empty navigation then create the recorder to make sure we
-    // start on a clean slate. This clears the platform differences in between
-    // Android and Desktop.
-    content::NavigateToURLBlockUntilNavigationsComplete(web_contents(),
-                                                        GURL("about:blank"), 1);
-
-    // Ensure that the actively sampled surfaces reported at browser startup go
-    // through before we set up the test recorder.
-    content::RunAllTasksUntilIdle();
-    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-  }
-
-  ukm::TestUkmRecorder& recorder() { return *ukm_recorder_; }
-
  private:
   test::ScopedPrivacyBudgetConfig scoped_config_;
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
+
+class PrivacyBudgetReidScoreBrowserTest : private EnableReidEstimation,
+                                          public PlatformBrowserTest {};
+
+class PrivacyBudgetReidScoreBrowserTestWithTestRecorder
+    : private EnableReidEstimation,
+      public PrivacyBudgetBrowserTestBaseWithTestRecorder {};
 
 }  // namespace
 
@@ -75,7 +65,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetReidScoreBrowserTest, LoadsAGroup) {
   ASSERT_TRUE(settings->IsActive());
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetReidScoreBrowserTest, ReidHashIsReported) {
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetReidScoreBrowserTestWithTestRecorder,
+                       ReidHashIsReported) {
   blink::IdentifiabilityStudySettings::ResetStateForTesting();
   auto study_state = std::make_unique<IdentifiabilityStudyState>(
       g_browser_process->local_state());
@@ -102,7 +93,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetReidScoreBrowserTest, ReidHashIsReported) {
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents(),
                                                       GURL("about:blank"), 1);
   // Wait for the metrics to come down the pipe.
-  content::RunAllTasksUntilIdle();
   run_loop.Run();
 
   auto merged_entries = recorder().GetMergedEntriesByName(

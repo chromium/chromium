@@ -96,6 +96,8 @@ source_set("browser_tests") {
   sources = [
     "canvas_input_key_browsertest.cc",
     "privacy_budget_browsertest.cc",
+    "privacy_budget_browsertest_util.cc",
+    "privacy_budget_browsertest_util.h",
     "privacy_budget_reid_score_browsertest.cc",
   ]
 
