@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/syslog_logging.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"
 #include "components/policy/core/common/cloud/affiliation.h"
@@ -204,6 +205,8 @@ void PolicyLoaderLacros::SetComponentPolicy(
     // The data is also good; expose the policies.
     component_policy_->Get(policy_pair.first).Swap(&component_policy_map);
   }
+  // TODO(igorcov): crbug.com/1301854 Remove after bug fix.
+  SYSLOG(INFO) << "New component policy installed";
 }
 
 enterprise_management::PolicyData* PolicyLoaderLacros::GetPolicyData() {
