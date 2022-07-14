@@ -16,19 +16,6 @@ namespace printing {
 
 class MetafilePlayer;
 class PrintDialogLinuxInterface;
-class PrintingContextLinux;
-
-class COMPONENT_EXPORT(PRINTING) PrintingContextLinuxDelegate {
- public:
-  virtual ~PrintingContextLinuxDelegate() = default;
-
-  virtual PrintDialogLinuxInterface* CreatePrintDialog(
-      PrintingContextLinux* context) = 0;
-
-  virtual gfx::Size GetPdfPaperSize(PrintingContextLinux* context) = 0;
-
-  static void SetInstance(PrintingContextLinuxDelegate* delegate);
-};
 
 // PrintingContext with optional native UI for print dialog and pdf_paper_size.
 class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {

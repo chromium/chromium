@@ -21,14 +21,12 @@
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_font_delegate.h"
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 #include "ui/shell_dialogs/shell_dialog_linux.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PRINTING)
-#include "printing/printing_context_linux.h"  // nogncheck
 #endif
 
 // The main entrypoint into Linux toolkit specific code. GTK/QT code should only
@@ -46,6 +44,11 @@ namespace gfx {
 class Image;
 }
 
+namespace printing {
+class PrintingContextLinux;
+class PrintDialogLinuxInterface;
+}  // namespace printing
+
 namespace ui {
 
 class DeviceScaleFactorObserver;
@@ -61,9 +64,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
       public gfx::SkiaFontDelegate,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
       public ui::ShellDialogLinux,
-#endif
-#if BUILDFLAG(ENABLE_PRINTING)
-      public printing::PrintingContextLinuxDelegate,
 #endif
       public ui::TextEditKeyBindingsDelegateAuraLinux,
       public ui::CursorThemeManager,
@@ -179,6 +179,14 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
 
   // Returns a map of KeyboardEvent code to KeyboardEvent key values.
   virtual base::flat_map<std::string, std::string> GetKeyboardLayoutMap() = 0;
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  virtual printing::PrintDialogLinuxInterface* CreatePrintDialog(
+      printing::PrintingContextLinux* context) = 0;
+
+  virtual gfx::Size GetPdfPaperSize(
+      printing::PrintingContextLinux* context) = 0;
+#endif
 
  protected:
   struct CmdLineArgs {

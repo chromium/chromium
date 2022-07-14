@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
@@ -17,13 +18,12 @@
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
 
+// Avoid using LinuxUi on Fuchsia.
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
+
 namespace printing {
-
-namespace {
-
-static PrintingContextLinuxDelegate* g_delegate = nullptr;
-
-}  // namespace
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
@@ -47,12 +47,6 @@ PrintingContextLinux::~PrintingContextLinux() {
     print_dialog_->ReleaseDialog();
 }
 
-// static
-void PrintingContextLinuxDelegate::SetInstance(
-    PrintingContextLinuxDelegate* delegate) {
-  g_delegate = delegate;
-}
-
 void PrintingContextLinux::AskUserForSettings(int max_pages,
                                               bool has_selection,
                                               bool is_scripted,
@@ -74,19 +68,23 @@ mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
 
   ResetSettings();
 
-  if (!g_delegate)
+#if BUILDFLAG(IS_LINUX)
+  if (!ui::LinuxUi::instance())
     return mojom::ResultCode::kSuccess;
 
   if (!print_dialog_)
-    print_dialog_ = g_delegate->CreatePrintDialog(this);
+    print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
   print_dialog_->UseDefaultSettings();
+#endif
 
   return mojom::ResultCode::kSuccess;
 }
 
 gfx::Size PrintingContextLinux::GetPdfPaperSizeDeviceUnits() {
-  if (g_delegate)
-    return g_delegate->GetPdfPaperSize(this);
+#if BUILDFLAG(IS_LINUX)
+  if (ui::LinuxUi::instance())
+    return ui::LinuxUi::instance()->GetPdfPaperSize(this);
+#endif
 
   return gfx::Size();
 }
@@ -96,16 +94,18 @@ mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
   DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
 
-  if (!g_delegate)
+#if BUILDFLAG(IS_LINUX)
+  if (!ui::LinuxUi::instance())
     return mojom::ResultCode::kSuccess;
 
   if (!print_dialog_)
-    print_dialog_ = g_delegate->CreatePrintDialog(this);
+    print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
 
   // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_ will
   // remain non-null after this line.
   print_dialog_->UpdateSettings(std::move(settings_));
   DCHECK(settings_);
+#endif
 
   return mojom::ResultCode::kSuccess;
 }

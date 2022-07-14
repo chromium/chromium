@@ -30,9 +30,6 @@ void LinuxUi::SetInstance(std::unique_ptr<LinuxUi> instance) {
   ShellDialogLinux::SetInstance(g_linux_ui);
 #endif
   ui::SetTextEditKeyBindingsDelegate(g_linux_ui);
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_PRINTING)
-  printing::PrintingContextLinuxDelegate::SetInstance(g_linux_ui);
-#endif
   ui::CursorThemeManager::SetInstance(g_linux_ui);
   gfx::AnimationSettingsProviderLinux::SetInstance(g_linux_ui);
 

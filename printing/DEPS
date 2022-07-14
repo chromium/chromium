@@ -13,4 +13,5 @@ include_rules = [
   "+ui/base/resource",
   "+ui/base/text",
   "+ui/gfx",
+  "+ui/linux",
 ]

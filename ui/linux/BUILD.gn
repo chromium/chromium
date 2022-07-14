@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/linux/gtk/gtk.gni")
-import("//printing/buildflags/buildflags.gni")
 import("//ui/qt/qt.gni")
 
 component("linux_ui") {
@@ -26,9 +25,6 @@ component("linux_ui") {
     "//ui/native_theme",
     "//ui/shell_dialogs",
   ]
-  if (enable_basic_printing) {
-    deps += [ "//printing" ]
-  }
   public_deps = [
     "//printing/buildflags",
     "//skia",
