@@ -742,7 +742,8 @@ class GpuIntegrationTest(
             gpu_tags.extend([gpu_vendor, gpu_device_tag])
             # This acts as a way to add expectations for both HD 630 and UHD 630
             # GPUs without resorting to the more generic "intel" tag.
-            if gpu_device_tag in ('intel-0x5912', 'intel-0x3e92'):
+            if gpu_device_tag in ('intel-0x5912', 'intel-0x3e92',
+                                  'intel-0x9bc5'):
               gpu_tags.append('intel-hd-630-family')
       # all spaces and underscores in the tag will be replaced by dashes
       tags.extend([re.sub('[ _]', '-', tag) for tag in gpu_tags])
