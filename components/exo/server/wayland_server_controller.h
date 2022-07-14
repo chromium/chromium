@@ -10,8 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
-#include "components/exo/capabilities.h"
 #include "components/exo/display.h"
+#include "components/exo/security_delegate.h"
 #include "components/exo/wayland/server.h"
 
 namespace exo {
@@ -58,16 +58,16 @@ class WaylandServerController {
       std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager);
 
-  // Creates a wayland server with the given set of |capabilities|. Invokes
+  // Creates a wayland server with the given |security_delegate|. Invokes
   // |callback| with the success flag indicating whether the request
-  // succeeded/failed. If successful, the server and its |capabilities| will
-  // persist until DeleteServer() is called.
-  void CreateServer(std::unique_ptr<Capabilities> capabilities,
+  // succeeded/failed. If successful, the server and its |security_delegate|
+  // will persist until DeleteServer() is called.
+  void CreateServer(std::unique_ptr<SecurityDelegate> security_delegate,
                     wayland::Server::StartCallback callback);
 
   // Removes the wayland server with a socket at |path|. This server, along with
-  // its capabilities, will be deleted, and wayland clients will no longer be
-  // able to connect to it.
+  // its security_delegate, will be deleted, and wayland clients will no longer
+  // be able to connect to it.
   void DeleteServer(const base::FilePath& path);
 
  private:

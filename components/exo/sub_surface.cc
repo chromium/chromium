@@ -124,9 +124,9 @@ void SubSurface::OnSetParent(Surface* parent, const gfx::Point&) {
     surface_->window()->SetProperty(aura::client::kSkipImeProcessing, true);
 }
 
-Capabilities* SubSurface::GetCapabilities() {
+SecurityDelegate* SubSurface::GetSecurityDelegate() {
   if (parent_)
-    return parent_->GetCapabilities();
+    return parent_->GetSecurityDelegate();
   return nullptr;
 }
 

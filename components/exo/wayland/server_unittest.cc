@@ -17,8 +17,8 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "components/exo/capabilities.h"
 #include "components/exo/display.h"
+#include "components/exo/security_delegate.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/test/wayland_server_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,14 +30,14 @@ namespace wayland {
 using ServerTest = test::WaylandServerTestBase;
 
 TEST_F(ServerTest, AddSocket) {
-  auto server = CreateServer(Capabilities::GetDefaultCapabilities());
+  auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
   // Check that calling AddSocket() with a unique socket name succeeds.
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);
 }
 
 TEST_F(ServerTest, GetFileDescriptor) {
-  auto server = CreateServer(Capabilities::GetDefaultCapabilities());
+  auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);
 
@@ -46,15 +46,15 @@ TEST_F(ServerTest, GetFileDescriptor) {
   DCHECK_GE(fd, 0);
 }
 
-TEST_F(ServerTest, CapabilityAssociation) {
-  std::unique_ptr<Capabilities> capabilities =
-      Capabilities::GetDefaultCapabilities();
-  Capabilities* capability_ptr = capabilities.get();
+TEST_F(ServerTest, SecurityDelegateAssociation) {
+  std::unique_ptr<SecurityDelegate> security_delegate =
+      SecurityDelegate::GetDefaultSecurityDelegate();
+  SecurityDelegate* security_delegate_ptr = security_delegate.get();
 
-  auto server = CreateServer(std::move(capabilities));
+  auto server = CreateServer(std::move(security_delegate));
 
-  EXPECT_EQ(GetCapabilities(server->GetWaylandDisplayForTesting()),
-            capability_ptr);
+  EXPECT_EQ(GetSecurityDelegate(server->GetWaylandDisplayForTesting()),
+            security_delegate_ptr);
 }
 
 TEST_F(ServerTest, CreateAsync) {
@@ -90,7 +90,7 @@ TEST_F(ServerTest, CreateAsync) {
 }
 
 TEST_F(ServerTest, Dispatch) {
-  auto server = CreateServer(Capabilities::GetDefaultCapabilities());
+  auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
 
   std::string socket_name = GetUniqueSocketName();
   bool rv = server->AddSocket(socket_name);
@@ -113,7 +113,7 @@ TEST_F(ServerTest, Dispatch) {
 }
 
 TEST_F(ServerTest, Flush) {
-  auto server = CreateServer(Capabilities::GetDefaultCapabilities());
+  auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
 
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);

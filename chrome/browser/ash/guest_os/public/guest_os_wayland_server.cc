@@ -9,9 +9,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/browser/ash/borealis/borealis_capabilities.h"
-#include "chrome/browser/ash/crostini/crostini_capabilities.h"
-#include "chrome/browser/ash/guest_os/guest_os_capabilities.h"
+#include "chrome/browser/ash/borealis/borealis_security_delegate.h"
+#include "chrome/browser/ash/crostini/crostini_security_delegate.h"
+#include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -36,8 +36,8 @@ void OnWaylandServerStarted(
       case GuestOsWaylandServer::ServerFailure::kUnknownVmType:
         reason = "requested VM type is not known";
         break;
-      case GuestOsWaylandServer::ServerFailure::kUndefinedCapabilities:
-        reason = "could not generate capabilities";
+      case GuestOsWaylandServer::ServerFailure::kUndefinedSecurityDelegate:
+        reason = "could not generate security_delegate";
         break;
       case GuestOsWaylandServer::ServerFailure::kFailedToSpawn:
         reason = "could not spawn the server";
@@ -59,21 +59,21 @@ void OnWaylandServerStarted(
 
 }  // namespace
 
-class GuestOsWaylandServer::CapabilityHolder
+class GuestOsWaylandServer::DelegateHolder
     : public CachedCallback<ServerDetails, ServerFailure> {
  public:
   // To create a capability set we allow each VM type to asynchronously build
-  // and return the capabilities. Callees can reject the request by returning
-  // nullptr instead of the capabilities.
+  // and return the security_delegate. Callees can reject the request by
+  // returning nullptr instead of the security_delegate.
   using CapabilityFactory = base::RepeatingCallback<void(
-      base::OnceCallback<void(std::unique_ptr<GuestOsCapabilities>)>)>;
+      base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>)>;
 
-  explicit CapabilityHolder(CapabilityFactory cap_factory)
+  explicit DelegateHolder(CapabilityFactory cap_factory)
       : cap_factory_(std::move(cap_factory)) {}
 
  private:
   static void OnServerCreated(RealCallback callback,
-                              base::WeakPtr<GuestOsCapabilities> cap_ptr,
+                              base::WeakPtr<GuestOsSecurityDelegate> cap_ptr,
                               bool success,
                               const base::FilePath& path) {
     if (!success) {
@@ -85,20 +85,22 @@ class GuestOsWaylandServer::CapabilityHolder
     std::move(callback).Run(Success(cap_ptr, path));
   }
 
-  static void OnCapabilitiesCreated(RealCallback callback,
-                                    std::unique_ptr<GuestOsCapabilities> caps) {
+  static void OnSecurityDelegateCreated(
+      RealCallback callback,
+      std::unique_ptr<GuestOsSecurityDelegate> caps) {
     if (!caps) {
-      std::move(callback).Run(Failure(ServerFailure::kUndefinedCapabilities));
+      std::move(callback).Run(
+          Failure(ServerFailure::kUndefinedSecurityDelegate));
       return;
     }
-    GuestOsCapabilities::BuildServer(
+    GuestOsSecurityDelegate::BuildServer(
         std::move(caps), base::BindOnce(&OnServerCreated, std::move(callback)));
   }
 
   // CachedCallback overrides.
   void Build(RealCallback callback) override {
     cap_factory_.Run(
-        base::BindOnce(&OnCapabilitiesCreated, std::move(callback)));
+        base::BindOnce(&OnSecurityDelegateCreated, std::move(callback)));
   }
   ServerFailure Reject() override { return ServerFailure::kRejected; }
 
@@ -106,15 +108,15 @@ class GuestOsWaylandServer::CapabilityHolder
 };
 
 GuestOsWaylandServer::ServerDetails::ServerDetails(
-    base::WeakPtr<GuestOsCapabilities> capabilities,
+    base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
     base::FilePath path)
-    : capabilities_(capabilities), server_path_(std::move(path)) {}
+    : security_delegate_(security_delegate), server_path_(std::move(path)) {}
 
 GuestOsWaylandServer::ServerDetails::~ServerDetails() {
   // In tests, this is used to avoid dealing with the real server controller.
   if (server_path_.empty())
     return;
-  GuestOsCapabilities::MaybeRemoveServer(capabilities_, server_path_);
+  GuestOsSecurityDelegate::MaybeRemoveServer(security_delegate_, server_path_);
 }
 
 // static
@@ -136,20 +138,20 @@ void GuestOsWaylandServer::StartServer(
 
 GuestOsWaylandServer::GuestOsWaylandServer(Profile* profile)
     : profile_(profile) {
-  capability_holders_[vm_tools::launch::BOREALIS] =
-      std::make_unique<CapabilityHolder>(base::BindRepeating(
-          &borealis::BorealisCapabilities::Build, profile_));
-  capability_holders_[vm_tools::launch::TERMINA] =
-      std::make_unique<CapabilityHolder>(base::BindRepeating(
-          &crostini::CrostiniCapabilities::Build, profile_));
+  delegate_holders_[vm_tools::launch::BOREALIS] =
+      std::make_unique<DelegateHolder>(base::BindRepeating(
+          &borealis::BorealisSecurityDelegate::Build, profile_));
+  delegate_holders_[vm_tools::launch::TERMINA] =
+      std::make_unique<DelegateHolder>(base::BindRepeating(
+          &crostini::CrostiniSecurityDelegate::Build, profile_));
 }
 
 GuestOsWaylandServer::~GuestOsWaylandServer() = default;
 
 void GuestOsWaylandServer::Get(vm_tools::launch::VmType vm_type,
                                base::OnceCallback<void(Result)> callback) {
-  auto holder_iter = capability_holders_.find(vm_type);
-  if (holder_iter == capability_holders_.end()) {
+  auto holder_iter = delegate_holders_.find(vm_type);
+  if (holder_iter == delegate_holders_.end()) {
     std::move(callback).Run(Result::Unexpected(ServerFailure::kUnknownVmType));
     return;
   }
@@ -158,16 +160,16 @@ void GuestOsWaylandServer::Get(vm_tools::launch::VmType vm_type,
 
 void GuestOsWaylandServer::SetCapabilityFactoryForTesting(
     vm_tools::launch::VmType vm_type,
-    CapabilityHolder::CapabilityFactory factory) {
-  capability_holders_[vm_type] = std::make_unique<CapabilityHolder>(factory);
+    DelegateHolder::CapabilityFactory factory) {
+  delegate_holders_[vm_type] = std::make_unique<DelegateHolder>(factory);
 }
 
 void GuestOsWaylandServer::OverrideServerForTesting(
     vm_tools::launch::VmType vm_type,
-    base::WeakPtr<GuestOsCapabilities> capabilities,
+    base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
     base::FilePath path) {
-  capability_holders_[vm_type]->CacheForTesting(  // IN-TEST
-      std::make_unique<ServerDetails>(capabilities, std::move(path)));
+  delegate_holders_[vm_type]->CacheForTesting(  // IN-TEST
+      std::make_unique<ServerDetails>(security_delegate, std::move(path)));
 }
 
 }  // namespace guest_os

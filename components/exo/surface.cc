@@ -1643,9 +1643,9 @@ void Surface::SetKeyboardShortcutsInhibited(bool inhibited) {
 #endif
 }
 
-Capabilities* Surface::GetCapabilities() {
+SecurityDelegate* Surface::GetSecurityDelegate() {
   if (delegate_)
-    return delegate_->GetCapabilities();
+    return delegate_->GetSecurityDelegate();
   return nullptr;
 }
 

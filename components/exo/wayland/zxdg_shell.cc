@@ -649,7 +649,7 @@ void xdg_shell_v6_get_xdg_surface(wl_client* client,
   // mapped before they are enabled and can become visible.
   shell_surface->SetEnabled(false);
 
-  shell_surface->SetCapabilities(GetCapabilities(client));
+  shell_surface->SetSecurityDelegate(GetSecurityDelegate(client));
 
   std::unique_ptr<WaylandXdgSurface> wayland_shell_surface =
       std::make_unique<WaylandXdgSurface>(std::move(shell_surface),

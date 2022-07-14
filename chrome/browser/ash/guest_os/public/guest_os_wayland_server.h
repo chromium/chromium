@@ -18,7 +18,7 @@ class Profile;
 
 namespace guest_os {
 
-class GuestOsCapabilities;
+class GuestOsSecurityDelegate;
 
 // Holds references to the wayland servers created for GuestOS VMs. There is one
 // instance of the server per-capability set, where capability-sets loosely
@@ -31,7 +31,7 @@ class GuestOsWaylandServer {
   // server.
   class ServerDetails {
    public:
-    ServerDetails(base::WeakPtr<GuestOsCapabilities> capabilities,
+    ServerDetails(base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
                   base::FilePath path);
     ~ServerDetails();
 
@@ -42,21 +42,23 @@ class GuestOsWaylandServer {
     ServerDetails* operator=(const ServerDetails&) = delete;
 
     // This may be nullptr during shutdown.
-    GuestOsCapabilities* capabilities() const { return capabilities_.get(); }
+    GuestOsSecurityDelegate* security_delegate() const {
+      return security_delegate_.get();
+    }
 
     const base::FilePath& server_path() const { return server_path_; }
 
    private:
     // The capability-set is owned by Exo, we hold a weak reference in case we
     // need to delete it before Exo does (on shutdown).
-    base::WeakPtr<GuestOsCapabilities> capabilities_;
+    base::WeakPtr<GuestOsSecurityDelegate> security_delegate_;
     base::FilePath server_path_;
   };
 
   // Enumerates the reasons why a wayland server might not be created.
   enum class ServerFailure {
     kUnknownVmType,
-    kUndefinedCapabilities,
+    kUndefinedSecurityDelegate,
     kFailedToSpawn,
     kRejected,
   };
@@ -87,22 +89,23 @@ class GuestOsWaylandServer {
 
   void SetCapabilityFactoryForTesting(
       vm_tools::launch::VmType vm_type,
-      base::RepeatingCallback<
-          void(base::OnceCallback<void(std::unique_ptr<GuestOsCapabilities>)>)>
+      base::RepeatingCallback<void(
+          base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>)>
           factory);
 
   // Used in tests to skip actually trying to allocate a server socket via exo.
-  void OverrideServerForTesting(vm_tools::launch::VmType vm_type,
-                                base::WeakPtr<GuestOsCapabilities> capabilities,
-                                base::FilePath path);
+  void OverrideServerForTesting(
+      vm_tools::launch::VmType vm_type,
+      base::WeakPtr<GuestOsSecurityDelegate> security_delegate,
+      base::FilePath path);
 
  private:
-  class CapabilityHolder;
+  class DelegateHolder;
 
   Profile* profile_;
 
-  base::flat_map<vm_tools::launch::VmType, std::unique_ptr<CapabilityHolder>>
-      capability_holders_;
+  base::flat_map<vm_tools::launch::VmType, std::unique_ptr<DelegateHolder>>
+      delegate_holders_;
 };
 
 }  // namespace guest_os

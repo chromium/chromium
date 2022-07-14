@@ -24,7 +24,7 @@ namespace exo::wayland {
 
 namespace {
 
-using CapabilityBindingTest = WaylandClientTest;
+using SecurityDelegateBindingTest = WaylandClientTest;
 
 class GlobalBindings {
  public:
@@ -129,15 +129,15 @@ UserData* GetUserDataForInterface(Server* server,
 
 }  // namespace
 
-TEST_F(CapabilityBindingTest, ShellSurfacesHaveCapabilities) {
+TEST_F(SecurityDelegateBindingTest, ShellSurfacesHaveSecurityDelegate) {
   // Due to a limitation in the viz::TestGpuServiceHolder, we are only allowed
   // one instance of the WaylandTestHelper. For this reason, all checks must be
   // done in a single test.
   struct wl_display* display = wl_display_connect(nullptr);
   GlobalBindings gb(display);
-  Capabilities* server_capabilities =
-      GetCapabilities(GetServer()->GetWaylandDisplayForTesting());
-  ASSERT_NE(server_capabilities, nullptr);
+  SecurityDelegate* server_security_delegate =
+      GetSecurityDelegate(GetServer()->GetWaylandDisplayForTesting());
+  ASSERT_NE(server_security_delegate, nullptr);
 
   // wl_shell_surface
   wl_shell_get_shell_surface(gb.shell(),
@@ -145,8 +145,8 @@ TEST_F(CapabilityBindingTest, ShellSurfacesHaveCapabilities) {
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<ShellSurface>(GetServer(),
                                                   wl_shell_surface_interface)
-                ->GetCapabilities(),
-            server_capabilities);
+                ->GetSecurityDelegate(),
+            server_security_delegate);
 
   // xdg_surface
   xdg_wm_base_get_xdg_surface(gb.xdg_wm_base(),
@@ -154,8 +154,8 @@ TEST_F(CapabilityBindingTest, ShellSurfacesHaveCapabilities) {
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<WaylandXdgSurface>(GetServer(),
                                                        xdg_surface_interface)
-                ->shell_surface->GetCapabilities(),
-            server_capabilities);
+                ->shell_surface->GetSecurityDelegate(),
+            server_security_delegate);
 
   // zxdg_surface
   zxdg_shell_v6_get_xdg_surface(gb.zxdg_shell(),
@@ -163,8 +163,8 @@ TEST_F(CapabilityBindingTest, ShellSurfacesHaveCapabilities) {
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<WaylandXdgSurface>(
                 GetServer(), zxdg_surface_v6_interface)
-                ->shell_surface->GetCapabilities(),
-            server_capabilities);
+                ->shell_surface->GetSecurityDelegate(),
+            server_security_delegate);
 
   // zcr_remote_surface_v1
   zcr_remote_shell_v1_get_remote_surface(
@@ -173,8 +173,8 @@ TEST_F(CapabilityBindingTest, ShellSurfacesHaveCapabilities) {
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<ClientControlledShellSurface>(
                 GetServer(), zcr_remote_surface_v1_interface)
-                ->GetCapabilities(),
-            server_capabilities);
+                ->GetSecurityDelegate(),
+            server_security_delegate);
 
   // zcr_remote_surface_v2
   zcr_remote_shell_v2_get_remote_surface(
@@ -183,8 +183,8 @@ TEST_F(CapabilityBindingTest, ShellSurfacesHaveCapabilities) {
   wl_display_roundtrip(display);
   EXPECT_EQ(GetUserDataForInterface<ClientControlledShellSurface>(
                 GetServer(), zcr_remote_surface_v2_interface)
-                ->GetCapabilities(),
-            server_capabilities);
+                ->GetSecurityDelegate(),
+            server_security_delegate);
 }
 
 }  // namespace exo::wayland

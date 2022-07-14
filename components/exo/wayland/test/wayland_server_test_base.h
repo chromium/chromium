@@ -19,7 +19,7 @@
 #endif
 
 namespace exo {
-class Capabilities;
+class SecurityDelegate;
 class Display;
 
 namespace wayland {
@@ -51,7 +51,7 @@ class WaylandServerTestBase : public TestBase {
   void TearDown() override;
 
   std::unique_ptr<Server> CreateServer(
-      std::unique_ptr<Capabilities> capabilities);
+      std::unique_ptr<SecurityDelegate> security_delegate);
   std::unique_ptr<Server> CreateServer();
 
  protected:
