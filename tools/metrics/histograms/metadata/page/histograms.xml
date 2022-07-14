@@ -2318,12 +2318,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.LayoutInstability.CumulativeShiftScore"
-    units="scorex10" expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
-
+    units="scorex10" expires_after="2023-07-13">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Measures the cumulative layout shift score (bit.ly/lsm-explainer) that has
     occurred on the page (including all subframes). Higher values correspond to
@@ -2331,9 +2328,6 @@ chromium-metrics-reviews@google.com.
     such as when the page is being navigated away from or when a tab is being
     closed. Stable since M79; previous versions are expermental and subject to
     fluctuation between releases.
-
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
 
     Bucketing for this histogram should be kept in sync with bucketing for
     PageLoad.LayoutInstability.CumulativeShiftScore.AfterBackForwardCacheRestore.
