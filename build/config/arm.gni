@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/v8_target_cpu.gni")
 
 # These are primarily relevant in current_cpu == "arm" contexts, where
@@ -36,6 +37,12 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # Thumb is a reduced instruction set available on some ARM processors that
     # has increased code density.
     arm_use_thumb = true
+  }
+
+  # For lacros build, we use ARM v8 by default.
+  if (is_chromeos_lacros && arm_arch == "") {
+    arm_version = 8
+    arm_arch = "armv8-a+crc"
   }
 
   if (current_os == "android" || target_os == "android") {
