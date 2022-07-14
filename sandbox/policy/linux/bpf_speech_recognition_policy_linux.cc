@@ -34,6 +34,12 @@ ResultExpr SpeechRecognitionProcessPolicy::EvaluateSyscall(
     case __NR_getdents:
       return Allow();
 #endif
+#if defined(__NR_sched_getparam)
+    case __NR_sched_getparam:
+#endif
+#if defined(__NR_sched_getscheduler)
+    case __NR_sched_getscheduler:
+#endif
     case __NR_sched_setscheduler:
       // Used for starting an AudioStream when recognizing microphone data.
       return RestrictSchedTarget(GetPolicyPid(), system_call_number);
