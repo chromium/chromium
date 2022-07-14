@@ -283,8 +283,8 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
   if (is_primary_partial_view_ && model_list.empty())
     return nullptr;
 
-  auto row_list_view =
-      std::make_unique<DownloadBubbleRowListView>(is_primary_partial_view_);
+  auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
+      is_primary_partial_view_, browser_);
   for (DownloadUIModel::DownloadUIModelPtr& model : model_list) {
     // raw pointer is safe as the toolbar owns the bubble, which owns an
     // individual row view.

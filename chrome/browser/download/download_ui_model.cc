@@ -441,8 +441,12 @@ bool DownloadUIModel::IsBeingRevived() const {
 
 void DownloadUIModel::SetIsBeingRevived(bool is_being_revived) {}
 
-DownloadItem* DownloadUIModel::download() {
+const DownloadItem* DownloadUIModel::GetDownloadItem() const {
   return nullptr;
+}
+
+DownloadItem* DownloadUIModel::GetDownloadItem() {
+  return const_cast<DownloadItem*>(base::as_const(*this).GetDownloadItem());
 }
 
 std::u16string DownloadUIModel::GetWebDriveName() const {

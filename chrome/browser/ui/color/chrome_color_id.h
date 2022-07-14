@@ -44,6 +44,9 @@
   /* Desktop media tab list colors. */ \
   E_CPONLY(kColorDesktopMediaTabListBorder) \
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
+  /* Download bubble colors. */\
+  E_CPONLY(kColorDownloadBubbleInfoBackground) \
+  E_CPONLY(kColorDownloadBubbleInfoIcon) \
   /* Download shelf colors. */ \
   E_CPONLY(kColorDownloadItemForeground) \
   E_CPONLY(kColorDownloadItemForegroundDangerous) \

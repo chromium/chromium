@@ -17,6 +17,7 @@
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/download_item_utils.h"
@@ -117,7 +118,12 @@ class DownloadBubbleUIControllerDelegate
  public:
   // |profile| is required to outlive DownloadBubbleUIControllerDelegate.
   explicit DownloadBubbleUIControllerDelegate(Profile* profile)
-      : profile_(profile) {}
+      : profile_(profile) {
+    if (download::IsDownloadBubbleV2Enabled(profile_) &&
+        profile_->IsOffTheRecord()) {
+      profile_->GetPrefs()->SetBoolean(prefs::kPromptForDownload, true);
+    }
+  }
   ~DownloadBubbleUIControllerDelegate() override = default;
 
  private:

@@ -81,6 +81,9 @@ class DownloadBubbleUIController
   // this controller belongs to should show the partial view.
   void OnNewItem(download::DownloadItem* item, bool show_details);
 
+  // Returns whether the incognito icon should be shown for the download.
+  bool ShouldShowIncognitoIcon(const DownloadUIModel* model) const;
+
   // Returns the DownloadDisplayController. Should always return a valid
   // controller.
   DownloadDisplayController* display_controller_for_testing() {

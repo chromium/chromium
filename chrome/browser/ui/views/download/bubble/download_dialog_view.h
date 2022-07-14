@@ -26,9 +26,11 @@ class DownloadDialogView : public views::View {
 
  private:
   void CloseBubble();
+  void ShowAllDownloads();
   void AddHeader();
   void AddFooter();
-  void ShowAllDownloads();
+
+  // views::View.
   void OnThemeChanged() override;
 
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;

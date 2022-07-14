@@ -74,7 +74,7 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetMenuModel() {
 
   DCHECK(WantsContextMenu(download_.get()));
 
-  bool is_download = download_->download() != nullptr;
+  bool is_download = download_->GetDownloadItem() != nullptr;
 
   if (download_->IsMixedContent()) {
     model = GetMixedContentDownloadMenuModel();

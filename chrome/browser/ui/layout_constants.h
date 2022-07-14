@@ -118,6 +118,9 @@ enum LayoutInset {
   // The padding around icons used in Download bubbles.
   DOWNLOAD_ICON,
 
+  // The padding around rows used in Download bubbles.
+  DOWNLOAD_ROW,
+
   // The padding used around the icon inside the LocationBar. The full width of
   // the icon would be LOCATION_BAR_ICON_SIZE + 2 * inset.width(). The full
   // height of the icon would be LOCATION_BAR_ICON_SIZE + 2 * inset.height().

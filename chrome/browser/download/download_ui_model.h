@@ -332,7 +332,8 @@ class DownloadUIModel {
 
   // Returns the DownloadItem if this is a regular download, or nullptr
   // otherwise.
-  virtual download::DownloadItem* download();
+  virtual const download::DownloadItem* GetDownloadItem() const;
+  download::DownloadItem* GetDownloadItem();
 
   // Returns the display name for the web drive where the file is rerouted to.
   virtual std::u16string GetWebDriveName() const;

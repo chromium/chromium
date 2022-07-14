@@ -139,14 +139,13 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
   // Layout will stretch it back out into any additional space available.
   // The side margin is added twice, once in the bubble, and then for each
   // row view.
-  const int side_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int side_margin = GetLayoutInsets(DOWNLOAD_ROW).width();
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   const int min_label_width =
-      bubble_width - side_margin * 4 - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+      bubble_width - side_margin * 2 - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
       GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
   styled_label_->SizeToFit(min_label_width);
 
@@ -288,7 +287,7 @@ void DownloadBubbleSecurityView::RecordWarningActionTime(bool is_first_button) {
   std::string histogram = base::StrCat(
       {"Download.Bubble.Subpage.",
        download::GetDownloadDangerTypeString(
-           download_row_view_->model()->download()->GetDangerType()),
+           download_row_view_->model()->GetDownloadItem()->GetDangerType()),
        ".", is_first_button ? "First" : "Second", "ButtonActionTime"});
   base::UmaHistogramMediumTimes(histogram,
                                 base::Time::Now() - (*warning_time_));

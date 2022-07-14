@@ -78,7 +78,7 @@ class DownloadItemModel : public DownloadUIModel,
   void OpenUsingPlatformHandler() override;
   bool IsBeingRevived() const override;
   void SetIsBeingRevived(bool is_being_revived) override;
-  download::DownloadItem* download() override;
+  const download::DownloadItem* GetDownloadItem() const override;
   std::u16string GetWebDriveName() const override;
   std::u16string GetWebDriveMessage(bool verbose) const override;
   base::FilePath GetFileNameToReportUser() const override;

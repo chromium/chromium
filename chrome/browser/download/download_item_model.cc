@@ -464,7 +464,7 @@ void DownloadItemModel::SetIsBeingRevived(bool is_being_revived) {
   data->is_being_revived_ = is_being_revived;
 }
 
-download::DownloadItem* DownloadItemModel::download() {
+const download::DownloadItem* DownloadItemModel::GetDownloadItem() const {
   return download_;
 }
 

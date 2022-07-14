@@ -201,8 +201,8 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
 }
 
 bool IsExtensionDownload(DownloadUIModel* item) {
-  return item->download() &&
-         download_crx_util::IsExtensionDownload(*item->download());
+  return item->GetDownloadItem() &&
+         download_crx_util::IsExtensionDownload(*item->GetDownloadItem());
 }
 
 bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {

@@ -102,6 +102,9 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
     case DOWNLOAD_ICON:
       return gfx::Insets(4);
 
+    case DOWNLOAD_ROW:
+      return gfx::Insets(8);
+
     case LOCATION_BAR_ICON_INTERIOR_PADDING:
       return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
 

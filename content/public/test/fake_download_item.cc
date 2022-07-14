@@ -370,6 +370,11 @@ int32_t FakeDownloadItem::GetAutoResumeCount() const {
   return 0;
 }
 
+bool FakeDownloadItem::IsOffTheRecord() const {
+  NOTREACHED();
+  return false;
+}
+
 const GURL& FakeDownloadItem::GetReferrerUrl() const {
   NOTREACHED();
   return dummy_url;

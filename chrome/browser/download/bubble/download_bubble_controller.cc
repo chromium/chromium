@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
@@ -205,6 +206,12 @@ void DownloadBubbleUIController::OnNewItem(download::DownloadItem* item,
   display_controller_->OnNewItem(
       (item->GetState() == download::DownloadItem::IN_PROGRESS) &&
       show_details);
+}
+
+bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
+    const DownloadUIModel* model) const {
+  return download::IsDownloadBubbleV2Enabled(profile_) &&
+         model->GetDownloadItem() && model->GetDownloadItem()->IsOffTheRecord();
 }
 
 void DownloadBubbleUIController::OnItemRemoved(const ContentId& id) {
@@ -427,8 +434,9 @@ bool DownloadBubbleUIController::SubmitDownloadToFeedbackService(
   if (!dp_service)
     return false;
   // TODO(shaktisahu): Enable feedback service for offline item.
-  return !model->download() || dp_service->MaybeBeginFeedbackForDownload(
-                                   profile_, model->download(), command);
+  return !model->GetDownloadItem() ||
+         dp_service->MaybeBeginFeedbackForDownload(
+             profile_, model->GetDownloadItem(), command);
 #else
   NOTREACHED();
   return false;

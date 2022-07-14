@@ -2741,6 +2741,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status text for a download item that is being scanned by enterprise policy.">
         Checking with your organization's security policies...
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INCOGNITO_INFORMATION_ROW"
+               desc="For Incognito/Guest mode, text notifying that downloads are visible to others on the device.">
+        Anyone using this device can see downloaded files
+      </message>
 
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">

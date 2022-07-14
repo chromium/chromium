@@ -437,13 +437,13 @@ bool DownloadItemView::OnMouseDragged(const ui::MouseEvent& event) {
   if (!dragging_) {
     dragging_ = ExceededDragThreshold(event.location() - *drag_start_point_);
   } else if ((model_->GetState() == download::DownloadItem::COMPLETE) &&
-             model_->download()) {
+             model_->GetDownloadItem()) {
     const gfx::Image* const file_icon =
         g_browser_process->icon_manager()->LookupIconFromFilepath(
             model_->GetTargetFilePath(), IconLoader::SMALL, current_scale_);
     const views::Widget* const widget = GetWidget();
     // TODO(shaktisahu): Make DragDownloadItem work with a model.
-    DragDownloadItem(model_->download(), file_icon,
+    DragDownloadItem(model_->GetDownloadItem(), file_icon,
                      widget ? widget->GetNativeView() : nullptr);
     RecordDownloadShelfDragInfo(DownloadDragInfo::DRAG_STARTED);
   }
@@ -838,9 +838,9 @@ void DownloadItemView::UpdateLabels() {
   deep_scanning_label_->SetVisible(mode_ ==
                                    download::DownloadItemMode::kDeepScanning);
   if (deep_scanning_label_->GetVisible()) {
-    const int id = (model_->download() &&
+    const int id = (model_->GetDownloadItem() &&
                     safe_browsing::DeepScanningRequest::ShouldUploadBinary(
-                        model_->download()))
+                        model_->GetDownloadItem()))
                        ? IDS_PROMPT_DEEP_SCANNING_DOWNLOAD
                        : IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD;
     const std::u16string filename = ElidedFilename(*deep_scanning_label_);
@@ -1294,7 +1294,8 @@ void DownloadItemView::ReviewButtonPressed() {
   dropdown_button_->SetEnabled(false);
 
   enterprise_connectors::ShowDownloadReviewDialog(
-      ElidedFilename(*file_name_label_), model_->profile(), model_->download(),
+      ElidedFilename(*file_name_label_), model_->profile(),
+      model_->GetDownloadItem(),
       shelf_->browser()->tab_strip_model()->GetActiveWebContents(),
       model_->GetDangerType(),
       base::BindOnce(&DownloadItemView::ExecuteCommand, base::Unretained(this),
@@ -1378,9 +1379,9 @@ bool DownloadItemView::SubmitDownloadToFeedbackService(
   if (!dp_service)
     return false;
   // TODO(shaktisahu): Enable feedback service for offline item.
-  return !model_->download() ||
-         dp_service->MaybeBeginFeedbackForDownload(shelf_->browser()->profile(),
-                                                   model_->download(), command);
+  return !model_->GetDownloadItem() ||
+         dp_service->MaybeBeginFeedbackForDownload(
+             shelf_->browser()->profile(), model_->GetDownloadItem(), command);
 #else
   NOTREACHED();
   return false;

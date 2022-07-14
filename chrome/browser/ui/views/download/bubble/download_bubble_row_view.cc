@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/download_stats.h"
@@ -63,7 +64,6 @@ ui::ImageModel GetDefaultIcon() {
 
 constexpr int kDownloadButtonHeight = 24;
 constexpr int kDownloadSubpageIconMargin = 8;
-constexpr gfx::Insets kDownloadBubbleRowInsets(8);
 // Num of columns in the table layout, the width of which progress bar will
 // span. The 6 columns are Download Icon, Padding, Status text, Padding,
 // Main Button, Subpage Icon.
@@ -100,12 +100,10 @@ END_METADATA
 void DownloadBubbleRowView::UpdateBubbleUIInfo() {
   auto mode = download::GetDesiredDownloadItemMode(model_.get());
   auto state = model_->GetState();
-  bool mode_unchanged = (mode_ == mode);
   bool is_paused = model_->IsPaused();
-  if (mode_unchanged && (state_ == state) && (is_paused_ == is_paused)) {
+  if ((mode_ == mode) && (state_ == state) && (is_paused_ == is_paused)) {
     return;
   }
-
   mode_ = mode;
   state_ = state;
   is_paused_ = is_paused;
@@ -168,6 +166,17 @@ void DownloadBubbleRowView::LoadIcon() {
     return;
   }
 
+  if (bubble_controller_->ShouldShowIncognitoIcon(model_.get())) {
+    if (last_overriden_icon_ == &kIncognitoIcon)
+      return;
+    last_overriden_icon_ = &kIncognitoIcon;
+    SetIconFromImageModel(
+        /*use_over_last_override=*/true,
+        ui::ImageModel::FromVectorIcon(kIncognitoIcon, ui::kColorIcon,
+                                       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+    return;
+  }
+
   last_overriden_icon_ = nullptr;
 
   base::FilePath file_path = model_->GetTargetFilePath();
@@ -212,7 +221,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       bubble_controller_(bubble_controller),
       navigation_handler_(navigation_handler) {
   model_->SetDelegate(this);
-  SetBorder(views::CreateEmptyBorder(kDownloadBubbleRowInsets));
+  SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -369,12 +378,12 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
   if (!dragging_) {
     dragging_ = ExceededDragThreshold(event.location() - *drag_start_point_);
   } else if ((model_->GetState() == download::DownloadItem::COMPLETE) &&
-             model_->download()) {
+             model_->GetDownloadItem()) {
     const gfx::Image* const file_icon =
         g_browser_process->icon_manager()->LookupIconFromFilepath(
             model_->GetTargetFilePath(), IconLoader::SMALL, current_scale_);
     const views::Widget* const widget = GetWidget();
-    DragDownloadItem(model_->download(), file_icon,
+    DragDownloadItem(model_->GetDownloadItem(), file_icon,
                      widget ? widget->GetNativeView() : nullptr);
     RecordDownloadBubbleDragInfo(DownloadDragInfo::DRAG_STARTED);
   }

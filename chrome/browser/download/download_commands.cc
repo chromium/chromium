@@ -138,7 +138,7 @@ GURL DownloadCommands::GetLearnMoreURLForInterruptedDownload() const {
       learn_more_url, g_browser_process->GetApplicationLocale());
   return net::AppendQueryParameter(
       learn_more_url, "ctx",
-      base::NumberToString(model_->download()->GetLastReason()));
+      base::NumberToString(model_->GetDownloadItem()->GetLastReason()));
 }
 
 bool DownloadCommands::IsCommandEnabled(Command command) const {

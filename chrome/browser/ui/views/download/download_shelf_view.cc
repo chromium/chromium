@@ -285,14 +285,14 @@ void DownloadShelfView::DoShowDownload(
   // Insert the new view as the first child, so the logical child order matches
   // the visual order.  This ensures that tabbing through downloads happens in
   // the order users would expect.
-  download::DownloadItem* download_item = download->download();
+  download::DownloadItem* download_item = download->GetDownloadItem();
   auto view = std::make_unique<DownloadItemView>(std::move(download), this,
                                                  accessible_alert_);
   DownloadItemView* download_item_view = AddChildViewAt(std::move(view), 0);
   download_views_.push_back(download_item_view);
 
   // Check download_item is not null, as it can be in some cases. See
-  // DownloadUIModel::download() description.
+  // DownloadUIModel::GetDownloadItem() description.
   if (download_item) {
     download_item_view->GetWidget()
         ->GetCompositor()
