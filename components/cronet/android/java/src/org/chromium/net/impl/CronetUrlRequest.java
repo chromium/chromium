@@ -109,6 +109,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
     private int mFinishedReason;
     private CronetException mException;
     private CronetMetrics mMetrics;
+    private boolean mQuicConnectionMigrationAttempted;
+    private boolean mQuicConnectionMigrationSuccessful;
 
     /*
      * Listener callback is repeatedly invoked when each read is completed, so it
@@ -784,7 +786,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
             long connectStartMs, long connectEndMs, long sslStartMs, long sslEndMs,
             long sendingStartMs, long sendingEndMs, long pushStartMs, long pushEndMs,
             long responseStartMs, long requestEndMs, boolean socketReused, long sentByteCount,
-            long receivedByteCount) {
+            long receivedByteCount, boolean quicConnectionMigrationAttempted,
+            boolean quicConnectionMigrationSuccessful) {
         synchronized (mUrlRequestAdapterLock) {
             if (mMetrics != null) {
                 throw new IllegalStateException("Metrics collection should only happen once.");
@@ -793,6 +796,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
                     connectEndMs, sslStartMs, sslEndMs, sendingStartMs, sendingEndMs, pushStartMs,
                     pushEndMs, responseStartMs, requestEndMs, socketReused, sentByteCount,
                     receivedByteCount);
+            mQuicConnectionMigrationAttempted = quicConnectionMigrationAttempted;
+            mQuicConnectionMigrationSuccessful = quicConnectionMigrationSuccessful;
         }
         // Metrics are reported to RequestFinishedListener when the final UrlRequest.Callback has
         // been invoked.
@@ -942,11 +947,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
 
         return new CronetTrafficInfo(requestHeaderSizeInBytes, requestBodySizeInBytes,
                 responseHeaderSizeInBytes, responseBodySizeInBytes, httpStatusCode, headersLatency,
-                totalLatency, negotiatedProtocol,
-                // TODO(stefanoduo): Possibly retrieve this by extending NetErrorDetails.
-                false, // wasConnectionMigrationAttempted
-                false // didConnectionMigrationSucceed
-        );
+                totalLatency, negotiatedProtocol, mQuicConnectionMigrationAttempted,
+                mQuicConnectionMigrationSuccessful);
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

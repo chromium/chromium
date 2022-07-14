@@ -146,7 +146,9 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
                           const base::TimeTicks& request_end,
                           bool socket_reused,
                           int64_t sent_bytes_count,
-                          int64_t received_bytes_count) override;
+                          int64_t received_bytes_count,
+                          bool quic_connection_migration_attempted,
+                          bool quic_connection_migration_successful) override;
 
   void OnStatus(
       const base::android::ScopedJavaGlobalRef<jobject>& status_listener_ref,

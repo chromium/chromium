@@ -298,7 +298,9 @@ class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
                           const base::TimeTicks& request_end,
                           bool socket_reused,
                           int64_t sent_bytes_count,
-                          int64_t received_bytes_count)
+                          int64_t received_bytes_count,
+                          bool quic_connection_migration_attempted,
+                          bool quic_connection_migration_successful)
       LOCKS_EXCLUDED(url_request_->lock_) override;
 
   // The UrlRequest which owns context that owns the callback.
@@ -818,7 +820,10 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnMetricsCollected(
     const base::TimeTicks& request_end,
     bool socket_reused,
     int64_t sent_bytes_count,
-    int64_t received_bytes_count) {
+    int64_t received_bytes_count,
+    bool,  // quic_connection_migration_attempted
+    bool   // quic_connection_migration_successful
+) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   base::AutoLock lock(url_request_->lock_);
   DCHECK_EQ(url_request_->request_finished_info_, nullptr)

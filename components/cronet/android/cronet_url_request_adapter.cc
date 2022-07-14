@@ -301,7 +301,9 @@ void CronetURLRequestAdapter::OnMetricsCollected(
     const base::TimeTicks& request_end,
     bool socket_reused,
     int64_t sent_bytes_count,
-    int64_t received_bytes_count) {
+    int64_t received_bytes_count,
+    bool quic_connection_migration_attempted,
+    bool quic_connection_migration_successful) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CronetUrlRequest_onMetricsCollected(
       env, owner_,
@@ -319,7 +321,9 @@ void CronetURLRequestAdapter::OnMetricsCollected(
       metrics_util::ConvertTime(receive_headers_end, start_ticks, start_time),
       metrics_util::ConvertTime(request_end, start_ticks, start_time),
       socket_reused ? JNI_TRUE : JNI_FALSE, sent_bytes_count,
-      received_bytes_count);
+      received_bytes_count,
+      quic_connection_migration_attempted ? JNI_TRUE : JNI_FALSE,
+      quic_connection_migration_successful ? JNI_TRUE : JNI_FALSE);
 }
 
 }  // namespace cronet

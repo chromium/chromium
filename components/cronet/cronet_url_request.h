@@ -111,23 +111,26 @@ class CronetURLRequest {
     virtual void OnDestroyed() = 0;
 
     // Invoked right before request is destroyed to report collected metrics.
-    virtual void OnMetricsCollected(const base::Time& request_start_time,
-                                    const base::TimeTicks& request_start,
-                                    const base::TimeTicks& dns_start,
-                                    const base::TimeTicks& dns_end,
-                                    const base::TimeTicks& connect_start,
-                                    const base::TimeTicks& connect_end,
-                                    const base::TimeTicks& ssl_start,
-                                    const base::TimeTicks& ssl_end,
-                                    const base::TimeTicks& send_start,
-                                    const base::TimeTicks& send_end,
-                                    const base::TimeTicks& push_start,
-                                    const base::TimeTicks& push_end,
-                                    const base::TimeTicks& receive_headers_end,
-                                    const base::TimeTicks& request_end,
-                                    bool socket_reused,
-                                    int64_t sent_bytes_count,
-                                    int64_t received_bytes_count) = 0;
+    virtual void OnMetricsCollected(
+        const base::Time& request_start_time,
+        const base::TimeTicks& request_start,
+        const base::TimeTicks& dns_start,
+        const base::TimeTicks& dns_end,
+        const base::TimeTicks& connect_start,
+        const base::TimeTicks& connect_end,
+        const base::TimeTicks& ssl_start,
+        const base::TimeTicks& ssl_end,
+        const base::TimeTicks& send_start,
+        const base::TimeTicks& send_end,
+        const base::TimeTicks& push_start,
+        const base::TimeTicks& push_end,
+        const base::TimeTicks& receive_headers_end,
+        const base::TimeTicks& request_end,
+        bool socket_reused,
+        int64_t sent_bytes_count,
+        int64_t received_bytes_count,
+        bool quic_connection_migration_attempted,
+        bool quic_connection_migration_successful) = 0;
   };
   // Invoked in response to CronetURLRequest::GetStatus() to allow multiple
   // overlapping calls. The load states correspond to the lengthy periods of

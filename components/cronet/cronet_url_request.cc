@@ -401,6 +401,8 @@ void CronetURLRequest::NetworkTasks::MaybeReportMetrics() {
   metrics_reported_ = true;
   net::LoadTimingInfo metrics;
   url_request_->GetLoadTimingInfo(&metrics);
+  net::NetErrorDetails net_error_details;
+  url_request_->PopulateNetErrorDetails(&net_error_details);
   callback_->OnMetricsCollected(
       metrics.request_start_time, metrics.request_start,
       metrics.connect_timing.dns_start, metrics.connect_timing.dns_end,
@@ -410,7 +412,9 @@ void CronetURLRequest::NetworkTasks::MaybeReportMetrics() {
       metrics.push_end, metrics.receive_headers_end, base::TimeTicks::Now(),
       metrics.socket_reused, url_request_->GetTotalSentBytes(),
       received_byte_count_from_redirects_ +
-          url_request_->GetTotalReceivedBytes());
+          url_request_->GetTotalReceivedBytes(),
+      net_error_details.quic_connection_migration_attempted,
+      net_error_details.quic_connection_migration_successful);
 }
 
 void CronetURLRequest::NetworkTasks::MaybeReportMetricsAndRunCallback(
