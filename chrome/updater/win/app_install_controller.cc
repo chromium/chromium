@@ -464,7 +464,7 @@ class AppInstallControllerImpl : public AppInstallController,
   bool DoRestartBrowser(bool restart_all_browsers,
                         const std::vector<std::u16string>& urls) override;
   bool DoReboot() override;
-  void DoCancel() override {}
+  void DoCancel() override;
 
   // Overrides for WTL::CMessageFilter.
   BOOL PreTranslateMessage(MSG* msg) override;
@@ -870,6 +870,13 @@ bool AppInstallControllerImpl::DoRestartBrowser(
 bool AppInstallControllerImpl::DoReboot() {
   DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
   return false;
+}
+
+void AppInstallControllerImpl::DoCancel() {
+  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UpdateService::CancelInstalls, update_service_, app_id_));
 }
 
 }  // namespace
