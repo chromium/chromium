@@ -201,8 +201,8 @@ export function drawSingleReport(
       // We do not draw non-numerical values, but still want to record it in the
       // data series.
       addDataSeriesPoints(
-          peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
-          [stats.timestamp], [stats.values[i + 1]]);
+          peerConnectionElement, rawDataSeriesId, rawLabel, [stats.timestamp],
+          [stats.values[i + 1]]);
       continue;
     }
     let finalDataSeriesId = rawDataSeriesId;
@@ -212,8 +212,8 @@ export function drawSingleReport(
     if (isLegacyReport && dataConversionConfig[rawLabel]) {
       // Updates the original dataSeries before the conversion.
       addDataSeriesPoints(
-          peerConnectionElement, reportType, rawDataSeriesId, rawLabel,
-          [stats.timestamp], [rawValue]);
+          peerConnectionElement, rawDataSeriesId, rawLabel, [stats.timestamp],
+          [rawValue]);
 
       // Convert to another value to draw on graph, using the original
       // dataSeries as input.
@@ -226,8 +226,8 @@ export function drawSingleReport(
 
     // Updates the final dataSeries to draw.
     addDataSeriesPoints(
-        peerConnectionElement, reportType, finalDataSeriesId, finalLabel,
-        [stats.timestamp], [finalValue]);
+        peerConnectionElement, finalDataSeriesId, finalLabel, [stats.timestamp],
+        [finalValue]);
 
     if (!isLegacyReport &&
         (isStandardReportBlocklisted(report) ||
@@ -297,12 +297,12 @@ export function removeStatsReportGraphs(peerConnectionElement) {
 // and adds the new data points to it. |times| is the list of timestamps for
 // each data point, and |values| is the list of the data point values.
 function addDataSeriesPoints(
-    peerConnectionElement, reportType, dataSeriesId, label, times, values) {
+    peerConnectionElement, dataSeriesId, label, times, values) {
   let dataSeries =
       peerConnectionDataStore[peerConnectionElement.id].getDataSeries(
           dataSeriesId);
   if (!dataSeries) {
-    dataSeries = new TimelineDataSeries(reportType);
+    dataSeries = new TimelineDataSeries();
     peerConnectionDataStore[peerConnectionElement.id].setDataSeries(
         dataSeriesId, dataSeries);
     if (bweCompoundGraphConfig[label]) {
