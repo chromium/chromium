@@ -373,7 +373,6 @@ android_library("ui_no_recycler_view_java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

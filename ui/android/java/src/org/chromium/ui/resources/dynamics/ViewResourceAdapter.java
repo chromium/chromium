@@ -29,26 +29,41 @@ import org.chromium.ui.resources.ResourceFactory;
  */
 public class ViewResourceAdapter
         implements DynamicResource, OnLayoutChangeListener, CaptureObserver {
+    /** A plain object to hold the return values from {@link CaptureMechanism#syncCaptureBitmap}. */
+    public static class CaptureResult {
+        public final Bitmap bitmap;
+        public final boolean clearDirtyRect;
+
+        /**
+         * @param bitmap The drawn pixels for the view being captured.
+         * @param clearDirtyRect If the dirty rect can be cleared, because a capture happened.
+         */
+        public CaptureResult(Bitmap bitmap, boolean clearDirtyRect) {
+            this.bitmap = bitmap;
+            this.clearDirtyRect = clearDirtyRect;
+        }
+    }
+
     /** Abstraction around the mechanism for actually capturing bitmaps.  */
     public interface CaptureMechanism {
         /** See {@link Resource#shouldRemoveResourceOnNullBitmap()}. */
         boolean shouldRemoveResourceOnNullBitmap();
+        /** If a capture should be taken based on state of the capture mechanism. */
+        boolean shouldPretendIsDirty();
         /** Called when the size of the view changes. */
-        default void onViewSizeChange(View view, float scale) {}
+        void onViewSizeChange(View view, float scale);
         /** Called to drop any cached bitmaps to free up memory. */
         void dropCachedBitmap();
-
         /**
          * Called to trigger the actual bitmap capture.
          * @param view The view being captured.
          * @param dirtyRect The area that has changed since last capture.
          * @param scale Scalar to apply to width and height when capturing a bitmap.
          * @param observer To be notified before and after the capture happens.
-         * @param onBitmapCapture The callback to return the recorded image.
-         * @return If the dirty rect can be cleared on a successful capture.
+         * @return The result of the capture.
          */
-        boolean startBitmapCapture(View view, Rect dirtyRect, float scale, CaptureObserver observer,
-                Callback<Bitmap> onBitmapCapture);
+        CaptureResult syncCaptureBitmap(
+                View view, Rect dirtyRect, float scale, CaptureObserver observer);
     }
 
     private final View mView;
@@ -97,26 +112,23 @@ public class ViewResourceAdapter
     }
 
     /**
-     * Triggers a bitmap capture. Depending on this mechanism, it may do some or all of the work,
-     * and may be sync or async.
+     * Typically called when ({@link #isDirty()} returned {@code true}), to return a new
+     * {@link Bitmap} and clear out the dirty rect, resulting in a non-dirty view. Depending on the
+     * draw mechanism, this may return a null bitmap. In such a case, on the next frame, isDirty()
+     * should still be used to decide whether to call this.
+     * @return A {@link Bitmap} representing the {@link View}.
      */
     @SuppressWarnings("NewApi")
-    public void triggerBitmapCapture() {
+    public Bitmap getBitmap() {
         mThreadChecker.assertOnValidThread();
         try (TraceEvent e = TraceEvent.scoped("ViewResourceAdapter:getBitmap")) {
-            if (mCaptureMechanism.startBitmapCapture(
-                        mView, new Rect(mDirtyRect), mScale, this, this::onCapture)) {
+            CaptureResult result =
+                    mCaptureMechanism.syncCaptureBitmap(mView, new Rect(mDirtyRect), mScale, this);
+            if (result.clearDirtyRect) {
                 mDirtyRect.setEmpty();
             }
+            return result.bitmap;
         }
-    }
-
-    private void onCapture(Bitmap bitmap) {
-        mThreadChecker.assertOnValidThread();
-        Resource resource = new DynamicResourceSnapshot(bitmap,
-                mCaptureMechanism.shouldRemoveResourceOnNullBitmap(), mViewSize,
-                createNativeResource());
-        mOnResourceReady.onResult(resource);
     }
 
     /**
@@ -144,18 +156,30 @@ public class ViewResourceAdapter
     /**
      * On every render frame, this resources will check to see if it is dirty. If so, it will take
      * a bitmap capture and push it to the renderer. Subclasses can override this method to suppress
-     * when captures are/can be taken.
+     * when captures are/can be taken. Although this will likely run into problems with hardware
+     * draws because the bitmap they return lags behind by a capture. Should ultimately be fixed as
+     * part of https://crbug.com/1338202.
      * @return If a bitmap capture should be taken/started.
      */
     @CallSuper
     protected boolean isDirty() {
-        return !mDirtyRect.isEmpty();
+        // The bitmap is dirty if some part of it has changed, or the capture mode wants to return a
+        // new bitmap.
+        return !mDirtyRect.isEmpty() || mCaptureMechanism.shouldPretendIsDirty();
     }
 
     @Override
     public void onResourceRequested() {
+        // TODO(skym): The hardware capture approach should be pushing bitmaps when they're ready,
+        // and avoid relying on isDirty and/or onResourceRequested signals. However this is an
+        // intermediate state during refactoring, and is intentionally keeping the old behavior for
+        // now.
         if (mOnResourceReady != null && isDirty()) {
-            triggerBitmapCapture();
+            Bitmap bitmap = getBitmap();
+            boolean removeOnNull = mCaptureMechanism.shouldRemoveResourceOnNullBitmap();
+            Resource resource = new DynamicResourceSnapshot(
+                    bitmap, removeOnNull, mViewSize, createNativeResource());
+            mOnResourceReady.onResult(resource);
         }
     }
 

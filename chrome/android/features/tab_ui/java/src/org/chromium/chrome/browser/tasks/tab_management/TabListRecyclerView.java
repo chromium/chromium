@@ -14,6 +14,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
@@ -332,9 +333,9 @@ class TabListRecyclerView
             }
 
             @Override
-            public void triggerBitmapCapture() {
+            public Bitmap getBitmap() {
                 long startTime = SystemClock.elapsedRealtime();
-                super.triggerBitmapCapture();
+                Bitmap bitmap = super.getBitmap();
                 long elapsed = SystemClock.elapsedRealtime() - startTime;
                 if (elapsed == 0) elapsed = 1;
 
@@ -348,6 +349,7 @@ class TabListRecyclerView
                 mSuppressedUntil = SystemClock.elapsedRealtime() + suppressedFor;
                 Log.d(TAG, "DynamicView: spent %dms on getBitmap, suppress updating for %dms.",
                         elapsed, suppressedFor);
+                return bitmap;
             }
         };
         mDynamicView.setDownsamplingScale(getDownsamplingScale());

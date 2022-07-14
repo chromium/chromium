@@ -48,8 +48,6 @@ public class ToolbarControlContainerTest {
     public void testIsDirty() {
         ToolbarViewResourceAdapter adapter =
                 new ToolbarViewResourceAdapter(mToolbarContainer, false);
-        adapter.setOnResourceReadyCallback((resource) -> {});
-
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason"));
@@ -81,7 +79,7 @@ public class ToolbarControlContainerTest {
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
 
-        adapter.triggerBitmapCapture();
+        adapter.getBitmap();
         Assert.assertFalse(adapter.isDirty());
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -90,14 +88,19 @@ public class ToolbarControlContainerTest {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.SnapshotDifference"));
-        Assert.assertEquals(1,
+
+        // Need to be careful here. #getBitmap() in debug builds will call isDirty. Reset histogram
+        // tracking to avoid being needing to depend on build type.
+        UmaRecorderHolder.resetForTesting();
+
+        Assert.assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
 
         adapter.forceInvalidate();
         Assert.assertTrue(adapter.isDirty());
-        Assert.assertEquals(2,
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
