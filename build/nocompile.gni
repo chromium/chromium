@@ -127,6 +127,13 @@ if (enable_nocompile_tests) {
           rebase_path(sysroot, root_build_dir),
         ]
       }
+
+      if (llvm_force_head_revision && !is_nacl) {
+        args += [
+          # TODO(crbug.com/1343975) Evaluate and possibly enable.
+          "-Wno-deprecated-builtins",
+        ]
+      }
     }
 
     test(target_name) {
