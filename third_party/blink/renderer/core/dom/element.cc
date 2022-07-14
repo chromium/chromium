@@ -2996,8 +2996,8 @@ void Element::HandlePopupLightDismiss(const Event& event) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (event.GetEventPath().IsEmpty())
     return;
-  DCHECK_NE(Event::kNone, event.eventPhase());
-  if (event.eventPhase() == Event::kBubblingPhase)
+  DCHECK_NE(Event::PhaseType::kNone, event.eventPhase());
+  if (event.eventPhase() == Event::PhaseType::kBubblingPhase)
     return;
   // Ensure that shadow DOM event retargeting is considered when computing
   // the event target node.

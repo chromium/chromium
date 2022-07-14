@@ -183,7 +183,7 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
 
 void HTMLFormElement::HandleLocalEvents(Event& event) {
   Node* target_node = event.target()->ToNode();
-  if (event.eventPhase() != Event::kCapturingPhase && target_node &&
+  if (event.eventPhase() != Event::PhaseType::kCapturingPhase && target_node &&
       target_node != this &&
       (event.type() == event_type_names::kSubmit ||
        event.type() == event_type_names::kReset)) {

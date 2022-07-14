@@ -50,7 +50,7 @@ class SVGResourceClient;
 
 class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
  public:
-  enum OperationType {
+  enum class OperationType {
     kReference,  // url(#somefilter)
     kGrayscale,
     kSepia,
@@ -73,26 +73,26 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
 
   static bool CanInterpolate(FilterOperation::OperationType type) {
     switch (type) {
-      case kGrayscale:
-      case kSepia:
-      case kSaturate:
-      case kHueRotate:
-      case kLuminanceToAlpha:
-      case kInvert:
-      case kOpacity:
-      case kBrightness:
-      case kContrast:
-      case kBlur:
-      case kDropShadow:
-      case kColorMatrix:
-      case kTurbulence:
+      case OperationType::kGrayscale:
+      case OperationType::kSepia:
+      case OperationType::kSaturate:
+      case OperationType::kHueRotate:
+      case OperationType::kLuminanceToAlpha:
+      case OperationType::kInvert:
+      case OperationType::kOpacity:
+      case OperationType::kBrightness:
+      case OperationType::kContrast:
+      case OperationType::kBlur:
+      case OperationType::kDropShadow:
+      case OperationType::kColorMatrix:
+      case OperationType::kTurbulence:
         return true;
-      case kReference:
-      case kComponentTransfer:
-      case kConvolveMatrix:
-      case kBoxReflect:
+      case OperationType::kReference:
+      case OperationType::kComponentTransfer:
+      case OperationType::kConvolveMatrix:
+      case OperationType::kBoxReflect:
         return false;
-      case kNone:
+      case OperationType::kNone:
         break;
     }
     NOTREACHED();
@@ -167,7 +167,7 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
 template <>
 struct DowncastTraits<ReferenceFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::kReference;
+    return op.GetType() == FilterOperation::OperationType::kReference;
   }
 };
 
@@ -214,11 +214,11 @@ class CORE_EXPORT ColorMatrixFilterOperation : public FilterOperation {
 inline bool IsBasicColorMatrixFilterOperation(
     const FilterOperation& operation) {
   FilterOperation::OperationType type = operation.GetType();
-  return type == FilterOperation::kGrayscale ||
-         type == FilterOperation::kSepia ||
-         type == FilterOperation::kSaturate ||
-         type == FilterOperation::kHueRotate ||
-         type == FilterOperation::kLuminanceToAlpha;
+  return type == FilterOperation::OperationType::kGrayscale ||
+         type == FilterOperation::OperationType::kSepia ||
+         type == FilterOperation::OperationType::kSaturate ||
+         type == FilterOperation::OperationType::kHueRotate ||
+         type == FilterOperation::OperationType::kLuminanceToAlpha;
 }
 
 template <>
@@ -231,7 +231,7 @@ struct DowncastTraits<BasicColorMatrixFilterOperation> {
 template <>
 struct DowncastTraits<ColorMatrixFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::kColorMatrix;
+    return op.GetType() == FilterOperation::OperationType::kColorMatrix;
   }
 };
 
@@ -245,7 +245,9 @@ class CORE_EXPORT BasicComponentTransferFilterOperation
 
   double Amount() const { return amount_; }
 
-  bool AffectsOpacity() const override { return type_ == kOpacity; }
+  bool AffectsOpacity() const override {
+    return type_ == OperationType::kOpacity;
+  }
 
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
@@ -261,10 +263,10 @@ class CORE_EXPORT BasicComponentTransferFilterOperation
 inline bool IsBasicComponentTransferFilterOperation(
     const FilterOperation& operation) {
   FilterOperation::OperationType type = operation.GetType();
-  return type == FilterOperation::kInvert ||
-         type == FilterOperation::kOpacity ||
-         type == FilterOperation::kBrightness ||
-         type == FilterOperation::kContrast;
+  return type == FilterOperation::OperationType::kInvert ||
+         type == FilterOperation::OperationType::kOpacity ||
+         type == FilterOperation::OperationType::kBrightness ||
+         type == FilterOperation::OperationType::kContrast;
 }
 
 template <>
@@ -277,7 +279,7 @@ struct DowncastTraits<BasicComponentTransferFilterOperation> {
 class CORE_EXPORT BlurFilterOperation : public FilterOperation {
  public:
   explicit BlurFilterOperation(const Length& std_deviation)
-      : FilterOperation(kBlur), std_deviation_(std_deviation) {}
+      : FilterOperation(OperationType::kBlur), std_deviation_(std_deviation) {}
 
   const Length& StdDeviation() const { return std_deviation_; }
 
@@ -299,14 +301,14 @@ class CORE_EXPORT BlurFilterOperation : public FilterOperation {
 template <>
 struct DowncastTraits<BlurFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::kBlur;
+    return op.GetType() == FilterOperation::OperationType::kBlur;
   }
 };
 
 class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
  public:
   explicit DropShadowFilterOperation(const ShadowData& shadow)
-      : FilterOperation(kDropShadow), shadow_(shadow) {}
+      : FilterOperation(OperationType::kDropShadow), shadow_(shadow) {}
 
   const ShadowData& Shadow() const { return shadow_; }
 
@@ -328,14 +330,14 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
 template <>
 struct DowncastTraits<DropShadowFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::kDropShadow;
+    return op.GetType() == FilterOperation::OperationType::kDropShadow;
   }
 };
 
 class CORE_EXPORT BoxReflectFilterOperation : public FilterOperation {
  public:
   explicit BoxReflectFilterOperation(const BoxReflection& reflection)
-      : FilterOperation(kBoxReflect), reflection_(reflection) {}
+      : FilterOperation(OperationType::kBoxReflect), reflection_(reflection) {}
 
   const BoxReflection& Reflection() const { return reflection_; }
 
@@ -353,7 +355,7 @@ class CORE_EXPORT BoxReflectFilterOperation : public FilterOperation {
 template <>
 struct DowncastTraits<BoxReflectFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::kBoxReflect;
+    return op.GetType() == FilterOperation::OperationType::kBoxReflect;
   }
 };
 
@@ -366,7 +368,7 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
                                 FEConvolveMatrix::EdgeModeType edge_mode,
                                 bool preserve_alpha,
                                 const Vector<float>& kernel_matrix)
-      : FilterOperation(kConvolveMatrix),
+      : FilterOperation(OperationType::kConvolveMatrix),
         kernel_size_(kernel_size),
         divisor_(divisor),
         bias_(bias),
@@ -408,7 +410,7 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
 template <>
 struct DowncastTraits<ConvolveMatrixFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::kConvolveMatrix;
+    return op.GetType() == FilterOperation::OperationType::kConvolveMatrix;
   }
 };
 
@@ -418,7 +420,7 @@ class CORE_EXPORT ComponentTransferFilterOperation : public FilterOperation {
                                    const ComponentTransferFunction& green_func,
                                    const ComponentTransferFunction& blue_func,
                                    const ComponentTransferFunction& alpha_func)
-      : FilterOperation(kComponentTransfer),
+      : FilterOperation(OperationType::kComponentTransfer),
         red_func_(red_func),
         green_func_(green_func),
         blue_func_(blue_func),
@@ -448,7 +450,7 @@ class CORE_EXPORT ComponentTransferFilterOperation : public FilterOperation {
 template <>
 struct DowncastTraits<ComponentTransferFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::kComponentTransfer;
+    return op.GetType() == FilterOperation::OperationType::kComponentTransfer;
   }
 };
 
@@ -460,7 +462,7 @@ class CORE_EXPORT TurbulenceFilterOperation : public FilterOperation {
                             int num_octaves,
                             float seed,
                             bool stitch_tiles)
-      : FilterOperation(kTurbulence),
+      : FilterOperation(OperationType::kTurbulence),
         type_(type),
         base_frequency_x_(base_frequency_x),
         base_frequency_y_(base_frequency_y),
@@ -498,7 +500,7 @@ class CORE_EXPORT TurbulenceFilterOperation : public FilterOperation {
 template <>
 struct DowncastTraits<TurbulenceFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
-    return op.GetType() == FilterOperation::kTurbulence;
+    return op.GetType() == FilterOperation::OperationType::kTurbulence;
   }
 };
 

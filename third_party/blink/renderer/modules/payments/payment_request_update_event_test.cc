@@ -48,7 +48,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {
   MockPaymentRequest* request = MakeGarbageCollected<MockPaymentRequest>();
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
@@ -68,7 +68,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsFailureCalled) {
   MockPaymentRequest* request = MakeGarbageCollected<MockPaymentRequest>();
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
@@ -103,7 +103,7 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateTwice) {
   MockPaymentRequest* request = MakeGarbageCollected<MockPaymentRequest>();
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   event->updateWith(
       scope.GetScriptState(),
       MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
@@ -224,7 +224,7 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
@@ -261,7 +261,7 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
       scope.GetExecutionContext(), event_type_names::kShippingoptionchange);
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
-  event->SetEventPhase(Event::kCapturingPhase);
+  event->SetEventPhase(Event::PhaseType::kCapturingPhase);
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);

@@ -49,7 +49,9 @@ gfx::RectF ReferenceFilterOperation::MapRect(const gfx::RectF& rect) const {
 
 ReferenceFilterOperation::ReferenceFilterOperation(const AtomicString& url,
                                                    SVGResource* resource)
-    : FilterOperation(kReference), url_(url), resource_(resource) {}
+    : FilterOperation(OperationType::kReference),
+      url_(url),
+      resource_(resource) {}
 
 void ReferenceFilterOperation::AddClient(SVGResourceClient& client) {
   if (resource_)

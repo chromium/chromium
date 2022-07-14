@@ -692,9 +692,9 @@ DispatchEventResult EventTarget::DispatchEvent(Event& event) {
 DispatchEventResult EventTarget::DispatchEventInternal(Event& event) {
   event.SetTarget(this);
   event.SetCurrentTarget(this);
-  event.SetEventPhase(Event::kAtTarget);
+  event.SetEventPhase(Event::PhaseType::kAtTarget);
   DispatchEventResult dispatch_result = FireEventListeners(event);
-  event.SetEventPhase(0);
+  event.SetEventPhase(Event::PhaseType::kNone);
   return dispatch_result;
 }
 

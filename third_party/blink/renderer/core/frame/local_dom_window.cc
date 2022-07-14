@@ -1971,7 +1971,7 @@ DispatchEventResult LocalDOMWindow::DispatchEvent(Event& event,
   event.SetTrusted(true);
   event.SetTarget(target ? target : this);
   event.SetCurrentTarget(this);
-  event.SetEventPhase(Event::kAtTarget);
+  event.SetEventPhase(Event::PhaseType::kAtTarget);
 
   DEVTOOLS_TIMELINE_TRACE_EVENT("EventDispatch",
                                 inspector_event_dispatch_event::Data, event);

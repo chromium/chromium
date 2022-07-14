@@ -559,25 +559,25 @@ DispatchEventResult SerialPort::DispatchEventInternal(Event& event) {
   event.SetTarget(this);
 
   // Events fired on a SerialPort instance bubble to the parent Serial instance.
-  event.SetEventPhase(Event::kCapturingPhase);
+  event.SetEventPhase(Event::PhaseType::kCapturingPhase);
   event.SetCurrentTarget(parent_);
   parent_->FireEventListeners(event);
   if (event.PropagationStopped())
     goto doneDispatching;
 
-  event.SetEventPhase(Event::kAtTarget);
+  event.SetEventPhase(Event::PhaseType::kAtTarget);
   event.SetCurrentTarget(this);
   FireEventListeners(event);
   if (event.PropagationStopped() || !event.bubbles())
     goto doneDispatching;
 
-  event.SetEventPhase(Event::kBubblingPhase);
+  event.SetEventPhase(Event::PhaseType::kBubblingPhase);
   event.SetCurrentTarget(parent_);
   parent_->FireEventListeners(event);
 
 doneDispatching:
   event.SetCurrentTarget(nullptr);
-  event.SetEventPhase(Event::kNone);
+  event.SetEventPhase(Event::PhaseType::kNone);
   return EventTarget::GetDispatchEventResult(event);
 }
 

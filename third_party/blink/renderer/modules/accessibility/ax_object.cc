@@ -2864,7 +2864,7 @@ bool AXObject::DispatchEventToAOMEventListeners(Event& event) {
   event.SetTarget(target);
 
   // Capturing phase.
-  event.SetEventPhase(Event::kCapturingPhase);
+  event.SetEventPhase(Event::PhaseType::kCapturingPhase);
   for (int i = static_cast<int>(event_path.size()) - 1; i >= 0; i--) {
     // Don't call capturing event listeners on the target. Note that
     // the target may not necessarily be in the event path which is why
@@ -2879,14 +2879,14 @@ bool AXObject::DispatchEventToAOMEventListeners(Event& event) {
   }
 
   // Targeting phase.
-  event.SetEventPhase(Event::kAtTarget);
+  event.SetEventPhase(Event::PhaseType::kAtTarget);
   event.SetCurrentTarget(event_path[0]);
   event_path[0]->FireEventListeners(event);
   if (event.PropagationStopped())
     return true;
 
   // Bubbling phase.
-  event.SetEventPhase(Event::kBubblingPhase);
+  event.SetEventPhase(Event::PhaseType::kBubblingPhase);
   for (wtf_size_t i = 1; i < event_path.size(); i++) {
     event.SetCurrentTarget(event_path[i]);
     event_path[i]->FireEventListeners(event);

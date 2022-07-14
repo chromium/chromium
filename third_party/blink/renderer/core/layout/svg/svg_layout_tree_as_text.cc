@@ -766,7 +766,8 @@ void WriteResources(WTF::TextStream& ts,
     DCHECK(style.HasFilter());
     DCHECK_EQ(style.Filter().size(), 1u);
     const FilterOperation& filter_operation = *style.Filter().at(0);
-    DCHECK_EQ(filter_operation.GetType(), FilterOperation::kReference);
+    DCHECK_EQ(filter_operation.GetType(),
+              FilterOperation::OperationType::kReference);
     const auto& reference_filter_operation =
         To<ReferenceFilterOperation>(filter_operation);
     WriteSVGResourceReferencePrefix(ts, "filter", filter,

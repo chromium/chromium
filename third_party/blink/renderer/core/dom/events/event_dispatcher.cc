@@ -292,7 +292,7 @@ inline EventDispatchContinuation EventDispatcher::DispatchEventAtCapturing() {
   // Trigger capturing event handlers, starting at the top and working our way
   // down. When we get to the last one, the target, change the event phase to
   // AT_TARGET and fire only the capture listeners on it.
-  event_->SetEventPhase(Event::kCapturingPhase);
+  event_->SetEventPhase(Event::PhaseType::kCapturingPhase);
 
   if (event_->GetEventPath().GetWindowEventContext().HandleLocalEvents(
           *event_) &&
@@ -302,12 +302,12 @@ inline EventDispatchContinuation EventDispatcher::DispatchEventAtCapturing() {
   for (wtf_size_t i = event_->GetEventPath().size(); i > 0; --i) {
     const NodeEventContext& event_context = event_->GetEventPath()[i - 1];
     if (event_context.CurrentTargetSameAsTarget()) {
-      event_->SetEventPhase(Event::kAtTarget);
+      event_->SetEventPhase(Event::PhaseType::kAtTarget);
       event_->SetFireOnlyCaptureListenersAtTarget(true);
       event_context.HandleLocalEvents(*event_);
       event_->SetFireOnlyCaptureListenersAtTarget(false);
     } else {
-      event_->SetEventPhase(Event::kCapturingPhase);
+      event_->SetEventPhase(Event::PhaseType::kCapturingPhase);
       event_context.HandleLocalEvents(*event_);
     }
     if (event_->PropagationStopped())
@@ -326,12 +326,12 @@ inline void EventDispatcher::DispatchEventAtBubbling() {
     const NodeEventContext& event_context = event_->GetEventPath()[i];
     if (event_context.CurrentTargetSameAsTarget()) {
       // TODO(hayato): Need to check cancelBubble() also here?
-      event_->SetEventPhase(Event::kAtTarget);
+      event_->SetEventPhase(Event::PhaseType::kAtTarget);
       event_->SetFireOnlyNonCaptureListenersAtTarget(true);
       event_context.HandleLocalEvents(*event_);
       event_->SetFireOnlyNonCaptureListenersAtTarget(false);
     } else if (event_->bubbles() && !event_->cancelBubble()) {
-      event_->SetEventPhase(Event::kBubblingPhase);
+      event_->SetEventPhase(Event::PhaseType::kBubblingPhase);
       event_context.HandleLocalEvents(*event_);
     } else {
       continue;
@@ -340,7 +340,7 @@ inline void EventDispatcher::DispatchEventAtBubbling() {
       return;
   }
   if (event_->bubbles() && !event_->cancelBubble()) {
-    event_->SetEventPhase(Event::kBubblingPhase);
+    event_->SetEventPhase(Event::PhaseType::kBubblingPhase);
     event_->GetEventPath().GetWindowEventContext().HandleLocalEvents(*event_);
   }
 }
@@ -355,7 +355,7 @@ inline void EventDispatcher::DispatchEventPostProcess(
   event_->SetStopPropagation(false);
   event_->SetStopImmediatePropagation(false);
   // 15. Set event’s eventPhase attribute to NONE.
-  event_->SetEventPhase(0);
+  event_->SetEventPhase(Event::PhaseType::kNone);
   // TODO(rakina): investigate this and move it to the bottom of step 16
   // 17. Set event’s currentTarget attribute to null.
   event_->SetCurrentTarget(nullptr);

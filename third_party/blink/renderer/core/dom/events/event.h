@@ -60,7 +60,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
     kNo,
   };
 
-  enum PhaseType {
+  enum class PhaseType {
     kNone = 0,
     kCapturingPhase = 1,
     kAtTarget = 2,
@@ -157,19 +157,19 @@ class CORE_EXPORT Event : public ScriptWrappable {
 
   void SetRelatedTargetIfExists(EventTarget* related_target);
 
-  uint8_t eventPhase() const { return event_phase_; }
-  void SetEventPhase(uint8_t event_phase) { event_phase_ = event_phase; }
+  PhaseType eventPhase() const { return event_phase_; }
+  void SetEventPhase(PhaseType event_phase) { event_phase_ = event_phase; }
 
   void SetFireOnlyCaptureListenersAtTarget(
       bool fire_only_capture_listeners_at_target) {
-    DCHECK_EQ(event_phase_, kAtTarget);
+    DCHECK_EQ(event_phase_, PhaseType::kAtTarget);
     fire_only_capture_listeners_at_target_ =
         fire_only_capture_listeners_at_target;
   }
 
   void SetFireOnlyNonCaptureListenersAtTarget(
       bool fire_only_non_capture_listeners_at_target) {
-    DCHECK_EQ(event_phase_, kAtTarget);
+    DCHECK_EQ(event_phase_, PhaseType::kAtTarget);
     fire_only_non_capture_listeners_at_target_ =
         fire_only_non_capture_listeners_at_target;
   }
@@ -266,7 +266,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   ScriptValue path(ScriptState*) const;
   HeapVector<Member<EventTarget>> composedPath(ScriptState*) const;
 
-  bool IsBeingDispatched() const { return eventPhase(); }
+  bool IsBeingDispatched() const { return eventPhase() != PhaseType::kNone; }
 
   // Events that must not leak across isolated world, similar to how
   // ErrorEvent behaves, can override this method.
@@ -353,7 +353,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   unsigned copy_event_path_from_underlying_event_ : 1;
 
   PassiveMode handling_passive_;
-  uint8_t event_phase_;
+  PhaseType event_phase_;
   probe::AsyncTaskContext async_task_context_;
 
   Member<EventTarget> current_target_;

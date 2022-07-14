@@ -16,18 +16,18 @@ namespace blink {
 namespace {
 double ClampParameter(double value, FilterOperation::OperationType type) {
   switch (type) {
-    case FilterOperation::kBrightness:
-    case FilterOperation::kContrast:
-    case FilterOperation::kSaturate:
+    case FilterOperation::OperationType::kBrightness:
+    case FilterOperation::OperationType::kContrast:
+    case FilterOperation::OperationType::kSaturate:
       return ClampTo<double>(value, 0);
 
-    case FilterOperation::kGrayscale:
-    case FilterOperation::kInvert:
-    case FilterOperation::kOpacity:
-    case FilterOperation::kSepia:
+    case FilterOperation::OperationType::kGrayscale:
+    case FilterOperation::OperationType::kInvert:
+    case FilterOperation::OperationType::kOpacity:
+    case FilterOperation::OperationType::kSepia:
       return ClampTo<double>(value, 0, 1);
 
-    case FilterOperation::kHueRotate:
+    case FilterOperation::OperationType::kHueRotate:
       return value;
 
     default:
@@ -44,33 +44,33 @@ std::unique_ptr<InterpolableFilter> InterpolableFilter::MaybeCreate(
   std::unique_ptr<InterpolableValue> value;
   FilterOperation::OperationType type = filter.GetType();
   switch (type) {
-    case FilterOperation::kGrayscale:
-    case FilterOperation::kHueRotate:
-    case FilterOperation::kSaturate:
-    case FilterOperation::kSepia:
+    case FilterOperation::OperationType::kGrayscale:
+    case FilterOperation::OperationType::kHueRotate:
+    case FilterOperation::OperationType::kSaturate:
+    case FilterOperation::OperationType::kSepia:
       value = std::make_unique<InterpolableNumber>(
           To<BasicColorMatrixFilterOperation>(filter).Amount());
       break;
 
-    case FilterOperation::kBrightness:
-    case FilterOperation::kContrast:
-    case FilterOperation::kInvert:
-    case FilterOperation::kOpacity:
+    case FilterOperation::OperationType::kBrightness:
+    case FilterOperation::OperationType::kContrast:
+    case FilterOperation::OperationType::kInvert:
+    case FilterOperation::OperationType::kOpacity:
       value = std::make_unique<InterpolableNumber>(
           To<BasicComponentTransferFilterOperation>(filter).Amount());
       break;
 
-    case FilterOperation::kBlur:
+    case FilterOperation::OperationType::kBlur:
       value = InterpolableLength::MaybeConvertLength(
           To<BlurFilterOperation>(filter).StdDeviation(), zoom);
       break;
 
-    case FilterOperation::kDropShadow:
+    case FilterOperation::OperationType::kDropShadow:
       value = InterpolableShadow::Create(
           To<DropShadowFilterOperation>(filter).Shadow(), zoom);
       break;
 
-    case FilterOperation::kReference:
+    case FilterOperation::OperationType::kReference:
       return nullptr;
 
     default:
@@ -96,25 +96,25 @@ std::unique_ptr<InterpolableFilter> InterpolableFilter::MaybeConvertCSSValue(
   FilterOperation::OperationType type =
       FilterOperationResolver::FilterOperationForType(filter.FunctionType());
   switch (type) {
-    case FilterOperation::kBrightness:
-    case FilterOperation::kContrast:
-    case FilterOperation::kGrayscale:
-    case FilterOperation::kInvert:
-    case FilterOperation::kOpacity:
-    case FilterOperation::kSaturate:
-    case FilterOperation::kSepia:
-    case FilterOperation::kHueRotate:
+    case FilterOperation::OperationType::kBrightness:
+    case FilterOperation::OperationType::kContrast:
+    case FilterOperation::OperationType::kGrayscale:
+    case FilterOperation::OperationType::kInvert:
+    case FilterOperation::OperationType::kOpacity:
+    case FilterOperation::OperationType::kSaturate:
+    case FilterOperation::OperationType::kSepia:
+    case FilterOperation::OperationType::kHueRotate:
       value = std::make_unique<InterpolableNumber>(
           FilterOperationResolver::ResolveNumericArgumentForFunction(filter));
       break;
 
-    case FilterOperation::kBlur:
+    case FilterOperation::OperationType::kBlur:
       value = filter.length() > 0
                   ? InterpolableLength::MaybeConvertCSSValue(filter.Item(0))
                   : InterpolableLength::CreateNeutral();
       break;
 
-    case FilterOperation::kDropShadow:
+    case FilterOperation::OperationType::kDropShadow:
       value = InterpolableShadow::MaybeConvertCSSValue(filter.Item(0));
       break;
 
@@ -135,25 +135,25 @@ std::unique_ptr<InterpolableFilter> InterpolableFilter::CreateInitialValue(
   // mapping of OperationType to initial value.
   std::unique_ptr<InterpolableValue> value;
   switch (type) {
-    case FilterOperation::kGrayscale:
-    case FilterOperation::kInvert:
-    case FilterOperation::kSepia:
-    case FilterOperation::kHueRotate:
+    case FilterOperation::OperationType::kGrayscale:
+    case FilterOperation::OperationType::kInvert:
+    case FilterOperation::OperationType::kSepia:
+    case FilterOperation::OperationType::kHueRotate:
       value = std::make_unique<InterpolableNumber>(0);
       break;
 
-    case FilterOperation::kBrightness:
-    case FilterOperation::kContrast:
-    case FilterOperation::kOpacity:
-    case FilterOperation::kSaturate:
+    case FilterOperation::OperationType::kBrightness:
+    case FilterOperation::OperationType::kContrast:
+    case FilterOperation::OperationType::kOpacity:
+    case FilterOperation::OperationType::kSaturate:
       value = std::make_unique<InterpolableNumber>(1);
       break;
 
-    case FilterOperation::kBlur:
+    case FilterOperation::OperationType::kBlur:
       value = InterpolableLength::CreateNeutral();
       break;
 
-    case FilterOperation::kDropShadow:
+    case FilterOperation::OperationType::kDropShadow:
       value = InterpolableShadow::CreateNeutral();
       break;
 
@@ -168,33 +168,33 @@ std::unique_ptr<InterpolableFilter> InterpolableFilter::CreateInitialValue(
 FilterOperation* InterpolableFilter::CreateFilterOperation(
     const StyleResolverState& state) const {
   switch (type_) {
-    case FilterOperation::kGrayscale:
-    case FilterOperation::kHueRotate:
-    case FilterOperation::kSaturate:
-    case FilterOperation::kSepia: {
+    case FilterOperation::OperationType::kGrayscale:
+    case FilterOperation::OperationType::kHueRotate:
+    case FilterOperation::OperationType::kSaturate:
+    case FilterOperation::OperationType::kSepia: {
       double value =
           ClampParameter(To<InterpolableNumber>(*value_).Value(), type_);
       return MakeGarbageCollected<BasicColorMatrixFilterOperation>(value,
                                                                    type_);
     }
 
-    case FilterOperation::kBrightness:
-    case FilterOperation::kContrast:
-    case FilterOperation::kInvert:
-    case FilterOperation::kOpacity: {
+    case FilterOperation::OperationType::kBrightness:
+    case FilterOperation::OperationType::kContrast:
+    case FilterOperation::OperationType::kInvert:
+    case FilterOperation::OperationType::kOpacity: {
       double value =
           ClampParameter(To<InterpolableNumber>(*value_).Value(), type_);
       return MakeGarbageCollected<BasicComponentTransferFilterOperation>(value,
                                                                          type_);
     }
 
-    case FilterOperation::kBlur: {
+    case FilterOperation::OperationType::kBlur: {
       Length std_deviation = To<InterpolableLength>(*value_).CreateLength(
           state.CssToLengthConversionData(), Length::ValueRange::kNonNegative);
       return MakeGarbageCollected<BlurFilterOperation>(std_deviation);
     }
 
-    case FilterOperation::kDropShadow: {
+    case FilterOperation::OperationType::kDropShadow: {
       ShadowData shadow_data =
           To<InterpolableShadow>(*value_).CreateShadowData(state);
       if (shadow_data.GetColor().IsCurrentColor())
@@ -213,13 +213,13 @@ void InterpolableFilter::Add(const InterpolableValue& other) {
   // The following types have an initial value of 1, so addition for them is
   // one-based: result = value_ + other.value_ - 1
   switch (type_) {
-    case FilterOperation::kBrightness:
-    case FilterOperation::kContrast:
-    case FilterOperation::kGrayscale:
-    case FilterOperation::kInvert:
-    case FilterOperation::kOpacity:
-    case FilterOperation::kSaturate:
-    case FilterOperation::kSepia:
+    case FilterOperation::OperationType::kBrightness:
+    case FilterOperation::OperationType::kContrast:
+    case FilterOperation::OperationType::kGrayscale:
+    case FilterOperation::OperationType::kInvert:
+    case FilterOperation::OperationType::kOpacity:
+    case FilterOperation::OperationType::kSaturate:
+    case FilterOperation::OperationType::kSepia:
       value_->Add(*std::make_unique<InterpolableNumber>(-1));
       break;
     default:
