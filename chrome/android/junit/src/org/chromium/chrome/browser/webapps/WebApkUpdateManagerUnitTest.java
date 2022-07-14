@@ -101,6 +101,7 @@ public class WebApkUpdateManagerUnitTest {
     private static final String SCOPE_URL = "/";
     private static final String NAME = "Long Name";
     private static final String SHORT_NAME = "Short Name";
+    private static final String MANIFEST_ID = "manifestId";
     private static final String PRIMARY_ICON_URL = "/icon.png";
     private static final String PRIMARY_ICON_MURMUR2_HASH = "3";
     private static final @DisplayMode.EnumType int DISPLAY_MODE = DisplayMode.UNDEFINED;
@@ -151,11 +152,11 @@ public class WebApkUpdateManagerUnitTest {
 
         @Override
         public void storeWebApkUpdateRequestToFile(String updateRequestPath, String startUrl,
-                String scope, String name, String shortName, String primaryIconUrl,
-                String primaryIconData, boolean isPrimaryIconMaskable, String splashIconUrl,
-                String splashIconData, boolean isSplashIconMaskable, String[] iconUrls,
-                String[] iconHashes, @DisplayMode.EnumType int displayMode, int orientation,
-                long themeColor, long backgroundColor, String shareTargetAction,
+                String scope, String name, String shortName, String manifestId, String appKey,
+                String primaryIconUrl, String primaryIconData, boolean isPrimaryIconMaskable,
+                String splashIconUrl, String splashIconData, boolean isSplashIconMaskable,
+                String[] iconUrls, String[] iconHashes, @DisplayMode.EnumType int displayMode,
+                int orientation, long themeColor, long backgroundColor, String shareTargetAction,
                 String shareTargetParamTitle, String shareTargetParamText,
                 boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
                 String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,
@@ -180,6 +181,7 @@ public class WebApkUpdateManagerUnitTest {
         private Callback<Boolean> mStoreUpdateRequestCallback;
         private TestWebApkUpdateDataFetcher mFetcher;
         private String mUpdateName;
+        private String mAppKey;
         private boolean mDestroyedFetcher;
 
         /**
@@ -232,6 +234,14 @@ public class WebApkUpdateManagerUnitTest {
             return mUpdateName;
         }
 
+        /**
+         * Returns the "app_key" from the requested update. Null if an update has not been
+         * requested.
+         */
+        public String requestedAppKey() {
+            return mAppKey;
+        }
+
         public boolean destroyedFetcher() {
             return mDestroyedFetcher;
         }
@@ -278,6 +288,7 @@ public class WebApkUpdateManagerUnitTest {
                 Callback<Boolean> callback) {
             mStoreUpdateRequestCallback = callback;
             mUpdateName = info.name();
+            mAppKey = info.appKey();
             writeRandomTextToFile(updateRequestPath);
         }
 
@@ -293,6 +304,8 @@ public class WebApkUpdateManagerUnitTest {
         public String scopeUrl;
         public String name;
         public String shortName;
+        public String id;
+        public String appKey;
         public Map<String, String> iconUrlToMurmur2HashMap;
         public String primaryIconUrl;
         public Bitmap primaryIcon;
@@ -379,6 +392,8 @@ public class WebApkUpdateManagerUnitTest {
         metaData.putInt(WebApkMetaDataKeys.DEFAULT_BACKGROUND_COLOR_ID,
                 FakeDefaultBackgroundColorResource.ID);
         metaData.putString(WebApkMetaDataKeys.WEB_MANIFEST_URL, WEB_MANIFEST_URL);
+        metaData.putString(WebApkMetaDataKeys.WEB_MANIFEST_ID, manifestData.id);
+        metaData.putString(WebApkMetaDataKeys.APP_KEY, manifestData.appKey);
 
         String iconUrlsAndIconMurmur2Hashes = "";
         for (Map.Entry<String, String> mapEntry : manifestData.iconUrlToMurmur2HashMap.entrySet()) {
@@ -434,6 +449,8 @@ public class WebApkUpdateManagerUnitTest {
         manifestData.scopeUrl = SCOPE_URL;
         manifestData.name = NAME;
         manifestData.shortName = SHORT_NAME;
+        manifestData.id = MANIFEST_ID;
+        manifestData.appKey = MANIFEST_ID;
 
         manifestData.iconUrlToMurmur2HashMap = new HashMap<>();
         manifestData.iconUrlToMurmur2HashMap.put(PRIMARY_ICON_URL, PRIMARY_ICON_MURMUR2_HASH);
@@ -479,7 +496,7 @@ public class WebApkUpdateManagerUnitTest {
                 manifestData.themeColor, manifestData.backgroundColor,
                 manifestData.defaultBackgroundColor, false /* isPrimaryIconMaskable */,
                 false /* isSplashIconMaskable*/, kPackageName, -1, WEB_MANIFEST_URL,
-                manifestData.startUrl, null /* manifestId*/, null /* appId*/,
+                manifestData.startUrl, manifestData.id, manifestData.appKey,
                 WebApkDistributor.BROWSER, manifestData.iconUrlToMurmur2HashMap, shareTarget,
                 false /* forceNavigation */, false /* isSplashProvidedByWebApk */,
                 null /* shareData */, manifestData.shortcuts /* shortcutItems */,
@@ -796,6 +813,7 @@ public class WebApkUpdateManagerUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertTrue(updateManager.updateRequested());
         assertEquals(NAME, updateManager.requestedUpdateName());
+        assertEquals(MANIFEST_ID, updateManager.requestedAppKey());
 
         // Check that the {@link WebApkUpdateDataFetcher} has been destroyed. This prevents
         // {@link #onGotManifestData()} from getting called.
@@ -841,6 +859,7 @@ public class WebApkUpdateManagerUnitTest {
         onGotManifestData(updateManager, defaultManifestData());
         assertTrue(updateManager.updateRequested());
         assertEquals(NAME, updateManager.requestedUpdateName());
+        assertEquals(MANIFEST_ID, updateManager.requestedAppKey());
 
         assertTrue(updateManager.destroyedFetcher());
     }
@@ -1556,5 +1575,56 @@ public class WebApkUpdateManagerUnitTest {
         assertTrue(updateManager.updateCheckStarted());
         updateManager.onGotManifestData(/* fetchedIntentDataProvider= */ null,
                 /* primaryIconUrl= */ null, /* splashIconUrl= */ null);
+    }
+
+    @Test
+    public void testManifestIdChangeShouldNotUpdate() {
+        ManifestData androidData = defaultManifestData();
+        ManifestData fetchedData = defaultManifestData();
+        fetchedData.id = MANIFEST_ID + "1";
+        assertFalse(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+    }
+
+    @Test
+    public void testAppKeyNotChangeWhenUpdate() {
+        ManifestData androidData = defaultManifestData();
+        androidData.appKey = WEB_MANIFEST_URL;
+        registerWebApk(WEBAPK_PACKAGE_NAME, androidData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
+        mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
+
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
+        assertTrue(updateManager.updateCheckStarted());
+
+        ManifestData fetchedData = defaultManifestData();
+        fetchedData.appKey = "another id";
+        // Set a different backgroundColor to trigger an update.
+        fetchedData.backgroundColor = DIFFERENT_BACKGROUND_COLOR;
+        onGotManifestData(updateManager, fetchedData);
+
+        assertTrue(updateManager.updateRequested());
+        assertEquals(WEB_MANIFEST_URL, updateManager.requestedAppKey());
+    }
+
+    /**
+     * Tests that WebAPK updates keeps the default appKey when no value specified from the WebAPK's
+     * Android Manifest <meta-data>.
+     */
+    @Test
+    public void testEmptyManifestAppKeyHasDefault() {
+        ManifestData androidData = defaultManifestData();
+        androidData.id = null;
+        androidData.appKey = null;
+
+        registerWebApk(WEBAPK_PACKAGE_NAME, androidData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
+        mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
+
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
+        assertTrue(updateManager.updateCheckStarted());
+
+        onGotDifferentData(updateManager);
+        assertTrue(updateManager.updateRequested());
+        assertEquals(WEB_MANIFEST_URL, updateManager.requestedAppKey());
     }
 }

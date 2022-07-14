@@ -23,17 +23,6 @@ namespace {
 // https://developer.android.com/guide/topics/ui/shortcuts#shortcut-limitations
 constexpr size_t kMaxShortcuts = 4;
 
-std::string GetManifestId(const blink::mojom::Manifest& manifest) {
-  if (manifest.id.has_value()) {
-    // Generate the formatted id by <start_url_origin>/<manifest_id>.
-    GURL manifest_id(manifest.start_url.DeprecatedGetOriginAsURL().spec() +
-                     base::UTF16ToUTF8(manifest.id.value()));
-    DCHECK(manifest_id.is_valid());
-    return manifest_id.spec();
-  }
-  return manifest.start_url.spec();
-}
-
 }  // namespace
 
 using blink::mojom::DisplayMode;
@@ -230,6 +219,19 @@ void ShortcutInfo::UpdateBestSplashIcon(
 
 void ShortcutInfo::UpdateSource(const Source new_source) {
   source = new_source;
+}
+
+// static
+std::string ShortcutInfo::GetManifestId(
+    const blink::mojom::Manifest& manifest) {
+  if (manifest.id.has_value()) {
+    // Generate the formatted id by <start_url_origin>/<manifest_id>.
+    GURL manifest_id(manifest.start_url.DeprecatedGetOriginAsURL().spec() +
+                     base::UTF16ToUTF8(manifest.id.value()));
+    DCHECK(manifest_id.is_valid());
+    return manifest_id.spec();
+  }
+  return manifest.start_url.spec();
 }
 
 }  // namespace webapps

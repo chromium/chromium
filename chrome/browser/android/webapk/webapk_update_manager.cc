@@ -64,6 +64,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     const JavaParamRef<jstring>& java_scope,
     const JavaParamRef<jstring>& java_name,
     const JavaParamRef<jstring>& java_short_name,
+    const JavaParamRef<jstring>& java_manifest_id,
+    const JavaParamRef<jstring>& java_app_key,
     const JavaParamRef<jstring>& java_primary_icon_url,
     const JavaParamRef<jstring>& java_primary_icon_data,
     jboolean java_is_primary_icon_maskable,
@@ -114,6 +116,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
       GURL(ConvertJavaStringToUTF8(env, java_splash_icon_url));
   info.is_splash_image_maskable = java_is_splash_icon_maskable;
   info.manifest_url = GURL(ConvertJavaStringToUTF8(env, java_web_manifest_url));
+  info.manifest_id = ConvertJavaStringToUTF8(env, java_manifest_id);
+  std::string app_key = ConvertJavaStringToUTF8(env, java_app_key);
 
   GURL share_target_action =
       GURL(ConvertJavaStringToUTF8(env, java_share_target_action));
@@ -217,7 +221,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
         static_cast<webapps::WebApkUpdateReason>(update_reason));
 
   WebApkInstaller::StoreUpdateRequestToFile(
-      base::FilePath(update_request_path), info, primary_icon_data,
+      base::FilePath(update_request_path), info, app_key, primary_icon_data,
       java_is_primary_icon_maskable, splash_icon_data, webapk_package,
       base::NumberToString(java_webapk_version),
       std::move(icon_url_to_murmur2_hash), java_is_manifest_stale,

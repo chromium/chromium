@@ -652,24 +652,24 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
         WebApkUpdateManagerJni.get().storeWebApkUpdateRequestToFile(updateRequestPath,
                 info.manifestStartUrl(), info.scopeUrl(), info.name(), info.shortName(),
-                primaryIconUrl, primaryIconData, info.isIconAdaptive(), splashIconUrl,
-                splashIconData, info.isSplashIconMaskable(), iconUrls, iconHashes,
-                info.displayMode(), info.orientation(), info.toolbarColor(), info.backgroundColor(),
-                shareTargetAction, shareTargetParamTitle, shareTargetParamText,
-                shareTargetIsMethodPost, shareTargetIsEncTypeMultipart, shareTargetParamFileNames,
-                shareTargetParamAccepts, shortcuts, shortcutIconData, info.manifestUrl(),
-                info.webApkPackageName(), versionCode, isManifestStale,
+                info.manifestId(), info.appKey(), primaryIconUrl, primaryIconData,
+                info.isIconAdaptive(), splashIconUrl, splashIconData, info.isSplashIconMaskable(),
+                iconUrls, iconHashes, info.displayMode(), info.orientation(), info.toolbarColor(),
+                info.backgroundColor(), shareTargetAction, shareTargetParamTitle,
+                shareTargetParamText, shareTargetIsMethodPost, shareTargetIsEncTypeMultipart,
+                shareTargetParamFileNames, shareTargetParamAccepts, shortcuts, shortcutIconData,
+                info.manifestUrl(), info.webApkPackageName(), versionCode, isManifestStale,
                 isAppIdentityUpdateSupported, updateReasonsArray, callback);
     }
 
     @NativeMethods
     interface Natives {
         public void storeWebApkUpdateRequestToFile(String updateRequestPath, String startUrl,
-                String scope, String name, String shortName, String primaryIconUrl,
-                String primaryIconData, boolean isPrimaryIconMaskable, String splashIconUrl,
-                String splashIconData, boolean isSplashIconMaskable, String[] iconUrls,
-                String[] iconHashes, @DisplayMode.EnumType int displayMode, int orientation,
-                long themeColor, long backgroundColor, String shareTargetAction,
+                String scope, String name, String shortName, String manifestId, String appKey,
+                String primaryIconUrl, String primaryIconData, boolean isPrimaryIconMaskable,
+                String splashIconUrl, String splashIconData, boolean isSplashIconMaskable,
+                String[] iconUrls, String[] iconHashes, @DisplayMode.EnumType int displayMode,
+                int orientation, long themeColor, long backgroundColor, String shareTargetAction,
                 String shareTargetParamTitle, String shareTargetParamText,
                 boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
                 String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,

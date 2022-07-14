@@ -203,6 +203,8 @@ public class WebApkUpdateManagerTest {
         public String scope;
         public String name;
         public String shortName;
+        public String manifestId;
+        public String appKey;
         public Map<String, String> iconUrlToMurmur2HashMap;
         public @DisplayMode.EnumType int displayMode;
         public int orientation;
@@ -217,6 +219,8 @@ public class WebApkUpdateManagerTest {
         creationData.manifestUrl = mTestServer.getURL(WEBAPK_MANIFEST_URL);
         creationData.startUrl = mTestServer.getURL(WEBAPK_START_URL);
         creationData.scope = mTestServer.getURL(WEBAPK_SCOPE_URL);
+        creationData.manifestId = mTestServer.getURL(WEBAPK_START_URL);
+        creationData.appKey = mTestServer.getURL(WEBAPK_MANIFEST_URL);
         creationData.name = WEBAPK_NAME;
         creationData.shortName = WEBAPK_SHORT_NAME;
 
@@ -263,7 +267,7 @@ public class WebApkUpdateManagerTest {
                             creationData.themeColor, creationData.backgroundColor, 0,
                             creationData.isPrimaryIconMaskable, false /* isSplashIconMaskable */,
                             "", 1000 /* shellApkVersion */, creationData.manifestUrl,
-                            creationData.startUrl, null /* manifestId */, null /*appKey*/,
+                            creationData.startUrl, creationData.manifestId, creationData.appKey,
                             WebApkDistributor.BROWSER, creationData.iconUrlToMurmur2HashMap, null,
                             false /* forceNavigation */, false /* isSplashProvidedByWebApk */,
                             null /* shareData */, creationData.shortcuts,

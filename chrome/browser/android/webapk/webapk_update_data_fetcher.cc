@@ -13,6 +13,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,22 +51,31 @@ jlong JNI_WebApkUpdateDataFetcher_Initialize(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& java_scope_url,
-    const JavaParamRef<jstring>& java_web_manifest_url) {
+    const JavaParamRef<jstring>& java_web_manifest_url,
+    const JavaParamRef<jstring>& java_web_manifest_id) {
   GURL scope(base::android::ConvertJavaStringToUTF8(env, java_scope_url));
   GURL web_manifest_url(
       base::android::ConvertJavaStringToUTF8(env, java_web_manifest_url));
-  WebApkUpdateDataFetcher* fetcher =
-      new WebApkUpdateDataFetcher(env, obj, scope, web_manifest_url);
+  std::string web_manifest_id;
+  if (!java_web_manifest_id.is_null()) {
+    web_manifest_id =
+        base::android::ConvertJavaStringToUTF8(env, java_web_manifest_id);
+  }
+  WebApkUpdateDataFetcher* fetcher = new WebApkUpdateDataFetcher(
+      env, obj, scope, web_manifest_url, web_manifest_id);
   return reinterpret_cast<intptr_t>(fetcher);
 }
 
-WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(JNIEnv* env,
-                                                 jobject obj,
-                                                 const GURL& scope,
-                                                 const GURL& web_manifest_url)
+WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(
+    JNIEnv* env,
+    jobject obj,
+    const GURL& scope,
+    const GURL& web_manifest_url,
+    const std::string& web_manifest_id)
     : content::WebContentsObserver(nullptr),
       scope_(scope),
       web_manifest_url_(web_manifest_url),
+      web_manifest_id_(web_manifest_id),
       info_(GURL()),
       is_primary_icon_maskable_(false),
       is_splash_icon_maskable_(false) {
@@ -146,9 +156,22 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // web developers to change the Web Manifest location. When it does
   // change, we will treat the new Web Manifest as the one of another WebAPK.
   if (!data.NoBlockingErrors() || blink::IsEmptyManifest(data.manifest) ||
-      web_manifest_url_ != data.manifest_url ||
       !webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
           data.manifest)) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId) &&
+      web_manifest_url_ != data.manifest_url) {
+    return;
+  }
+
+  // If the fetched manifest id is different from the current one, we also
+  // continue observing as the id is the identity for the application. We
+  // will treat the manifest with different id as the one of another WebAPK.
+  if (base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId) &&
+      !web_manifest_id_.empty() &&
+      web_manifest_id_ != webapps::ShortcutInfo::GetManifestId(data.manifest)) {
     return;
   }
 
@@ -202,6 +225,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       base::android::ConvertUTF16ToJavaString(env, info_.name);
   ScopedJavaLocalRef<jstring> java_short_name =
       base::android::ConvertUTF16ToJavaString(env, info_.short_name);
+  ScopedJavaLocalRef<jstring> java_manifest_id =
+      base::android::ConvertUTF8ToJavaString(env, info_.manifest_id);
   ScopedJavaLocalRef<jstring> java_primary_icon_url =
       base::android::ConvertUTF8ToJavaString(
           env, info_.best_primary_icon_url.spec());
@@ -290,8 +315,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
 
   Java_WebApkUpdateDataFetcher_onDataAvailable(
       env, java_ref_, java_url, java_scope, java_name, java_short_name,
-      java_primary_icon_url, java_primary_icon_murmur2_hash, java_primary_icon,
-      java_is_primary_icon_maskable, java_splash_icon_url,
+      java_manifest_id, java_primary_icon_url, java_primary_icon_murmur2_hash,
+      java_primary_icon, java_is_primary_icon_maskable, java_splash_icon_url,
       java_splash_icon_murmur2_hash, java_splash_icon,
       java_is_splash_icon_maskable, java_icon_urls,
       static_cast<int>(info_.display), static_cast<int>(info_.orientation),

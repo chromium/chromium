@@ -113,4 +113,9 @@ public class MergedWebappInfo extends WebappInfo {
         }
         return super.iconUrlToMurmur2HashMap();
     }
+
+    @Override
+    public String appKey() {
+        return mOldWebappInfo.appKey();
+    }
 }

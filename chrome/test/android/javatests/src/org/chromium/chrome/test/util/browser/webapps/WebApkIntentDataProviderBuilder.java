@@ -26,6 +26,7 @@ public class WebApkIntentDataProviderBuilder {
     private @DisplayMode.EnumType int mDisplayMode = DisplayMode.STANDALONE;
     private String mManifestUrl;
     private int mWebApkVersionCode;
+    private String mManifestId;
 
     public WebApkIntentDataProviderBuilder(String webApkPackageName, String url) {
         mWebApkPackageName = webApkPackageName;
@@ -48,6 +49,17 @@ public class WebApkIntentDataProviderBuilder {
         mWebApkVersionCode = versionCode;
     }
 
+    public void setWebApkManifestId(String manifestId) {
+        mManifestId = manifestId;
+    }
+
+    private String manifestId() {
+        if (mManifestId == null) {
+            return mUrl;
+        }
+        return mManifestId;
+    }
+
     /**
      * Builds {@link BrowserServicesIntentDataProvider} object using options that have been set.
      */
@@ -56,8 +68,8 @@ public class WebApkIntentDataProviderBuilder {
                 null, mDisplayMode, ScreenOrientationLockType.DEFAULT, ShortcutSource.UNKNOWN,
                 ColorUtils.INVALID_COLOR, ColorUtils.INVALID_COLOR, Color.WHITE,
                 false /* isPrimaryIconMaskable */, false /* isSplashIconMaskable */,
-                mWebApkPackageName, /* shellApkVersion */ 1, mManifestUrl, mUrl,
-                null /* manifestId*/, null /* appId*/, WebApkDistributor.BROWSER,
+                mWebApkPackageName, /* shellApkVersion */ 1, mManifestUrl, mUrl, manifestId(),
+                null /*appKey*/, WebApkDistributor.BROWSER,
                 new HashMap<String, String>() /* iconUrlToMurmur2HashMap */, null,
                 false /* forceNavigation */, false /* isSplashProvidedByWebApk */, null,
                 new ArrayList<>() /* shortcutItems */, mWebApkVersionCode);

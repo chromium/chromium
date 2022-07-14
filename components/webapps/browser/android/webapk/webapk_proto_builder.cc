@@ -305,6 +305,7 @@ void BuildProto(
 bool StoreUpdateRequestToFileInBackground(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
+    const std::string& app_key,
     const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
@@ -317,10 +318,9 @@ bool StoreUpdateRequestToFileInBackground(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  // TODO(crbug.com/1342070): Implement the app_key for updates.
   std::unique_ptr<std::string> proto = BuildProtoInBackground(
-      shortcut_info, "" /*app_key*/, primary_icon_data,
-      is_primary_icon_maskable, splash_icon_data, package_name, version,
+      shortcut_info, app_key, primary_icon_data, is_primary_icon_maskable,
+      splash_icon_data, package_name, version,
       std::move(icon_url_to_murmur2_hash), is_manifest_stale,
       is_app_identity_update_supported, std::move(update_reasons));
 
