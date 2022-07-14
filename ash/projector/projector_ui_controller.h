@@ -49,6 +49,10 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   void ResetTools();
   // Invoked when the canvas has either succeeded or failed to initialize.
   void OnCanvasInitialized(bool success);
+  // Returns if the annotation canvas has been initialized.
+  bool GetAnnotatorAvailability();
+  // Toggles the UI of the annotation tray and the marker's enabled state.
+  void ToggleAnnotationTray();
 
   void OnRecordedWindowChangingRoot(aura::Window* new_root);
 

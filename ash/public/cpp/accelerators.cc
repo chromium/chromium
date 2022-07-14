@@ -233,6 +233,9 @@ const AcceleratorData kAcceleratorData[] = {
     // ARC-specific shortcut.
     {true, ui::VKEY_C, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
      TOGGLE_RESIZE_LOCK_MENU},
+
+    // Projector shortcuts.
+    {true, ui::VKEY_OEM_3, ui::EF_COMMAND_DOWN, TOGGLE_PROJECTOR_MARKER},
 };
 
 const size_t kAcceleratorDataLength = std::size(kAcceleratorData);

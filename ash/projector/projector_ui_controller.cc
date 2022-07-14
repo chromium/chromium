@@ -76,7 +76,7 @@ void SetProjectorAnnotationTrayVisibility(aura::Window* root, bool visible) {
     projector_annotation_tray->SetVisiblePreferred(visible);
 }
 
-void ToggleAnnotator() {
+void ToggleAnnotatorCanvas() {
   auto* capture_mode_controller = CaptureModeController::Get();
   // TODO(b/200292852): This check should not be necessary, but because
   // several Projector unit tests that rely on mocking and don't test the real
@@ -168,7 +168,7 @@ void ProjectorUiController::HideAnnotationTray() {
 
 void ProjectorUiController::EnableAnnotatorTool() {
   if (!annotator_enabled_) {
-    ToggleAnnotator();
+    ToggleAnnotatorCanvas();
     annotator_enabled_ = !annotator_enabled_;
     RecordToolbarMetrics(ProjectorToolbar::kMarkerTool);
   }
@@ -181,7 +181,7 @@ void ProjectorUiController::SetAnnotatorTool(const AnnotatorTool& tool) {
 
 void ProjectorUiController::ResetTools() {
   if (annotator_enabled_) {
-    ToggleAnnotator();
+    ToggleAnnotatorCanvas();
     annotator_enabled_ = false;
     ash::ProjectorAnnotatorController::Get()->Clear();
   }
@@ -192,6 +192,20 @@ void ProjectorUiController::OnCanvasInitialized(bool success) {
   UpdateTrayEnabledState();
 }
 
+bool ProjectorUiController::GetAnnotatorAvailability() {
+  if (!canvas_initialized_state_) {
+    return false;
+  }
+  return *canvas_initialized_state_;
+}
+
+void ProjectorUiController::ToggleAnnotationTray() {
+  if (auto* projector_annotation_tray =
+          GetProjectorAnnotationTrayForRoot(current_root_)) {
+    projector_annotation_tray->ToggleAnnotator();
+  }
+}
+
 void ProjectorUiController::OnRecordedWindowChangingRoot(
     aura::Window* new_root) {
   DCHECK_NE(new_root, current_root_);
@@ -199,7 +213,7 @@ void ProjectorUiController::OnRecordedWindowChangingRoot(
   SetProjectorAnnotationTrayVisibility(current_root_, /*visible=*/false);
   SetProjectorAnnotationTrayVisibility(new_root, /*visible=*/true);
   current_root_ = new_root;
-  if (canvas_initialized_state_)
+  if (GetAnnotatorAvailability())
     UpdateTrayEnabledState();
 }
 
@@ -221,7 +235,7 @@ ProjectorMarkerColor ProjectorUiController::GetMarkerColorForMetrics(
 void ProjectorUiController::UpdateTrayEnabledState() {
   if (auto* projector_annotation_tray =
           GetProjectorAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->SetTrayEnabled(*canvas_initialized_state_);
+    projector_annotation_tray->SetTrayEnabled(GetAnnotatorAvailability());
   }
 }
 }  // namespace ash

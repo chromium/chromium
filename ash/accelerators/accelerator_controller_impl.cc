@@ -46,6 +46,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
@@ -1467,6 +1468,21 @@ void HandleTouchHudModeChange() {
   controller->touch_hud_debug()->ChangeToNextMode();
 }
 
+bool CanHandleToggleProjectorMarker() {
+  auto* projector_controller = ProjectorController::Get();
+  if (projector_controller) {
+    return projector_controller->GetAnnotatorAvailability();
+  }
+  return false;
+}
+
+void HandleToggleProjectorMarker() {
+  auto* projector_controller = ProjectorController::Get();
+  if (projector_controller) {
+    projector_controller->ToggleAnnotationTray();
+  }
+}
+
 }  // namespace
 
 constexpr const char* AcceleratorControllerImpl::kVolumeButtonRegion;
@@ -1927,6 +1943,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case TAKE_SCREENSHOT:
     case TAKE_WINDOW_SCREENSHOT:
       return CanHandleScreenshot(action);
+    case TOGGLE_PROJECTOR_MARKER:
+      return CanHandleToggleProjectorMarker();
     case TOGGLE_RESIZE_LOCK_MENU:
       return CanHandleToggleResizeLockMenu();
     case TOGGLE_FLOATING:
@@ -2312,6 +2330,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case TOGGLE_IME_MENU_BUBBLE:
       HandleToggleImeMenuBubble();
+      break;
+    case TOGGLE_PROJECTOR_MARKER:
+      HandleToggleProjectorMarker();
       break;
     case SHOW_SHORTCUT_VIEWER:
       HandleShowKeyboardShortcutViewer();

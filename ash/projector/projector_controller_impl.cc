@@ -293,6 +293,14 @@ void ProjectorControllerImpl::OnCanvasInitialized(bool success) {
   ui_controller_->OnCanvasInitialized(success);
 }
 
+bool ProjectorControllerImpl::GetAnnotatorAvailability() {
+  return ui_controller_->GetAnnotatorAvailability();
+}
+
+void ProjectorControllerImpl::ToggleAnnotationTray() {
+  return ui_controller_->ToggleAnnotationTray();
+}
+
 void ProjectorControllerImpl::OnRecordingStarted(aura::Window* current_root,
                                                  bool is_in_projector_mode) {
   if (!is_in_projector_mode) {

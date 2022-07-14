@@ -33,6 +33,8 @@ class MockProjectorController : public ash::ProjectorController {
   MOCK_METHOD2(OnUndoRedoAvailabilityChanged,
                void(bool undo_available, bool redo_available));
   MOCK_METHOD1(OnCanvasInitialized, void(bool success));
+  MOCK_METHOD0(GetAnnotatorAvailability, bool());
+  MOCK_METHOD0(ToggleAnnotationTray, void());
 };
 
 }  // namespace ash

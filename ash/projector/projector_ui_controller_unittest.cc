@@ -162,6 +162,18 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
                                       /*count=*/1);
 }
 
+TEST_F(ProjectorUiControllerTest, ToggleMarkerWithKeyboardShortcut) {
+  controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
+  controller_->OnCanvasInitialized(true);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(controller_->is_annotator_enabled());
+
+  event_generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(controller_->is_annotator_enabled());
+}
+
 TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()

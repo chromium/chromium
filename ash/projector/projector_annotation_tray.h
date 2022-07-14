@@ -52,9 +52,9 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
 
   void HideAnnotationTray();
   void SetTrayEnabled(bool enabled);
+  void ToggleAnnotator();
 
  private:
-  void ToggleAnnotator();
   void EnableAnnotatorWithPenColor();
   // Deactivates any annotation tool that is currently enabled and updates the
   // UI.
