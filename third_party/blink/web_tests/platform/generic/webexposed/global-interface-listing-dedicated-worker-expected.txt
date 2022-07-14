@@ -836,6 +836,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter activeSourceBuffers
 [Worker]     getter duration
+[Worker]     getter handle
 [Worker]     getter onsourceclose
 [Worker]     getter onsourceended
 [Worker]     getter onsourceopen
@@ -845,7 +846,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method clearLiveSeekableRange
 [Worker]     method constructor
 [Worker]     method endOfStream
-[Worker]     method getHandle
 [Worker]     method removeSourceBuffer
 [Worker]     method setLiveSeekableRange
 [Worker]     setter duration

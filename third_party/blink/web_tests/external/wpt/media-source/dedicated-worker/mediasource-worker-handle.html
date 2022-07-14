@@ -33,6 +33,17 @@ async_test(t => {
   });
 }, "Test main context receipt of postMessage'd MediaSourceHandle from DedicatedWorker MediaSource");
 
+test(t => {
+  assert_true(window.hasOwnProperty("MediaSourceHandle"), "window must have MediaSourceHandle visibility");
+
+  // Note, MSE spec may eventually describe how a main-thread MediaSource can
+  // attach to an HTMLMediaElement using a MediaSourceHandle. For now, we
+  // ensure that the implementation of this is not available.
+  assert_throws_dom('NotSupportedError', function() {
+    let h = new MediaSource().handle;
+  }, 'main thread MediaSource instance cannot (yet) create a usable MediaSourceHandle');
+}, "Test main-thread-owned MediaSource instance cannot create a MediaSourceHandle");
+
 if (MediaSource.hasOwnProperty("canConstructInDedicatedWorker") && MediaSource.canConstructInDedicatedWorker === true) {
   // If implementation claims support for MSE-in-Workers, then fetch and run
   // some tests directly in another dedicated worker and get their results

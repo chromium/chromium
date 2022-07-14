@@ -32,7 +32,7 @@ class SameThreadMediaSourceAttachment final
   // URLMediaSource::createObjectUrl will lead to
   // MediaSourceRegistryImpl::RegisterURL doing this scoped_refptr adoption).
   // TODO(crbug.com/506273): For main-thread MediaSource's MediaSourceHandle
-  // usage via srcObject, MediaSource::getHandle() may also call this.
+  // usage via srcObject, MediaSource::handle() may also call this.
   SameThreadMediaSourceAttachment(MediaSource* media_source,
                                   AttachmentCreationPassKeyProvider::PassKey);
 

@@ -14,13 +14,13 @@
 namespace blink {
 
 // Enables enforcement that a handle instance, originally retrieved from a
-// MediaSource instance via MediaSource::getHandle(), and any new clones of it
-// that may be produced during postMessage serialization of it (which can
+// MediaSource instance via MediaSource::handle(), and any new clones of it that
+// may be produced during postMessage serialization of it (which can
 // surprisingly cause broadcast semantics) all drop their hard reference to the
-// underlying MediaSourceAttachment once one of those clones is used to
-// start attaching to an HTMLMediaElement. This prevents leakage of the attached
-// media element and MSE collection of objects in multiple GC heaps, as the
-// refcounted attachment object has persistent references to the element and the
+// underlying MediaSourceAttachment once one of those clones is used to start
+// attaching to an HTMLMediaElement. This prevents leakage of the attached media
+// element and MSE collection of objects in multiple GC heaps, as the refcounted
+// attachment object has persistent references to the element and the
 // mediasource. Once attached, only the media element and the mediasource should
 // have references to the attachment object, and when they close the attachment
 // and drop their references, there should be no other references remaining,

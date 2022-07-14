@@ -7190,6 +7190,10 @@ crbug.com/1343651 external/wpt/credential-management/fedcm-network-requests.sub.
 crbug.com/1343698 [ Mac Release ] external/wpt/webmessaging/postMessage_asterisk_xorigin.sub.htm [ Failure Pass ]
 crbug.com/1343698 [ Release Win10.20h2 ] external/wpt/webmessaging/postMessage_asterisk_xorigin.sub.htm [ Failure Pass ]
 
+# Disable test to land a MSE change. Spec change (MSE PR#306) is still pending,
+# and once landed, this line can be removed.
+crbug.com/878133 external/wpt/media-source/idlharness.window.html [ Failure Pass ]
+
 # Tests that are exercising the tentative feature COOP: restrict-properties.
 # These are tests which are implemented before the feature is complete and
 # flakily crash.

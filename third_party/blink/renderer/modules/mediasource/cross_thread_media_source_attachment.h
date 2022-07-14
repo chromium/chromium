@@ -38,7 +38,7 @@ class CrossThreadMediaSourceAttachment final
   // then adopted into a scoped_refptr by the caller (e.g.,
   // URLMediaSource::createObjectUrl will lead to
   // MediaSourceRegistryImpl::RegisterURL doing this scoped_refptr adoption;
-  // separately, MediaSource::getHandle() does this adoption immediately.)
+  // separately, MediaSource::handle() does this adoption immediately.)
   CrossThreadMediaSourceAttachment(MediaSource* media_source,
                                    AttachmentCreationPassKeyProvider::PassKey);
 

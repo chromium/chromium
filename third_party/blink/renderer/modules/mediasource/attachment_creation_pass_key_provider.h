@@ -27,7 +27,7 @@ class AttachmentCreationPassKeyProvider {
   // create a MediaSourceAttachmentSupplement.
   static PassKey GetPassKey() { return PassKey(); }
   friend String URLMediaSource::createObjectURL(ScriptState*, MediaSource*);
-  friend MediaSourceHandleImpl* MediaSource::getHandle(ExceptionState&);
+  friend MediaSourceHandleImpl* MediaSource::handle(ExceptionState&);
 };
 
 }  // namespace blink

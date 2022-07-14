@@ -5,6 +5,6 @@ importScripts('mediasource-message-util.js');
 // harness, and would confuse the test case message parsing there.
 
 // Just obtain a MediaSourceHandle and transfer it to creator of our context.
-let handle = new MediaSource().getHandle();
+let handle = new MediaSource().handle;
 postMessage(
     {subject: messageSubject.HANDLE, info: handle}, {transfer: [handle]});

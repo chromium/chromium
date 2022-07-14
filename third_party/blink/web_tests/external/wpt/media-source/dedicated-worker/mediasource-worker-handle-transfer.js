@@ -1,7 +1,7 @@
 importScripts('/resources/testharness.js');
 
 test(t => {
-  let handle = new MediaSource().getHandle();
+  let handle = new MediaSource().handle;
   assert_true(handle instanceof MediaSourceHandle);
   assert_throws_dom('DataCloneError', function() {
     postMessage(handle);
@@ -9,7 +9,7 @@ test(t => {
 }, 'MediaSourceHandle serialization without transfer must fail, tested in worker');
 
 test(t => {
-  let handle = new MediaSource().getHandle();
+  let handle = new MediaSource().handle;
   assert_true(handle instanceof MediaSourceHandle);
   assert_throws_dom('DataCloneError', function() {
     postMessage(handle, [handle, handle]);

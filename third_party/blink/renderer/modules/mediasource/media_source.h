@@ -98,7 +98,7 @@ class MediaSource final : public EventTargetWithInlineData,
   void clearLiveSeekableRange(ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
 
-  MediaSourceHandleImpl* getHandle(ExceptionState&)
+  MediaSourceHandleImpl* handle(ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
 
   static bool isTypeSupported(ExecutionContext* context, const String& type);
@@ -282,13 +282,11 @@ class MediaSource final : public EventTargetWithInlineData,
       GUARDED_BY(attachment_link_lock_);
   bool context_already_destroyed_ GUARDED_BY(attachment_link_lock_);
 
-  // This is to ensure that at most one successful call to a MediaSource
-  // instance's getHandle() is allowed.
-  bool handle_already_retrieved_ GUARDED_BY(attachment_link_lock_) = false;
+  Member<MediaSourceHandleImpl> worker_media_source_handle_;
 
   // |attachment_link_lock_| protects read/write of |media_source_attachment_|,
-  // |attachment_tracer_|, |context_already_destroyed_|, and
-  // |handle_already_retrieved_|.
+  // |attachment_tracer_|, |context_already_destroyed_|, and execution of
+  // handle().
   // It is only truly necessary for CrossThreadAttachment usage of worker MSE,
   // to prevent read/write collision on main thread versus worker thread. Note
   // that |attachment_link_lock_| must be released before attempting

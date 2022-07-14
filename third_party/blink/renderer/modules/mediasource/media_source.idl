@@ -75,10 +75,11 @@ enum EndOfStreamError {
     // https://github.com/w3c/media-source/pull/305 and
     // https://github.com/w3c/media-source/pull/306.
     [
-        RaisesException,
         RuntimeEnabled=MediaSourceInWorkersUsingHandle,
-        MeasureAs=MediaSourceGetHandle
-    ] MediaSourceHandle getHandle();
+        MeasureAs=MediaSourceGetHandle,
+        RaisesException=Getter,
+        SameObject
+    ] readonly attribute MediaSourceHandle handle;
 
     // TODO(crbug.com/1144908): Consider adding an overload which is given a
     // SourceBufferConfig.

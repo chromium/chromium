@@ -5501,6 +5501,7 @@ interface MediaSource : EventTarget
     attribute @@toStringTag
     getter activeSourceBuffers
     getter duration
+    getter handle
     getter onsourceclose
     getter onsourceended
     getter onsourceopen
@@ -5510,7 +5511,6 @@ interface MediaSource : EventTarget
     method clearLiveSeekableRange
     method constructor
     method endOfStream
-    method getHandle
     method removeSourceBuffer
     method setLiveSeekableRange
     setter duration
