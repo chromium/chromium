@@ -3,86 +3,83 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/common/features.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/optimize_webui.gni")
-import("extensions.gni")
 
 assert(enable_extensions, "enable extensions check failed")
 
-preprocess_folder = "preprocessed"
+build_webui("build") {
+  grd_prefix = "extensions"
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
+  static_files = [ "extensions.html" ]
 
-  optimize_webui("build") {
-    host = "extensions"
-    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    js_out_files = [ "extensions.rollup.js" ]
-    js_module_in_files = [ "extensions.js" ]
-    out_manifest = "$target_gen_dir/$build_manifest"
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "activity_log/activity_log.ts",
+    "activity_log/activity_log_history.ts",
+    "activity_log/activity_log_history_item.ts",
+    "activity_log/activity_log_stream.ts",
+    "activity_log/activity_log_stream_item.ts",
+    "code_section.ts",
+    "detail_view.ts",
+    "drop_overlay.ts",
+    "error_page.ts",
+    "host_permissions_toggle_list.ts",
+    "install_warnings_dialog.ts",
+    "item.ts",
+    "item_list.ts",
+    "keyboard_shortcuts.ts",
+    "load_error.ts",
+    "manager.ts",
+    "options_dialog.ts",
+    "pack_dialog.ts",
+    "pack_dialog_alert.ts",
+    "restricted_sites_dialog.ts",
+    "runtime_host_permissions.ts",
+    "runtime_hosts_dialog.ts",
+    "shortcut_input.ts",
+    "sidebar.ts",
+    "site_permissions_by_site.ts",
+    "site_permissions_edit_permissions_dialog.ts",
+    "site_permissions_edit_url_dialog.ts",
+    "site_permissions_list.ts",
+    "site_permissions_site_group.ts",
+    "site_permissions.ts",
+    "toggle_row.ts",
+    "toolbar.ts",
+  ]
 
-    deps = [
-      ":build_ts",
-      "../../../../ui/webui/resources:preprocess",
-    ]
-    excludes = [ "chrome://resources/js/cr.m.js" ]
+  if (is_chromeos_ash) {
+    web_component_files += [ "kiosk_dialog.ts" ]
   }
-}
 
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  public_deps = [
-    ":css_wrapper_files",
-    ":html_wrapper_files",
+  non_web_component_files = [
+    "drag_and_drop_handler.ts",
+    "extensions.ts",
+    "item_mixin.ts",
+    "item_util.ts",
+    "keyboard_shortcut_delegate.ts",
+    "navigation_helper.ts",
+    "service.ts",
+    "shortcut_util.ts",
+    "site_settings_mixin.ts",
+    "url_util.ts",
   ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files + css_wrapper_files
-}
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files + icons_html_files
-}
+  if (is_chromeos_ash) {
+    non_web_component_files += [ "kiosk_browser_proxy.ts" ]
+  }
 
-css_to_wrapper("css_wrapper_files") {
-  in_files = css_files
-}
+  icons_html_files = [ "icons.html" ]
 
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/extensions_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/extensions_resources.h",
-    "grit/extensions_resources_map.cc",
-    "grit/extensions_resources_map.h",
-    "extensions_resources.pak",
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared_style.css",
+    "shared_vars.css",
   ]
-  output_dir = "$root_gen_dir/chrome"
-}
 
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + css_wrapper_files + html_wrapper_files
-  definitions = [
+  ts_composite = true
+  ts_definitions = [
     "//tools/typescript/definitions/activity_log_private.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/developer_private.d.ts",
@@ -91,34 +88,21 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
   ]
-
   if (is_chromeos_ash) {
-    definitions += [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+    ts_definitions += [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   }
-
-  deps = [
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
-  ]
-}
 
-generate_grd("build_grd") {
-  grd_prefix = "extensions"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [ "extensions.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    resource_path_rewrites = [ "extensions.rollup.js|extensions.js" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "extensions"
+    optimize_webui_out_files = [ "extensions.rollup.js" ]
+    optimize_webui_in_files = [ "extensions.js" ]
+    optimize_webui_excludes = [ "chrome://resources/js/cr.m.js" ]
+    optimize_webui_resource_paths_rewrites =
+        [ "extensions.rollup.js|extensions.js" ]
   }
 }

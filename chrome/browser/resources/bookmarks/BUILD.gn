@@ -2,84 +2,54 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/optimize_webui.gni")
-import("bookmarks.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-preprocess_folder = "preprocessed"
-tsc_folder = "tsc"
+build_webui("build") {
+  grd_prefix = "bookmarks"
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
-
-  optimize_webui("build") {
-    host = "bookmarks"
-    input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
-    js_out_files = [ "bookmarks.rollup.js" ]
-    js_module_in_files = [ "bookmarks.js" ]
-    out_manifest = "$target_gen_dir/$build_manifest"
-
-    deps = [
-      ":build_ts",
-      "../../../../ui/webui/resources:preprocess",
-    ]
-    excludes = [ "chrome://resources/js/cr.m.js" ]
-  }
-}
-
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":css_wrapper_files",
-    ":html_wrapper_files",
+  static_files = [
+    "bookmarks.html",
+    "images/folder_open.svg",
   ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files + css_wrapper_files
-}
 
-css_to_wrapper("css_wrapper_files") {
-  in_files = css_files
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/bookmarks_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/bookmarks_resources.h",
-    "grit/bookmarks_resources_map.cc",
-    "grit/bookmarks_resources_map.h",
-    "bookmarks_resources.pak",
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "app.ts",
+    "command_manager.ts",
+    "edit_dialog.ts",
+    "folder_node.ts",
+    "item.ts",
+    "list.ts",
+    "router.ts",
+    "toolbar.ts",
   ]
-  output_dir = "$root_gen_dir/chrome"
-}
 
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/$tsc_folder"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + css_wrapper_files + html_wrapper_files
-  definitions = [
+  non_web_component_files = [
+    "actions.ts",
+    "bookmarks.ts",
+    "api_listener.ts",
+    "browser_proxy.ts",
+    "constants.ts",
+    "debouncer.ts",
+    "dialog_focus_manager.ts",
+    "dnd_manager.ts",
+    "mouse_focus_behavior.ts",
+    "reducers.ts",
+    "store_client_mixin.ts",
+    "store.ts",
+    "types.ts",
+    "util.ts",
+  ]
+
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared_style.css",
+    "shared_vars.css",
+  ]
+
+  ts_composite = true
+
+  ts_definitions = [
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
@@ -89,32 +59,19 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]
-  deps = [
+
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
-  ]
-}
 
-generate_grd("build_grd") {
-  input_files = [
-    "bookmarks.html",
-    "images/folder_open.svg",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [ "bookmarks.rollup.js|bookmarks.js" ]
-  } else {
-    deps = [ ":build_ts" ]
-    manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "bookmarks"
+    optimize_webui_out_files = [ "bookmarks.rollup.js" ]
+    optimize_webui_in_files = [ "bookmarks.js" ]
+    optimize_webui_excludes = [ "chrome://resources/js/cr.m.js" ]
+    optimize_webui_resource_paths_rewrites =
+        [ "bookmarks.rollup.js|bookmarks.js" ]
   }
-  grd_prefix = "bookmarks"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

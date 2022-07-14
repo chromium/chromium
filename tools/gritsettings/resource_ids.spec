@@ -108,7 +108,7 @@
     "META": {"sizes": {"includes": [5],}},
     "includes": [1280],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/bookmarks/bookmarks_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/bookmarks/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1300],
   },
@@ -184,15 +184,15 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [1585],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/downloads/downloads_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/downloads/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1590],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/extensions/extensions_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/extensions/resources.grd": {
     "META": {"sizes": {"includes": [80],}},
     "includes": [1600],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/history/history_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/history/resources.grd": {
     "META": {"sizes": {"includes": [40]}},
     "includes": [1620],
   },
@@ -255,7 +255,7 @@
     "META": {"sizes": {"includes": [200]}},
     "includes": [1880],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/print_preview/print_preview_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/print_preview/resources.grd": {
     "META": {"sizes": {"includes": [500],}},
     "includes": [1900],
   },
@@ -303,7 +303,7 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [2040],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/welcome/welcome_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/welcome/resources.grd": {
     "META": {"sizes": {"includes": [30]}},
     "includes": [2060],
   },

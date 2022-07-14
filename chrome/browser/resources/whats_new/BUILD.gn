@@ -2,70 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-tsc_folder = "tsc"
+build_webui("build") {
+  grd_prefix = "whats_new"
+  static_files = [ "whats_new.html" ]
+  web_component_files = [ "whats_new_app.ts" ]
+  non_web_component_files = [ "whats_new_proxy.ts" ]
 
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/whats_new_resources.h",
-    "grit/whats_new_resources_map.cc",
-    "grit/whats_new_resources_map.h",
-    "whats_new_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = [ "whats_new_app.html" ]
-}
-
-copy("copy_ts_files") {
-  sources = [
-    "whats_new_app.ts",
-    "whats_new_proxy.ts",
-  ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  out_dir = "$target_gen_dir/$tsc_folder"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "whats_new_app.ts",
-    "whats_new_app.html.ts",
-    "whats_new_proxy.ts",
-  ]
-  deps = [
+  ts_composite = true
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/js/browser_command:build_ts",
   ]
-  extra_deps = [
-    ":copy_ts_files",
-    ":html_wrapper_files",
-  ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "whats_new"
-  out_grd = "$target_gen_dir/resources.grd"
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  input_files = [ "whats_new.html" ]
-  input_files_base_dir = rebase_path(".", "//")
 }

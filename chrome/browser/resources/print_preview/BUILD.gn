@@ -3,125 +3,144 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/common/features.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/optimize_webui.gni")
-import("./print_preview.gni")
+
+import("//chrome/browser/resources/tools/build_webui.gni")
 
 assert(enable_print_preview, "enable_print_preview check failed")
 
-preprocess_folder = "preprocessed"
+build_webui("build") {
+  grd_prefix = "print_preview"
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
+  extra_grdp_deps = [ "../pdf:build_print_preview_grdp" ]
+  extra_grdp_files = [ "$root_gen_dir/chrome/browser/resources/pdf/print_preview_pdf_resources.grdp" ]
 
-  optimize_webui("build") {
-    host = "print"
-    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    js_out_files = [ "print_preview.rollup.js" ]
-    js_module_in_files = [ "print_preview.js" ]
-    out_manifest = "$target_gen_dir/$build_manifest"
+  static_files = [ "print_preview.html" ]
 
-    deps = [
-      ":build_ts",
-      "../../../../ui/webui/resources:preprocess",
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "ui/advanced_options_settings.ts",
+    "ui/advanced_settings_dialog.ts",
+    "ui/advanced_settings_item.ts",
+    "ui/app.ts",
+    "ui/button_strip.ts",
+    "ui/color_settings.ts",
+    "ui/copies_settings.ts",
+    "ui/destination_list.ts",
+    "ui/destination_settings.ts",
+    "ui/dpi_settings.ts",
+    "ui/duplex_settings.ts",
+    "ui/header.ts",
+    "ui/layout_settings.ts",
+    "ui/margin_control.ts",
+    "ui/margin_control_container.ts",
+    "ui/margins_settings.ts",
+    "ui/media_size_settings.ts",
+    "ui/more_settings.ts",
+    "ui/number_settings_section.ts",
+    "ui/other_options_settings.ts",
+    "ui/pages_per_sheet_settings.ts",
+    "ui/pages_settings.ts",
+    "ui/preview_area.ts",
+    "ui/print_preview_search_box.ts",
+    "ui/scaling_settings.ts",
+    "ui/settings_section.ts",
+    "ui/settings_select.ts",
+    "ui/sidebar.ts",
+  ]
+
+  if (is_chromeos) {
+    web_component_files += [
+      "ui/destination_dropdown_cros.ts",
+      "ui/destination_list_item_cros.ts",
+      "ui/destination_select_cros.ts",
+      "ui/pin_settings.ts",
+      "ui/provisional_destination_resolver.ts",
+      "ui/destination_dialog_cros.ts",
     ]
-    excludes = [
-      "chrome://resources/js/cr.m.js",
-      "pdf/pdf_scripting_api.js",
+  } else {
+    web_component_files += [
+      "ui/destination_select.ts",
+      "ui/link_container.ts",
+      "ui/destination_dialog.ts",
+      "ui/destination_list_item.ts",
     ]
   }
-}
 
-css_to_wrapper("css_wrapper_files") {
-  in_files = css_files
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files + icons_html_files
-}
-
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":css_wrapper_files",
-    ":html_wrapper_files",
-  ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files + css_wrapper_files
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/print_preview_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/print_preview_resources.h",
-    "grit/print_preview_resources_map.cc",
-    "grit/print_preview_resources_map.h",
-    "print_preview_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + css_wrapper_files + html_wrapper_files
-
-  deps = [
-    "//chrome/browser/resources/pdf:build_ts",
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
+  non_web_component_files = [
+    "dark_mode_mixin.ts",
+    "metrics.ts",
+    "native_layer.ts",
+    "print_preview.ts",
+    "print_preview_utils.ts",
+    "data/cdd.ts",
+    "data/coordinate2d.ts",
+    "data/destination.ts",
+    "data/destination_match.ts",
+    "data/destination_store.ts",
+    "data/document_info.ts",
+    "data/local_parsers.ts",
+    "data/margins.ts",
+    "data/measurement_system.ts",
+    "data/model.ts",
+    "data/printable_area.ts",
+    "data/scaling.ts",
+    "data/size.ts",
+    "data/state.ts",
+    "ui/highlight_utils.ts",
+    "ui/input_mixin.ts",
+    "ui/plugin_proxy.ts",
+    "ui/select_mixin.ts",
+    "ui/settings_mixin.ts",
   ]
 
-  definitions = [
+  if (is_chromeos) {
+    non_web_component_files += [
+      "data/print_server_store.ts",
+      "data/printer_status_cros.ts",
+      "native_layer_cros.ts",
+    ]
+  }
+
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "ui/destination_dialog_style.css",
+    "ui/destination_list_item_style.css",
+    "ui/destination_select_style.css",
+    "ui/print_preview_shared.css",
+    "ui/print_preview_vars.css",
+    "ui/throbber.css",
+  ]
+
+  icons_html_files = [ "ui/icons.html" ]
+
+  ts_composite = true
+  ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
 
-  path_mappings = [ "chrome://print/pdf/*|" + rebase_path(
-                        "$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
-                        target_gen_dir) ]
-
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
+  ts_deps = [
+    "//chrome/browser/resources/pdf:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
-}
 
-generate_grd("build_grd") {
-  input_files = [ "print_preview.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ "../pdf:build_print_preview_grdp" ]
-  grdp_files = [ "$root_gen_dir/chrome/browser/resources/pdf/print_preview_pdf_resources.grdp" ]
-  if (optimize_webui) {
-    deps += [ ":build" ]
-    resource_path_rewrites = [ "print_preview.rollup.js|print_preview.js" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-  } else {
-    deps += [ ":build_ts" ]
-    manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  ts_path_mappings = [ "chrome://print/pdf/*|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
+                           target_gen_dir) ]
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "print"
+    optimize_webui_out_files = [ "print_preview.rollup.js" ]
+    optimize_webui_in_files = [ "print_preview.js" ]
+    optimize_webui_excludes = [
+      "chrome://resources/js/cr.m.js",
+      "pdf/pdf_scripting_api.js",
+    ]
+    optimize_webui_resource_paths_rewrites =
+        [ "print_preview.rollup.js|print_preview.js" ]
   }
-  grd_prefix = "print_preview"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

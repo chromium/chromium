@@ -2,18 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("welcome.gni")
 
 assert(!is_chromeos_ash && !is_android)
-
-preprocess_folder = "preprocessed"
 
 if (is_chrome_branded) {
   generate_grd("build_icons_grdp") {
@@ -38,72 +31,10 @@ if (is_chrome_branded) {
   }
 }
 
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":css_wrapper_files",
-    ":html_wrapper_files",
-  ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files + css_wrapper_files
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/welcome_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/welcome_resources.h",
-    "grit/welcome_resources_map.cc",
-    "grit/welcome_resources_map.h",
-    "welcome_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-css_to_wrapper("css_wrapper_files") {
-  in_files = css_files
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + css_wrapper_files + html_wrapper_files
-  definitions = [
-    "//tools/typescript/definitions/bookmarks.d.ts",
-    "//tools/typescript/definitions/chrome_event.d.ts",
-    "//tools/typescript/definitions/chrome_send.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
-  ]
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-  ]
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
-  ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "welcome"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
+
+  static_files = [
     "images/background_svgs/bookmarks_background.svg",
     "images/background_svgs/bookmarks_foreground.svg",
     "images/background_svgs/devices_check.svg",
@@ -119,14 +50,59 @@ generate_grd("build_grd") {
     "welcome.html",
     "welcome.css",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 
   if (is_chrome_branded) {
-    deps += [ ":build_icons_grdp" ]
-    grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
+    # Additional static files that need to be passed separately since they have
+    # a different |input_files_base_dir|
+    extra_grdp_deps = [ ":build_icons_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
   }
+
+  # Files holding a Polymer element definition AND have an equivalent .html file.
+  web_component_files = [
+    "google_apps/nux_google_apps.ts",
+    "landing_view.ts",
+    "ntp_background/nux_ntp_background.ts",
+    "set_as_default/nux_set_as_default.ts",
+    "shared/onboarding_background.ts",
+    "shared/step_indicator.ts",
+    "signin_view.ts",
+    "welcome_app.ts",
+  ]
+
+  non_web_component_files = [
+    "google_apps/google_app_proxy.ts",
+    "google_apps/google_apps_metrics_proxy.ts",
+    "landing_view_proxy.ts",
+    "navigation_mixin.ts",
+    "ntp_background/ntp_background_metrics_proxy.ts",
+    "ntp_background/ntp_background_proxy.ts",
+    "set_as_default/nux_set_as_default_proxy.ts",
+    "shared/bookmark_proxy.ts",
+    "shared/module_metrics_proxy.ts",
+    "shared/nux_types.ts",
+    "signin_view_proxy.ts",
+    "welcome_browser_proxy.ts",
+  ]
+
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared/action_link_style.css",
+    "shared/animations.css",
+    "shared/chooser_shared.css",
+    "shared/navi_colors.css",
+    "shared/splash_pages_shared.css",
+  ]
+
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
 }
