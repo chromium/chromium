@@ -393,6 +393,7 @@
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
+      'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64',
       'fuchsia-fyi-arm64-emu-arg': 'release_trybot_fuchsia_arm64',
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script',
@@ -3348,6 +3349,10 @@
 
     'release_bot_fuchsia_cfv2_script': [
       'release_bot', 'fuchsia', 'fuchsia_cfv2_script',
+    ],
+
+    'release_bot_fuchsia_cfv2_script_arm64': [
+      'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'fuchsia_cfv2_script',
     ],
 
     'release_bot_mac_strip_minimal_symbols': [

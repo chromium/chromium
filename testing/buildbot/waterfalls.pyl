@@ -3135,6 +3135,18 @@
           'linux-bionic',
         ],
       },
+      # A temporary builder to test new Fuchsia testing scripts on arm64.
+      'fuchsia-fyi-arm64-cfv2-script': {
+        'os_type': 'fuchsia',
+        'mixins': [
+          'arm64',
+          'docker',
+          'linux-focal',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+        },
+      },
       # A temporary builder to test the changes to the emulator arguments on
       # arm64.
       'fuchsia-fyi-arm64-emu-arg': {

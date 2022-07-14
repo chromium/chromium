@@ -254,6 +254,38 @@ ci.builder(
 )
 
 ci.builder(
+    name = "fuchsia-fyi-arm64-cfv2-script",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_arm64",
+                "fuchsia_arm64_host",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = "fuchsia",
+        ),
+        build_gs_bucket = "chromium-fuchsia-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|a64",
+            short_name = "cfv2",
+        ),
+    ],
+    os = os.LINUX_DEFAULT,
+)
+
+ci.builder(
     name = "fuchsia-fyi-x64-rel",
     console_view_entry = [
         consoles.console_view_entry(
