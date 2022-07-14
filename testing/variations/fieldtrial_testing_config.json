@@ -269,6 +269,22 @@
             ]
         }
     ],
+    "AndroidPhotoPickerComparison": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidMediaPickerSupport"
+                    ],
+                    "min_os_version": "13.0.0"
+                }
+            ]
+        }
+    ],
     "AndroidScrollOptimizations": [
         {
             "platforms": [
