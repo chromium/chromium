@@ -68,6 +68,16 @@ class NetworkChangeManagerClient
                    bool* connection_type_changed,
                    bool* connection_subtype_changed);
 
+  // Notifies NetworkChangeNotifier, NetworkChangeManager and
+  // crosapi::mojom::NetworkChangeObserver.
+  void NotifyObservers(
+      bool dns_changed,
+      bool ip_address_changed,
+      bool connection_type_changed,
+      net::NetworkChangeNotifier::ConnectionType connection_type,
+      bool connection_subtype_changed,
+      net::NetworkChangeNotifier::ConnectionSubtype connection_subtype);
+
   // Maps the shill network type and technology to its NetworkChangeNotifier
   // equivalent.
   //

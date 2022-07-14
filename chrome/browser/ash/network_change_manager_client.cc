@@ -39,16 +39,14 @@ NetworkChangeManagerClient::~NetworkChangeManagerClient() {
 }
 
 void NetworkChangeManagerClient::SuspendDone(base::TimeDelta sleep_duration) {
-  // Force invalidation of network resources on resume.
-  network_change_notifier_->OnIPAddressChanged();
-  if (network_change_manager_) {
-    network_change_manager_->OnNetworkChanged(
-        /*dns_changed=*/false, /*ip_address_changed=*/true,
-        /*connection_type_changed=*/false,
-        network::mojom::ConnectionType::CONNECTION_UNKNOWN,
-        /*connection_subtype_changed=*/false,
-        network::mojom::ConnectionSubtype::SUBTYPE_NONE);
-  }
+  // Set `ip_address_changed` to true to force invalidation of network resources
+  // on resume.
+  NotifyObservers(
+      /*dns_changed=*/false, /*ip_address_changed=*/true,
+      /*connection_type_changed=*/false,
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN,
+      /*connection_subtype_changed=*/false,
+      net::NetworkChangeNotifier::ConnectionSubtype::SUBTYPE_NONE);
 }
 
 void NetworkChangeManagerClient::DefaultNetworkChanged(
@@ -61,23 +59,9 @@ void NetworkChangeManagerClient::DefaultNetworkChanged(
   UpdateState(default_network, &dns_changed, &ip_address_changed,
               &connection_type_changed, &connection_subtype_changed);
 
-  if (ip_address_changed)
-    network_change_notifier_->OnIPAddressChanged();
-  if (dns_changed)
-    network_change_notifier_->OnDNSChanged();
-  if (connection_type_changed)
-    network_change_notifier_->OnConnectionChanged(connection_type_);
-  if (connection_subtype_changed || connection_type_changed)
-    network_change_notifier_->OnConnectionSubtypeChanged(connection_type_,
-                                                         connection_subtype_);
-
-  if (network_change_manager_) {
-    network_change_manager_->OnNetworkChanged(
-        dns_changed, ip_address_changed, connection_type_changed,
-        network::mojom::ConnectionType(connection_type_),
-        connection_subtype_changed,
-        network::mojom::ConnectionSubtype(connection_subtype_));
-  }
+  NotifyObservers(dns_changed, ip_address_changed, connection_type_changed,
+                  connection_type_, connection_subtype_changed,
+                  connection_subtype_);
 }
 
 void NetworkChangeManagerClient::ConnectToNetworkChangeManager() {
@@ -195,6 +179,37 @@ void NetworkChangeManagerClient::UpdateState(
   }
 }
 
+void NetworkChangeManagerClient::NotifyObservers(
+    bool dns_changed,
+    bool ip_address_changed,
+    bool connection_type_changed,
+    net::NetworkChangeNotifier::ConnectionType connection_type,
+    bool connection_subtype_changed,
+    net::NetworkChangeNotifier::ConnectionSubtype connection_subtype) {
+  // If `test_notifications_only_` is set, skip notifying.
+  if (network_change_notifier_->IsTestNotificationsOnly())
+    return;
+
+  // Notify NetworkChangeNotifier.
+  if (ip_address_changed)
+    network_change_notifier_->OnIPAddressChanged();
+  if (dns_changed)
+    network_change_notifier_->OnDNSChanged();
+  if (connection_type_changed)
+    network_change_notifier_->OnConnectionChanged(connection_type);
+  if (connection_subtype_changed || connection_type_changed)
+    network_change_notifier_->OnConnectionSubtypeChanged(connection_type,
+                                                         connection_subtype);
+
+  // Notify NetworkChangeManager if exists.
+  if (network_change_manager_) {
+    network_change_manager_->OnNetworkChanged(
+        dns_changed, ip_address_changed, connection_type_changed,
+        network::mojom::ConnectionType(connection_type),
+        connection_subtype_changed,
+        network::mojom::ConnectionSubtype(connection_subtype));
+  }
+}
 // static
 net::NetworkChangeNotifier::ConnectionType
 NetworkChangeManagerClient::ConnectionTypeFromShill(
