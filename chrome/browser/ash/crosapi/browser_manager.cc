@@ -1293,7 +1293,9 @@ void BrowserManager::OnLacrosChromeTerminated() {
   SetState(State::STOPPED);
   // TODO(https://crbug.com/1109366): Restart lacros-chrome if it exits
   // abnormally (e.g. crashes). For now, assume the user meant to close it.
-  SetLaunchOnLoginPref(false);
+  // Relaunch lacros-chrome if it was closed due to ash shutting down.
+  // Note that this only matters for side-by-side lacros.
+  SetLaunchOnLoginPref(shutdown_requested_);
 
   is_terminated_ = true;
 
