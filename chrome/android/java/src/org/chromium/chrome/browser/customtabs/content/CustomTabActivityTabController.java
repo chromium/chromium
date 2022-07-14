@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -58,8 +57,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
@@ -113,9 +110,6 @@ public class CustomTabActivityTabController implements InflationObserver {
     @Nullable
     private final CustomTabsSessionToken mSession;
     private final Intent mIntent;
-
-    private GestureStateListener mGestureStateListener;
-    private ScrollState mScrollState;
 
     @Inject
     public CustomTabActivityTabController(AppCompatActivity activity,
@@ -417,24 +411,6 @@ public class CustomTabActivityTabController implements InflationObserver {
                 public void onContentChanged(Tab tab) {
                     if (tab.getWebContents() != null) {
                         mConnection.setClientDataHeaderForNewTab(mSession, tab.getWebContents());
-
-                        if (ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
-                            maybeStartSendingRealTimeEngagementSignals(tab);
-                        }
-                    }
-                }
-
-                @Override
-                public void webContentsWillSwap(Tab tab) {
-                    if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
-                        if (tab.getWebContents() != null) {
-                            if (mGestureStateListener != null) {
-                                GestureListenerManager.fromWebContents(tab.getWebContents())
-                                        .removeListener(mGestureStateListener);
-                            }
-                        }
                     }
                 }
             };
@@ -487,64 +463,5 @@ public class CustomTabActivityTabController implements InflationObserver {
         };
 
         tab.addObserver(mediaObserver);
-    }
-
-    /**
-     * Create |mScrollState| and |mGestureStateListener| and start sending real-time engagement
-     * signals through {@link androidx.browser.customtabs.CustomTabsCallback}.
-     */
-    private void maybeStartSendingRealTimeEngagementSignals(Tab tab) {
-        assert tab.getWebContents() != null;
-
-        if (mScrollState == null) mScrollState = new ScrollState();
-        if (mGestureStateListener == null) {
-            mGestureStateListener = new GestureStateListener() {
-                @Override
-                public void onScrollStarted(
-                        int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
-                    mScrollState.onScrollStarted(isDirectionUp);
-                }
-
-                @Override
-                public void onVerticalScrollDirectionChanged(
-                        boolean directionUp, float currentScrollRatio) {
-                    mScrollState.onScrollDirectionChanged(directionUp);
-                }
-
-                @Override
-                public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
-                    mScrollState.onScrollEnded();
-                }
-            };
-        }
-
-        GestureListenerManager gestureListenerManager =
-                GestureListenerManager.fromWebContents(tab.getWebContents());
-        if (!gestureListenerManager.hasListener(mGestureStateListener)) {
-            gestureListenerManager.addListener(mGestureStateListener);
-        }
-    }
-
-    private class ScrollState {
-        boolean mIsScrollActive;
-        boolean mIsDirectionUp;
-
-        void onScrollStarted(boolean isDirectionUp) {
-            assert !mIsScrollActive;
-            mIsScrollActive = true;
-            mIsDirectionUp = isDirectionUp;
-            mConnection.notifyVerticalScrollEvent(mSession, mIsDirectionUp);
-        }
-
-        void onScrollDirectionChanged(boolean isDirectionUp) {
-            if (mIsScrollActive && isDirectionUp != mIsDirectionUp) {
-                mIsDirectionUp = isDirectionUp;
-                mConnection.notifyVerticalScrollEvent(mSession, mIsDirectionUp);
-            }
-        }
-
-        void onScrollEnded() {
-            mIsScrollActive = false;
-        }
     }
 }

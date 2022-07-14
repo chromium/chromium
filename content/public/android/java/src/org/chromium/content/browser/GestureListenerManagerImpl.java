@@ -44,8 +44,6 @@ public class GestureListenerManagerImpl
                 GestureListenerManagerImpl::new;
     }
 
-    private static GestureListenerManagerImpl sInstanceForTesting;
-
     private final WebContentsImpl mWebContents;
     private final ObserverList<GestureStateListener> mListeners;
     private final RewindableIterator<GestureStateListener> mIterator;
@@ -74,17 +72,9 @@ public class GestureListenerManagerImpl
      *         Creates one if not present.
      */
     public static GestureListenerManagerImpl fromWebContents(WebContents webContents) {
-        if (sInstanceForTesting != null) return sInstanceForTesting;
         return ((WebContentsImpl) webContents)
                 .getOrSetUserData(
                         GestureListenerManagerImpl.class, UserDataFactoryLazyHolder.INSTANCE);
-    }
-
-    // TODO(https://crbug.com/1340593): Mocking |#fromWebContents()| may be a better option, when
-    // available.
-    @VisibleForTesting
-    public static void setInstanceForTesting(GestureListenerManagerImpl instance) {
-        sInstanceForTesting = instance;
     }
 
     public GestureListenerManagerImpl(WebContents webContents) {
