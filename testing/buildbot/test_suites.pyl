@@ -4186,16 +4186,6 @@
           'has_native_resultdb_integration',
         ],
       },
-      'ozone_unittests': {
-        'timeout_sec': 3600,
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter']
-      },
-      'viz_unittests': {
-        'timeout_sec': 3600,
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter']
-      },
     },
 
     # create this temporary lacros arm test suites that runs on skylab
@@ -7558,6 +7548,7 @@
           'CROS_JACUZZI_RELEASE_LKGM',
           'CROS_JACUZZI_RELEASE_DEV',
           'CROS_JACUZZI_RELEASE_BETA',
+          'CROS_JACUZZI_RELEASE_STABLE',
         ]
       },
     },

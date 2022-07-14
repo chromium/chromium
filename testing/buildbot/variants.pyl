@@ -1103,6 +1103,15 @@
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_BETA',
   },
+  'CROS_JACUZZI_RELEASE_STABLE': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '103.0.5060.114',
+      'cros_img': 'jacuzzi-release/R103-14816.99.0',
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI_RELEASE_STABLE',
+  },
   'CROS_OCTOPUS_FULL': {
     'skylab': {
       'cros_board': 'octopus',
