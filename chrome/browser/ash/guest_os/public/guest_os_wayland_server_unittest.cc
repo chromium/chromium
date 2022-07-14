@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include <memory>
 
-#include "chrome/browser/ash/borealis/borealis_security_delegate.h"
+#include "chrome/browser/ash/borealis/borealis_capabilities.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
-#include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
+#include "chrome/browser/ash/guest_os/guest_os_capabilities.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/exo/data_exchange_delegate.h"
@@ -15,6 +15,7 @@
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/server/wayland_server_controller.h"
 #include "components/exo/toast_surface_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using borealis::NiceCallbackFactory;
@@ -55,9 +56,9 @@ TEST_F(GuestOsWaylandServerTest, UnknownVmTypeNotSupported) {
   gows.Get(vm_tools::launch::UNKNOWN, result_factory.BindOnce());
 }
 
-TEST_F(GuestOsWaylandServerTest, NullSecurityDelegatePreventsBuild) {
+TEST_F(GuestOsWaylandServerTest, NullCapabilitiesPreventsBuild) {
   NiceCallbackFactory<void(
-      base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>)>
+      base::OnceCallback<void(std::unique_ptr<GuestOsCapabilities>)>)>
       capability_factory;
   NiceCallbackFactory<void(GuestOsWaylandServer::Result)> result_factory;
 
@@ -67,7 +68,7 @@ TEST_F(GuestOsWaylandServerTest, NullSecurityDelegatePreventsBuild) {
 
   EXPECT_CALL(capability_factory, Call(_))
       .WillOnce(Invoke(
-          [](base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>
+          [](base::OnceCallback<void(std::unique_ptr<GuestOsCapabilities>)>
                  callback) { std::move(callback).Run(nullptr); }));
   EXPECT_CALL(result_factory, Call(IsFalse()));
 
@@ -76,7 +77,7 @@ TEST_F(GuestOsWaylandServerTest, NullSecurityDelegatePreventsBuild) {
 
 TEST_F(GuestOsWaylandServerTest, SuccessfulResultIsReused) {
   NiceCallbackFactory<void(
-      base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>)>
+      base::OnceCallback<void(std::unique_ptr<GuestOsCapabilities>)>)>
       capability_factory;
   NiceCallbackFactory<void(GuestOsWaylandServer::Result)> result_factory;
 
@@ -87,12 +88,11 @@ TEST_F(GuestOsWaylandServerTest, SuccessfulResultIsReused) {
 
   EXPECT_CALL(capability_factory, Call(_))
       .Times(1)
-      .WillOnce(Invoke(
-          [](base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>
-                 callback) {
-            std::move(callback).Run(
-                std::make_unique<borealis::BorealisSecurityDelegate>());
-          }));
+      .WillOnce(Invoke([](base::OnceCallback<void(
+                              std::unique_ptr<GuestOsCapabilities>)> callback) {
+        std::move(callback).Run(
+            std::make_unique<borealis::BorealisCapabilities>());
+      }));
   base::RunLoop loop;
   EXPECT_CALL(result_factory, Call(_))
       .Times(2)
@@ -110,7 +110,7 @@ TEST_F(GuestOsWaylandServerTest, SuccessfulResultIsReused) {
 
 TEST_F(GuestOsWaylandServerTest, InvalidatedOnceServerDestroyed) {
   NiceCallbackFactory<void(
-      base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>)>
+      base::OnceCallback<void(std::unique_ptr<GuestOsCapabilities>)>)>
       capability_factory;
   NiceCallbackFactory<void(GuestOsWaylandServer::Result)> result_factory;
 
@@ -122,12 +122,11 @@ TEST_F(GuestOsWaylandServerTest, InvalidatedOnceServerDestroyed) {
   GuestOsWaylandServer::ServerDetails* details;
 
   EXPECT_CALL(capability_factory, Call(_))
-      .WillOnce(Invoke(
-          [](base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>
-                 callback) {
-            std::move(callback).Run(
-                std::make_unique<borealis::BorealisSecurityDelegate>());
-          }));
+      .WillOnce(Invoke([](base::OnceCallback<void(
+                              std::unique_ptr<GuestOsCapabilities>)> callback) {
+        std::move(callback).Run(
+            std::make_unique<borealis::BorealisCapabilities>());
+      }));
   base::RunLoop loop;
   EXPECT_CALL(result_factory, Call(_))
       .WillRepeatedly(
@@ -139,10 +138,10 @@ TEST_F(GuestOsWaylandServerTest, InvalidatedOnceServerDestroyed) {
   gows.Get(vm_tools::launch::UNKNOWN, result_factory.BindOnce());
   loop.Run();
 
-  EXPECT_NE(details->security_delegate(), nullptr);
+  EXPECT_NE(details->capabilities(), nullptr);
   wsc.reset();
   this->task_environment()->RunUntilIdle();
-  EXPECT_EQ(details->security_delegate(), nullptr);
+  EXPECT_EQ(details->capabilities(), nullptr);
 }
 
 }  // namespace guest_os

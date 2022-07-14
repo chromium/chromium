@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/borealis/borealis_security_delegate.h"
+#include "chrome/browser/ash/borealis/borealis_capabilities.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -13,27 +13,27 @@
 
 namespace borealis {
 
-void BorealisSecurityDelegate::Build(
+void BorealisCapabilities::Build(
     Profile* profile,
-    base::OnceCallback<void(std::unique_ptr<guest_os::GuestOsSecurityDelegate>)>
+    base::OnceCallback<void(std::unique_ptr<guest_os::GuestOsCapabilities>)>
         callback) {
   BorealisService::GetForProfile(profile)->Features().IsAllowed(base::BindOnce(
       [](base::OnceCallback<void(
-             std::unique_ptr<guest_os::GuestOsSecurityDelegate>)> callback,
+             std::unique_ptr<guest_os::GuestOsCapabilities>)> callback,
          BorealisFeatures::AllowStatus allow_status) {
         if (allow_status != BorealisFeatures::AllowStatus::kAllowed) {
           LOG(WARNING) << "Borealis is not allowed: " << allow_status;
           std::move(callback).Run(nullptr);
           return;
         }
-        std::move(callback).Run(std::make_unique<BorealisSecurityDelegate>());
+        std::move(callback).Run(std::make_unique<BorealisCapabilities>());
       },
       std::move(callback)));
 }
 
-BorealisSecurityDelegate::~BorealisSecurityDelegate() = default;
+BorealisCapabilities::~BorealisCapabilities() = default;
 
-std::string BorealisSecurityDelegate::GetSecurityContext() const {
+std::string BorealisCapabilities::GetSecurityContext() const {
   return vm_tools::kConciergeSecurityContext;
 }
 

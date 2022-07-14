@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EXO_SECURITY_DELEGATE_H_
-#define COMPONENTS_EXO_SECURITY_DELEGATE_H_
+#ifndef COMPONENTS_EXO_CAPABILITIES_H_
+#define COMPONENTS_EXO_CAPABILITIES_H_
 
 #include <memory>
 #include <string>
@@ -16,13 +16,13 @@ namespace exo {
 // product may have multiple clients associated with it.
 //
 // TODO(b/200896773): Flesh this class out once we're clear on what things
-// should be secure.
-class SecurityDelegate {
+// should be server capabilities.
+class Capabilities {
  public:
-  // Get a SecurityDelegate instance with all of the defaults.
-  static std::unique_ptr<SecurityDelegate> GetDefaultSecurityDelegate();
+  // Get a capability instance with all of the defaults.
+  static std::unique_ptr<Capabilities> GetDefaultCapabilities();
 
-  virtual ~SecurityDelegate();
+  virtual ~Capabilities();
 
   // The path of the wayland server will be determined (partially) by its
   // security context. This process is documented in go/secure-exo-ids. All
@@ -39,4 +39,4 @@ class SecurityDelegate {
 
 }  // namespace exo
 
-#endif  // COMPONENTS_EXO_SECURITY_DELEGATE_H_
+#endif  // COMPONENTS_EXO_CAPABILITIES_H_

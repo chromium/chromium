@@ -12,17 +12,17 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/exo/capabilities.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/input_method_surface_manager.h"
 #include "components/exo/notification_surface_manager.h"
-#include "components/exo/security_delegate.h"
 #include "components/exo/toast_surface_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace exo {
 namespace {
 
-class TestSecurityDelegate : public SecurityDelegate {
+class TestCapabilities : public Capabilities {
  public:
   std::string GetSecurityContext() const override { return "test"; }
 };
@@ -56,7 +56,7 @@ TEST_F(WaylandServerControllerTest, RequestServer) {
   {
     base::ScopedDisallowBlocking no_blocking;
     WaylandServerController::Get()->CreateServer(
-        std::make_unique<TestSecurityDelegate>(),
+        std::make_unique<TestCapabilities>(),
         base::BindLambdaForTesting(
             [&loop, &socket_path](bool success,
                                   const base::FilePath& new_path) {

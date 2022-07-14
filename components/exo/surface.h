@@ -55,7 +55,7 @@ class CompositorFrame;
 
 namespace exo {
 class Buffer;
-class SecurityDelegate;
+class Capabilities;
 class FrameSinkResourceManager;
 class SurfaceObserver;
 
@@ -422,9 +422,9 @@ class Surface final : public ui::PropertyHandler {
     return keyboard_shortcuts_inhibited_;
   }
 
-  // Returns the SecurityDelegate associated with this surface, or nullptr
-  // if one can not be determined. See go/secure-exo-ids for more details.
-  SecurityDelegate* GetSecurityDelegate();
+  // Returns the capability set associated with this surface, or nullptr if one
+  // can not be determined. See go/secure-exo-ids for more details.
+  Capabilities* GetCapabilities();
 
  private:
   struct State {

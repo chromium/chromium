@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/borealis/borealis_service_impl.h"
 
+#include "chrome/browser/ash/borealis/borealis_capabilities.h"
+
 namespace borealis {
 
 BorealisServiceImpl::BorealisServiceImpl(Profile* profile)

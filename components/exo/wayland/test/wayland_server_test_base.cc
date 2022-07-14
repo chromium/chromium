@@ -20,8 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
+#include "components/exo/capabilities.h"
 #include "components/exo/display.h"
-#include "components/exo/security_delegate.h"
 #include "components/exo/test/exo_test_base_views.h"
 #include "components/exo/wayland/server.h"
 #include "components/exo/wayland/server_util.h"
@@ -35,7 +35,7 @@ namespace {
 
 base::AtomicSequenceNumber g_next_socket_id;
 
-class TestSecurityDelegate : public SecurityDelegate {
+class TestCapabilities : public Capabilities {
  public:
   std::string GetSecurityContext() const override { return "test"; }
 };
@@ -66,14 +66,14 @@ void WaylandServerTestBase::TearDown() {
 }
 
 std::unique_ptr<Server> WaylandServerTestBase::CreateServer() {
-  return CreateServer(std::make_unique<TestSecurityDelegate>());
+  return CreateServer(std::make_unique<TestCapabilities>());
 }
 
 std::unique_ptr<Server> WaylandServerTestBase::CreateServer(
-    std::unique_ptr<SecurityDelegate> security_delegate) {
-  if (!security_delegate)
-    security_delegate = std::make_unique<TestSecurityDelegate>();
-  return Server::Create(display_.get(), std::move(security_delegate));
+    std::unique_ptr<Capabilities> capabilities) {
+  if (!capabilities)
+    capabilities = std::make_unique<TestCapabilities>();
+  return Server::Create(display_.get(), std::move(capabilities));
 }
 
 WaylandClientRunner::WaylandClientRunner(Server* server,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crostini/crostini_security_delegate.h"
+#include "chrome/browser/ash/crostini/crostini_capabilities.h"
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -11,9 +11,9 @@
 
 namespace crostini {
 
-void CrostiniSecurityDelegate::Build(
+void CrostiniCapabilities::Build(
     Profile* profile,
-    base::OnceCallback<void(std::unique_ptr<guest_os::GuestOsSecurityDelegate>)>
+    base::OnceCallback<void(std::unique_ptr<guest_os::GuestOsCapabilities>)>
         callback) {
   std::string reason;
   if (!CrostiniFeatures::Get()->IsAllowedNow(profile, &reason)) {
@@ -22,12 +22,12 @@ void CrostiniSecurityDelegate::Build(
     return;
   }
   // WrapUnique is used because the constructor is private.
-  std::move(callback).Run(base::WrapUnique(new CrostiniSecurityDelegate()));
+  std::move(callback).Run(base::WrapUnique(new CrostiniCapabilities()));
 }
 
-CrostiniSecurityDelegate::~CrostiniSecurityDelegate() = default;
+CrostiniCapabilities::~CrostiniCapabilities() = default;
 
-std::string CrostiniSecurityDelegate::GetSecurityContext() const {
+std::string CrostiniCapabilities::GetSecurityContext() const {
   return vm_tools::kConciergeSecurityContext;
 }
 

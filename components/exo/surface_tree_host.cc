@@ -197,9 +197,9 @@ void SurfaceTreeHost::DidPresentCompositorFrame(
   active_presentation_callbacks_.erase(it);
 }
 
-void SurfaceTreeHost::SetSecurityDelegate(SecurityDelegate* security_delegate) {
-  DCHECK(security_delegate_ == nullptr);
-  security_delegate_ = security_delegate;
+void SurfaceTreeHost::SetCapabilities(Capabilities* capabilities) {
+  DCHECK(capabilities_ == nullptr);
+  capabilities_ = capabilities;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -225,9 +225,9 @@ void SurfaceTreeHost::OnNewOutputAdded() {
   UpdateDisplayOnTree();
 }
 
-SecurityDelegate* SurfaceTreeHost::GetSecurityDelegate() {
-  DCHECK(security_delegate_);
-  return security_delegate_;
+Capabilities* SurfaceTreeHost::GetCapabilities() {
+  DCHECK(capabilities_);
+  return capabilities_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

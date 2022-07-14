@@ -52,8 +52,8 @@
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buildflags.h"
+#include "components/exo/capabilities.h"
 #include "components/exo/display.h"
-#include "components/exo/security_delegate.h"
 #include "components/exo/wayland/overlay_prioritizer.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
@@ -171,14 +171,14 @@ void wayland_log(const char* fmt, va_list argp) {
 //  - "socket" is the name of the wayland socket, usually "wayland-0"
 // This is documented in go/secure-exo-ids. Returns "true" if |out_temp_dir| was
 // successfully initialized.
-bool InitServerDirectory(const SecurityDelegate& security_delegate,
+bool InitServerDirectory(const Capabilities& capabilities,
                          base::ScopedTempDir& out_temp_dir) {
   char* xdg_dir_str = getenv("XDG_RUNTIME_DIR");
   if (!xdg_dir_str) {
     LOG(ERROR) << "XDG_RUNTIME_DIR is not set.";
     return false;
   }
-  std::string security_context = security_delegate.GetSecurityContext();
+  std::string security_context = capabilities.GetSecurityContext();
   if (security_context.empty()) {
     LOG(ERROR) << "Providing an empty security context is an error.";
     return false;
@@ -217,7 +217,7 @@ bool Server::Open(bool default_path) {
     }
     socket_path_ = base::FilePath(runtime_dir_str).Append(socket_name);
   } else {
-    if (!InitServerDirectory(*security_delegate_, socket_dir_)) {
+    if (!InitServerDirectory(*capabilities_, socket_dir_)) {
       return false;
     }
     socket_path_ = socket_dir_.GetPath().Append(socket_name);
@@ -273,13 +273,12 @@ bool Server::Open(bool default_path) {
 ////////////////////////////////////////////////////////////////////////////////
 // Server, public:
 
-Server::Server(Display* display,
-               std::unique_ptr<SecurityDelegate> security_delegate)
-    : display_(display), security_delegate_(std::move(security_delegate)) {
+Server::Server(Display* display, std::unique_ptr<Capabilities> capabilities)
+    : display_(display), capabilities_(std::move(capabilities)) {
   wl_log_set_handler_server(wayland_log);
 
   wl_display_.reset(wl_display_create());
-  SetSecurityDelegate(wl_display_.get(), security_delegate_.get());
+  SetCapabilities(wl_display_.get(), capabilities_.get());
 }
 
 void Server::Initialize() {
@@ -432,7 +431,7 @@ void Server::Finalize(StartCallback callback, bool success) {
 }
 
 Server::~Server() {
-  RemoveSecurityDelegate(wl_display_.get());
+  RemoveCapabilities(wl_display_.get());
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
   // methods.
   serial_tracker_->Shutdown();
@@ -440,15 +439,14 @@ Server::~Server() {
 
 // static
 std::unique_ptr<Server> Server::Create(Display* display) {
-  return Create(display, SecurityDelegate::GetDefaultSecurityDelegate());
+  return Create(display, Capabilities::GetDefaultCapabilities());
 }
 
 // static
 std::unique_ptr<Server> Server::Create(
     Display* display,
-    std::unique_ptr<SecurityDelegate> security_delegate) {
-  std::unique_ptr<Server> server(
-      new Server(display, std::move(security_delegate)));
+    std::unique_ptr<Capabilities> capabilities) {
+  std::unique_ptr<Server> server(new Server(display, std::move(capabilities)));
   server->Initialize();
   return server;
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/exo/security_delegate.h"
+#include "components/exo/capabilities.h"
 
 #include <memory>
 #include <string>
@@ -11,21 +11,20 @@ namespace exo {
 
 namespace {
 
-class DefaultSecurityDelegate : public SecurityDelegate {
+class DefaultCapabilities : public Capabilities {
  public:
-  ~DefaultSecurityDelegate() override = default;
+  ~DefaultCapabilities() override = default;
 
   std::string GetSecurityContext() const override { return ""; }
 };
 
 }  // namespace
 
-SecurityDelegate::~SecurityDelegate() = default;
+Capabilities::~Capabilities() = default;
 
 // static
-std::unique_ptr<SecurityDelegate>
-SecurityDelegate::GetDefaultSecurityDelegate() {
-  return std::make_unique<DefaultSecurityDelegate>();
+std::unique_ptr<Capabilities> Capabilities::GetDefaultCapabilities() {
+  return std::make_unique<DefaultCapabilities>();
 }
 
 }  // namespace exo
