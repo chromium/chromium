@@ -6,72 +6,176 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "base/base64.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
+#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/favicon_cache.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/template_url.h"
+#include "content/public/test/browser_task_environment.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/skia_util.h"
+#include "url/gurl.h"
 
 namespace app_list {
 namespace test {
 
 namespace {
 
-const char kFullQuery[] = "Hello World";
-const char16_t kFullQuery16[] = u"Hello World";
-const char kExampleDescription[] = "A website";
-const char16_t kExampleDescription16[] = u"A website";
+using testing::_;
+
+const char16_t kFullQuery[] = u"Hello World";
+const char16_t kExampleDescription[] = u"A website";
 const char kExampleUrl[] = "http://example.com/hello";
 const int kRelevance = 750;
 const double kAppListRelevance = 0.5;
+const char16_t kExampleKeyword[] = u"example.com";
+const int kExampleContentsClass =
+    ACMatchClassification::URL | ACMatchClassification::MATCH;
+const int kExampleDescriptionClass = ACMatchClassification::MATCH;
 
-const char kExampleKeyword[] = "example.com";
+// The bytes of a 16x16 yellow square PNG image. Encoded in base64 for
+// convenience.
+const char kTestIconBase64[] =
+    "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAB5JREFUOE"
+    "9j/P+f4T8DBYBx1ACG0TBgGA0DhmERBgDtai/htUkdAAAAAABJRU5ErkJggg==";
+
+// The same 16x16 image.
+gfx::ImageSkia TestIcon() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorYELLOW);
+  return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+}
+
+// Returns the given vector icon using the standard system size and color.
+gfx::ImageSkia SystemIcon(const gfx::VectorIcon& icon) {
+  return gfx::CreateVectorIcon(icon, kSystemIconDimension,
+                               GetGenericIconColor());
+}
+
+// Returns true if the pixels of the two given images are identical.
+bool ImageSkiasEqual(const gfx::ImageSkia& a, const gfx::ImageSkia& b) {
+  return gfx::BitmapsAreEqual(*a.bitmap(), *b.bitmap());
+}
+
+// Returns true if the given text vector has one text entry that equals the
+// given text, and one tag that matches the given tag.
+bool IsSingletonTextVector(const std::vector<ash::SearchResultTextItem>& v,
+                           const std::u16string& text,
+                           int styles) {
+  return v.size() == 1 &&
+         v[0].GetType() == ash::SearchResultTextItemType::kString &&
+         v[0].GetText() == text && v[0].GetTextTags().size() == 1 &&
+         v[0].GetTextTags()[0].styles == styles;
+}
 
 }  // namespace
 
-class OmniboxResultTest : public AppListTestBase {
+class OmniboxResultTest : public testing::Test {
  public:
-  OmniboxResultTest() {}
+  OmniboxResultTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kProductivityLauncher);
+  }
 
   OmniboxResultTest(const OmniboxResultTest&) = delete;
   OmniboxResultTest& operator=(const OmniboxResultTest&) = delete;
 
   ~OmniboxResultTest() override {}
 
-  // AppListTestBase overrides:
   void SetUp() override {
-    AppListTestBase::SetUp();
+    // We need the bookmark and template URL services, and to create URL
+    // loaders.
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        TemplateURLServiceFactory::GetInstance(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    profile_builder.AddTestingFactory(
+        BookmarkModelFactory::GetInstance(),
+        BookmarkModelFactory::GetDefaultFactory());
+    profile_builder.SetSharedURLLoaderFactory(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
+    profile_ = profile_builder.Build();
 
     app_list_controller_delegate_ =
         std::make_unique<::test::TestAppListControllerDelegate>();
+
+    favicon_cache_ = std::make_unique<FaviconCache>(
+        /*favicon_service=*/&favicon_service_, /*history_service=*/nullptr);
   }
 
   std::unique_ptr<OmniboxResult> CreateOmniboxResult(
-      const std::string& original_query,
-      int relevance,
       const std::string& destination_url,
-      const std::string& contents,
-      const std::string& description,
+      const std::u16string& contents,
+      int contents_class,
+      const std::u16string& description,
+      int description_class,
       AutocompleteMatchType::Type type,
-      const std::string& keyword) {
+      const GURL& image_url) {
     AutocompleteMatch match;
-    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
-        base::UTF8ToUTF16(original_query));
-    match.search_terms_args->original_query = base::UTF8ToUTF16(original_query);
-    match.relevance = relevance;
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(kFullQuery);
+    match.search_terms_args->original_query = kFullQuery;
+    match.relevance = kRelevance;
     match.destination_url = GURL(destination_url);
     match.stripped_destination_url = match.destination_url;
-    match.contents = base::UTF8ToUTF16(contents);
-    match.description = base::UTF8ToUTF16(description);
+
+    match.contents = contents;
+    match.contents_class = {{0, contents_class}};
+
+    match.description = description;
+    match.description_class = {{0, description_class}};
+
     match.type = type;
-    match.keyword = base::UTF8ToUTF16(keyword);
+    match.keyword = kExampleKeyword;
+    match.image_url = image_url;
 
     return std::make_unique<OmniboxResult>(
-        profile_.get(), app_list_controller_delegate_.get(), nullptr, nullptr,
-        input_, match, false);
+        profile_.get(), app_list_controller_delegate_.get(), nullptr,
+        favicon_cache_.get(), input_, match, false);
+  }
+
+  // Convenience version of the above method that only sets the most-useful
+  // properties.
+  std::unique_ptr<OmniboxResult> CreateOmniboxResult(
+      const std::string& url,
+      AutocompleteMatchType::Type type,
+      const GURL& image_url = GURL()) {
+    return CreateOmniboxResult(url, kFullQuery, kExampleContentsClass,
+                               kExampleDescription, kExampleDescriptionClass,
+                               type, image_url);
   }
 
   const GURL& GetLastOpenedUrl() const {
@@ -79,22 +183,231 @@ class OmniboxResultTest : public AppListTestBase {
   }
 
  private:
+  const AutocompleteInput input_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  content::BrowserTaskEnvironment task_environment_;
+
   std::unique_ptr<::test::TestAppListControllerDelegate>
       app_list_controller_delegate_;
-  AutocompleteInput input_;
+
+  std::unique_ptr<FaviconCache> favicon_cache_;
+
+  // Replaces IPC with a call to an inprocess alternative.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+
+ protected:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
+  std::unique_ptr<TestingProfile> profile_;
+
+  testing::NiceMock<favicon::MockFaviconService> favicon_service_;
 };
 
 TEST_F(OmniboxResultTest, Basic) {
-  std::unique_ptr<OmniboxResult> result = CreateOmniboxResult(
-      kFullQuery, kRelevance, kExampleUrl, kFullQuery, kExampleDescription,
-      AutocompleteMatchType::HISTORY_URL, kExampleKeyword);
+  std::unique_ptr<OmniboxResult> result =
+      CreateOmniboxResult(kExampleUrl, AutocompleteMatchType::HISTORY_URL);
 
-  EXPECT_EQ(kExampleDescription16, result->title());
-  EXPECT_EQ(kFullQuery16, result->details());
+  EXPECT_EQ(kExampleDescription, result->title());
+  EXPECT_EQ(kFullQuery, result->details());
   EXPECT_EQ(kAppListRelevance, result->relevance());
 
   result->Open(0);
   EXPECT_EQ(kExampleUrl, GetLastOpenedUrl().spec());
+}
+
+// Test that multiple results for the same URL will be correctly de-duped based
+// on their type.
+TEST_F(OmniboxResultTest, Priority) {
+  // Make sure rich entity results supplant all others, and that history results
+  // supplant non-rich-entity results.
+  const auto history_result = CreateOmniboxResult(
+      "https://url1.com", AutocompleteMatchType::SEARCH_HISTORY);
+  const auto rich_entity_result = CreateOmniboxResult(
+      "https://url1.com", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+      GURL("http://website/rich_image.jpg"));
+  const auto other_result = CreateOmniboxResult(
+      "https://url1.com", AutocompleteMatchType::CALCULATOR);
+
+  EXPECT_GT(rich_entity_result->dedup_priority(),
+            history_result->dedup_priority());
+  EXPECT_GT(history_result->dedup_priority(), other_result->dedup_priority());
+}
+
+// Test that metrics of the right types are logged for different types of
+// answers.
+TEST_F(OmniboxResultTest, Metrics) {
+  // Add a URL to our bookmarks.
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
+                         GURL("https://example.com"));
+
+  // Bookmarked URLs belong to their own metrics category and have a specific
+  // icon.
+  const auto bookmarked_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::HISTORY_URL);
+  EXPECT_EQ(ash::OMNIBOX_BOOKMARK, bookmarked_result->metrics_type());
+  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(omnibox::kBookmarkIcon),
+                              bookmarked_result->icon().icon));
+
+  // Unbookmarked URLs belong to the general "recently visited" category and
+  // have a generic icon.
+  const auto unbookmarked_result = CreateOmniboxResult(
+      "https://fake.com", AutocompleteMatchType::HISTORY_URL);
+  EXPECT_EQ(ash::OMNIBOX_RECENTLY_VISITED_WEBSITE,
+            unbookmarked_result->metrics_type());
+  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(ash::kOmniboxGenericIcon),
+                              unbookmarked_result->icon().icon));
+}
+
+// Test that the Omnibox search results are specially handled.
+TEST_F(OmniboxResultTest, OmniboxSearchResult) {
+  // Omnibox-search-type results should be demarked and should have the remove
+  // action set.
+  const auto search_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_TRUE(search_result->CloneMetadata()->is_omnibox_search);
+  ASSERT_EQ(1u, search_result->actions().size());
+  EXPECT_EQ(ash::SearchResultActionType::kRemove,
+            search_result->actions()[0].type);
+
+  // Non-Omnibox-search-type results have no actions.
+  const auto non_search_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::HISTORY_URL);
+  EXPECT_FALSE(non_search_result->CloneMetadata()->is_omnibox_search);
+  EXPECT_EQ(0u, non_search_result->actions().size());
+}
+
+// Test that category is correctly set.
+TEST_F(OmniboxResultTest, Category) {
+  // Search suggestions belong to the "search and assistant" category.
+  const auto search_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_EQ(ash::AppListSearchResultCategory::kSearchAndAssistant,
+            search_result->category());
+
+  // Others belong to the "web" category.
+  const auto non_search_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::HISTORY_URL);
+  EXPECT_EQ(ash::AppListSearchResultCategory::kWeb,
+            non_search_result->category());
+}
+
+// Test that a favicon is used as an icon if it exists.
+TEST_F(OmniboxResultTest, Favicon) {
+  // Capture the callback used to return the "fetched" icon.
+  favicon_base::FaviconImageCallback return_icon_callback;
+  EXPECT_CALL(favicon_service_,
+              GetFaviconImageForPageURL(GURL("https://example.com"),
+                                        /*callback=*/_, /*tracker=*/_))
+      .WillOnce([&](auto, favicon_base::FaviconImageCallback callback, auto) {
+        return_icon_callback = std::move(callback);
+        return base::CancelableTaskTracker::kBadTaskId;
+      });
+
+  const auto result = CreateOmniboxResult("https://example.com",
+                                          AutocompleteMatchType::HISTORY_URL);
+
+  favicon_base::FaviconImageResult mock_icon_result;
+  mock_icon_result.image = gfx::Image(TestIcon());
+  std::move(return_icon_callback).Run(mock_icon_result);
+  EXPECT_TRUE(ImageSkiasEqual(TestIcon(), result->icon().icon));
+}
+
+// Test that the attached media (e.g. sun icon for weather results) is used as
+// the icon for a rich entity result.
+TEST_F(OmniboxResultTest, RichEntityIcon) {
+  // Set up mock icon response.
+  std::string test_icon_png;
+  ASSERT_TRUE(base::Base64Decode(kTestIconBase64, &test_icon_png));
+  test_url_loader_factory_.AddResponse("https://example.com/icon.png",
+                                       test_icon_png);
+
+  // Construct a rich entity that points to the icon URL. This triggers a
+  // download and parse.
+  const auto result = CreateOmniboxResult(
+      "https://url1.com", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+      GURL("https://example.com/icon.png"));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ImageSkiasEqual(TestIcon(), result->icon().icon));
+}
+
+// Test that results have generic icons for their result type.
+TEST_F(OmniboxResultTest, GenericIcon) {
+  const auto calculator_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::CALCULATOR);
+  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(ash::kEqualIcon),
+                              calculator_result->icon().icon));
+
+  const auto search_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST);
+  EXPECT_TRUE(ImageSkiasEqual(SystemIcon(ash::kSearchIcon),
+                              search_result->icon().icon));
+}
+
+// Test that URLs with descriptions have their contents and descriptions
+// swapped.
+TEST_F(OmniboxResultTest, UrlText) {
+  const auto result = CreateOmniboxResult(
+      "https://example.com", u"contents",
+      ACMatchClassification::URL | ACMatchClassification::MATCH, u"description",
+      ACMatchClassification::MATCH, AutocompleteMatchType::HISTORY_URL,
+      /*image_url=*/GURL());
+
+  // The output title should be the input description and the output details
+  // should be the input contents.
+  EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(), u"description",
+                                    ash::SearchResultTag::MATCH));
+  EXPECT_TRUE(IsSingletonTextVector(
+      result->details_text_vector(), u"contents",
+      ash::SearchResultTag::MATCH | ash::SearchResultTag::URL));
+
+  // Accessible name should not be set.
+  EXPECT_TRUE(result->accessible_name().empty());
+}
+
+// Test that descriptions are displayed for rich entities.
+TEST_F(OmniboxResultTest, RichEntityText) {
+  const auto result = CreateOmniboxResult(
+      "https://example.com", u"contents",
+      ACMatchClassification::URL | ACMatchClassification::MATCH, u"description",
+      ACMatchClassification::MATCH,
+      AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
+      GURL("https://example.com/icon.png"));
+
+  // Both contents and description should be displayed.
+  EXPECT_TRUE(IsSingletonTextVector(
+      result->title_text_vector(), u"contents",
+      ash::SearchResultTag::MATCH | ash::SearchResultTag::URL));
+  EXPECT_TRUE(IsSingletonTextVector(result->details_text_vector(),
+                                    u"description",
+                                    ash::SearchResultTag::MATCH));
+
+  // Accessible name should be set.
+  EXPECT_NE(std::u16string::npos, result->accessible_name().find(u"contents"));
+}
+
+// Test that there is no description, but an accessible name, for search
+// results.
+TEST_F(OmniboxResultTest, SearchResultText) {
+  const auto result = CreateOmniboxResult(
+      "https://example.com", u"contents",
+      ACMatchClassification::URL | ACMatchClassification::MATCH, u"description",
+      ACMatchClassification::MATCH, AutocompleteMatchType::SEARCH_SUGGEST,
+      /*image_url=*/GURL());
+
+  // Title should be populated, but details shouldn't be.
+  EXPECT_TRUE(IsSingletonTextVector(
+      result->title_text_vector(), u"contents",
+      ash::SearchResultTag::MATCH | ash::SearchResultTag::URL));
+  EXPECT_TRUE(result->details_text_vector().empty());
+
+  // Accessible name should be set.
+  EXPECT_NE(std::u16string::npos, result->accessible_name().find(u"contents"));
 }
 
 }  // namespace test
