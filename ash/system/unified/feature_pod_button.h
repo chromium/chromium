@@ -150,6 +150,7 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   bool visible_preferred() const { return visible_preferred_; }
 
   FeaturePodIconButton* icon_button() const { return icon_button_; }
+  FeaturePodLabelButton* label_button() const { return label_button_; }
 
  private:
   // For unit tests.
