@@ -36,7 +36,6 @@ export class NotificationTester extends PolymerElement {
             notifierType: 'System',
             richDataNeverTimeout: false,
             richDataPinned: false,
-            richDataRenotify: false,
             richDataProgress: '-1',
             richDataShowSettings: false,
             richDataShowSnooze: false,
@@ -186,7 +185,6 @@ export class NotificationTester extends PolymerElement {
         'notifMetadata.richDataPriority',
         NotificationPriority.DEFAULT_PRIORITY);
     this.set('notifMetadata.richDataPinned', false);
-    this.set('notifMetadata.richDataRenotify', false);
     this.set('notifMetadata.richDataShowSnooze', false);
     this.set('notifMetadata.richDataShowSettings', false);
     this.set('notifMetadata.richDataProgress', '-1');

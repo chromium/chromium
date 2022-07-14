@@ -20,7 +20,6 @@
  *   richDataNeverTimeout: boolean,
  *   richDataPriority: number,
  *   richDataPinned: boolean,
- *   richDataRenotify: boolean,
  *   richDataShowSnooze: boolean,
  *   richDataShowSettings: boolean,
  *   richDataProgress: number,

@@ -197,10 +197,6 @@ NotificationTesterHandler::DictToOptionalFields(
   DCHECK(pinned);
   optional_fields.pinned = pinned.value();
 
-  absl::optional<bool> renotify = notifObj->FindBool("richDataRenotify");
-  DCHECK(renotify);
-  optional_fields.renotify = renotify.value();
-
   absl::optional<bool> show_snooze = notifObj->FindBool("richDataShowSnooze");
   DCHECK(show_snooze);
   optional_fields.should_show_snooze_button = show_snooze.value();
