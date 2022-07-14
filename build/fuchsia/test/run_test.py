@@ -12,12 +12,13 @@ from contextlib import ExitStack
 from typing import List
 
 from common import register_common_args, register_device_args, \
-                   register_log_args, resolve_packages
+                   register_log_args, resolve_packages, resolve_v1_packages
 from ffx_integration import test_connection
 from log_manager import LogManager, start_system_log
 from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
 from run_executable_test import create_executable_test_runner
+from run_gpu_test import GPUTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
 from test_runner import TestRunner
@@ -26,9 +27,13 @@ from test_runner import TestRunner
 def _get_test_runner(runner_args: argparse.Namespace,
                      test_args: List[str]) -> TestRunner:
     """Initialize a suitable TestRunner class."""
+
     if runner_args.test_type == 'blink':
         return BlinkTestRunner(runner_args.out_dir, test_args,
                                runner_args.target_id)
+    if runner_args.test_type == 'gpu':
+        return GPUTestRunner(runner_args.out_dir, test_args,
+                             runner_args.target_id)
     return create_executable_test_runner(runner_args, test_args)
 
 
@@ -37,7 +42,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'test_type',
-        help='The type of test to run. Options include \'blink\''
+        help='The type of test to run. Options include \'blink\', \'gpu\''
         'or in the case of gtests, the gtest name.')
     parser.add_argument('--device',
                         '-d',
@@ -87,7 +92,14 @@ def main():
                          not runner_args.no_repo_init)
 
         with serve_repository(runner_args):
-            resolve_packages(test_runner.packages, runner_args.target_id)
+
+            # TODO(crbug.com/1342460): Remove when Telemetry and blink_web_tests
+            # are using CFv2 packages.
+            if runner_args.test_type in ['blink', 'gpu']:
+                resolve_v1_packages(test_runner.packages,
+                                    runner_args.target_id)
+            else:
+                resolve_packages(test_runner.packages, runner_args.target_id)
             return test_runner.run_test().returncode
 
 

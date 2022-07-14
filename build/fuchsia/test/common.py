@@ -12,6 +12,8 @@ import subprocess
 from argparse import ArgumentParser
 from typing import Iterable, List, Optional
 
+from compatible_utils import parse_host_port
+
 DIR_SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 REPO_ALIAS = 'fuchsia.com'
@@ -168,8 +170,27 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 
         run_ffx_command([
             'component', 'create', f'/core/ffx-laboratory:{package}',
-            f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
+            f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cmx'
         ], target_id)
         run_ffx_command(
             ['component', 'resolve', f'/core/ffx-laboratory:{package}'],
             target_id)
+
+
+# TODO(crbug.com/1342460): Remove when Telemetry tests are using CFv2 packages.
+def resolve_v1_packages(packages: List[str], target_id: Optional[str]) -> None:
+    """Ensure that all cfv1 packages are installed on a device."""
+
+    ssh_address = run_ffx_command(('target', 'get-ssh-address'),
+                                  target_id,
+                                  capture_output=True).stdout.strip()
+    address, port = parse_host_port(ssh_address)
+
+    for package in packages:
+        subprocess.run([
+            'ssh', '-F',
+            os.path.expanduser('~/.fuchsia/sshconfig'), address, '-p',
+            str(port), '--', 'pkgctl', 'resolve',
+            'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
+        ],
+                       check=True)

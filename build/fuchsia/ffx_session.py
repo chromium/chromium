@@ -23,32 +23,15 @@ import tempfile
 import common
 import log_manager
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+from compatible_utils import parse_host_port
+
 
 def get_ffx_path():
   """Returns the full path to `ffx`."""
   return os.path.join(common.SDK_ROOT, 'tools',
                       common.GetHostArchFromPlatform(), 'ffx')
-
-
-def parse_host_port(host_port_pair):
-  """Parses a host name or IP address and a port number from a string of any of
-  the following forms:
-  - hostname:port
-  - IPv4addy:port
-  - [IPv6addy]:port
-
-  Returns:
-    A tuple of the string host name/address and integer port number.
-
-  Raises:
-    ValueError if `host_port_pair` does not contain a colon or if the substring
-      following the last colon cannot be converted to an int.
-  """
-  host, port = host_port_pair.rsplit(':', 1)
-  # Strip the brackets if the host looks like an IPv6 address.
-  if len(host) > 2 and host[0] == '[' and host[-1] == ']':
-    host = host[1:-1]
-  return (host, int(port))
 
 
 def format_host_port(host, port):
