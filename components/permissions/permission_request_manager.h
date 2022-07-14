@@ -150,6 +150,7 @@ class PermissionRequestManager
   void SetDecisionTime() override;
   void SetManageClicked() override;
   void SetLearnMoreClicked() override;
+  base::WeakPtr<PermissionPrompt::Delegate> GetWeakPtr() override;
 
   void set_manage_clicked() { did_click_manage_ = true; }
   void set_learn_more_clicked() { did_click_learn_more_ = true; }

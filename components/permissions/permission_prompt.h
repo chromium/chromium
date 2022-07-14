@@ -99,6 +99,8 @@ class PermissionPrompt {
 
     // Set when the user made any decision for clicking on learn more link.
     virtual void SetLearnMoreClicked() = 0;
+
+    virtual base::WeakPtr<Delegate> GetWeakPtr() = 0;
   };
 
   typedef base::RepeatingCallback<

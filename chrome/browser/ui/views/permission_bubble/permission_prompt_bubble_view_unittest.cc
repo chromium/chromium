@@ -66,15 +66,20 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   void SetBubbleShown() override {}
   void SetDecisionTime() override {}
 
+  base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
   std::vector<permissions::PermissionRequest*> raw_requests_;
+  base::WeakPtrFactory<TestDelegate> weak_factory_{this};
 };
 
 std::unique_ptr<PermissionPromptBubbleView> CreateBubble(
     TestDelegate* delegate) {
   return std::make_unique<PermissionPromptBubbleView>(
-      nullptr, delegate, base::TimeTicks::Now(),
+      nullptr, delegate->GetWeakPtr(), base::TimeTicks::Now(),
       PermissionPromptStyle::kBubbleOnly);
 }
 

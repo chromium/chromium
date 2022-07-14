@@ -581,6 +581,11 @@ void PermissionRequestManager::SetLearnMoreClicked() {
   set_learn_more_clicked();
 }
 
+base::WeakPtr<PermissionPrompt::Delegate>
+PermissionRequestManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 PermissionRequestManager::PermissionRequestManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
