@@ -248,7 +248,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
-  VLOG(1) << "Executing EXTRACT_ARCHIVE IO task";
+  DVLOG(1) << "Executing EXTRACT_ARCHIVE IO task";
   progress_.state = State::kInProgress;
   progress_callback_.Run(progress_);
   // If the backend can't handle the folder to unpack into or
