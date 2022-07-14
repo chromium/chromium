@@ -73,28 +73,6 @@ PhysicalRect PaintLayerPainter::ContentsVisualRect(const FragmentData& fragment,
   return contents_visual_rect;
 }
 
-PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
-                                     PaintFlags paint_flags) {
-  const LayoutObject& layout_object = paint_layer_.GetLayoutObject();
-  if (UNLIKELY(layout_object.NeedsLayout() &&
-               !layout_object.ChildLayoutBlockedByDisplayLock())) {
-    // Skip if we need layout. This should never happen. See crbug.com/1244130
-    NOTREACHED();
-    return kFullyPainted;
-  }
-
-  if (layout_object.GetFrameView()->ShouldThrottleRendering())
-    return kFullyPainted;
-
-  // Non self-painting layers without self-painting descendants don't need to be
-  // painted as their layoutObject() should properly paint itself.
-  if (!paint_layer_.IsSelfPaintingLayer() &&
-      !paint_layer_.HasSelfPaintingLayerDescendant())
-    return kFullyPainted;
-
-  return PaintLayerContents(context, paint_flags);
-}
-
 static bool ShouldCreateSubsequence(const PaintLayer& paint_layer,
                                     const GraphicsContext& context,
                                     PaintFlags paint_flags) {
@@ -125,15 +103,24 @@ static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
   return ToEnclosingRect(overflow_rect);
 }
 
-PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
-                                                  PaintFlags paint_flags) {
-  DCHECK(paint_layer_.IsSelfPaintingLayer() ||
-         paint_layer_.HasSelfPaintingLayerDescendant());
-
+PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
+                                     PaintFlags paint_flags) {
   const auto& object = paint_layer_.GetLayoutObject();
-  PaintResult result = kFullyPainted;
+  if (UNLIKELY(object.NeedsLayout() &&
+               !object.ChildLayoutBlockedByDisplayLock())) {
+    // Skip if we need layout. This should never happen. See crbug.com/1244130
+    NOTREACHED();
+    return kFullyPainted;
+  }
+
   if (object.GetFrameView()->ShouldThrottleRendering())
-    return result;
+    return kFullyPainted;
+
+  // Non self-painting layers without self-painting descendants don't need to be
+  // painted as their layoutObject() should properly paint itself.
+  if (!paint_layer_.IsSelfPaintingLayer() &&
+      !paint_layer_.HasSelfPaintingLayerDescendant())
+    return kFullyPainted;
 
   // A paint layer should always have LocalBorderBoxProperties when it's ready
   // for paint.
@@ -147,7 +134,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
   bool selection_drag_image_only =
       paint_flags & PaintFlag::kSelectionDragImageOnly;
   if (selection_drag_image_only && !object.IsSelected())
-    return result;
+    return kFullyPainted;
 
   IgnorePaintTimingScope ignore_paint_timing;
   if (object.StyleRef().Opacity() == 0.0f) {
@@ -173,6 +160,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
       // is primary, not auxiliary.
       !paint_layer_.IsUnderSVGHiddenContainer() && is_self_painting_layer;
 
+  PaintResult result = kFullyPainted;
   if (object.FirstFragment().NextFragment() ||
       // When printing, the LayoutView's background should extend infinitely
       // regardless of LayoutView's visual rect, so don't check intersection

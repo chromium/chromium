@@ -32,10 +32,6 @@ class CORE_EXPORT PaintLayerPainter {
   // Paints the layers from back to front. It assumes that the caller will
   // clip to the bounds of damage rect if necessary.
   PaintResult Paint(GraphicsContext&, PaintFlags = PaintFlag::kNoFlag);
-  // PaintLayerContents() assumes that the caller will clip to the bounds of the
-  // painting dirty rect if necessary.
-  PaintResult PaintLayerContents(GraphicsContext&,
-                                 PaintFlags = PaintFlag::kNoFlag);
 
   // Returns true if the painted output of this PaintLayer and its children is
   // invisible and therefore can't impact painted output.
