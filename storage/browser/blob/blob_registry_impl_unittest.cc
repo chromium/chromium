@@ -74,19 +74,9 @@ class BlobRegistryImplTest : public testing::Test {
         data_dir_.GetPath(), data_dir_.GetPath(),
         base::ThreadPool::CreateTaskRunner({base::MayBlock()}));
     auto storage_policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
-    file_system_context_ = FileSystemContext::Create(
-        base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(),
-        /*external_mount_points=*/nullptr, std::move(storage_policy),
-        /*quota_manager_proxy=*/nullptr,
-        std::vector<std::unique_ptr<FileSystemBackend>>(),
-        std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
-        FileSystemOptions(FileSystemOptions::PROFILE_MODE_INCOGNITO,
-                          /*force_in_memory=*/false,
-                          std::vector<std::string>()));
     registry_impl_ = std::make_unique<BlobRegistryImpl>(
         context_->AsWeakPtr(), url_registry_.AsWeakPtr(),
-        base::SequencedTaskRunnerHandle::Get(), file_system_context_);
+        base::SequencedTaskRunnerHandle::Get());
     auto delegate = std::make_unique<MockBlobRegistryDelegate>();
     delegate_ptr_ = delegate.get();
     registry_impl_->Bind(registry_.BindNewPipeAndPassReceiver(),
@@ -194,7 +184,6 @@ class BlobRegistryImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<BlobStorageContext> context_;
-  scoped_refptr<FileSystemContext> file_system_context_;
   BlobUrlRegistry url_registry_;
   std::unique_ptr<BlobRegistryImpl> registry_impl_;
   mojo::Remote<blink::mojom::BlobRegistry> registry_;
@@ -625,82 +614,6 @@ TEST_F(BlobRegistryImplTest, Register_ValidFile) {
 
   BlobDataBuilder expected_blob_data(kId);
   expected_blob_data.AppendFile(path, 0, 16, base::Time());
-
-  EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
-  EXPECT_EQ(0u, BlobsUnderConstruction());
-}
-
-TEST_F(BlobRegistryImplTest, Register_FileSystemFile_InvalidScheme) {
-  const std::string kId = "id";
-
-  std::vector<blink::mojom::DataElementPtr> elements;
-  elements.push_back(blink::mojom::DataElement::NewFileFilesystem(
-      blink::mojom::DataElementFilesystemURL::New(GURL("http://foobar.com/"), 0,
-                                                  16, absl::nullopt)));
-
-  mojo::PendingRemote<blink::mojom::Blob> blob;
-  EXPECT_TRUE(registry_->Register(blob.InitWithNewPipeAndPassReceiver(), kId,
-                                  "", "", std::move(elements)));
-  EXPECT_TRUE(bad_messages_.empty());
-
-  std::unique_ptr<BlobDataHandle> handle = context_->GetBlobDataFromUUID(kId);
-  WaitForBlobCompletion(handle.get());
-
-  EXPECT_TRUE(handle->IsBroken());
-  EXPECT_EQ(BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE,
-            handle->GetBlobStatus());
-  EXPECT_EQ(0u, BlobsUnderConstruction());
-}
-
-TEST_F(BlobRegistryImplTest, Register_FileSystemFile_UnreadableFile) {
-  delegate_ptr_->can_read_file_system_file_result = false;
-
-  const std::string kId = "id";
-  const GURL url("filesystem:http://example.com/temporary/myfile.png");
-
-  std::vector<blink::mojom::DataElementPtr> elements;
-  elements.push_back(blink::mojom::DataElement::NewFileFilesystem(
-      blink::mojom::DataElementFilesystemURL::New(url, 0, 16, absl::nullopt)));
-
-  mojo::PendingRemote<blink::mojom::Blob> blob;
-  EXPECT_TRUE(registry_->Register(blob.InitWithNewPipeAndPassReceiver(), kId,
-                                  "", "", std::move(elements)));
-  EXPECT_TRUE(bad_messages_.empty());
-
-  std::unique_ptr<BlobDataHandle> handle = context_->GetBlobDataFromUUID(kId);
-  WaitForBlobCompletion(handle.get());
-
-  EXPECT_TRUE(handle->IsBroken());
-  EXPECT_EQ(BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE,
-            handle->GetBlobStatus());
-  EXPECT_EQ(0u, BlobsUnderConstruction());
-}
-
-TEST_F(BlobRegistryImplTest, Register_FileSystemFile_Valid) {
-  delegate_ptr_->can_read_file_system_file_result = true;
-
-  const std::string kId = "id";
-  const GURL url("filesystem:http://example.com/temporary/myfile.png");
-
-  std::vector<blink::mojom::DataElementPtr> elements;
-  elements.push_back(blink::mojom::DataElement::NewFileFilesystem(
-      blink::mojom::DataElementFilesystemURL::New(url, 0, 16, absl::nullopt)));
-
-  mojo::PendingRemote<blink::mojom::Blob> blob;
-  EXPECT_TRUE(registry_->Register(blob.InitWithNewPipeAndPassReceiver(), kId,
-                                  "", "", std::move(elements)));
-  EXPECT_TRUE(bad_messages_.empty());
-
-  std::unique_ptr<BlobDataHandle> handle = context_->GetBlobDataFromUUID(kId);
-  WaitForBlobCompletion(handle.get());
-
-  EXPECT_FALSE(handle->IsBroken());
-  ASSERT_EQ(BlobStatus::DONE, handle->GetBlobStatus());
-
-  BlobDataBuilder expected_blob_data(kId);
-  expected_blob_data.AppendFileSystemFile(
-      file_system_context_->CrackURLInFirstPartyContext(url), 0, 16,
-      base::Time(), file_system_context_);
 
   EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
   EXPECT_EQ(0u, BlobsUnderConstruction());

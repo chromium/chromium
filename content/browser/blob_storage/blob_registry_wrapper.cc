@@ -11,7 +11,6 @@
 #include "content/public/common/content_features.h"
 #include "storage/browser/blob/blob_registry_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/file_system/file_system_context.h"
 
 namespace content {
 
@@ -27,9 +26,6 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
   bool CanReadFile(const base::FilePath& file) override {
     return security_policy_handle_.CanReadFile(file);
   }
-  bool CanReadFileSystemFile(const storage::FileSystemURL& url) override {
-    return security_policy_handle_.CanReadFileSystemFile(url);
-  }
   bool CanAccessDataForOrigin(const url::Origin& origin) override {
     return security_policy_handle_.CanAccessDataForOrigin(origin);
   }
@@ -43,13 +39,11 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
 // static
 scoped_refptr<BlobRegistryWrapper> BlobRegistryWrapper::Create(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-    scoped_refptr<storage::FileSystemContext> file_system_context,
     base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry) {
   scoped_refptr<BlobRegistryWrapper> result(new BlobRegistryWrapper());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&BlobRegistryWrapper::InitializeOnIOThread,
                                 result, std::move(blob_storage_context),
-                                std::move(file_system_context),
                                 std::move(blob_url_registry)));
   return result;
 }
@@ -72,13 +66,11 @@ BlobRegistryWrapper::~BlobRegistryWrapper() {}
 
 void BlobRegistryWrapper::InitializeOnIOThread(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-    scoped_refptr<storage::FileSystemContext> file_system_context,
     base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   blob_registry_ = std::make_unique<storage::BlobRegistryImpl>(
       blob_storage_context->context()->AsWeakPtr(),
-      std::move(blob_url_registry), GetUIThreadTaskRunner({}),
-      std::move(file_system_context));
+      std::move(blob_url_registry), GetUIThreadTaskRunner({}));
 }
 
 }  // namespace content

@@ -12,16 +12,18 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "storage/browser/blob/blob_url_registry.h"
-#include "storage/browser/file_system/file_system_context.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 #include "url/origin.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace storage {
 
 class BlobBuilderFromStream;
 class BlobDataHandle;
 class BlobStorageContext;
-class FileSystemURL;
 
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
     : public blink::mojom::BlobRegistry {
@@ -32,14 +34,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
    public:
     virtual ~Delegate() {}
     virtual bool CanReadFile(const base::FilePath& file) = 0;
-    virtual bool CanReadFileSystemFile(const FileSystemURL& url) = 0;
     virtual bool CanAccessDataForOrigin(const url::Origin& origin) = 0;
   };
 
   BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context,
                    base::WeakPtr<BlobUrlRegistry> url_registry,
-                   scoped_refptr<base::TaskRunner> url_registry_runner,
-                   scoped_refptr<FileSystemContext> file_system_context);
+                   scoped_refptr<base::TaskRunner> url_registry_runner);
 
   BlobRegistryImpl(const BlobRegistryImpl&) = delete;
   BlobRegistryImpl& operator=(const BlobRegistryImpl&) = delete;
@@ -96,7 +96,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
                          std::unique_ptr<BlobDataHandle> result);
 
   base::WeakPtr<BlobStorageContext> context_;
-  scoped_refptr<FileSystemContext> file_system_context_;
 
   // `url_registry_` should only be accessed on `url_registry_runner_`.
   base::WeakPtr<BlobUrlRegistry> url_registry_;

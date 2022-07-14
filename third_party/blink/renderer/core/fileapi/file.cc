@@ -113,23 +113,6 @@ static std::unique_ptr<BlobData> CreateBlobDataForFileWithMetadata(
   return blob_data;
 }
 
-static std::unique_ptr<BlobData> CreateBlobDataForFileSystemURL(
-    const KURL& file_system_url,
-    const FileMetadata& metadata) {
-  std::unique_ptr<BlobData> blob_data;
-  if (metadata.length == BlobData::kToEndOfFile) {
-    blob_data = BlobData::CreateForFileSystemURLWithUnknownSize(
-        file_system_url, metadata.modification_time);
-  } else {
-    blob_data = std::make_unique<BlobData>();
-    blob_data->AppendFileSystemURL(file_system_url, 0, metadata.length,
-                                   metadata.modification_time);
-  }
-  blob_data->SetContentType(GetContentTypeFromFileName(
-      file_system_url.GetPath(), File::kWellKnownContentTypes));
-  return blob_data;
-}
-
 // static
 File* File::Create(ExecutionContext* context,
                    const HeapVector<Member<V8BlobPart>>& file_bits,
@@ -289,22 +272,6 @@ File::File(const KURL& file_system_url,
            UserVisibility user_visibility,
            scoped_refptr<BlobDataHandle> blob_data_handle)
     : Blob(std::move(blob_data_handle)),
-      has_backing_file_(false),
-      user_visibility_(user_visibility),
-      name_(DecodeURLEscapeSequences(file_system_url.LastPathComponent(),
-                                     DecodeURLMode::kUTF8OrIsomorphic)),
-      file_system_url_(file_system_url),
-      snapshot_size_(metadata.length),
-      snapshot_modification_time_(metadata.modification_time) {
-  DCHECK_GE(metadata.length, 0);
-}
-
-File::File(const KURL& file_system_url,
-           const FileMetadata& metadata,
-           UserVisibility user_visibility)
-    : Blob(BlobDataHandle::Create(
-          CreateBlobDataForFileSystemURL(file_system_url, metadata),
-          metadata.length)),
       has_backing_file_(false),
       user_visibility_(user_visibility),
       name_(DecodeURLEscapeSequences(file_system_url.LastPathComponent(),

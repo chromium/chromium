@@ -154,7 +154,6 @@ class CORE_EXPORT File final : public Blob {
        const absl::optional<base::Time>& modification_time,
        scoped_refptr<BlobDataHandle>);
   File(const String& name, const FileMetadata&, UserVisibility);
-  File(const KURL& file_system_url, const FileMetadata&, UserVisibility);
   File(const KURL& file_system_url,
        const FileMetadata& metadata,
        UserVisibility user_visibility,

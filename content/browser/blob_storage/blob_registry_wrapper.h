@@ -12,7 +12,6 @@
 namespace storage {
 class BlobRegistryImpl;
 class BlobUrlRegistry;
-class FileSystemContext;
 }  // namespace storage
 
 namespace content {
@@ -30,7 +29,6 @@ class BlobRegistryWrapper
  public:
   static scoped_refptr<BlobRegistryWrapper> Create(
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-      scoped_refptr<storage::FileSystemContext> file_system_context,
       base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry);
 
   void Bind(int process_id,
@@ -44,7 +42,6 @@ class BlobRegistryWrapper
 
   void InitializeOnIOThread(
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-      scoped_refptr<storage::FileSystemContext> file_system_context,
       base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry);
 
   std::unique_ptr<storage::BlobRegistryImpl> blob_registry_;

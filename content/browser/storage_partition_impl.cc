@@ -1301,8 +1301,8 @@ void StoragePartitionImpl::Initialize(
           ? fallback_for_blob_urls->GetBlobUrlRegistry()->AsWeakPtr()
           : nullptr);
 
-  blob_registry_ = BlobRegistryWrapper::Create(
-      blob_context, filesystem_context_, blob_url_registry_->AsWeakPtr());
+  blob_registry_ = BlobRegistryWrapper::Create(blob_context,
+                                               blob_url_registry_->AsWeakPtr());
 
   prefetch_url_loader_service_ =
       std::make_unique<PrefetchURLLoaderService>(browser_context_);

@@ -119,9 +119,6 @@ class PLATFORM_EXPORT BlobData {
   static std::unique_ptr<BlobData> CreateForFileWithUnknownSize(
       const String& path,
       const absl::optional<base::Time>& expected_modification_time);
-  static std::unique_ptr<BlobData> CreateForFileSystemURLWithUnknownSize(
-      const KURL& file_system_url,
-      const absl::optional<base::Time>& expected_modification_time);
 
   const String& ContentType() const { return content_type_; }
   void SetContentType(const String&);
@@ -143,11 +140,6 @@ class PLATFORM_EXPORT BlobData {
   void AppendBlob(scoped_refptr<BlobDataHandle>,
                   int64_t offset,
                   int64_t length);
-  void AppendFileSystemURL(
-      const KURL&,
-      int64_t offset,
-      int64_t length,
-      const absl::optional<base::Time>& expected_modification_time);
   void AppendText(const String&, bool normalize_line_endings_to_native);
 
   // The value of the size property for a Blob who has this data.

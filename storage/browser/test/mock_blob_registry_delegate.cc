@@ -9,9 +9,7 @@ namespace storage {
 bool MockBlobRegistryDelegate::CanReadFile(const base::FilePath& file) {
   return can_read_file_result;
 }
-bool MockBlobRegistryDelegate::CanReadFileSystemFile(const FileSystemURL& url) {
-  return can_read_file_system_file_result;
-}
+
 bool MockBlobRegistryDelegate::CanAccessDataForOrigin(
     const url::Origin& origin) {
   return can_access_data_for_origin;
