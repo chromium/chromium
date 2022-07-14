@@ -6,6 +6,7 @@ import './os_feedback_shared_css.js';
 import './file_attachment.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -136,7 +137,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     this.dispatchEvent(new CustomEvent('go-back-click', {
       composed: true,
       bubbles: true,
-      detail: {currentState: FeedbackFlowState.SHARE_DATA}
+      detail: {currentState: FeedbackFlowState.SHARE_DATA},
     }));
   }
 
@@ -153,7 +154,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       this.dispatchEvent(new CustomEvent('continue-click', {
         composed: true,
         bubbles: true,
-        detail: {currentState: FeedbackFlowState.SHARE_DATA, report: report}
+        detail: {currentState: FeedbackFlowState.SHARE_DATA, report: report},
       }));
     });
   }
@@ -199,7 +200,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
 
     if (this.getElement_('#pageUrlCheckbox').checked) {
       report.feedbackContext.pageUrl = {
-        url: this.getElement_('#pageUrlText').textContent.trim()
+        url: this.getElement_('#pageUrlText').textContent.trim(),
       };
     }
 

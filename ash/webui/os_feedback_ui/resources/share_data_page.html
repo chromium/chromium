@@ -49,8 +49,9 @@
   }
 
   #screenshotImage {
+    border-radius: 0 4px 4px 0;
     display: block;
-    height: auto;
+    height: 48px;
     transition: all 250ms ease;
     width: 68px;
   }
@@ -112,6 +113,30 @@
     color: var(--cros-text-color-primary);
     line-height: 20px;
   }
+
+  #screenshotCheckbox {
+    margin-inline-end: 10px;
+    margin-inline-start: 12px;
+  }
+
+  #screenshotCheckLabel {
+    color: var(--cros-text-color-primary);
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #imageButton {
+    background: none;
+    border: none;
+    height: 48px;
+    padding: 0;
+    width: 68px;
+  }
+
+  cr-checkbox {
+    --cr-checkbox-label-padding-start: 0;
+    --cr-checkbox-size: 20px;
+  }
 </style>
 <div id="container">
   <div id="header">
@@ -124,9 +149,9 @@
       <div id="attachFilesContainer">
         <!-- Attach a screenshot -->
         <div id="screenshotContainer" class="card-frame">
-          <input id="screenshotCheckbox" type="checkbox"
-              aria-labelledby="screenshotCheckLabel"
+          <cr-checkbox id="screenshotCheckbox" aria-labelledby="screenshotCheckLabel"
               disabled="[[!hasScreenshot_(screenshotUrl)]]">
+          </cr-checkbox>
           <label id="screenshotCheckLabel">[[i18n('attachScreenshotLabel')]]</label>
           <button id="imageButton" on-click="handleScreenshotClick_">
             <img id="screenshotImage" aria-label="$i18n{screenshotA11y}"
