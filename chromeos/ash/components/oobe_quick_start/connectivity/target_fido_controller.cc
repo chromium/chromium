@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker.h"
-
 namespace ash::quick_start {
 
 // TODO impl

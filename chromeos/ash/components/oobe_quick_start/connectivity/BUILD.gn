@@ -20,6 +20,12 @@ source_set("connectivity") {
     "target_device_connection_broker_factory.h",
     "target_device_connection_broker_impl.cc",
     "target_device_connection_broker_impl.h",
+    "target_fido_controller.cc",
+    "target_fido_controller.h",
+    "target_fido_controller_factory.cc",
+    "target_fido_controller_factory.h",
+    "target_fido_controller_impl.cc",
+    "target_fido_controller_impl.h",
   ]
 }
 
@@ -44,5 +50,6 @@ source_set("unit_tests") {
   sources = [
     "fast_pair_advertiser_unittest.cc",
     "target_device_connection_broker_impl_unittest.cc",
+    "target_fido_controller_impl_unittest.cc",
   ]
 }
