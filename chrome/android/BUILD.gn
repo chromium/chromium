@@ -1580,6 +1580,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/safety_check/android:java",
     "//chrome/browser/safety_check/android:javatests",
     "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/selection/android:javatests",
     "//chrome/browser/settings:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/share:java",
