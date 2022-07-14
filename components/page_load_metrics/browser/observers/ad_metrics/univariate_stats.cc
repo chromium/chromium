@@ -4,6 +4,8 @@
 
 #include "components/page_load_metrics/browser/observers/ad_metrics/univariate_stats.h"
 
+#include <cmath>
+
 #include "base/check_op.h"
 
 namespace page_load_metrics {
