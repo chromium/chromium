@@ -1,0 +1,17 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_random_random") {
+  packages = [ "absl_random_random" ]
+}
+
+shim_headers("random_shim") {
+  root_path = "."
+  prefix = "absl/random/"
+  headers = [ "random.h" ]
+}
+
+source_set("random") {
+  deps = [ ":random_shim" ]
+  public_configs = [ ":system_absl_random_random" ]
+}

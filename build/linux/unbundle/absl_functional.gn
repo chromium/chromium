@@ -1,0 +1,17 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_bind_front") {
+  packages = [ "absl_bind_front" ]
+}
+
+shim_headers("bind_front_shim") {
+  root_path = "."
+  prefix = "absl/functional/"
+  headers = [ "bind_front.h" ]
+}
+
+source_set("bind_front") {
+  deps = [ ":bind_front_shim" ]
+  public_configs = [ ":system_absl_bind_front" ]
+}

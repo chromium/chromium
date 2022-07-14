@@ -1,0 +1,22 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_hash") {
+  packages = [ "absl_hash" ]
+}
+
+shim_headers("hash_shim") {
+  root_path = "."
+  prefix = "absl/hash/"
+  headers = [ "hash.h" ]
+}
+
+source_set("hash") {
+  deps = [ ":hash_shim" ]
+  public_configs = [ ":system_absl_hash" ]
+}
+
+source_set("hash_test") {
+}
+source_set("low_level_hash_test") {
+}

@@ -1,0 +1,37 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_yuv") {
+  packages = [ "libyuv" ]
+}
+
+shim_headers("libyuv_shim") {
+  root_path = "include"
+  headers = [
+    "libyuv.h",
+    "libyuv/basic_types.h",
+    "libyuv/compare.h",
+    "libyuv/convert.h",
+    "libyuv/convert_argb.h",
+    "libyuv/convert_from.h",
+    "libyuv/convert_from_argb.h",
+    "libyuv/cpu_id.h",
+    "libyuv/mjpeg_decoder.h",
+    "libyuv/planar_functions.h",
+    "libyuv/rotate.h",
+    "libyuv/rotate_argb.h",
+    "libyuv/rotate_row.h",
+    "libyuv/row.h",
+    "libyuv/scale.h",
+    "libyuv/scale_argb.h",
+    "libyuv/scale_row.h",
+    "libyuv/scale_uv.h",
+    "libyuv/version.h",
+    "libyuv/video_common.h",
+  ]
+}
+
+source_set("libyuv") {
+  deps = [ ":libyuv_shim" ]
+  public_configs = [ ":system_yuv" ]
+}
