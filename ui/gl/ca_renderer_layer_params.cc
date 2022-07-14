@@ -19,6 +19,7 @@ CARendererLayerParams::CARendererLayerParams(
     unsigned edge_aa_mask,
     float opacity,
     unsigned filter,
+    absl::optional<gfx::HDRMetadata> hdr_metadata,
     gfx::ProtectedVideoType protected_video_type)
     : is_clipped(is_clipped),
       clip_rect(clip_rect),
@@ -32,6 +33,7 @@ CARendererLayerParams::CARendererLayerParams(
       edge_aa_mask(edge_aa_mask),
       opacity(opacity),
       filter(filter),
+      hdr_metadata(hdr_metadata),
       protected_video_type(protected_video_type) {}
 
 CARendererLayerParams::CARendererLayerParams(

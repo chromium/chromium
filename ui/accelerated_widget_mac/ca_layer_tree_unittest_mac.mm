@@ -74,7 +74,7 @@ bool ScheduleCALayer(ui::CARendererLayerTree* tree,
       properties->transform, properties->gl_image.get(),
       properties->contents_rect, properties->rect, properties->background_color,
       properties->edge_aa_mask, properties->opacity, properties->filter,
-      gfx::ProtectedVideoType::kClear));
+      absl::nullopt, gfx::ProtectedVideoType::kClear));
 }
 
 void UpdateCALayerTree(std::unique_ptr<ui::CARendererLayerTree>& ca_layer_tree,

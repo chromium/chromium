@@ -16,11 +16,13 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gfx/video_types.h"
 
@@ -223,6 +225,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                  unsigned edge_aa_mask,
                  float opacity,
                  unsigned filter,
+                 absl::optional<gfx::HDRMetadata> hdr_metadata,
                  gfx::ProtectedVideoType protected_video_type);
 
     ContentLayer(ContentLayer&& layer) = delete;
@@ -265,6 +268,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // HDR video (that cannot be displayed by a regular CALayer) or for
     // protected content (see https://crbug.com/1026703).
     bool video_type_can_downgrade_ = true;
+
+    absl::optional<gfx::HDRMetadata> hdr_metadata_;
 
     gfx::ProtectedVideoType protected_video_type_ =
         gfx::ProtectedVideoType::kClear;

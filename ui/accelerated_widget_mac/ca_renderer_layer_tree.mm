@@ -23,6 +23,7 @@
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mac/io_surface_hdr_metadata.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_image_io_surface.h"
@@ -147,7 +148,8 @@ bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
 bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     AVSampleBufferDisplayLayer* av_layer,
     IOSurfaceRef io_surface,
-    const gfx::ColorSpace& io_surface_color_space) {
+    const gfx::ColorSpace& io_surface_color_space,
+    absl::optional<gfx::HDRMetadata> hdr_metadata) {
   CVReturn cv_return = kCVReturnSuccess;
 
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
@@ -188,20 +190,24 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
       // Note: It'd be nice to find a way to set this on the IOSurface itself
       // in some way that propagates to the CVPixelBuffer, but thus far we
       // haven't been able to find a way.
-      gfx::HDRMetadata hdr_metadata;
-      if (IOSurfaceGetHDRMetadata(io_surface, hdr_metadata)) {
-        if (!(hdr_metadata.color_volume_metadata ==
+      gfx::HDRMetadata io_surface_hdr_metadata;
+      if (!hdr_metadata &&
+          IOSurfaceGetHDRMetadata(io_surface, io_surface_hdr_metadata)) {
+        hdr_metadata = io_surface_hdr_metadata;
+      }
+      if (hdr_metadata) {
+        if (!(hdr_metadata->color_volume_metadata ==
               gfx::ColorVolumeMetadata())) {
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
-              media::GenerateMasteringDisplayColorVolume(hdr_metadata),
+              media::GenerateMasteringDisplayColorVolume(*hdr_metadata),
               kCVAttachmentMode_ShouldPropagate);
         }
-        if (hdr_metadata.max_content_light_level ||
-            hdr_metadata.max_frame_average_light_level) {
+        if (hdr_metadata->max_content_light_level ||
+            hdr_metadata->max_frame_average_light_level) {
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferContentLightLevelInfoKey,
-              media::GenerateContentLightLevelInfo(hdr_metadata),
+              media::GenerateContentLightLevelInfo(*hdr_metadata),
               kCVAttachmentMode_ShouldPropagate);
         }
       }
@@ -730,6 +736,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     unsigned edge_aa_mask,
     float opacity,
     unsigned filter,
+    absl::optional<gfx::HDRMetadata> hdr_metadata,
     gfx::ProtectedVideoType protected_video_type)
     : parent_layer_(parent_layer),
       io_surface_(io_surface),
@@ -741,6 +748,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       ca_edge_aa_mask_(0),
       opacity_(opacity),
       ca_filter_(filter == GL_LINEAR ? kCAFilterLinear : kCAFilterNearest),
+      hdr_metadata_(hdr_metadata),
       protected_video_type_(protected_video_type) {
   DCHECK(filter == GL_LINEAR || filter == GL_NEAREST);
 
@@ -927,7 +935,8 @@ void CARendererLayerTree::TransformLayer::AddContentLayer(
   content_layers_.emplace_back(
       this, io_surface, cv_pixel_buffer, params.contents_rect, params.rect,
       params.background_color, io_surface_color_space, params.edge_aa_mask,
-      params.opacity, params.filter, params.protected_video_type);
+      params.opacity, params.filter, params.hdr_metadata,
+      params.protected_video_type);
 }
 
 void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,
@@ -1168,7 +1177,8 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     update_contents =
         old_layer_->io_surface_ != io_surface_ ||
         old_layer_->cv_pixel_buffer_ != cv_pixel_buffer_ ||
-        old_layer_->solid_color_contents_ != solid_color_contents_;
+        old_layer_->solid_color_contents_ != solid_color_contents_ ||
+        old_layer_->hdr_metadata_ != hdr_metadata_;
     update_contents_rect = old_layer_->contents_rect_ != contents_rect_;
     update_rect = old_layer_->rect_ != rect_;
     update_background_color =
@@ -1233,7 +1243,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
           }
         } else {
           result = AVSampleBufferDisplayLayerEnqueueIOSurface(
-              av_layer_, io_surface_, io_surface_color_space_);
+              av_layer_, io_surface_, io_surface_color_space_, hdr_metadata_);
           if (!result) {
             LOG(ERROR) << "AVSampleBufferDisplayLayerEnqueueIOSurface failed";
           }

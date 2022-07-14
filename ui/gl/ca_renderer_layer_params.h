@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_export.h"
 
@@ -44,6 +46,7 @@ struct GL_EXPORT CARendererLayerParams {
                         unsigned edge_aa_mask,
                         float opacity,
                         unsigned filter,
+                        absl::optional<gfx::HDRMetadata> hdr_metadata,
                         gfx::ProtectedVideoType protected_video_type);
   CARendererLayerParams(const CARendererLayerParams& other);
   ~CARendererLayerParams();
@@ -60,6 +63,7 @@ struct GL_EXPORT CARendererLayerParams {
   unsigned edge_aa_mask;
   float opacity;
   unsigned filter;
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
   gfx::ProtectedVideoType protected_video_type;
 
   // This is a subset of cc::FilterOperation::FilterType.

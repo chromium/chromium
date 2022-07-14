@@ -193,6 +193,7 @@ gfx::CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
   }
   ca_layer_overlay->opacity *= quad->vertex_opacity[0];
   ca_layer_overlay->filter = quad->nearest_neighbor ? GL_NEAREST : GL_LINEAR;
+  ca_layer_overlay->hdr_metadata = quad->hdr_metadata;
   if (quad->is_video_frame)
     ca_layer_overlay->protected_video_type = quad->protected_video_type;
   return gfx::kCALayerSuccess;
@@ -256,6 +257,7 @@ gfx::CALayerResult FromYUVVideoQuad(DisplayResourceProvider* resource_provider,
 
   ca_layer_overlay->contents_resource_id = y_resource_id;
   ca_layer_overlay->contents_rect = ya_contents_rect;
+  ca_layer_overlay->hdr_metadata = quad->hdr_metadata;
   ca_layer_overlay->protected_video_type = quad->protected_video_type;
   return gfx::kCALayerSuccess;
 }

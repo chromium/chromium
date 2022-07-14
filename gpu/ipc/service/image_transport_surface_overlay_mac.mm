@@ -288,6 +288,7 @@ bool ImageTransportSurfaceOverlayMac::ScheduleOverlayPlane(
       0,                                 // edge_aa_mask
       1.f,                               // opacity
       GL_LINEAR,                         // filter
+      absl::nullopt,                     // hdr_metadata
       gfx::ProtectedVideoType::kClear);  // protected_video_type
   return ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->ScheduleCALayer(overlay_as_calayer_params);
@@ -607,6 +608,7 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
       0,                                 // edge_aa_mask
       1.f,                               // opacity
       GL_LINEAR,                         // filter
+      absl::nullopt,                     // hdr_metadata
       gfx::ProtectedVideoType::kClear);  // protected_video_type
   return ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->ScheduleCALayer(overlay_as_calayer_params);

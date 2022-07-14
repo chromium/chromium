@@ -13,11 +13,13 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 
@@ -76,6 +78,8 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   unsigned edge_aa_mask = 0;
   // The minification and magnification filters for the CALayer.
   unsigned filter = 0;
+  // The HDR metadata for this quad.
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
   // The protected video status of the AVSampleBufferDisplayLayer.
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
