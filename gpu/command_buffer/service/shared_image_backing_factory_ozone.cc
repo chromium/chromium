@@ -84,6 +84,7 @@ SharedImageBackingFactoryOzone::CreateSharedImageInternal(
                                                  gfx::BufferUsage::GPU_READ);
   }
   if (!pixmap) {
+    DLOG(ERROR) << "Failed to create native pixmap";
     return nullptr;
   }
   return std::make_unique<SharedImageBackingOzone>(
@@ -124,9 +125,12 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
       CreateSharedImageInternal(mailbox, format, surface_handle, size,
                                 color_space, surface_origin, alpha_type, usage);
 
+  if (!backing) {
+    return nullptr;
+  }
   if (!pixel_data.empty() &&
-      !backing->WritePixels(pixel_data, shared_context_state_, format, size,
-                            alpha_type)) {
+      !backing->WritePixels(pixel_data, shared_context_state_.get(), format,
+                            size, alpha_type)) {
     return nullptr;
   }
 
@@ -176,8 +180,11 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     backing = CreateSharedImageInternal(mailbox, format, surface_handle, size,
                                         color_space, surface_origin, alpha_type,
                                         usage);
+    if (!backing) {
+      return nullptr;
+    }
     if (!backing->WritePixels(shm_wrapper.GetMemoryAsSpan(),
-                              shared_context_state_, format, size,
+                              shared_context_state_.get(), format, size,
                               alpha_type)) {
       DLOG(ERROR) << "Failed to write pixels for shared memory.";
       return nullptr;
