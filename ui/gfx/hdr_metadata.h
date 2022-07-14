@@ -5,13 +5,13 @@
 #ifndef UI_GFX_HDR_METADATA_H_
 #define UI_GFX_HDR_METADATA_H_
 
+#include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 // SMPTE ST 2086 color volume metadata.
-struct GFX_EXPORT ColorVolumeMetadata {
+struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
   using Chromaticity = PointF;
   Chromaticity primary_r;
   Chromaticity primary_g;
@@ -33,7 +33,7 @@ struct GFX_EXPORT ColorVolumeMetadata {
 };
 
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
-struct GFX_EXPORT HDRMetadata {
+struct COLOR_SPACE_EXPORT HDRMetadata {
   ColorVolumeMetadata color_volume_metadata;
   // Max content light level (CLL), i.e. maximum brightness level present in the
   // stream), in nits.

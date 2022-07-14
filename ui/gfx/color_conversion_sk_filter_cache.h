@@ -6,10 +6,12 @@
 #define UI_GFX_COLOR_CONVERSION_SK_FILTER_CACHE_H_
 
 #include "base/containers/flat_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/gfx_export.h"
+#include "ui/gfx/hdr_metadata.h"
 
 class GrDirectContext;
 class SkImage;
@@ -27,14 +29,15 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
   ~ColorConversionSkFilterCache();
 
   // Retrieve an SkColorFilter to transform `src` to `dst`. The filter also
-  // applies the offset `resource_offset` and then scales by
-  // `resource_multiplier`.
-  // TODO(https://crbug.com/1286076): Apply tone mapping using
-  // `sdr_max_luminance_nits` and `dst_max_luminance_relative`.
+  // applies the offset `src_resource_offset` and then scales by
+  // `src_resource_multiplier`. Apply tone mapping of `src` is HLG or PQ,
+  // using `sdr_max_luminance_nits`, `src_hdr_metadata`, and
+  // `dst_max_luminance_relative` as parameters.
   sk_sp<SkColorFilter> Get(const gfx::ColorSpace& src,
                            const gfx::ColorSpace& dst,
                            float resource_offset,
                            float resource_multiplier,
+                           absl::optional<gfx::HDRMetadata> src_hdr_metadata,
                            float sdr_max_luminance_nits,
                            float dst_max_luminance_relative);
 
@@ -57,11 +60,13 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
   struct Key {
     Key(const gfx::ColorSpace& src,
         const gfx::ColorSpace& dst,
+        absl::optional<gfx::HDRMetadata> src_hdr_metadata,
         float sdr_max_luminance_nits,
         float dst_max_luminance_relative);
 
     gfx::ColorSpace src;
     gfx::ColorSpace dst;
+    absl::optional<gfx::HDRMetadata> src_hdr_metadata;
     float sdr_max_luminance_nits = 0.f;
     float dst_max_luminance_relative = 0.f;
 
@@ -74,6 +79,7 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
                           float resource_offset,
                           float resource_multiplier,
                           float sdr_max_luminance_nits,
+                          absl::optional<gfx::HDRMetadata> src_hdr_metadata,
                           float dst_max_luminance_relative);
 
   base::flat_map<Key, sk_sp<SkRuntimeEffect>> cache_;

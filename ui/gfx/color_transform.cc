@@ -144,6 +144,21 @@ float ToLinear(ColorSpace::TransferID id, float v) {
   return 0;
 }
 
+// Return the maximum luminance to be used for tone mapping a PQ signal, with
+// the indicated metadata.
+float GetToneMapPQMaxLuminanceNits(
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  if (hdr_metadata) {
+    if (hdr_metadata->max_content_light_level > 0)
+      return hdr_metadata->max_content_light_level;
+    if (hdr_metadata->color_volume_metadata.luminance_max > 0.f) {
+      return hdr_metadata->color_volume_metadata.luminance_max;
+    }
+  }
+  // The maximum value that ColorTransformPQToLinear can produce.
+  return 10000.f;
+}
+
 }  // namespace
 
 class ColorTransformMatrix;
@@ -1119,9 +1134,9 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
         break;
       }
       case ColorSpace::TransferID::PQ: {
-        // The maximum value that ColorTransformPQToLinear can produce.
         const float src_max_luminance_relative =
-            10000 / options.sdr_max_luminance_nits;
+            GetToneMapPQMaxLuminanceNits(options.src_hdr_metadata) /
+            options.sdr_max_luminance_nits;
         if (src_max_luminance_relative > options.dst_max_luminance_relative) {
           const ColorSpace rec2020_linear(
               ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR,

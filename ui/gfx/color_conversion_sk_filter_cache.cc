@@ -36,6 +36,7 @@ bool ColorConversionSkFilterCache::Key::Key::operator==(
     const Key& other) const {
   return src == other.src && dst == other.dst &&
          sdr_max_luminance_nits == other.sdr_max_luminance_nits &&
+         src_hdr_metadata == other.src_hdr_metadata &&
          dst_max_luminance_relative == other.dst_max_luminance_relative;
 }
 
@@ -50,12 +51,15 @@ bool ColorConversionSkFilterCache::Key::operator<(const Key& other) const {
                   other.dst_max_luminance_relative);
 }
 
-ColorConversionSkFilterCache::Key::Key(const gfx::ColorSpace& src,
-                                       const gfx::ColorSpace& dst,
-                                       float sdr_max_luminance_nits,
-                                       float dst_max_luminance_relative)
+ColorConversionSkFilterCache::Key::Key(
+    const gfx::ColorSpace& src,
+    const gfx::ColorSpace& dst,
+    absl::optional<gfx::HDRMetadata> src_hdr_metadata,
+    float sdr_max_luminance_nits,
+    float dst_max_luminance_relative)
     : src(src),
       dst(dst),
+      src_hdr_metadata(src_hdr_metadata),
       sdr_max_luminance_nits(sdr_max_luminance_nits),
       dst_max_luminance_relative(dst_max_luminance_relative) {}
 
@@ -64,14 +68,16 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     const gfx::ColorSpace& dst,
     float resource_offset,
     float resource_multiplier,
+    absl::optional<gfx::HDRMetadata> src_hdr_metadata,
     float sdr_max_luminance_nits,
     float dst_max_luminance_relative) {
   // Set unused parameters to bogus values, so that they do not result in
   // different keys for the same conversion.
   if (!src.IsToneMappedByDefault()) {
-    // If the source is not going to be tone mapped, then
-    // `dst_max_luminance_relative` will not be used, so set it to a nonsense
-    // value.
+    // If the source is not going to be tone mapped, then `src_hdr_metadata`
+    // and `dst_max_luminance_relative` will not be used, so set them nonsense
+    // values.
+    src_hdr_metadata = absl::nullopt;
     dst_max_luminance_relative = 0;
 
     // If neither source nor destination will use `sdr_max_luminance_nits`, then
@@ -81,7 +87,8 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     }
   }
 
-  const Key key(src, dst, sdr_max_luminance_nits, dst_max_luminance_relative);
+  const Key key(src, dst, src_hdr_metadata, sdr_max_luminance_nits,
+                dst_max_luminance_relative);
   sk_sp<SkRuntimeEffect>& effect = cache_[key];
 
   if (!effect) {
@@ -93,6 +100,7 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     // SkShaderSource not depend on that parameter (rather, that it be left
     // as a uniform in the shader). If that is not the case, then it will need
     // to be part of the key.
+    options.src_hdr_metadata = src_hdr_metadata;
     options.dst_max_luminance_relative = dst_max_luminance_relative;
     std::unique_ptr<gfx::ColorTransform> transform =
         gfx::ColorTransform::NewColorTransform(src, dst, options);
@@ -194,7 +202,8 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
   sk_sp<SkColorFilter> filter =
       Get(image_color_space, gfx::ColorSpace(*target_color_space),
           /*resource_offset=*/0, /*resource_multiplier=*/1,
-          sdr_max_luminance_nits, dst_max_luminance_relative);
+          /*src_hdr_metadata=*/absl::nullopt, sdr_max_luminance_nits,
+          dst_max_luminance_relative);
   SkPaint paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   paint.setColorFilter(filter);

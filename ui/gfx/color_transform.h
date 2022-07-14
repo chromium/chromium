@@ -8,9 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace gfx {
 
@@ -32,6 +34,9 @@ class COLOR_SPACE_EXPORT ColorTransform {
     // definition depends on an SDR white point.
     // TODO(https://crbug.com/1286082): Use this value in the transform.
     float sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
+
+    // Used for tone mapping PQ sources.
+    absl::optional<gfx::HDRMetadata> src_hdr_metadata;
 
     // The maximum luminance value for the destination, as a multiple of
     // `sdr_max_luminance_nits` (so this is 1 for SDR displays).

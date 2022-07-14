@@ -2594,10 +2594,8 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     const gfx::ColorSpace& dst,
     float resource_offset,
     float resource_multiplier) {
-  // TODO(https://crbug.com/1325384): Use `src_hdr_metadata` in the color
-  // filter.
   return color_filter_cache_.Get(
-      src, dst, resource_offset, resource_multiplier,
+      src, dst, resource_offset, resource_multiplier, src_hdr_metadata,
       current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
       current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative());
 }
