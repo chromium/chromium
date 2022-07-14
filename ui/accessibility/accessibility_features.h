@@ -198,6 +198,14 @@ AX_BASE_EXPORT extern const base::Feature kPdfOcr;
 // and the resulting text, together with its layout information, will be added
 // to the accessibility tree.
 AX_BASE_EXPORT bool IsPdfOcrEnabled();
+
+// Enables a setting that can turn on/off browser vocalization of 'descriptions'
+// tracks.
+AX_BASE_EXPORT extern const base::Feature kTextBasedAudioDescription;
+
+// Returns true if the setting to turn on text based audio descriptions is
+// enabled.
+AX_BASE_EXPORT bool IsTextBasedAudioDescriptionEnabled();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

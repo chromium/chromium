@@ -225,6 +225,13 @@ const base::Feature kPdfOcr{"PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT};
 bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);
 }
+
+const base::Feature kTextBasedAudioDescription{
+    "TextBasedAudioDescription", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsTextBasedAudioDescriptionEnabled() {
+  return base::FeatureList::IsEnabled(::features::kTextBasedAudioDescription);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
