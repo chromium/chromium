@@ -549,12 +549,12 @@ enum BacklightColor {
 
 // Hex values of the colors displayed in the rgb keyboard section.
 const uint32 kWhiteColor = 0xFFFFFF;
-const uint32 kRedColor = 0xF28B82;
-const uint32 kYellowColor = 0xFDD663;
-const uint32 kGreenColor = 0x81C995;
-const uint32 kBlueColor = 0x78D9EC;
-const uint32 kIndigoColor = 0x8AB4F8;
-const uint32 kPurpleColor = 0xC58AF9;
+const uint32 kRedColor = 0xEE675C;
+const uint32 kYellowColor = 0xFBBC04;
+const uint32 kGreenColor = 0x34A853;
+const uint32 kBlueColor = 0x00A3C2;
+const uint32 kIndigoColor = 0x4285F4;
+const uint32 kPurpleColor = 0xB76DF8;
 
 // Receives information whenever there are keyboard backlight related changes
 // such as backlight colors.

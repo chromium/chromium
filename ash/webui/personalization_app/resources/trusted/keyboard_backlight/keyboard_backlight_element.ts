@@ -47,6 +47,12 @@ function calculateColorBrightness(hexVal: number): number {
   return (r * 299 + g * 587 + b * 114) / 1000;
 }
 
+/** Returns the RGB hex in #FFFFFF format. */
+function convertToRgbHexStr(hexVal: number): string {
+  const PADDING_LENGTH = 6;
+  return `#${hexVal.toString(16).padStart(PADDING_LENGTH, '0')}`;
+}
+
 interface ColorInfo {
   hexVal: string;
   enumVal: BacklightColor;
@@ -131,31 +137,31 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   private computePresetColors_(): Record<string, ColorInfo> {
     return {
       'whiteColor': {
-        hexVal: `#${WHITE_COLOR.toString(16)}`,
+        hexVal: convertToRgbHexStr(WHITE_COLOR),
         enumVal: BacklightColor.kWhite,
       },
       'redColor': {
-        hexVal: `#${RED_COLOR.toString(16)}`,
+        hexVal: convertToRgbHexStr(RED_COLOR),
         enumVal: BacklightColor.kRed,
       },
       'yellowColor': {
-        hexVal: `#${YELLOW_COLOR.toString(16)}`,
+        hexVal: convertToRgbHexStr(YELLOW_COLOR),
         enumVal: BacklightColor.kYellow,
       },
       'greenColor': {
-        hexVal: `#${GREEN_COLOR.toString(16)}`,
+        hexVal: convertToRgbHexStr(GREEN_COLOR),
         enumVal: BacklightColor.kGreen,
       },
       'blueColor': {
-        hexVal: `#${BLUE_COLOR.toString(16)}`,
+        hexVal: convertToRgbHexStr(BLUE_COLOR),
         enumVal: BacklightColor.kBlue,
       },
       'indigoColor': {
-        hexVal: `#${INDIGO_COLOR.toString(16)}`,
+        hexVal: convertToRgbHexStr(INDIGO_COLOR),
         enumVal: BacklightColor.kIndigo,
       },
       'purpleColor': {
-        hexVal: `#${PURPLE_COLOR.toString(16)}`,
+        hexVal: convertToRgbHexStr(PURPLE_COLOR),
         enumVal: BacklightColor.kPurple,
       },
     };
@@ -247,34 +253,29 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
   private getColorInnerContainerStyle_(
       colorId: string, colors: Record<string, ColorInfo>) {
+    const outlineStyle = `outline: 2px solid var(--cros-separator-color);
+                  outline-offset: -2px;`;
     switch (colorId) {
       case this.rainbowColorId_:
-        const hexColors =
-            Object.values(colors).map(color => color.hexVal).slice(1);
-        return `background-image: linear-gradient(${hexColors})`;
-      case 'whiteColor':
-        // Add the border for the white background.
-        return `background-color: ${
-            colors[colorId]
-                .hexVal}; outline: 1px solid var(--cros-separator-color);
-                outline-offset: -1px;`;
+        return `background-image: linear-gradient(${colors['redColor'].hexVal},
+            ${colors['yellowColor'].hexVal},
+            ${colors['greenColor'].hexVal},
+            ${colors['indigoColor'].hexVal});
+            ${outlineStyle}`;
       default:
-        return `background-color: ${colors[colorId].hexVal}`;
+        return `background-color: ${colors[colorId].hexVal};
+                                  ${outlineStyle};`;
     }
   }
 
   private getWallpaperColorInnerContainerStyle_(wallpaperColor: SkColor):
       string {
-    // Show the default style when wallpaper color is loading or invalid.
-    if (!wallpaperColor || (wallpaperColor.value & 0xFFFFFF) === 0xFFFFFF) {
-      return `background-color: #FFFFFF;
-          outline: 1px solid var(--cros-separator-color);
-          outline-offset: -1px;`;
-    }
-    // Strip the alpha value and convert to hex string.
-    const hexStr =
-        (wallpaperColor.value & 0xFFFFFF).toString(16).padStart(6, '0');
-    return `background-color: #${hexStr};`;
+    const hexStr = !wallpaperColor ?
+        '#FFFFFF' :
+        convertToRgbHexStr(wallpaperColor.value & 0xFFFFFF);
+    return `background-color: ${hexStr};
+            outline: 2px solid var(--cros-separator-color);
+            outline-offset: -2px;`;
   }
 
   private getWallpaperIconColorClass_(wallpaperColor: SkColor): string {
