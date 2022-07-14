@@ -333,6 +333,17 @@ var NewTabPageModulesChromeCartV2ModuleTest =
   }
 };
 
+var NewTabPageModulesFeedModuleTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/feed/module_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesFeedModuleTest', 'All', function() {
+  mocha.run();
+});
+
 // https://crbug.com/1227564: Flaky on Chrome OS.
 GEN('#if BUILDFLAG(IS_CHROMEOS)');
 GEN('#define MAYBE_All DISABLED_All');

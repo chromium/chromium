@@ -33,6 +33,8 @@ export {driveDescriptor as driveV2Descriptor, DriveModuleElement as DriveV2Modul
 export {FooProxy} from './modules/dummy_v2/foo_proxy.js';
 export {DummyModuleElement, dummyV2Descriptor} from './modules/dummy_v2/module.js';
 // </if>
+export {FeedProxy} from './modules/feed/feed_module_proxy.js';
+export {feedDescriptor, FeedModuleElement, feedV2Descriptor} from './modules/feed/module.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';

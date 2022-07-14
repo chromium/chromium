@@ -6,6 +6,7 @@ import("./cart/cart.gni")
 import("./cart_v2/cart_v2.gni")
 import("./drive/drive.gni")
 import("./drive_v2/drive_v2.gni")
+import("./feed/feed.gni")
 import("./photos/photos.gni")
 import("./recipes_v2/recipes_v2.gni")
 import("./task_module/task_module.gni")
@@ -21,7 +22,8 @@ modules_non_web_component_files =
       "modules/module_descriptors.ts",
       "modules/module_registry.ts",
     ] + cart_non_web_component_files + drive_non_web_component_files +
-    photos_non_web_component_files + task_module_non_web_component_files
+    feed_non_web_component_files + photos_non_web_component_files +
+    task_module_non_web_component_files
 
 if (!is_official_build) {
   modules_non_web_component_files += dummy_v2_non_web_component_files
@@ -36,8 +38,8 @@ modules_web_component_files =
       "modules/module_wrapper.ts",
     ] + cart_web_component_files + cart_v2_web_component_files +
     drive_web_component_files + drive_v2_web_component_files +
-    photos_web_component_files + recipes_v2_web_component_files +
-    task_module_web_component_files
+    feed_web_component_files + photos_web_component_files +
+    recipes_v2_web_component_files + task_module_web_component_files
 
 if (!is_official_build) {
   modules_web_component_files += dummy_v2_web_component_files

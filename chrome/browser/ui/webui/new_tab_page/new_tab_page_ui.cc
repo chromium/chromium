@@ -19,6 +19,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive_handler.h"
+#include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_handler.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,6 +53,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -330,6 +332,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDummy10Title", IDS_NTP_MODULES_DUMMY2_TITLE},
       {"modulesDummy11Title", IDS_NTP_MODULES_DUMMY2_TITLE},
       {"modulesDummy12Title", IDS_NTP_MODULES_DUMMY2_TITLE},
+      {"modulesFeedTitle", IDS_NTP_MODULES_FEED_TITLE},
       {"modulesKaleidoscopeTitle", IDS_NTP_MODULES_KALEIDOSCOPE_TITLE},
       {"modulesPhotosInfo", IDS_NTP_MODULES_PHOTOS_INFO},
       {"modulesPhotosSentence", IDS_NTP_MODULES_PHOTOS_MEMORIES_TITLE},
@@ -453,6 +456,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "modulesRedesignedLayoutEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesignedLayout));
+  source->AddBoolean("feedModuleEnabled", base::FeatureList::IsEnabled(
+                                              ntp_features::kNtpFeedModule));
 
   std::vector<std::string> splitExperimentGroup = base::SplitString(
       base::GetFieldTrialParamValueByFeature(
@@ -664,6 +669,12 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<photos::mojom::PhotosHandler> pending_receiver) {
   photos_handler_ = std::make_unique<PhotosHandler>(std::move(pending_receiver),
                                                     profile_, web_contents_);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<ntp::feed::mojom::FeedHandler> pending_receiver) {
+  feed_handler_ =
+      ntp::FeedHandler::Create(std::move(pending_receiver), profile_);
 }
 
 #if !defined(OFFICIAL_BUILD)

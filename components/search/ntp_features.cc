@@ -135,6 +135,10 @@ const base::Feature kNtpPhotosModuleSplitSvgOptInArtWork(
     "NtpPhotosModuleSplitSvgOptInArtWork",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Following Feed module will be shown.
+const base::Feature kNtpFeedModule{"NtpFeedModule",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, recipe tasks module will be shown.
 const base::Feature kNtpRecipeTasksModule{"NtpRecipeTasksModule",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
