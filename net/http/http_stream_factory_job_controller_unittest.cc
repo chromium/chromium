@@ -3887,17 +3887,20 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                                                   std::move(endpoints));
   }
 
-  std::unique_ptr<HttpStreamRequest> CreateJobControllerAndStart(
-      const HttpRequestInfo& request_info) {
+  void CreateJobController(const HttpRequestInfo& request_info) {
     auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
         factory_, &request_delegate_, session_.get(), &default_job_factory_,
         request_info, is_preconnect_, false /* is_websocket */,
         enable_ip_based_pooling_, enable_alternative_services_,
         delay_main_job_with_available_spdy_session_, SSLConfig(), SSLConfig());
-
     job_controller_ = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
+  }
+
+  std::unique_ptr<HttpStreamRequest> CreateJobControllerAndStart(
+      const HttpRequestInfo& request_info) {
+    CreateJobController(request_info);
     return job_controller_->Start(
         &request_delegate_, nullptr, net_log_with_source_,
         HttpStreamRequest::HTTP_STREAM, DEFAULT_PRIORITY);
@@ -4863,6 +4866,60 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   MakeMainJobSucceed(/*expect_stream_ready=*/false);
 
   request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, PreconnectDnsAlpnH3) {
+  SetPreconnect();
+  PrepareForFirstQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+  CreateJobController(request_info);
+  job_controller_->Preconnect(/*num_streams=*/5);
+  // Only one job is started.
+  EXPECT_TRUE(job_controller_->main_job());
+  EXPECT_FALSE(job_controller_->alternative_job());
+  EXPECT_EQ(HttpStreamFactory::PRECONNECT_DNS_ALPN_H3,
+            job_controller_->main_job()->job_type());
+
+  MakeQuicJobScceed(0, /*expect_stream_ready=*/false);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, PreconnectNoDnsAlpnH3) {
+  EnableOndemandHostResolver();
+  PrepareForMainJob();
+  SetPreconnect();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+
+  Initialize(HttpRequestInfo());
+  CreateJobController(request_info);
+  job_controller_->Preconnect(/*num_streams=*/1);
+  // Only one job is started.
+  EXPECT_TRUE(job_controller_->main_job());
+  EXPECT_FALSE(job_controller_->alternative_job());
+  EXPECT_EQ(HttpStreamFactory::PRECONNECT_DNS_ALPN_H3,
+            job_controller_->main_job()->job_type());
+
+  // Resolve the host resolve request from |dns_alpn_h3_job|.
+  session_deps_.host_resolver->ResolveAllPending();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(HttpStreamFactory::PRECONNECT,
+            job_controller_->main_job()->job_type());
+
+  base::RunLoop().RunUntilIdle();
+
+  // Make |main_job| succeed.
+  MakeMainJobSucceed(/*expect_stream_ready=*/false);
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 

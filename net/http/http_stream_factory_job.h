@@ -110,7 +110,7 @@ class HttpStreamFactory::Job
                                   HttpAuthController* auth_controller) = 0;
 
     // Invoked when the |job| finishes pre-connecting sockets.
-    virtual void OnPreconnectsComplete(Job* job) = 0;
+    virtual void OnPreconnectsComplete(Job* job, int result) = 0;
 
     // Invoked to record connection attempts made by the socket layer to
     // HttpStreamRequest if |job| is associated with HttpStreamRequest.
@@ -269,7 +269,7 @@ class HttpStreamFactory::Job
                                 HttpAuthController* auth_controller,
                                 base::OnceClosure restart_with_auth_callback);
   void OnNeedsClientAuthCallback(SSLCertRequestInfo* cert_info);
-  void OnPreconnectsComplete();
+  void OnPreconnectsComplete(int result);
 
   void OnIOComplete(int result);
   // RunLoop() finishes asynchronously and invokes one of the On* methods (see

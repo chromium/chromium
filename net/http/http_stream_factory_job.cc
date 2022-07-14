@@ -81,6 +81,8 @@ const char* NetLogHttpStreamJobType(HttpStreamFactory::JobType job_type) {
       return "dns_alpn_h3";
     case HttpStreamFactory::PRECONNECT:
       return "preconnect";
+    case HttpStreamFactory::PRECONNECT_DNS_ALPN_H3:
+      return "preconnect_dns_alpn_h3";
   }
   return "";
 }
@@ -159,7 +161,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       using_quic_(
           alternative_protocol == kProtoQUIC ||
           (ShouldForceQuic(session, destination_, proxy_info, using_ssl_)) ||
-          job_type == DNS_ALPN_H3),
+          job_type == DNS_ALPN_H3 || job_type == PRECONNECT_DNS_ALPN_H3),
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
       quic_request_(session_->quic_stream_factory()),
@@ -198,7 +200,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
 
   if (using_quic_) {
     DCHECK((quic_version_ != quic::ParsedQuicVersion::Unsupported()) ||
-           (job_type_ == DNS_ALPN_H3));
+           (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3));
   }
 
   DCHECK(session);
@@ -433,6 +435,7 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
 void HttpStreamFactory::Job::OnStreamReadyCallback() {
   DCHECK(stream_.get());
   DCHECK_NE(job_type_, PRECONNECT);
+  DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(!is_websocket_ || try_websocket_over_http2_);
 
   MaybeCopyConnectionAttemptsFromHandle();
@@ -444,6 +447,7 @@ void HttpStreamFactory::Job::OnStreamReadyCallback() {
 void HttpStreamFactory::Job::OnWebSocketHandshakeStreamReadyCallback() {
   DCHECK(websocket_stream_);
   DCHECK_NE(job_type_, PRECONNECT);
+  DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(is_websocket_);
 
   MaybeCopyConnectionAttemptsFromHandle();
@@ -465,6 +469,7 @@ void HttpStreamFactory::Job::OnBidirectionalStreamImplReadyCallback() {
 
 void HttpStreamFactory::Job::OnStreamFailedCallback(int result) {
   DCHECK_NE(job_type_, PRECONNECT);
+  DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
 
   MaybeCopyConnectionAttemptsFromHandle();
 
@@ -476,6 +481,7 @@ void HttpStreamFactory::Job::OnCertificateErrorCallback(
     int result,
     const SSLInfo& ssl_info) {
   DCHECK_NE(job_type_, PRECONNECT);
+  DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(!spdy_session_request_);
 
   MaybeCopyConnectionAttemptsFromHandle();
@@ -489,6 +495,7 @@ void HttpStreamFactory::Job::OnNeedsProxyAuthCallback(
     HttpAuthController* auth_controller,
     base::OnceClosure restart_with_auth_callback) {
   DCHECK_NE(job_type_, PRECONNECT);
+  DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(establishing_tunnel_);
   DCHECK(!restart_with_auth_callback_);
 
@@ -506,14 +513,15 @@ void HttpStreamFactory::Job::OnNeedsProxyAuthCallback(
 void HttpStreamFactory::Job::OnNeedsClientAuthCallback(
     SSLCertRequestInfo* cert_info) {
   DCHECK_NE(job_type_, PRECONNECT);
+  DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(!spdy_session_request_);
 
   delegate_->OnNeedsClientAuth(this, server_ssl_config_, cert_info);
   // |this| may be deleted after this call.
 }
 
-void HttpStreamFactory::Job::OnPreconnectsComplete() {
-  delegate_->OnPreconnectsComplete(this);
+void HttpStreamFactory::Job::OnPreconnectsComplete(int result) {
+  delegate_->OnPreconnectsComplete(this, result);
   // |this| may be deleted after this call.
 }
 
@@ -533,11 +541,11 @@ void HttpStreamFactory::Job::RunLoop(int result) {
   // while doing anything other than waiting to establish a connection.
   spdy_session_request_.reset();
 
-  if (job_type_ == PRECONNECT) {
+  if ((job_type_ == PRECONNECT) || (job_type_ == PRECONNECT_DNS_ALPN_H3)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&HttpStreamFactory::Job::OnPreconnectsComplete,
-                       ptr_factory_.GetWeakPtr()));
+                       ptr_factory_.GetWeakPtr(), result));
     return;
   }
 
@@ -908,7 +916,8 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
     ssl_config = &server_ssl_config_;
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
-  bool require_dns_https_alpn = (job_type_ == DNS_ALPN_H3);
+  bool require_dns_https_alpn =
+      (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
 
   int rv = quic_request_.Request(
       std::move(destination), quic_version_, request_info_.privacy_mode,
@@ -950,7 +959,7 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   // established.
   spdy_session_request_.reset();
 
-  if (job_type_ == PRECONNECT) {
+  if ((job_type_ == PRECONNECT) || (job_type_ == PRECONNECT_DNS_ALPN_H3)) {
     if (using_quic_)
       return result;
     DCHECK_EQ(OK, result);
@@ -1100,6 +1109,7 @@ int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
 
   if (is_websocket_) {
     DCHECK_NE(job_type_, PRECONNECT);
+    DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
     DCHECK(delegate_->websocket_handshake_stream_create_helper());
 
     if (!try_websocket_over_http2_) {
@@ -1140,6 +1150,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
                        request_info_.url.SchemeIs(url::kHttpScheme);
     if (is_websocket_) {
       DCHECK_NE(job_type_, PRECONNECT);
+      DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
       DCHECK(delegate_->websocket_handshake_stream_create_helper());
       websocket_stream_ =
           delegate_->websocket_handshake_stream_create_helper()
@@ -1252,7 +1263,7 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
 
   // If this is a preconnect, nothing left do to.
   if (job_type_ == PRECONNECT) {
-    OnPreconnectsComplete();
+    OnPreconnectsComplete(OK);
     return;
   }
 

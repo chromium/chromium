@@ -278,6 +278,9 @@ void HttpStreamFactory::JobController::SetPriority(RequestPriority priority) {
   if (dns_alpn_h3_job_) {
     dns_alpn_h3_job_->SetPriority(priority);
   }
+  if (preconnect_backup_job_) {
+    preconnect_backup_job_->SetPriority(priority);
+  }
 }
 
 void HttpStreamFactory::JobController::OnStreamReady(
@@ -508,9 +511,23 @@ void HttpStreamFactory::JobController::OnNeedsProxyAuth(
                               auth_controller);
 }
 
-void HttpStreamFactory::JobController::OnPreconnectsComplete(Job* job) {
+void HttpStreamFactory::JobController::OnPreconnectsComplete(Job* job,
+                                                             int result) {
   DCHECK_EQ(main_job_.get(), job);
+  if (result == ERR_DNS_NO_MACHING_SUPPORTED_ALPN) {
+    DCHECK_EQ(job->job_type(), PRECONNECT_DNS_ALPN_H3);
+    DCHECK(preconnect_backup_job_);
+    GURL origin_url = request_info_.url;
+    RewriteUrlWithHostMappingRules(origin_url);
+    url::SchemeHostPort destination(origin_url);
+    DCHECK(destination.IsValid());
+    ConvertWsToHttp(destination);
+    main_job_ = std::move(preconnect_backup_job_);
+    main_job_->Preconnect(num_streams_);
+    return;
+  }
   main_job_.reset();
+  preconnect_backup_job_.reset();
   ResetErrorStatusForJobs();
   factory_->OnPreconnectsCompleteInternal();
   MaybeNotifyFactoryOfCompletion();
@@ -797,6 +814,14 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         SelectQuicVersion(alternative_service_info_.advertised_versions());
     DCHECK_NE(quic_version, quic::ParsedQuicVersion::Unsupported());
   }
+  const bool dns_alpn_h3_job_enabled =
+      base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcbAlpn) &&
+      base::EqualsCaseInsensitiveASCII(origin_url.scheme(),
+                                       url::kHttpsScheme) &&
+      session_->IsQuicEnabled() && proxy_info_.is_direct() &&
+      !session_->http_server_properties()->IsAlternativeServiceBroken(
+          GetAlternativeServiceForDnsJob(origin_url),
+          request_info_.network_isolation_key);
 
   if (is_preconnect_) {
     // Due to how the socket pools handle priorities and idle sockets, only IDLE
@@ -819,14 +844,25 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
           enable_ip_based_pooling_, session_->net_log(),
           alternative_service_info_.protocol(), quic_version);
     } else {
+      // Note: When `dns_alpn_h3_job_enabled` is true, we create a
+      // PRECONNECT_DNS_ALPN_H3 job. If no matching HTTPS DNS ALPN records are
+      // received, the PRECONNECT_DNS_ALPN_H3 job will fail with
+      // ERR_DNS_NO_MACHING_SUPPORTED_ALPN, and |preconnect_backup_job_| will be
+      // started in OnPreconnectsComplete().
       main_job_ = job_factory_->CreateJob(
-          this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
-          server_ssl_config_, proxy_ssl_config_, std::move(destination),
-          origin_url, is_websocket_, enable_ip_based_pooling_,
-          session_->net_log());
+          this, dns_alpn_h3_job_enabled ? PRECONNECT_DNS_ALPN_H3 : PRECONNECT,
+          session_, request_info_, priority_, proxy_info_, server_ssl_config_,
+          proxy_ssl_config_, destination, origin_url, is_websocket_,
+          enable_ip_based_pooling_, net_log_.net_log());
+      if (dns_alpn_h3_job_enabled) {
+        preconnect_backup_job_ = job_factory_->CreateJob(
+            this, PRECONNECT, session_, request_info_, priority_, proxy_info_,
+            server_ssl_config_, proxy_ssl_config_, std::move(destination),
+            origin_url, is_websocket_, enable_ip_based_pooling_,
+            net_log_.net_log());
+      }
     }
     main_job_->Preconnect(num_streams_);
-    // TODO(crbug.com/1317943): Consider using DNS_ALPN_H3 job for preconnect.
     return OK;
   }
   main_job_ = job_factory_->CreateJob(
@@ -860,13 +896,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         alternative_service_info_.protocol(), quic_version);
   }
 
-  if (base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcbAlpn) &&
-      base::EqualsCaseInsensitiveASCII(origin_url.scheme(),
-                                       url::kHttpsScheme) &&
-      session_->IsQuicEnabled() && proxy_info_.is_direct() &&
-      !session_->http_server_properties()->IsAlternativeServiceBroken(
-          GetAlternativeServiceForDnsJob(origin_url),
-          request_info_.network_isolation_key)) {
+  if (dns_alpn_h3_job_enabled) {
     DCHECK(!is_websocket_);
     url::SchemeHostPort dns_alpn_h3_destination =
         url::SchemeHostPort(origin_url);

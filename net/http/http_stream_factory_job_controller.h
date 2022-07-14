@@ -129,7 +129,7 @@ class HttpStreamFactory::JobController
                         HttpAuthController* auth_controller) override;
 
   // Invoked when the |job| finishes pre-connecting sockets.
-  void OnPreconnectsComplete(Job* job) override;
+  void OnPreconnectsComplete(Job* job, int result) override;
 
   // Invoked to record connection attempts made by the socket layer to
   // Request if |job| is associated with Request.
@@ -304,12 +304,19 @@ class HttpStreamFactory::JobController
   // Enable using alternative services for the request.
   const bool enable_alternative_services_;
 
-  // |main_job_| is a job waiting to see if |alternative_job_| can reuse a
-  // connection. If |alternative_job_| is unable to do so, |this| will notify
-  // |main_job_| to proceed and then race the two jobs.
+  // For normal (non-preconnect) job, |main_job_| is a job waiting to see if
+  // |alternative_job_| or |dns_alpn_h3_job_| can reuse a connection. If both
+  // |alternative_job_| and |dns_alpn_h3_job_| are unable to do so, |this| will
+  // notify |main_job_| to proceed and then race the two jobs.
+  // For preconnect job, |main_job_| is started first, and if it fails with
+  // ERR_DNS_NO_MACHING_SUPPORTED_ALPN, |preconnect_backup_job_| will be
+  // started.
   std::unique_ptr<Job> main_job_;
   std::unique_ptr<Job> alternative_job_;
   std::unique_ptr<Job> dns_alpn_h3_job_;
+
+  std::unique_ptr<Job> preconnect_backup_job_;
+
   // The alternative service used by |alternative_job_|
   // (or by |main_job_| if |is_preconnect_|.)
   AlternativeServiceInfo alternative_service_info_;

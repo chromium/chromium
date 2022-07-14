@@ -97,6 +97,9 @@ std::unique_ptr<HttpStreamFactory::Job> TestJobFactory::CreateJob(
     case HttpStreamFactory::PRECONNECT:
       main_job_ = job.get();
       break;
+    case HttpStreamFactory::PRECONNECT_DNS_ALPN_H3:
+      main_job_ = job.get();
+      break;
   }
   return job;
 }

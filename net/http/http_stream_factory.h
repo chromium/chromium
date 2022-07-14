@@ -58,6 +58,9 @@ class NET_EXPORT HttpStreamFactory {
     // Job that will preconnect. This uses HTTP/3 iff Chrome has received an
     // Alt-Svc header from the origin. Otherwise, it use HTTP/1 or HTTP/2.
     PRECONNECT,
+    // Job that will preconnect via HTTP/3 iff an "h3" value was found in the
+    // ALPN list of an HTTPS DNS record.
+    PRECONNECT_DNS_ALPN_H3,
   };
 
   explicit HttpStreamFactory(HttpNetworkSession* session);
