@@ -5,7 +5,7 @@
 #include "content/public/browser/prefetch_service_delegate.h"
 
 #include "content/browser/browser_context_impl.h"
-#include "content/browser/speculation_rules/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace content {
