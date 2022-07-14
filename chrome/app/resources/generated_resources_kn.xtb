@@ -3873,7 +3873,7 @@
 <translation id="4742334355511750246">ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="4742970037960872810">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
-<translation id="4744981231093950366">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
+<translation id="4744981231093950366">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="474609389162964566">"Ok Google" ಎಂದು ಎಚ್ಚರಿಸುವ ಮೂಲಕ ನಿಮ್ಮ Assistant ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">ಅಸಹಜ ಕೀಬೋರ್ಡ್‌ಗಳು, ಗೇಮ್ ಕಂಟ್ರೋಲರ್‌ಗಳು ಮತ್ತು ಇತರ ಸಾಧನಗಳನ್ನು ಬಳಸುವ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ HID ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ</translation>
@@ -4098,7 +4098,7 @@
 <translation id="4972129977812092092">ಪ್ರಿಂಟರ್‌ ಅನ್ನು ಎಡಿಟ್‌ ಮಾಡಿ</translation>
 <translation id="4972164225939028131">ಪಾಸ್‌ವರ್ಡ್ ತಪ್ಪಾಗಿದೆ</translation>
 <translation id="4972737347717125191">ಸೈಟ್‌ಗಳು, ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
-<translation id="4973325300212422370">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ಗಳನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
+<translation id="4973325300212422370">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="497403230787583386">ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಳನ್ನು ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">ಪ್ರವೇಶ ದೃಢೀಕರಿಸಿ</translation>
