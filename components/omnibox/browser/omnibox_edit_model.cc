@@ -74,7 +74,6 @@
 using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
 
-
 // Helpers --------------------------------------------------------------------
 
 namespace {
@@ -139,7 +138,6 @@ void RecordActionShownForAllActions(
 
 }  // namespace
 
-
 // OmniboxEditModel::State ----------------------------------------------------
 
 OmniboxEditModel::State::State(
@@ -162,9 +160,7 @@ OmniboxEditModel::State::State(
 
 OmniboxEditModel::State::State(const State& other) = default;
 
-OmniboxEditModel::State::~State() {
-}
-
+OmniboxEditModel::State::~State() = default;
 
 // OmniboxEditModel -----------------------------------------------------------
 
@@ -190,8 +186,7 @@ OmniboxEditModel::OmniboxEditModel(OmniboxView* view,
       std::make_unique<OmniboxController>(this, client_.get());
 }
 
-OmniboxEditModel::~OmniboxEditModel() {
-}
+OmniboxEditModel::~OmniboxEditModel() = default;
 
 void OmniboxEditModel::set_popup_view(OmniboxPopupView* popup_view) {
   popup_view_ = popup_view;
@@ -374,8 +369,8 @@ void OmniboxEditModel::OnChanged() {
   // Don't call CurrentMatch() when there's no editing, as in this case we'll
   // never actually use it.  This avoids running the autocomplete providers (and
   // any systems they then spin up) during startup.
-  const AutocompleteMatch& current_match = user_input_in_progress_ ?
-      CurrentMatch(nullptr) : AutocompleteMatch();
+  const AutocompleteMatch& current_match =
+      user_input_in_progress_ ? CurrentMatch(nullptr) : AutocompleteMatch();
 
   client_->OnTextChanged(current_match, user_input_in_progress_, user_text_,
                          result(), has_focus());
@@ -1305,9 +1300,15 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   // for ease of replacement, and matches other browsers.
   bool user_input_was_in_progress = user_input_in_progress_;
   bool popup_was_open = PopupIsOpen();
+  // TODO(crbug.com/1340378): If the popup was open, `user_input_in_progress_`
+  //  *should* also be true; checking `user_text_` in the DCHECK below, and
+  //  checking `popup_was_open` in the if predicate below *should* be
+  //  unnecessary. However, that's not always the case (see
+  //  `user_input_in_progress_` comment in the header).
+  DCHECK(!popup_was_open || user_input_was_in_progress || user_text_.empty());
   view_->RevertAll();
   view_->SelectAll(true);
-  if (user_input_was_in_progress) {
+  if (user_input_was_in_progress || popup_was_open) {
     base::UmaHistogramEnumeration(
         kOmniboxEscapeHistogramName,
         popup_was_open ? OmniboxEscapeAction::kClosePopupAndClearUserInput
@@ -1320,8 +1321,6 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
     // loaded triggers the ZeroSuggest popup.
     return true;
   }
-
-  DCHECK(!popup_was_open);
 
   // Blur the omnibox and focus the web contents.
   if (base::FeatureList::IsEnabled(omnibox::kBlurWithEscape)) {
@@ -1424,7 +1423,8 @@ void OmniboxEditModel::OnPopupDataChanged(
   omnibox_controller_->InvalidateCurrentMatch();
 
   // Update keyword/hint-related local state.
-  bool keyword_state_changed = (keyword_ != keyword) ||
+  bool keyword_state_changed =
+      (keyword_ != keyword) ||
       ((is_keyword_hint_ != is_keyword_hint) && !keyword.empty());
   if (keyword_state_changed) {
     bool keyword_was_selected = is_keyword_selected();
@@ -1680,8 +1680,9 @@ void OmniboxEditModel::InternalSetUserText(const std::u16string& text) {
 
 std::u16string OmniboxEditModel::MaybeStripKeyword(
     const std::u16string& text) const {
-  return is_keyword_selected() ?
-      KeywordProvider::SplitReplacementStringFromInput(text, false) : text;
+  return is_keyword_selected()
+             ? KeywordProvider::SplitReplacementStringFromInput(text, false)
+             : text;
 }
 
 std::u16string OmniboxEditModel::MaybePrependKeyword(
@@ -2217,8 +2218,10 @@ bool OmniboxEditModel::CreatedKeywordSearchByInsertingSpaceInMiddle(
   std::u16string keyword;
   base::TrimWhitespace(new_text.substr(0, space_position), base::TRIM_LEADING,
                        &keyword);
-  return !keyword.empty() && !autocomplete_controller()->keyword_provider()->
-      GetKeywordForText(keyword).empty();
+  return !keyword.empty() && !autocomplete_controller()
+                                  ->keyword_provider()
+                                  ->GetKeywordForText(keyword)
+                                  .empty();
 }
 
 //  static

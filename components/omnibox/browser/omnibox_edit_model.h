@@ -639,7 +639,9 @@ class OmniboxEditModel {
   // not yet accepted them.  We use this to determine when we need to save
   // state (on switching tabs) and whether changes to the page URL should be
   // immediately displayed.
-  // This flag will be true in a superset of the cases where the popup is open.
+  // This flag *should* be true in a superset of the cases where the popup is
+  // open. Except (crbug.com/1340378) for zero suggestions when the popup was
+  // opened with ctrl+L or a mouse click (as opposed to the down arrow).
   bool user_input_in_progress_;
 
   // The text that the user has entered.  This does not include inline
