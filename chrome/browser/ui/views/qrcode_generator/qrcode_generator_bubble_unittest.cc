@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
 
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_observer.h"
@@ -144,6 +146,28 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
   QRCodeGeneratorBubble* bubble() { return bubble_; }
   views::ImageView* image() { return bubble_->image_for_testing(); }
   views::Textfield* textfield() { return bubble_->textfield_for_testing(); }
+  views::Label* error_label() { return bubble_->error_label_for_testing(); }
+  views::LabelButton* download_button() {
+    return bubble_->download_button_for_testing();
+  }
+
+  bool ImageShowing() {
+    return image()->GetVisible() && image()->GetPreferredSize().height() > 0 &&
+           image()->GetPreferredSize().width() > 0;
+  }
+
+  bool ImagePlaceholderShowing() {
+    return ImageShowing() && image()->GetImage().height() > 128 &&
+           image()->GetImage().width() > 128 &&
+           image()->GetImage().bitmap()->getColor(128, 128) ==
+               SK_ColorTRANSPARENT;
+  }
+
+  bool ErrorLabelShowing() {
+    return error_label()->GetVisible() &&
+           error_label()->GetPreferredSize().height() > 0 &&
+           error_label()->GetPreferredSize().width() > 0;
+  }
 
   FakeQRCodeGeneratorService* service() { return &fake_service_; }
 
@@ -165,26 +189,21 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
 TEST_F(QRCodeGeneratorBubbleUITest, ImageShowsAfterErrorState) {
   bubble()->Show();
 
-  auto image_showing = [&]() {
-    return image()->GetVisible() && image()->GetPreferredSize().height() > 0 &&
-           image()->GetPreferredSize().width() > 0;
-  };
-
-  EXPECT_TRUE(image_showing());
+  EXPECT_TRUE(ImageShowing());
 
   service()->WaitForRequest();
   ASSERT_TRUE(service()->HasPendingRequest());
   auto error_response = mojom::GenerateQRCodeResponse::New();
   error_response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
 
-  EXPECT_TRUE(image_showing());
+  EXPECT_TRUE(ImageShowing());
 
   {
     ViewVisibilityWaiter waiter(image());
     service()->DeliverResponse(std::move(error_response));
     waiter.Wait();
 
-    EXPECT_FALSE(image_showing());
+    EXPECT_FALSE(ImageShowing());
   }
 
   // The UI regenerates the QR code when the user types new text, so synthesize
@@ -203,8 +222,108 @@ TEST_F(QRCodeGeneratorBubbleUITest, ImageShowsAfterErrorState) {
     service()->DeliverResponse(std::move(ok_response));
     waiter.Wait();
 
-    EXPECT_TRUE(image_showing());
+    EXPECT_TRUE(ImageShowing());
   }
+}
+
+TEST_F(QRCodeGeneratorBubbleUITest,
+       PlaceholderImageShowsAfterTextFieldEmptied) {
+  bubble()->Show();
+
+  EXPECT_TRUE(ImagePlaceholderShowing());
+
+  service()->WaitForRequest();
+  ASSERT_TRUE(service()->HasPendingRequest());
+  auto error_response = mojom::GenerateQRCodeResponse::New();
+  error_response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
+
+  EXPECT_TRUE(ImagePlaceholderShowing());
+
+  {
+    ViewVisibilityWaiter waiter(image());
+    service()->DeliverResponse(std::move(error_response));
+    waiter.Wait();
+
+    EXPECT_FALSE(ImageShowing());
+  }
+
+  auto ok_response = mojom::GenerateQRCodeResponse::New();
+  ok_response->error_code = mojom::QRCodeGeneratorError::NONE;
+  ok_response->bitmap.allocN32Pixels(16, 16);
+  ok_response->bitmap.eraseColor(SK_ColorRED);
+  ok_response->data.resize(16 * 16);
+  ok_response->data_size = gfx::Size(16, 16);
+
+  // The UI regenerates the QR code when the user types new text, so synthesize
+  // that.
+  textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
+  service()->WaitForRequest();
+
+  {
+    ViewVisibilityWaiter waiter(image());
+    service()->DeliverResponse(std::move(ok_response));
+    waiter.Wait();
+
+    EXPECT_TRUE(ImageShowing());
+    EXPECT_FALSE(ImagePlaceholderShowing());
+    EXPECT_TRUE(download_button()->GetEnabled());
+  }
+
+  textfield()->SelectAll(false);
+  textfield()->DeleteRange(textfield()->GetSelectedRange());
+
+  EXPECT_TRUE(ImageShowing());
+  EXPECT_TRUE(ImagePlaceholderShowing());
+  EXPECT_FALSE(download_button()->GetEnabled());
+}
+
+TEST_F(QRCodeGeneratorBubbleUITest, LabelHidesAfterErrorState) {
+  bubble()->Show();
+
+  EXPECT_TRUE(ImagePlaceholderShowing());
+  EXPECT_FALSE(ErrorLabelShowing());
+
+  service()->WaitForRequest();
+  ASSERT_TRUE(service()->HasPendingRequest());
+  auto error_response = mojom::GenerateQRCodeResponse::New();
+  error_response->error_code = mojom::QRCodeGeneratorError::UNKNOWN_ERROR;
+
+  EXPECT_TRUE(ImagePlaceholderShowing());
+
+  {
+    ViewVisibilityWaiter waiter(image());
+    service()->DeliverResponse(std::move(error_response));
+    waiter.Wait();
+
+    EXPECT_FALSE(ImageShowing());
+  }
+
+  auto too_long_response = mojom::GenerateQRCodeResponse::New();
+  too_long_response->error_code = mojom::QRCodeGeneratorError::INPUT_TOO_LONG;
+
+  // The UI regenerates the QR code when the user types new text, so synthesize
+  // that.
+  textfield()->InsertOrReplaceText(u"https://www.chromium.org/b");
+  service()->WaitForRequest();
+
+  {
+    ViewVisibilityWaiter waiter(image());
+    service()->DeliverResponse(std::move(too_long_response));
+    waiter.Wait();
+
+    EXPECT_TRUE(ImageShowing());
+    EXPECT_TRUE(ImagePlaceholderShowing());
+    EXPECT_TRUE(ErrorLabelShowing());
+    EXPECT_FALSE(download_button()->GetEnabled());
+  }
+
+  textfield()->SelectAll(false);
+  textfield()->DeleteRange(textfield()->GetSelectedRange());
+
+  EXPECT_TRUE(ImageShowing());
+  EXPECT_TRUE(ImagePlaceholderShowing());
+  EXPECT_FALSE(ErrorLabelShowing());
+  EXPECT_FALSE(download_button()->GetEnabled());
 }
 
 }  // namespace

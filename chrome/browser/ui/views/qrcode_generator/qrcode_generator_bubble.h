@@ -71,6 +71,8 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   views::ImageView* image_for_testing() { return qr_code_image_; }
   views::Textfield* textfield_for_testing() { return textfield_url_; }
+  views::Label* error_label_for_testing() { return bottom_error_label_; }
+  views::LabelButton* download_button_for_testing() { return download_button_; }
 
   void SetQRCodeServiceForTesting(
       mojo::Remote<mojom::QRCodeGeneratorService>&& remote);
@@ -87,6 +89,9 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   // Shows an error message.
   void DisplayError(mojom::QRCodeGeneratorError error);
+
+  // Hides all error messages and enables or disables download button.
+  void HideErrors(bool enable_download_button);
 
   // Shrinks the view and sets it not visible.
   void ShrinkAndHideDisplay(views::View* view);

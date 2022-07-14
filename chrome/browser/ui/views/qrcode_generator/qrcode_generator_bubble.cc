@@ -129,6 +129,7 @@ void QRCodeGeneratorBubble::OnThemeChanged() {
 void QRCodeGeneratorBubble::UpdateQRContent() {
   if (textfield_url_->GetText().empty()) {
     DisplayPlaceholderImage();
+    HideErrors(false);
     return;
   }
 
@@ -154,9 +155,7 @@ void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
     return;
   }
 
-  ShrinkAndHideDisplay(center_error_label_);
-  bottom_error_label_->SetVisible(false);
-  download_button_->SetEnabled(true);
+  HideErrors(true);
   UpdateQRImage(AddQRCodeQuietZone(
       gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap), response->data_size,
       GetColorProvider()->GetColor(kColorQrCodeBackground)));
@@ -188,6 +187,12 @@ void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
   bottom_error_label_->SetVisible(false);
   center_error_label_->SetPreferredSize(GetQRCodeImageSize());
   center_error_label_->SetVisible(true);
+}
+
+void QRCodeGeneratorBubble::HideErrors(bool enable_download_button) {
+  ShrinkAndHideDisplay(center_error_label_);
+  bottom_error_label_->SetVisible(false);
+  download_button_->SetEnabled(enable_download_button);
 }
 
 void QRCodeGeneratorBubble::ShrinkAndHideDisplay(views::View* view) {
