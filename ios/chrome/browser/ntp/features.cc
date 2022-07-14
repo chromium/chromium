@@ -10,6 +10,13 @@ const base::Feature kBlockNewTabPagePendingLoad{
 const base::Feature kEnableWebChannels{"EnableWebChannels",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableFeedBackgroundRefresh{
+    "EnableFeedBackgroundRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsWebChannelsEnabled() {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
+}
+
+bool IsFeedBackgroundRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh);
 }

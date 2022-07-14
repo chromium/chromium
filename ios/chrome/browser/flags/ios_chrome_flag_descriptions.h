@@ -296,6 +296,10 @@ extern const char kEnableWebChannelsDescription[];
 extern const char kExpandedTabStripName[];
 extern const char kExpandedTabStripDescription[];
 
+// Title and description for the flag to enable feed background refresh.
+extern const char kFeedBackgroundRefreshName[];
+extern const char kFeedBackgroundRefreshDescription[];
+
 // Title and description for the flag to enable filling across affiliated
 // websites.
 extern const char kFillingAcrossAffiliatedWebsitesName[];

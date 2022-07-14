@@ -10,11 +10,18 @@
 // Feature flag to enable NTP UI pending loader blocker.
 extern const base::Feature kBlockNewTabPagePendingLoad;
 
+// Feature flag to enable feed background refresh.
+// Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
+extern const base::Feature kEnableFeedBackgroundRefresh;
+
 // Feature flag to enable the Following feed in the NTP.
 // Use IsWebChannelsEnabled() instead of this constant directly.
 extern const base::Feature kEnableWebChannels;
 
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
+
+// Whether feed background refresh is enabled.
+bool IsFeedBackgroundRefreshEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

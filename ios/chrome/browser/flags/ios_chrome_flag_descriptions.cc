@@ -342,6 +342,11 @@ const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
     " or the toolbar";
 
+const char kFeedBackgroundRefreshName[] = "Enable feed background refresh";
+const char kFeedBackgroundRefreshDescription[] =
+    "Schedules a feed background refresh after some minimum period of time has "
+    "passed after the last refresh.";
+
 const char kFillingAcrossAffiliatedWebsitesName[] =
     "Fill passwords across affiliated websites.";
 const char kFillingAcrossAffiliatedWebsitesDescription[] =

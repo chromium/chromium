@@ -1041,6 +1041,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableRemadeDownstreamMetrics)},
+    {"feed-background-refresh-ios",
+     flag_descriptions::kFeedBackgroundRefreshName,
+     flag_descriptions::kFeedBackgroundRefreshDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableFeedBackgroundRefresh)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
