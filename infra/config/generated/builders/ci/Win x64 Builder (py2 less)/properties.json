@@ -24,8 +24,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "use_clang_coverage",
-                  "disable_vpython_common_crbug_1329052"
+                  "use_clang_coverage"
                 ],
                 "config": "chromium"
               }

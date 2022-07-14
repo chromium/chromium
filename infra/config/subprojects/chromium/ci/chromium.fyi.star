@@ -1216,12 +1216,6 @@ ci.builder(
     description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Win%20x64%20Builder\">Win x64 Builder</a>, but runs on bots not having python2.",
     builder_spec = builder_config.copy_from("ci/Win x64 Builder", lambda spec: structs.evolve(
         spec,
-        gclient_config = structs.extend(
-            spec.gclient_config,
-            apply_configs = [
-                "disable_vpython_common_crbug_1329052",
-            ],
-        ),
         build_gs_bucket = "chromium-fyi-archive",
     )),
     builderless = True,
@@ -1271,12 +1265,6 @@ fyi_mac_builder(
     name = "Mac Builder (py2 less)",
     builder_spec = builder_config.copy_from("ci/Mac Builder", lambda spec: structs.evolve(
         spec,
-        gclient_config = structs.extend(
-            spec.gclient_config,
-            apply_configs = [
-                "disable_vpython_common_crbug_1329052",
-            ],
-        ),
         build_gs_bucket = "chromium-fyi-archive",
     )),
     console_view_entry = consoles.console_view_entry(
