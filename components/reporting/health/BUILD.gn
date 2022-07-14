@@ -6,6 +6,10 @@ import("//build/config/features.gni")
 
 static_library("health_module") {
   sources = [
+    "health_module.cc",
+    "health_module.h",
+    "health_module_delegate.cc",
+    "health_module_delegate.h",
     "health_module_files.cc",
     "health_module_files.h",
   ]
@@ -24,7 +28,10 @@ static_library("health_module") {
 # target and must be one targets named "unit_tests".
 source_set("unit_tests") {
   testonly = true
-  sources = [ "health_module_files_unittest.cc" ]
+  sources = [
+    "health_module_delegate_unittest.cc",
+    "health_module_files_unittest.cc",
+  ]
 
   deps = [
     ":health_module",
