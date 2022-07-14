@@ -240,7 +240,7 @@ constexpr size_t kSuperPageShift = 21;  // 2 MiB
 constexpr size_t kSuperPageSize = 1 << kSuperPageShift;
 constexpr size_t kSuperPageAlignment = kSuperPageSize;
 constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
-constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask & kMemTagUnmask;
+constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
 // GigaCage is split into two pools, one which supports BackupRefPtr (BRP) and
 // one that doesn't.
@@ -278,14 +278,14 @@ static constexpr pool_handle kConfigurablePoolHandle = 3;
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
 #if defined(PA_HAS_MEMORY_TAGGING)
-// Returns whether the tag of |object| overflowed and the containing slot needs
-// to be moved to quarantine.
+// Returns whether the tag of |object| overflowed, meaning the containing slot
+// needs to be moved to quarantine.
 PA_ALWAYS_INLINE bool HasOverflowTag(void* object) {
   // The tag with which the slot is put to quarantine.
   constexpr uintptr_t kOverflowTag = 0x0f00000000000000uLL;
-  static_assert((kOverflowTag & ~kMemTagUnmask) != 0,
+  static_assert((kOverflowTag & kPtrTagMask) != 0,
                 "Overflow tag must be in tag bits");
-  return (reinterpret_cast<uintptr_t>(object) & ~kMemTagUnmask) == kOverflowTag;
+  return (reinterpret_cast<uintptr_t>(object) & kPtrTagMask) == kOverflowTag;
 }
 #endif  // defined(PA_HAS_MEMORY_TAGGING)
 

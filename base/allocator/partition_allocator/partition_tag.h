@@ -48,12 +48,15 @@ PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(uintptr_t addr) {
   size_t offset_in_bitmap = offset_in_super_page >>
                             internal::tag_bitmap::kBytesPerPartitionTagShift
                                 << internal::tag_bitmap::kPartitionTagSizeShift;
+  // No need to tag, as the tag bitmap region isn't protected by MTE.
   return reinterpret_cast<PartitionTag*>(bitmap_base + offset_in_bitmap);
 }
 
 PA_ALWAYS_INLINE PartitionTag* PartitionTagPointer(const void* ptr) {
-  return PartitionTagPointer(
-      internal::UnmaskPtr(reinterpret_cast<uintptr_t>(ptr)));
+  // Disambiguation: UntagPtr relates to hwardware MTE, and it strips the tag
+  // from the pointer. Whereas, PartitionTagPointer relates to software MTE
+  // (i.e. MTECheckedPtr) and it returns a pointer to the tag in memory.
+  return PartitionTagPointer(UntagPtr(ptr));
 }
 
 namespace internal {
@@ -75,7 +78,10 @@ PA_ALWAYS_INLINE void PartitionTagSetValue(uintptr_t addr,
 PA_ALWAYS_INLINE void PartitionTagSetValue(void* ptr,
                                            size_t size,
                                            PartitionTag value) {
-  PartitionTagSetValue(reinterpret_cast<uintptr_t>(ptr), size, value);
+  // Disambiguation: UntagPtr relates to hwardware MTE, and it strips the tag
+  // from the pointer. Whereas, PartitionTagSetValue relates to software MTE
+  // (i.e. MTECheckedPtr) and it sets the in-memory tag.
+  PartitionTagSetValue(UntagPtr(ptr), size, value);
 }
 
 PA_ALWAYS_INLINE PartitionTag PartitionTagGetValue(void* ptr) {

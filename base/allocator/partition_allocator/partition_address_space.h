@@ -61,7 +61,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   static PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       uintptr_t address) {
-    address = ::partition_alloc::internal::UnmaskPtr(address);
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
     PA_DCHECK(!IsInBRPPool(address));
@@ -155,8 +154,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   static PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
-    return ::partition_alloc::internal::UnmaskPtr(address) -
-           setup_.brp_pool_base_address_;
+    return address - setup_.brp_pool_base_address_;
   }
 
   // PartitionAddressSpace is static_only class.
@@ -227,19 +225,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
 #if !defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
   // Masks used to easy determine belonging to a pool.
-  // On Arm, the top byte of each pointer is ignored (meaning there are
-  // effectively 256 versions of each valid pointer). 4 bits are used to store
-  // tags for Arm's Memory Tagging Extension (MTE). To ensure that tagged
-  // pointers are recognized as being in the pool, mask off the top byte with
-  // kMemTagUnmask.
   static constexpr uintptr_t kRegularPoolOffsetMask =
       static_cast<uintptr_t>(kRegularPoolSize) - 1;
-  static constexpr uintptr_t kRegularPoolBaseMask =
-      ~kRegularPoolOffsetMask & kMemTagUnmask;
+  static constexpr uintptr_t kRegularPoolBaseMask = ~kRegularPoolOffsetMask;
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
-  static constexpr uintptr_t kBRPPoolBaseMask =
-      ~kBRPPoolOffsetMask & kMemTagUnmask;
+  static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
 #endif  // !defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
 
   // This must be set to such a value that IsIn*Pool() always returns false when

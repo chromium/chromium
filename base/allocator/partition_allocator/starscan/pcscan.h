@@ -247,15 +247,12 @@ PA_ALWAYS_INLINE void PCScan::MoveToQuarantine(void* object,
     SecureMemset(object, 0, usable_size);
   }
 
-  // TODO(bartekn): Remove MTE untagging, once its done in the caller.
-  uintptr_t unmasked_slot_start =
-      ::partition_alloc::internal::UnmaskPtr(slot_start);
-  auto* state_bitmap = StateBitmapFromAddr(unmasked_slot_start);
+  auto* state_bitmap = StateBitmapFromAddr(slot_start);
 
   // Mark the state in the state bitmap as quarantined. Make sure to do it after
   // the clearing to avoid racing with *Scan Sweeper.
   [[maybe_unused]] const bool succeeded =
-      state_bitmap->Quarantine(unmasked_slot_start, instance.epoch());
+      state_bitmap->Quarantine(slot_start, instance.epoch());
 #if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
   if (PA_UNLIKELY(!succeeded))
     DoubleFreeAttempt();

@@ -10,6 +10,7 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cxx17_backports.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
@@ -452,7 +453,8 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   uintptr_t buffer = root->RawAlloc(bucket, AllocFlags::kZeroFill, raw_size,
                                     internal::PartitionPageSize(), &usable_size,
                                     &already_zeroed);
-  ThreadCache* tcache = new (reinterpret_cast<void*>(buffer)) ThreadCache(root);
+  ThreadCache* tcache =
+      new (internal::SlotStartAddr2Ptr(buffer)) ThreadCache(root);
 
   // This may allocate.
   internal::PartitionTlsSet(internal::g_thread_cache_key, tcache);
@@ -519,11 +521,15 @@ void ThreadCache::Delete(void* tcache_ptr) {
 
   auto* root = tcache->root_;
   tcache->~ThreadCache();
-  root->RawFree(reinterpret_cast<uintptr_t>(tcache_ptr));
+  // TreadCache was allocated using RawAlloc() and SlotStartAddr2Ptr(), so it
+  // shifted by extras, but is MTE-tagged.
+  root->RawFree(internal::SlotStartPtr2Addr(tcache_ptr));
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, allocations do occur during thread/process teardown, make sure
   // they don't resurrect the thread cache.
+  //
+  // Don't MTE-tag, as it'd mess with the sentinel value.
   //
   // TODO(lizeb): Investigate whether this is needed on POSIX as well.
   internal::PartitionTlsSet(internal::g_thread_cache_key,
@@ -679,7 +685,7 @@ void ThreadCache::FreeAfter(internal::PartitionFreelistEntry* head,
   // acquisitions can be expensive.
   internal::ScopedGuard guard(root_->lock_);
   while (head) {
-    uintptr_t slot_start = reinterpret_cast<uintptr_t>(head);
+    uintptr_t slot_start = internal::SlotStartPtr2Addr(head);
     head = head->GetNextForThreadCache<crash_on_corruption>(slot_size);
     root_->RawFreeLocked(slot_start);
   }

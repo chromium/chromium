@@ -143,7 +143,7 @@ constexpr int kTagBits = sizeof(uintptr_t) * 8 - kValidAddressBits;
 // MTECheckedPtr has no business with the topmost bits reserved for the
 // tag used by true ARM MTE, so we strip it out here.
 constexpr uintptr_t kTagMask =
-    ~kAddressMask & partition_alloc::internal::kMemTagUnmask;
+    ~kAddressMask & partition_alloc::internal::kPtrUntagMask;
 
 constexpr int kTopBitShift = 63;
 constexpr uintptr_t kTopBit = 1ull << kTopBitShift;
@@ -157,19 +157,20 @@ struct MTECheckedPtrImplPartitionAllocSupport {
   // Checks if the necessary support is enabled in PartitionAlloc for `ptr`.
   template <typename T>
   static ALWAYS_INLINE bool EnabledForPtr(T* ptr) {
-    auto as_uintptr =
-        partition_alloc::internal::UnmaskPtr(reinterpret_cast<uintptr_t>(ptr));
+    // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this class
+    // is responsible for handling the software MTE tag.
+    auto addr = partition_alloc::UntagPtr(ptr);
     // MTECheckedPtr algorithms work only when memory is
     // allocated by PartitionAlloc, from normal buckets pool.
     //
     // TODO(crbug.com/1307514): Allow direct-map buckets.
-    return partition_alloc::IsManagedByPartitionAlloc(as_uintptr) &&
-           partition_alloc::internal::IsManagedByNormalBuckets(as_uintptr);
+    return partition_alloc::IsManagedByPartitionAlloc(addr) &&
+           partition_alloc::internal::IsManagedByNormalBuckets(addr);
   }
 
-  // Returns pointer to the tag that protects are pointed by |ptr|.
-  static ALWAYS_INLINE void* TagPointer(uintptr_t ptr) {
-    return partition_alloc::PartitionTagPointer(ptr);
+  // Returns pointer to the tag that protects are pointed by |addr|.
+  static ALWAYS_INLINE void* TagPointer(uintptr_t addr) {
+    return partition_alloc::PartitionTagPointer(addr);
   }
 };
 
@@ -184,13 +185,15 @@ struct MTECheckedPtrImpl {
   // Wraps a pointer, and returns its uintptr_t representation.
   template <typename T>
   static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
-    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
+    // function is responsible for adding the software MTE tag.
+    uintptr_t addr = partition_alloc::UntagPtr(ptr);
     DCHECK_EQ(ExtractTag(addr), 0ull);
 
     // Return a not-wrapped |addr|, if it's either nullptr or if the protection
     // for this pointer is disabled.
     if (!PartitionAllocSupport::EnabledForPtr(ptr)) {
-      return reinterpret_cast<T*>(addr);
+      return ptr;
     }
 
     // Read the tag and place it in the top bits of the address.
@@ -202,7 +205,10 @@ struct MTECheckedPtrImpl {
 
     tag <<= kValidAddressBits;
     addr |= tag;
-    return reinterpret_cast<T*>(addr);
+    // See the disambiguation comment above.
+    // TODO(kdlee): Ensure that ptr's hardware MTE tag is preserved.
+    // TODO(kdlee): Ensure that hardware and software MTE tags don't conflict.
+    return static_cast<T*>(partition_alloc::internal::TagAddr(addr));
   }
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
@@ -214,7 +220,9 @@ struct MTECheckedPtrImpl {
   // hasn't been freed. The function is allowed to crash on nullptr.
   template <typename T>
   static ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
-    uintptr_t wrapped_addr = reinterpret_cast<uintptr_t>(wrapped_ptr);
+    // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
+    // function is responsible for removing the software MTE tag.
+    uintptr_t wrapped_addr = partition_alloc::UntagPtr(wrapped_ptr);
     uintptr_t tag = ExtractTag(wrapped_addr);
     if (tag > 0) {
       // Read the tag provided by PartitionAlloc.
@@ -227,7 +235,11 @@ struct MTECheckedPtrImpl {
               PartitionAllocSupport::TagPointer(ExtractAddress(wrapped_addr)));
       if (UNLIKELY(tag != read_tag))
         IMMEDIATE_CRASH();
-      return reinterpret_cast<T*>(ExtractAddress(wrapped_addr));
+      // See the disambiguation comment above.
+      // TODO(kdlee): Ensure that ptr's hardware MTE tag is preserved.
+      // TODO(kdlee): Ensure that hardware and software MTE tags don't conflict.
+      return static_cast<T*>(
+          partition_alloc::internal::TagAddr(ExtractAddress(wrapped_addr)));
     }
     return wrapped_ptr;
   }
@@ -284,8 +296,12 @@ struct MTECheckedPtrImpl {
 
   template <typename T>
   static ALWAYS_INLINE T* ExtractPtr(T* wrapped_ptr) {
-    return reinterpret_cast<T*>(
-        ExtractAddress(reinterpret_cast<uintptr_t>(wrapped_ptr)));
+    // Disambiguation: UntagPtr/TagAddr handle the hardware MTE tag, whereas
+    // this function is responsible for removing the software MTE tag.
+    // TODO(kdlee): Ensure that wrapped_ptr's hardware MTE tag is preserved.
+    // TODO(kdlee): Ensure that hardware and software MTE tags don't conflict.
+    return static_cast<T*>(partition_alloc::internal::TagAddr(
+        ExtractAddress(partition_alloc::UntagPtr(wrapped_ptr))));
   }
 
   static ALWAYS_INLINE uintptr_t ExtractTag(uintptr_t wrapped_ptr) {
@@ -363,7 +379,7 @@ struct BackupRefPtrImpl {
   // Wraps a pointer.
   template <typename T>
   static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+    uintptr_t address = partition_alloc::UntagPtr(ptr);
     if (IsSupportedAndNotNull(address)) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       CHECK(ptr != nullptr);
@@ -383,7 +399,7 @@ struct BackupRefPtrImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
   static ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
+    uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     if (IsSupportedAndNotNull(address)) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       CHECK(wrapped_ptr != nullptr);
@@ -404,7 +420,7 @@ struct BackupRefPtrImpl {
   template <typename T>
   static ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
+    uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     if (IsSupportedAndNotNull(address)) {
       CHECK(wrapped_ptr != nullptr);
       CHECK(IsPointeeAlive(address));
@@ -443,7 +459,7 @@ struct BackupRefPtrImpl {
             typename = std::enable_if_t<offset_type<Z>, void>>
   static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    uintptr_t address = reinterpret_cast<uintptr_t>(wrapped_ptr);
+    uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     if (IsSupportedAndNotNull(address))
       CHECK(IsValidDelta(address, delta_elems * sizeof(T)));
 #endif
