@@ -89,14 +89,9 @@ displayStreamHandler.setStreamActionObserver(
  guestMessagePipe.registerHandler(Message.CLOSE_WINDOW, async () => {
    const info = /** @type {!SystemInfo} */ (await systemInfo.getSystemInfo());
    const systemInfoJson = JSON.parse(JSON.stringify(info));
-   const debugMode = JSON.parse(systemInfoJson.systemInfo)['debug_mode'];
-   if (debugMode) {
-     console.log('echeapi debug on, browser_proxy.js window.close block');
-   } else {
-     console.log('echeapi browser_proxy.js window.close');
-     displayStreamHandler.onStreamStatusChanged(
-         ash.echeApp.mojom.StreamStatus.kStreamStatusStopped);
-   }
+   console.log('echeapi browser_proxy.js window.close');
+   displayStreamHandler.onStreamStatusChanged(
+       ash.echeApp.mojom.StreamStatus.kStreamStatusStopped);
  });
 
  // Register GET_SYSTEM_INFO pipes for wrapping getSystemInfo async api call.
@@ -139,10 +134,10 @@ displayStreamHandler.setStreamActionObserver(
        // strings support either 8 or 16 bit characters, and must be converted
        // to an array of 16 bit character codes that match std::u16string.
        const titleArray = {
-         data: Array.from(message.title, c => c.charCodeAt())
+         data: Array.from(message.title, c => c.charCodeAt()),
        };
        const messageArray = {
-         data: Array.from(message.message, c => c.charCodeAt())
+         data: Array.from(message.message, c => c.charCodeAt()),
        };
        console.log('echeapi browser_proxy.js showNotification');
        notificationGenerator.showNotification(
