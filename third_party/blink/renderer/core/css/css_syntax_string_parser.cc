@@ -152,7 +152,6 @@ bool CSSSyntaxStringParser::ConsumeIdent(String& ident) {
   ident = ConsumeName(input_);
   // TODO(crbug.com/882285): Make 'default' invalid as <custom-ident>.
   return !css_parsing_utils::IsCSSWideKeyword(ident) &&
-         !css_parsing_utils::IsRevertKeyword(ident) &&
          !css_parsing_utils::IsDefaultKeyword(ident);
 }
 

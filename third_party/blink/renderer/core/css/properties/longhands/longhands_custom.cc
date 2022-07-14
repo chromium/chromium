@@ -1634,10 +1634,7 @@ const CSSValue* ColorScheme::ParseSingleValue(
   do {
     CSSValueID id = range.Peek().Id();
     // 'normal' is handled above, and 'default' is reserved for future use.
-    // 'revert' is not yet implemented as a keyword, but still skip it for
-    // compat and interop.
-    if (id == CSSValueID::kNormal || id == CSSValueID::kRevert ||
-        id == CSSValueID::kDefault) {
+    if (id == CSSValueID::kNormal || id == CSSValueID::kDefault) {
       return nullptr;
     }
     CSSValue* value =
