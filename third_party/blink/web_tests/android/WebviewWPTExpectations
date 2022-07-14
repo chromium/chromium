@@ -2450,7 +2450,6 @@ crbug.com/1050754 external/wpt/html/browsers/windows/embedded-opener.html [ Fail
 crbug.com/1050754 external/wpt/html/browsers/windows/noreferrer-window-name.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/canvas/element/drawing-images-to-the-canvas/2d.drawImage.animated.poster.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/canvas/element/drawing-images-to-the-canvas/2d.drawImage.zerosource.image.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.drawing.style.fontKerning.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.drawing.style.fontKerning.with.uppercase.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.drawing.style.fontVariant.settings.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.drawing.style.spacing.html [ Failure ]

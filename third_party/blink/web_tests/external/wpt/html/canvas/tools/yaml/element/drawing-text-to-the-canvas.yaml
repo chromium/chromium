@@ -922,10 +922,10 @@
   - 2d.text.drawing.style.fontKerning
   code: |
     @assert ctx.fontKerning === "auto";
-    ctx.fontKerning = "Normal";
+    ctx.fontKerning = "normal";
     @assert ctx.fontKerning === "normal";
     width_normal = ctx.measureText("TAWATAVA").width;
-    ctx.fontKerning = "None";
+    ctx.fontKerning = "none";
     @assert ctx.fontKerning === "none";
     width_none = ctx.measureText("TAWATAVA").width;
     @assert width_normal < width_none;

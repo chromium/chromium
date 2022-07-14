@@ -3478,6 +3478,8 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/html/browsers/origin/cross-origin-objects/location-properties-smoke-test.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-tiled-001.https.html [ Failure ]
 crbug.com/626703 external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected.html [ Failure ]
 crbug.com/626703 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Failure Timeout ]
@@ -7205,7 +7207,7 @@ crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 # Sheriff 2022-07-13
 crbug.com/1344128 external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Skip ]
 crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure Pass ]
-crbug.com/1344210 [ Linux Debug ] http/tests/devtools/elements/styles-2/page-reload-update-sidebar.js [ Failure Pass ]
+crbug.com/1344210 [ Debug Linux ] http/tests/devtools/elements/styles-2/page-reload-update-sidebar.js [ Failure Pass ]
 crbug.com/1344175 [ Mac12 ] external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-root.html [ Failure Pass ]
 # Flaking on WebKit Linux MSAN
 crbug.com/1344277 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Crash Failure Pass ]
