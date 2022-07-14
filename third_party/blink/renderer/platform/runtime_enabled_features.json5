@@ -153,10 +153,6 @@
       name: "AccessibilityUseAXPositionForDocumentMarkers",
     },
     {
-      name: "AddEventListenerAbortSignal",
-      status: "stable",
-    },
-    {
       name: "AddressSpace",
       status: "experimental",
       implied_by: ["CorsRFC1918"],

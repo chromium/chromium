@@ -7,5 +7,5 @@
 dictionary AddEventListenerOptions : EventListenerOptions {
     boolean passive;
     boolean once = false;
-    [RuntimeEnabled=AddEventListenerAbortSignal] AbortSignal signal;
+    AbortSignal signal;
 };
