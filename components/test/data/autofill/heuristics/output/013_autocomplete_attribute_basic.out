@@ -35,9 +35,9 @@ HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE | cs |  |  | credit-card-cc
 HTML_TYPE_CREDIT_CARD_TYPE | ct |  |  | credit-card-cc
 UNKNOWN_TYPE | xl |  |  | na_1-default
 UNKNOWN_TYPE | xb |  |  | na_1-default
-UNKNOWN_TYPE | xd |  |  | na_1-default
-UNKNOWN_TYPE | xm |  |  | na_1-default
-UNKNOWN_TYPE | xy |  |  | na_1-default
+HTML_TYPE_BIRTHDATE_DAY | xd |  |  | na_1-default
+HTML_TYPE_BIRTHDATE_MONTH | xm |  |  | na_1-default
+HTML_TYPE_BIRTHDATE_YEAR | xy |  |  | na_1-default
 UNKNOWN_TYPE | xs |  |  | na_1-default
 UNKNOWN_TYPE | xu |  |  | na_1-default
 UNKNOWN_TYPE | xp |  |  | na_1-default

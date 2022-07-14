@@ -399,6 +399,12 @@ base::StringPiece FieldTypeToStringPiece(HtmlFieldType type) {
       return "HTML_TYPE_TEL_EXTENSION";
     case HTML_TYPE_EMAIL:
       return "HTML_TYPE_EMAIL";
+    case HTML_TYPE_BIRTHDATE_DAY:
+      return "HTML_TYPE_BIRTHDATE_DAY";
+    case HTML_TYPE_BIRTHDATE_MONTH:
+      return "HTML_TYPE_BIRTHDATE_MONTH";
+    case HTML_TYPE_BIRTHDATE_YEAR:
+      return "HTML_TYPE_BIRTHDATE_YEAR";
     case HTML_TYPE_TRANSACTION_AMOUNT:
       return "HTML_TYPE_TRANSACTION_AMOUNT";
     case HTML_TYPE_TRANSACTION_CURRENCY:

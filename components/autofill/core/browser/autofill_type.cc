@@ -186,6 +186,11 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HTML_TYPE_EMAIL:
       return FieldTypeGroup::kEmail;
 
+    case HTML_TYPE_BIRTHDATE_DAY:
+    case HTML_TYPE_BIRTHDATE_MONTH:
+    case HTML_TYPE_BIRTHDATE_YEAR:
+      return FieldTypeGroup::kBirthdateField;
+
     case HTML_TYPE_UPI_VPA:
       // TODO(crbug/702223): Add support for UPI-VPA.
       return FieldTypeGroup::kNoGroup;
@@ -334,6 +339,13 @@ ServerFieldType AutofillType::GetStorableType() const {
 
     case HTML_TYPE_EMAIL:
       return EMAIL_ADDRESS;
+
+    case HTML_TYPE_BIRTHDATE_DAY:
+      return BIRTHDATE_DAY;
+    case HTML_TYPE_BIRTHDATE_MONTH:
+      return BIRTHDATE_MONTH;
+    case HTML_TYPE_BIRTHDATE_YEAR:
+      return BIRTHDATE_4_DIGIT_YEAR;
 
     case HTML_TYPE_ADDITIONAL_NAME_INITIAL:
       return NAME_MIDDLE_INITIAL;
