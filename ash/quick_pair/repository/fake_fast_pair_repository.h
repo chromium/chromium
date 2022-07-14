@@ -54,6 +54,7 @@ class FakeFastPairRepository : public FastPairRepository {
   }
 
   void SetOptInStatus(nearby::fastpair::OptInStatus status);
+  nearby::fastpair::OptInStatus GetOptInStatus();
 
   void SetSavedDevices(nearby::fastpair::OptInStatus status,
                        std::vector<nearby::fastpair::FastPairDevice> devices);

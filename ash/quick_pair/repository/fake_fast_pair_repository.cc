@@ -91,6 +91,10 @@ void FakeFastPairRepository::SetOptInStatus(
   status_ = status;
 }
 
+nearby::fastpair::OptInStatus FakeFastPairRepository::GetOptInStatus() {
+  return status_;
+}
+
 // Unimplemented.
 void FakeFastPairRepository::CheckOptInStatus(
     CheckOptInStatusCallback callback) {
@@ -113,10 +117,12 @@ void FakeFastPairRepository::DeleteAssociatedDeviceByAccountKey(
   std::move(callback).Run(/*success=*/false);
 }
 
-// Unimplemented.
 void FakeFastPairRepository::UpdateOptInStatus(
     nearby::fastpair::OptInStatus opt_in_status,
-    UpdateOptInStatusCallback callback) {}
+    UpdateOptInStatusCallback callback) {
+  status_ = opt_in_status;
+  std::move(callback).Run(/*success=*/true);
+}
 
 // Unimplemented.
 void FakeFastPairRepository::FetchDeviceImages(scoped_refptr<Device> device) {

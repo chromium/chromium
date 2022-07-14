@@ -374,6 +374,23 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
     QP_LOG(INFO) << __func__
                  << ": Saving Account Key locally for subsequent pair";
     FastPairRepository::Get()->AssociateAccountKeyLocally(device_);
+
+    // If the Saved Devices feature is enabled and we are utilizing a "loose"
+    // interpretation of a user's opt-in status, then we will opt-in the user
+    // whenever they pair a Fast Pair device to saving devices to their account.
+    // Although we don't surface the user's opt-in status in the Settings'
+    // sub-page, this will surface on Android, and show devices saved to the
+    // user's account. For subsequent pairing, we opt in the user after they
+    // elect to pair with a device already saved to their account.
+    if (features::IsFastPairSavedDevicesEnabled() &&
+        !features::IsFastPairSavedDevicesStrictOptInEnabled()) {
+      QP_LOG(VERBOSE) << __func__ << ": attempting to opt-in the user";
+      FastPairRepository::Get()->UpdateOptInStatus(
+          nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
+          base::BindOnce(&FastPairPairerImpl::OnUpdateOptInStatus,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+
     std::move(pairing_procedure_complete_).Run(device_);
     return;
   }
@@ -448,10 +465,35 @@ void FastPairPairerImpl::OnWriteAccountKey(
   FastPairRepository::Get()->AssociateAccountKey(
       device_, std::vector<uint8_t>(account_key.begin(), account_key.end()));
 
+  // If the Saved Devices feature is enabled and we are utilizing a "loose"
+  // interpretation of a user's opt-in status, then we will opt-in the user
+  // whenever they pair a Fast Pair device to saving devices to their account.
+  // Although we don't surface the user's opt-in status in the Settings'
+  // sub-page, this will surface on Android, and show devices saved to the
+  // user's account. For initial pairing and retroactive pairing, we opt in the
+  // user after after we successfully save an account key to their account.
+  if (features::IsFastPairSavedDevicesEnabled() &&
+      !features::IsFastPairSavedDevicesStrictOptInEnabled()) {
+    QP_LOG(VERBOSE) << __func__ << ": attempting to opt-in the user";
+    FastPairRepository::Get()->UpdateOptInStatus(
+        nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
+        base::BindOnce(&FastPairPairerImpl::OnUpdateOptInStatus,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   QP_LOG(INFO)
       << __func__
       << ": Account key written to device. Pairing procedure complete.";
   std::move(pairing_procedure_complete_).Run(device_);
+}
+
+void FastPairPairerImpl::OnUpdateOptInStatus(bool success) {
+  if (!success) {
+    QP_LOG(WARNING) << __func__ << ": failure";
+    return;
+  }
+
+  QP_LOG(VERBOSE) << __func__ << ": success";
 }
 
 void FastPairPairerImpl::RequestPinCode(device::BluetoothDevice* device) {

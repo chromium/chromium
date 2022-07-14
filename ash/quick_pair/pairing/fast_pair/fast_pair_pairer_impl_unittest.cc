@@ -1981,5 +1981,105 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
 
+TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairSavedDevices},
+      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+
+  // Start opted out.
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  base::RunLoop().RunUntilIdle();
+
+  // Pair the device via Initial Pairing protocol.
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+  SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
+                               /*protocol=*/Protocol::kFastPairInitial);
+  SetPublicKey();
+  SetGetDeviceConnectFailure();
+  CreatePairer();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  SetDecryptPasskeyForSuccess();
+  SetGetDeviceInitialSuccess();
+  NotifyConfirmPasskey();
+  base::RunLoop().RunUntilIdle();
+  RunWritePasskeyCallback(kResponseBytes);
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_TRUE(IsDevicePaired());
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  RunWriteAccountKeyCallback();
+
+  // Expect that the user is now opted in.
+  EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
+            fast_pair_repository_.GetOptInStatus());
+}
+
+TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+
+  // Start opted out
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairSavedDevices},
+      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+  base::RunLoop().RunUntilIdle();
+
+  // Retroactive pair
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+  SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
+                               /*protocol=*/Protocol::kFastPairRetroactive);
+  SetGetDeviceConnectFailure();
+  CreatePairer();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  RunWriteAccountKeyCallback();
+
+  // Expect that the user is now opted in
+  EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
+            fast_pair_repository_.GetOptInStatus());
+}
+
+TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairSavedDevices},
+      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+
+  // Start opted out
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+
+  // Subsequent pair
+  SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
+                               /*protocol=*/Protocol::kFastPairSubsequent);
+  SetGetDeviceConnectFailure();
+  CreatePairer();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  SetDecryptPasskeyForSuccess();
+  SetGetDeviceInitialSuccess();
+  NotifyConfirmPasskey();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  RunWritePasskeyCallback(kResponseBytes);
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_TRUE(IsDevicePaired());
+
+  // Expect that the user is opted in now
+  EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
+            fast_pair_repository_.GetOptInStatus());
+}
+
 }  // namespace quick_pair
 }  // namespace ash

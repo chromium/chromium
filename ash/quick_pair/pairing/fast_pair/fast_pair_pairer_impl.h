@@ -124,6 +124,9 @@ class FastPairPairerImpl : public FastPairPairer,
   // FastPairRepository::CheckOptInStatus callback
   void OnCheckOptInStatus(nearby::fastpair::OptInStatus status);
 
+  // FastPairRepository::UpdateOptInStatus callback
+  void OnUpdateOptInStatus(bool success);
+
   // Creates a 16-byte array of random bytes with a first byte of 0x04 to
   // signal Fast Pair account key, and then writes to the device.
   void AttemptSendAccountKey();
