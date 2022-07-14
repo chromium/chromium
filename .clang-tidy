@@ -39,6 +39,10 @@
       value:        ::std::basic_string;::std::basic_string_view;::base::BasicStringPiece;::absl::string_view
     - key:          modernize-use-default-member-init.UseAssignment
       value:        1
+    # crbug.com/1342136, crbug.com/1343915: At times, this check makes
+    # suggestions that break builds. Safe mode allows us to sidestep that.
+    - key:          modernize-use-transparent-functors.SafeMode
+      value:        1
     # This relaxes modernize-use-emplace in some cases; we might want to make it
     # more aggressive in the future. See discussion on
     # https://groups.google.com/a/chromium.org/g/cxx/c/noMMTNYiM0w .
