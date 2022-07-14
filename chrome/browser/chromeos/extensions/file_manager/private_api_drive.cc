@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -452,6 +453,19 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
     const GURL url = GURL(params->urls[i]);
     const storage::FileSystemURL file_system_url =
         file_system_context->CrackURLInFirstPartyContext(url);
+
+    constexpr auto is_fusebox_fsp = [](const storage::FileSystemURL& url) {
+      if (url.type() != storage::kFileSystemTypeFuseBox)
+        return false;
+      if (!base::StartsWith(url.filesystem_id(), file_manager::util::kFuseBox))
+        return false;
+      static const base::FilePath::CharType kFuseBoxMediaPathFSPSuffix[] =
+          FILE_PATH_LITERAL("/media/fuse/fusebox/fsp:");
+      if (!base::StartsWith(url.path().value(), kFuseBoxMediaPathFSPSuffix))
+        return false;
+      return true;
+    };
+
     switch (file_system_url.type()) {
       case storage::kFileSystemTypeProvided:
         SingleEntryPropertiesGetterForFileSystemProvider::Start(
@@ -478,6 +492,17 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
                 this, i, file_system_url));
         break;
       default:
+        // Handle FuseBox provided storage::kFileSystemTypeProvided file system.
+        if (is_fusebox_fsp(file_system_url)) {
+          SingleEntryPropertiesGetterForFileSystemProvider::Start(
+              file_system_url, names_as_set,
+              base::BindOnce(
+                  &FileManagerPrivateInternalGetEntryPropertiesFunction::
+                      CompleteGetEntryProperties,
+                  this, i, file_system_url));
+          break;
+        }
+
         // TODO(yawano) Change this to support other voluems (e.g. local) ,and
         // integrate fileManagerPrivate.getMimeType to this method.
         LOG(ERROR) << "Not supported file system type.";

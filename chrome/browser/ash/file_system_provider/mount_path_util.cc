@@ -8,7 +8,9 @@
 
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -90,10 +92,27 @@ FileSystemURLParser::~FileSystemURLParser() {
 bool FileSystemURLParser::Parse() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (url_.type() != storage::kFileSystemTypeProvided)
-    return false;
+  switch (url_.type()) {
+    case storage::kFileSystemTypeFuseBox:
+    case storage::kFileSystemTypeProvided:
+      break;
+    default:
+      return false;
+  }
 
-  // First, find the service handling the mount point of the URL.
+  std::string filesystem_id = url_.filesystem_id();
+  base::FilePath path = url_.path();
+
+  // Convert fusebox URL to its backing (FSP) file system provider URL.
+  if (url_.type() == storage::kFileSystemTypeFuseBox) {
+    const int prefix = strlen(file_manager::util::kFuseBox);
+    filesystem_id = filesystem_id.substr(prefix);
+    std::string virtual_path(url_.virtual_path().value().substr(prefix));
+    path = base::FilePath::FromUTF8Unsafe(
+        base::JoinString({kProvidedMountPointRoot, virtual_path}, "/"));
+  }
+
+  // Find the service that handles the provider URL mount point.
   const std::vector<Profile*>& profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
 
@@ -110,21 +129,19 @@ bool FileSystemURLParser::Parse() {
       continue;
 
     ProvidedFileSystemInterface* const file_system =
-        service->GetProvidedFileSystem(url_.filesystem_id());
+        service->GetProvidedFileSystem(filesystem_id);
     if (!file_system)
       continue;
 
     // Strip the mount path name from the local path, to extract the file path
     // within the provided file system.
     file_system_ = file_system;
-    std::vector<base::FilePath::StringType> components =
-        url_.path().GetComponents();
+    std::vector<base::FilePath::StringType> components = path.GetComponents();
     if (components.size() < 3)
       return false;
 
     file_path_ = base::FilePath(FILE_PATH_LITERAL("/"));
     for (size_t i = 3; i < components.size(); ++i) {
-      // TODO(mtomasz): This could be optimized, to avoid unnecessary copies.
       file_path_ = file_path_.Append(components[i]);
     }
 
