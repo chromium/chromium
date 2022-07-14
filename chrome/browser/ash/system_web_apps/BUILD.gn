@@ -4,9 +4,7 @@
 
 import("//chrome/browser/buildflags.gni")
 
-# TODO(crbug.com/1321984): Make SystemWebAppManager an ash-only object and
-# move all the GN dependencies under `if (is_chromeos_ash)` section.
-# assert(is_chromeos_ash)
+assert(is_chromeos_ash)
 
 source_set("system_web_apps") {
   sources = [
@@ -21,6 +19,18 @@ source_set("system_web_apps") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//ash/public/cpp",
+    "//ash/webui/camera_app_ui",
+    "//ash/webui/connectivity_diagnostics",
+    "//ash/webui/eche_app_ui",
+    "//ash/webui/file_manager:file_manager_ui",
+    "//ash/webui/firmware_update_ui",
+    "//ash/webui/help_app_ui",
+    "//ash/webui/media_app_ui",
+    "//ash/webui/os_feedback_ui",
+    "//ash/webui/personalization_app",
+    "//ash/webui/shimless_rma",
+    "//ash/webui/shortcut_customization_ui",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/types",
@@ -34,41 +44,22 @@ source_set("system_web_apps") {
     "//ui/base/idle",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/public/cpp",
-      "//ash/webui/camera_app_ui",
-      "//ash/webui/connectivity_diagnostics",
-      "//ash/webui/eche_app_ui",
-      "//ash/webui/file_manager:file_manager_ui",
-      "//ash/webui/firmware_update_ui",
-      "//ash/webui/help_app_ui",
-      "//ash/webui/media_app_ui",
-      "//ash/webui/os_feedback_ui",
-      "//ash/webui/personalization_app",
-      "//ash/webui/shimless_rma",
-      "//ash/webui/shortcut_customization_ui",
-    ]
-
-    if (!is_official_build) {
-      deps += [ "//ash/webui/sample_system_web_app_ui" ]
-    }
+  if (!is_official_build) {
+    deps += [ "//ash/webui/sample_system_web_app_ui" ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  # TODO(crbug.com/1321984): Remove `if`.
-  if (is_chromeos_ash) {
-    sources = [ "system_web_app_manager_unittest.cc" ]
-  }
+  sources = [ "system_web_app_manager_unittest.cc" ]
 
   deps = [
     ":system_web_apps",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -80,11 +71,6 @@ source_set("unit_tests") {
     "//ui/base/idle:test_support",
     "//url",
   ]
-
-  # TODO(crbug.com/1321984): Remove `if`.
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/system_web_apps/test_support" ]
-  }
 }
 
 source_set("browser_tests") {
@@ -92,15 +78,14 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  # TODO(crbug.com/1321984): Remove `if`.
-  if (is_chromeos_ash) {
-    sources = [ "system_web_app_manager_browsertest.cc" ]
-  }
+  sources = [ "system_web_app_manager_browsertest.cc" ]
 
   deps = [
     ":system_web_apps",
     "//base",
     "//chrome/app:command_ids",
+    "//chrome/browser/ash/system_web_apps/test_support",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -111,12 +96,4 @@ source_set("browser_tests") {
     "//ui/base/idle:test_support",
     "//url",
   ]
-
-  # TODO(crbug.com/1321984): Remove `if`.
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/system_web_apps/test_support",
-      "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-    ]
-  }
 }

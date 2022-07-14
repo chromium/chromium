@@ -28,7 +28,6 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -66,6 +65,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/account_id/account_id.h"
 #endif
 
@@ -606,6 +606,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // Open System Apps in their standalone window if necessary.
   // TODO(crbug.com/1096345): Remove this code after we integrate with intent
   // handling.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(params->initiating_profile, params->url);
   if (capturing_system_app_type &&
@@ -627,6 +628,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // the navigation should appear to be cancelled.
     return nullptr;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
   // Force isolated PWAs to open in an app window.

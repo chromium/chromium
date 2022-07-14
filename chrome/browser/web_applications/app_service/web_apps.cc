@@ -12,7 +12,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -36,6 +35,7 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -98,14 +98,22 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
       app_type_(GetWebAppType()),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       instance_registry_(&proxy->InstanceRegistry()),
-#endif
       publisher_helper_(
           profile_,
           provider_,
           ash::SystemWebAppManager::GetForLocalAppsUnchecked(profile_),
           app_type_,
           this,
-          ShouldObserveMediaRequests()) {
+          ShouldObserveMediaRequests())
+#else
+      publisher_helper_(profile_,
+                        provider_,
+                        /*swa_manager=*/nullptr,
+                        app_type_,
+                        this,
+                        ShouldObserveMediaRequests())
+#endif
+{
   Initialize(proxy->AppService());
 }
 

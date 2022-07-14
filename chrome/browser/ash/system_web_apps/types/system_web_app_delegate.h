@@ -160,6 +160,7 @@ class SystemWebAppDelegate {
   // Returns whether the specified Tab Context Menu shortcut should be shown.
   virtual bool ShouldShowTabContextMenuShortcut(Profile* profile,
                                                 int command_id) const;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Control the launch of an SWA. The default takes into account single vs.
   // multiple windows, make sure multiple windows don't open directly above
   // each other, and a few other niceties. Overriding this will require some
@@ -177,6 +178,7 @@ class SystemWebAppDelegate {
       web_app::WebAppProvider* provider,
       const GURL& url,
       const apps::AppLaunchParams& params) const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Whether |url| which is outside the normal Navigation Scope should be
   // considered part of this System App.

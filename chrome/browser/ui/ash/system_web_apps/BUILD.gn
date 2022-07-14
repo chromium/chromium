@@ -4,9 +4,7 @@
 
 import("//chrome/browser/buildflags.gni")
 
-# TODO(crbug.com/1321984): Make System Web Apps ash-only and move all the GN
-# dependencies under `if (is_chromeos_ash)` section.
-# assert(is_chromeos_ash)
+assert(is_chromeos_ash)
 
 source_set("system_web_apps") {
   sources = [

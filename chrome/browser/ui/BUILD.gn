@@ -1743,7 +1743,6 @@ static_library("ui") {
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_themes",
       "//chrome/browser:theme_properties",
-      "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/autofill_assistant/password_change/vector_icons",
       "//chrome/browser/browsing_data:constants",
@@ -5345,7 +5344,6 @@ static_library("ui") {
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/extensions",
-      "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/web_share_target",
       "//chrome/common/extensions/api",
       "//components/drive",
@@ -5362,7 +5360,6 @@ static_library("ui") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
-      "//chrome/browser/ui/ash/system_web_apps",
     ]
     sources += [
       "extensions/accelerator_priority.h",
@@ -5466,6 +5463,12 @@ static_library("ui") {
       "webui/extensions/extension_icon_source.cc",
       "webui/extensions/extension_icon_source.h",
     ]
+
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/ui/ash/system_web_apps" ]
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/ash/system_web_apps" ]
+    }
 
     if (is_mac) {
       sources += [ "views/javascript_app_modal_event_blocker_mac.h" ]

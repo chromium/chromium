@@ -353,7 +353,6 @@ static_library("test_support") {
       ":test_support_ui",
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
-      "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/web_applications",
       "//components/crx_file",
       "//components/keep_alive_registry",
@@ -555,6 +554,7 @@ static_library("test_support") {
       "//ash/constants",
       "//ash/public/cpp:test_support",
       "//chrome/browser/ash",
+      "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/components/dbus/session_manager",
       "//chromeos/ash/components/dbus/userdataauth",
       "//chromeos/dbus/tpm_manager",
@@ -1213,7 +1213,6 @@ if (!is_android) {
       "//chrome/browser:theme_properties",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service:test_support",
-      "//chrome/browser/ash/system_web_apps:browser_tests",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
@@ -2378,8 +2377,10 @@ if (!is_android) {
     if (is_chromeos_ash) {
       sources += [ "../browser/sessions/tab_restore_service_browsertest.cc" ]
       deps += [
+        "//chrome/browser/ash/system_web_apps:browser_tests",
         "//chrome/browser/ash/system_web_apps/test_support",
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+        "//chrome/browser/ui/ash/system_web_apps",
       ]
     }
 
@@ -2455,7 +2456,6 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [
-        "//chrome/browser/ui/ash/system_web_apps",
         "//chrome/browser/web_applications/app_service",
         "//chromeos/constants",
         "//chromeos/ui/frame",
@@ -4490,7 +4490,6 @@ if (!is_android) {
 
       # TODO(crbug.com/1278123): Enable once PWAs are supported.
       deps -= [
-        "//chrome/browser/ash/system_web_apps:browser_tests",
         "//chrome/browser/ui/web_applications:app_service_browser_tests",
         "//chrome/browser/ui/web_applications:browser_tests",
         "//chrome/browser/web_applications:app_service_browser_tests",
@@ -7835,7 +7834,6 @@ test("unit_tests") {
     ]
 
     deps += [
-      "//chrome/browser/ash/system_web_apps:unit_tests",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/ui/web_applications:unit_tests",
       "//chrome/browser/web_applications:unit_tests",
@@ -7942,6 +7940,7 @@ test("unit_tests") {
       ]
 
       deps += [
+        "//chrome/browser/ash/system_web_apps:unit_tests",
         "//chrome/browser/chromeos/extensions/telemetry/api",
         "//chrome/browser/chromeos/extensions/telemetry/api:fake_hardware_info_delegate",
         "//chrome/browser/chromeos/extensions/telemetry/api:unit_tests",
@@ -8819,7 +8818,6 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser",
       "//chrome/browser:browser_process",
-      "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/devtools",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
@@ -8952,6 +8950,7 @@ if (!is_android) {
         "//ash/services/device_sync",
         "//ash/services/device_sync:test_support",
         "//chrome/browser/ash",
+        "//chrome/browser/ash/system_web_apps",
         "//chrome/browser/ash/system_web_apps/test_support",
         "//chromeos/ash/components/browser_context_helper",
       ]
@@ -9464,6 +9463,7 @@ if (!is_android) {
         "//ash/constants",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/media/router:test_support",
+        "//chrome/browser/ui/ash/system_web_apps",
         "//chromeos/dbus",
         "//chromeos/ui/frame:test_support",
         "//components/exo/wayland:weston_test_stub",
@@ -9595,8 +9595,6 @@ if (!is_android) {
           "../browser/ui/webui/management/management_a11y_browsertest.h",
         ]
       }
-
-      deps += [ "//chrome/browser/ui/ash/system_web_apps" ]
     }
 
     # These tests currently require `enable_system_notifications`, which is not

@@ -39,8 +39,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_features.h"
@@ -78,7 +76,6 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -259,8 +256,11 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
 #endif
@@ -646,6 +646,7 @@ bool DoesInputFieldTypeSupportEmoji(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // If the link points to a system web app (in |profile|), return its type.
 // Otherwise nullopt.
 absl::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
@@ -658,6 +659,7 @@ absl::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
 
   return ash::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ui::MenuSourceType GetMenuSourceType(int event_flags) {
@@ -730,9 +732,11 @@ RenderViewContextMenu::RenderViewContextMenu(
   set_content_type(
       ContextMenuContentTypeFactory::Create(source_web_contents_, params));
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   system_app_ = GetBrowser() && GetBrowser()->app_controller()
                     ? GetBrowser()->app_controller()->system_app()
                     : nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 RenderViewContextMenu::~RenderViewContextMenu() = default;
@@ -1387,9 +1391,16 @@ void RenderViewContextMenu::AppendLinkItems() {
     const bool in_app =
         browser && (browser->is_type_app() || browser->is_type_app_popup());
 
+    bool show_open_in_new_window = true;
+    bool show_open_link_off_the_record = true;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     Profile* profile = GetProfile();
     absl::optional<ash::SystemWebAppType> link_system_app_type =
         GetLinkSystemAppType(profile, params_.link_url);
+    // Links to system web app can't be opened in incognito / off-the-record.
+    show_open_link_off_the_record = !link_system_app_type;
+
     if (system_app_ && link_system_app_type) {
       // Show "Open in new tab" if this link points to the current app, and the
       // app has a tab strip.
@@ -1405,7 +1416,11 @@ void RenderViewContextMenu::AppendLinkItems() {
 
       // Don't show "open in new window", this is instead handled below in
       // |AppendOpenInWebAppLinkItems| (which includes app's name and icon).
-    } else {
+      show_open_in_new_window = false;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    if (show_open_in_new_window) {
       menu_model_.AddItemWithStringId(
           IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
           in_app ? IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP
@@ -1420,8 +1435,7 @@ void RenderViewContextMenu::AppendLinkItems() {
       AppendProtocolHandlerSubMenu();
     }
 
-    // Links to system web app can't be opened in incognito / off-the-record.
-    if (!link_system_app_type) {
+    if (show_open_link_off_the_record) {
       menu_model_.AddItemWithStringId(
           IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
           in_app ? IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD_INAPP
@@ -1578,6 +1592,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (!link_app_id)
     return;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Don't show "Open link in new app window", if the link points to the
   // current app, and the app is single windowed.
   if (system_app_ &&
@@ -1586,6 +1601,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
       system_app_->ShouldReuseExistingWindow()) {
     return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Only applies to apps that open in an app window.
   if (provider->registrar().GetAppUserDisplayMode(*link_app_id) ==

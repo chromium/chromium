@@ -10,11 +10,9 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -32,7 +30,9 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #endif
@@ -150,35 +150,31 @@ void RequestFeedbackFlow(const GURL& page_url,
 
   bool include_bluetooth_logs = false;
   bool show_questionnaire = false;
-  bool use_os_feedback = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsGoogleInternalAccount(profile)) {
     flow = feedback_private::FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL;
     include_bluetooth_logs = IsFromUserInteraction(source);
     show_questionnaire = IsFromUserInteraction(source);
   }
-  use_os_feedback = base::FeatureList::IsEnabled(ash::features::kOsFeedback);
-#endif
-
-  if (use_os_feedback) {
+  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
     ash::SystemAppLaunchParams params{};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     params.url = BuildFeedbackUrl(extra_diagnostics, description_template);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
                                  std::move(params));
-  } else {
-    extensions::FeedbackPrivateAPI* api =
-        extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(profile);
-    auto info = api->CreateFeedbackInfo(
-        description_template, description_placeholder_text, category_tag,
-        extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
-        include_bluetooth_logs, show_questionnaire,
-        source == kFeedbackSourceChromeLabs ||
-            source == kFeedbackSourceKaleidoscope);
-
-    FeedbackDialog::CreateOrShow(profile, *info);
+    return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  extensions::FeedbackPrivateAPI* api =
+      extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(profile);
+  auto info = api->CreateFeedbackInfo(
+      description_template, description_placeholder_text, category_tag,
+      extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
+      include_bluetooth_logs, show_questionnaire,
+      source == kFeedbackSourceChromeLabs ||
+          source == kFeedbackSourceKaleidoscope);
+
+  FeedbackDialog::CreateOrShow(profile, *info);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

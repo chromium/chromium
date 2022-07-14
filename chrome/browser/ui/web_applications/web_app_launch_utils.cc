@@ -19,13 +19,12 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -65,6 +64,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -224,6 +225,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
       WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
   if (provider && provider->registrar().IsInstalled(app_id)) {
     const ash::SystemWebAppDelegate* system_app = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto system_app_type =
         ash::GetSystemWebAppTypeForAppId(browser->profile(), app_id);
     if (system_app_type) {
@@ -231,6 +233,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
           ash::SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile())
               ->GetSystemApp(*system_app_type);
     }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     const bool has_tab_strip =
         !browser->is_type_app_popup() &&
         ((system_app && system_app->ShouldHaveTabStrip()) ||
@@ -294,6 +297,7 @@ content::WebContents* NavigateWebApplicationWindow(
 
 content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Browser* browser = nav_params.browser;
   const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
       ash::GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
@@ -303,7 +307,6 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   if (capturing_system_app_type &&
       (!browser ||
        !IsBrowserForSystemWebApp(browser, capturing_system_app_type.value()))) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto* user_manager = user_manager::UserManager::Get();
     bool is_kiosk = user_manager && user_manager->IsLoggedInAsAnyKioskApp();
     AppBrowserController* app_controller = browser->app_controller();
@@ -333,9 +336,9 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
         });
     UMA_HISTOGRAM_ENUMERATION("WebApp.SystemApps.BadNavigate.Type",
                               capturing_system_app_type.value());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return nullptr;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   Navigate(&nav_params);
 

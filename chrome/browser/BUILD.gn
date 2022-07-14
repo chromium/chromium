@@ -4374,7 +4374,6 @@ static_library("browser") {
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/app/vector_icons",
-      "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/enterprise/connectors/analysis:features",
@@ -4398,7 +4397,6 @@ static_library("browser") {
       "//chrome/browser/share/core:share_targets",
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/support_tool:support_tool_proto",
-      "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",
@@ -4472,8 +4470,6 @@ static_library("browser") {
 
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
-      "//chrome/browser/ash/system_web_apps",
-      "//chrome/browser/ui/ash/system_web_apps",
 
       # TODO(crbug.com/1292435): Remove once AppServiceProxy is extracted from
       # //chrome/browser.
@@ -5115,6 +5111,7 @@ static_library("browser") {
       "//chrome/browser/ash/system_extensions",
       "//chrome/browser/ash/system_extensions/api/hid",
       "//chrome/browser/ash/system_extensions/api/window_management",
+      "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/chromeos",
       "//chrome/browser/chromeos/extensions/telemetry",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
@@ -5133,6 +5130,7 @@ static_library("browser") {
       "//chrome/browser/policy:onc",
       "//chrome/browser/resources/chromeos:app_icon_resources",
       "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
+      "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/audio:mojo_bindings",
@@ -5225,6 +5223,8 @@ static_library("browser") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ui/ash/system_web_apps",
     ]
 
     allow_circular_includes_from += [

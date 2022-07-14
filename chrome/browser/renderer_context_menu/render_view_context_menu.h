@@ -52,10 +52,6 @@ class QuickAnswersMenuObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
 
-namespace ash {
-class SystemWebAppDelegate;
-}
-
 namespace content {
 class RenderFrameHost;
 class WebContents;
@@ -81,6 +77,9 @@ class DataTransferEndpoint;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash {
+class SystemWebAppDelegate;
+}
 namespace policy {
 class DlpRulesManager;
 }  // namespace policy
@@ -392,8 +391,10 @@ class RenderViewContextMenu
   std::unique_ptr<ClickToCallContextMenuObserver>
       click_to_call_context_menu_observer_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The system app (if any) associated with the WebContents we're in.
   raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // A one-time callback that will be called the next time a plugin action is
   // executed from a given render frame.
