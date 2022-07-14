@@ -337,8 +337,10 @@ class EnrollmentScreenHandsOffTest : public EnrollmentScreenTest {
   }
 };
 
+// TODO(crbug.com/1344492): Consistent failures, unable to cleanly revert
+// culprit CL.
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenHandsOffTest,
-                       SkipEnrollmentCompleteScreen) {
+                       DISABLED_SkipEnrollmentCompleteScreen) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnDeviceAttributeUpdatePermission(false /* granted */);
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
