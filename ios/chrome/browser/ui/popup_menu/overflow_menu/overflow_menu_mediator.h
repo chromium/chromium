@@ -19,6 +19,7 @@ namespace feature_engagement {
 class Tracker;
 }
 @protocol ApplicationCommands;
+@protocol BookmarksCommands;
 @protocol BrowserCommands;
 @protocol BrowserCoordinatorCommands;
 class BrowserPolicyConnectorIOS;
@@ -52,6 +53,7 @@ class WebStateList;
                               TextZoomCommands>
     dispatcher;
 
+@property(nonatomic, weak) id<BookmarksCommands> bookmarksCommandsHandler;
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
 

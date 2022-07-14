@@ -24,6 +24,9 @@
 //   "Edit" button will be provided in the displayed snackbar message.
 - (void)bookmark:(BookmarkAddCommand*)command;
 
+// Adds bookmark for the current page.
+- (void)bookmarkCurrentPage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_BOOKMARKS_COMMANDS_H_

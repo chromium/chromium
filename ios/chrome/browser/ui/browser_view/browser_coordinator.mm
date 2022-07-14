@@ -589,6 +589,8 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
           _dispatcher);
   _keyCommandsProvider.omniboxHandler =
       static_cast<id<OmniboxCommands>>(_dispatcher);
+  _keyCommandsProvider.bookmarksCommandsHandler =
+      static_cast<id<BookmarksCommands>>(_dispatcher);
 
   _prerenderService = PrerenderServiceFactory::GetForBrowserState(browserState);
   if (!browserState->IsOffTheRecord()) {

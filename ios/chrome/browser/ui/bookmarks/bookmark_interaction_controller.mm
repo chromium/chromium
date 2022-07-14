@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
@@ -642,6 +643,19 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
                                                        toFolder:folder]];
     }
   }];
+}
+
+- (void)bookmarkCurrentPage {
+  web::WebState* currentWebState =
+      _browser->GetWebStateList()->GetActiveWebState();
+
+  GURL URL = currentWebState->GetLastCommittedURL();
+  NSString* title = tab_util::GetTabTitle(currentWebState);
+  BookmarkAddCommand* command = [[BookmarkAddCommand alloc] initWithURL:URL
+                                                                  title:title
+                                                   presentFolderChooser:NO];
+
+  [self bookmark:command];
 }
 
 #pragma mark - Private

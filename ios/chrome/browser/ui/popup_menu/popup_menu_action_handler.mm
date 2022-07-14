@@ -14,6 +14,7 @@
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
@@ -77,7 +78,7 @@ using base::UserMetricsAction;
     case PopupMenuActionPageBookmark:
       RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-      [self.dispatcher bookmarkCurrentPage];
+      [self.bookmarksCommandsHandler bookmarkCurrentPage];
       break;
     case PopupMenuActionTranslate:
       base::RecordAction(UserMetricsAction("MobileMenuTranslate"));

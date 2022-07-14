@@ -168,17 +168,6 @@ enum HeaderBehaviour {
 NSString* const kBrowserViewControllerSnackbarCategory =
     @"BrowserViewControllerSnackbarCategory";
 
-bookmarks::BookmarkModel* GetBookmarkModelForWebState(
-    web::WebState* web_state) {
-  if (!web_state)
-    return nullptr;
-  web::BrowserState* browser_state = web_state->GetBrowserState();
-  if (!browser_state)
-    return nullptr;
-  return ios::BookmarkModelFactory::GetForBrowserState(
-      ChromeBrowserState::FromBrowserState(browser_state));
-}
-
 }  // namespace
 
 #pragma mark - ToolbarContainerView
@@ -3275,24 +3264,6 @@ bookmarks::BookmarkModel* GetBookmarkModelForWebState(
 }
 
 #pragma mark - BrowserCommands
-
-- (void)bookmarkCurrentPage {
-  GURL URL = self.currentWebState->GetLastCommittedURL();
-
-  bookmarks::BookmarkModel* bookmarkModel =
-      GetBookmarkModelForWebState(self.currentWebState);
-  BOOL alreadyBookmarked =
-      bookmarkModel && bookmarkModel->GetMostRecentlyAddedUserNodeForURL(
-                           self.currentWebState->GetLastCommittedURL());
-
-  if (alreadyBookmarked) {
-    [_bookmarkInteractionController presentBookmarkEditorForURL:URL];
-  } else {
-    [_bookmarkInteractionController
-        bookmarkURL:URL
-              title:tab_util::GetTabTitle(self.currentWebState)];
-  }
-}
 
 // TODO(crbug.com/1272540): Remove this command and factor it into a model
 // update helper function as part of the reading list API.

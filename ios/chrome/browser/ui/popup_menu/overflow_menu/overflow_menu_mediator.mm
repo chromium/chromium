@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
@@ -1332,7 +1333,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  [self.dispatcher bookmarkCurrentPage];
+  [self.bookmarksCommandsHandler bookmarkCurrentPage];
 }
 
 // Dismisses the menu and adds the current page to the reading list.

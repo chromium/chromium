@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 
+@protocol BookmarksCommands;
 class Browser;
 
 // Handles the keyboard commands registration and handling for the
@@ -25,6 +26,8 @@ class Browser;
                               BrowserCoordinatorCommands,
                               FindInPageCommands>
     dispatcher;
+
+@property(nonatomic, weak) id<BookmarksCommands> bookmarksCommandsHandler;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
 
 // Set this flag to YES when the key shortcut bound to Escape key that dismisses
