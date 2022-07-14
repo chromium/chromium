@@ -77,6 +77,9 @@ class VTTCueBackgroundBox final : public HTMLDivElement {
 
 template <>
 struct DowncastTraits<VTTCueBackgroundBox> {
+  static bool AllowFrom(const Node& node) {
+    return node.IsElementNode() && To<Element>(node).IsVTTCueBackgroundBox();
+  }
   static bool AllowFrom(const Element& element) {
     return element.IsVTTCueBackgroundBox();
   }

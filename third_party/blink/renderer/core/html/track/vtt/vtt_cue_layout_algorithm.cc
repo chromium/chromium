@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
 #include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 
 namespace blink {
 
@@ -49,6 +51,32 @@ gfx::Rect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
 }
 
 void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
+  // 9. If there are no line boxes in boxes, skip the remainder of these
+  // substeps for cue. The cue is ignored.
+  const LayoutBox& cue_box = *cue_.GetLayoutBox();
+  NGInlineCursor cursor(To<LayoutBlockFlow>(cue_box));
+  cursor.MoveToFirstLine();
+  if (cursor.IsNull()) {
+    return;
+  }
+  // We refer to the block size of a kBox item for VTTCueBackgroundBox rather
+  // than the block size of a line box. The kBox item is taller than the line
+  // box due to paddings.
+  cursor.MoveToNext();
+  if (cursor.IsNull())
+    return;
+  const NGFragmentItem& first_item = *cursor.CurrentItem();
+  DCHECK(first_item.GetLayoutObject());
+  DCHECK(IsA<VTTCueBackgroundBox>(first_item.GetLayoutObject()->GetNode()));
+
+  const bool is_horizontal = cue_box.IsHorizontalWritingMode();
+  const LayoutBlock& container = *cue_box.ContainingBlock();
+
+  // 1. Horizontal: Let full dimension be the height of video’s rendering area.
+  //    Vertical: Let full dimension be the width of video’s rendering area.
+  [[maybe_unused]] const LayoutUnit full_dimension =
+      is_horizontal ? container.Size().Height() : container.Size().Width();
+
   // TODO(crbug.com/1335309): Implement this.
 
   // This function will make cue_.adjusted_position_ a value other than
