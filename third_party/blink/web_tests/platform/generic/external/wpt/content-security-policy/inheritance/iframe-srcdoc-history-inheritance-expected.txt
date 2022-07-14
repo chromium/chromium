@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL iframe-srcdoc-history-inheritance promise_test: Unhandled rejection with value: object "Error: The srcdoc iframe's img loaded correctly, bypassing the parent's update CSP"
-Harness: the test ran to completion.
-
