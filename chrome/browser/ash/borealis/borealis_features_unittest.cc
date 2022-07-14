@@ -135,11 +135,11 @@ TEST(BorealisFeaturesUtilTest, TokenHardwareCheckerWorks) {
   EXPECT_TRUE(checker.CpuRegexMatches("cp"));
   EXPECT_TRUE(checker.CpuRegexMatches("^[a-z]*$"));
 
-  EXPECT_TRUE(checker.HasMemory(-1));
+  EXPECT_TRUE(checker.HasMemory(0));
   EXPECT_TRUE(checker.HasMemory(41));
   EXPECT_TRUE(checker.HasMemory(42));
   EXPECT_FALSE(checker.HasMemory(43));
-  EXPECT_FALSE(checker.HasMemory(std::numeric_limits<int64_t>::max()));
+  EXPECT_FALSE(checker.HasMemory(std::numeric_limits<uint64_t>::max()));
 }
 
 TEST(BorealisFeaturesUtilTest, DataCanBeBuilt) {
@@ -160,7 +160,7 @@ TEST(BorealisFeaturesUtilTest, DataCanBeBuilt) {
         // Faking CPU and RAM are not supported, so just assert they have some
         // trivial values.
         EXPECT_NE(data.cpu, "");
-        EXPECT_GT(data.memory, 0);
+        EXPECT_GT(data.memory, 0u);
         loop.Quit();
       }));
   loop.Run();

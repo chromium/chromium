@@ -158,20 +158,20 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
 // Returns the default memory limit to use for discardable memory, taking
 // the amount physical memory available and other platform specific constraints
 // into account.
-int64_t GetDefaultMemoryLimit() {
-  const int kMegabyte = 1024 * 1024;
+uint64_t GetDefaultMemoryLimit() {
+  const uint64_t kMegabyte = 1024ull * 1024;
 
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // Bypass IsLowEndDevice() check and fix max_default_memory_limit to 64MB on
   // Chromecast devices. Set value here as IsLowEndDevice() is used on some, but
   // not all Chromecast devices.
-  int64_t max_default_memory_limit = 64 * kMegabyte;
+  uint64_t max_default_memory_limit = 64 * kMegabyte;
 #else
 #if BUILDFLAG(IS_ANDROID)
   // Limits the number of FDs used to 32, assuming a 4MB allocation size.
-  int64_t max_default_memory_limit = 128 * kMegabyte;
+  uint64_t max_default_memory_limit = 128 * kMegabyte;
 #else
-  int64_t max_default_memory_limit = 512 * kMegabyte;
+  uint64_t max_default_memory_limit = 512 * kMegabyte;
 #endif
 
   // Use 1/8th of discardable memory on low-end devices.
@@ -201,7 +201,8 @@ int64_t GetDefaultMemoryLimit() {
 
     // Allow 1/2 of available shmem dir space to be used for discardable memory.
     max_default_memory_limit =
-        std::min(max_default_memory_limit, shmem_dir_amount_of_free_space / 2);
+        std::min(max_default_memory_limit,
+                 static_cast<uint64_t>(shmem_dir_amount_of_free_space / 2));
   }
 #endif
 

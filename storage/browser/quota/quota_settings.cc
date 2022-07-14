@@ -37,7 +37,7 @@ int64_t RandomizeByPercent(int64_t value, int percent) {
 }
 
 QuotaSettings CalculateIncognitoDynamicSettings(
-    int64_t physical_memory_amount) {
+    uint64_t physical_memory_amount) {
   // The incognito pool size is a fraction of the amount of system memory.
   double incognito_pool_size_ratio =
       kIncognitoQuotaRatioLowerBound +

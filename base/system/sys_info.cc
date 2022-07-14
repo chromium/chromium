@@ -23,21 +23,21 @@ namespace base {
 namespace {
 #if BUILDFLAG(IS_IOS)
 // For M99, 45% of devices have 2GB of RAM, and 55% have more.
-constexpr int64_t kLowMemoryDeviceThresholdMB = 1024;
+constexpr uint64_t kLowMemoryDeviceThresholdMB = 1024;
 #else
 // Updated Desktop default threshold to match the Android 2021 definition.
-constexpr int64_t kLowMemoryDeviceThresholdMB = 2048;
+constexpr uint64_t kLowMemoryDeviceThresholdMB = 2048;
 #endif
 }  // namespace
 
 // static
-int64_t SysInfo::AmountOfPhysicalMemory() {
+uint64_t SysInfo::AmountOfPhysicalMemory() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {
     // Keep using 512MB as the simulated RAM amount for when users or tests have
     // manually enabled low-end device mode. Note this value is different from
     // the threshold used for low end devices.
-    constexpr int64_t kSimulatedMemoryForEnableLowEndDeviceMode =
+    constexpr uint64_t kSimulatedMemoryForEnableLowEndDeviceMode =
         512 * 1024 * 1024;
     return std::min(kSimulatedMemoryForEnableLowEndDeviceMode,
                     AmountOfPhysicalMemoryImpl());
@@ -47,14 +47,14 @@ int64_t SysInfo::AmountOfPhysicalMemory() {
 }
 
 // static
-int64_t SysInfo::AmountOfAvailablePhysicalMemory() {
+uint64_t SysInfo::AmountOfAvailablePhysicalMemory() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {
     // Estimate the available memory by subtracting our memory used estimate
     // from the fake |kLowMemoryDeviceThresholdMB| limit.
-    int64_t memory_used =
+    uint64_t memory_used =
         AmountOfPhysicalMemoryImpl() - AmountOfAvailablePhysicalMemoryImpl();
-    int64_t memory_limit = kLowMemoryDeviceThresholdMB * 1024 * 1024;
+    uint64_t memory_limit = kLowMemoryDeviceThresholdMB * 1024 * 1024;
     // std::min ensures no underflow, as |memory_used| can be > |memory_limit|.
     return memory_limit - std::min(memory_used, memory_limit);
   }
@@ -82,7 +82,8 @@ bool DetectLowEndDevice() {
     return false;
 
   int ram_size_mb = SysInfo::AmountOfPhysicalMemoryMB();
-  return (ram_size_mb > 0 && ram_size_mb <= kLowMemoryDeviceThresholdMB);
+  return ram_size_mb > 0 &&
+         static_cast<uint64_t>(ram_size_mb) <= kLowMemoryDeviceThresholdMB;
 }
 
 // static

@@ -91,7 +91,7 @@ TokenHardwareChecker::Data::Data(std::string token_hash,
                                  std::string board,
                                  std::string model,
                                  std::string cpu,
-                                 int64_t memory)
+                                 uint64_t memory)
     : token_hash(std::move(token_hash)),
       board(std::move(board)),
       model(std::move(model)),
@@ -176,7 +176,7 @@ bool TokenHardwareChecker::CpuRegexMatches(const std::string& cpu_regex) const {
   return RE2::PartialMatch(token_hardware_.cpu, cpu_regex);
 }
 
-bool TokenHardwareChecker::HasMemory(int64_t mem_bytes) const {
+bool TokenHardwareChecker::HasMemory(uint64_t mem_bytes) const {
   return token_hardware_.memory >= mem_bytes;
 }
 

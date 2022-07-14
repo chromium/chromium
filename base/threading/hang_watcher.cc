@@ -740,7 +740,7 @@ void HangWatcher::WatchStateSnapShot::Init(
       // Emit trace events for monitored threads.
       if (ThreadTypeLoggingLevelGreaterOrEqual(watch_state.get()->thread_type(),
                                                LoggingLevel::kUmaOnly)) {
-        const uint64_t thread_id = watch_state.get()->GetThreadID();
+        const PlatformThreadId thread_id = watch_state.get()->GetThreadID();
         const auto track = perfetto::Track::FromPointer(
             this, perfetto::ThreadTrack::ForThread(thread_id));
         TRACE_EVENT_BEGIN("base", "HangWatcher::ThreadHung", track, deadline);
@@ -758,9 +758,8 @@ void HangWatcher::WatchStateSnapShot::Init(
       // the next capture then they'll already be marked and will be included
       // in the capture at that time.
       if (thread_marked && all_threads_marked) {
-        hung_watch_state_copies_.push_back(WatchStateCopy{
-            deadline,
-            static_cast<PlatformThreadId>(watch_state.get()->GetThreadID())});
+        hung_watch_state_copies_.push_back(
+            WatchStateCopy{deadline, watch_state.get()->GetThreadID()});
       } else {
         all_threads_marked = false;
       }
@@ -1277,7 +1276,7 @@ HangWatchState::GetHangWatchStateForCurrentThread() {
   return hang_watch_state.get();
 }
 
-uint64_t HangWatchState::GetThreadID() const {
+PlatformThreadId HangWatchState::GetThreadID() const {
   return thread_id_;
 }
 

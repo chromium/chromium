@@ -17,7 +17,7 @@ int64_t QuotaDeviceInfoHelper::AmountOfTotalDiskSpace(
   return disk_space;
 }
 
-int64_t QuotaDeviceInfoHelper::AmountOfPhysicalMemory() const {
+uint64_t QuotaDeviceInfoHelper::AmountOfPhysicalMemory() const {
   return base::SysInfo::AmountOfPhysicalMemory();
 }
 

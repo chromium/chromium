@@ -68,11 +68,8 @@ class SysInfoDelegate : public SessionRestorePolicy::Delegate {
   }
 
   size_t GetFreeMemoryMiB() const override {
-    constexpr int64_t kMibibytesInBytes = 1 << 20;
-    int64_t free_mem =
-        base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
-    DCHECK(free_mem >= 0);
-    return free_mem;
+    constexpr uint64_t kMibibytesInBytes = 1 << 20;
+    return base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
   }
 
   base::TimeTicks NowTicks() const override { return base::TimeTicks::Now(); }

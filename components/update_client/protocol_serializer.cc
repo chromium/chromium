@@ -37,9 +37,7 @@ namespace {
 
 // Returns the amount of physical memory in GB, rounded to the nearest GB.
 int GetPhysicalMemoryGB() {
-  const double kOneGB = 1024 * 1024 * 1024;
-  const int64_t phys_mem = base::SysInfo::AmountOfPhysicalMemory();
-  return static_cast<int>(std::floor(0.5 + phys_mem / kOneGB));
+  return base::ClampRound(base::SysInfo::AmountOfPhysicalMemoryMB() / 1024.0f);
 }
 
 std::string GetOSVersion() {

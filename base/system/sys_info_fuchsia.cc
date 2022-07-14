@@ -91,12 +91,12 @@ int64_t GetAmountOfTotalDiskSpaceAndVolumePath(const FilePath& path,
 }  // namespace
 
 // static
-int64_t SysInfo::AmountOfPhysicalMemoryImpl() {
+uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   return zx_system_get_physmem();
 }
 
 // static
-int64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   // TODO(https://crbug.com/986608): Implement this.
   NOTIMPLEMENTED_LOG_ONCE();
   return 0;
@@ -108,7 +108,7 @@ int SysInfo::NumberOfProcessors() {
 }
 
 // static
-int64_t SysInfo::AmountOfVirtualMemory() {
+uint64_t SysInfo::AmountOfVirtualMemory() {
   return 0;
 }
 
