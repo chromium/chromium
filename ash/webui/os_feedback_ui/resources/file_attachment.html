@@ -5,6 +5,8 @@
   }
 
   :host {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -46,11 +48,26 @@
   #selectedFileImage:hover {
     opacity: 0.7;
   }
+
+  #addFileLabel {
+    background: none;
+    border: none;
+    color: var(--google-blue-600);
+    font-size: 13px;
+    font-weight: var(--feedback-medium-font-weight);
+    line-height: 20px;
+    padding: 0;
+  }
+
+  #addFileIcon {
+    margin-inline-end: 10px;
+    margin-inline-start: 12px;
+  }
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
   <button id="addFileLabel" class="file-input"
       on-click="handleOpenFileInputClick_">
-    <iron-icon icon="attachment:add-file"></iron-icon>
+    <iron-icon id="addFileIcon" icon="attachment:add-file"></iron-icon>
     [[i18n('addFileLabel')]]
   </button>
 </div>
