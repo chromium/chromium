@@ -66,7 +66,7 @@ presets:
           - win-10-perf
           - android-pixel4-perf
         stories:
-          - Jetstream2
+          - JetStream2
   chrome_health_pgo:
     telemetry_batch_experiment:
       - benchmark: speedometer2-chrome-health
@@ -126,7 +126,7 @@ presets:
           - win-10-perf-pgo
           - android-pixel4-perf
         stories:
-          - Jetstream2
+          - JetStream2
   speedometer2:
     telemetry_batch_experiment:
       - benchmark: speedometer2-chrome-health
@@ -192,7 +192,18 @@ presets:
           - win-10-perf
           - android-pixel4-perf
         stories:
-          - Jetstream2
+          - JetStream2
+  jetstream2-pgo:
+    telemetry_batch_experiment:
+      - benchmark: jetstream2
+        configs:
+          - mac-laptop_low_end-perf-pgo
+          - mac-m1_mini_2020-perf-pgo
+          - linux-perf-pgo
+          - win-10-perf-pgo
+          - android-pixel4-perf
+        stories:
+          - JetStream2
   cwv-ch:
     telemetry_batch_experiment:
       - benchmark: loading.desktop
