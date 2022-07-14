@@ -55,8 +55,10 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.url.GURL;
 
@@ -69,6 +71,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                                        SearchDelegate, SnackbarController,
                                        HistoryContentManager.Observer {
     private static final String METRICS_PREFIX = "Android.HistoryPage.";
+    static final String HISTORY_CLUSTERS_VISIBLE_PREF = "history_clusters.visible";
 
     // Keep consistent with the UMA constants on the WebUI history page (history/constants.js).
     private static final int UMA_MAX_BUCKET_VALUE = 1000;
@@ -86,6 +89,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
     private final HistoryProvider mHistoryProvider;
+    private final ObservableSupplierImpl<Boolean> mShowHistoryClustersToggleSupplier =
+            new ObservableSupplierImpl<>();
     private ViewGroup mRootView;
     private ViewGroup mContentView;
     private SelectableListLayout<HistoryItem> mSelectableListLayout;
@@ -99,6 +104,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
             new ObservableSupplierImpl<>();
+    private final PrefService mPrefService;
 
     private boolean mIsSearching;
 
@@ -126,6 +132,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mSnackbarManager = snackbarManager;
         mIsIncognito = isIncognito;
         mHistoryProvider = historyProvider;
+        mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
 
         recordUserAction("Show");
         // If incognito placeholder is shown, we don't need to create History UI elements.
@@ -228,6 +235,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 public String getSearchEmptyString() {
                     return HistoryManager.this.getSearchEmptyString();
                 }
+
+                @Override
+                public void onOptOut() {
+                    onHistoryClustersOptOutChanged(false);
+                }
             };
 
             mHistoryClustersCoordinator =
@@ -247,7 +259,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, true);
         mContentManager = new HistoryContentManager(mActivity, this, isSeparateActivity,
                 isIncognito, shouldShowInfoHeader, /* shouldShowClearData */ true,
-                /* hostName */ null, mSelectionDelegate, tabSupplier, historyClustersEnabled,
+                /* hostName */ null, mSelectionDelegate, tabSupplier,
+                mShowHistoryClustersToggleSupplier,
                 (vg) -> buildToggleView(vg, HISTORY_TAB_INDEX), historyProvider);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
@@ -263,6 +276,18 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mToolbar.initializeSearchView(this, R.string.history_manager_search, R.id.search_menu_id);
         mToolbar.setInfoMenuItem(R.id.info_menu_id);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
+        if (historyClustersEnabled) {
+            boolean historyClustersVisible = mPrefService.getBoolean(HISTORY_CLUSTERS_VISIBLE_PREF);
+            mShowHistoryClustersToggleSupplier.set(historyClustersVisible);
+            mToolbar.getMenu()
+                    .findItem(R.id.optout_menu_id)
+                    .setVisible(true)
+                    .setTitle(historyClustersVisible
+                                    ? R.string.history_clusters_disable_menu_item_label
+                                    : R.string.history_clusters_enable_menu_item_label);
+        } else {
+            mToolbar.getMenu().removeItem(R.id.optout_menu_id);
+        }
 
         // 4. Width constrain the SelectableListLayout.
         mSelectableListLayout.configureWideDisplayStyle();
@@ -283,6 +308,24 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             mContentView = mSelectableListLayout;
         }
         mRootView.addView(mContentView);
+    }
+
+    private void onHistoryClustersOptOutChanged(boolean isVisible) {
+        mPrefService.setBoolean(HISTORY_CLUSTERS_VISIBLE_PREF, isVisible);
+        if (isVisible) {
+            mToolbar.getMenu()
+                    .findItem(R.id.optout_menu_id)
+                    .setTitle(R.string.history_clusters_disable_menu_item_label);
+            mShowHistoryClustersToggleSupplier.set(true);
+        } else {
+            mToolbar.getMenu()
+                    .findItem(R.id.optout_menu_id)
+                    .setTitle(R.string.history_clusters_enable_menu_item_label);
+            if (mContentView == mHistoryClustersCoordinator.getActivityContentView()) {
+                swapContentView();
+            }
+            mShowHistoryClustersToggleSupplier.set(false);
+        }
     }
 
     private ViewGroup buildToggleView(ViewGroup parent, int selectedIndex) {
@@ -379,6 +422,9 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             return true;
         } else if (item.getItemId() == R.id.info_menu_id) {
             toggleInfoHeaderVisibility();
+        } else if (item.getItemId() == R.id.optout_menu_id) {
+            onHistoryClustersOptOutChanged(!mPrefService.getBoolean(HISTORY_CLUSTERS_VISIBLE_PREF));
+            return true;
         }
         return false;
     }

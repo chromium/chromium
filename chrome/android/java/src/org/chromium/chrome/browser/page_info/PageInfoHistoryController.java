@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
@@ -83,7 +84,7 @@ public class PageInfoHistoryController
                 /* isSeparateActivity */ false,
                 /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true,
                 /* shouldShowClearData */ false, mHost,
-                /* selectionDelegate */ null, mTabSupplier, false,
+                /* selectionDelegate */ null, mTabSupplier, new ObservableSupplierImpl<>(),
                 vg -> null, new BrowsingHistoryBridge(Profile.getLastUsedRegularProfile()));
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();

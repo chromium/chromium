@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Function;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
@@ -66,17 +67,19 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private String mHostName;
 
     private boolean mDisableScrollToLoadForTest;
-    private boolean mShowHistoryToggle;
+    private ObservableSupplier<Boolean> mShowHistoryToggleSupplier;
     private Function<ViewGroup, ViewGroup> mToggleViewFactory;
 
     public HistoryAdapter(HistoryContentManager manager, HistoryProvider provider,
-            boolean showHistoryToggle, Function<ViewGroup, ViewGroup> toggleViewFactory) {
+            ObservableSupplier<Boolean> showHistoryToggleSupplier,
+            Function<ViewGroup, ViewGroup> toggleViewFactory) {
         mToggleViewFactory = toggleViewFactory;
         setHasStableIds(true);
         mHistoryProvider = provider;
         mHistoryProvider.setObserver(this);
         mManager = manager;
-        mShowHistoryToggle = showHistoryToggle;
+        mShowHistoryToggleSupplier = showHistoryToggleSupplier;
+        mShowHistoryToggleSupplier.addObserver((unused) -> setHeaders());
         mFaviconHelper = new DefaultFaviconHelper();
         mItemViews = new ArrayList<>();
     }
@@ -375,7 +378,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         ArrayList<HeaderItem> args = new ArrayList<>();
         if (mPrivacyDisclaimersVisible) args.add(mPrivacyDisclaimerHeaderItem);
         if (mClearBrowsingDataButtonVisible) args.add(mClearBrowsingDataButtonHeaderItem);
-        if (mShowHistoryToggle && mHistoryToggleHeaderItem != null) {
+        boolean showHistoryToggle =
+                mShowHistoryToggleSupplier.get() != null && mShowHistoryToggleSupplier.get();
+        if (showHistoryToggle && mHistoryToggleHeaderItem != null) {
             args.add(mHistoryToggleHeaderItem);
         }
 

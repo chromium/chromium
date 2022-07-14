@@ -84,4 +84,9 @@ public interface HistoryClustersDelegate {
     default String getSearchEmptyString() {
         return "";
     }
+    /**
+     * Called when the user opts out of the Journeys feature to signal to the embedding component
+     * that it should remove the HistoryClusters UI.
+     */
+    default void onOptOut() {}
 }

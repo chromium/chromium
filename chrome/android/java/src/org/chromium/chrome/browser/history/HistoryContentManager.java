@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -125,6 +126,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *         unselectable items.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *                    separate activity.
+     * @param showHistoryToggleSupplier A supplier that tells us if and when we should show the
+     *         toggle that swaps between the Journeys and regular history UIs.
      * @param toggleViewFactory Function that provides a toggle view container for the given parent
      *         ViewGroup. This toggle is used to switch between the Journeys UI and the regular
      *         history UI and is thus controlled by our parent component.
@@ -134,7 +137,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean isSeparateActivity, boolean isIncognito, boolean shouldShowPrivacyDisclaimers,
             boolean shouldShowClearDataIfAvailable, @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
-            @Nullable Supplier<Tab> tabSupplier, boolean showHistoryToggle,
+            @Nullable Supplier<Tab> tabSupplier,
+            ObservableSupplier<Boolean> showHistoryToggleSupplier,
             Function<ViewGroup, ViewGroup> toggleViewFactory, HistoryProvider historyProvider) {
         mActivity = activity;
         mObserver = observer;
@@ -170,8 +174,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // explicitly redirects to use regular profile for Incognito case.
         Profile profile = Profile.getLastUsedRegularProfile();
         mHistoryAdapter = new HistoryAdapter(this,
-                sProviderForTests != null ? sProviderForTests : historyProvider, showHistoryToggle,
-                toggleViewFactory);
+                sProviderForTests != null ? sProviderForTests : historyProvider,
+                showHistoryToggleSupplier, toggleViewFactory);
 
         // Create a recycler view.
         mRecyclerView =

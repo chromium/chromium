@@ -155,6 +155,7 @@ public class HistoryUITest {
         Profile.setLastUsedProfileForTesting(mProfile);
         doReturn(mPrefService).when(mUserPrefsJni).get(mProfile);
         doReturn(true).when(mPrefService).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+        doReturn(true).when(mPrefService).getBoolean(HistoryManager.HISTORY_CLUSTERS_VISIBLE_PREF);
         IdentityServicesProvider.setInstanceForTests(mIdentityService);
         doReturn(mSigninManager).when(mIdentityService).getSigninManager(mProfile);
         mJniMocker.mock(PrefChangeRegistrarJni.TEST_HOOKS, mPrefChangeRegistrarJni);

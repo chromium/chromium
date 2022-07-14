@@ -229,6 +229,9 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
             mMediator.deleteVisits(mSelectionDelegate.getSelectedItemsAsList());
             mSelectionDelegate.clearSelection();
             return true;
+        } else if (menuItem.getItemId() == R.id.optout_menu_id) {
+            mDelegate.onOptOut();
+            return true;
         }
         return false;
     }
