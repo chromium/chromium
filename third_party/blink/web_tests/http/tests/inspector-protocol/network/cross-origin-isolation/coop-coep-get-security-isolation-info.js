@@ -9,6 +9,7 @@
   }
 
   await dp.Page.enable();
+  await dp.Network.enable();
 
   const results = new Map();
 
