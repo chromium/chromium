@@ -8999,7 +8999,7 @@
   },
   "Win x64 Builder (py2 less)": {
     "additional_compile_targets": [
-      "pdf_fuzzers"
+      "all"
     ],
     "scripts": [
       {

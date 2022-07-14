@@ -2945,10 +2945,8 @@
         'use_swarming': False,
       },
       'Win x64 Builder (py2 less)': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=6248;drc=e40c45d7cb85fa476e0946b56a0fdcbb7d764134
         'additional_compile_targets': [
-          'pdf_fuzzers'
+          'all'
         ],
         'test_suites': {
           'scripts': 'chromium_win_scripts',
