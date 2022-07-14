@@ -4,13 +4,14 @@
 
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
-#include "ash/session/session_controller_impl.h"
+#include "ash/rgb_keyboard/rgb_keyboard_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
 
@@ -20,6 +21,44 @@ const AccountId account_id_1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
 
 constexpr char kUser2[] = "user2@test.com";
 const AccountId account_id_2 = AccountId::FromUserEmailGaiaId(kUser2, kUser2);
+
+// Creates an image of size |size|.
+gfx::ImageSkia CreateImage(int width, int height, SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(color);
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  return image;
+}
+
+class TestWallpaperObserver : public ash::WallpaperControllerObserver {
+ public:
+  TestWallpaperObserver() {
+    wallpaper_controller_observation_.Observe(WallpaperControllerImpl::Get());
+  }
+
+  TestWallpaperObserver(const TestWallpaperObserver&) = delete;
+  TestWallpaperObserver& operator=(const TestWallpaperObserver&) = delete;
+
+  ~TestWallpaperObserver() override = default;
+
+  // ash::WallpaperControllerObserver:
+  void OnWallpaperColorsChanged() override {
+    DCHECK(ui_run_loop_);
+    ui_run_loop_->QuitWhenIdle();
+  }
+
+  // Wait until the wallpaper update is completed.
+  void WaitForWallpaperColorsChanged() {
+    ui_run_loop_ = std::make_unique<base::RunLoop>();
+    ui_run_loop_->Run();
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> ui_run_loop_;
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      wallpaper_controller_observation_{this};
+};
 }  // namespace
 
 class KeyboardBacklightColorControllerTest : public AshTestBase {
@@ -41,6 +80,7 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     controller_ = Shell::Get()->keyboard_backlight_color_controller();
+    wallpaper_controller_ = Shell::Get()->wallpaper_controller();
   }
 
  protected:
@@ -48,7 +88,12 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
     return histogram_tester_;
   }
 
+  SkColor displayed_color() const {
+    return controller_->displayed_color_for_testing_;
+  }
+
   KeyboardBacklightColorController* controller_ = nullptr;
+  WallpaperControllerImpl* wallpaper_controller_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -87,6 +132,20 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
   SimulateUserLogin(account_id_1);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kRainbow,
             controller_->GetBacklightColor(account_id_1));
+}
+
+TEST_F(KeyboardBacklightColorControllerTest,
+       DisplaysDefaultColorForNearlyBlackColor) {
+  TestWallpaperObserver observer;
+  SimulateUserLogin(account_id_1);
+  gfx::ImageSkia one_shot_wallpaper =
+      CreateImage(640, 480, SkColorSetRGB(/*r=*/0, /*g=*/0, /*b=*/10));
+  wallpaper_controller_->ShowOneShotWallpaper(one_shot_wallpaper);
+  observer.WaitForWallpaperColorsChanged();
+
+  histogram_tester().ExpectBucketCount(
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", true, 1);
+  EXPECT_EQ(kDefaultColor, displayed_color());
 }
 
 }  // namespace ash
