@@ -7,6 +7,7 @@
  * the background context.
  */
 import {CursorRange} from '../../../common/cursors/range.js';
+import {PanelBridge} from '../../common/panel_bridge.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 
 import {ISearch} from './i_search.js';

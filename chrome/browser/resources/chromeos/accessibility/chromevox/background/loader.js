@@ -38,7 +38,6 @@ goog.require('OutputEventType');
 goog.require('OutputNodeSpan');
 goog.require('OutputSelectionSpan');
 goog.require('OutputSpeechProperties');
-goog.require('PanelBridge');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');
 goog.require('QueueMode');

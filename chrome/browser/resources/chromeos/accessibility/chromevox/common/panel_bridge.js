@@ -7,25 +7,21 @@
  * the ChromeVox panel.
  */
 
-goog.provide('PanelBridge');
-
-goog.require('PanelNodeMenuItemData');
-
-PanelBridge = {
+export class PanelBridge {
   /**
    * @param {!PanelNodeMenuItemData} itemData
    * @return {!Promise}
    */
-  addMenuItem(itemData) {
+  static addMenuItem(itemData) {
     return BridgeHelper.sendMessage(
         BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ADD_MENU_ITEM, itemData);
-  },
+  }
 
   /** @return {!Promise} */
-  async onCurrentRangeChanged() {
+  static async onCurrentRangeChanged() {
     return BridgeHelper.sendMessage(
         BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED);
-  },
-};
+  }
+}
