@@ -34,8 +34,14 @@ class ArcVolumeMounterBridge
  public:
   class Delegate {
    public:
+    // Returns true if file system changes are watched by file system watchers.
+    // Mounting events should be sent to Android only when this returns true so
+    // that every file in MyFiles and removable media is indexed in Android's
+    // MediaStore.
+    virtual bool IsWatchingFileSystemChanges() = 0;
+
     // To be called by ArcVolumeMounter when a removable media is mounted. This
-    // create a watcher for the removable media.
+    // creates a watcher for the removable media if it's not created yet.
     virtual void StartWatchingRemovableMedia(const std::string& fs_uuid,
                                              const std::string& mount_path,
                                              base::OnceClosure callback) = 0;

@@ -57,17 +57,19 @@ class ArcFileSystemWatcherService
   void OnConnectionClosed() override;
 
   // ArcVolumeMounterBridge::Delegate overrides.
+  bool IsWatchingFileSystemChanges() override;
   void StartWatchingRemovableMedia(const std::string& fs_uuid,
                                    const std::string& mount_path,
                                    base::OnceClosure callback) override;
-
   void StopWatchingRemovableMedia(const std::string& mount_path) override;
 
  private:
   class FileSystemWatcher;
 
   void StartWatchingFileSystem();
-  void StopWatchingFileSystem(base::OnceClosure);
+  void StopWatchingFileSystem();
+
+  void OnMyFilesWatcherStarted();
 
   void TriggerSendAllMountEvents() const;
 
@@ -79,6 +81,8 @@ class ArcFileSystemWatcherService
 
   content::BrowserContext* const context_;
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+
+  bool watching_file_system_changes_ = false;
 
   std::unique_ptr<FileSystemWatcher> myfiles_watcher_;
   // A map from mount path to watcher.

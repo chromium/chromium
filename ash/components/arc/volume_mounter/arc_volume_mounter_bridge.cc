@@ -121,6 +121,13 @@ void ArcVolumeMounterBridge::Initialize(Delegate* delegate) {
 
 // Sends MountEvents of all existing MountPoints in cros-disks.
 void ArcVolumeMounterBridge::SendAllMountEvents() {
+  DCHECK(delegate_);
+  if (!delegate_->IsWatchingFileSystemChanges()) {
+    DVLOG(1) << "Skipping SendAllMountEvents because file system changes are "
+             << "not watched by watchers";
+    return;
+  }
+
   SendMountEventForMyFiles();
 
   for (const auto& keyValue : DiskMountManager::GetInstance()->mount_points()) {
@@ -199,6 +206,13 @@ void ArcVolumeMounterBridge::OnMountEvent(
   if (event == DiskMountManager::MountEvent::MOUNTING &&
       pref_service_->GetBoolean(disks::prefs::kExternalStorageDisabled)) {
     DVLOG(1) << "Ignoring mount event since policy disallows removable media";
+    return;
+  }
+
+  if (event == DiskMountManager::MountEvent::MOUNTING &&
+      !delegate_->IsWatchingFileSystemChanges()) {
+    DVLOG(1) << "Skipping OnMountEvent because file system changes are not "
+             << "watched by watchers";
     return;
   }
 
