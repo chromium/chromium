@@ -416,7 +416,7 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
   std::multimap<std::string, base::RepeatingClosure>::iterator pos =
       cancellation_callbacks_.emplace(registration.app_id, base::DoNothing());
   pos->second = update_client_->Install(
-      install_data_index,
+      registration.app_id,
       base::BindOnce(&GetComponents, config_, persisted_data_,
                      AppInstallDataIndex({std::make_pair(registration.app_id,
                                                          install_data_index)}),
