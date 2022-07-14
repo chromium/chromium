@@ -7035,7 +7035,7 @@ crbug.com/1289759 [ Win ] http/tests/loading/slow-parsing-subframe.html [ Failur
 crbug.com/1137003 fast/dom/timer-throttling-background-page-near-alignment-interval.html [ Failure Pass ]
 
 # Sheriff 2022-04-29
-crbug.com/1321243 accessibility/aom-reparenting-crash.html [ Skip ]
+crbug.com/1321243 accessibility/aom-reparenting-crash.html [ Pass Timeout ]
 
 # Sheriff 2022-05-02
 crbug.com/1321293 fast/forms/calendar-picker/week-picker-choose-default-value-after-set-value.html [ Failure Pass ]
