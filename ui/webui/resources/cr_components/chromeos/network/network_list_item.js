@@ -83,13 +83,6 @@ Polymer({
       computed: 'getButtonLabel_(item)',
     },
 
-    /** Expose the aria role attribute as "button". */
-    role: {
-      type: String,
-      reflectToAttribute: true,
-      value: 'button',
-    },
-
     /**
      * The cached ConnectionState for the network.
      * @type {!chromeos.networkConfig.mojom.ConnectionStateType|undefined}
