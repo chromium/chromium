@@ -82,8 +82,6 @@ class BASE_EXPORT CheckError {
                                    int line,
                                    const char* function);
 
-  static CheckError NotReached(const char* file, int line);
-
   // Stream for adding optional details to the error message.
   std::ostream& stream();
 
