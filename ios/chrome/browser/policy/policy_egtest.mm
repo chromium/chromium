@@ -131,7 +131,7 @@ NSString* const kDomain2 = @"domain2.com";
 
 @implementation PolicyTestCase {
   BOOL _settingsOpened;
-  std::unique_ptr<policy::EmbeddedPolicyTestServer> test_server_;
+  std::unique_ptr<policy::EmbeddedPolicyTestServer> _server;
 }
 
 - (void)tearDown {
@@ -465,8 +465,8 @@ NSString* const kDomain2 = @"domain2.com";
 
 // Tests the chrome://management page when there are machine level policies.
 - (void)testManagementPageManagedWithCBCM {
-  test_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
-  test_server_->Start();
+  _server = std::make_unique<policy::EmbeddedPolicyTestServer>();
+  _server->Start();
 
   // Enable machine level (browser) cloud policies.
   AppLaunchConfiguration config;
@@ -481,7 +481,7 @@ NSString* const kDomain2 = @"domain2.com";
   // Use the embedded test server as the policy server.
   config.additional_args.push_back(
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
-                    test_server_->GetServiceURL().spec()}));
+                    _server->GetServiceURL().spec()}));
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [PolicyAppInterface setBrowserCloudPolicyDataWithDomain:kDomain1];
@@ -509,8 +509,8 @@ NSString* const kDomain2 = @"domain2.com";
 // Tests the chrome://management page when there are machine level policies and
 // user level policies from the same domain.
 - (void)testManagementPageManagedWithCBCMAndUserPolicyDifferentDomains {
-  test_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
-  test_server_->Start();
+  _server = std::make_unique<policy::EmbeddedPolicyTestServer>();
+  _server->Start();
 
   // Enable browser cloud policies.
   AppLaunchConfiguration config;
@@ -525,7 +525,7 @@ NSString* const kDomain2 = @"domain2.com";
   // Use the embedded test server as the policy server.
   config.additional_args.push_back(
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
-                    test_server_->GetServiceURL().spec()}));
+                    _server->GetServiceURL().spec()}));
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [PolicyAppInterface setBrowserCloudPolicyDataWithDomain:kDomain1];
@@ -544,8 +544,8 @@ NSString* const kDomain2 = @"domain2.com";
 // Tests the chrome://management page when there are machine level policies and
 // user level policies from different domains.
 - (void)testManagementPageManagedWithCBCMAndUserPolicySameDomains {
-  test_server_ = std::make_unique<policy::EmbeddedPolicyTestServer>();
-  test_server_->Start();
+  _server = std::make_unique<policy::EmbeddedPolicyTestServer>();
+  _server->Start();
 
   // Enable browser cloud policies.
   AppLaunchConfiguration config;
@@ -560,7 +560,7 @@ NSString* const kDomain2 = @"domain2.com";
   // Use the embedded test server as the policy server.
   config.additional_args.push_back(
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
-                    test_server_->GetServiceURL().spec()}));
+                    _server->GetServiceURL().spec()}));
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [PolicyAppInterface setBrowserCloudPolicyDataWithDomain:kDomain1];
