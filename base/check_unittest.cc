@@ -407,7 +407,7 @@ TEST_F(CheckTest, OstreamVsToString) {
                CHECK_EQ(g, h));
 }
 
-#define EXPECT_LOG_ERROR(msg, expr, expected_line)                             \
+#define EXPECT_LOG_ERROR(expected_line, msg, expr)                             \
   do {                                                                         \
     static bool got_log_message = false;                                       \
     ASSERT_EQ(logging::GetLogMessageHandler(), nullptr);                       \
@@ -441,9 +441,10 @@ TEST_F(CheckTest, OstreamVsToString) {
   } while (0)
 
 TEST_F(CheckTest, NotReached) {
-#if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
-  // Expect LOG(ERROR) without the streamed params.
-  EXPECT_LOG_ERROR("NOTREACHED() hit.\n", NOTREACHED() << "foo", __LINE__);
+#if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED) && !DCHECK_IS_ON()
+  // Expect LOG(ERROR) that looks like CHECK(false) with streamed params intact.
+  EXPECT_LOG_ERROR(__LINE__, "Check failed: false. foo\n",
+                   NOTREACHED() << "foo");
 #else
   // Expect a DCHECK with streamed params intact.
   EXPECT_DCHECK("Check failed: false. foo", NOTREACHED() << "foo");
@@ -456,7 +457,7 @@ TEST_F(CheckTest, NotImplemented) {
 
 #if DCHECK_IS_ON()
   // Expect LOG(ERROR) with streamed params intact.
-  EXPECT_LOG_ERROR(expected_msg + "foo\n", NOTIMPLEMENTED() << "foo", __LINE__);
+  EXPECT_LOG_ERROR(__LINE__, expected_msg + "foo\n", NOTIMPLEMENTED() << "foo");
 #else
   // Expect nothing.
   EXPECT_NO_LOG(NOTIMPLEMENTED() << "foo");
@@ -473,7 +474,7 @@ TEST_F(CheckTest, NotImplementedLogOnce) {
       "Not implemented reached in void (anonymous namespace)::NiLogOnce()\n";
 
 #if DCHECK_IS_ON()
-  EXPECT_LOG_ERROR(expected_msg, NiLogOnce(), __LINE__ - 8);
+  EXPECT_LOG_ERROR(__LINE__ - 8, expected_msg, NiLogOnce());
   EXPECT_NO_LOG(NiLogOnce());
 #else
   EXPECT_NO_LOG(NiLogOnce());
