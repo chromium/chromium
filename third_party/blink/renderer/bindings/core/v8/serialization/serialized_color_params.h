@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 
 namespace blink {
 
@@ -41,8 +42,10 @@ enum class ImageSerializationTag : uint32_t {
   // row-major order that converts an r,g,b triple in the linear color space to
   // x,y,z in the XYZ D50 color space.
   kParametricColorSpaceTag = 7,
+  // followed by a SerializedImageOrientation enum, used only for ImageBitmap.
+  kImageOrientationTag = 8,
 
-  kLast = kParametricColorSpaceTag,
+  kLast = kImageOrientationTag,
 };
 
 // This enumeration specifies the values used to serialize PredefinedColorSpace.
@@ -89,6 +92,18 @@ enum class SerializedOpacityMode : uint32_t {
   kLast = kOpaque,
 };
 
+enum class SerializedImageOrientation : uint32_t {
+  kTopLeft = 0,
+  kTopRight = 1,
+  kBottomRight = 2,
+  kBottomLeft = 3,
+  kLeftTop = 4,
+  kRightTop = 5,
+  kRightBottom = 6,
+  kLeftBottom = 7,
+  kLast = kLeftBottom,
+};
+
 class SerializedImageDataSettings {
  public:
   SerializedImageDataSettings(PredefinedColorSpace, ImageDataStorageFormat);
@@ -120,14 +135,16 @@ constexpr float kSerializedHLGConstant = -3.f;
 class SerializedImageBitmapSettings {
  public:
   SerializedImageBitmapSettings();
-  explicit SerializedImageBitmapSettings(SkImageInfo);
+  explicit SerializedImageBitmapSettings(SkImageInfo, ImageOrientationEnum);
   SerializedImageBitmapSettings(SerializedPredefinedColorSpace,
                                 const Vector<double>& sk_color_space,
                                 SerializedPixelFormat,
                                 SerializedOpacityMode,
-                                uint32_t is_premultiplied);
+                                uint32_t is_premultiplied,
+                                SerializedImageOrientation);
 
   SkImageInfo GetSkImageInfo(uint32_t width, uint32_t height) const;
+  ImageOrientationEnum GetImageOrientation() const;
 
   const Vector<double>& GetSerializedSkColorSpace() { return sk_color_space_; }
   SerializedPixelFormat GetSerializedPixelFormat() const {
@@ -137,6 +154,9 @@ class SerializedImageBitmapSettings {
     return opacity_mode_;
   }
   uint32_t IsPremultiplied() const { return is_premultiplied_; }
+  SerializedImageOrientation GetSerializedImageOrientation() const {
+    return image_orientation_;
+  }
 
  private:
   SerializedPredefinedColorSpace color_space_ =
@@ -145,6 +165,8 @@ class SerializedImageBitmapSettings {
   SerializedPixelFormat pixel_format_ = SerializedPixelFormat::kRGBA8;
   SerializedOpacityMode opacity_mode_ = SerializedOpacityMode::kNonOpaque;
   bool is_premultiplied_ = true;
+  SerializedImageOrientation image_orientation_ =
+      SerializedImageOrientation::kTopLeft;
 };
 
 }  // namespace blink

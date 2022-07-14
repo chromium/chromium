@@ -466,27 +466,36 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     }
     WriteTag(kImageBitmapTag);
     SkImageInfo info = image_bitmap->GetBitmapSkImageInfo();
-    SerializedImageBitmapSettings color_params(info);
+    SerializedImageBitmapSettings bitmap_settings(
+        info, image_bitmap->ImageOrientation());
     WriteUint32Enum(ImageSerializationTag::kParametricColorSpaceTag);
-    DCHECK_EQ(color_params.GetSerializedSkColorSpace().size(),
+    DCHECK_EQ(bitmap_settings.GetSerializedSkColorSpace().size(),
               kSerializedParametricColorSpaceLength);
-    for (const auto& value : color_params.GetSerializedSkColorSpace())
+    for (const auto& value : bitmap_settings.GetSerializedSkColorSpace())
       WriteDouble(value);
     WriteUint32Enum(ImageSerializationTag::kCanvasPixelFormatTag);
-    WriteUint32Enum(color_params.GetSerializedPixelFormat());
+    WriteUint32Enum(bitmap_settings.GetSerializedPixelFormat());
     WriteUint32Enum(ImageSerializationTag::kCanvasOpacityModeTag);
-    WriteUint32Enum(color_params.GetSerializedOpacityMode());
+    WriteUint32Enum(bitmap_settings.GetSerializedOpacityMode());
     WriteUint32Enum(ImageSerializationTag::kOriginCleanTag);
     WriteUint32(image_bitmap->OriginClean());
     WriteUint32Enum(ImageSerializationTag::kIsPremultipliedTag);
-    WriteUint32(color_params.IsPremultiplied());
+    WriteUint32(bitmap_settings.IsPremultiplied());
+    WriteUint32Enum(ImageSerializationTag::kImageOrientationTag);
+    WriteUint32Enum(bitmap_settings.GetSerializedImageOrientation());
     WriteUint32Enum(ImageSerializationTag::kEndTag);
-    WriteUint32(image_bitmap->width());
-    WriteUint32(image_bitmap->height());
-    Vector<uint8_t> pixels = image_bitmap->CopyBitmapData(info, false);
-    // Check if we succeeded to copy the BitmapData.
-    if (image_bitmap->width() != 0 && image_bitmap->height() != 0 &&
-        pixels.size() == 0) {
+    // Obtain size disregarding image orientation since the image orientation
+    // will be applied at deserialization time.
+    Image::SizeConfig size_config;
+    size_config.apply_orientation = false;
+    gfx::Size bitmap_size =
+        image_bitmap->BitmapImage()->SizeWithConfig(size_config);
+    WriteUint32(bitmap_size.width());
+    WriteUint32(bitmap_size.height());
+    Vector<uint8_t> pixels =
+        image_bitmap->CopyBitmapData(info, /*apply_orientation=*/false);
+    // Check if we succeeded to copy the bitmap data.
+    if (!bitmap_size.IsEmpty() && pixels.size() == 0) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
           "An ImageBitmap could not be read successfully.");

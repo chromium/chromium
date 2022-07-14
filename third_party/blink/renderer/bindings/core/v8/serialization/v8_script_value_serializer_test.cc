@@ -1069,6 +1069,37 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmap) {
   ASSERT_THAT(pixel, testing::ElementsAre(255, 0, 0, 255));
 }
 
+TEST(V8ScriptValueSerializerTest, ImageBitmapEXIFImageOrientation) {
+  // More complete end-to-end testing is provided by WPT test
+  // imagebitmap-replication-exif-orientation.html.
+  // The purpose of this complementary test is to get complete code coverage
+  // for all possible values of ImageOrientationEnum.
+  V8TestingScope scope;
+  const uint32_t kImageWidth = 10;
+  const uint32_t kImageHeight = 5;
+  for (uint8_t i = static_cast<uint8_t>(ImageOrientationEnum::kOriginTopLeft);
+       i <= static_cast<uint8_t>(ImageOrientationEnum::kMaxValue); i++) {
+    ImageOrientationEnum orientation = static_cast<ImageOrientationEnum>(i);
+    sk_sp<SkSurface> surface =
+        SkSurface::MakeRasterN32Premul(kImageWidth, kImageHeight);
+    auto static_image =
+        UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
+    static_image->SetOrientation(orientation);
+    auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(static_image);
+    ASSERT_TRUE(image_bitmap->BitmapImage());
+    // Serialize and deserialize it.
+    v8::Local<v8::Value> wrapper = ToV8(image_bitmap, scope.GetScriptState());
+    v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
+    ASSERT_TRUE(V8ImageBitmap::HasInstance(result, scope.GetIsolate()));
+    ImageBitmap* new_image_bitmap =
+        V8ImageBitmap::ToImpl(result.As<v8::Object>());
+    ASSERT_TRUE(new_image_bitmap->BitmapImage());
+    // Ensure image orientation did not confuse (e.g transpose) the image size
+    ASSERT_EQ(new_image_bitmap->Size(), image_bitmap->Size());
+    ASSERT_EQ(new_image_bitmap->ImageOrientation(), orientation);
+  }
+}
+
 TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
   sk_sp<SkColorSpace> p3 =
       SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kDisplayP3);
@@ -1152,6 +1183,9 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmap) {
           SkImageInfo::Make(2, 1, kRGBA_8888_SkColorType, kPremul_SkAlphaType),
           &pixels, 8, 0, 0));
   ASSERT_THAT(pixels, testing::ElementsAre(255, 0, 0, 255, 0, 255, 0, 255));
+  // Check that orientation is top left (default).
+  ASSERT_EQ(new_image_bitmap->ImageOrientation(),
+            ImageOrientationEnum::kOriginTopLeft);
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV18) {
@@ -1187,6 +1221,133 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV18) {
   // in half floats by Skia).
   ASSERT_THAT(pixel, testing::ElementsAre(0x94, 0x3A, 0x3F, 0x28, 0x5F, 0x24,
                                           0x0, 0x3C));
+  // Check that orientation is top left (default).
+  ASSERT_EQ(new_image_bitmap->ImageOrientation(),
+            ImageOrientationEnum::kOriginTopLeft);
+}
+
+TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV20WithoutImageOrientation) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  scoped_refptr<SerializedScriptValue> input = SerializedValue({
+      0xff,  // kVersionTag
+      0x14,  // 20
+      0xff,  // Value serializer header
+      0x0f,  // Value serializer version 15 (varint format)
+      0x5c,  // kHostObjectTag
+      0x67,  // kImageBitmapTag
+      0x07,  // kParametricColorSpaceTag
+      // srgb colorspace
+      0x00, 0x00, 0x00, 0x40, 0x33, 0x33, 0x03, 0x40, 0x00, 0x00, 0x00, 0xc0,
+      0xed, 0x54, 0xee, 0x3f, 0x00, 0x00, 0x00, 0x20, 0x23, 0xb1, 0xaa, 0x3f,
+      0x00, 0x00, 0x00, 0x20, 0x72, 0xd0, 0xb3, 0x3f, 0x00, 0x00, 0x00, 0xc0,
+      0xdc, 0xb5, 0xa4, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x80, 0xe8, 0xdb, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x40, 0xa6, 0xd8, 0x3f,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x50, 0xc2, 0x3f, 0x00, 0x00, 0x00, 0x00,
+      0x80, 0x7a, 0xcc, 0x3f, 0x00, 0x00, 0x00, 0x00, 0xa0, 0xf0, 0xe6, 0x3f,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0xaf, 0x3f, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x80, 0x8c, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0xda, 0xb8, 0x3f,
+      0x00, 0x00, 0x00, 0x00, 0xe0, 0xd9, 0xe6, 0x3f, 0x02,
+      0x03,        // kCanvasPixelFormatTag kBGRA8
+      0x06, 0x00,  // kCanvasOpacityModeTag
+      0x04, 0x01,  // kOriginCleanTag
+      0x05, 0x01,  // kIsPremultipliedTag
+      // Image orientation omitted
+      0x0,         // kEndTag
+      0x01, 0x01,  // width, height (varint format)
+      0x04,        // pixel size (varint format)
+      0xee, 0xaa, 0x77, 0xff,
+      0x00  // padding: even number of bytes for endianness swapping.
+  });
+
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializer(script_state, input).Deserialize();
+  ASSERT_TRUE(V8ImageBitmap::HasInstance(result, scope.GetIsolate()));
+  ImageBitmap* new_image_bitmap =
+      V8ImageBitmap::ToImpl(result.As<v8::Object>());
+  // Check image size
+  ASSERT_EQ(gfx::Size(1, 1), new_image_bitmap->Size());
+  // Check the color settings.
+  SkImageInfo bitmap_info = new_image_bitmap->GetBitmapSkImageInfo();
+  EXPECT_EQ(kBGRA_8888_SkColorType, bitmap_info.colorType());
+  sk_sp<SkColorSpace> srgb =
+      SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kSRGB);
+  EXPECT_TRUE(SkColorSpace::Equals(srgb.get(), bitmap_info.colorSpace()));
+  // Check that orientation is bottom left.
+  ASSERT_EQ(new_image_bitmap->ImageOrientation(),
+            ImageOrientationEnum::kOriginTopLeft);
+  // Check pixel value
+  SkImageInfo info = SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType,
+                                       kPremul_SkAlphaType, srgb);
+  uint8_t pixel[4] = {};
+  ASSERT_TRUE(
+      new_image_bitmap->BitmapImage()->PaintImageForCurrentFrame().readPixels(
+          info, &pixel, 4, 0, 0));
+  // BGRA encoding, swapped to RGBA
+  ASSERT_THAT(pixel, testing::ElementsAre(0x77, 0xaa, 0xee, 0xff));
+}
+
+TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV20WithImageOrientation) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  scoped_refptr<SerializedScriptValue> input = SerializedValue({
+      0xff,  // kVersionTag
+      0x14,  // 20
+      0xff,  // Value serializer header
+      0x0f,  // Value serializer version 15, varint encoding
+      0x5c,  // kHostObjectTag
+      0x67,  // kImageBitmapTag
+      0x07,  // kParametricColorSpaceTag
+      // srgb colorspace
+      0x00, 0x00, 0x00, 0x40, 0x33, 0x33, 0x03, 0x40, 0x00, 0x00, 0x00, 0xc0,
+      0xed, 0x54, 0xee, 0x3f, 0x00, 0x00, 0x00, 0x20, 0x23, 0xb1, 0xaa, 0x3f,
+      0x00, 0x00, 0x00, 0x20, 0x72, 0xd0, 0xb3, 0x3f, 0x00, 0x00, 0x00, 0xc0,
+      0xdc, 0xb5, 0xa4, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x80, 0xe8, 0xdb, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x40, 0xa6, 0xd8, 0x3f,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x50, 0xc2, 0x3f, 0x00, 0x00, 0x00, 0x00,
+      0x80, 0x7a, 0xcc, 0x3f, 0x00, 0x00, 0x00, 0x00, 0xa0, 0xf0, 0xe6, 0x3f,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0xaf, 0x3f, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x80, 0x8c, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0xda, 0xb8, 0x3f,
+      0x00, 0x00, 0x00, 0x00, 0xe0, 0xd9, 0xe6, 0x3f, 0x02,
+      0x03,        // kCanvasPixelFormatTag kBGRA8
+      0x06, 0x00,  // kCanvasOpacityModeTag
+      0x04, 0x01,  // kOriginCleanTag
+      0x05, 0x01,  // kIsPremultipliedTag
+      0x08, 0x03,  // kImageOrientationTag -> kBottomLeft
+      0x0,         // kEndTag
+      0x01, 0x01,  // width, height (varint format)
+      0x04,        // pixel size (varint format)
+      0xee, 0xaa, 0x77, 0xff,
+      0x00  // padding: even number of bytes for endianness swapping.
+  });
+
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializer(script_state, input).Deserialize();
+  ASSERT_TRUE(V8ImageBitmap::HasInstance(result, scope.GetIsolate()));
+  ImageBitmap* new_image_bitmap =
+      V8ImageBitmap::ToImpl(result.As<v8::Object>());
+  // Check image size
+  ASSERT_EQ(gfx::Size(1, 1), new_image_bitmap->Size());
+  // Check the color settings.
+  SkImageInfo bitmap_info = new_image_bitmap->GetBitmapSkImageInfo();
+  EXPECT_EQ(kBGRA_8888_SkColorType, bitmap_info.colorType());
+  sk_sp<SkColorSpace> srgb =
+      SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kSRGB);
+  EXPECT_TRUE(SkColorSpace::Equals(srgb.get(), bitmap_info.colorSpace()));
+  // Check that orientation is bottom left.
+  ASSERT_EQ(new_image_bitmap->ImageOrientation(),
+            ImageOrientationEnum::kOriginBottomLeft);
+  // Check pixel value
+  SkImageInfo info = SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType,
+                                       kPremul_SkAlphaType, srgb);
+  uint8_t pixel[4] = {};
+  ASSERT_TRUE(
+      new_image_bitmap->BitmapImage()->PaintImageForCurrentFrame().readPixels(
+          info, &pixel, 4, 0, 0));
+  // BGRA encoding, swapped to RGBA
+  ASSERT_THAT(pixel, testing::ElementsAre(0x77, 0xaa, 0xee, 0xff));
 }
 
 TEST(V8ScriptValueSerializerTest, InvalidImageBitmapDecode) {

@@ -108,7 +108,9 @@ ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
 
 SerializedImageBitmapSettings::SerializedImageBitmapSettings() = default;
 
-SerializedImageBitmapSettings::SerializedImageBitmapSettings(SkImageInfo info)
+SerializedImageBitmapSettings::SerializedImageBitmapSettings(
+    SkImageInfo info,
+    ImageOrientationEnum image_orientation)
     : sk_color_space_(kSerializedParametricColorSpaceLength) {
   auto color_space =
       info.colorSpace() ? info.refColorSpace() : SkColorSpace::MakeSRGB();
@@ -167,6 +169,33 @@ SerializedImageBitmapSettings::SerializedImageBitmapSettings(SkImageInfo info)
       is_premultiplied_ = true;
       break;
   }
+
+  switch (image_orientation) {
+    case ImageOrientationEnum::kOriginTopLeft:
+      image_orientation_ = SerializedImageOrientation::kTopLeft;
+      break;
+    case ImageOrientationEnum::kOriginTopRight:
+      image_orientation_ = SerializedImageOrientation::kTopRight;
+      break;
+    case ImageOrientationEnum::kOriginBottomRight:
+      image_orientation_ = SerializedImageOrientation::kBottomRight;
+      break;
+    case ImageOrientationEnum::kOriginBottomLeft:
+      image_orientation_ = SerializedImageOrientation::kBottomLeft;
+      break;
+    case ImageOrientationEnum::kOriginLeftTop:
+      image_orientation_ = SerializedImageOrientation::kLeftTop;
+      break;
+    case ImageOrientationEnum::kOriginRightTop:
+      image_orientation_ = SerializedImageOrientation::kRightTop;
+      break;
+    case ImageOrientationEnum::kOriginRightBottom:
+      image_orientation_ = SerializedImageOrientation::kRightBottom;
+      break;
+    case ImageOrientationEnum::kOriginLeftBottom:
+      image_orientation_ = SerializedImageOrientation::kLeftBottom;
+      break;
+  }
 }
 
 SerializedImageBitmapSettings::SerializedImageBitmapSettings(
@@ -174,12 +203,14 @@ SerializedImageBitmapSettings::SerializedImageBitmapSettings(
     const Vector<double>& sk_color_space,
     SerializedPixelFormat pixel_format,
     SerializedOpacityMode opacity_mode,
-    uint32_t is_premultiplied)
+    uint32_t is_premultiplied,
+    SerializedImageOrientation image_orientation)
     : color_space_(color_space),
       sk_color_space_(sk_color_space),
       pixel_format_(pixel_format),
       opacity_mode_(opacity_mode),
-      is_premultiplied_(is_premultiplied) {}
+      is_premultiplied_(is_premultiplied),
+      image_orientation_(image_orientation) {}
 
 SkImageInfo SerializedImageBitmapSettings::GetSkImageInfo(
     uint32_t width,
@@ -233,6 +264,30 @@ SkImageInfo SerializedImageBitmapSettings::GetSkImageInfo(
 
   return SkImageInfo::Make(width, height, sk_color_type, sk_alpha_type,
                            std::move(sk_color_space));
+}
+
+ImageOrientationEnum SerializedImageBitmapSettings::GetImageOrientation()
+    const {
+  switch (image_orientation_) {
+    case SerializedImageOrientation::kTopLeft:
+      return ImageOrientationEnum::kOriginTopLeft;
+    case SerializedImageOrientation::kTopRight:
+      return ImageOrientationEnum::kOriginTopRight;
+    case SerializedImageOrientation::kBottomRight:
+      return ImageOrientationEnum::kOriginBottomRight;
+    case SerializedImageOrientation::kBottomLeft:
+      return ImageOrientationEnum::kOriginBottomLeft;
+    case SerializedImageOrientation::kLeftTop:
+      return ImageOrientationEnum::kOriginLeftTop;
+    case SerializedImageOrientation::kRightTop:
+      return ImageOrientationEnum::kOriginRightTop;
+    case SerializedImageOrientation::kRightBottom:
+      return ImageOrientationEnum::kOriginRightBottom;
+    case SerializedImageOrientation::kLeftBottom:
+      return ImageOrientationEnum::kOriginLeftBottom;
+  }
+  NOTREACHED();
+  return ImageOrientationEnum::kOriginTopLeft;
 }
 
 }  // namespace blink

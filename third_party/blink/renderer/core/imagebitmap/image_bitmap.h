@@ -72,7 +72,9 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   // This constructor may called by structured-cloning an ImageBitmap.
   // isImageBitmapOriginClean indicates whether the original ImageBitmap is
   // origin clean or not.
-  ImageBitmap(const SkPixmap& pixmap, bool is_image_bitmap_origin_clean);
+  ImageBitmap(const SkPixmap& pixmap,
+              bool is_image_bitmap_origin_clean,
+              ImageOrientationEnum);
 
   // Type and helper function required by CallbackPromiseAdapter:
   using WebType = sk_sp<SkImage>;
@@ -94,6 +96,9 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   bool IsNeutered() const override { return is_neutered_; }
   bool OriginClean() const { return image_->OriginClean(); }
   bool IsPremultiplied() const { return image_->IsPremultiplied(); }
+  ImageOrientationEnum ImageOrientation() const {
+    return image_->CurrentFrameOrientation().Orientation();
+  }
   scoped_refptr<StaticBitmapImage> Transfer();
   void close();
 

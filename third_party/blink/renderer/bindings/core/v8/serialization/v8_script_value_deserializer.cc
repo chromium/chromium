@@ -323,6 +323,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           SerializedPixelFormat::kNative8_LegacyObsolete;
       SerializedOpacityMode canvas_opacity_mode =
           SerializedOpacityMode::kOpaque;
+      SerializedImageOrientation image_orientation =
+          SerializedImageOrientation::kTopLeft;
       uint32_t origin_clean = 0, is_premultiplied = 0, width = 0, height = 0,
                byte_length = 0;
       const void* pixels = nullptr;
@@ -366,6 +368,11 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
               if (!ReadUint32(&is_premultiplied) || is_premultiplied > 1)
                 return nullptr;
               break;
+            case ImageSerializationTag::kImageOrientationTag:
+              if (!ReadUint32Enum<SerializedImageOrientation>(
+                      &image_orientation))
+                return nullptr;
+              break;
             case ImageSerializationTag::kImageDataStorageFormatTag:
               // Does not apply to ImageBitmap.
               return nullptr;
@@ -378,11 +385,10 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       if (!ReadUint32(&width) || !ReadUint32(&height) ||
           !ReadUint32(&byte_length) || !ReadRawBytes(byte_length, &pixels))
         return nullptr;
-      SkImageInfo info =
-          SerializedImageBitmapSettings(predefined_color_space, sk_color_space,
-                                        canvas_pixel_format,
-                                        canvas_opacity_mode, is_premultiplied)
-              .GetSkImageInfo(width, height);
+      SerializedImageBitmapSettings settings(
+          predefined_color_space, sk_color_space, canvas_pixel_format,
+          canvas_opacity_mode, is_premultiplied, image_orientation);
+      SkImageInfo info = settings.GetSkImageInfo(width, height);
       base::CheckedNumeric<uint32_t> computed_byte_length =
           info.computeMinByteSize();
       if (!computed_byte_length.IsValid() ||
@@ -394,7 +400,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       }
       SkPixmap pixmap(info, pixels, info.minRowBytes());
-      return MakeGarbageCollected<ImageBitmap>(pixmap, origin_clean);
+      return MakeGarbageCollected<ImageBitmap>(pixmap, origin_clean,
+                                               settings.GetImageOrientation());
     }
     case kImageBitmapTransferTag: {
       uint32_t index = 0;
@@ -437,6 +444,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
             case ImageSerializationTag::kIsPremultipliedTag:
             case ImageSerializationTag::kCanvasOpacityModeTag:
             case ImageSerializationTag::kParametricColorSpaceTag:
+            case ImageSerializationTag::kImageOrientationTag:
               // Does not apply to ImageData.
               return nullptr;
           }
