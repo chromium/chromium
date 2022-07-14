@@ -12,7 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogChoice;
@@ -21,18 +22,18 @@ import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogChoice;
  * Unit test for {@link DownloadLaterMetrics}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class DownloadLaterMetricsUnitTest {
     private static final String UI_EVENT_METRIC_NAME = "Download.Later.UI.Events";
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test
@@ -40,7 +41,7 @@ public class DownloadLaterMetricsUnitTest {
         DownloadLaterMetrics.recordDownloadLaterUiEvent(
                 DownloadLaterUiEvent.DOWNLOAD_LATER_DIALOG_EDIT_CLICKED);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(UI_EVENT_METRIC_NAME,
+                RecordHistogram.getHistogramValueCountForTesting(UI_EVENT_METRIC_NAME,
                         DownloadLaterUiEvent.DOWNLOAD_LATER_DIALOG_EDIT_CLICKED));
     }
 
@@ -48,20 +49,20 @@ public class DownloadLaterMetricsUnitTest {
     public void testRecordDownloadLaterDialogChoice() {
         DownloadLaterMetrics.recordDownloadLaterDialogChoice(DownloadLaterDialogChoice.ON_WIFI, -1);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Download.Later.UI.DialogChoice.Main", DownloadLaterDialogChoice.ON_WIFI));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         UI_EVENT_METRIC_NAME, DownloadLaterUiEvent.DOWNLOAD_LATER_DIALOG_COMPLETE));
 
         DownloadLaterMetrics.recordDownloadLaterDialogChoice(
                 DownloadLaterDialogChoice.DOWNLOAD_LATER, 1024);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Download.Later.UI.DialogChoice.Main",
                         DownloadLaterDialogChoice.DOWNLOAD_LATER));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Download.Later.ScheduledDownloadSize", 0));
     }
 
@@ -70,11 +71,11 @@ public class DownloadLaterMetricsUnitTest {
         DownloadLaterMetrics.recordDownloadHomeChangeScheduleChoice(
                 DownloadLaterDialogChoice.DOWNLOAD_LATER);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Download.Later.UI.DialogChoice.DownloadHome",
                         DownloadLaterDialogChoice.DOWNLOAD_LATER));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(UI_EVENT_METRIC_NAME,
+                RecordHistogram.getHistogramValueCountForTesting(UI_EVENT_METRIC_NAME,
                         DownloadLaterUiEvent.DOWNLOAD_HOME_CHANGE_SCHEDULE_COMPLETE));
     }
 
@@ -83,11 +84,11 @@ public class DownloadLaterMetricsUnitTest {
         DownloadLaterMetrics.recordInfobarChangeScheduleChoice(
                 DownloadLaterDialogChoice.DOWNLOAD_NOW);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Download.Later.UI.DialogChoice.Infobar",
                         DownloadLaterDialogChoice.DOWNLOAD_NOW));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(UI_EVENT_METRIC_NAME,
+                RecordHistogram.getHistogramValueCountForTesting(UI_EVENT_METRIC_NAME,
                         DownloadLaterUiEvent.DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_COMPLETE));
     }
 }

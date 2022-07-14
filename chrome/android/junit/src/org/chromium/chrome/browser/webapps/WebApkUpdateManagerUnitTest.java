@@ -36,7 +36,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.PathUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -79,7 +80,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Unit tests for WebApkUpdateManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowUrlUtilities.class})
+@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkUpdateManagerUnitTest {
     @Rule
@@ -600,7 +601,7 @@ public class WebApkUpdateManagerUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         PathUtils.setPrivateDataDirectorySuffix("chrome");
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
@@ -1422,7 +1423,7 @@ public class WebApkUpdateManagerUnitTest {
 
     private void verifyHistograms(String name, int expectedCallCount) {
         assertEquals("Histogram record count doesn't match.", expectedCallCount,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(name));
+                RecordHistogram.getHistogramTotalCountForTesting(name));
     }
 
     @Test

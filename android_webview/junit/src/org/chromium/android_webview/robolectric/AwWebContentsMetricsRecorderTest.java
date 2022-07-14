@@ -23,7 +23,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebContentsMetricsRecorder;
 import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
@@ -34,11 +34,11 @@ import org.chromium.base.test.util.Feature;
  * cases.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class AwWebContentsMetricsRecorderTest {
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

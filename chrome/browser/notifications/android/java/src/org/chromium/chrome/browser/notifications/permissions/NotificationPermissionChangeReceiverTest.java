@@ -17,18 +17,18 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  * Robolectric tests for {@link NotificationPermissionChangeReceiver}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 30, manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(sdk = 30, manifest = Config.NONE)
 public class NotificationPermissionChangeReceiverTest {
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     private void verifyPermissionChangeHistogramWasRecorded(boolean expectedPermissionState) {

@@ -37,7 +37,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -63,8 +63,7 @@ import java.util.Map;
 
 /** Unit tests for the {@link AdaptiveToolbarButtonController} */
 @Config(manifest = Config.NONE,
-        shadows = {ShadowRecordHistogram.class,
-                AdaptiveToolbarButtonControllerTest.ShadowChromeFeatureList.class,
+        shadows = {AdaptiveToolbarButtonControllerTest.ShadowChromeFeatureList.class,
                 AdaptiveToolbarButtonControllerTest.ShadowVoiceRecognitionHandler.class})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
@@ -115,7 +114,7 @@ public class AdaptiveToolbarButtonControllerTest {
         MockitoAnnotations.initMocks(this);
         LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
         ShadowChromeFeatureList.sParamValues.clear();
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         ShadowVoiceRecognitionHandler.sIsVoiceRecognitionEnabled = true;
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         mButtonData = new ButtonDataImpl(

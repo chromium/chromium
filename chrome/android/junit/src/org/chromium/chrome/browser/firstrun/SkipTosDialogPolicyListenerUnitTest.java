@@ -29,7 +29,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -45,9 +45,8 @@ import org.chromium.components.policy.PolicyService;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {SkipTosDialogPolicyListenerUnitTest.ShadowFirstRunUtils.class,
-                ShadowRecordHistogram.class})
-//TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+        shadows = {SkipTosDialogPolicyListenerUnitTest.ShadowFirstRunUtils.class})
+// TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SkipTosDialogPolicyListenerUnitTest {
     private static final String HIST_IS_DEVICE_OWNED_DETECTED =
@@ -103,7 +102,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         Mockito.doAnswer(invocation -> {
                    mEnterpriseInfoCallback = invocation.getArgument(0);
                    return null;
@@ -130,7 +129,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

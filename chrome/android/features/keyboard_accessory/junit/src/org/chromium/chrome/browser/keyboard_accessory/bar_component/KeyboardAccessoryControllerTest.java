@@ -39,7 +39,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -69,8 +69,7 @@ import java.util.HashMap;
  * Controller tests for the keyboard accessory component.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 public class KeyboardAccessoryControllerTest {
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -101,7 +100,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         setAutofillFeature(false);
         mocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogram);

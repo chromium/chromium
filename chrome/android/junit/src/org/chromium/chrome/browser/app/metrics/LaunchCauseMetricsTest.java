@@ -16,18 +16,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  * Tests basic functionality of LaunchCauseMetrics.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowRecordHistogram.class})
 public final class LaunchCauseMetricsTest {
     @Mock
     private Activity mActivity;
@@ -46,7 +44,7 @@ public final class LaunchCauseMetricsTest {
     }
 
     private static int histogramCountForValue(int value) {
-        return ShadowRecordHistogram.getHistogramValueCountForTesting(
+        return RecordHistogram.getHistogramValueCountForTesting(
                 LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, value);
     }
 

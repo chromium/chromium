@@ -13,14 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  * Test suite for the SplitInstallFailureLogger class.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class SplitInstallFailureLoggerTest {
     private SplitInstallFailureLogger mFailureLogger;
 
@@ -44,7 +44,7 @@ public class SplitInstallFailureLoggerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mFailureLogger = new SplitInstallFailureLogger();
     }
 
@@ -96,14 +96,14 @@ public class SplitInstallFailureLoggerTest {
 
         // Act & Assert.
         for (int[] tuple : mErrorCodeMapping) {
-            ShadowRecordHistogram.reset();
+            UmaRecorderHolder.resetForTesting();
             int expectedOutputCode = tuple[0];
             int inputCode = tuple[1];
             mFailureLogger.logStatusFailure(moduleName, inputCode);
             assertEquals(expectedOutputCode, getHistogramStatus(moduleName));
         }
 
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mFailureLogger.logStatusFailure(moduleName, unknownCode);
         assertEquals(expectedUnknownCode, getHistogramStatus(moduleName));
     }
@@ -117,14 +117,14 @@ public class SplitInstallFailureLoggerTest {
 
         // Act & Assert.
         for (int[] tuple : mErrorCodeMapping) {
-            ShadowRecordHistogram.reset();
+            UmaRecorderHolder.resetForTesting();
             int expectedOutputCode = tuple[0];
             int inputCode = tuple[1];
             mFailureLogger.logRequestFailure(moduleName, inputCode);
             assertEquals(expectedOutputCode, getHistogramStatus(moduleName));
         }
 
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mFailureLogger.logRequestFailure(moduleName, unknownCode);
         assertEquals(expectedUnknownCode, getHistogramStatus(moduleName));
     }

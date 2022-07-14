@@ -18,10 +18,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.FileNotFoundException;
@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
  * Test basic functionality of {@link DropDataContentProvider}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowRecordHistogram.class})
 public class DropDataContentProviderTest {
     private static final byte[] IMAGE_DATA_A = new byte[100];
     private static final byte[] IMAGE_DATA_B = new byte[50];
@@ -59,7 +58,7 @@ public class DropDataContentProviderTest {
     public void tearDown() {
         DropDataContentProvider.clearCache();
         DropDataContentProvider.clearLastUriCreatedTimestampForTesting();
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test
@@ -194,42 +193,42 @@ public class DropDataContentProviderTest {
     private void assertImageSizeRecorded(int expectedCnt) {
         final String histogram = "Android.DragDrop.Image.Size";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
-        Assert.assertEquals(errorMsg, expectedCnt,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+        Assert.assertEquals(
+                errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
     private void assertImageUriCreatedIntervalRecorded(int expectedCnt) {
         final String histogram = "Android.DragDrop.Image.UriCreatedInterval";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
-        Assert.assertEquals(errorMsg, expectedCnt,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+        Assert.assertEquals(
+                errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
     private void assertImageFirstOpenFileRecorded(int expectedCnt) {
         final String histogram = "Android.DragDrop.Image.OpenFileTime.FirstAttempt";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
-        Assert.assertEquals(errorMsg, expectedCnt,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+        Assert.assertEquals(
+                errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
     private void assertImageLastOpenFileRecorded(int expectedCnt) {
         final String histogram = "Android.DragDrop.Image.OpenFileTime.LastAttempt";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
-        Assert.assertEquals(errorMsg, expectedCnt,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+        Assert.assertEquals(
+                errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
     private void assertImageFirstExpiredOpenFileRecorded(int expectedCnt) {
         final String histogram = "Android.DragDrop.Image.OpenFileTime.FirstExpired";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
-        Assert.assertEquals(errorMsg, expectedCnt,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+        Assert.assertEquals(
+                errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
     private void assertImageAllExpiredOpenFileRecorded(int expectedCnt) {
         final String histogram = "Android.DragDrop.Image.OpenFileTime.AllExpired";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
-        Assert.assertEquals(errorMsg, expectedCnt,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+        Assert.assertEquals(
+                errorMsg, expectedCnt, RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 }

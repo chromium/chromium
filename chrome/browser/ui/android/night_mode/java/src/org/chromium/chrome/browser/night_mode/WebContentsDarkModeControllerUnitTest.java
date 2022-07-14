@@ -23,7 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -37,7 +37,7 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link WebContentsDarkModeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowColorUtils.class})
+@Config(manifest = Config.NONE, shadows = {ShadowColorUtils.class})
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class WebContentsDarkModeControllerUnitTest {
     @Rule
@@ -62,7 +62,7 @@ public class WebContentsDarkModeControllerUnitTest {
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
 
         Profile.setLastUsedProfileForTesting(mMockProfile);
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         Mockito.doAnswer(invocation -> {
                    mIsGlobalSettingsEnabled = (boolean) invocation.getArguments()[2];
@@ -95,7 +95,7 @@ public class WebContentsDarkModeControllerUnitTest {
         Profile.setLastUsedProfileForTesting(null);
         ShadowColorUtils.sInNightMode = false;
 
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

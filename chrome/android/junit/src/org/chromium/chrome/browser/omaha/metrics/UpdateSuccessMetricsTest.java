@@ -31,7 +31,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Source;
@@ -41,7 +41,7 @@ import org.chromium.components.version_info.VersionConstants;
 
 /** Tests the API surface of UpdateSuccessMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class UpdateSuccessMetricsTest {
     private static final int FAILED = 0;
     private static final int SUCCESS = 1;
@@ -68,7 +68,7 @@ public class UpdateSuccessMetricsTest {
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     /** Tests that StartTracking properly persists the right tracking information. */

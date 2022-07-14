@@ -33,7 +33,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -67,7 +67,7 @@ import java.util.concurrent.TimeUnit;
  * Unit tests for {@link CommerceSubscriptionsService}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class CommerceSubscriptionsServiceUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -111,7 +111,7 @@ public class CommerceSubscriptionsServiceUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         doNothing().when(mActivityLifecycleDispatcher).register(any());
         doNothing().when(mSubscriptionsManager).getSubscriptions(anyString(), anyBoolean(), any());

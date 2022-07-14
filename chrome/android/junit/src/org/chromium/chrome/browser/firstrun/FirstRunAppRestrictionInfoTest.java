@@ -26,7 +26,8 @@ import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -42,8 +43,7 @@ import java.util.List;
  * Unit test for {@link FirstRunAppRestrictionInfo}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowRecordHistogram.class, ShadowPostTask.class, ShadowUserManager.class})
+@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class, ShadowUserManager.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class FirstRunAppRestrictionInfoTest {
     private static final List<String> HISTOGRAM_NAMES =
@@ -61,7 +61,7 @@ public class FirstRunAppRestrictionInfoTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             @Override
             public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
@@ -88,7 +88,7 @@ public class FirstRunAppRestrictionInfoTest {
     private void verifyHistograms(int expectedCallCount) {
         for (String name : HISTOGRAM_NAMES) {
             Assert.assertEquals("Histogram record count doesn't match.", expectedCallCount,
-                    ShadowRecordHistogram.getHistogramTotalCountForTesting(name));
+                    RecordHistogram.getHistogramTotalCountForTesting(name));
         }
     }
 

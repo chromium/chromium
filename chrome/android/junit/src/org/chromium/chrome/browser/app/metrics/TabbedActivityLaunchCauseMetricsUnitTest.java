@@ -21,13 +21,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -38,7 +37,6 @@ import org.chromium.components.webapps.ShortcutSource;
  * Unit tests for TabbedActivityLaunchCauseMetrics.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowRecordHistogram.class})
 public final class TabbedActivityLaunchCauseMetricsUnitTest {
     @Mock
     private Activity mActivity;
@@ -57,7 +55,7 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     }
 
     private static int histogramCountForValue(int value) {
-        return ShadowRecordHistogram.getHistogramValueCountForTesting(
+        return RecordHistogram.getHistogramValueCountForTesting(
                 LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, value);
     }
 
@@ -99,13 +97,13 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
 
         // Ensures other metrics still aren't recorded when Chrome has already recorded a launch.
-        int total = ShadowRecordHistogram.getHistogramTotalCountForTesting(
+        int total = RecordHistogram.getHistogramTotalCountForTesting(
                 LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM);
         intent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false);
         metrics.onReceivedIntent();
         metrics.recordLaunchCause();
         Assert.assertEquals(total,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
     }
 

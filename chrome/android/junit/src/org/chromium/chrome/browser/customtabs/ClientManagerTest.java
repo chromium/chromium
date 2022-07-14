@@ -33,7 +33,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactoryImpl;
@@ -43,9 +43,7 @@ import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 
 /** Tests for ClientManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowRecordHistogram.class, ShadowUrlUtilities.class,
-                ShadowPackageManager.class})
+@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class, ShadowPackageManager.class})
 public class ClientManagerTest {
     private static final String URL = "https://www.android.com";
     private static final String PACKAGE_NAME = "org.chromium.chrome";
@@ -72,7 +70,7 @@ public class ClientManagerTest {
                 new ClientManager(new OriginVerifierFactoryImpl(), mInstalledAppProviderWrapper);
 
         OriginVerifier.clearCachedVerificationsForTesting();
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         ShadowUrlUtilities.setTestImpl(new ShadowUrlUtilities.TestImpl() {
             @Override
@@ -347,7 +345,7 @@ public class ClientManagerTest {
 
         // Low and High confidence, same call.
         RequestThrottler.purgeAllEntriesForTesting();
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         Assert.assertTrue(
                 mClientManager.updateStatsAndReturnWhetherAllowed(mSession, mUid, URL, true));
         mClientManager.registerLaunch(mSession, URL);

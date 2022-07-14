@@ -27,7 +27,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -36,7 +37,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
  * Tests for {@link ChildAccountStatusSupplier}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class ChildAccountStatusSupplierTest {
     private static final String ADULT_ACCOUNT_EMAIL = "adult.account@gmail.com";
     private static final String CHILD_ACCOUNT_EMAIL =
@@ -57,7 +58,7 @@ public class ChildAccountStatusSupplierTest {
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test
@@ -70,7 +71,7 @@ public class ChildAccountStatusSupplierTest {
         // list of accounts from AccountManagerFacade.
         assertNull(supplier.get());
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "MobileFre.ChildAccountStatusDuration"));
 
         mAccountManagerFacade.unblockGetAccounts();
@@ -78,7 +79,7 @@ public class ChildAccountStatusSupplierTest {
 
         assertFalse(supplier.get());
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "MobileFre.ChildAccountStatusDuration"));
     }
 
@@ -92,7 +93,7 @@ public class ChildAccountStatusSupplierTest {
 
         assertTrue(supplier.get());
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "MobileFre.ChildAccountStatusDuration"));
     }
 
@@ -106,7 +107,7 @@ public class ChildAccountStatusSupplierTest {
 
         assertFalse(supplier.get());
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "MobileFre.ChildAccountStatusDuration"));
     }
 
@@ -121,7 +122,7 @@ public class ChildAccountStatusSupplierTest {
 
         assertTrue(supplier.get());
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "MobileFre.ChildAccountStatusDuration"));
     }
 
@@ -144,7 +145,7 @@ public class ChildAccountStatusSupplierTest {
         // No app restrictions should mean that the child account status is false.
         assertFalse(supplier.get());
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "MobileFre.ChildAccountStatusDuration"));
     }
 
@@ -172,7 +173,7 @@ public class ChildAccountStatusSupplierTest {
 
         assertTrue(supplier.get());
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "MobileFre.ChildAccountStatusDuration"));
     }
 }

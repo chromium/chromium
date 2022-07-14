@@ -4402,7 +4402,6 @@ if (is_android) {
     sources = [
       "//third_party/robolectric/custom_asynctask/java/src/org/chromium/base/task/test/ShadowAsyncTask.java",
       "//third_party/robolectric/custom_asynctask/java/src/org/chromium/base/task/test/ShadowAsyncTaskBridge.java",
-      "android/junit/src/org/chromium/base/metrics/test/ShadowRecordHistogram.java",
       "android/junit/src/org/chromium/base/metrics/test/ShadowRecordUserAction.java",
       "test/android/junit/src/org/chromium/base/task/test/BackgroundShadowAsyncTask.java",
       "test/android/junit/src/org/chromium/base/task/test/CustomShadowAsyncTask.java",
@@ -4451,7 +4450,6 @@ if (is_android) {
       "android/junit/src/org/chromium/base/library_loader/LinkerTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPressureMonitorTest.java",
       "android/junit/src/org/chromium/base/metrics/CachingUmaRecorderTest.java",
-      "android/junit/src/org/chromium/base/metrics/test/ShadowRecordHistogramTest.java",
       "android/junit/src/org/chromium/base/metrics/test/ShadowRecordUserActionTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildConnectionAllocatorTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildProcessConnectionTest.java",

@@ -27,7 +27,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
@@ -41,7 +42,7 @@ import java.util.OptionalInt;
  * callbacks in return.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowSystemClock.class})
+@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
 @Batch(Batch.PER_CLASS)
 public class PasswordSettingsUpdaterBridgeTest {
     @Rule
@@ -64,7 +65,7 @@ public class PasswordSettingsUpdaterBridgeTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(PasswordSettingsUpdaterBridgeJni.TEST_HOOKS, mBridgeJniMock);
         mBridge = new PasswordSettingsUpdaterBridge(sDummyNativePointer, mAccessorMock);
@@ -74,20 +75,16 @@ public class PasswordSettingsUpdaterBridgeTest {
         final String nameWithSuffixes =
                 HISTOGRAM_NAME_BASE + "." + functionSuffix + "." + settingSuffix;
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        nameWithSuffixes + ".Success", 1));
+                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffixes + ".Success", 1));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        nameWithSuffixes + ".Latency", 0));
+                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffixes + ".Latency", 0));
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         nameWithSuffixes + ".ErrorLatency"));
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        nameWithSuffixes + ".ErrorCode"));
+                RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".ErrorCode"));
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        nameWithSuffixes + ".APIError1"));
+                RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".APIError1"));
     }
 
     private void checkFailureHistograms(
@@ -95,24 +92,22 @@ public class PasswordSettingsUpdaterBridgeTest {
         final String nameWithSuffixes =
                 HISTOGRAM_NAME_BASE + "." + functionSuffix + "." + settingSuffix;
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        nameWithSuffixes + ".Success", 0));
-        assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        nameWithSuffixes + ".Latency"));
+                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffixes + ".Success", 0));
+        assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".Latency"));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffixes + ".ErrorLatency", 0));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffixes + ".ErrorCode", errorCode));
         apiErrorCode.ifPresentOrElse(apiError
                 -> assertEquals(1,
-                        ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        RecordHistogram.getHistogramValueCountForTesting(
                                 nameWithSuffixes + ".APIError1", apiError)),
                 ()
                         -> assertEquals(0,
-                                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                                RecordHistogram.getHistogramTotalCountForTesting(
                                         nameWithSuffixes + ".APIError1")));
     }
 

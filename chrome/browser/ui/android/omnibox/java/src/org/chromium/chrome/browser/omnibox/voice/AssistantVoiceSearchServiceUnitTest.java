@@ -36,7 +36,8 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.Promise;
 import org.chromium.base.SysUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -62,8 +63,7 @@ import java.util.List;
  * Tests for AssistantVoiceSearchService.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
@@ -110,7 +110,7 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         SysUtils.resetForTesting();
         MockitoAnnotations.initMocks(this);
         DeferredStartupHandler.setInstanceForTests(new TestDeferredStartupHandler());
@@ -337,28 +337,28 @@ public class AssistantVoiceSearchServiceUnitTest {
     public void testReportUserEligibility() {
         mAssistantVoiceSearchService.reportMicPressUserEligibility();
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM, /* eligible= */ 1));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.AGSA_VERSION_HISTOGRAM, AGSA_VERSION_NUMBER));
 
         doReturn(true).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
         mAssistantVoiceSearchService.reportMicPressUserEligibility();
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM, /* eligible= */ 0));
         Assert.assertEquals(2,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.AGSA_VERSION_HISTOGRAM, AGSA_VERSION_NUMBER));
 
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
                         AssistantVoiceSearchService.EligibilityFailureReason.NO_CHROME_ACCOUNT));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
                         AssistantVoiceSearchService.EligibilityFailureReason.NO_CHROME_ACCOUNT));
     }

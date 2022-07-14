@@ -22,13 +22,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationRationaleResult;
@@ -44,7 +43,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Tests for {@link NotificationPermissionRationaleDialogController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowRecordHistogram.class})
 @Features.DisableFeatures(ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT)
 public class NotificationPermissionRationaleDialogControllerTest {
     private ModalDialogManager mModalDialogManager;
@@ -52,7 +50,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mModalDialogManager =
                 new ModalDialogManager(Mockito.mock(ModalDialogManager.Presenter.class), 0);
         mContext = ApplicationProvider.getApplicationContext();

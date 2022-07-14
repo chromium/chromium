@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
@@ -33,7 +32,7 @@ import org.chromium.chrome.test.util.browser.Features;
  * Tests for {@link org.chromium.chrome.browser.tasks.ConditionalTabStripUtils}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class ConditionalTabStripUtilsUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

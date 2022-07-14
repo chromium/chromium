@@ -20,7 +20,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -32,7 +33,7 @@ import org.chromium.chrome.test.util.browser.Features;
 
 /** Tests for {@link StartSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 @Features.EnableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
 @Features.DisableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.FEED_INTERACTIVE_REFRESH,
         ChromeFeatureList.SHOPPING_LIST})
@@ -50,7 +51,7 @@ public class StartSurfaceCoordinatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mCoordinator = mTestRule.getCoordinator();
     }
 
@@ -131,7 +132,7 @@ public class StartSurfaceCoordinatorUnitTest {
         Assert.assertFalse(manager.readBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false));
         Assert.assertEquals(1, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
         Assert.assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "Startup.Android.ShowChromeStartSegmentationResultComparison"));
 
         // Verifies if the next decision time past and the clicks of MV tiles is higher than the
@@ -145,7 +146,7 @@ public class StartSurfaceCoordinatorUnitTest {
                 manager, StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP.getValue());
         Assert.assertEquals(0, manager.readInt(ChromePreferenceKeys.TAP_MV_TILES_COUNT, 0));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Startup.Android.ShowChromeStartSegmentationResultComparison",
                         ReturnToChromeUtil.ShowChromeStartSegmentationResultComparison
                                 .SEGMENTATION_DISABLED_LOGIC_ENABLED));
@@ -163,7 +164,7 @@ public class StartSurfaceCoordinatorUnitTest {
         verifyNextDecisionTimeStampInDays(
                 manager, StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD.getValue());
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Startup.Android.ShowChromeStartSegmentationResultComparison",
                         ReturnToChromeUtil.ShowChromeStartSegmentationResultComparison
                                 .SEGMENTATION_ENABLED_LOGIC_DISABLED));

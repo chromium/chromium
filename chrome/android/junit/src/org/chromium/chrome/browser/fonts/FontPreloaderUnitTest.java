@@ -30,7 +30,8 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.annotation.Resetter;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.fonts.FontPreloaderUnitTest.ShadowResourcesCompat;
 
@@ -41,9 +42,7 @@ import java.util.List;
  * Unit tests for {@link FontPreloader}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowSystemClock.class, ShadowResourcesCompat.class,
-                ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class, ShadowResourcesCompat.class})
 @LooperMode(Mode.PAUSED)
 public class FontPreloaderUnitTest {
     private static final Integer[] FONTS = {org.chromium.chrome.R.font.chrome_google_sans,
@@ -92,7 +91,7 @@ public class FontPreloaderUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         ShadowResourcesCompat.reset();
         when(mContext.getApplicationContext()).thenReturn(mContext);
         mFontPreloader = new FontPreloader(FONTS);
@@ -299,7 +298,7 @@ public class FontPreloaderUnitTest {
      */
     private void assertHistogramRecorded(String histogram, int expectedValue) {
         assertEquals(histogram + " isn't recorded correctly.", 1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, expectedValue));
+                RecordHistogram.getHistogramValueCountForTesting(histogram, expectedValue));
     }
 
     /**
@@ -307,6 +306,6 @@ public class FontPreloaderUnitTest {
      */
     private void assertHistogramNotRecorded(String histogram) {
         assertEquals(histogram + " shouldn't be recorded.", 0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+                RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 }

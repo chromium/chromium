@@ -55,7 +55,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -101,7 +101,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Controller tests for the root controller for interactions with the manual filling UI.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY,
         ChromeFeatureList.AUTOFILL_MANUAL_FALLBACK_ANDROID})
 public class ManualFillingControllerTest {
@@ -295,7 +295,7 @@ public class ManualFillingControllerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);

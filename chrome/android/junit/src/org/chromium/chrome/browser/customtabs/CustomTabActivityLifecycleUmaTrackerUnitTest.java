@@ -21,7 +21,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTracker.ClientIdentifierType;
@@ -34,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  * Unit test for {@link CustomTabActivityLifecycleUmaTracker}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowRecordHistogram.class, ShadowSystemClock.class})
+@Config(shadows = {ShadowSystemClock.class})
 public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     private static final String PACKAGE_A = "com.example.test.package";
     private static final String PACKAGE_B = "org.test.mypackage";
@@ -63,7 +64,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
         mPref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID);
         mPref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_URL);
 
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         ShadowSystemClock.reset();
     }
 
@@ -181,7 +182,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
             String histogram = prefix + suffix;
             Assert.assertEquals("<" + histogram + "> record is different.",
                     expectedSuffix.equals(suffix) ? 1 : 0,
-                    ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+                    RecordHistogram.getHistogramTotalCountForTesting(histogram));
         }
     }
 

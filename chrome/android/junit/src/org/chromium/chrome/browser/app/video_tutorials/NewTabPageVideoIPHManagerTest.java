@@ -21,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -101,7 +101,7 @@ public class NewTabPageVideoIPHManagerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         Mockito.when(mViewStub.getContext()).thenReturn(mContext);
 

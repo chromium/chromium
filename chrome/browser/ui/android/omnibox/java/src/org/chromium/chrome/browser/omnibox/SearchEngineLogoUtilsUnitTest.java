@@ -38,7 +38,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -59,7 +60,7 @@ import org.chromium.url.JUnitTestGURLs;
  * Tests for SearchEngineLogoUtils.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class SearchEngineLogoUtilsUnitTest {
     private static final String LOGO_URL = JUnitTestGURLs.URL_1;
     private static final String EVENTS_HISTOGRAM = "AndroidSearchEngineLogo.Events";
@@ -116,7 +117,7 @@ public class SearchEngineLogoUtilsUnitTest {
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         SearchEngineLogoUtils.resetForTesting();
     }
 
@@ -132,7 +133,7 @@ public class SearchEngineLogoUtilsUnitTest {
         mSearchEngineLogoUtils.recordEvent(
                 SearchEngineLogoUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
+                RecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
     }
 
@@ -150,10 +151,10 @@ public class SearchEngineLogoUtilsUnitTest {
 
         verify(mCallback).onResult(expected);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
+                RecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         EVENTS_HISTOGRAM, SearchEngineLogoUtils.Events.FETCH_SUCCESS));
     }
 
@@ -198,13 +199,13 @@ public class SearchEngineLogoUtilsUnitTest {
 
         verify(mCallback, times(2)).onResult(expected);
         assertEquals(2,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
+                RecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         EVENTS_HISTOGRAM, SearchEngineLogoUtils.Events.FETCH_SUCCESS));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         EVENTS_HISTOGRAM, SearchEngineLogoUtils.Events.FETCH_SUCCESS_CACHE_HIT));
     }
 
@@ -220,10 +221,10 @@ public class SearchEngineLogoUtilsUnitTest {
 
         verify(mCallback).onResult(eq(expected));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
+                RecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         EVENTS_HISTOGRAM, SearchEngineLogoUtils.Events.FETCH_FAILED_NULL_URL));
     }
 
@@ -242,10 +243,10 @@ public class SearchEngineLogoUtilsUnitTest {
 
         verify(mCallback).onResult(expected);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
+                RecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
+                RecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_FAILED_FAVICON_HELPER_ERROR));
     }
 
@@ -265,10 +266,10 @@ public class SearchEngineLogoUtilsUnitTest {
 
         verify(mCallback).onResult(expected);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
+                RecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
+                RecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_FAILED_RETURNED_BITMAP_NULL));
     }
 

@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.Features;
 
@@ -23,7 +23,7 @@ import org.chromium.chrome.test.util.browser.Features;
  * Tests for {@link MerchantTrustMessageContext}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class MerchantTrustMetricsTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -32,7 +32,7 @@ public class MerchantTrustMetricsTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mMetrics = new MerchantTrustMetrics();
     }
 

@@ -41,7 +41,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,7 +60,7 @@ import java.util.Map;
  * Test for {@link ChromeFeedbackCollector}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ChromeFeedbackCollectorUnitTest {
     @Rule
@@ -274,7 +275,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         when(mAccountInfo.getEmail()).thenReturn(ACCOUNT_IN_USE);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
@@ -302,7 +303,7 @@ public class ChromeFeedbackCollectorUnitTest {
         verify(callback, times(1)).onResult(any());
 
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "Feedback.Duration.FetchSystemInformation"));
     }
 

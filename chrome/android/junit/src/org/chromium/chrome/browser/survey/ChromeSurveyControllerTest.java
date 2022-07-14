@@ -26,7 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -44,7 +44,7 @@ import org.chromium.content_public.browser.WebContents;
  * Unit tests for ChromeSurveyController.java.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = ShadowRecordHistogram.class)
+@Config(manifest = Config.NONE)
 public class ChromeSurveyControllerTest {
     private static final String TEST_SURVEY_TRIGGER_ID = "foobar";
 
@@ -269,7 +269,7 @@ public class ChromeSurveyControllerTest {
     }
 
     private void verifyFilteringResultRecorded(@FilteringResult int reason, int expectedCount) {
-        int count = ShadowRecordHistogram.getHistogramValueCountForTesting(
+        int count = RecordHistogram.getHistogramValueCountForTesting(
                 "Android.Survey.SurveyFilteringResults", reason);
         Assert.assertEquals(String.format("FilteringResult for type <%s> does not match.", reason),
                 expectedCount, count);

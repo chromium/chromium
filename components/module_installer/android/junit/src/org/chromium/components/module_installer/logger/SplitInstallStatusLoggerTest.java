@@ -13,20 +13,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  * Test suite for the SplitInstallStatusLogger class.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class SplitInstallStatusLoggerTest {
     private SplitInstallStatusLogger mStatusLogger;
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mStatusLogger = new SplitInstallStatusLogger();
     }
 
@@ -77,7 +77,7 @@ public class SplitInstallStatusLoggerTest {
     }
 
     private int logStatusChange(String moduleName, int status) {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         mStatusLogger.logStatusChange(moduleName, status);
         return getHistogramStatus(moduleName);
     }

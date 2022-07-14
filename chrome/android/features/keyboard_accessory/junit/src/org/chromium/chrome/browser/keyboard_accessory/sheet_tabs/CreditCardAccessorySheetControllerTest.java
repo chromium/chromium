@@ -37,7 +37,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -56,8 +56,7 @@ import org.chromium.ui.modelutil.ListObservable;
  * Controller tests for the credit card accessory sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class CreditCardAccessorySheetControllerTest {
     @Rule
@@ -76,7 +75,7 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogramNatives);
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));

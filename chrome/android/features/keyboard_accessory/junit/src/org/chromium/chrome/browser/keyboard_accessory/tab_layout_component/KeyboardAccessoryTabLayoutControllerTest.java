@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,8 +41,7 @@ import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
  * Controller tests for the keyboard accessory tab layout component.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class KeyboardAccessoryTabLayoutControllerTest {
     @Rule
@@ -66,7 +65,7 @@ public class KeyboardAccessoryTabLayoutControllerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
 
         mCoordinator = new KeyboardAccessoryTabLayoutCoordinator();

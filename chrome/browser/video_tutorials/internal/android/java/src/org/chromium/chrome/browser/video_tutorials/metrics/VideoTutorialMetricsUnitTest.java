@@ -9,9 +9,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.UserAction;
@@ -21,16 +21,15 @@ import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.
  * Tests for {@link VideoTutorialMetrics}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowRecordHistogram.class})
 public class VideoTutorialMetricsUnitTest {
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test
@@ -44,23 +43,23 @@ public class VideoTutorialMetricsUnitTest {
         VideoTutorialMetrics.recordUserAction(
                 FeatureType.VOICE_SEARCH, UserAction.BACK_PRESS_WHEN_SHOWING_VIDEO_PLAYER);
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.ChromeIntro.Player.UserAction", UserAction.SHARE));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.Download.Player.UserAction", UserAction.CLOSE));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.Search.Player.UserAction", UserAction.CHANGE_LANGUAGE));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.VoiceSearch.Player.UserAction",
                         UserAction.WATCH_NEXT_VIDEO));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.Search.Player.UserAction", UserAction.TRY_NOW));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.VoiceSearch.Player.UserAction",
                         UserAction.BACK_PRESS_WHEN_SHOWING_VIDEO_PLAYER));
     }
@@ -75,19 +74,19 @@ public class VideoTutorialMetricsUnitTest {
         VideoTutorialMetrics.recordWatchStateUpdate(FeatureType.CHROME_INTRO, WatchState.RESUMED);
         VideoTutorialMetrics.recordWatchStateUpdate(FeatureType.CHROME_INTRO, WatchState.WATCHED);
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.ChromeIntro.Player.Progress", WatchState.STARTED));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.ChromeIntro.Player.Progress", WatchState.COMPLETED));
         Assert.assertEquals(2,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.ChromeIntro.Player.Progress", WatchState.PAUSED));
         Assert.assertEquals(2,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.ChromeIntro.Player.Progress", WatchState.RESUMED));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "VideoTutorials.ChromeIntro.Player.Progress", WatchState.WATCHED));
     }
 }

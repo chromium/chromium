@@ -41,7 +41,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -83,7 +84,7 @@ import java.util.concurrent.TimeUnit;
 // clang-format off
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = { BackgroundShadowAsyncTask.class, ShadowRecordHistogram.class,
+        shadows = { BackgroundShadowAsyncTask.class,
             ChromeSurveyControllerFlowTest.ShadowChromeFeatureList.class,
             ChromeSurveyControllerFlowTest.ShadowSurveyInfoBar.class,
             ChromeSurveyControllerFlowTest.ShadowInfoBarContainer.class
@@ -216,7 +217,7 @@ public class ChromeSurveyControllerFlowTest {
         ShadowChromeFeatureList.sParamValues.clear();
         ShadowChromeFeatureList.sEnableSurvey = false;
         ShadowChromeFeatureList.sEnableMessages = false;
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         CommandLine.getInstance().removeSwitch(ChromeSurveyController.COMMAND_LINE_PARAM_NAME);
     }
@@ -794,7 +795,7 @@ public class ChromeSurveyControllerFlowTest {
     }
 
     private void assertInfoBarClosingStateRecorded(@InfoBarClosingState int state) {
-        int count = ShadowRecordHistogram.getHistogramValueCountForTesting(
+        int count = RecordHistogram.getHistogramValueCountForTesting(
                 "Android.Survey.InfoBarClosingState", state);
         Assert.assertEquals(
                 String.format("InfoBarClosingState for state <%d> is not recorded.", state), 1,
@@ -830,7 +831,7 @@ public class ChromeSurveyControllerFlowTest {
                                             + "with sample <%d> is not recorded.",
                                     sample),
                 1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Survey.DownloadAttemptsBeforeAccepted", sample));
     }
 

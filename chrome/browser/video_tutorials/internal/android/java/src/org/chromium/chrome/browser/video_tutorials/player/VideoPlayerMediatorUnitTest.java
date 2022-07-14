@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
@@ -71,7 +71,7 @@ public class VideoPlayerMediatorUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
 
         Mockito.doReturn(mNavigationController).when(mWebContents).getNavigationController();

@@ -33,7 +33,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
 
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.chrome.R;
@@ -55,7 +54,7 @@ import java.util.List;
 
 /** A simple test for {@link TileRenderer} using real {@link android.view.View} objects. */
 @RunWith(LocalRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowPostTask.class})
+@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
 public class TileRendererTest {
     /**
      * Backend that substitutes normal PostTask operations. Allow us to coordinate task execution

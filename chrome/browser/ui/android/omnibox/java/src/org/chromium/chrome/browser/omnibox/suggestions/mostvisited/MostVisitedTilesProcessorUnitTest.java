@@ -36,7 +36,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,7 +65,7 @@ import java.util.List;
  * Tests for {@link MostVisitedTilesProcessor}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
@@ -88,6 +89,8 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Before
     public void setUp() {
+        UmaRecorderHolder.resetForTesting();
+
         // Enable logs to be printed along with possible test failures.
         ShadowLog.stream = System.out;
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -178,19 +181,19 @@ public final class MostVisitedTilesProcessorUnitTest {
 
         // Verify histogram increased for delete attempt.
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileType", SuggestTileType.SEARCH));
         assertEquals(2,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileType", SuggestTileType.URL));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 0));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 1));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 2));
     }
 

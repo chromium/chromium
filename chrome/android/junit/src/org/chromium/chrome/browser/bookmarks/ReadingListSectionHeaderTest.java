@@ -17,7 +17,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
@@ -30,14 +31,14 @@ import java.util.List;
 
 /** Unit tests for {@link ReadingListSectionHeader}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class ReadingListSectionHeaderTest {
     private static final int NEWER_CREATION_TIMESTAMP = 2;
     private static final int OLDER_CREATION_TIMESTAMP = 1;
 
     @Before
     public void setup() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     private BookmarkListEntry createReadingListEntry(long id, boolean read, int dateAdded) {
@@ -88,13 +89,13 @@ public class ReadingListSectionHeaderTest {
         assertEquals(
                 "Expected a different item", 2, listItems.get(4).getBookmarkItem().getId().getId());
         assertEquals("Incorrect histogram value for unread items", 1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Bookmarks.ReadingList.NumberOfUnreadItems", 1));
         assertEquals("Incorrect histogram value for read items", 1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Bookmarks.ReadingList.NumberOfReadItems", 2));
         assertEquals("Incorrect histogram value for read list items", 1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Bookmarks.ReadingList.NumberOfItems", 3));
     }
 

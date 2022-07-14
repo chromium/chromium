@@ -44,7 +44,8 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -68,7 +69,7 @@ import java.util.List;
 
 /** Unit tests for AppLaunchDrawBlocker behavior. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowSystemClock.class})
+@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
 @LooperMode(Mode.PAUSED)
 public class AppLaunchDrawBlockerUnitTest {
     @Rule
@@ -135,7 +136,7 @@ public class AppLaunchDrawBlockerUnitTest {
                 mShouldShowTabSwitcherOnStartSupplier, mIsInstantStartEnabledSupplier,
                 mIncognitoRestoreAppLaunchDrawBlockerFactoryMock);
         validateConstructorAndCaptureObservers();
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
     }
 
@@ -316,7 +317,7 @@ public class AppLaunchDrawBlockerUnitTest {
         assertAccuracyHistogram(true, true);
         final String histogram = APP_LAUNCH_BLOCK_OVERVIEW_PAGE_DRAW_DURATION_UMA;
         assertEquals(histogram + " isn't recorded correctly.", 1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, 10));
+                RecordHistogram.getHistogramValueCountForTesting(histogram, 10));
     }
 
     @Test
@@ -464,7 +465,7 @@ public class AppLaunchDrawBlockerUnitTest {
                                 : BlockDrawForInitialTabAccuracy.CORRECTLY_DID_NOT_BLOCK;
         }
         assertEquals(histogram + " isn't recorded correctly.", 1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, enumEntry));
+                RecordHistogram.getHistogramValueCountForTesting(histogram, enumEntry));
     }
 
     /**
@@ -476,10 +477,10 @@ public class AppLaunchDrawBlockerUnitTest {
         final String histogram = APP_LAUNCH_BLOCK_INITIAL_TAB_DRAW_DURATION_UMA;
         if (shouldBeBlocked) {
             assertEquals(histogram + " isn't recorded correctly.", 1,
-                    ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, duration));
+                    RecordHistogram.getHistogramValueCountForTesting(histogram, duration));
         } else {
             assertEquals(histogram + " shouldn't be recorded since the view isn't blocked.", 0,
-                    ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+                    RecordHistogram.getHistogramTotalCountForTesting(histogram));
         }
     }
 }

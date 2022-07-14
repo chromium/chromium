@@ -24,14 +24,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.library_loader.Linker.PreferAddress;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  *  Tests for {@link Linker}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 @SuppressWarnings("GuardedBy") // doNothing().when(...).methodLocked() cannot resolve |mLock|.
 public class LinkerTest {
     @Mock
@@ -45,7 +45,7 @@ public class LinkerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         Linker.setNativesForTesting(mNativeMock);
         ModernLinker.setModernLinkerNativesForTesting(mModernLinkerNativeMock);
     }
@@ -282,7 +282,7 @@ public class LinkerTest {
         // Verify.
         Assert.assertNotNull(linker.mWebviewReservationSearchResult);
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "ChromiumAndroidLinker.TimeToFindWebViewReservation.Found.Zygote"));
     }
 
@@ -303,7 +303,7 @@ public class LinkerTest {
         // Verify.
         Assert.assertNotNull(linker.mWebviewReservationSearchResult);
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "ChromiumAndroidLinker.TimeToFindWebViewReservation.NotFound.Child"));
     }
 }

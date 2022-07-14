@@ -13,14 +13,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
  * Unit tests for {@link OfflineIndicatorMetricsDelegate}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public final class OfflineIndicatorMetricsDelegateUnitTest {
     /**
      * Fake of OfflineIndicatorMetricsDelegate.Clock used to test metrics that rely on the wall
@@ -56,7 +57,7 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
         mFakeClock = new FakeClock();
         OfflineIndicatorMetricsDelegate.setClockForTesting(mFakeClock);
 
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         resetMetricsDelegate(/*isOffline=*/false, /*isForeground=*/true);
     }
@@ -94,11 +95,11 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
                 0);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_BACKGROUND));
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_UNTIL_FIRST_TIME_BACKGROUNDED));
     }
@@ -146,7 +147,7 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
                 1);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED));
     }
@@ -200,7 +201,7 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
                 numStateChanges);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED));
     }
@@ -257,7 +258,7 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
                 1);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED));
     }
@@ -306,7 +307,7 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
                 1);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED));
     }
@@ -347,12 +348,12 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
                 1);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_FOREGROUND_WITHOUT_BEING_BACKGROUNDED));
 
         // After checking the histograms, clear them, so our next check only looks at new data.
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         // Simulate Chrome being killed, then restarted. After restarting, check that we are not be
         // tracking a shown duration.
@@ -384,11 +385,11 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
                 0);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_IN_BACKGROUND));
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         OfflineIndicatorMetricsDelegate
                                 .OFFLINE_INDICATOR_SHOWN_DURATION_V2_UNTIL_FIRST_TIME_BACKGROUNDED));
     }
@@ -412,9 +413,8 @@ public final class OfflineIndicatorMetricsDelegateUnitTest {
      * @param expectedSample The expected value recorded to the histogram.
      */
     private void checkUniqueSample(String histogramName, int expectedSample) {
-        assertEquals(1, ShadowRecordHistogram.getHistogramTotalCountForTesting(histogramName));
-        assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        histogramName, expectedSample));
+        assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(histogramName));
+        assertEquals(
+                1, RecordHistogram.getHistogramValueCountForTesting(histogramName, expectedSample));
     }
 }

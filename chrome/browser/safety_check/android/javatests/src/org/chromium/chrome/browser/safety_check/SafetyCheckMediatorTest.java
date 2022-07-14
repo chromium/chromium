@@ -39,7 +39,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -66,7 +66,7 @@ import java.util.Collection;
 
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class SafetyCheckMediatorTest {
     private static final String SAFETY_CHECK_INTERACTIONS_HISTOGRAM =
             "Settings.SafetyCheck.Interactions";
@@ -252,7 +252,7 @@ public class SafetyCheckMediatorTest {
         // User is always signed in unless the test specifies otherwise.
         doReturn(true).when(mSafetyCheckBridge).userSignedIn(any(BrowserContextHandle.class));
         // Reset the histogram count.
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

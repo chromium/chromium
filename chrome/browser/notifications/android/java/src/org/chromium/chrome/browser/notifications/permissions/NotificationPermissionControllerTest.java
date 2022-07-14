@@ -26,7 +26,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.ShadowBuildInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,7 +48,7 @@ import java.time.Duration;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30, manifest = Config.NONE,
-        shadows = {ShadowBuildInfo.class, ShadowRecordHistogram.class, ShadowSystemClock.class},
+        shadows = {ShadowBuildInfo.class, ShadowSystemClock.class},
         // We use ShadowSystemClock to manipulate System.currentTimeMillis, but we must tell
         // Robolectric to instrument the code in the packages below so it can replace the original
         // implementation with the shadow one.
@@ -59,7 +59,7 @@ public class NotificationPermissionControllerTest {
     @Before
     public void setUp() {
         ShadowBuildInfo.reset();
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         ShadowSystemClock.reset();
         // Set a non-zero currentTimeMillis.
         ShadowSystemClock.advanceBy(Duration.ofDays(10));

@@ -28,7 +28,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
@@ -50,7 +50,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link ImplicitPriceDropSubscriptionsManager}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Rule
@@ -119,7 +119,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mTab1 = prepareTab(TAB1_ID, URL1, POSITION1, mCriticalPersistedTabData1);
         mTab2 = prepareTab(TAB2_ID, URL2, POSITION2, mCriticalPersistedTabData2);

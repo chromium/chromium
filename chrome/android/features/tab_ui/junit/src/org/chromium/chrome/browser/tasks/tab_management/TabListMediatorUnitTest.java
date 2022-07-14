@@ -91,7 +91,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
@@ -174,7 +174,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings(
         {"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored", "ConstantConditions"})
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class},
+@Config(manifest = Config.NONE,
         instrumentedPackages =
                 {
                         "androidx.recyclerview.widget.RecyclerView" // required to mock final
@@ -3081,7 +3081,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testRecordPriceAnnotationsEnabledMetrics() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         setPriceTrackingEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         mMediator.setActionOnAllRelatedTabsForTesting(true);

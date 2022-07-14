@@ -25,7 +25,8 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -48,8 +49,7 @@ import java.util.List;
 
 /** Unit tests for JourneyManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowRecordHistogram.class, BackgroundShadowAsyncTask.class})
+@Config(manifest = Config.NONE, shadows = {BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public final class JourneyManagerTest {
     private static final int LAST_ENGAGEMENT_ELAPSED_MS = 5000;
@@ -93,7 +93,7 @@ public final class JourneyManagerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         Robolectric.getBackgroundThreadScheduler().reset();
 
         MockitoAnnotations.initMocks(this);
@@ -130,7 +130,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -148,7 +148,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
 
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -171,7 +171,7 @@ public final class JourneyManagerTest {
 
         // Should still only record once.
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -189,7 +189,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
 
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -221,7 +221,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_EXIT);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -260,7 +260,7 @@ public final class JourneyManagerTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -272,7 +272,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onClosingStateChanged(mTab, true);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_CLOSE_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -290,7 +290,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onClosingStateChanged(mTab, true);
 
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_CLOSE_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
 
         assertTrue(mSharedPreferences.contains(String.valueOf(mTab.getId())));
@@ -310,7 +310,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onClosingStateChanged(mTab, false);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_CLOSE_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -328,7 +328,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onClosingStateChanged(mTab, true);
 
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_CLOSE_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
 
         mTabModelSelectorTabModelObserver.tabClosureCommitted(mTab);
@@ -358,7 +358,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onLoadUrl(mTab, params, 0);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_CLOBBER_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -384,7 +384,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onLoadUrl(mTab, params, 0);
 
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_CLOBBER_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
@@ -410,7 +410,7 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onLoadUrl(mTab, params, 0);
 
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         JourneyManager.TAB_CLOBBER_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 

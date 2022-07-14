@@ -42,7 +42,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -79,7 +80,7 @@ import java.util.List;
  */
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked"})
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(
         {ChromeFeatureList.TAB_SWITCHER_ON_RETURN, ChromeFeatureList.START_SURFACE_ANDROID})
@@ -157,7 +158,7 @@ public class TabSwitcherMediatorUnitTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
 
         MockitoAnnotations.initMocks(this);
 
@@ -262,10 +263,10 @@ public class TabSwitcherMediatorUnitTest {
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
         assertThat(mMediator.overviewVisible(), equalTo(true));
 
-        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
                            TabSwitcherMediator.TAB_COUNT_HISTOGRAM, 3),
                 equalTo(1));
-        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
                            TabSwitcherMediator.TAB_ENTRIES_HISTOGRAM, 3),
                 equalTo(1));
     }
@@ -291,10 +292,10 @@ public class TabSwitcherMediatorUnitTest {
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
         assertThat(mMediator.overviewVisible(), equalTo(true));
 
-        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
                            TabSwitcherMediator.TAB_COUNT_HISTOGRAM, 3),
                 equalTo(1));
-        assertThat(ShadowRecordHistogram.getHistogramValueCountForTesting(
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
                            TabSwitcherMediator.TAB_ENTRIES_HISTOGRAM, 2),
                 equalTo(1));
     }

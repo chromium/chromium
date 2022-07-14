@@ -44,7 +44,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -76,7 +76,7 @@ import java.util.OptionalInt;
 
 /** Tests for password manager helper methods. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
 @Batch(Batch.PER_CLASS)
 public class PasswordManagerHelperTest {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
@@ -149,7 +149,7 @@ public class PasswordManagerHelperTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
@@ -1385,19 +1385,15 @@ public class PasswordManagerHelperTest {
         final String nameWithSuffix = PASSWORD_CHECKUP_HISTOGRAM_BASE + "."
                 + getPasswordCheckupHistogramSuffixForOperation(operation);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        nameWithSuffix + ".Success", 1));
+                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffix + ".Success", 1));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        nameWithSuffix + ".Latency", 0));
+                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffix + ".Latency", 0));
         assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        nameWithSuffix + ".ErrorLatency"));
-        assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".Error"));
-        assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        nameWithSuffix + ".ApiError"));
+                RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".ErrorLatency"));
+        assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".Error"));
+        assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".ApiError"));
     }
 
     private void checkPasswordCheckupFailureHistogramsForOperation(
@@ -1405,24 +1401,22 @@ public class PasswordManagerHelperTest {
         final String nameWithSuffix = PASSWORD_CHECKUP_HISTOGRAM_BASE + "."
                 + getPasswordCheckupHistogramSuffixForOperation(operation);
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
-                        nameWithSuffix + ".Success", 0));
-        assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        nameWithSuffix + ".Latency"));
+                RecordHistogram.getHistogramValueCountForTesting(nameWithSuffix + ".Success", 0));
+        assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffix + ".Latency"));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffix + ".ErrorLatency", 0));
         assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffix + ".Error", errorCode));
         apiErrorCode.ifPresentOrElse(apiError
                 -> assertEquals(1,
-                        ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        RecordHistogram.getHistogramValueCountForTesting(
                                 nameWithSuffix + ".APIError", apiError)),
                 ()
                         -> assertEquals(0,
-                                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                                RecordHistogram.getHistogramTotalCountForTesting(
                                         nameWithSuffix + ".APIError")));
     }
 

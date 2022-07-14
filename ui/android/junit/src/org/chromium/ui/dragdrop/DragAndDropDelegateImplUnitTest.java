@@ -41,7 +41,8 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowAccessibilityManager;
 
 import org.chromium.base.compat.ApiHelperForN;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl.DragTargetType;
 import org.chromium.url.JUnitTestGURLs;
@@ -50,7 +51,6 @@ import org.chromium.url.JUnitTestGURLs;
  * Unit tests for {@link DragAndDropDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowRecordHistogram.class})
 public class DragAndDropDelegateImplUnitTest {
     /** Using a window size of 1000*600 for the ease of dp / pixel calculation. */
     private static final int WINDOW_WIDTH = 1000;
@@ -98,7 +98,7 @@ public class DragAndDropDelegateImplUnitTest {
     @After
     public void tearDown() {
         DropDataContentProvider.onDragEnd(false);
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         ShadowApiHelperForN.sLastDragShadowBuilder = null;
     }
 
@@ -462,8 +462,8 @@ public class DragAndDropDelegateImplUnitTest {
     private void assertDragTypeRecorded(@DragTargetType int type) {
         final String histogram = "Android.DragDrop.FromWebContent.TargetType";
         final String errorMsg = "<" + histogram + "> is not recorded correctly.";
-        Assert.assertEquals(errorMsg, 1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, type));
+        Assert.assertEquals(
+                errorMsg, 1, RecordHistogram.getHistogramValueCountForTesting(histogram, type));
     }
 
     private void assertDragOutsideWebContentHistogramsRecorded(boolean dropResult) {
@@ -496,8 +496,7 @@ public class DragAndDropDelegateImplUnitTest {
     private void assertHistogramRecorded(String histogram, boolean recorded, String reason) {
         Assert.assertEquals(
                 String.format("<%s> is not recorded correctly. Reason: %s", histogram, reason),
-                recorded ? 1 : 0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+                recorded ? 1 : 0, RecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
     private DragAndDropBrowserDelegate createDragAndDropBrowserDelegate(

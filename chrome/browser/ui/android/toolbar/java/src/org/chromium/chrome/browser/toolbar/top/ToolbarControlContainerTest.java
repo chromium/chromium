@@ -17,7 +17,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
@@ -26,8 +27,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnaps
 
 /** Unit tests for ToolbarControlContainer. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {HomeButtonCoordinatorTest.ShadowChromeFeatureList.class,
-                ShadowRecordHistogram.class})
+@Config(shadows = {HomeButtonCoordinatorTest.ShadowChromeFeatureList.class})
 public class ToolbarControlContainerTest {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
@@ -39,7 +39,7 @@ public class ToolbarControlContainerTest {
 
     @Before
     public void before() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         Mockito.when(mToolbarContainer.getWidth()).thenReturn(1);
         Mockito.when(mToolbarContainer.getHeight()).thenReturn(1);
     }
@@ -51,25 +51,25 @@ public class ToolbarControlContainerTest {
         adapter.setOnResourceReadyCallback((resource) -> {});
 
         Assert.assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason"));
         Assert.assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason"));
         Assert.assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.SnapshotDifference"));
 
         Assert.assertFalse(adapter.isDirty());
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason",
                         TopToolbarBlockCaptureReason.TOOLBAR_OR_RESULT_NULL));
 
         adapter.setToolbar(mToolbar);
         Assert.assertFalse(adapter.isDirty());
         Assert.assertEquals(2,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason",
                         TopToolbarBlockCaptureReason.TOOLBAR_OR_RESULT_NULL));
 
@@ -77,32 +77,32 @@ public class ToolbarControlContainerTest {
                 .thenReturn(CaptureReadinessResult.unknown(true));
         Assert.assertTrue(adapter.isDirty());
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
 
         adapter.triggerBitmapCapture();
         Assert.assertFalse(adapter.isDirty());
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason",
                         TopToolbarBlockCaptureReason.VIEW_NOT_DIRTY));
         Assert.assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.SnapshotDifference"));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
 
         adapter.forceInvalidate();
         Assert.assertTrue(adapter.isDirty());
         Assert.assertEquals(2,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarBlockCaptureReason.UNKNOWN));
         Assert.assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.SnapshotDifference"));
     }
 
@@ -116,7 +116,7 @@ public class ToolbarControlContainerTest {
                         TopToolbarBlockCaptureReason.SNAPSHOT_SAME));
         Assert.assertFalse(adapter.isDirty());
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason",
                         TopToolbarBlockCaptureReason.SNAPSHOT_SAME));
     }
@@ -130,11 +130,11 @@ public class ToolbarControlContainerTest {
                 .thenReturn(CaptureReadinessResult.readyForced());
         Assert.assertTrue(adapter.isDirty());
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarAllowCaptureReason.FORCE_CAPTURE));
         Assert.assertEquals(0,
-                ShadowRecordHistogram.getHistogramTotalCountForTesting(
+                RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.TopToolbar.SnapshotDifference"));
     }
 
@@ -148,11 +148,11 @@ public class ToolbarControlContainerTest {
                         ToolbarSnapshotDifference.URL_TEXT));
         Assert.assertTrue(adapter.isDirty());
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.AllowCaptureReason",
                         TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE));
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.SnapshotDifference",
                         ToolbarSnapshotDifference.URL_TEXT));
     }

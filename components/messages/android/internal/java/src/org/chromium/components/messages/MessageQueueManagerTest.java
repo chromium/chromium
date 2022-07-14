@@ -31,7 +31,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
@@ -44,7 +44,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Unit tests for MessageQueueManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class MessageQueueManagerTest {
     private MessageQueueDelegate mEmptyDelegate = new MessageQueueDelegate() {
         @Override
@@ -103,7 +103,7 @@ public class MessageQueueManagerTest {
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     /**

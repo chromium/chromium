@@ -13,8 +13,7 @@ import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 
 /**
- * Java API for recording UMA histograms. Note that when updating this file, please also update
- * {@link ShadowRecordHistogram} so that it correctly shadows all the methods.
+ * Java API for recording UMA histograms.
  * */
 @JNINamespace("base::android")
 @MainDex
@@ -262,25 +261,31 @@ public class RecordHistogram {
 
     /**
      * Returns the number of samples recorded in the given bucket of the given histogram.
-     * Does not reset between batched tests. Use HistogramTestRule instead.
+     *
+     * WARNING:
+     * Does not reset between batched tests. Use
+     * {@link org.chromium.base.test.metrics.HistogramTestRule} instead. Or use
+     * {@link org.chromium.base.test.util.MetricsUtils.HistogramDelta} to account for cases where
+     * the initial histogram value is not 0 at the start of the testing logic.
      *
      * @param name name of the histogram to look up
      * @param sample the bucket containing this sample value will be looked up
      */
     @VisibleForTesting
-    @Deprecated
     public static int getHistogramValueCountForTesting(String name, int sample) {
         return UmaRecorderHolder.get().getHistogramValueCountForTesting(name, sample);
     }
 
     /**
      * Returns the number of samples recorded for the given histogram.
-     * Does not reset between batched tests. Use HistogramTestRule instead.
+     *
+     * WARNING:
+     * Does not reset between batched tests. Use
+     * {@link org.chromium.base.test.metrics.HistogramTestRule} instead.
      *
      * @param name name of the histogram to look up
      */
     @VisibleForTesting
-    @Deprecated
     public static int getHistogramTotalCountForTesting(String name) {
         return UmaRecorderHolder.get().getHistogramTotalCountForTesting(name);
     }
