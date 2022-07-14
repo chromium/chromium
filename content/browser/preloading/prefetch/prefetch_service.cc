@@ -893,7 +893,8 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
     base::WeakPtr<PrefetchContainer> prefetch_container) const {
   bool matching_prefetch = false;
   for (const auto& prefetch_iter : all_prefetches_) {
-    if (prefetch_iter.second->GetURL() == prefetch_container->GetURL() &&
+    if (prefetch_iter.second &&
+        prefetch_iter.second->GetURL() == prefetch_container->GetURL() &&
         prefetch_iter.second->GetReferringRenderFrameHostId() !=
             prefetch_container->GetReferringRenderFrameHostId()) {
       matching_prefetch = true;
