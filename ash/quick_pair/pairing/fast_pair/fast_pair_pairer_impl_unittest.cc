@@ -89,6 +89,15 @@ const char kConfirmPasskeyAskTime[] =
     "Bluetooth.ChromeOS.FastPair.RequestPasskey.Latency";
 const char kConfirmPasskeyConfirmTime[] =
     "Bluetooth.ChromeOS.FastPair.ConfirmPasskey.Latency";
+const char kSavedDeviceUpdateOptInStatusInitialResult[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
+    "InitialPairingProtocol";
+const char kSavedDeviceUpdateOptInStatusRetroactiveResult[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
+    "RetroactivePairingProtocol";
+const char kSavedDeviceUpdateOptInStatusSubsequentResult[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
+    "SubsequentPairingProtocol";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -1991,6 +2000,12 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
   // Start opted out.
   fast_pair_repository_.SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusInitialResult,
+      /*success=*/true, 0);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusInitialResult,
+      /*success=*/false, 0);
   base::RunLoop().RunUntilIdle();
 
   // Pair the device via Initial Pairing protocol.
@@ -2017,6 +2032,12 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
   // Expect that the user is now opted in.
   EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
             fast_pair_repository_.GetOptInStatus());
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusInitialResult,
+      /*success=*/true, 1);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusInitialResult,
+      /*success=*/false, 0);
 }
 
 TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
@@ -2025,6 +2046,12 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
   // Start opted out
   fast_pair_repository_.SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusRetroactiveResult,
+      /*success=*/true, 0);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusRetroactiveResult,
+      /*success=*/false, 0);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -2046,6 +2073,12 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
   // Expect that the user is now opted in
   EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
             fast_pair_repository_.GetOptInStatus());
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusRetroactiveResult,
+      /*success=*/true, 1);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusRetroactiveResult,
+      /*success=*/false, 0);
 }
 
 TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
@@ -2058,6 +2091,12 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
   // Start opted out
   fast_pair_repository_.SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusSubsequentResult,
+      /*success=*/true, 0);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusSubsequentResult,
+      /*success=*/false, 0);
 
   // Subsequent pair
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -2079,6 +2118,12 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
   // Expect that the user is opted in now
   EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_OPTED_IN,
             fast_pair_repository_.GetOptInStatus());
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusSubsequentResult,
+      /*success=*/true, 1);
+  histogram_tester().ExpectBucketCount(
+      kSavedDeviceUpdateOptInStatusSubsequentResult,
+      /*success=*/false, 0);
 }
 
 }  // namespace quick_pair

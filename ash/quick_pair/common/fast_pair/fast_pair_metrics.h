@@ -263,6 +263,10 @@ void RecordPairFailureRetry(int num_retries);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordSavedDevicesRemoveResult(bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordSavedDevicesUpdatedOptInStatusResult(const Device& device,
+                                                bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 

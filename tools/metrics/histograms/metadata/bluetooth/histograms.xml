@@ -876,6 +876,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result.{FastPairPairingProtocol}"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of updating a user's opt-in status to
+    STATUS_OPTED_IN. Emitted each time an update attempt completes following
+    user pairing via a Fast Pair protocol: initial, subsequent, or retroactive.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol"
+        summary="the first time a user pairs a device via Fast Pair, device
+                 needs to be in pairing mode, account key written to the
+                 device to save it to their account, discovered via BLE
+                 scanning"/>
+    <variant name="RetroactivePairingProtocol"
+        summary="user elects to save a device paired via classic Bluetooth
+                 settings to their Google account, account key written to
+                 device"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="device is already saved to the user's account and is
+                 discovered via not-discoverable advertisement, which means
+                 the device does not have to be in pairing mode, no account
+                 key saved to device, discovered via BLE scanning"/>
+  </token>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.Scanner.StartSession.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>

@@ -187,7 +187,15 @@ const char kFastPairRetryCount[] =
     "Bluetooth.ChromeOS.FastPair.PairRetry.Count";
 const char kSavedDeviceRemoveResult[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.Remove.Result";
-
+const char kSavedDeviceUpdateOptInStatusInitialResult[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
+    "InitialPairingProtocol";
+const char kSavedDeviceUpdateOptInStatusRetroactiveResult[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
+    "RetroactivePairingProtocol";
+const char kSavedDeviceUpdateOptInStatusSubsequentResult[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
+    "SubsequentPairingProtocol";
 }  // namespace
 
 namespace ash {
@@ -542,6 +550,24 @@ void RecordPairFailureRetry(int num_retries) {
 
 void RecordSavedDevicesRemoveResult(bool success) {
   base::UmaHistogramBoolean(kSavedDeviceRemoveResult, success);
+}
+
+void RecordSavedDevicesUpdatedOptInStatusResult(const Device& device,
+                                                bool success) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramBoolean(kSavedDeviceUpdateOptInStatusInitialResult,
+                                success);
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramBoolean(kSavedDeviceUpdateOptInStatusRetroactiveResult,
+                                success);
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramBoolean(kSavedDeviceUpdateOptInStatusSubsequentResult,
+                                success);
+      break;
+  }
 }
 
 }  // namespace quick_pair

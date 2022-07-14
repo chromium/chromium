@@ -488,6 +488,9 @@ void FastPairPairerImpl::OnWriteAccountKey(
 }
 
 void FastPairPairerImpl::OnUpdateOptInStatus(bool success) {
+  RecordSavedDevicesUpdatedOptInStatusResult(/*device=*/*device_,
+                                             /*success=*/success);
+
   if (!success) {
     QP_LOG(WARNING) << __func__ << ": failure";
     return;
