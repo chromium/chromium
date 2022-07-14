@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "ui/gfx/image/image.h"
 
@@ -47,6 +48,7 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
   void OnSavedDeviceDeleted(bool success);
 
   bool loading_saved_device_page_ = false;
+  base::TimeTicks loading_start_time_;
 
   std::unique_ptr<base::AtomicRefCount> pending_decoding_tasks_count_;
   std::vector<nearby::fastpair::FastPairDevice> devices_;

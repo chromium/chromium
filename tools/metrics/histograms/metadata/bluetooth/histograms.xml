@@ -889,6 +889,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.SavedDevices.TotalUxLoadTime"
+    units="ms" expires_after="2022-09-20">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the time necessary to load the Saved Devices Bluetooth Settings
+    sub-age to a terminal state with a list of devices, from the user's
+    perspective. Time is calculated as the difference between when the user
+    opens the Saved Devices sub-page and a load request is immediately sent to
+    the WebUI layer, and when the WebUI receives a response back from the server
+    with a list of devices (even if it is empty). The metric is emitted after
+    the response has been transformed into the appropriate data to be displayed
+    on the settings page, which involves decoding image URLs and parsing bytes
+    to transform them into string keys, and sent to the Settings UI layer for
+    immediate display.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result.{FastPairPairingProtocol}"
     enum="BooleanSuccess" expires_after="2022-09-20">

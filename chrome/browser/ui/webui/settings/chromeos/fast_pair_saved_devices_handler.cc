@@ -101,6 +101,7 @@ void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
     return;
 
   loading_saved_device_page_ = true;
+  loading_start_time_ = base::TimeTicks::Now();
   ash::quick_pair::FastPairRepository::Get()->GetSavedDevices(
       base::BindOnce(&FastPairSavedDevicesHandler::OnGetSavedDevices,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -125,6 +126,9 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
     FireWebUIListener(kSavedDevicesListMessage,
                       base::Value(std::move(saved_devices_list)));
     loading_saved_device_page_ = false;
+    base::TimeDelta total_load_time =
+        base::TimeTicks::Now() - loading_start_time_;
+    ash::quick_pair::RecordSavedDevicesTotalUxLoadTime(total_load_time);
     return;
   }
 
@@ -226,6 +230,9 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
   FireWebUIListener(kSavedDevicesListMessage,
                     base::Value(std::move(saved_devices_list)));
   QP_LOG(VERBOSE) << __func__ << ": Sending device list";
+  base::TimeDelta total_load_time =
+      base::TimeTicks::Now() - loading_start_time_;
+  ash::quick_pair::RecordSavedDevicesTotalUxLoadTime(total_load_time);
 
   // We reset the state here for another page load that may happened while
   // chrome://os-settings is open, since our decoding tasks are completed.

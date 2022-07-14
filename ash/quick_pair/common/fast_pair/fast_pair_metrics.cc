@@ -198,6 +198,8 @@ const char kSavedDeviceUpdateOptInStatusSubsequentResult[] =
     "SubsequentPairingProtocol";
 const char kSavedDeviceGetDevicesResult[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.GetSavedDevices.Result";
+const char kSavedDevicesTotalUxLoadTime[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.TotalUxLoadTime";
 
 }  // namespace
 
@@ -575,6 +577,11 @@ void RecordSavedDevicesUpdatedOptInStatusResult(const Device& device,
 
 void RecordGetSavedDevicesResult(bool success) {
   base::UmaHistogramBoolean(kSavedDeviceGetDevicesResult, success);
+}
+
+void RecordSavedDevicesTotalUxLoadTime(base::TimeDelta total_load_time) {
+  base::UmaHistogramCustomTimes(kSavedDevicesTotalUxLoadTime, total_load_time,
+                                base::Milliseconds(1), base::Seconds(25), 50);
 }
 
 }  // namespace quick_pair

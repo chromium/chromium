@@ -270,6 +270,9 @@ void RecordSavedDevicesUpdatedOptInStatusResult(const Device& device,
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordGetSavedDevicesResult(bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordSavedDevicesTotalUxLoadTime(base::TimeDelta total_load_time);
+
 }  // namespace quick_pair
 }  // namespace ash
 
