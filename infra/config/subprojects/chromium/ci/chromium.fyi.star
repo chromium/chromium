@@ -1053,10 +1053,12 @@ ci.builder(
 # Build Perf builders use CQ reclient instance and high reclient jobs/cores and
 # SSD to represent CQ build performance.
 
-# Sync specs with android-pie-arm64-rel-compilator
-# in chromium/try/tryserver.chromium.android.star
 ci.builder(
     name = "build-perf-android",
+    description_html = """\
+This builder measures Android build performance with and without remote caches.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-compilator">android-pie-arm64-rel-compilator</a>.\
+""",
     builderless = True,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1094,10 +1096,12 @@ ci.builder(
     ssd = True,
 )
 
-# Sync specs with linux-rel-compilator
-# in chromium/try/tryserver.chromium.linux.star
 ci.builder(
     name = "build-perf-linux",
+    description_html = """\
+This builder measures Linux build performance with and without remote caches.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
+""",
     builderless = True,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -1129,10 +1133,12 @@ ci.builder(
     ssd = True,
 )
 
-# Sync specs with win10_chromium_x64_rel_ng-compilator
-# in chromium/try/tryserver.chromium.win.star
 ci.builder(
     name = "build-perf-windows",
+    description_html = """\
+This builder measures Windows build performance with and without remote caches.<br/>\
+The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng-compilator">win10_chromium_x64_rel_ng-compilator</a>.\
+""",
     builderless = True,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
