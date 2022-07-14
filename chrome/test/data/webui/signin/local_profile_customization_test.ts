@@ -105,7 +105,8 @@ suite('LocalProfileCustomizationTest', function() {
       assertEquals(getProfileAvatarSelectorIconUrl(item), displayedAvatarUrl);
     }
     await browserProxy.whenCalled('getAvailableIcons');
-    assertTrue(isChildVisible(customizeProfileElement, '#customizeAvatarIcon')!
+    assertTrue(
+        isChildVisible(customizeProfileElement, '#customizeAvatarIcon')!,
     );
     customizeProfileElement.shadowRoot!
         .querySelector<HTMLElement>('#customizeAvatarIcon')!.click();
@@ -198,7 +199,7 @@ suite('LocalProfileCustomizationTest', function() {
       themeFrameColor: 'rgb(203, 233, 191)',
       themeFrameTextColor: 'rgb(32, 33, 36)',
       themeGenericAvatar: 'AvatarUrl-7',
-      themeShapeColor: 'rgb(255, 255, 255)'
+      themeShapeColor: 'rgb(255, 255, 255)',
     });
     verifyAppliedTheme();
     assertTrue(customizeProfileElement.$.save.disabled);

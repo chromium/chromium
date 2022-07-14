@@ -685,7 +685,7 @@ suite('NewTabPageLogoTest', () => {
       await flushTasks();
       ($$(logo, 'ntp-doodle-share-dialog')!
        ).dispatchEvent(new CustomEvent('share', {
-        detail: DoodleShareChannel.kFacebook
+        detail: DoodleShareChannel.kFacebook,
       }));
 
       // Assert (share).
@@ -716,10 +716,10 @@ suite('NewTabPageLogoTest', () => {
       doodle.image.light.animationUrl = {url: 'https://animation.com'};
       doodle.image.dark.animationUrl = {url: 'https://dark_animation.com'};
       doodle.image.light.animationImpressionLogUrl = {
-        url: 'https://animation_log.com'
+        url: 'https://animation_log.com',
       };
       doodle.image.dark.animationImpressionLogUrl = {
-        url: 'https://dark_animation_log.com'
+        url: 'https://dark_animation_log.com',
       };
       const imageDoodle = dark ? doodle.image.dark : doodle.image.light;
 
@@ -770,7 +770,7 @@ suite('NewTabPageLogoTest', () => {
       await flushTasks();
       ($$(logo, 'ntp-doodle-share-dialog')!
        ).dispatchEvent(new CustomEvent('share', {
-        detail: DoodleShareChannel.kTwitter
+        detail: DoodleShareChannel.kTwitter,
       }));
 
       // Assert (share).

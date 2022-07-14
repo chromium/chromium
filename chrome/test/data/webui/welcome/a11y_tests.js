@@ -40,7 +40,7 @@ AccessibilityTest.define('WelcomeA11y', {
     'rules': {
       // TODO(crbug.com/761461): enable after addressing flaky tests.
       'color-contrast': {enabled: false},
-    }
+    },
   },
 
   // Optional. Filter on failures. Use this for individual false positives.

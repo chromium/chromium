@@ -167,7 +167,7 @@ suite('spell check page', function() {
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: value,
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-          controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY
+          controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
         };
 
         // First set the prefValue, then override the actual preference

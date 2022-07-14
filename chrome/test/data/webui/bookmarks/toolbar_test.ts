@@ -26,7 +26,7 @@ suite('<bookmarks-toolbar>', function() {
       createItem('2'),
       createItem('3'),
       createFolder('4', [], {
-        unmodifiable: chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED
+        unmodifiable: chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED,
       }),
       createFolder('5', []),
       createFolder(

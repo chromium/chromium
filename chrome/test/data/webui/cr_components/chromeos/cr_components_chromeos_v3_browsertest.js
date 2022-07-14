@@ -16,25 +16,25 @@ GEN('#include "content/public/test/browser_test.h"');
   ['BluetoothIcon', 'bluetooth/bluetooth_icon_test.js'],
   [
     'BatteryIconPercentage',
-    'bluetooth/bluetooth_battery_icon_percentage_tests.js'
+    'bluetooth/bluetooth_battery_icon_percentage_tests.js',
   ],
   ['DeviceBatteryInfo', 'bluetooth/bluetooth_device_battery_info_tests.js'],
   [
     'DeviceSelectionPage',
-    'bluetooth/bluetooth_pairing_device_selection_page_test.js'
+    'bluetooth/bluetooth_pairing_device_selection_page_test.js',
   ],
   [
     'PairingConfirmCode',
-    'bluetooth/bluetooth_pairing_confirm_code_page_test.js'
+    'bluetooth/bluetooth_pairing_confirm_code_page_test.js',
   ],
   ['PairingDeviceItem', 'bluetooth/bluetooth_pairing_device_item_test.js'],
   [
     'PairingRequestCodePage',
-    'bluetooth/bluetooth_pairing_request_code_page_test.js'
+    'bluetooth/bluetooth_pairing_request_code_page_test.js',
   ],
   [
     'PairingEnterCodePage',
-    'bluetooth/bluetooth_pairing_enter_code_page_test.js'
+    'bluetooth/bluetooth_pairing_enter_code_page_test.js',
   ],
   ['PairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
   ['SpinnerPage', 'bluetooth/bluetooth_spinner_page_test.js'],

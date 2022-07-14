@@ -57,8 +57,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           merchant: 'Amazon',
           cartUrl: {url: 'https://amazon.com'},
           productImageUrls: [
-            {url: 'https://image1.com'}, {url: 'https://image2.com'},
-            {url: 'https://image3.com'}
+            {url: 'https://image1.com'},
+            {url: 'https://image2.com'},
+            {url: 'https://image3.com'},
           ],
         },
         {
@@ -76,8 +77,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           merchant: 'Walmart',
           cartUrl: {url: 'https://walmart.com'},
           productImageUrls: [
-            {url: 'https://image6.com'}, {url: 'https://image7.com'},
-            {url: 'https://image8.com'}, {url: 'https://image9.com'}
+            {url: 'https://image6.com'},
+            {url: 'https://image7.com'},
+            {url: 'https://image8.com'},
+            {url: 'https://image9.com'},
           ],
         },
         {
@@ -796,8 +799,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           merchant: 'Amazon',
           cartUrl: {url: 'https://amazon.com'},
           productImageUrls: [
-            {url: 'https://image1.com'}, {url: 'https://image2.com'},
-            {url: 'https://image3.com'}
+            {url: 'https://image1.com'},
+            {url: 'https://image2.com'},
+            {url: 'https://image3.com'},
           ],
         },
         {
@@ -892,8 +896,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           merchant: 'Amazon',
           cartUrl: {url: 'https://amazon.com'},
           productImageUrls: [
-            {url: 'https://image1.com'}, {url: 'https://image2.com'},
-            {url: 'https://image3.com'}
+            {url: 'https://image1.com'},
+            {url: 'https://image2.com'},
+            {url: 'https://image3.com'},
           ],
         },
         {

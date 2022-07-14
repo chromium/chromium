@@ -673,7 +673,7 @@ suite('PasswordsCheckSection', function() {
       profile: {
         password_dismiss_compromised_alert: {value: false},
         password_manager_leak_detection: {value: true},
-      }
+      },
     };
     await passwordManager.whenCalled('getCompromisedCredentials');
     flush();
@@ -743,7 +743,7 @@ suite('PasswordsCheckSection', function() {
       profile: {
         password_dismiss_compromised_alert: {value: false},
         password_manager_leak_detection: {value: true},
-      }
+      },
     };
     await passwordManager.whenCalled('getCompromisedCredentials');
     flush();

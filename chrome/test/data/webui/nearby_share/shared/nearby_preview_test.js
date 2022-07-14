@@ -37,7 +37,7 @@ suite('PreviewTest', function() {
     previewElement.payloadPreview = {
       description: title,
       fileCount: 1,
-      shareType: /** @type {nearbyShare.mojom.ShareType} */ (0)
+      shareType: /** @type {nearbyShare.mojom.ShareType} */ (0),
     };
 
     const renderedTitle =

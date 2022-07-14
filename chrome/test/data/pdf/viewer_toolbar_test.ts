@@ -303,7 +303,7 @@ const tests = [
     button!.click();
     await whenFired;
     chrome.test.succeed();
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

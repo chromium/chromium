@@ -95,9 +95,9 @@ function createAppearancePage() {
         policy: {
           color: {
             value: 0,
-          }
-        }
-      }
+          },
+        },
+      },
     },
     extensions: {
       theme: {

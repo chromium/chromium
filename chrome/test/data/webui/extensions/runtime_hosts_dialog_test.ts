@@ -21,9 +21,10 @@ suite('RuntimeHostsDialog', function() {
   const userSiteSettings: chrome.developerPrivate.UserSiteSettings = {
     permittedSites: [],
     restrictedSites: [
-      'http://restricted.com', 'https://restricted.com:8080',
-      'http://sub.restricted.com'
-    ]
+      'http://restricted.com',
+      'https://restricted.com:8080',
+      'http://sub.restricted.com',
+    ],
   };
 
   setup(function() {
@@ -187,7 +188,9 @@ suite('RuntimeHostsDialog', function() {
         ['https://sub.restricted.com'],
         getMatchingUserSpecifiedSites(
             [
-              'http://restricted.com', 'https://sub.restricted.com', 'other.com'
+              'http://restricted.com',
+              'https://sub.restricted.com',
+              'other.com',
             ],
             '*://sub.restricted.com'));
 
@@ -195,7 +198,9 @@ suite('RuntimeHostsDialog', function() {
         ['http://restricted.com', 'https://sub.restricted.com'],
         getMatchingUserSpecifiedSites(
             [
-              'http://restricted.com', 'https://sub.restricted.com', 'other.com'
+              'http://restricted.com',
+              'https://sub.restricted.com',
+              'other.com',
             ],
             '*://*.restricted.com'));
 
@@ -204,8 +209,9 @@ suite('RuntimeHostsDialog', function() {
         ['https://google.com:8080'],
         getMatchingUserSpecifiedSites(
             [
-              'https://google.com:8080', 'https://google.com:1337',
-              'https://google.com'
+              'https://google.com:8080',
+              'https://google.com:1337',
+              'https://google.com',
             ],
             '*://google.com:8080'));
 

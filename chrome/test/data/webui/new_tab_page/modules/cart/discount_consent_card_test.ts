@@ -40,10 +40,11 @@ suite('NewTabPageDiscountConsentCartTest', () => {
       merchant: 'Amazon',
       cartUrl: {url: 'https://amazon.com'},
       productImageUrls: [
-        {url: 'https://image1.com'}, {url: 'https://image2.com'},
-        {url: 'https://image3.com'}
+        {url: 'https://image1.com'},
+        {url: 'https://image2.com'},
+        {url: 'https://image3.com'},
       ],
-      discountText: ''
+      discountText: '',
     }];
 
     discountConsentCard.merchants = cart;
@@ -172,24 +173,25 @@ suite('NewTabPageDiscountConsentCartTest', () => {
         merchant: 'Amazon',
         cartUrl: {url: 'https://amazon.com'},
         productImageUrls: [
-          {url: 'https://image1.com'}, {url: 'https://image2.com'},
-          {url: 'https://image3.com'}
+          {url: 'https://image1.com'},
+          {url: 'https://image2.com'},
+          {url: 'https://image3.com'},
         ],
-        discountText: ''
+        discountText: '',
       },
       {
         merchant: 'eBay',
         cartUrl: {url: 'https://ebay.com'},
         productImageUrls:
             [{url: 'https://image4.com'}, {url: 'https://image5.com'}],
-        discountText: ''
+        discountText: '',
       },
       {
         merchant: 'BestBuy',
         cartUrl: {url: 'https://bestbuy.com'},
         productImageUrls: [],
-        discountText: ''
-      }
+        discountText: '',
+      },
     ];
 
     discountConsentCard.merchants = carts;
@@ -296,7 +298,7 @@ suite('NewTabPageDiscountConsentCartTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesCartConsentStepTwoDifferentColor: true,
-        modulesCartDiscountInlineCardShowCloseButton: false
+        modulesCartDiscountInlineCardShowCloseButton: false,
       });
     });
 
@@ -318,7 +320,7 @@ suite('NewTabPageDiscountConsentCartTest', () => {
         modulesCartConsentStepOneTwoMerchantsContent:
             'Two merchants: $1 and $2',
         modulesCartConsentStepOneThreeMerchantsContent:
-            'Three merchants: $1, $2, and more'
+            'Three merchants: $1, $2, and more',
       });
     });
 
@@ -327,10 +329,11 @@ suite('NewTabPageDiscountConsentCartTest', () => {
         merchant: 'Amazon',
         cartUrl: {url: 'https://amazon.com'},
         productImageUrls: [
-          {url: 'https://image1.com'}, {url: 'https://image2.com'},
-          {url: 'https://image3.com'}
+          {url: 'https://image1.com'},
+          {url: 'https://image2.com'},
+          {url: 'https://image3.com'},
         ],
-        discountText: ''
+        discountText: '',
       }];
 
       discountConsentCard.merchants = cart;
@@ -353,18 +356,19 @@ suite('NewTabPageDiscountConsentCartTest', () => {
           merchant: 'Amazon',
           cartUrl: {url: 'https://amazon.com'},
           productImageUrls: [
-            {url: 'https://image1.com'}, {url: 'https://image2.com'},
-            {url: 'https://image3.com'}
+            {url: 'https://image1.com'},
+            {url: 'https://image2.com'},
+            {url: 'https://image3.com'},
           ],
-          discountText: ''
+          discountText: '',
         },
         {
           merchant: 'eBay',
           cartUrl: {url: 'https://ebay.com'},
           productImageUrls:
               [{url: 'https://image4.com'}, {url: 'https://image5.com'}],
-          discountText: ''
-        }
+          discountText: '',
+        },
       ];
 
       discountConsentCard.merchants = carts;
@@ -389,24 +393,25 @@ suite('NewTabPageDiscountConsentCartTest', () => {
               merchant: 'Amazon',
               cartUrl: {url: 'https://amazon.com'},
               productImageUrls: [
-                {url: 'https://image1.com'}, {url: 'https://image2.com'},
-                {url: 'https://image3.com'}
+                {url: 'https://image1.com'},
+                {url: 'https://image2.com'},
+                {url: 'https://image3.com'},
               ],
-              discountText: ''
+              discountText: '',
             },
             {
               merchant: 'eBay',
               cartUrl: {url: 'https://ebay.com'},
               productImageUrls:
                   [{url: 'https://image4.com'}, {url: 'https://image5.com'}],
-              discountText: ''
+              discountText: '',
             },
             {
               merchant: 'BestBuy',
               cartUrl: {url: 'https://bestbuy.com'},
               productImageUrls: [],
-              discountText: ''
-            }
+              discountText: '',
+            },
           ];
 
           discountConsentCard.merchants = carts;
@@ -430,10 +435,11 @@ suite('NewTabPageDiscountConsentCartTest', () => {
             merchant: 'Amazon',
             cartUrl: {url: 'https://amazon.com'},
             productImageUrls: [
-              {url: 'https://image1.com'}, {url: 'https://image2.com'},
-              {url: 'https://image3.com'}
+              {url: 'https://image1.com'},
+              {url: 'https://image2.com'},
+              {url: 'https://image3.com'},
             ],
-            discountText: ''
+            discountText: '',
           }];
 
           discountConsentCard.merchants = carts;
@@ -454,18 +460,19 @@ suite('NewTabPageDiscountConsentCartTest', () => {
               merchant: 'Amazon',
               cartUrl: {url: 'https://amazon.com'},
               productImageUrls: [
-                {url: 'https://image1.com'}, {url: 'https://image2.com'},
-                {url: 'https://image3.com'}
+                {url: 'https://image1.com'},
+                {url: 'https://image2.com'},
+                {url: 'https://image3.com'},
               ],
-              discountText: ''
+              discountText: '',
             },
             {
               merchant: 'eBay',
               cartUrl: {url: 'https://ebay.com'},
               productImageUrls:
                   [{url: 'https://image4.com'}, {url: 'https://image5.com'}],
-              discountText: ''
-            }
+              discountText: '',
+            },
           ];
 
           await flushTasks();
@@ -486,7 +493,7 @@ suite('NewTabPageDiscountConsentCartTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesCartDiscountConsentVariation: 3,
-        modulesCartSentence: 'Dialog title'
+        modulesCartSentence: 'Dialog title',
       });
     });
 
@@ -495,10 +502,11 @@ suite('NewTabPageDiscountConsentCartTest', () => {
         merchant: 'Amazon',
         cartUrl: {url: 'https://amazon.com'},
         productImageUrls: [
-          {url: 'https://image1.com'}, {url: 'https://image2.com'},
-          {url: 'https://image3.com'}
+          {url: 'https://image1.com'},
+          {url: 'https://image2.com'},
+          {url: 'https://image3.com'},
         ],
-        discountText: ''
+        discountText: '',
       }];
 
       discountConsentCard.merchants = cart;

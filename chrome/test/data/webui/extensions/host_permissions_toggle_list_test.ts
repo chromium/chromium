@@ -21,7 +21,7 @@ suite('HostPermissionsToggleList', function() {
   const RESTRICTED_COM = '*://restricted.com/*';
   const userSiteSettings: chrome.developerPrivate.UserSiteSettings = {
     permittedSites: [],
-    restrictedSites: ['http://restricted.com', 'https://other.com']
+    restrictedSites: ['http://restricted.com', 'https://other.com'],
   };
 
   setup(function() {

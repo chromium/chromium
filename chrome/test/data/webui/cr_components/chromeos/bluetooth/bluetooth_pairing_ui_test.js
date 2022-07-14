@@ -613,8 +613,9 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
             /*opt_deviceType=*/ DeviceType.kMouse);
 
         bluetoothConfig.appendToDiscoveredDeviceList([
-          device.deviceProperties, device1.deviceProperties,
-          device2.deviceProperties
+          device.deviceProperties,
+          device1.deviceProperties,
+          device2.deviceProperties,
         ]);
         await flushTasks();
         let deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();

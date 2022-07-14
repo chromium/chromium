@@ -50,8 +50,10 @@ suite('SettingsDropdownMenu', function() {
       value: 100,
     };
     dropdown.menuOptions = [
-      {value: 100, name: 'Option 100'}, {value: 200, name: 'Option 200'},
-      {value: 300, name: 'Option 300'}, {value: 400, name: 'Option 400'}
+      {value: 100, name: 'Option 100'},
+      {value: 200, name: 'Option 200'},
+      {value: 300, name: 'Option 300'},
+      {value: 400, name: 'Option 400'},
     ];
 
     return waitUntilDropdownUpdated()
@@ -83,8 +85,10 @@ suite('SettingsDropdownMenu', function() {
       value: 'c',
     };
     dropdown.menuOptions = [
-      {value: 'a', name: 'AAA'}, {value: 'b', name: 'BBB'},
-      {value: 'c', name: 'CCC'}, {value: 'd', name: 'DDD'}
+      {value: 'a', name: 'AAA'},
+      {value: 'b', name: 'BBB'},
+      {value: 'c', name: 'CCC'},
+      {value: 'd', name: 'DDD'},
     ];
 
     return waitUntilDropdownUpdated()
@@ -117,8 +121,10 @@ suite('SettingsDropdownMenu', function() {
       value: 'f',
     };
     dropdown.menuOptions = [
-      {value: 'a', name: 'AAA'}, {value: 'b', name: 'BBB'},
-      {value: 'c', name: 'CCC'}, {value: 'd', name: 'DDD'}
+      {value: 'a', name: 'AAA'},
+      {value: 'b', name: 'BBB'},
+      {value: 'c', name: 'CCC'},
+      {value: 'd', name: 'DDD'},
     ];
     dropdown.addEventListener('settings-control-change', () => {
       // Failure, custom value shouldn't ever call this.
@@ -159,8 +165,10 @@ suite('SettingsDropdownMenu', function() {
           assertEquals('SETTINGS_DROPDOWN_NOT_FOUND_ITEM', selectElement.value);
 
           dropdown.menuOptions = [
-            {value: 100, name: 'Option 100'}, {value: 200, name: 'Option 200'},
-            {value: 300, name: 'Option 300'}, {value: 400, name: 'Option 400'}
+            {value: 100, name: 'Option 100'},
+            {value: 200, name: 'Option 200'},
+            {value: 300, name: 'Option 300'},
+            {value: 400, name: 'Option 400'},
           ];
           return waitUntilDropdownUpdated();
         })

@@ -24,7 +24,7 @@ const TEST_HISTORY_RESULTS = [
 const SEARCH_HISTORY_RESULTS = [
   createSearchEntry('2016-03-16', 'http://www.google.com'),
   createSearchEntry('2016-03-14 11:00', 'http://calendar.google.com'),
-  createSearchEntry('2016-03-14 10:00', 'http://mail.google.com')
+  createSearchEntry('2016-03-14 10:00', 'http://mail.google.com'),
 ];
 
 suite('<history-item> unit test', function() {

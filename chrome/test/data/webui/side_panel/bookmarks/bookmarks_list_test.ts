@@ -43,7 +43,7 @@ suite('SidePanelBookmarksListTest', () => {
               url: 'http://nested/bookmark/',
             },
           ],
-        }
+        },
       ],
     },
     {
@@ -219,7 +219,7 @@ suite('SidePanelBookmarksListTest', () => {
       detail: {
         id: folders[0]!.id,
         open: false,
-      }
+      },
     }));
     assertEquals(
         JSON.stringify([]),
@@ -231,7 +231,7 @@ suite('SidePanelBookmarksListTest', () => {
       detail: {
         id: '5001',
         open: true,
-      }
+      },
     }));
     assertEquals(
         JSON.stringify(['5001']),

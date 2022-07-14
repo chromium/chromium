@@ -105,7 +105,7 @@ const tests = [
 
     resetDocument();
     chrome.test.succeed();
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

@@ -110,7 +110,7 @@ const tests = [
     chrome.test.assertTrue(!!dialog);
     chrome.test.assertTrue(dialog.isOpen());
     chrome.test.succeed();
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

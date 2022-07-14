@@ -44,14 +44,14 @@ suite('EventTargetModuleTest', () => {
     const f = /** @type {!EventListener} */ ({
       handleEvent: function(_e: Event) {
         fi++;
-      }
+      },
     });
 
     let gi = 0;
     const g = /** @type {!EventListener} */ ({
       handleEvent: function(_e: Event) {
         gi++;
-      }
+      },
     });
 
     const et = new EventTarget();

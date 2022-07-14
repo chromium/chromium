@@ -440,7 +440,7 @@ suite('NewTabPageAppTest', () => {
         data: {
           frameType: 'one-google-bar',
           messageType: 'click',
-        }
+        },
       }));
 
       // Assert.
@@ -522,7 +522,7 @@ suite('NewTabPageAppTest', () => {
           descriptor: new ModuleDescriptor(
               'bar', 'bar', () => Promise.resolve(barElement)),
           element: barElement,
-        }
+        },
       ]);
       await counterfactualLoad();
       await flushTasks();

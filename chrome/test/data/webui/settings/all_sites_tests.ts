@@ -67,7 +67,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
             createRawSiteException('https://foo.com'),
             createRawSiteException('https://bar.com', {
               setting: ContentSetting.BLOCK,
-            })
+            }),
           ]),
       createContentSettingTypeToValuePair(
           ContentSettingsTypes.NOTIFICATIONS,
@@ -81,7 +81,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
             createRawSiteException('https://foo.com', {
               setting: ContentSetting.BLOCK,
             }),
-          ])
+          ]),
     ]);
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     localDataBrowserProxy = new TestLocalDataBrowserProxy();
@@ -281,7 +281,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         storage: true,
         title: 'siteSettingsClearAllStorageDialogTitle',
         description: 'siteSettingsClearAllStorageConfirmation',
-        signout: 'siteSettingsClearAllStorageSignOut'
+        signout: 'siteSettingsClearAllStorageSignOut',
       },
       {
         filter: false,
@@ -289,7 +289,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         storage: true,
         title: 'siteSettingsClearAllStorageDialogTitle',
         description: 'siteSettingsClearAllStorageConfirmationInstalled',
-        signout: 'siteSettingsClearAllStorageSignOut'
+        signout: 'siteSettingsClearAllStorageSignOut',
       },
       {
         filter: true,
@@ -297,7 +297,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         storage: true,
         title: 'siteSettingsClearDisplayedStorageDialogTitle',
         description: 'siteSettingsClearDisplayedStorageConfirmation',
-        signout: 'siteSettingsClearDisplayedStorageSignOut'
+        signout: 'siteSettingsClearDisplayedStorageSignOut',
       },
       {
         filter: true,
@@ -305,7 +305,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         storage: false,
         title: 'siteSettingsClearDisplayedStorageDialogTitle',
         description: 'siteSettingsClearDisplayedStorageConfirmation',
-        signout: 'siteSettingsClearDisplayedStorageSignOut'
+        signout: 'siteSettingsClearDisplayedStorageSignOut',
       },
       {
         filter: true,
@@ -313,7 +313,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         storage: false,
         title: 'siteSettingsClearDisplayedStorageDialogTitle',
         description: 'siteSettingsClearDisplayedStorageConfirmationInstalled',
-        signout: 'siteSettingsClearDisplayedStorageSignOut'
+        signout: 'siteSettingsClearDisplayedStorageSignOut',
       },
       {
         filter: true,
@@ -321,7 +321,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         storage: true,
         title: 'siteSettingsClearDisplayedStorageDialogTitle',
         description: 'siteSettingsClearDisplayedStorageConfirmationInstalled',
-        signout: 'siteSettingsClearDisplayedStorageSignOut'
+        signout: 'siteSettingsClearDisplayedStorageSignOut',
       },
     ];
 
@@ -856,7 +856,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         item: siteGroup,
         origin: siteGroup.origins[originIndex]!.origin,
         actionScope: 'origin',
-      }
+      },
     }));
     assertTrue(overflowMenu.open);
 
@@ -954,7 +954,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         item: siteGroup,
         origin: siteGroup.origins[originIndex]!.origin,
         actionScope: 'origin',
-      }
+      },
     }));
     assertTrue(overflowMenu.open);
 

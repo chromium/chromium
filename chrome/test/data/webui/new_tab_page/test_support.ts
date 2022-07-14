@@ -57,7 +57,7 @@ export function createMock<T extends object>(clazz: Constructor<T>):
         return callTracker.methodCalled(prop);
       }
       return undefined;
-    }
+    },
   };
   return {mock: new Proxy<T>({} as unknown as T, handler), callTracker};
 }
@@ -127,7 +127,7 @@ export function createTheme(): Theme {
     mostVisited: mostVisited,
     searchBox: searchBox,
     textColor: {value: 0xff0000ff},
-    isCustomBackground: true
+    isCustomBackground: true,
   };
 }
 

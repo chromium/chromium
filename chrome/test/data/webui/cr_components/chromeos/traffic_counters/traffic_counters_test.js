@@ -31,7 +31,7 @@ suite('TrafficCountersTest', function() {
   const FAKE_TIME_IN_MICROSECONDS = BigInt(13275778457938000);
   /** @type {!mojoBase.mojom.Time} */
   const FAKE_INITIAL_LAST_RESET_TIME = {
-    internalValue: FAKE_TIME_IN_MICROSECONDS
+    internalValue: FAKE_TIME_IN_MICROSECONDS,
   };
   /**
    * @type {string} human readable string representing
@@ -211,7 +211,7 @@ suite('TrafficCountersTest', function() {
     // network. The internal value represents one second.
     networkConfigRemote.setLastResetTimeForTest('cellular_guid', {
       internalValue:
-          FAKE_INITIAL_LAST_RESET_TIME.internalValue + BigInt(1000 * 1000)
+          FAKE_INITIAL_LAST_RESET_TIME.internalValue + BigInt(1000 * 1000),
     });
     await flushAsync();
     // Reset the traffic counters.

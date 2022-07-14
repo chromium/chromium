@@ -44,8 +44,8 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           id: '345',
           mimeType: 'application/vnd.google-apps.presentation',
           itemUrl: {url: 'https://caz.com'},
-        }
-      ]
+        },
+      ],
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
@@ -97,7 +97,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           mimeType: '',
           itemUrl: {url: ''},
         },
-      ]
+      ],
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const moduleElement =
@@ -133,7 +133,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           mimeType: '',
           itemUrl: {url: ''},
         },
-      ]
+      ],
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const module = await driveDescriptor.initialize(0);

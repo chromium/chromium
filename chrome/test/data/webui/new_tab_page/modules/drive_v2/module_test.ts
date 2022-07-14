@@ -44,8 +44,8 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           id: '345',
           mimeType: 'application/vnd.google-apps.presentation',
           itemUrl: {url: 'https://caz.com'},
-        }
-      ]
+        },
+      ],
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
@@ -91,7 +91,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
         {
           title: 'Abc',
         },
-      ]
+      ],
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
@@ -114,7 +114,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
         {
           title: 'Def',
         },
-      ]
+      ],
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
@@ -140,7 +140,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           mimeType: 'application/vnd.google-apps.presentation',
           itemUrl: {url: 'https://abc.com'},
         },
-      ]
+      ],
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const driveModule =
@@ -169,7 +169,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
               mimeType: 'application/vnd.google-apps.presentation',
               itemUrl: {url: 'https://abc.com'},
             },
-          ]
+          ],
         };
         handler.setResultFor('getFiles', Promise.resolve(data));
         const driveModule =

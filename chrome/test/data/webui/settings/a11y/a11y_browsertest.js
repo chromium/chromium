@@ -20,7 +20,7 @@ const axeOptionsExcludeLinkInTextBlock =
     Object.assign({}, SettingsAccessibilityV3Test.axeOptions, {
       'rules': Object.assign({}, SettingsAccessibilityV3Test.axeOptions.rules, {
         'link-in-text-block': {enabled: false},
-      })
+      }),
     });
 
 const violationFilterExcludeCustomInputAndTabindex =
@@ -44,8 +44,9 @@ const violationFilterExcludeCustomInputAndTabindex =
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 [[
-  'ManageProfile', 'manage_profile_a11y_test.js',
-  {filter: violationFilterExcludeCustomInputAndTabindex}
+  'ManageProfile',
+  'manage_profile_a11y_test.js',
+  {filter: violationFilterExcludeCustomInputAndTabindex},
 ],
  ['Signout', 'sign_out_a11y_test.js'],
 ].forEach(test => defineTest(...test));

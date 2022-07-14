@@ -37,7 +37,7 @@ const devElements = [
   {selector: '#inspect-views a[is="action-link"]', text: 'foo.html,'},
   {
     selector: '#inspect-views a[is="action-link"]:nth-of-type(2)',
-    text: '1 more…'
+    text: '1 more…',
   },
 ];
 
@@ -435,17 +435,17 @@ suite(extension_item_tests.suiteName, function() {
         item.set('data.views', [
           {
             type: chrome.developerPrivate.ViewType.EXTENSION_POPUP,
-            url: getUrl('popup.html')
+            url: getUrl('popup.html'),
           },
           {
             type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
-            url: getUrl('_generated_background_page.html')
+            url: getUrl('_generated_background_page.html'),
           },
           {
             type: chrome.developerPrivate.ViewType
                       .EXTENSION_SERVICE_WORKER_BACKGROUND,
-            url: getUrl('sw.js')
-          }
+            url: getUrl('sw.js'),
+          },
         ]);
         item.set('inDevMode', true);
         flush();

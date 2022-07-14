@@ -43,7 +43,7 @@ suite('SiteListChromeOS', function() {
                   // android sms setting.
                   createRawSiteException(TEST_ANDROID_SMS_ORIGIN),
                   // Non android sms setting that should be handled as usual.
-                  createRawSiteException('http://bar.com')
+                  createRawSiteException('http://bar.com'),
                 ])]);
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();

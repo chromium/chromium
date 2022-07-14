@@ -13,7 +13,7 @@ const extension_navigation_helper_tests = {
     Basic: 'basic',
     Conversions: 'conversions',
     PushAndReplaceState: 'push and replace state',
-    SupportedRoutes: 'supported routes'
+    SupportedRoutes: 'supported routes',
   },
 };
 

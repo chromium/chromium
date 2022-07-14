@@ -64,7 +64,7 @@ export class FakeContactManager {
         identifiers: [
           {accountName: 'jane@gmail.com'},
           {phoneNumber: '555-1212'},
-        ]
+        ],
       },
       {
         id: '2',
@@ -72,8 +72,8 @@ export class FakeContactManager {
         identifiers: [
           {phoneNumber: '555-5555'},
           {accountName: 'smith@google.com'},
-        ]
-      }
+        ],
+      },
     ];
     this.allowedContacts = ['1'];
   }

@@ -88,7 +88,7 @@ chrome.test.runTests(function() {
             scaleRatio: 2,
             direction: 'in',
             startScaleRatio: 2,
-            center: {x: 0, y: 2}
+            center: {x: 0, y: 2},
           },
           pinchListener.lastEvent!.detail);
 
@@ -102,7 +102,7 @@ chrome.test.runTests(function() {
             scaleRatio: 2,
             direction: 'in',
             startScaleRatio: 4,
-            center: {x: 0, y: 4}
+            center: {x: 0, y: 4},
           },
           pinchListener.lastEvent!.detail);
 
@@ -139,7 +139,7 @@ chrome.test.runTests(function() {
             scaleRatio: 2,
             direction: 'in',
             startScaleRatio: 2,
-            center: {x: 0, y: 2}
+            center: {x: 0, y: 2},
           },
           detail);
 
@@ -156,7 +156,7 @@ chrome.test.runTests(function() {
             scaleRatio: 0.5,
             direction: 'out',
             startScaleRatio: 1,
-            center: {x: 0, y: 1}
+            center: {x: 0, y: 1},
           },
           detail);
 
@@ -321,6 +321,6 @@ chrome.test.runTests(function() {
           'Should not have two finger touch with 3 touches.');
 
       chrome.test.succeed();
-    }
+    },
   ];
 }());

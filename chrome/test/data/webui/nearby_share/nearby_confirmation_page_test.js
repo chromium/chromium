@@ -115,7 +115,7 @@ suite('ConfirmatonPageTest', function() {
     confirmationPageElement.payloadPreview = {
       description: title,
       fileCount: 1,
-      shareType: nearbyShare.mojom.ShareType.kUnknownFile
+      shareType: nearbyShare.mojom.ShareType.kUnknownFile,
     };
     const renderedTitle =
         confirmationPageElement.shadowRoot.querySelector('nearby-preview')
@@ -182,7 +182,7 @@ suite('ConfirmatonPageTest', function() {
       kRejected: true,
       kCancelled: true,
       MIN_VALUE: true,
-      MAX_VALUE: true
+      MAX_VALUE: true,
     };
 
     let key;

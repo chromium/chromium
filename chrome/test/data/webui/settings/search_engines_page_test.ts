@@ -39,7 +39,7 @@ function createSampleOmniboxExtension(): SearchEngine {
     name: 'Omnibox extension',
     shouldConfirmDeletion: false,
     url: 'chrome-extension://dummyextensionid/?q=%s',
-    urlLocked: false
+    urlLocked: false,
   };
 }
 
@@ -411,7 +411,7 @@ suite('SearchEnginePageTests', function() {
       id: 0,
       name: 'search_engine_G',
       displayName: 'search_engine_G displayName',
-      keyword: 'search_engine_G'
+      keyword: 'search_engine_G',
     })],
     actives: [],
     others: [
@@ -419,13 +419,13 @@ suite('SearchEnginePageTests', function() {
         id: 1,
         name: 'search_engine_B',
         displayName: 'search_engine_B displayName',
-        keyword: 'search_engine_B'
+        keyword: 'search_engine_B',
       }),
       createSampleSearchEngine({
         id: 2,
         name: 'search_engine_A',
         displayName: 'search_engine_A displayName',
-        keyword: 'search_engine_A'
+        keyword: 'search_engine_A',
       }),
     ],
     extensions: [createSampleOmniboxExtension()],
@@ -568,8 +568,8 @@ suite('SearchEnginePageTests', function() {
       composed: true,
       detail: {
         engine,
-        anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!
-      }
+        anchorElement: page.shadowRoot!.querySelector('#addSearchEngine')!,
+      },
     }));
     return browserProxy.whenCalled('searchEngineEditStarted')
         .then(modelIndex => {

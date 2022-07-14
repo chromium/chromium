@@ -67,7 +67,7 @@ suite('nearby-onboarding-page', function() {
     loadTimeData.overrideValues({
       'nearbyShareDeviceNameEmptyError': 'non-empty',
       'nearbyShareDeviceNameTooLongError': 'non-empty',
-      'nearbyShareDeviceNameInvalidCharactersError': 'non-empty'
+      'nearbyShareDeviceNameInvalidCharactersError': 'non-empty',
     });
 
     const input = /** @type {!CrInputElement} */ (

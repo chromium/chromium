@@ -39,19 +39,19 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
     bluetoothBatteryIconPercentage.device.batteryInfo = {};
     if (batteryType === BatteryType.DEFAULT) {
       bluetoothBatteryIconPercentage.device.batteryInfo.defaultProperties = {
-        batteryPercentage: batteryPercentage
+        batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.LEFT_BUD) {
       bluetoothBatteryIconPercentage.device.batteryInfo.leftBudInfo = {
-        batteryPercentage: batteryPercentage
+        batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.CASE) {
       bluetoothBatteryIconPercentage.device.batteryInfo.caseInfo = {
-        batteryPercentage: batteryPercentage
+        batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.RIGHT_BUD) {
       bluetoothBatteryIconPercentage.device.batteryInfo.rightBudInfo = {
-        batteryPercentage: batteryPercentage
+        batteryPercentage: batteryPercentage,
       };
     }
     bluetoothBatteryIconPercentage.batteryType = batteryType;

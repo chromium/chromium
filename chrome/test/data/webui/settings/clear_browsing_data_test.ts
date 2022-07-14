@@ -96,7 +96,7 @@ function getClearBrowsingDataPrefs() {
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: 0,
       },
-    }
+    },
   };
 }
 

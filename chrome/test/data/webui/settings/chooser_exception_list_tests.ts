@@ -54,7 +54,7 @@ function populateTestExceptions() {
       [createContentSettingTypeToValuePair(ContentSettingsTypes.USB_DEVICES, [
         createRawChooserException(
             ChooserType.USB_DEVICES,
-            [createRawSiteException('https://foo.com')])
+            [createRawSiteException('https://foo.com')]),
       ])] /* chooserExceptionsList */);
 
   prefsPolicyProvider = createSiteSettingsPrefs(
@@ -63,7 +63,7 @@ function populateTestExceptions() {
         createRawChooserException(
             ChooserType.USB_DEVICES,
             [createRawSiteException(
-                'https://foo.com', {source: SiteSettingSource.POLICY})])
+                'https://foo.com', {source: SiteSettingSource.POLICY})]),
       ])] /* chooserExceptionsList */);
 
   prefsUsb =
@@ -93,7 +93,7 @@ function populateTestExceptions() {
               createRawChooserException(
                   ChooserType.USB_DEVICES,
                   [createRawSiteException('https://baz-user.com')],
-                  {displayName: 'Widget'})
+                  {displayName: 'Widget'}),
             ]),
       ] /* chooserExceptionsList */);
 }

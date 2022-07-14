@@ -34,7 +34,7 @@ suite('TabSwiper', () => {
     const pointerState: PointerEventInit = {
       clientY: startY,
       pointerId: 1,
-      pointerType: 'touch'
+      pointerType: 'touch',
     };
     tabElement.dispatchEvent(new PointerEvent('pointerdown', pointerState));
 
@@ -79,7 +79,7 @@ suite('TabSwiper', () => {
     const pointerState: PointerEventInit = {
       clientY: startY,
       pointerId: 1,
-      pointerType: 'touch'
+      pointerType: 'touch',
     };
     tabElement.dispatchEvent(new PointerEvent('pointerdown', pointerState));
 

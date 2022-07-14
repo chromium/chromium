@@ -44,7 +44,7 @@ suite(printer_status_test_cros.suiteName, function() {
        printerId: 'ID2',
        statusReasons: [{
          reason: PrinterStatusReason.LOW_ON_PAPER,
-         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY,
        }],
        timestamp: 0,
      },
@@ -52,7 +52,7 @@ suite(printer_status_test_cros.suiteName, function() {
        printerId: 'ID3',
        statusReasons: [{
          reason: PrinterStatusReason.LOW_ON_PAPER,
-         severity: PrinterStatusSeverity.REPORT
+         severity: PrinterStatusSeverity.REPORT,
        }],
        timestamp: 0,
      },
@@ -60,7 +60,7 @@ suite(printer_status_test_cros.suiteName, function() {
        printerId: 'ID4',
        statusReasons: [{
          reason: PrinterStatusReason.LOW_ON_PAPER,
-         severity: PrinterStatusSeverity.WARNING
+         severity: PrinterStatusSeverity.WARNING,
        }],
        timestamp: 0,
      },
@@ -68,7 +68,7 @@ suite(printer_status_test_cros.suiteName, function() {
        printerId: 'ID5',
        statusReasons: [{
          reason: PrinterStatusReason.LOW_ON_PAPER,
-         severity: PrinterStatusSeverity.ERROR
+         severity: PrinterStatusSeverity.ERROR,
        }],
        timestamp: 0,
      },
@@ -77,12 +77,12 @@ suite(printer_status_test_cros.suiteName, function() {
        statusReasons: [
          {
            reason: PrinterStatusReason.DEVICE_ERROR,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY,
          },
          {
            reason: PrinterStatusReason.PRINTER_QUEUE_FULL,
-           severity: PrinterStatusSeverity.ERROR
-         }
+           severity: PrinterStatusSeverity.ERROR,
+         },
        ],
        timestamp: 0,
      },
@@ -91,12 +91,12 @@ suite(printer_status_test_cros.suiteName, function() {
        statusReasons: [
          {
            reason: PrinterStatusReason.DEVICE_ERROR,
-           severity: PrinterStatusSeverity.REPORT
+           severity: PrinterStatusSeverity.REPORT,
          },
          {
            reason: PrinterStatusReason.PRINTER_QUEUE_FULL,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-         }
+           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY,
+         },
        ],
        timestamp: 0,
      },
@@ -104,7 +104,7 @@ suite(printer_status_test_cros.suiteName, function() {
        printerId: 'ID8',
        statusReasons: [{
          reason: PrinterStatusReason.UNKNOWN_REASON,
-         severity: PrinterStatusSeverity.ERROR
+         severity: PrinterStatusSeverity.ERROR,
        }],
        timestamp: 0,
      },
@@ -112,7 +112,7 @@ suite(printer_status_test_cros.suiteName, function() {
        printerId: 'ID9',
        statusReasons: [{
          reason: PrinterStatusReason.UNKNOWN_REASON,
-         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY,
        }],
        timestamp: 0,
      },
@@ -120,7 +120,7 @@ suite(printer_status_test_cros.suiteName, function() {
        printerId: 'ID10',
        statusReasons: [{
          reason: PrinterStatusReason.PRINTER_UNREACHABLE,
-         severity: PrinterStatusSeverity.ERROR
+         severity: PrinterStatusSeverity.ERROR,
        }],
        timestamp: 0,
      }]

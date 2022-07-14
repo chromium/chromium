@@ -40,13 +40,13 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
             image: {
               imageUrl: {url: 'https://image'},
               target: {url: 'https://link'},
-            }
+            },
           },
           {
             image: {
               imageUrl: {url: 'https://image'},
               target: {url: 'command:123'},
-            }
+            },
           },
           {text: {text: 'text', color: 'red'}},
           {
@@ -54,14 +54,14 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
               url: {url: 'https://link'},
               text: 'link',
               color: 'green',
-            }
+            },
           },
           {
             link: {
               url: {url: 'command:123'},
               text: 'command',
               color: 'blue',
-            }
+            },
           },
         ],
       },

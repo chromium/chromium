@@ -164,7 +164,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
       carrier: 'Verizon wireless',
       meid: '012345678912345',
       imei: '012345678912345',
-      mdn: '0123456789'
+      mdn: '0123456789',
     });
 
     cellularCarrierHandler.onCarrierPortalStatusChange(

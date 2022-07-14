@@ -79,7 +79,7 @@ class FakeProfile {
             () => resolve({
               result: this.profileInstallResult_ ?
                   this.profileInstallResult_ :
-                  ash.cellularSetup.mojom.ProfileInstallResult.kSuccess
+                  ash.cellularSetup.mojom.ProfileInstallResult.kSuccess,
             }),
             0));
   }
@@ -146,7 +146,7 @@ class FakeProfile {
     this.deferredSetProfileNicknamePromise_.resolve({
       result: this.esimOperationResult_ ?
           this.esimOperationResult_ :
-          ash.cellularSetup.mojom.ESimOperationResult.kSuccess
+          ash.cellularSetup.mojom.ESimOperationResult.kSuccess,
     });
   }
 
@@ -171,7 +171,7 @@ class FakeProfile {
     this.defferedUninstallProfilePromise_.resolve({
       result: this.esimOperationResult_ ?
           this.esimOperationResult_ :
-          ash.cellularSetup.mojom.ESimOperationResult.kSuccess
+          ash.cellularSetup.mojom.ESimOperationResult.kSuccess,
     });
   }
 }

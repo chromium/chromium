@@ -23,7 +23,7 @@ const print_preview_app_test = {
     DestinationsManaged: 'destinations managed',
     HeaderFooterManaged: 'header footer managed',
     CssBackgroundManaged: 'css background managed',
-    SheetsManaged: 'sheets managed'
+    SheetsManaged: 'sheets managed',
   },
 };
 

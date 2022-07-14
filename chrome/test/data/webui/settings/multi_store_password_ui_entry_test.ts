@@ -14,7 +14,7 @@ suite('MultiStorePasswordUiEntry', function() {
       username: 'user',
       id: 0,
       inAccountStore: true,
-      inProfileStore: true
+      inProfileStore: true,
     });
 
     const multiStoreDeviceEntry =

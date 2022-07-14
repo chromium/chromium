@@ -35,7 +35,7 @@ suite('SitePermissionsSiteGroupElement', function() {
           siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
           site: 'http://google.ca',
         },
-      ]
+      ],
     };
     flush();
 
@@ -68,7 +68,7 @@ suite('SitePermissionsSiteGroupElement', function() {
           siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
           site: 'http://google.ca',
         },
-      ]
+      ],
     };
     flush();
 
@@ -94,7 +94,7 @@ suite('SitePermissionsSiteGroupElement', function() {
       sites: [{
         siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
         site: 'https://a.example.com',
-      }]
+      }],
     };
     flush();
 

@@ -120,7 +120,7 @@ suite('DiscoveryPageTest', function() {
       charCode: 13,
       keyCode: 13,
       view: window,
-      bubbles: true
+      bubbles: true,
     }));
     return true;
   }
@@ -141,7 +141,7 @@ suite('DiscoveryPageTest', function() {
       charCode: 32,
       keyCode: 32,
       view: window,
-      bubbles: true
+      bubbles: true,
     }));
     return true;
   }
@@ -162,7 +162,7 @@ suite('DiscoveryPageTest', function() {
       charCode: 38,
       keyCode: 38,
       view: window,
-      bubbles: true
+      bubbles: true,
     }));
 
     return true;
@@ -185,7 +185,7 @@ suite('DiscoveryPageTest', function() {
       keyCode: 40,
       view: window,
       composed: true,
-      bubbles: true
+      bubbles: true,
     }));
 
     return true;

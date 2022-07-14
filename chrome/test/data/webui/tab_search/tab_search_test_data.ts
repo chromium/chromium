@@ -111,7 +111,7 @@ export const SAMPLE_WINDOW_DATA: Window[] = [
         url: {url: 'https://www.apple.com/'},
       }),
     ],
-  }
+  },
 ];
 
 export const SAMPLE_RECENTLY_CLOSED_DATA: RecentlyClosedTab[] = [
@@ -213,7 +213,7 @@ export function generateSampleDataFromSiteNames(siteNames: string[]):
     windows: [{
       active: true,
       height: SAMPLE_WINDOW_HEIGHT,
-      tabs: generateSampleTabsFromSiteNames(siteNames)
+      tabs: generateSampleTabsFromSiteNames(siteNames),
     }],
     recentlyClosedTabs: [],
     tabGroups: [],

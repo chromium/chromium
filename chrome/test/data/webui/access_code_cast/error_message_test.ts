@@ -29,7 +29,7 @@ suite('ErrorMessageElementTest', () => {
       {addResult: AddSinkResultCode.AUTH_ERROR, expectedMessage: 4},
       {
         addResult: AddSinkResultCode.HTTP_RESPONSE_CODE_ERROR,
-        expectedMessage: 3
+        expectedMessage: 3,
       },
       {addResult: AddSinkResultCode.RESPONSE_MALFORMED, expectedMessage: 3},
       {addResult: AddSinkResultCode.EMPTY_RESPONSE, expectedMessage: 3},
@@ -43,7 +43,7 @@ suite('ErrorMessageElementTest', () => {
       {addResult: AddSinkResultCode.PROFILE_SYNC_ERROR, expectedMessage: 1},
       {
         addResult: AddSinkResultCode.INTERNAL_MEDIA_ROUTER_ERROR,
-        expectedMessage: 1
+        expectedMessage: 1,
       },
     ];
 
@@ -67,24 +67,24 @@ suite('ErrorMessageElementTest', () => {
       {castResult: RouteRequestResultCode.INVALID_ORIGIN, expectedMessage: 1},
       {
         castResult: RouteRequestResultCode.DEPRECATED_OFF_THE_RECORD_MISMATCH,
-        expectedMessage: 1
+        expectedMessage: 1,
       },
       {
         castResult: RouteRequestResultCode.NO_SUPPORTED_PROVIDER,
-        expectedMessage: 1
+        expectedMessage: 1,
       },
       {castResult: RouteRequestResultCode.CANCELLED, expectedMessage: 1},
       {
         castResult: RouteRequestResultCode.ROUTE_ALREADY_EXISTS,
-        expectedMessage: 1
+        expectedMessage: 1,
       },
       {
         castResult: RouteRequestResultCode.DESKTOP_PICKER_FAILED,
-        expectedMessage: 1
+        expectedMessage: 1,
       },
       {
         castResult: RouteRequestResultCode.ROUTE_ALREADY_TERMINATED,
-        expectedMessage: 1
+        expectedMessage: 1,
       },
     ];
 

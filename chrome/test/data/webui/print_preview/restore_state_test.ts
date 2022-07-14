@@ -101,7 +101,7 @@ suite(restore_state_test.suiteName, function() {
 
     await Promise.all([
       nativeLayer.whenCalled('getInitialSettings'),
-      nativeLayer.whenCalled('getPrinterCapabilities')
+      nativeLayer.whenCalled('getPrinterCapabilities'),
     ]);
     verifyStickySettingsApplied(stickySettings);
   }
@@ -120,13 +120,13 @@ suite(restore_state_test.suiteName, function() {
             name: 'CUSTOM',
             width_microns: 215900,
             height_microns: 215900,
-            custom_display_name: 'CUSTOM_SQUARE'
+            custom_display_name: 'CUSTOM_SQUARE',
           },
           customMargins: {
             marginTop: 74,
             marginRight: 74,
             marginBottom: 74,
-            marginLeft: 74
+            marginLeft: 74,
           },
           vendorOptions: {
             paperType: 1,
@@ -167,7 +167,7 @@ suite(restore_state_test.suiteName, function() {
             width_microns: 215900,
             height_microns: 279400,
             is_default: true,
-            custom_display_name: 'Letter'
+            custom_display_name: 'Letter',
           },
           vendorOptions: {
             paperType: 0,
@@ -329,7 +329,7 @@ suite(restore_state_test.suiteName, function() {
 
     await Promise.all([
       nativeLayer.whenCalled('getInitialSettings'),
-      nativeLayer.whenCalled('getPrinterCapabilities')
+      nativeLayer.whenCalled('getPrinterCapabilities'),
     ]);
     // Set all the settings sections.
     testData.forEach((testValue: TestCase, index: number) => {

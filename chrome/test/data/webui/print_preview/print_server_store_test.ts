@@ -58,7 +58,7 @@ suite(print_server_store_test.suiteName, function() {
 
         const printServersConfig = {
           printServers: printServers,
-          isSingleServerFetchingMode: true
+          isSingleServerFetchingMode: true,
         };
         webUIListenerCallback(
             'print-servers-config-changed', printServersConfig);
@@ -84,7 +84,7 @@ suite(print_server_store_test.suiteName, function() {
 
         const printServersConfig = {
           printServers: printServers,
-          isSingleServerFetchingMode: true
+          isSingleServerFetchingMode: true,
         };
         webUIListenerCallback(
             'print-servers-config-changed', printServersConfig);
@@ -109,7 +109,7 @@ suite(print_server_store_test.suiteName, function() {
 
         const expectedPrintServersConfig = {
           printServers: printServers,
-          isSingleServerFetchingMode: true
+          isSingleServerFetchingMode: true,
         };
         nativeLayerCros.setPrintServersConfig(expectedPrintServersConfig);
         const actualPrintServersConfig =

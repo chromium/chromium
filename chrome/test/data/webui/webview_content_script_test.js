@@ -65,9 +65,9 @@ function testAddContentScript(url) {
     name: 'myrule',
     matches: ['http://*/empty*'],
     js: {
-      files: ['test/inject_comm_channel.js', 'test/inject_comm_channel_2.js']
+      files: ['test/inject_comm_channel.js', 'test/inject_comm_channel_2.js'],
     },
-    run_at: 'document_start'
+    run_at: 'document_start',
   }]);
 
   webview.addEventListener('loadstop', function() {
@@ -107,14 +107,14 @@ function testAddMultiContentScripts(url) {
       name: 'myrule1',
       matches: ['http://*/empty*'],
       js: {files: ['test/inject_comm_channel.js']},
-      run_at: 'document_start'
+      run_at: 'document_start',
     },
     {
       name: 'myrule2',
       matches: ['http://*/empty*'],
       js: {files: ['test/inject_comm_channel_2.js']},
-      run_at: 'document_start'
-    }
+      run_at: 'document_start',
+    },
   ]);
 
   webview.addEventListener('loadstop', function() {
@@ -172,7 +172,7 @@ function testAddContentScriptWithSameNameShouldOverwriteTheExistingOne(url) {
     name: 'myrule1',
     matches: ['http://*/empty*'],
     js: {files: ['test/inject_comm_channel.js']},
-    run_at: 'document_start'
+    run_at: 'document_start',
   }]);
   var connect_script_1 = true;
   var connect_script_2 = false;
@@ -207,7 +207,7 @@ function testAddContentScriptWithSameNameShouldOverwriteTheExistingOne(url) {
           name: 'myrule1',
           matches: ['http://*/empty*'],
           js: {files: ['test/inject_comm_channel_2.js']},
-          run_at: 'document_start'
+          run_at: 'document_start',
         }]);
         connect_script_2 = true;
         should_get_response_from_script_1 = false;
@@ -245,7 +245,7 @@ function testAddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView(url) {
     name: 'myrule',
     matches: ['http://*/empty*'],
     js: {files: ['test/inject_comm_channel.js']},
-    run_at: 'document_start'
+    run_at: 'document_start',
   }]);
 
   webview2.addEventListener('loadstop', function() {
@@ -289,7 +289,7 @@ function testAddAndRemoveContentScripts(url) {
     name: 'myrule',
     matches: ['http://*/empty*'],
     js: {files: ['test/inject_comm_channel.js']},
-    run_at: 'document_start'
+    run_at: 'document_start',
   }]);
 
   var should_get_response_from_script_1 = true;
@@ -350,7 +350,7 @@ function testAddContentScriptsWithNewWindowAPI(url) {
       name: 'myrule',
       matches: ['http://*/guest_from_opener*'],
       js: {files: ['test/inject_comm_channel.js']},
-      run_at: 'document_start'
+      run_at: 'document_start',
     }]);
 
     newwebview.addEventListener('loadstop', function(evt) {
@@ -402,7 +402,7 @@ function testContentScriptIsInjectedAfterTerminateAndReloadWebView(url) {
     name: 'myrule',
     matches: ['http://*/empty*'],
     js: {files: ['test/webview_execute_script.js']},
-    run_at: 'document_end'
+    run_at: 'document_end',
   }]);
 
   var count = 0;
@@ -439,7 +439,7 @@ function testContentScriptExistsAsLongAsWebViewTagExists(url) {
     name: 'myrule',
     matches: ['http://*/empty*'],
     js: {files: ['test/webview_execute_script.js']},
-    run_at: 'document_end'
+    run_at: 'document_end',
   }]);
 
   var count = 0;
@@ -478,7 +478,7 @@ function testAddContentScriptWithCode(url) {
     name: 'myrule',
     matches: ['http://*/empty*'],
     js: {code: 'document.body.style.backgroundColor = \'red\';'},
-    run_at: 'document_end'
+    run_at: 'document_end',
   }]);
 
   webview.addEventListener('loadstop', function() {

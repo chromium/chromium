@@ -254,5 +254,5 @@ chrome.test.runTests([
     await doNavigationUrlTests(url, '', undefined);
 
     chrome.test.succeed();
-  }
+  },
 ]);

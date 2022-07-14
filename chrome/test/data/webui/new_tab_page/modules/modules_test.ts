@@ -59,7 +59,7 @@ suite('NewTabPageModulesModulesTest', () => {
         {
           descriptor: barDescriptor,
           element: createElement(),
-        }
+        },
       ]);
       callbackRouterRemote.setDisabledModules(
           !visible, [barDescriptor.id, bazDescriptor.id]);
@@ -120,7 +120,7 @@ suite('NewTabPageModulesModulesTest', () => {
           {
             descriptor: barDescriptor,
             element: createElement(),
-          }
+          },
         ]);
         callbackRouterRemote.setDisabledModules(
             !visible, [barDescriptor.id, bazDescriptor.id]);
@@ -194,7 +194,7 @@ suite('NewTabPageModulesModulesTest', () => {
         {
           descriptor: barDescriptor,
           element: createElement(),
-        }
+        },
       ]);
       callbackRouterRemote.setModulesFreVisibility(true);
       callbackRouterRemote.setDisabledModules(false, []);
@@ -339,7 +339,7 @@ suite('NewTabPageModulesModulesTest', () => {
         {
           descriptor: bazDescriptor,
           element: moduleArray[2]!,
-        }
+        },
       ]);
 
       callbackRouterRemote.setDisabledModules(false, []);
@@ -617,7 +617,7 @@ suite('NewTabPageModulesModulesTest', () => {
       {
         descriptor: barDescriptor,
         element: createElement(),
-      }
+      },
     ]);
 
     // Assert.
@@ -640,7 +640,7 @@ suite('NewTabPageModulesModulesTest', () => {
       {
         descriptor: barDescriptor,
         element: createElement(),
-      }
+      },
     ]);
 
     // Assert.

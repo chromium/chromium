@@ -20,7 +20,7 @@ suite('discards', function() {
       isAutoDiscardable: false,
       discardCount: 0,
       utilityRank: 0,
-      lastActiveSeconds: 0
+      lastActiveSeconds: 0,
     };
     const dummy2 = {
       title: 'title 2',
@@ -30,7 +30,7 @@ suite('discards', function() {
       isAutoDiscardable: true,
       discardCount: 1,
       utilityRank: 1,
-      lastActiveSeconds: 1
+      lastActiveSeconds: 1,
     };
 
     ['title', 'tabUrl', 'visibility', 'state', 'isAutoDiscardable',

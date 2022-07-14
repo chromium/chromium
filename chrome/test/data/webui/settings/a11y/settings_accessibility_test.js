@@ -33,7 +33,7 @@ SettingsAccessibilityV3Test.axeOptions = {
     // TODO(crbug.com/1224185): Fails when the device is managed (due to
     // violations in <managed-footnote>, happens on some Win bots.
     'link-in-text-block': {enabled: false},
-  }
+  },
 };
 
 // Default accessibility audit options. Specify in test definition to use.

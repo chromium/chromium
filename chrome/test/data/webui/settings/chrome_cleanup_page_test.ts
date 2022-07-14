@@ -32,7 +32,10 @@ const longRegistryKeysList =
 
 const fileLists = [[], shortFileList, exactSizeFileList, longFileList];
 const registryKeysLists = [
-  [], shortRegistryKeysList, exactSizeRegistryKeysList, longRegistryKeysList
+  [],
+  shortRegistryKeysList,
+  exactSizeRegistryKeysList,
+  longRegistryKeysList,
 ];
 const descriptors = ['No', 'Few', 'ExactSize', 'Many'];
 
@@ -225,7 +228,7 @@ suite('ChromeCleanupHandler', function() {
         reporting: {
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: true,
-          key: ''
+          key: '',
         },
       },
     };
@@ -482,7 +485,7 @@ suite('ChromeCleanupHandler', function() {
           controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
           value: false,
           key: '',
-        }
+        },
       },
     };
 

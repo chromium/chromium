@@ -5,6 +5,7 @@
 module.exports = {
   'env': {'browser': true, 'es6': true},
   'rules': {
+    'comma-dangle' : ['error', 'always-multiline'],
     'no-restricted-properties': [
       'error', {
         'object': 'MockInteractions',
@@ -19,7 +20,7 @@ module.exports = {
         'message': 'test.only() silently disables other tests in the same ' +
             'suite(). Did you forget deleting it before uploading? Use ' +
             'test.skip() instead to explicitly disable certain test() cases.',
-      }
+      },
     ],
     'no-var': 'off',
     'eqeqeq': ['error', 'always', {'null': 'ignore'}],

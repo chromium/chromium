@@ -285,7 +285,7 @@ suite('PasswordEditDialog', function() {
       createMultiStorePasswordEntry(
           {url: 'goo.gl', username: 'bart', accountId: 0}),
       createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'mark', accountId: 1})
+          {url: 'goo.gl', username: 'mark', accountId: 1}),
     ];
     const editDialog = elementFactory.createPasswordEditDialog(
         accountPasswords[0]!, accountPasswords);
@@ -307,7 +307,7 @@ suite('PasswordEditDialog', function() {
       createMultiStorePasswordEntry(
           {url: 'goo.gl', username: 'bart', accountId: 0}),
       createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'mark', deviceId: 1})
+          {url: 'goo.gl', username: 'mark', deviceId: 1}),
     ];
     const editDialog =
         elementFactory.createPasswordEditDialog(passwords[0], passwords);
@@ -547,7 +547,7 @@ suite('PasswordEditDialog', function() {
       createMultiStorePasswordEntry(
           {url: 'website.com', username: 'username1', accountId: 0}),
       createMultiStorePasswordEntry(
-          {url: 'website.com', username: 'username2', deviceId: 0})
+          {url: 'website.com', username: 'username2', deviceId: 0}),
     ];
     const addDialog = elementFactory.createPasswordEditDialog(null, passwords);
     await updateWebsiteInput(addDialog, passwordManager, 'website.com');

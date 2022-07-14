@@ -117,7 +117,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'startAutomatedPasswordChange',
       'startBulkPasswordCheck',
       'stopBulkPasswordCheck',
-      'unmuteInsecureCredential'
+      'unmuteInsecureCredential',
     ]);
 
     /** @private {!PasswordManagerExpectations} */

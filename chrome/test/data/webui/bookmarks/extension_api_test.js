@@ -57,11 +57,11 @@ test('bookmarkManagerPrivate', async () => {
       childFolder = {parentId: folder.id, title: 'Child Folder'};
       childNodeA = {
         title: 'childNodeA',
-        url: 'http://www.example.com/childNodeA'
+        url: 'http://www.example.com/childNodeA',
       };
       childNodeB = {
         title: 'childNodeB',
-        url: 'http://www.example.com/childNodeB'
+        url: 'http://www.example.com/childNodeB',
       };
       grandChildFolder = {title: 'grandChildFolder'};
       chrome.bookmarks.create(
@@ -110,7 +110,7 @@ test('bookmarkManagerPrivate', async () => {
       fooNode = {
         parentId: '1',
         title: 'Foo',
-        url: 'http://www.example.com/foo'
+        url: 'http://www.example.com/foo',
       };
 
       emptyFolder = {parentId: '1', title: 'Empty Folder'};
@@ -132,7 +132,7 @@ test('bookmarkManagerPrivate', async () => {
       barNode = {
         parentId: '1',
         title: 'Bar',
-        url: 'http://www.example.com/bar'
+        url: 'http://www.example.com/bar',
       };
 
       chrome.bookmarks.create(barNode, pass(function(result) {
@@ -144,7 +144,7 @@ test('bookmarkManagerPrivate', async () => {
       gooNode = {
         parentId: '1',
         title: 'Goo',
-        url: 'http://www.example.com/goo'
+        url: 'http://www.example.com/goo',
       };
 
       chrome.bookmarks.create(gooNode, pass(function(result) {

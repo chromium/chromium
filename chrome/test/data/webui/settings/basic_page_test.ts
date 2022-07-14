@@ -81,8 +81,13 @@ suite('SettingsBasicPage', () => {
 
   test('basic pages', function() {
     const sections = [
-      'appearance', 'onStartup', 'people', 'search', 'autofill', 'safetyCheck',
-      'privacy'
+      'appearance',
+      'onStartup',
+      'people',
+      'search',
+      'autofill',
+      'safetyCheck',
+      'privacy',
     ];
     if (!isChromeOS && !isLacros) {
       sections.push('defaultBrowser');

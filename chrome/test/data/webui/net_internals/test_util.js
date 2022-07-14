@@ -82,7 +82,7 @@ function getTab(tabId) {
       sockets: SocketsView.TAB_ID,
       hsts: DomainSecurityPolicyView.TAB_ID,
       // <if expr="chromeos_ash">
-      chromeos: CrosView.TAB_ID
+      chromeos: CrosView.TAB_ID,
       // </if>
     };
 

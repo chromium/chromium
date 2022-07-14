@@ -39,7 +39,7 @@ suite(extension_item_list_tests.suiteName, function() {
     const extensionItems = [
       createExt({name: 'Alpha', id: 'a'.repeat(32)}),
       createExt({name: 'Bravo', id: 'b'.repeat(32)}),
-      createExt({name: 'Charlie', id: 'c'.repeat(29) + 'wxy'})
+      createExt({name: 'Charlie', id: 'c'.repeat(29) + 'wxy'}),
     ];
     const appItems = [
       createExt({name: 'QQ', id: 'q'.repeat(32)}),

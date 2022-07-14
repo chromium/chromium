@@ -31,63 +31,63 @@ chrome.test.runTests([
         return Promise.resolve({
           messageId: 'getNamedDestination_4',
           namedDestinationView: 'XYZ,111,222,1.7',
-          pageNumber: 10
+          pageNumber: 10,
         });
       }
       if (destination === 'DestWithXYZAtZoomNull') {
         return Promise.resolve({
           messageId: 'getNamedDestination_5',
           namedDestinationView: 'XYZ,111,222,null',
-          pageNumber: 10
+          pageNumber: 10,
         });
       }
       if (destination === 'DestWithXYZWithX0') {
         return Promise.resolve({
           messageId: 'getNamedDestination_6',
           namedDestinationView: 'XYZ,0,200,1.7',
-          pageNumber: 11
+          pageNumber: 11,
         });
       }
       if (destination === 'DestWithXYZWithXNull') {
         return Promise.resolve({
           messageId: 'getNamedDestination_7',
           namedDestinationView: 'XYZ,null,200,1.7',
-          pageNumber: 11
+          pageNumber: 11,
         });
       }
       if (destination === 'DestWithXYZWithY0') {
         return Promise.resolve({
           messageId: 'getNamedDestination_8',
           namedDestinationView: 'XYZ,100,0,1.7',
-          pageNumber: 11
+          pageNumber: 11,
         });
       }
       if (destination === 'DestWithXYZWithYNull') {
         return Promise.resolve({
           messageId: 'getNamedDestination_9',
           namedDestinationView: 'XYZ,100,null,1.7',
-          pageNumber: 11
+          pageNumber: 11,
         });
       }
       if (destination === 'DestWithFitR') {
         return Promise.resolve({
           messageId: 'getNamedDestination_10',
           namedDestinationView: 'FitR,20,100,120,300',
-          pageNumber: 0
+          pageNumber: 0,
         });
       }
       if (destination === 'DestWithFitRReversedCoordinates') {
         return Promise.resolve({
           messageId: 'getNamedDestination_11',
           namedDestinationView: 'FitR,120,300,20,100',
-          pageNumber: 0
+          pageNumber: 0,
         });
       }
       if (destination === 'DestWithFitRWithNull') {
         return Promise.resolve({
           messageId: 'getNamedDestination_12',
           namedDestinationView: 'FitR,null,100,100,300',
-          pageNumber: 0
+          pageNumber: 0,
         });
       }
       return Promise.resolve(
@@ -318,5 +318,5 @@ chrome.test.runTests([
     chrome.test.assertTrue(paramsParser.shouldShowToolbar(`${url}#toolbar=1`));
 
     chrome.test.succeed();
-  }
+  },
 ]);

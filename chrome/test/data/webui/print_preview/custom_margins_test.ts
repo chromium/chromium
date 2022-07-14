@@ -57,8 +57,10 @@ suite(custom_margins_test.suiteName, function() {
     model.set('settings.mediaSize.available', true);
 
     sides = [
-      CustomMarginsOrientation.TOP, CustomMarginsOrientation.RIGHT,
-      CustomMarginsOrientation.BOTTOM, CustomMarginsOrientation.LEFT
+      CustomMarginsOrientation.TOP,
+      CustomMarginsOrientation.RIGHT,
+      CustomMarginsOrientation.BOTTOM,
+      CustomMarginsOrientation.LEFT,
     ];
 
     container =
@@ -207,8 +209,10 @@ suite(custom_margins_test.suiteName, function() {
   function setupCustomMargins(): Map<CustomMarginsOrientation, number> {
     const orientationEnum = CustomMarginsOrientation;
     const marginValues = new Map([
-      [orientationEnum.TOP, 72], [orientationEnum.RIGHT, 36],
-      [orientationEnum.BOTTOM, 108], [orientationEnum.LEFT, 18]
+      [orientationEnum.TOP, 72],
+      [orientationEnum.RIGHT, 36],
+      [orientationEnum.BOTTOM, 108],
+      [orientationEnum.LEFT, 18],
     ]);
     model.settings.customMargins.value = {
       marginTop: marginValues.get(orientationEnum.TOP),

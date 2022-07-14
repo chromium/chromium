@@ -65,7 +65,7 @@ suite(key_event_test.suiteName, function() {
     return Promise
         .all([
           nativeLayer.whenCalled('getInitialSettings'),
-          nativeLayer.whenCalled('getPrinterCapabilities')
+          nativeLayer.whenCalled('getPrinterCapabilities'),
         ])
         .then(function() {
           flush();

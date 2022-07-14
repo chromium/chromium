@@ -60,17 +60,17 @@ suite('SettingsSecureDnsInteractive', function() {
     {
       name: 'resolver1',
       value: 'resolver1_template',
-      policy: 'https://resolver1_policy.com/'
+      policy: 'https://resolver1_policy.com/',
     },
     {
       name: 'resolver2',
       value: 'resolver2_template',
-      policy: 'https://resolver2_policy.com/'
+      policy: 'https://resolver2_policy.com/',
     },
     {
       name: 'resolver3',
       value: 'resolver3_template',
-      policy: 'https://resolver3_policy.com/'
+      policy: 'https://resolver3_policy.com/',
     },
   ];
 
@@ -141,7 +141,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.secureDnsInput.blur();
     await Promise.all([
       testBrowserProxy.whenCalled('isValidConfig'),
-      testBrowserProxy.whenCalled('probeConfig')
+      testBrowserProxy.whenCalled('probeConfig'),
     ]);
     assertEquals(
         SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
@@ -165,7 +165,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.secureDnsInput.blur();
     await Promise.all([
       testBrowserProxy.whenCalled('isValidConfig'),
-      testBrowserProxy.whenCalled('probeConfig')
+      testBrowserProxy.whenCalled('probeConfig'),
     ]);
     assertEquals(
         SecureDnsMode.SECURE, testElement.prefs.dns_over_https.mode.value);
@@ -408,7 +408,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.secureDnsInput.blur();
     await Promise.all([
       testBrowserProxy.whenCalled('isValidConfig'),
-      testBrowserProxy.whenCalled('probeConfig')
+      testBrowserProxy.whenCalled('probeConfig'),
     ]);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
     assertFalse(testElement.$.secureDnsInput.$.input.invalid);
@@ -428,7 +428,7 @@ suite('SettingsSecureDnsInteractive', function() {
     testElement.$.secureDnsInput.blur();
     await Promise.all([
       testBrowserProxy.whenCalled('isValidConfig'),
-      testBrowserProxy.whenCalled('probeConfig')
+      testBrowserProxy.whenCalled('probeConfig'),
     ]);
     assertFalse(testElement.$.secureDnsInput.matches(':focus-within'));
     assertFalse(testElement.$.secureDnsInput.$.input.invalid);

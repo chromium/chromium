@@ -31,7 +31,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       themeFrameColor: 'rgb(70, 42, 104)',
       themeShapeColor: 'rgb(109, 65, 161)',
       themeFrameTextColor: 'rgb(255, 255, 255)',
-      themeGenericAvatar: 'AvatarUrl-22'
+      themeGenericAvatar: 'AvatarUrl-22',
     };
 
     this.profileSample = {

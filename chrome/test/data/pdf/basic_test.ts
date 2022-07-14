@@ -86,7 +86,7 @@ const tests = [
         getFilenameFromURL('http://example.com/invalid%EDname.pdf'));
 
     chrome.test.succeed();
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

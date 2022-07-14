@@ -262,7 +262,7 @@ function testDefineWithGetter() {
     return {
       get v() {
         return v;
-      }
+      },
     };
   });
 

@@ -27,7 +27,7 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
       count: 1,
       activityType: chrome.activityLogPrivate.ExtensionActivityFilter.API_CALL,
       countsByUrl: new Map(),
-      expanded: false
+      expanded: false,
     };
 
     activityLogHistoryItem =
@@ -59,7 +59,7 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
       count: 3,
       activityType:
           chrome.activityLogPrivate.ExtensionActivityFilter.DOM_ACCESS,
-      countsByUrl
+      countsByUrl,
     };
     activityLogHistoryItem.set('data', testActivityGroup);
 
@@ -83,7 +83,7 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
       count: 3,
       activityType:
           chrome.activityLogPrivate.ExtensionActivityFilter.DOM_ACCESS,
-      countsByUrl
+      countsByUrl,
     };
 
     activityLogHistoryItem.set('data', testActivityGroup);
@@ -108,7 +108,7 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
       count: 15,
       activityType:
           chrome.activityLogPrivate.ExtensionActivityFilter.DOM_ACCESS,
-      countsByUrl
+      countsByUrl,
     };
     activityLogHistoryItem.set('data', testActivityGroup);
     activityLogHistoryItem.shadowRoot!

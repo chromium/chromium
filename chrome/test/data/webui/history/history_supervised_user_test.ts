@@ -58,7 +58,7 @@ suite('history-list supervised-user', function() {
               new CustomEvent('history-checkbox-select', {
                 bubbles: true,
                 composed: true,
-                detail: {index: 0, shiftKey: false}
+                detail: {index: 0, shiftKey: false},
               }));
           return whenChecked;
         })

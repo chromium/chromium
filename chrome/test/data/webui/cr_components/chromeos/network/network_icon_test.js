@@ -42,7 +42,7 @@ suite('NetworkIconTest', function() {
       simInfos: [
         {slot_id: 1, eid: '1', iccid: '1', isPrimary: false},
       ],
-      scanning: true
+      scanning: true,
     };
     await flushAsync();
 

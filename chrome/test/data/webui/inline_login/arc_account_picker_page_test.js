@@ -94,7 +94,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
             'ARC account picker screen should be active');
 
         const uiAccounts = [
-          ...arcAccountPickerComponent.root.querySelectorAll('.account-item')
+          ...arcAccountPickerComponent.root.querySelectorAll('.account-item'),
         ].filter(item => item.id !== 'addAccountButton');
         assertEquals(
             getFakeAccountsNotAvailableInArcList().length, uiAccounts.length);

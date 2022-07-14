@@ -18,8 +18,11 @@ suite('SetTimeDialog', function() {
   class TestSetTimeBrowserProxy extends TestBrowserProxy {
     constructor() {
       super([
-        'sendPageReady', 'setTimeInSeconds', 'setTimezone', 'dialogClose',
-        'doneClicked'
+        'sendPageReady',
+        'setTimeInSeconds',
+        'setTimezone',
+        'dialogClose',
+        'doneClicked',
       ]);
     }
 
@@ -57,7 +60,7 @@ suite('SetTimeDialog', function() {
       timezoneList: [
         [
           'America/Los_Angeles',
-          '(GMT-7:00) Pacific Daylight Time (Los Angeles)'
+          '(GMT-7:00) Pacific Daylight Time (Los Angeles)',
         ],
         ['America/Sao_Paulo', '(GMT-3:00) Brasilis Standard Time (Sao Paulo)'],
         ['Asia/Seoul', '(GMT+9:00) Korean Standard Time (Seoul)'],

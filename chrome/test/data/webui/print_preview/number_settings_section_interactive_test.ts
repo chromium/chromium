@@ -18,7 +18,7 @@ const number_settings_section_interactive_test = {
 
 Object.assign(window, {
   number_settings_section_interactive_test:
-      number_settings_section_interactive_test
+      number_settings_section_interactive_test,
 });
 
 suite(number_settings_section_interactive_test.suiteName, function() {

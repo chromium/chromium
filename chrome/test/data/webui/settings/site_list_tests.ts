@@ -102,7 +102,7 @@ function populateTestExceptions() {
           }),
           createRawSiteException('https://foo-block.com:443', {
             setting: ContentSetting.BLOCK,
-          })
+          }),
         ]),
   ]);
 
@@ -133,7 +133,7 @@ function populateTestExceptions() {
           createRawSiteException('https://[*.]foo.com', {
             setting: ContentSetting.BLOCK,
             source: SiteSettingSource.POLICY,
-          })
+          }),
         ]),
   ]);
 
@@ -146,7 +146,7 @@ function populateTestExceptions() {
           }),
           createRawSiteException('https://bar.com', {
             embeddingOrigin: '',
-          })
+          }),
         ]),
   ]);
 
@@ -159,7 +159,7 @@ function populateTestExceptions() {
           }),
           createRawSiteException('https://bar.com', {
             embeddingOrigin: '',
-          })
+          }),
         ]),
     createContentSettingTypeToValuePair(
         ContentSettingsTypes.NOTIFICATIONS,
@@ -172,7 +172,7 @@ function populateTestExceptions() {
           }),
           createRawSiteException('https://foo.com', {
             embeddingOrigin: '',
-          })
+          }),
         ]),
   ]);
 
@@ -207,7 +207,7 @@ function populateTestExceptions() {
           createRawSiteException('http://foo-session.com', {
             embeddingOrigin: '',
             setting: ContentSetting.SESSION_ONLY,
-          })
+          }),
         ]),
   ]);
 
@@ -229,7 +229,7 @@ function populateTestExceptions() {
           createRawSiteException('http://foo.com', {
             embeddingOrigin: '',
             incognito: true,
-          })
+          }),
         ]),
   ]);
 
@@ -1044,7 +1044,8 @@ suite('EditExceptionDialog', function() {
     input!.fire('input');
 
     return browserProxy.whenCalled('isPatternValidForType').then(function([
-      pattern, _category
+      pattern,
+      _category,
     ]) {
       assertEquals(expectedPattern, pattern);
       assertTrue(actionButton.disabled);
@@ -1135,7 +1136,8 @@ suite('AddExceptionDialog', function() {
     input!.fire('input');
 
     return browserProxy.whenCalled('isPatternValidForType').then(function([
-      pattern, _category
+      pattern,
+      _category,
     ]) {
       assertEquals(expectedPattern, pattern);
       assertTrue(actionButton.disabled);

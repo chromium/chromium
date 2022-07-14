@@ -62,8 +62,8 @@ var InlineLoginBrowserTestWithArcAccountRestrictionsEnabled =
     return {
       enabled: [
         'chromeos::features::kArcAccountRestrictions',
-        'chromeos::features::kLacrosSupport'
-      ]
+        'chromeos::features::kLacrosSupport',
+      ],
     };
   }
 };
@@ -109,7 +109,7 @@ var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
     return {
       disabled: [
         'chromeos::features::kArcAccountRestrictions',
-      ]
+      ],
     };
   }
 };
@@ -140,8 +140,8 @@ var InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled =
     return {
       enabled: [
         'chromeos::features::kArcAccountRestrictions',
-        'chromeos::features::kLacrosSupport'
-      ]
+        'chromeos::features::kLacrosSupport',
+      ],
     };
   }
 };
@@ -202,8 +202,8 @@ var InlineLoginArcAccountPickerBrowserTest =
     return {
       enabled: [
         'chromeos::features::kArcAccountRestrictions',
-        'chromeos::features::kLacrosSupport'
-      ]
+        'chromeos::features::kLacrosSupport',
+      ],
     };
   }
 };

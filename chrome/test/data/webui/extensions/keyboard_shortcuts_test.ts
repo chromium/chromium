@@ -49,7 +49,7 @@ suite(extension_shortcut_tests.suiteName, function() {
         isActive: true,
         scope: chrome.developerPrivate.CommandScope.CHROME,
         isExtensionAction: true,
-      }]
+      }],
     });
     twoCommands = createExtensionInfo({
       id: 'c'.repeat(32),
@@ -69,8 +69,8 @@ suite(extension_shortcut_tests.suiteName, function() {
           isActive: false,
           scope: chrome.developerPrivate.CommandScope.CHROME,
           isExtensionAction: false,
-        }
-      ]
+        },
+      ],
     });
 
     keyboardShortcuts.set('items', [noCommands, oneCommand, twoCommands]);

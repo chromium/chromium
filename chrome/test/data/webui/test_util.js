@@ -57,7 +57,7 @@ export function whenCheck(target, check) {
                              }).observe(target, {
         attributes: true,
         childList: true,
-        subtree: true
+        subtree: true,
       }));
 }
 

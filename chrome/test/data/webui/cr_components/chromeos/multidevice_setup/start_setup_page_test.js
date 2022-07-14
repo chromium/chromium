@@ -44,21 +44,21 @@ suite('MultiDeviceSetup', () => {
     // defined.
     {
       remoteDevice: {deviceName: 'Pixel XL', deviceId: 'legacy-id-1'},
-      connectivityStatus: 0  // kOnline
+      connectivityStatus: 0,  // kOnline
     },
     {
       remoteDevice: {deviceName: 'Nexus 6P', instanceId: 'iid-2'},
-      connectivityStatus: 1  // kOffline
+      connectivityStatus: 1,  // kOffline
     },
     {
       remoteDevice:
           {deviceName: 'Nexus 5', deviceId: 'legacy-id-3', instanceId: 'iid-3'},
-      connectivityStatus: 2  // kUnknownConnectivity
+      connectivityStatus: 2,  // kUnknownConnectivity
     },
     {
       remoteDevice:
           {deviceName: 'Pixel 4', deviceId: 'legacy-id-4', instanceId: ''},
-      connectivityStatus: 3  // kOnline
+      connectivityStatus: 3,  // kOnline
     },
   ];
 

@@ -59,7 +59,7 @@ suite(history_list_test.suiteName, function() {
     createHistoryEntry('2016-03-15', 'https://www.google.com'),
     createHistoryEntry('2016-03-14 10:00', 'https://www.example.com'),
     createHistoryEntry('2016-03-14 9:00', 'https://www.google.com'),
-    createHistoryEntry('2016-03-13', 'https://en.wikipedia.org')
+    createHistoryEntry('2016-03-13', 'https://en.wikipedia.org'),
   ];
   TEST_HISTORY_RESULTS[2]!.starred = true;
 
@@ -67,7 +67,7 @@ suite(history_list_test.suiteName, function() {
     createHistoryEntry('2016-03-13 10:00', 'https://en.wikipedia.org'),
     createHistoryEntry('2016-03-13 9:50', 'https://www.youtube.com'),
     createHistoryEntry('2016-03-11', 'https://www.google.com'),
-    createHistoryEntry('2016-03-10', 'https://www.example.com')
+    createHistoryEntry('2016-03-10', 'https://www.example.com'),
   ];
 
   setup(function() {
@@ -801,7 +801,7 @@ suite(history_list_test.suiteName, function() {
               app.dispatchEvent(new CustomEvent('change-query', {
                 bubbles: true,
                 composed: true,
-                detail: {search: 'something else'}
+                detail: {search: 'something else'},
               }));
               return testService.whenCalled('queryHistory');
             })
@@ -809,7 +809,7 @@ suite(history_list_test.suiteName, function() {
               testService.resetResolver('queryHistory');
               testService.setQueryResult({
                 info: createHistoryInfo('something else'),
-                value: ADDITIONAL_RESULTS
+                value: ADDITIONAL_RESULTS,
               });
               element.dispatchEvent(new CustomEvent(
                   'query-history',

@@ -29,15 +29,15 @@ suite('SitePermissionsBySite', function() {
           siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
           site: 'http://google.ca',
         },
-      ]
+      ],
     },
     {
       etldPlusOne: 'example.com',
       sites: [{
         siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
         site: 'http://example.com',
-      }]
-    }
+      }],
+    },
   ];
 
   setup(function() {

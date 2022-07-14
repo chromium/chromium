@@ -49,26 +49,28 @@ export function getCddTemplate(
         color: {
           option: [
             {type: 'STANDARD_COLOR', is_default: true},
-            {type: 'STANDARD_MONOCHROME'}
-          ]
+            {type: 'STANDARD_MONOCHROME'},
+          ],
         },
         dpi: {
           option: [
             {horizontal_dpi: 200, vertical_dpi: 200, is_default: true},
             {horizontal_dpi: 100, vertical_dpi: 100},
-          ]
+          ],
         },
         duplex: {
           option: [
-            {type: 'NO_DUPLEX', is_default: true}, {type: 'LONG_EDGE'},
-            {type: 'SHORT_EDGE'}
-          ]
+            {type: 'NO_DUPLEX', is_default: true},
+            {type: 'LONG_EDGE'},
+            {type: 'SHORT_EDGE'},
+          ],
         },
         page_orientation: {
           option: [
-            {type: 'PORTRAIT', is_default: true}, {type: 'LANDSCAPE'},
-            {type: 'AUTO'}
-          ]
+            {type: 'PORTRAIT', is_default: true},
+            {type: 'LANDSCAPE'},
+            {type: 'AUTO'},
+          ],
         },
         media_size: {
           option: [
@@ -84,11 +86,11 @@ export function getCddTemplate(
               width_microns: 215900,
               height_microns: 215900,
               custom_display_name: 'CUSTOM_SQUARE',
-            }
-          ]
-        }
-      }
-    }
+            },
+          ],
+        },
+      },
+    },
   };
   // <if expr="chromeos_ash or chromeos_lacros">
   template.capabilities!.printer.pin = {supported: true};
@@ -137,9 +139,9 @@ export function getCddTemplateWithAdvancedSettings(
       option: [
         {display_name: 'Standard', value: 0, is_default: true},
         {display_name: 'Recycled', value: 1},
-        {display_name: 'Special', value: 2}
-      ]
-    }
+        {display_name: 'Special', value: 2},
+      ],
+    },
   });
 
   if (numSettings < 3) {
@@ -152,7 +154,7 @@ export function getCddTemplateWithAdvancedSettings(
     type: 'TYPED_VALUE',
     typed_value_cap: {
       default: '',
-    }
+    },
   });
 
   if (numSettings < 4) {
@@ -166,7 +168,7 @@ export function getCddTemplateWithAdvancedSettings(
     typed_value_cap: {
       default: '',
       value_type: VendorCapabilityValueType.BOOLEAN,
-    }
+    },
   });
 
   return template;
@@ -182,9 +184,10 @@ export function getPdfPrinter(): {capabilities: Cdd} {
       printer: {
         page_orientation: {
           option: [
-            {type: 'AUTO', is_default: true}, {type: 'PORTRAIT'},
-            {type: 'LANDSCAPE'}
-          ]
+            {type: 'AUTO', is_default: true},
+            {type: 'PORTRAIT'},
+            {type: 'LANDSCAPE'},
+          ],
         },
         color: {option: [{type: 'STANDARD_COLOR', is_default: true}]},
         media_size: {
@@ -192,11 +195,11 @@ export function getPdfPrinter(): {capabilities: Cdd} {
             name: 'NA_LETTER',
             width_microns: 0,
             height_microns: 0,
-            is_default: true
-          }]
-        }
-      }
-    }
+            is_default: true,
+          }],
+        },
+      },
+    },
   };
 }
 
@@ -210,7 +213,7 @@ export function getDefaultMediaSize(device: CapabilitiesResponse):
       opt => !!opt.is_default);
   return {
     width_microns: size!.width_microns,
-    height_microns: size!.height_microns
+    height_microns: size!.height_microns,
   };
 }
 
@@ -237,19 +240,19 @@ export function getExtensionDestinations(): ExtensionPrinters {
     id: 'IDA',
     name: 'PrinterA',
     extensionId: 'ext1',
-    extensionName: 'ExtensionOne'
+    extensionName: 'ExtensionOne',
   },
    {
      id: 'IDB',
      name: 'PrinterB',
      extensionId: 'ext1',
-     extensionName: 'ExtensionOne'
+     extensionName: 'ExtensionOne',
    },
    {
      id: 'IDC',
      name: 'PrinterC',
      extensionId: 'ext2',
-     extensionName: 'ExtensionTwo'
+     extensionName: 'ExtensionTwo',
    },
   ].forEach(info => {
     const destination =
@@ -309,15 +312,15 @@ export function getMediaSizeCapabilityWithCustomNames(): MediaSizeCapability {
         height_microns: 79400,
         is_default: true,
         custom_display_name_localized:
-            [{locale: navigator.language, value: customLocalizedMediaName}]
+            [{locale: navigator.language, value: customLocalizedMediaName}],
       },
       {
         name: 'CUSTOM',
         width_microns: 15900,
         height_microns: 79400,
-        custom_display_name: customMediaName
-      }
-    ]
+        custom_display_name: customMediaName,
+      },
+    ],
   };
 }
 

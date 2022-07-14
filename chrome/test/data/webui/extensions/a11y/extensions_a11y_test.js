@@ -124,7 +124,7 @@ AccessibilityTest.define('CrExtensionsA11yTest', {
                        .shadowRoot.querySelector('#items-list');
       assertEquals(list.extensions.length, 0);
       assertEquals(list.apps.length, 0);
-    }
+    },
   },
 });
 

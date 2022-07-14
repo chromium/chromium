@@ -195,11 +195,16 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     ['network', 'network', 'none', Error.NETWORK],
     ['not-allowed', 'not-allowed', 'details', Error.NOT_ALLOWED],
     [
-      'service-not-allowed', 'not-allowed', 'details', Error.SERVICE_NOT_ALLOWED
+      'service-not-allowed',
+      'not-allowed',
+      'details',
+      Error.SERVICE_NOT_ALLOWED,
     ],
     [
-      'language-not-supported', 'language-not-supported', 'none',
-      Error.LANGUAGE_NOT_SUPPORTED
+      'language-not-supported',
+      'language-not-supported',
+      'none',
+      Error.LANGUAGE_NOT_SUPPORTED,
     ],
     ['aborted', 'other', 'none', Error.ABORTED],
     ['bad-grammar', 'other', 'none', Error.BAD_GRAMMAR],

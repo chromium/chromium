@@ -20,7 +20,7 @@ suite('SitePermissions', function() {
 
   const userSiteSettings: chrome.developerPrivate.UserSiteSettings = {
     permittedSites: ['http://google.com', 'http://example.com'],
-    restrictedSites: []
+    restrictedSites: [],
   };
 
   setup(function() {

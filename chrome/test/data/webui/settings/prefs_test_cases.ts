@@ -72,9 +72,9 @@ export const prefsTestCases: TestCase[] = [
           javascript: ['chromium.org', 'example.com'],
           cookies: ['example.net'],
           mic: ['example.com'],
-          flash: []
+          flash: [],
         },
-        {some: 4, other: 8, dictionary: 16}
+        {some: 4, other: 8, dictionary: 16},
       ],
     },
     nextValues: [
@@ -82,18 +82,18 @@ export const prefsTestCases: TestCase[] = [
         {
           javascript: ['example.com', 'example.net'],
           cookies: ['example.net', 'example.com'],
-          mic: ['example.com']
+          mic: ['example.com'],
         },
-        {some: 4, other: 8, dictionary: 16}
+        {some: 4, other: 8, dictionary: 16},
       ],
       [
         {
           javascript: ['chromium.org', 'example.com'],
           cookies: ['chromium.org', 'example.net', 'example.com'],
           flash: ['localhost'],
-          mic: ['example.com']
+          mic: ['example.com'],
         },
-        {some: 2.2, dictionary: 4.4}
+        {some: 2.2, dictionary: 4.4},
       ],
     ],
   },
@@ -140,7 +140,7 @@ export const prefsTestCases: TestCase[] = [
           'last_used': 1442489000.1000,
           'setting': 2,
         },
-      }
+      },
     ],
-  }
+  },
 ];

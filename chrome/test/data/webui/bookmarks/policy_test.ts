@@ -41,7 +41,7 @@ suite('Bookmarks policies', function() {
     // load the config.
     await Promise.all([
       testBrowserProxy.whenCalled('getIncognitoAvailability'),
-      store.waitForAction('set-incognito-availability')
+      store.waitForAction('set-incognito-availability'),
     ]);
 
     assertEquals(
@@ -61,7 +61,7 @@ suite('Bookmarks policies', function() {
     const commandManager = BookmarksCommandManagerElement.getInstance();
     await Promise.all([
       testBrowserProxy.whenCalled('getCanEditBookmarks'),
-      store.waitForAction('set-can-edit')
+      store.waitForAction('set-can-edit'),
     ]);
     assertFalse(store.data.prefs.canEdit);
     assertFalse(commandManager.canExecute(Command.DELETE, new Set(['11'])));

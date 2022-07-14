@@ -15,7 +15,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   private syncStatus_: SyncStatus|null = {
     signedIn: true,
     signedInUsername: 'fakeUsername',
-    statusAction: StatusAction.NO_ACTION
+    statusAction: StatusAction.NO_ACTION,
   };
 
   // Settable fake data.

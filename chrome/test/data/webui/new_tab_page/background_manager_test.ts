@@ -117,7 +117,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
         messageType: 'loaded',
         url: wrapImageUrl('https://example.com'),
         time: 123,
-      }
+      },
     }));
 
     // Assert.
@@ -141,7 +141,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
         messageType: 'loaded',
         url: wrapImageUrl('https://example.com'),
         time: 123,
-      }
+      },
     }));
 
     // Assert.

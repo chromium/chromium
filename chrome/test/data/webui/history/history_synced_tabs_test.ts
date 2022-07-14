@@ -82,7 +82,7 @@ suite('<history-synced-device-manager>', function() {
           'Nexus 6',
           [
             createWindow(['http://test.com']),
-            createWindow(['http://www.gmail.com', 'http://badssl.com'])
+            createWindow(['http://www.gmail.com', 'http://badssl.com']),
           ]),
     ];
     setForeignSessions(sessionList);
@@ -112,7 +112,7 @@ suite('<history-synced-device-manager>', function() {
         .then(function() {
           const session1updated = createSession('Chromebook', [
             createWindow(['http://www.example.com', 'http://crbug.com/new']),
-            createWindow(['http://web.site'])
+            createWindow(['http://web.site']),
           ]);
           session1updated.timestamp = 1234;
 
@@ -147,7 +147,7 @@ suite('<history-synced-device-manager>', function() {
           [
             createWindow(['http://www.gmail.com', 'http://badssl.com']),
             createWindow(['http://test.com']),
-            createWindow(['http://www.gmail.com', 'http://bagssl.com'])
+            createWindow(['http://www.gmail.com', 'http://bagssl.com']),
           ]),
     ];
     setForeignSessions(sessionList);

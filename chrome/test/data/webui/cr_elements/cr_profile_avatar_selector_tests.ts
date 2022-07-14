@@ -41,7 +41,7 @@ suite('cr-profile-avatar-selector', function() {
         index: 3,
         selected: false,
         isGaiaAvatar: false,
-      }
+      },
     ];
     return avatarSelector;
   }

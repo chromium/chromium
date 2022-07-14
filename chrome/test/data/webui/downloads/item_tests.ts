@@ -37,7 +37,7 @@ suite('item tests', function() {
                fileExternallyRemoved: false,
                hideDate: true,
                state: States.DANGEROUS,
-               url: 'http://evil.com'
+               url: 'http://evil.com',
              }));
     flush();
 

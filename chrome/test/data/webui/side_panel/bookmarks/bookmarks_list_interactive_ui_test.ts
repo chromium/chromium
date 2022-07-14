@@ -43,7 +43,7 @@ suite('SidePanelBookmarksListInteractiveUITest', () => {
               url: 'http://nested/bookmark/',
             },
           ],
-        }
+        },
       ],
     },
     {

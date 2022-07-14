@@ -18,11 +18,10 @@ suite('AccessCodeCastAppTest', () => {
   let app: AccessCodeCastElement;
 
   setup(async () => {
-
     const mockProxy = createTestProxy(
-      AddSinkResultCode.OK,
-      RouteRequestResultCode.OK,
-      () => {}
+        AddSinkResultCode.OK,
+        RouteRequestResultCode.OK,
+        () => {},
     );
     BrowserProxy.setInstance(mockProxy);
 
@@ -58,9 +57,9 @@ suite('AccessCodeCastAppTest', () => {
 
   test('addSinkAndCast sends correct accessCode to the handler', () => {
     const testProxy = createTestProxy(
-      AddSinkResultCode.OK,
-      RouteRequestResultCode.OK,
-      () => {}
+        AddSinkResultCode.OK,
+        RouteRequestResultCode.OK,
+        () => {},
     );
     BrowserProxy.setInstance(testProxy);
 
@@ -69,18 +68,18 @@ suite('AccessCodeCastAppTest', () => {
 
     app.addSinkAndCast();
     testProxy.handler.whenCalled('addSink').then(
-      ({accessCode, discoveryMethod}) => {
-        assertEquals(accessCode, 'qwerty');
-        assertEquals(discoveryMethod, CastDiscoveryMethod.INPUT_ACCESS_CODE);
-      }
+        ({accessCode, discoveryMethod}) => {
+          assertEquals(accessCode, 'qwerty');
+          assertEquals(discoveryMethod, CastDiscoveryMethod.INPUT_ACCESS_CODE);
+        },
     );
   });
 
   test('addSinkAndCast sends correct discoveryMethod to the handler', () => {
     const testProxy = createTestProxy(
-      AddSinkResultCode.OK,
-      RouteRequestResultCode.OK,
-      () => {}
+        AddSinkResultCode.OK,
+        RouteRequestResultCode.OK,
+        () => {},
     );
     BrowserProxy.setInstance(testProxy);
 
@@ -89,10 +88,10 @@ suite('AccessCodeCastAppTest', () => {
 
     app.addSinkAndCast();
     testProxy.handler.whenCalled('addSink').then(
-      ({accessCode, discoveryMethod}) => {
-        assertEquals(accessCode, '123456');
-        assertEquals(discoveryMethod, CastDiscoveryMethod.QR_CODE);
-      }
+        ({accessCode, discoveryMethod}) => {
+          assertEquals(accessCode, '123456');
+          assertEquals(discoveryMethod, CastDiscoveryMethod.QR_CODE);
+        },
     );
   });
 
@@ -103,9 +102,9 @@ suite('AccessCodeCastAppTest', () => {
       visited = true;
     };
     const testProxy = createTestProxy(
-      AddSinkResultCode.OK,
-      RouteRequestResultCode.OK,
-      visitedCallback
+        AddSinkResultCode.OK,
+        RouteRequestResultCode.OK,
+        visitedCallback,
     );
     BrowserProxy.setInstance(testProxy);
 
@@ -114,24 +113,25 @@ suite('AccessCodeCastAppTest', () => {
     assertTrue(visited);
   });
 
-  test('addSinkAndCast does not call castToSink if add is not successful',
-    async () => {
-      let visited = false;
-      app.setAccessCodeForTest('qwerty');
-      const visitedCallback = () => {
-        visited = true;
-      };
-      const testProxy = createTestProxy(
-        AddSinkResultCode.UNKNOWN_ERROR,
-        RouteRequestResultCode.OK,
-        visitedCallback
-      );
-      BrowserProxy.setInstance(testProxy);
+  test(
+      'addSinkAndCast does not call castToSink if add is not successful',
+      async () => {
+        let visited = false;
+        app.setAccessCodeForTest('qwerty');
+        const visitedCallback = () => {
+          visited = true;
+        };
+        const testProxy = createTestProxy(
+            AddSinkResultCode.UNKNOWN_ERROR,
+            RouteRequestResultCode.OK,
+            visitedCallback,
+        );
+        BrowserProxy.setInstance(testProxy);
 
-      assertFalse(visited);
-      await app.addSinkAndCast();
-      assertFalse(visited);
-    }
+        assertFalse(visited);
+        await app.addSinkAndCast();
+        assertFalse(visited);
+      },
   );
 
   test(

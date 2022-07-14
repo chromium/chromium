@@ -28,7 +28,7 @@ class TestDefaultBrowserBrowserProxy extends TestBrowserProxy implements
       canBeDefault: true,
       isDefault: false,
       isDisabledByPolicy: false,
-      isUnknownError: false
+      isUnknownError: false,
     };
   }
 
@@ -77,7 +77,7 @@ suite('DefaultBrowserPageTest', function() {
       canBeDefault: true,
       isDefault: false,
       isDisabledByPolicy: false,
-      isUnknownError: false
+      isUnknownError: false,
     });
 
     return initPage().then(function() {
@@ -98,7 +98,7 @@ suite('DefaultBrowserPageTest', function() {
       canBeDefault: true,
       isDefault: true,
       isDisabledByPolicy: false,
-      isUnknownError: false
+      isUnknownError: false,
     });
 
     return initPage().then(function() {
@@ -120,7 +120,7 @@ suite('DefaultBrowserPageTest', function() {
       canBeDefault: false,
       isDefault: false,
       isDisabledByPolicy: false,
-      isUnknownError: false
+      isUnknownError: false,
     });
 
     return initPage().then(function() {
@@ -142,7 +142,7 @@ suite('DefaultBrowserPageTest', function() {
       canBeDefault: true,
       isDefault: false,
       isDisabledByPolicy: true,
-      isUnknownError: false
+      isUnknownError: false,
     });
 
     return initPage().then(function() {
@@ -165,7 +165,7 @@ suite('DefaultBrowserPageTest', function() {
       canBeDefault: true,
       isDefault: false,
       isDisabledByPolicy: false,
-      isUnknownError: true
+      isUnknownError: true,
     });
 
     return initPage().then(function() {

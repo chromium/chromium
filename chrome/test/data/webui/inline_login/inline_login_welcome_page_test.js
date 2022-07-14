@@ -151,7 +151,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
       assert(inline_login_welcome_page_test.TestNames.IsAvailableInArc), () => {
         const dialogArgs = {
           isAvailableInArc: true,
-          showArcAvailabilityPicker: false
+          showArcAvailabilityPicker: false,
         };
         testSetup(dialogArgs);
         const toggle = inlineLoginComponent.$$('welcome-page-app')
@@ -172,7 +172,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
   test(assert(inline_login_welcome_page_test.TestNames.ToggleHidden), () => {
     const dialogArgs = {
       isAvailableInArc: true,
-      showArcAvailabilityPicker: true
+      showArcAvailabilityPicker: true,
     };
     testSetup(dialogArgs);
     const toggle =
@@ -184,7 +184,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
   test(assert(inline_login_welcome_page_test.TestNames.LinkClick), async () => {
     const dialogArgs = {
       isAvailableInArc: true,
-      showArcAvailabilityPicker: false
+      showArcAvailabilityPicker: false,
     };
     testSetup(dialogArgs);
 

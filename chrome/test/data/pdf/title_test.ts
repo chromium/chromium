@@ -10,5 +10,5 @@ chrome.test.runTests([
     chrome.test.assertEq('PDF title test', document.title);
 
     chrome.test.succeed();
-  }
+  },
 ]);

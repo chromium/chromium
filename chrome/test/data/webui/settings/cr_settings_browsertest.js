@@ -406,14 +406,14 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
     return {
       enabled: [
         'features::kPrivacyGuide2',
-      ]
+      ],
     };
   }
 
   get featuresWithParameters() {
     return [{
       featureName: 'features::kFedCm',
-      parameters: [{name: 'DesktopSettings', value: true}]
+      parameters: [{name: 'DesktopSettings', value: true}],
     }];
   }
 };
@@ -473,7 +473,7 @@ var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
     return {
       enabled: [
         'features::kPrivacyGuide2',
-      ]
+      ],
     };
   }
 };
@@ -574,7 +574,7 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
     return {
       enabled: [
         'features::kConsolidatedSiteStorageControls',
-      ]
+      ],
     };
   }
 };
@@ -616,7 +616,7 @@ var CrSettingsCookiesPageConsolidatedDisabledTest =
         // TODO(crbug.com/1238757)- Remove this when consolidated storage
         // launches.
         'privacy_sandbox::kPrivacySandboxSettings3',
-      ]
+      ],
     };
   }
 };
@@ -701,7 +701,7 @@ var CrSettingsSiteDataTest = class extends CrSettingsBrowserTest {
         // TODO(crbug.com/1238757)- Remove this when consolidated storage
         // launches.
         'privacy_sandbox::kPrivacySandboxSettings3',
-      ]
+      ],
     };
   }
 };
@@ -724,7 +724,7 @@ var CrSettingsSiteDataDetailsSubpageTest = class extends CrSettingsBrowserTest {
         // TODO(crbug.com/1238757)- Remove this when consolidated storage
         // launches.
         'privacy_sandbox::kPrivacySandboxSettings3',
-      ]
+      ],
     };
   }
 };
@@ -737,7 +737,7 @@ TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
  ['AppearancePage', 'appearance_page_test.js'],
  [
    'SettingsCategoryDefaultRadioGroup',
-   'settings_category_default_radio_group_tests.js'
+   'settings_category_default_radio_group_tests.js',
  ],
  ['CategoryDefaultSetting', 'category_default_setting_tests.js'],
  ['CategorySettingExceptions', 'category_setting_exceptions_tests.js'],
@@ -796,7 +796,7 @@ GEN('#endif');
 
 // Timeout on Linux dbg bots: https://crbug.com/1311163
 GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
-[['AllSites', 'all_sites_tests.js'], ].forEach(test => registerTest(...test));
+[['AllSites', 'all_sites_tests.js']].forEach(test => registerTest(...test));
 GEN('#endif');
 
 GEN('#if BUILDFLAG(IS_CHROMEOS)');

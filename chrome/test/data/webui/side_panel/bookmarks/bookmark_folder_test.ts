@@ -98,7 +98,7 @@ suite('SidePanelBookmarkFolderTest', () => {
           title: 'Shopping list',
           children: [],
         },
-      ]
+      ],
     });
     assertEquals('1', bookmarkFolder.style.getPropertyValue('--child-count'));
 

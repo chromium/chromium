@@ -36,7 +36,7 @@ suite('settings-edit-dictionary-page', function() {
         key: 'translate_blocked_languages',
         type: chrome.settingsPrivate.PrefType.LIST,
         value: ['en-US'],
-      }
+      },
     ];
     return fakePrefs;
   }

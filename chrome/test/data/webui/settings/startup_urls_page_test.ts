@@ -249,7 +249,7 @@ suite('StartupUrlsPage', function() {
     page.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
       bubbles: true,
       composed: true,
-      detail: {model: createSampleUrlEntry(), anchor: null}
+      detail: {model: createSampleUrlEntry(), anchor: null},
     }));
     flush();
     assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
@@ -274,7 +274,7 @@ suite('StartupUrlsPage', function() {
     page.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
       bubbles: true,
       composed: true,
-      detail: {model: entry2, anchor: null}
+      detail: {model: entry2, anchor: null},
     }));
     flush();
 

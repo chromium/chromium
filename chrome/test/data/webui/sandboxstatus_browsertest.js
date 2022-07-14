@@ -139,7 +139,7 @@ SandboxStatusWindowsUITest.prototype = {
    * Browse to the options page & call our preLoad().
    */
   browsePreload: 'chrome://sandbox',
-  isAsync: true
+  isAsync: true,
 };
 
 // This test is for Windows only.

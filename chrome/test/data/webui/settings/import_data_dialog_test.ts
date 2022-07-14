@@ -51,7 +51,7 @@ suite('ImportDataDialog', function() {
       name: 'Mozilla Firefox',
       passwords: true,
       profileName: '',
-      search: true
+      search: true,
     },
     {
       autofillFormData: true,
@@ -61,7 +61,7 @@ suite('ImportDataDialog', function() {
       name: 'Mozilla Firefox',
       passwords: true,
       profileName: 'My profile',
-      search: true
+      search: true,
     },
     {
       autofillFormData: false,
@@ -71,7 +71,7 @@ suite('ImportDataDialog', function() {
       name: 'Bookmarks HTML File',
       passwords: false,
       profileName: '',
-      search: false
+      search: false,
     },
   ];
 

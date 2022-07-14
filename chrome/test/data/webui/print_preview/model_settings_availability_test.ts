@@ -149,8 +149,9 @@ suite('ModelSettingsAvailabilityTest', function() {
      {
        colorCap: {
          option: [
-           {type: 'STANDARD_COLOR', is_default: true}, {type: 'CUSTOM_COLOR'}
-         ]
+           {type: 'STANDARD_COLOR', is_default: true},
+           {type: 'CUSTOM_COLOR'},
+         ],
        },
        expectedValue: true,
      },
@@ -158,8 +159,8 @@ suite('ModelSettingsAvailabilityTest', function() {
        colorCap: {
          option: [
            {type: 'STANDARD_MONOCHROME', is_default: true},
-           {type: 'CUSTOM_MONOCHROME'}
-         ]
+           {type: 'CUSTOM_MONOCHROME'},
+         ],
        },
        expectedValue: false,
      },
@@ -190,8 +191,8 @@ suite('ModelSettingsAvailabilityTest', function() {
       colorCap: {
         option: [
           {type: 'STANDARD_MONOCHROME', is_default: true},
-          {type: 'STANDARD_COLOR'}
-        ]
+          {type: 'STANDARD_COLOR'},
+        ],
       },
       expectedValue: false,
     },
@@ -199,8 +200,8 @@ suite('ModelSettingsAvailabilityTest', function() {
        colorCap: {
          option: [
            {type: 'STANDARD_MONOCHROME'},
-           {type: 'STANDARD_COLOR', is_default: true}
-         ]
+           {type: 'STANDARD_COLOR', is_default: true},
+         ],
        },
        expectedValue: true,
      },
@@ -208,8 +209,8 @@ suite('ModelSettingsAvailabilityTest', function() {
        colorCap: {
          option: [
            {type: 'CUSTOM_MONOCHROME', vendor_id: '42'},
-           {type: 'CUSTOM_COLOR', is_default: true, vendor_id: '43'}
-         ]
+           {type: 'CUSTOM_COLOR', is_default: true, vendor_id: '43'},
+         ],
        },
        expectedValue: true,
      }].forEach(capabilityAndValue => {
@@ -446,15 +447,15 @@ suite('ModelSettingsAvailabilityTest', function() {
           'name': 'SmallLabel',
           'width_microns': 38100,
           'height_microns': 12700,
-          'is_default': false
+          'is_default': false,
         },
         {
           'name': 'BigLabel',
           'width_microns': 50800,
           'height_microns': 76200,
-          'is_default': true
-        }
-      ]
+          'is_default': true,
+        },
+      ],
     };
     model.set('destination.capabilities', capabilities);
     model.set('settings.margins.value', MarginsType.DEFAULT);
@@ -515,7 +516,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     capabilities = getCddTemplate(model.destination.id).capabilities!;
     delete capabilities.printer!.duplex;
     capabilities.printer.duplex = {
-      option: [{type: DuplexType.NO_DUPLEX, is_default: true}]
+      option: [{type: DuplexType.NO_DUPLEX, is_default: true}],
     };
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.duplex.available);
@@ -527,8 +528,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     capabilities.printer.duplex = {
       option: [
         {type: DuplexType.NO_DUPLEX},
-        {type: DuplexType.LONG_EDGE, is_default: true}
-      ]
+        {type: DuplexType.LONG_EDGE, is_default: true},
+      ],
     };
     model.set('destination.capabilities', capabilities);
     assertTrue(model.settings.duplex.available);

@@ -89,7 +89,7 @@ suite('Metrics', function() {
     historyEntry.starred = true;
     await finishSetup([
       createHistoryEntry(weekAgo.getTime(), 'http://www.example.com'),
-      historyEntry
+      historyEntry,
     ]);
     await flushTasks();
 
@@ -169,7 +169,7 @@ suite('Metrics', function() {
           'Nexus 6',
           [
             createWindow(['http://test.com']),
-            createWindow(['http://www.gmail.com', 'http://badssl.com'])
+            createWindow(['http://www.gmail.com', 'http://badssl.com']),
           ]),
     ];
     testService.setForeignSessions(sessionList);

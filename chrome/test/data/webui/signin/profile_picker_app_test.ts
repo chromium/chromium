@@ -174,7 +174,7 @@ suite('ProfilePickerAppTest', function() {
       themeFrameColor: 'rgb(203, 233, 191)',
       themeFrameTextColor: 'rgb(32, 33, 36)',
       themeGenericAvatar: 'AvatarUrl-7',
-      themeShapeColor: 'rgb(255, 255, 255)'
+      themeShapeColor: 'rgb(255, 255, 255)',
     });
     // Select different color.
     colorPicker!.selectedTheme = {

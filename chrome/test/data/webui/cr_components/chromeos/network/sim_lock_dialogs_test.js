@@ -50,14 +50,14 @@ suite('NetworkSimLockDialogsTest', function() {
 
   test('Show Enter pin dialog', async function() {
     const deviceState = {
-      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
     };
     verifyDialogShown('enterPinDialog', deviceState);
   });
 
   test('Show Change PIN dialog', async function() {
     const deviceState = {
-      simLockStatus: {lockEnabled: true, lockType: '', retriesLeft: 3}
+      simLockStatus: {lockEnabled: true, lockType: '', retriesLeft: 3},
     };
     simLockDialog.showChangePin = true;
     verifyDialogShown('changePinDialog', deviceState);
@@ -65,7 +65,7 @@ suite('NetworkSimLockDialogsTest', function() {
 
   test('Show Unlock PIN dialog', async function() {
     const deviceState = {
-      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3}
+      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3},
     };
     verifyDialogShown('unlockPinDialog', deviceState);
     assertFalse(!!simLockDialog.$$(`#adminSubtitle`));
@@ -78,7 +78,7 @@ suite('NetworkSimLockDialogsTest', function() {
 
   test('Show Unlock PUK dialog', async function() {
     const deviceState = {
-      simLockStatus: {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 3}
+      simLockStatus: {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 3},
     };
     verifyDialogShown('unlockPukDialog', deviceState);
 
@@ -96,7 +96,7 @@ suite('NetworkSimLockDialogsTest', function() {
   test('Show invalid unlock PIN error message properly', async function() {
     // Set sim to PIN locked state with multiple retries left.
     simLockDialog.deviceState = {
-      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3}
+      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3},
     };
     await flushAsync();
     unlockPinDialog = simLockDialog.$$('#unlockPinDialog');
@@ -113,7 +113,7 @@ suite('NetworkSimLockDialogsTest', function() {
 
     // Set SIM to PIN locked state with single retry left.
     simLockDialog.deviceState = {
-      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 1}
+      simLockStatus: {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 1},
     };
     await flushAsync();
     unlockPinDialog.querySelector('#unlockPin').value = 'invalid_pin2';
@@ -129,7 +129,7 @@ suite('NetworkSimLockDialogsTest', function() {
       async function() {
         simLockDialog.deviceState = {
           simLockStatus:
-              {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3}
+              {lockEnabled: true, lockType: 'sim-pin', retriesLeft: 3},
         };
         await flushAsync();
         unlockPinDialog = simLockDialog.$$('#unlockPinDialog');
@@ -138,7 +138,7 @@ suite('NetworkSimLockDialogsTest', function() {
 
         simLockDialog.deviceState = {
           simLockStatus:
-              {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 3}
+              {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 3},
         };
         await flushAsync();
         const unlockPukDialog = simLockDialog.$$('#unlockPukDialog');
@@ -152,7 +152,7 @@ suite('NetworkSimLockDialogsTest', function() {
       'Show unlock PUK dialog when lockEnabled changes to true from false',
       async function() {
         simLockDialog.deviceState = {
-          simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+          simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
         };
         await flushAsync();
         const enterPinDialog = simLockDialog.$$('#enterPinDialog');
@@ -163,7 +163,7 @@ suite('NetworkSimLockDialogsTest', function() {
         // enter pin dialog errored out.
         simLockDialog.deviceState = {
           simLockStatus:
-              {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 0}
+              {lockEnabled: true, lockType: 'sim-puk', retriesLeft: 0},
         };
 
         const unlockPukDialog = simLockDialog.$$('#unlockPukDialog');
@@ -179,7 +179,7 @@ suite('NetworkSimLockDialogsTest', function() {
       type: mojom.NetworkType.kCellular,
       deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
       simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
-      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
     };
     networkConfigRemote_.setDeviceStateForTest(deviceState);
     simLockDialog.deviceState = deviceState;
@@ -219,7 +219,7 @@ suite('NetworkSimLockDialogsTest', function() {
       type: mojom.NetworkType.kCellular,
       deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
       simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
-      simLockStatus: {lockEnabled: true, lockType: '', retriesLeft: 2}
+      simLockStatus: {lockEnabled: true, lockType: '', retriesLeft: 2},
     };
     networkConfigRemote_.setDeviceStateForTest(deviceState);
     simLockDialog.showChangePin = true;
@@ -251,7 +251,7 @@ suite('NetworkSimLockDialogsTest', function() {
       type: mojom.NetworkType.kCellular,
       deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
       simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
-      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
     };
     networkConfigRemote_.setDeviceStateForTest(deviceState);
     simLockDialog.deviceState = deviceState;
@@ -277,7 +277,7 @@ suite('NetworkSimLockDialogsTest', function() {
       type: mojom.NetworkType.kCellular,
       deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
       simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
-      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
     };
 
     await flushAsync();
@@ -297,7 +297,7 @@ suite('NetworkSimLockDialogsTest', function() {
       type: mojom.NetworkType.kCellular,
       deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
       simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
-      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3},
     };
     networkConfigRemote_.setDeviceStateForTest(deviceState);
     simLockDialog.deviceState = deviceState;

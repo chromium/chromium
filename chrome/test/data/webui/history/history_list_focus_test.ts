@@ -21,7 +21,7 @@ suite('<history-list>', function() {
     createHistoryEntry('2016-03-15', 'https://www.google.com'),
     createHistoryEntry('2016-03-14 10:00', 'https://www.example.com'),
     createHistoryEntry('2016-03-14 9:00', 'https://www.google.com'),
-    createHistoryEntry('2016-03-13', 'https://en.wikipedia.org')
+    createHistoryEntry('2016-03-13', 'https://en.wikipedia.org'),
   ];
   TEST_HISTORY_RESULTS[2]!.starred = true;
 

@@ -149,5 +149,5 @@ chrome.test.runTests([
         {uri: 'http://www.chromium.org', newtab: false});
 
     chrome.test.succeed();
-  }
+  },
 ]);

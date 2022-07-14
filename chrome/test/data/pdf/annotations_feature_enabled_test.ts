@@ -72,7 +72,7 @@ chrome.test.runTests([
         right: 718.5,
         dark_light_right: 717.75,
         bottom: -412.5,
-        dark_light_bottom: -411.75
+        dark_light_bottom: -411.75,
       },
       {
         top: 2.25,
@@ -82,7 +82,7 @@ chrome.test.runTests([
         right: 408.75,
         dark_light_right: 408,
         bottom: -205.125,
-        dark_light_bottom: -204.75
+        dark_light_bottom: -204.75,
       },
       {
         top: -35.25,
@@ -92,7 +92,7 @@ chrome.test.runTests([
         right: 446.25,
         dark_light_right: 445.5,
         bottom: -242.625,
-        dark_light_bottom: -242.25
+        dark_light_bottom: -242.25,
       },
     ];
 
@@ -368,7 +368,7 @@ chrome.test.runTests([
         timeStamp: pointerEvent.timeStamp,
         preventDefault() {
           touchPrevented = true;
-        }
+        },
       } as unknown as TouchEvent);
 
       return touchPrevented;

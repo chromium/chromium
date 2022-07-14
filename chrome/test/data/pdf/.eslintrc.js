@@ -5,6 +5,7 @@
 module.exports = {
   'env': {'browser': true, 'es6': true},
   'rules': {
+    'comma-dangle' : ['error', 'always-multiline'],
     'no-restricted-properties': 'off',
     'eqeqeq': ['error', 'always', {'null': 'ignore'}],
   },
@@ -24,6 +25,6 @@ module.exports = {
           format: null,
         },
       ],
-    }
-  }]
+    },
+  }],
 };

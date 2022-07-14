@@ -97,8 +97,10 @@ TEST_F('MediaHistoryOriginsWebUIBrowserTest', 'MAYBE_All', async function() {
 
     assertDeepEquals(
         [
-          'Origin', 'Last Updated', 'Audio + Video Watchtime (secs, cached)',
-          'Audio + Video Watchtime (secs, actual)'
+          'Origin',
+          'Last Updated',
+          'Audio + Video Watchtime (secs, cached)',
+          'Audio + Video Watchtime (secs, actual)',
         ],
         dataHeaderRows.map(x => x.textContent.trim()));
   });
@@ -162,8 +164,15 @@ TEST_F('MediaHistorySessionsWebUIBrowserTest', 'MAYBE_All', async function() {
 
     assertDeepEquals(
         [
-          'URL', 'Last Updated', 'Position (secs)', 'Duration (secs)', 'Title',
-          'Artist', 'Album', 'Source Title', 'Artwork'
+          'URL',
+          'Last Updated',
+          'Position (secs)',
+          'Duration (secs)',
+          'Title',
+          'Artist',
+          'Album',
+          'Source Title',
+          'Artwork',
         ],
         dataHeaderRows.map(x => x.textContent.trim()));
   });

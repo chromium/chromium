@@ -32,7 +32,7 @@ suite('AppManagementFileHandlingItemTest', function() {
       close: 'Close',
       appManagementFileHandlingHeader: 'Enable File Handling',
       fileHandlingOverflowDialogTitle: 'Overflow dialog',
-      fileHandlingSetDefaults: 'Learn more <a href="#">here</a>'
+      fileHandlingSetDefaults: 'Learn more <a href="#">here</a>',
     });
 
     fileHandlingItem =

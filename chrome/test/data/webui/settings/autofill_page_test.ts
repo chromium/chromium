@@ -80,7 +80,7 @@ suite('PasswordsAndForms', function() {
                            key: 'payments.can_make_payment_enabled',
                            type: chrome.settingsPrivate.PrefType.BOOLEAN,
                            value: true,
-                         }
+                         },
                        ]) as unknown as typeof chrome.settingsPrivate);
 
       CrSettingsPrefs.initialized.then(function() {
@@ -194,7 +194,7 @@ suite('PasswordsAndForms', function() {
 
       const list = [
         createPasswordEntry({url: 'one.com', username: 'user1', id: 0}),
-        createPasswordEntry({url: 'two.com', username: 'user1', id: 1})
+        createPasswordEntry({url: 'two.com', username: 'user1', id: 1}),
       ];
 
       passwordManager.lastCallback.addSavedPasswordListChangedListener!(list);
@@ -222,7 +222,7 @@ suite('PasswordsAndForms', function() {
 
       const list = [
         createExceptionEntry({url: 'one.com', id: 0}),
-        createExceptionEntry({url: 'two.com', id: 1})
+        createExceptionEntry({url: 'two.com', id: 1}),
       ];
       passwordManager.lastCallback.addExceptionListChangedListener!(list);
       flush();

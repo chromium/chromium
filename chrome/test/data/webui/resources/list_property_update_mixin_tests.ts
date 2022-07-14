@@ -269,8 +269,9 @@ suite('ListPropertyUpdateMixin', function() {
         testElement.resetComplexArray();
         const newArray = [
           {letter: 'w', words: ['water', 'woods']},
-          {letter: 'x', words: ['xylophone']}, {letter: 'y', words: ['yo-yo']},
-          {letter: 'z', words: ['zebra', 'zephyr']}
+          {letter: 'x', words: ['xylophone']},
+          {letter: 'y', words: ['yo-yo']},
+          {letter: 'z', words: ['zebra', 'zephyr']},
         ];
         result = testElement.updateComplexArray(newArray);
 
@@ -362,8 +363,9 @@ suite('ListPropertyUpdateMixin', function() {
     testElement.resetComplexArray();
     const newArray = [
       {letter: 'w', words: ['water', 'woods']},
-      {letter: 'x', words: ['xylophone']}, {letter: 'y', words: ['yo-yo']},
-      {letter: 'z', words: ['zebra', 'zephyr']}
+      {letter: 'x', words: ['xylophone']},
+      {letter: 'y', words: ['yo-yo']},
+      {letter: 'z', words: ['zebra', 'zephyr']},
     ];
     testElement.updateList('complexArray', obj => obj, newArray, true);
     assertComplexArrayEquals(testElement.complexArray, newArray);

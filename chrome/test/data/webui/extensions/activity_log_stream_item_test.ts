@@ -32,7 +32,7 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
       pageUrl: '',
       argUrl: '',
       args: JSON.stringify([]),
-      expanded: false
+      expanded: false,
     };
 
     activityLogStreamItem = document.createElement('activity-log-stream-item');
@@ -66,7 +66,7 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
           argUrl: '',
           args: JSON.stringify([null]),
           webRequestInfo: 'web request info',
-          expanded: false
+          expanded: false,
         };
 
         activityLogStreamItem.set('data', testStreamItem);
@@ -100,7 +100,7 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
         ["${placeholder}"],
         {"url":"${escapedPlaceholder}"}
       ]`,
-      expanded: false
+      expanded: false,
     };
 
     activityLogStreamItem.set('data', testStreamItem);

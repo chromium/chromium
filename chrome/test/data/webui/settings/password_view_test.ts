@@ -148,7 +148,7 @@ suite('PasswordViewTest', function() {
                     url: SITE,
                     username: USERNAME2,
                     id: 4,
-                    inAccountStore: true
+                    inAccountStore: true,
                   }),
                 ];
 
@@ -423,7 +423,7 @@ suite('PasswordViewTest', function() {
             username: USERNAME,
             id: ID,
             inAccountStore: true,
-            inProfileStore: true
+            inProfileStore: true,
           }),
         ];
         const page = document.createElement('password-view');

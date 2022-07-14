@@ -37,7 +37,7 @@ suite('SiteDataDetailsSubpage', function() {
     sendfor: 'Any kind of connection',
     title: 'abcd',
     totalUsage: '1kB',
-    type: 'cookie'
+    type: 'cookie',
   };
 
   const site: string = 'foo.com';

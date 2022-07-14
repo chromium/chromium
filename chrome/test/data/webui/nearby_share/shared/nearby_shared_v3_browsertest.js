@@ -22,7 +22,7 @@ const NearbySharedV3Test = class extends PolymerTest {
     return {
       enabled: [
         'features::kNearbySharing',
-      ]
+      ],
     };
   }
 };

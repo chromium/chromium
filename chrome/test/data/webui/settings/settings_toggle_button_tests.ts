@@ -25,7 +25,7 @@ suite('SettingsToggleButton', () => {
     const pref = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: true
+      value: true,
     };
     document.body.innerHTML = '';
     testElement = document.createElement('settings-toggle-button');
@@ -102,7 +102,7 @@ suite('SettingsToggleButton', () => {
     testElement.set('pref', {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: true
+      value: true,
     });
 
     assertTrue(testElement.pref!.value);
@@ -121,7 +121,7 @@ suite('SettingsToggleButton', () => {
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 1
+      value: 1,
     };
 
     testElement.set('pref', prefNum);
@@ -140,7 +140,7 @@ suite('SettingsToggleButton', () => {
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 5
+      value: 5,
     };
 
     testElement.numericUncheckedValue = 5;
@@ -161,7 +161,7 @@ suite('SettingsToggleButton', () => {
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 3
+      value: 3,
     };
 
     testElement.numericUncheckedValue = 5;
@@ -194,7 +194,7 @@ suite('SettingsToggleButton', () => {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: 3,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
     };
 
     testElement.set('pref', pref);
@@ -214,7 +214,7 @@ suite('SettingsToggleButton', () => {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: 3,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
     };
 
     testElement.set('pref', pref);
@@ -229,7 +229,7 @@ suite('SettingsToggleButton', () => {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
-      userControlDisabled: true
+      userControlDisabled: true,
     };
 
     assertFalse(testElement.$.control.disabled);

@@ -44,7 +44,7 @@ suite('NetworkConfigSelectTest', function() {
 
     // chromeos.networkConfig.mojom.NetworkCertificate
     configSelect.items = [
-      {deviceWide: true, hash: 'hash', issuedBy: 'me'}
+      {deviceWide: true, hash: 'hash', issuedBy: 'me'},
     ];
     flush();
 
@@ -53,7 +53,7 @@ suite('NetworkConfigSelectTest', function() {
 
     // Unset the hash; the item is disabled without a hash.
     configSelect.items = [
-      {deviceWide: true, hash: null, issuedBy: 'me'}
+      {deviceWide: true, hash: null, issuedBy: 'me'},
     ];
     flush();
     optionEnabled = !optionEl.disabled;
@@ -61,7 +61,7 @@ suite('NetworkConfigSelectTest', function() {
 
     // Unset the hash; the item is disabled without a hash.
     configSelect.items = [
-      {deviceWide: true, hash: null, issuedBy: 'me'}
+      {deviceWide: true, hash: null, issuedBy: 'me'},
     ];
     flush();
     optionEnabled = !optionEl.disabled;
@@ -71,7 +71,7 @@ suite('NetworkConfigSelectTest', function() {
     // so matches the criteria to be enabled.
     configSelect.deviceCertsOnly = true;
     configSelect.items = [
-      {deviceWide: true, hash: 'hash', issuedBy: 'me'}
+      {deviceWide: true, hash: 'hash', issuedBy: 'me'},
     ];
     flush();
     optionEnabled = !optionEl.disabled;
@@ -79,7 +79,7 @@ suite('NetworkConfigSelectTest', function() {
 
     // Change the cert to not be device-wide.
     configSelect.items = [
-      {deviceWide: false, hash: 'hash', issuedBy: 'me'}
+      {deviceWide: false, hash: 'hash', issuedBy: 'me'},
     ];
     flush();
     optionEnabled = !optionEl.disabled;

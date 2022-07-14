@@ -126,7 +126,7 @@ const tests = [
     await whenScrollAvoided;
 
     chrome.test.succeed();
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

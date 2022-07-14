@@ -325,7 +325,7 @@ suite('PasswordsSection', function() {
       createPasswordEntry(
           {url: 'anotherwebsite.com', username: 'luigi', id: 0}),
       createPasswordEntry({url: 'longwebsite.com', username: 'peach', id: 1}),
-      createPasswordEntry({url: 'website.com', username: 'mario', id: 2})
+      createPasswordEntry({url: 'website.com', username: 'mario', id: 2}),
     ];
 
     const passwordsSection = elementFactory.createPasswordsSection(
@@ -433,7 +433,7 @@ suite('PasswordsSection', function() {
     // Set-up initial list.
     let passwordList = [
       createPasswordEntry({url: 'website.com', username: 'mario', id: 0}),
-      createPasswordEntry({url: 'website.com', username: 'luigi', id: 1})
+      createPasswordEntry({url: 'website.com', username: 'luigi', id: 1}),
     ];
 
     passwordManager.lastCallback.addSavedPasswordListChangedListener!
@@ -724,7 +724,7 @@ suite('PasswordsSection', function() {
       createExceptionEntry({url: 'google.com', id: 2}),
       createExceptionEntry({url: 'inbox.google.com', id: 3}),
       createExceptionEntry({url: 'maps.google.com', id: 4}),
-      createExceptionEntry({url: 'plus.google.com', id: 5})
+      createExceptionEntry({url: 'plus.google.com', id: 5}),
     ];
     validateExceptionList(
         getDomRepeatChildren(passwordsSection.$.passwordExceptionsList),

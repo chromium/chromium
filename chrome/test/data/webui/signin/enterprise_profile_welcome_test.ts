@@ -129,7 +129,7 @@ suite('EnterpriseProfileWelcomeTest', function() {
       subtitle: 'new_subtitle',
       enterpriseInfo: 'new_enterprise_info',
       proceedLabel: 'new_proceed_label',
-      showCancelButton: false
+      showCancelButton: false,
     });
 
     checkTextValues(

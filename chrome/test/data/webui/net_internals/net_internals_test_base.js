@@ -30,7 +30,7 @@ NetInternalsTest.prototype = {
     NetInternalsTest.activeTest = this;
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     window.setTimeout(runTest, 0);
-  }
+  },
 };
 
 NetInternalsTest.activeTest = null;

@@ -14,7 +14,7 @@ class TestAccessCodeCastBrowserProxy extends TestBrowserProxy {
   constructor (addResult: AddSinkResultCode, castResult: RouteRequestResultCode, castCallback: () => void) {
     super([
       'addSink',
-      'castToSink'
+      'castToSink',
     ]);
 
     this.addResult = addResult;
@@ -41,8 +41,8 @@ export function createTestProxy(addResult:AddSinkResultCode, castResult: RouteRe
   return {
     callbackRouter,
     callbackRouterRemote: callbackRouter.$.bindNewPipeAndPassRemote(),
-    handler: new TestAccessCodeCastBrowserProxy(
-      addResult, castResult, castCallback),
+    handler:
+        new TestAccessCodeCastBrowserProxy(addResult, castResult, castCallback),
     async isQrScanningAvailable() {
       return Promise.resolve(true);
     },
@@ -58,6 +58,6 @@ export function createTestProxy(addResult:AddSinkResultCode, castResult: RouteRe
     },
     isCameraAvailable() {
       return Promise.resolve(true);
-    }
+    },
   };
 }

@@ -83,7 +83,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
     const alphaFromStore = createExtensionInfo({
       location: chrome.developerPrivate.Location.FROM_STORE,
       name: 'Alpha',
-      id: 'a'.repeat(32)
+      id: 'a'.repeat(32),
     });
     simulateExtensionInstall(alphaFromStore);
     assertEquals(1, getExtensions().length);
@@ -93,7 +93,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
     const betaUnpacked = createExtensionInfo({
       location: chrome.developerPrivate.Location.UNPACKED,
       name: 'Beta',
-      id: 'b'.repeat(32)
+      id: 'b'.repeat(32),
     });
     simulateExtensionInstall(betaUnpacked);
     assertEquals(2, getExtensions().length);
@@ -104,7 +104,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
     const gammaUnpacked = createExtensionInfo({
       location: chrome.developerPrivate.Location.UNPACKED,
       name: 'Gamma',
-      id: 'c'.repeat(32)
+      id: 'c'.repeat(32),
     });
     simulateExtensionInstall(gammaUnpacked);
     assertEquals(3, getExtensions().length);
@@ -117,19 +117,19 @@ suite(extension_manager_unit_tests.suiteName, function() {
     const aaFromStore = createExtensionInfo({
       location: chrome.developerPrivate.Location.FROM_STORE,
       name: 'AA',
-      id: 'd'.repeat(32)
+      id: 'd'.repeat(32),
     });
     simulateExtensionInstall(aaFromStore);
     const AaFromStore = createExtensionInfo({
       location: chrome.developerPrivate.Location.FROM_STORE,
       name: 'Aa',
-      id: 'e'.repeat(32)
+      id: 'e'.repeat(32),
     });
     simulateExtensionInstall(AaFromStore);
     const aAFromStore = createExtensionInfo({
       location: chrome.developerPrivate.Location.FROM_STORE,
       name: 'aA',
-      id: 'f'.repeat(32)
+      id: 'f'.repeat(32),
     });
     simulateExtensionInstall(aAFromStore);
 
@@ -232,7 +232,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
     const extension = createExtensionInfo({
       location: chrome.developerPrivate.Location.FROM_STORE,
       name: 'Alpha',
-      id: 'a'.repeat(32)
+      id: 'a'.repeat(32),
     });
     simulateExtensionInstall(extension);
     assertEquals(1, getExtensions().length);
@@ -257,7 +257,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
           name: 'Alpha',
-          id: 'a'.repeat(32)
+          id: 'a'.repeat(32),
         });
         simulateExtensionInstall(extension);
 
@@ -285,7 +285,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
           name: 'Alpha',
-          id: 'a'.repeat(32)
+          id: 'a'.repeat(32),
         });
         simulateExtensionInstall(extension);
         assertEquals(1, getExtensions().length);
@@ -322,7 +322,7 @@ suite(extension_manager_unit_tests.suiteName, function() {
         const extension = createExtensionInfo({
           location: chrome.developerPrivate.Location.FROM_STORE,
           name: 'My extension 1',
-          id: 'a'.repeat(32)
+          id: 'a'.repeat(32),
         });
         simulateExtensionInstall(extension);
         assertEquals(1, getExtensions().length);

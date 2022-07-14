@@ -47,7 +47,7 @@ suite('CrComponentsNetworkConfigElementBehaviorTest', function() {
           type: Boolean,
           value: false,
           computed: 'getDisabled_(disabled, property)',
-        }
+        },
       },
     });
   });

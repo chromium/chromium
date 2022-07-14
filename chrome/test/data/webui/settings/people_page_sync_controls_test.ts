@@ -101,7 +101,7 @@ suite('SyncControlsTest', async function() {
       disabled: false,
       hasError: false,
       signedIn: true,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     // Controls are available when signed in and there is no error.
     assertFalse(syncControls.hidden);
@@ -112,7 +112,7 @@ suite('SyncControlsTest', async function() {
       disabled: true,
       hasError: false,
       signedIn: true,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     // Controls are hidden when sync is disabled.
     assertTrue(syncControls.hidden);
@@ -123,7 +123,7 @@ suite('SyncControlsTest', async function() {
       disabled: false,
       hasError: true,
       signedIn: true,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     // Controls are hidden when there is an error but it's not a
     // passphrase error.
@@ -190,7 +190,7 @@ suite('SyncControlsSubpageTest', function() {
       disabled: false,
       hasError: true,
       signedIn: true,
-      statusAction: StatusAction.ENTER_PASSPHRASE
+      statusAction: StatusAction.ENTER_PASSPHRASE,
     };
     const router = Router.getInstance();
     assertEquals(
@@ -203,7 +203,7 @@ suite('SyncControlsSubpageTest', function() {
       disabled: false,
       hasError: true,
       signedIn: true,
-      statusAction: StatusAction.REAUTHENTICATE
+      statusAction: StatusAction.REAUTHENTICATE,
     };
     const router = Router.getInstance();
     assertEquals(

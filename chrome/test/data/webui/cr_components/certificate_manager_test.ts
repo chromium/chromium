@@ -102,7 +102,7 @@ class TestCertificatesBrowserProxy extends TestBrowserProxy implements
   forceCertificatesError() {
     this.certificatesError_ = {
       title: 'DummyError',
-      description: 'DummyDescription'
+      description: 'DummyDescription',
     };
   }
 

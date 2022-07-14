@@ -985,7 +985,7 @@ suite('MsbbFragmentMetricsTests', function() {
     return assertMsbbMetrics({
       msbbStartOn: true,
       changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_ON
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_ON,
     });
   });
 
@@ -993,7 +993,7 @@ suite('MsbbFragmentMetricsTests', function() {
     return assertMsbbMetrics({
       msbbStartOn: true,
       changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_OFF
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_OFF,
     });
   });
 
@@ -1001,7 +1001,7 @@ suite('MsbbFragmentMetricsTests', function() {
     return assertMsbbMetrics({
       msbbStartOn: false,
       changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_ON
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_ON,
     });
   });
 
@@ -1009,7 +1009,7 @@ suite('MsbbFragmentMetricsTests', function() {
     return assertMsbbMetrics({
       msbbStartOn: false,
       changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF,
     });
   });
 });
@@ -1085,7 +1085,7 @@ suite('HistorySyncFragmentMetricsTests', function() {
     return assertHistorySyncMetrics({
       historySyncStartOn: true,
       changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON,
     });
   });
 
@@ -1093,7 +1093,7 @@ suite('HistorySyncFragmentMetricsTests', function() {
     return assertHistorySyncMetrics({
       historySyncStartOn: true,
       changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF,
     });
   });
 
@@ -1101,7 +1101,7 @@ suite('HistorySyncFragmentMetricsTests', function() {
     return assertHistorySyncMetrics({
       historySyncStartOn: false,
       changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON,
     });
   });
 
@@ -1109,7 +1109,7 @@ suite('HistorySyncFragmentMetricsTests', function() {
     return assertHistorySyncMetrics({
       historySyncStartOn: false,
       changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF,
     });
   });
 });

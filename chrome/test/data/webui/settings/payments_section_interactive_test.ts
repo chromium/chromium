@@ -236,8 +236,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     nicknameInput.focus();
 
     const validInputs = [
-      '', ' ', '~@#$%^&**(){}|<>', 'Grocery Card', 'Two percent Cashback',
-      /* UTF-16 hex encoded credit card emoji */ 'Chase Freedom \uD83D\uDCB3'
+      '',
+      ' ',
+      '~@#$%^&**(){}|<>',
+      'Grocery Card',
+      'Two percent Cashback',
+      /* UTF-16 hex encoded credit card emoji */ 'Chase Freedom \uD83D\uDCB3',
     ];
     for (const nickname of validInputs) {
       typeInNickname(nicknameInput, nickname);
@@ -249,8 +253,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Verify invalid nickname inputs.
     const invalidInputs = [
-      '12345', '2abc', 'abc3', 'abc4de', 'a 1 b',
-      /* UTF-16 hex encoded digt 7 emoji */ 'Digit emoji: \u0037\uFE0F\u20E3'
+      '12345',
+      '2abc',
+      'abc3',
+      'abc4de',
+      'a 1 b',
+      /* UTF-16 hex encoded digt 7 emoji */ 'Digit emoji: \u0037\uFE0F\u20E3',
     ];
     for (const nickname of invalidInputs) {
       typeInNickname(nicknameInput, nickname);

@@ -20,7 +20,9 @@ suite('NetworkProxyExclusionsTest', function() {
 
   test('Clear fires proxy-exclusions-change event', function(done) {
     proxyExclusions.exclusions = [
-      'one', 'two', 'three'
+      'one',
+      'two',
+      'three',
     ];
     flush();
 

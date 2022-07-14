@@ -35,7 +35,7 @@ suite('CrComponentsBluetoothDeviceBatteryInfoTest', function() {
    */
   async function setDefaultBatteryPercentage(batteryPercentage) {
     bluetoothDeviceBatteryInfo.device.batteryInfo = {
-      defaultProperties: {batteryPercentage: batteryPercentage}
+      defaultProperties: {batteryPercentage: batteryPercentage},
     };
     bluetoothDeviceBatteryInfo.device =
         /**

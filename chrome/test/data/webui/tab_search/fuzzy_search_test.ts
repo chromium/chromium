@@ -66,7 +66,9 @@ suite('FuzzySearchTest', () => {
         highlightRanges: {
           'tab.title': [{start: 2, length: 1}, {start: 4, length: 2}],
           hostname: [
-            {start: 6, length: 1}, {start: 8, length: 2}, {start: 13, length: 1}
+            {start: 6, length: 1},
+            {start: 8, length: 2},
+            {start: 13, length: 1},
           ],
         },
       },
@@ -142,7 +144,9 @@ suite('FuzzySearchTest', () => {
         highlightRanges: {
           'tab.title': [{start: 2, length: 1}, {start: 4, length: 2}],
           hostname: [
-            {start: 6, length: 1}, {start: 8, length: 2}, {start: 13, length: 1}
+            {start: 6, length: 1},
+            {start: 8, length: 2},
+            {start: 13, length: 1},
           ],
         },
       },
@@ -193,7 +197,7 @@ suite('FuzzySearchTest', () => {
               name: 'tab.title',
               weight: 1,
             },
-          ]
+          ],
         };
         assertSearchOrders('sear', records, options, [2, 1, 0]);
       });
@@ -272,7 +276,7 @@ suite('FuzzySearchTest', () => {
         hostname: 'searchengineland.com',
         highlightRanges: {
           'tab.title': [{start: 2, length: 4}, {start: 23, length: 4}],
-          hostname: [{start: 2, length: 4}]
+          hostname: [{start: 2, length: 4}],
         },
       },
       {
@@ -440,8 +444,8 @@ suite('FuzzySearchTest', () => {
         {
           name: 'hostname',
           weight: 1,
-        }
-      ]
+        },
+      ],
     };
 
     assertSearchOrders(

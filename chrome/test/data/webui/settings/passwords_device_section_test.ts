@@ -84,7 +84,7 @@ suite('PasswordsDeviceSection', function() {
     simulateStoredAccounts(syncBrowserProxy.storedAccounts);
     syncBrowserProxy.testSyncStatus = {
       signedIn: false,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     simulateSyncStatus(syncBrowserProxy.testSyncStatus);
     passwordManager.setIsOptedInForAccountStorageAndNotify(true);
@@ -400,13 +400,13 @@ suite('PasswordsDeviceSection', function() {
           url: 'www.test.com',
           username: 'username',
           id: 0,
-          inProfileStore: true
+          inProfileStore: true,
         });
         const accountPassword = createPasswordEntry({
           url: 'www.test.com',
           username: 'username',
           id: 1,
-          inAccountStore: true
+          inAccountStore: true,
         });
 
         const passwordsDeviceSection = await createPasswordsDeviceSection(

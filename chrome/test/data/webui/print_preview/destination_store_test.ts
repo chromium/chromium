@@ -41,7 +41,7 @@ const destination_store_test = {
     LoadSaveToDriveCros: 'load Save to Drive Cros',
     DriveNotMounted: 'drive not mounted',
     // </if>
-  }
+  },
 };
 
 Object.assign(window, {destination_store_test: destination_store_test});
@@ -110,7 +110,8 @@ suite(destination_store_test.suiteName, function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr,
         recentDestinations);
     return expectPrinterFailure ? Promise.resolve() : Promise.race([
-      nativeLayer.whenCalled('getPrinterCapabilities'), whenCapabilitiesReady
+      nativeLayer.whenCalled('getPrinterCapabilities'),
+      whenCapabilitiesReady,
     ]);
   }
 
@@ -393,7 +394,7 @@ suite(destination_store_test.suiteName, function() {
                   destinationStore.selectedDestination!.id);
               const localDestinationInfo = {
                 deviceName: id1,
-                printerName: name1
+                printerName: name1,
               };
               // Typecast localDestinationInfo to work around the fact that
               // policy types are only defined on Chrome OS.

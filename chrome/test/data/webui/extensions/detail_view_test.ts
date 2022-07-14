@@ -228,7 +228,7 @@ suite(extension_detail_view_tests.suiteName, function() {
       runtimeHostPermissions: {
         hosts: [
           {granted: true, host: 'https://chromium.org/*'},
-          {granted: false, host: 'https://example.com/*'}
+          {granted: false, host: 'https://example.com/*'},
         ],
         hasAllHosts: false,
         hostAccess: chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES,
@@ -531,17 +531,17 @@ suite(extension_detail_view_tests.suiteName, function() {
         item.set('data.views', [
           {
             type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
-            url: getUrl('_generated_background_page.html')
+            url: getUrl('_generated_background_page.html'),
           },
           {
             type: chrome.developerPrivate.ViewType
                       .EXTENSION_SERVICE_WORKER_BACKGROUND,
-            url: getUrl('sw.js')
+            url: getUrl('sw.js'),
           },
           {
             type: chrome.developerPrivate.ViewType.EXTENSION_POPUP,
-            url: getUrl('popup.html')
-          }
+            url: getUrl('popup.html'),
+          },
         ]);
         item.set('inDevMode', true);
         flush();

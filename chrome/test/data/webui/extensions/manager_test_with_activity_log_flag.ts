@@ -54,7 +54,7 @@ suite(extension_manager_tests.suiteName, function() {
         // Try to open activity log with a valid ID.
         navigation.navigateTo({
           page: Page.ACTIVITY_LOG,
-          extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf'
+          extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf',
         });
         flush();
 

@@ -129,7 +129,7 @@ suite(inline_login_test.suiteName, () => {
         loadTimeData.getBoolean('isArcAccountRestrictionsEnabled')) {
       const expectedCredentials = {
         email: 'example@gmail.com',
-        isAvailableInArc: false
+        isAvailableInArc: false,
       };
       assertDeepEquals(expectedCredentials, completeLoginResult);
     } else {

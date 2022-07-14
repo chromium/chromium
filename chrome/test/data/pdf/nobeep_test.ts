@@ -12,5 +12,5 @@ chrome.test.runTests([
     const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
     chrome.test.assertEq(0, viewer.beepCount);
     chrome.test.succeed();
-  }
+  },
 ]);

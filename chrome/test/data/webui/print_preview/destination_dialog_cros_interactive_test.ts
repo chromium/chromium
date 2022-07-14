@@ -23,7 +23,7 @@ const destination_dialog_cros_interactive_test = {
 
 Object.assign(window, {
   destination_dialog_cros_interactive_test:
-      destination_dialog_cros_interactive_test
+      destination_dialog_cros_interactive_test,
 });
 
 suite(destination_dialog_cros_interactive_test.suiteName, function() {

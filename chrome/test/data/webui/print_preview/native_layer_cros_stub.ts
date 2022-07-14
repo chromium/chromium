@@ -106,7 +106,7 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
         printerId: printerId,
         statusReasons: [{
           reason: PrinterStatusReason.NO_ERROR,
-          severity: PrinterStatusSeverity.REPORT
+          severity: PrinterStatusSeverity.REPORT,
         }],
         timestamp: Date.now(),
       });

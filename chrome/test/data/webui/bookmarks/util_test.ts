@@ -80,12 +80,12 @@ suite('util', function() {
               [
                 createItem('41', {
                   unmodifiable:
-                      chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED
+                      chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED,
                 }),
               ],
               {
                 unmodifiable:
-                    chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED
+                    chrome.bookmarks.BookmarkTreeNodeUnmodifiable.MANAGED,
               })),
     });
 

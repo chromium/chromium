@@ -50,7 +50,7 @@ suite('SyncSettingsTests', function() {
       profile: {password_manager_leak_detection: {value: true}},
       signin: {
         allowed_on_next_startup:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true}
+            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
       },
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
@@ -165,7 +165,7 @@ suite('SyncSettingsTests', function() {
       signedIn: true,
       disabled: false,
       hasError: true,
-      statusAction: StatusAction.REAUTHENTICATE
+      statusAction: StatusAction.REAUTHENTICATE,
     };
     assertTrue(syncSection.hidden);
     assertFalse(
@@ -177,7 +177,7 @@ suite('SyncSettingsTests', function() {
       signedIn: true,
       disabled: false,
       hasError: true,
-      statusAction: StatusAction.ENTER_PASSPHRASE
+      statusAction: StatusAction.ENTER_PASSPHRASE,
     };
     assertFalse(syncSection.hidden);
     assertTrue(
@@ -653,7 +653,7 @@ suite('SyncSettingsTests', function() {
     // Normal user
     syncPage.syncStatus = {
       supervisedUser: false,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertFalse(dashboardLink.hidden);
@@ -661,7 +661,7 @@ suite('SyncSettingsTests', function() {
     // Supervised user
     syncPage.syncStatus = {
       supervisedUser: true,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertTrue(dashboardLink.hidden);
@@ -882,14 +882,14 @@ suite('SyncSettingsTests', function() {
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
     syncPage.syncStatus = {
       syncSystemEnabled: false,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertFalse(
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
     syncPage.syncStatus = {
       syncSystemEnabled: true,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertTrue(
@@ -904,14 +904,14 @@ suite('SyncSettingsTests', function() {
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
     syncPage.syncStatus = {
       syncSystemEnabled: false,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertFalse(
         !!syncPage.shadowRoot!.querySelector('settings-sync-account-control'));
     syncPage.syncStatus = {
       syncSystemEnabled: true,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertFalse(

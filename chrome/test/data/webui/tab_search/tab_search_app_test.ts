@@ -82,7 +82,7 @@ suite('TabSearchAppTest', () => {
             title: 'Reading List',
             tabCount: sampleTabCount,
             lastActiveTime: {internalValue: BigInt(sampleTabCount + 1)},
-            lastActiveElapsedText: ''
+            lastActiveElapsedText: '',
           }],
           recentlyClosedSectionExpanded: true,
         },
@@ -118,7 +118,7 @@ suite('TabSearchAppTest', () => {
           }],
           recentlyClosedTabs: generateSampleRecentlyClosedTabsFromSiteNames(
               ['RecentlyClosedTab1', 'RecentlyClosedTab2']),
-          recentlyClosedSectionExpanded: true
+          recentlyClosedSectionExpanded: true,
         }),
         {
           recentlyClosedDefaultItemDisplayCount: 1,
@@ -172,7 +172,7 @@ suite('TabSearchAppTest', () => {
             title: 'Reading List',
             tabCount: sampleTabCount,
             lastActiveTime: {internalValue: BigInt(sampleTabCount + 1)},
-            lastActiveElapsedText: ''
+            lastActiveElapsedText: '',
           })],
           recentlyClosedSectionExpanded: true,
         }),
@@ -240,10 +240,10 @@ suite('TabSearchAppTest', () => {
           title: 'Google',
           url: {url: 'https://www.google.com'},
           lastActiveTimeTicks: {internalValue: BigInt(4)},
-        })]
+        })],
       }],
       recentlyClosedTabs: [tabData],
-      recentlyClosedSectionExpanded: true
+      recentlyClosedSectionExpanded: true,
     }));
 
     const tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
@@ -276,10 +276,10 @@ suite('TabSearchAppTest', () => {
           title: 'Google',
           url: {url: 'https://www.google.com'},
           lastActiveTimeTicks: {internalValue: BigInt(4)},
-        })]
+        })],
       }],
       recentlyClosedTabGroups: [tabGroupData],
-      recentlyClosedSectionExpanded: true
+      recentlyClosedSectionExpanded: true,
     }));
 
     const tabSearchItem =
@@ -397,7 +397,7 @@ suite('TabSearchAppTest', () => {
       windows: [{
         active: true,
         height: SAMPLE_WINDOW_HEIGHT,
-        tabs: [testData.windows[0]!.tabs[0]!]
+        tabs: [testData.windows[0]!.tabs[0]!],
       }],
     }));
     await flushTasks();

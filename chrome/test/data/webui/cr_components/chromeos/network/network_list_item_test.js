@@ -185,7 +185,7 @@ suite('NetworkListItemTest', function() {
     managedPropertiesActivated.typeProperties.cellular.activationState =
         mojom.ActivationStateType.kActivated;
     managedPropertiesActivated.typeProperties.cellular.paymentPortal = {
-      url: 'url'
+      url: 'url',
     };
     mojoApi_.setManagedPropertiesForTest(managedPropertiesActivated);
 
@@ -206,7 +206,7 @@ suite('NetworkListItemTest', function() {
     managedPropertiesESimNotActivated.typeProperties.cellular.activationState =
         mojom.ActivationStateType.kNotActivated;
     managedPropertiesESimNotActivated.typeProperties.cellular.paymentPortal = {
-      url: 'url'
+      url: 'url',
     };
     mojoApi_.setManagedPropertiesForTest(managedPropertiesESimNotActivated);
 
@@ -224,7 +224,7 @@ suite('NetworkListItemTest', function() {
     managedPropertiesNotActivated.typeProperties.cellular.activationState =
         mojom.ActivationStateType.kNotActivated;
     managedPropertiesNotActivated.typeProperties.cellular.paymentPortal = {
-      url: 'url'
+      url: 'url',
     };
     mojoApi_.setManagedPropertiesForTest(managedPropertiesNotActivated);
 

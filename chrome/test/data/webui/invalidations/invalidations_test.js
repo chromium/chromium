@@ -21,7 +21,7 @@ suite('invalidations_test', function() {
   test(invalidations_test.TestNames.RegisterNewInvalidation, function() {
     var invalidationsLog = $('invalidations-log');
     var invalidation = [
-      {isUnknownVersion: 'true', objectId: {name: 'EXTENSIONS', source: 1004}}
+      {isUnknownVersion: 'true', objectId: {name: 'EXTENSIONS', source: 1004}},
     ];
     invalidationsLog.value = '';
     webUIListenerCallback('log-invalidations', invalidation);
@@ -60,7 +60,7 @@ suite('invalidations_test', function() {
   test(invalidations_test.TestNames.RegisterNewIds, function() {
     var newDataType = [
       {name: 'EXTENSIONS', source: 1004, totalCount: 0},
-      {name: 'FAVICON_IMAGE', source: 1004, totalCount: 0}
+      {name: 'FAVICON_IMAGE', source: 1004, totalCount: 0},
     ];
     const registrarName = 'Fake';
     var pattern1 = [registrarName, '1004', 'EXTENSIONS', '0', '0', '', '', ''];

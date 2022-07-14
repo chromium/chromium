@@ -46,7 +46,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       altKey,
       ctrlKey,
       metaKey,
-      shiftKey
+      shiftKey,
     });
   }
 
@@ -67,7 +67,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       altKey,
       ctrlKey,
       metaKey,
-      shiftKey
+      shiftKey,
     });
   }
 

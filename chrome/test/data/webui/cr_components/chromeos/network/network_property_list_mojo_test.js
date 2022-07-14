@@ -56,7 +56,7 @@ suite('NetworkPropertyListMojoTest', function() {
       ipv4: {
         ipAddress: latestIp,
         type: 'IPv4',
-      }
+      },
     };
     await flushAsync();
   }

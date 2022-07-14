@@ -118,7 +118,7 @@ function assertSafetyCheckChild({
   buttonAriaLabel,
   buttonClass,
   managedIcon,
-  rowClickable
+  rowClickable,
 }: SafetyCheckChildExpectation) {
   const safetyCheckChild =
       page.shadowRoot!.querySelector<SettingsSafetyCheckChildElement>(

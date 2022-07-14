@@ -34,7 +34,7 @@ function createContextMenuEvent() {
     bubbles: true,
     composed: true,
     cancelable: true,
-    sourceCapabilities: new InputDeviceCapabilities({firesTouchEvents: true})
+    sourceCapabilities: new InputDeviceCapabilities({firesTouchEvents: true}),
   });
 }
 

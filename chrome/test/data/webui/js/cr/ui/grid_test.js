@@ -20,7 +20,7 @@ function testGetColumnCount() {
     marginBottom: 0,
     width: 10,
     marginLeft: 0,
-    marginRight: 0
+    marginRight: 0,
   };
   let columns = g.getColumnCount_();
   g.measured_.width = 0;

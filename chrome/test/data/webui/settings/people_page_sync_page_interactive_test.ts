@@ -35,7 +35,7 @@ suite('sync-page-test', function() {
       signedIn: true,
       disabled: false,
       hasError: true,
-      statusAction: StatusAction.ENTER_PASSPHRASE
+      statusAction: StatusAction.ENTER_PASSPHRASE,
     };
     webUIListenerCallback('sync-prefs-changed', {passphraseRequired: false});
     flush();

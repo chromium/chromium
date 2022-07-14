@@ -113,8 +113,8 @@ suite('DownloadsHandler', function() {
           key: 'download.default_directory',
           type: chrome.settingsPrivate.PrefType.STRING,
           value: downloadPath,
-        }
-      }
+        },
+      },
     };
   }
 

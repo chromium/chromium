@@ -86,7 +86,7 @@ const tests = [
 
     chrome.test.assertFalse(buttonsContainer.hidden);
     chrome.test.succeed();
-  }
+  },
 ];
 
 chrome.test.runTests(tests);

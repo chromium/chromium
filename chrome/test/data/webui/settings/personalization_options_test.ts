@@ -70,14 +70,14 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
 
     testElement.syncStatus = {
       signedIn: true,
-      statusAction: StatusAction.NO_ACTION
+      statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertTrue(!!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
 
     testElement.syncStatus = {
       signedIn: true,
-      statusAction: StatusAction.REAUTHENTICATE
+      statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
     assertFalse(
@@ -265,7 +265,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: ['en-US']}}
+      spellcheck: {dictionaries: {value: ['en-US']}},
     };
     flush();
     const shadowRoot = testElement.shadowRoot!;
@@ -278,7 +278,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: []}}
+      spellcheck: {dictionaries: {value: []}},
     };
     flush();
     assertTrue(
@@ -293,8 +293,8 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       browser: {enable_spellchecking: {value: false}},
       spellcheck: {
         dictionaries: {value: ['en-US']},
-        use_spelling_service: {value: false}
-      }
+        use_spelling_service: {value: false},
+      },
     };
     flush();
     shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.click();
@@ -317,7 +317,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: ['en-US']}}
+      spellcheck: {dictionaries: {value: ['en-US']}},
     };
     flush();
     const shadowRoot = testElement.shadowRoot!;
@@ -332,7 +332,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: []}}
+      spellcheck: {dictionaries: {value: []}},
     };
     flush();
     assertTrue(
@@ -345,8 +345,8 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       browser: {enable_spellchecking: {value: false}},
       spellcheck: {
         dictionaries: {value: ['en-US']},
-        use_spelling_service: {value: false}
-      }
+        use_spelling_service: {value: false},
+      },
     };
     flush();
     shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.click();
@@ -364,7 +364,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: ['en-US']}}
+      spellcheck: {dictionaries: {value: ['en-US']}},
     };
     flush();
     const shadowRoot = testElement.shadowRoot!;
@@ -375,7 +375,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
-      spellcheck: {dictionaries: {value: []}}
+      spellcheck: {dictionaries: {value: []}},
     };
     flush();
     assertTrue(

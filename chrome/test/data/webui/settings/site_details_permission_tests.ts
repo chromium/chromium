@@ -145,7 +145,7 @@ suite('SiteDetailsPermission', function() {
       [SiteSettingSource.INSECURE_ORIGIN, 'Blocked to protect your privacy'],
       [
         SiteSettingSource.KILL_SWITCH,
-        'Temporarily blocked to protect your security'
+        'Temporarily blocked to protect your security',
       ],
       [SiteSettingSource.PREFERENCE, ''],
     ]);

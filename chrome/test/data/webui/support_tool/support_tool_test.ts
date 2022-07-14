@@ -46,7 +46,7 @@ const PII_ITEMS: PIIDataItem[] = [
     detectedData: '255.255.155.2, 255.255.155.255, 172.11.5.5',
     count: 3,
     keep: false,
-    expandDetails: true
+    expandDetails: true,
   },
   {
     piiTypeDescription: 'Hash',
@@ -54,7 +54,7 @@ const PII_ITEMS: PIIDataItem[] = [
     detectedData: '27540283740a0897ab7c8de0f809add2bacde78f',
     count: 1,
     keep: false,
-    expandDetails: true
+    expandDetails: true,
   },
   {
     piiTypeDescription: 'URL',
@@ -63,8 +63,8 @@ const PII_ITEMS: PIIDataItem[] = [
         'chrome://resources/f?user=bar, chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x, http://tets.com',
     count: 3,
     keep: false,
-    expandDetails: true
-  }
+    expandDetails: true,
+  },
 ];
 
 /**
@@ -176,7 +176,8 @@ suite('SupportToolTest', function() {
     // Click on continue button to start data collection.
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
     browserProxy.whenCalled('startDataCollection').then(function([
-      issueDetails, selectedDataCollectors
+      issueDetails,
+      selectedDataCollectors,
     ]) {
       assertEquals(issueDetails.caseId, 'testcaseid');
       assertEquals(selectedDataCollectors, DATA_COLLECTORS);
@@ -254,7 +255,7 @@ suite('SupportToolTest', function() {
     const exportResult: DataExportResult = {
       success: true,
       path: '/usr/testuser/downloads/fake_support_packet_path.zip',
-      error: ''
+      error: '',
     };
     webUIListenerCallback('data-export-completed', exportResult);
     flush();
@@ -296,7 +297,7 @@ suite('UrlGeneratorTest', function() {
     const expectedResult: UrlGenerationResult = {
       success: true,
       url: expectedLink,
-      errorMessage: ''
+      errorMessage: '',
     };
     browserProxy.setUrlGenerationResult(expectedResult);
     // Click the button to generate URL and copy to clipboard.
@@ -312,7 +313,7 @@ suite('UrlGeneratorTest', function() {
     const expectedResult: UrlGenerationResult = {
       success: false,
       url: '',
-      errorMessage: 'Test error message'
+      errorMessage: 'Test error message',
     };
     browserProxy.setUrlGenerationResult(expectedResult);
     const copyLinkButton = urlGenerator.shadowRoot!.getElementById(

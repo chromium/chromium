@@ -54,7 +54,7 @@ suite('bluetooth_internals', function() {
       internalsHandler.whenCalled('getAdapter'),
       internalsHandler.adapter.whenCalled('getInfo'),
       internalsHandler.adapter.whenCalled('getDevices'),
-      internalsHandler.adapter.whenCalled('addObserver')
+      internalsHandler.adapter.whenCalled('addObserver'),
     ]);
   });
 
@@ -223,7 +223,7 @@ suite('bluetooth_internals', function() {
     newDeviceInfo.rssi = {value: -20};
     newDeviceInfo.serviceUuids = [
       {uuid: '00002a05-0000-1000-8000-00805f9b34fb'},
-      {uuid: '0000180d-0000-1000-8000-00805f9b34fb'}
+      {uuid: '0000180d-0000-1000-8000-00805f9b34fb'},
     ];
 
     changeDevice(newDeviceInfo);
@@ -245,7 +245,7 @@ suite('bluetooth_internals', function() {
     newDeviceInfo.rssi = {value: -20};
     newDeviceInfo.serviceUuids = [
       {uuid: '00002a05-0000-1000-8000-00805f9b34fb'},
-      {uuid: '0000180d-0000-1000-8000-00805f9b34fb'}
+      {uuid: '0000180d-0000-1000-8000-00805f9b34fb'},
     ];
 
     changeDevice(newDeviceInfo);

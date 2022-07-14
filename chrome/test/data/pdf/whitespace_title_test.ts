@@ -10,5 +10,5 @@ chrome.test.runTests([
     chrome.test.assertEq('test-whitespace-title.pdf', document.title);
 
     chrome.test.succeed();
-  }
+  },
 ]);

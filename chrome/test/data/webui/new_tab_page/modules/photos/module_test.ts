@@ -29,7 +29,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     setup(() => {
       loadTimeData.overrideValues({
         photosModuleCustomArtWork: '1',
-        photosModuleSplitSvgCustomArtWork: true
+        photosModuleSplitSvgCustomArtWork: true,
       });
     });
 
@@ -40,14 +40,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
           {
             title: 'Title 1',
             id: 'key1',
-            coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+            coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
           },
           {
             title: 'Title 2',
             id: 'key2',
-            coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-          }
-        ]
+            coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+          },
+        ],
       };
       handler.setResultFor('getMemories', Promise.resolve(data));
       handler.setResultFor(
@@ -90,7 +90,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     setup(() => {
       loadTimeData.overrideValues({
         photosModuleCustomArtWork: '2',
-        photosModuleSplitSvgCustomArtWork: true
+        photosModuleSplitSvgCustomArtWork: true,
       });
     });
 
@@ -101,14 +101,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
           {
             title: 'Title 1',
             id: 'key1',
-            coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+            coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
           },
           {
             title: 'Title 2',
             id: 'key2',
-            coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-          }
-        ]
+            coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+          },
+        ],
       };
       handler.setResultFor('getMemories', Promise.resolve(data));
       handler.setResultFor(
@@ -151,7 +151,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     setup(() => {
       loadTimeData.overrideValues({
         photosModuleCustomArtWork: '3',
-        photosModuleSplitSvgCustomArtWork: true
+        photosModuleSplitSvgCustomArtWork: true,
       });
     });
 
@@ -162,14 +162,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
           {
             title: 'Title 1',
             id: 'key1',
-            coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+            coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
           },
           {
             title: 'Title 2',
             id: 'key2',
-            coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-          }
-        ]
+            coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+          },
+        ],
       };
       handler.setResultFor('getMemories', Promise.resolve(data));
       handler.setResultFor(
@@ -212,7 +212,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     setup(() => {
       loadTimeData.overrideValues({
         photosModuleCustomArtWork: '4',
-        photosModuleSplitSvgCustomArtWork: true
+        photosModuleSplitSvgCustomArtWork: true,
       });
     });
 
@@ -225,14 +225,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
               {
                 title: 'Title 1',
                 id: 'key1',
-                coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+                coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
               },
               {
                 title: 'Title 2',
                 id: 'key2',
-                coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-              }
-            ]
+                coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+              },
+            ],
           };
           handler.setResultFor('getMemories', Promise.resolve(data));
           handler.setResultFor(
@@ -276,7 +276,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     setup(() => {
       loadTimeData.overrideValues({
         photosModuleCustomArtWork: '1',
-        photosModuleSplitSvgCustomArtWork: false
+        photosModuleSplitSvgCustomArtWork: false,
       });
     });
 
@@ -289,14 +289,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
               {
                 title: 'Title 1',
                 id: 'key1',
-                coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+                coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
               },
               {
                 title: 'Title 2',
                 id: 'key2',
-                coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-              }
-            ]
+                coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+              },
+            ],
           };
           handler.setResultFor('getMemories', Promise.resolve(data));
           handler.setResultFor(
@@ -338,14 +338,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
             {
               title: 'Title 1',
               id: 'key1',
-              coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+              coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
             },
             {
               title: 'Title 2',
               id: 'key2',
-              coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-            }
-          ]
+              coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+            },
+          ],
         };
         handler.setResultFor('getMemories', Promise.resolve(data));
         handler.setResultFor(
@@ -380,14 +380,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         {
           title: 'Title 1',
           id: 'key1',
-          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
         },
         {
           title: 'Title 2',
           id: 'key2',
-          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-        }
-      ]
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+        },
+      ],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -449,14 +449,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         {
           title: 'Title 1',
           id: 'key1',
-          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
         },
         {
           title: 'Title 2',
           id: 'key2',
-          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-        }
-      ]
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+        },
+      ],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -490,14 +490,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         {
           title: 'Title 1',
           id: 'key1',
-          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
         },
         {
           title: 'Title 2',
           id: 'key2',
-          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-        }
-      ]
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+        },
+      ],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -542,14 +542,14 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         {
           title: 'Title 1',
           id: 'key1',
-          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
         },
         {
           title: 'Title 2',
           id: 'key2',
-          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
-        }
-      ]
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
+        },
+      ],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -588,8 +588,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       memories: [{
         title: 'Title 1',
         id: 'key1',
-        coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
-      }]
+        coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
+      }],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -619,24 +619,24 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         {
           title: 'Title 1',
           id: 'key1',
-          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
         },
         {
           title: 'Title 2',
           id: 'key2',
-          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'},
         },
         {
           title: 'Title 3',
           id: 'key3',
-          coverUrl: {url: 'https://fakeurl.com/3?token=foo'}
+          coverUrl: {url: 'https://fakeurl.com/3?token=foo'},
         },
         {
           title: 'Title 4',
           id: 'key4',
-          coverUrl: {url: 'https://fakeurl.com/4?token=foo'}
-        }
-      ]
+          coverUrl: {url: 'https://fakeurl.com/4?token=foo'},
+        },
+      ],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -666,8 +666,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       memories: [{
         title: 'Title 1',
         id: 'key1',
-        coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
-      }]
+        coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
+      }],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -715,8 +715,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       memories: [{
         title: 'Title 1',
         id: 'key1',
-        coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
-      }]
+        coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
+      }],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -764,8 +764,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         title: 'Title 1',
         id: 'key1',
         coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
-        itemUrl: {url: '#'}
-      }]
+        itemUrl: {url: '#'},
+      }],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -802,8 +802,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
             title: 'Title 1',
             id: 'key1',
             coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
-            itemUrl: {url: '#'}
-          }]
+            itemUrl: {url: '#'},
+          }],
         };
         handler.setResultFor('getMemories', Promise.resolve(data));
         handler.setResultFor(
@@ -840,8 +840,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
             title: 'Title 1',
             id: 'key1',
             coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
-            itemUrl: {url: '#'}
-          }]
+            itemUrl: {url: '#'},
+          }],
         };
         handler.setResultFor('getMemories', Promise.resolve(data));
         handler.setResultFor(
@@ -874,8 +874,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         title: 'Title 1',
         id: 'key1',
         coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
-        itemUrl: {url: '#'}
-      }]
+        itemUrl: {url: '#'},
+      }],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(
@@ -908,8 +908,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
             title: 'Title 1',
             id: 'key1',
             coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
-            itemUrl: {url: '#'}
-          }]
+            itemUrl: {url: '#'},
+          }],
         };
         handler.setResultFor('getMemories', Promise.resolve(data));
         handler.setResultFor(
@@ -950,8 +950,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
             title: 'Title 1',
             id: 'key1',
             coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
-            itemUrl: {url: '#'}
-          }]
+            itemUrl: {url: '#'},
+          }],
         };
         handler.setResultFor('getMemories', Promise.resolve(data));
         handler.setResultFor(
@@ -990,8 +990,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       memories: [{
         title: 'Title 1',
         id: 'key1',
-        coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
-      }]
+        coverUrl: {url: 'https://fakeurl.com/1?token=foo'},
+      }],
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     handler.setResultFor(

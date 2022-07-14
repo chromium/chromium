@@ -1041,7 +1041,7 @@ CallFunctionAction.prototype = {
    */
   describe: function() {
     return 'calls the given function with saved arguments and ' + this.args_;
-  }
+  },
 };
 
 /**

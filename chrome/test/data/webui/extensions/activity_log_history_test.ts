@@ -26,7 +26,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         args: 'null',
         count: 10,
         extensionId: EXTENSION_ID,
-        time: 1541203132002.664
+        time: 1541203132002.664,
       },
       {
         activityId: '309',
@@ -37,11 +37,11 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         count: 35,
         extensionId: EXTENSION_ID,
         other: {
-          domVerb: chrome.activityLogPrivate.ExtensionActivityDomVerb.METHOD
+          domVerb: chrome.activityLogPrivate.ExtensionActivityDomVerb.METHOD,
         },
         pageTitle: 'Test Extension',
         pageUrl: `chrome-extension://${EXTENSION_ID}/index.html`,
-        time: 1541203131994.837
+        time: 1541203131994.837,
       },
       {
         activityId: '308',
@@ -52,7 +52,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         count: 10,
         extensionId: EXTENSION_ID,
         pageUrl: `chrome-extension://${EXTENSION_ID}/index.html`,
-        time: 1541203131994.837
+        time: 1541203131994.837,
       },
       {
         activityId: '301',
@@ -61,9 +61,9 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         args: 'null',
         count: 30,
         extensionId: EXTENSION_ID,
-        time: 1541203172002.664
+        time: 1541203172002.664,
       },
-    ]
+    ],
   };
 
   // The first two activities of |testActivities|,
@@ -85,7 +85,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         count: 1,
         extensionId: EXTENSION_ID,
         pageTitle: 'Test Extension',
-        pageUrl: 'https://www.google.com/search'
+        pageUrl: 'https://www.google.com/search',
       },
       {
         activityId: '290',
@@ -95,9 +95,9 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         count: 1,
         extensionId: EXTENSION_ID,
         pageTitle: 'Test Extension',
-        pageUrl: 'https://www.google.com/search'
+        pageUrl: 'https://www.google.com/search',
       },
-    ]
+    ],
   };
 
   // Sample activities representing web requests. Activities with valid fields
@@ -117,10 +117,10 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         extensionId: EXTENSION_ID,
         other: {
           webRequest:
-              `{"modified_request_headers":true, "added_request_headers":"a"}`
+              `{"modified_request_headers":true, "added_request_headers":"a"}`,
         },
         pageUrl: `chrome-extension://${EXTENSION_ID}/index.html`,
-        time: 1546499283237.616
+        time: 1546499283237.616,
       },
       {
         activityId: '1339',
@@ -132,9 +132,9 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         extensionId: EXTENSION_ID,
         other: {},
         pageUrl: `chrome-extension://${EXTENSION_ID}/index.html`,
-        time: 1546499283237.616
+        time: 1546499283237.616,
       },
-    ]
+    ],
   };
 
   /**
@@ -309,7 +309,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
         const expectedItemKeys = [
           'webRequest.onBeforeSendHeaders (added_request_headers)',
           'webRequest.onBeforeSendHeaders (modified_request_headers)',
-          'webRequest.noWebRequestObject'
+          'webRequest.noWebRequestObject',
         ];
         const expectedNumItems = expectedItemKeys.length;
 

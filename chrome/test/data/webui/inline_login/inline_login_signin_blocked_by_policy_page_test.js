@@ -128,7 +128,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
           email: 'coyote@acme.com',
           hostedDomain: 'acme.com',
           deviceType: 'Chromebox',
-          signinBlockedByPolicy: true
+          signinBlockedByPolicy: true,
         });
         textBody = signinBlockedByPolicyPageComponent.shadowRoot.querySelector(
             '.secondary');

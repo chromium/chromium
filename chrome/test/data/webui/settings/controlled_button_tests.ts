@@ -17,7 +17,7 @@ suite('controlled button', function() {
   const uncontrolledPref: chrome.settingsPrivate.PrefObject = {
     key: 'test',
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: true
+    value: true,
   };
 
   /** @type {!chrome.settingsPrivate.PrefObject} */

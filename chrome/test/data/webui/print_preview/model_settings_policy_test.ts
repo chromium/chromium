@@ -68,8 +68,8 @@ suite('ModelSettingsPolicyTest', function() {
        colorCap: {
          option: [
            {type: 'STANDARD_MONOCHROME', is_default: true},
-           {type: 'STANDARD_COLOR'}
-         ]
+           {type: 'STANDARD_COLOR'},
+         ],
        },
        colorPolicy: ColorModeRestriction.COLOR,
        // Default mismatches restriction and is ignored.
@@ -84,8 +84,8 @@ suite('ModelSettingsPolicyTest', function() {
        colorCap: {
          option: [
            {type: 'STANDARD_MONOCHROME', is_default: true},
-           {type: 'STANDARD_COLOR'}
-         ]
+           {type: 'STANDARD_COLOR'},
+         ],
        },
        colorDefault: ColorModeRestriction.COLOR,
        expectedValue: true,
@@ -99,8 +99,8 @@ suite('ModelSettingsPolicyTest', function() {
        colorCap: {
          option: [
            {type: 'STANDARD_MONOCHROME'},
-           {type: 'STANDARD_COLOR', is_default: true}
-         ]
+           {type: 'STANDARD_COLOR', is_default: true},
+         ],
        },
        colorDefault: ColorModeRestriction.MONOCHROME,
        expectedValue: false,
@@ -116,7 +116,7 @@ suite('ModelSettingsPolicyTest', function() {
         color: {
           allowedMode: subtestParams.colorPolicy,
           defaultMode: subtestParams.colorDefault,
-        }
+        },
       };
 
       model.set('destination.capabilities', capabilities);
@@ -163,9 +163,10 @@ suite('ModelSettingsPolicyTest', function() {
        // Policy overrides default.
        duplexCap: {
          option: [
-           {type: 'NO_DUPLEX', is_default: true}, {type: 'LONG_EDGE'},
-           {type: 'SHORT_EDGE'}
-         ]
+           {type: 'NO_DUPLEX', is_default: true},
+           {type: 'LONG_EDGE'},
+           {type: 'SHORT_EDGE'},
+         ],
        },
        duplexPolicy: DuplexModeRestriction.DUPLEX,
        // Default mismatches restriction and is ignored.
@@ -182,9 +183,10 @@ suite('ModelSettingsPolicyTest', function() {
        // Policy sets duplex type, overriding default.
        duplexCap: {
          option: [
-           {type: 'NO_DUPLEX'}, {type: 'LONG_EDGE', is_default: true},
-           {type: 'SHORT_EDGE'}
-         ]
+           {type: 'NO_DUPLEX'},
+           {type: 'LONG_EDGE', is_default: true},
+           {type: 'SHORT_EDGE'},
+         ],
        },
        duplexPolicy: DuplexModeRestriction.SHORT_EDGE,
        // Default mismatches restriction and is ignored.
@@ -201,9 +203,10 @@ suite('ModelSettingsPolicyTest', function() {
        // Default defined by policy but setting is modifiable.
        duplexCap: {
          option: [
-           {type: 'NO_DUPLEX', is_default: true}, {type: 'LONG_EDGE'},
-           {type: 'SHORT_EDGE'}
-         ]
+           {type: 'NO_DUPLEX', is_default: true},
+           {type: 'LONG_EDGE'},
+           {type: 'SHORT_EDGE'},
+         ],
        },
        duplexDefault: DuplexModeRestriction.LONG_EDGE,
        expectedValue: true,
@@ -222,7 +225,7 @@ suite('ModelSettingsPolicyTest', function() {
         duplex: {
           allowedMode: subtestParams.duplexPolicy,
           defaultMode: subtestParams.duplexDefault,
-        }
+        },
       };
 
       model.set('destination.capabilities', capabilities);
@@ -328,7 +331,7 @@ suite('ModelSettingsPolicyTest', function() {
         pin: {
           allowedMode: subtestParams.pinPolicy,
           defaultMode: subtestParams.pinDefault,
-        }
+        },
       };
 
       model.set('destination.capabilities', capabilities);

@@ -201,7 +201,7 @@ suite('CrSettingsCookiesPageTest', function() {
     page.set('prefs.generated.cookie_session_only', {
       value: true,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY
+      controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
     });
     assertEquals(
         blockAll.pref!.controlledBy,

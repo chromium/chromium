@@ -42,7 +42,7 @@ ClickCounter.prototype = {
    */
   get value() {
     return this.clickCount_;
-  }
+  },
 };
 
 function setUp() {

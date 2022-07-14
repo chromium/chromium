@@ -469,7 +469,7 @@ suite('NewTabPageRealboxTest', () => {
       createSearchMatch({
         allowedToBeDefaultMatch: true,
       }),
-      createUrlMatch()
+      createUrlMatch(),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -541,7 +541,7 @@ suite('NewTabPageRealboxTest', () => {
       set: (value) => {
         inputValueChanged = true;
         originalValueProperty.set!.call(realbox.$.input, value);
-      }
+      },
     });
 
     // If the user types the next character of the inline autocompletion, the
@@ -765,7 +765,7 @@ suite('NewTabPageRealboxTest', () => {
       createSearchMatch({
         allowedToBeDefaultMatch: true,
       }),
-      createUrlMatch()
+      createUrlMatch(),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -1003,7 +1003,7 @@ suite('NewTabPageRealboxTest', () => {
       createSearchMatch({
         allowedToBeDefaultMatch: true,
       }),
-      createUrlMatch()
+      createUrlMatch(),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -1070,7 +1070,7 @@ suite('NewTabPageRealboxTest', () => {
       createSearchMatch({
         allowedToBeDefaultMatch: true,
       }),
-      createUrlMatch()
+      createUrlMatch(),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -1275,7 +1275,7 @@ suite('NewTabPageRealboxTest', () => {
       createSearchMatch({
         allowedToBeDefaultMatch: true,
       }),
-      createUrlMatch({supportsDeletion: true})
+      createUrlMatch({supportsDeletion: true}),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -1679,10 +1679,10 @@ suite('NewTabPageRealboxTest', () => {
         a11yLabel: mojoString16(''),
         hint: mojoString16('Clear Browsing History'),
         suggestionContents: mojoString16(''),
-        iconUrl: 'chrome://theme/current-channel-logo'
+        iconUrl: 'chrome://theme/current-channel-logo',
       },
       fillIntoEdit: mojoString16('clear browsing history'),
-      supportsDeletion: true
+      supportsDeletion: true,
     })];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -1832,7 +1832,7 @@ suite('NewTabPageRealboxTest', () => {
 
         const matches = [
           createSearchMatch({iconUrl: 'clock.svg'}),
-          createUrlMatch({iconUrl: 'page.svg'})
+          createUrlMatch({iconUrl: 'page.svg'}),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged({
           input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -1959,12 +1959,13 @@ suite('NewTabPageRealboxTest', () => {
         realbox.$.input.dispatchEvent(new InputEvent('input'));
 
         const matches = [
-          createUrlMatch({iconUrl: 'page.svg'}), createSearchMatch({
+          createUrlMatch({iconUrl: 'page.svg'}),
+          createSearchMatch({
             iconUrl: 'clock.svg',
             imageUrl: 'https://gstatic.com/',
             imageDominantColor: '#757575',
             isRichSuggestion: true,
-          })
+          }),
         ];
         testProxy.callbackRouterRemote.autocompleteResultChanged({
           input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -2078,14 +2079,14 @@ suite('NewTabPageRealboxTest', () => {
         header: mojoString16('Recommended for you'),
         hideGroupA11yLabel: mojoString16(''),
         showGroupA11yLabel: mojoString16(''),
-        hidden: true
+        hidden: true,
       },
       101: {
         header: mojoString16('Not recommended for you'),
         hideGroupA11yLabel: mojoString16(''),
         showGroupA11yLabel: mojoString16(''),
-        hidden: false
-      }
+        hidden: false,
+      },
     };
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -2182,7 +2183,7 @@ suite('NewTabPageRealboxTest', () => {
             header: mojoString16('Recommended for you'),
             hideGroupA11yLabel: mojoString16(''),
             showGroupA11yLabel: mojoString16(''),
-            hidden: false
+            hidden: false,
           },
         };
         testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -2280,7 +2281,7 @@ suite('NewTabPageRealboxTest', () => {
     const matches = [createSearchMatch({
       answer: {
         firstLine: mojoString16('When is Christmas Day'),
-        secondLine: mojoString16('Saturday, December 25, 2021')
+        secondLine: mojoString16('Saturday, December 25, 2021'),
       },
       isRichSuggestion: true,
     })];
@@ -2325,8 +2326,8 @@ suite('NewTabPageRealboxTest', () => {
         a11yLabel: mojoString16(''),
         hint: mojoString16('Clear Browsing History'),
         suggestionContents: mojoString16(''),
-        iconUrl: 'chrome://theme/current-channel-logo'
-      }
+        iconUrl: 'chrome://theme/current-channel-logo',
+      },
     })];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -2376,9 +2377,9 @@ suite('NewTabPageRealboxTest', () => {
           a11yLabel: mojoString16(''),
           hint: mojoString16('Clear Browsing History'),
           suggestionContents: mojoString16(''),
-          iconUrl: 'chrome://theme/current-channel-logo'
-        }
-      })
+          iconUrl: 'chrome://theme/current-channel-logo',
+        },
+      }),
     ];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),

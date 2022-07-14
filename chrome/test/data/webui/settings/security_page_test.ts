@@ -433,7 +433,7 @@ suite('CrSettingsSecurityPageTest', function() {
     const [enhancedClickedResult, enhancedClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
-      testMetricsBrowserProxy.whenCalled('recordAction')
+      testMetricsBrowserProxy.whenCalled('recordAction'),
     ]);
     assertEquals(
         SafeBrowsingInteractions.SAFE_BROWSING_ENHANCED_PROTECTION_CLICKED,
@@ -450,7 +450,7 @@ suite('CrSettingsSecurityPageTest', function() {
     const [enhancedExpandedResult, enhancedExpandedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
-      testMetricsBrowserProxy.whenCalled('recordAction')
+      testMetricsBrowserProxy.whenCalled('recordAction'),
     ]);
     assertEquals(
         SafeBrowsingInteractions
@@ -468,7 +468,7 @@ suite('CrSettingsSecurityPageTest', function() {
     const [standardExpandedResult, standardExpandedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
-      testMetricsBrowserProxy.whenCalled('recordAction')
+      testMetricsBrowserProxy.whenCalled('recordAction'),
     ]);
     assertEquals(
         SafeBrowsingInteractions
@@ -486,7 +486,7 @@ suite('CrSettingsSecurityPageTest', function() {
     const [disableClickedResult, disableClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
-      testMetricsBrowserProxy.whenCalled('recordAction')
+      testMetricsBrowserProxy.whenCalled('recordAction'),
     ]);
     assertEquals(
         SafeBrowsingInteractions.SAFE_BROWSING_DISABLE_SAFE_BROWSING_CLICKED,
@@ -504,7 +504,7 @@ suite('CrSettingsSecurityPageTest', function() {
     const [disableDeniedResult, disableDeniedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
-      testMetricsBrowserProxy.whenCalled('recordAction')
+      testMetricsBrowserProxy.whenCalled('recordAction'),
     ]);
     assertEquals(
         SafeBrowsingInteractions
@@ -527,7 +527,7 @@ suite('CrSettingsSecurityPageTest', function() {
     const [disableConfirmedResult, disableConfirmedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
-      testMetricsBrowserProxy.whenCalled('recordAction')
+      testMetricsBrowserProxy.whenCalled('recordAction'),
     ]);
     assertEquals(
         SafeBrowsingInteractions

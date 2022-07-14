@@ -20,7 +20,7 @@ suite('SettingsCheckbox', function() {
   const pref: chrome.settingsPrivate.PrefObject = {
     key: 'test',
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: true
+    value: true,
   };
 
   // Initialize a checked settings-checkbox before each test.
@@ -66,7 +66,7 @@ suite('SettingsCheckbox', function() {
     const prefNum = {
       key: 'test',
       type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 1
+      value: 1,
     };
 
     testElement.set('pref', prefNum);

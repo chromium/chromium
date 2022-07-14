@@ -49,8 +49,8 @@ suite('NetworkSiminfoTest', function() {
       simLockStatus: {
         lockEnabled: lockEnabled,
         lockType: isLocked ? 'sim-pin' : '',
-        retriesLeft: 3
-      }
+        retriesLeft: 3,
+      },
     };
     await flushAsync();
   }

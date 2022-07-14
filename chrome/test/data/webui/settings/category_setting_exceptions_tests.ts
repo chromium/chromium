@@ -62,7 +62,7 @@ suite('CategorySettingExceptions', function() {
               createContentSettingTypeToValuePair(
                   ContentSettingsTypes.COOKIES, createDefaultContentSetting({
                     setting: ContentSetting.ALLOW,
-                    source: ContentSettingProvider.POLICY
+                    source: ContentSettingProvider.POLICY,
                   })),
             ],
             []);

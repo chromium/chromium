@@ -19,8 +19,8 @@ suite('NetworkChooseMobileTest', function() {
     chooseMobile = document.createElement('network-choose-mobile');
     chooseMobile.managedProperties = {
       typeProperties: {
-        cellular: {}
-      }
+        cellular: {},
+      },
     };
     document.body.appendChild(chooseMobile);
     flush();
@@ -36,11 +36,11 @@ suite('NetworkChooseMobileTest', function() {
     chooseMobile.managedProperties = {
       connectionState: mojom.ConnectionStateType.kNotConnected,
       typeProperties: {
-        cellular: {}
-      }
+        cellular: {},
+      },
     };
     chooseMobile.deviceState = {
-      scanning: false
+      scanning: false,
     };
     flush();
 
@@ -50,7 +50,7 @@ suite('NetworkChooseMobileTest', function() {
 
     // Set the device state to scanning.
     chooseMobile.deviceState = {
-      scanning: true
+      scanning: true,
     };
     flush();
 
@@ -59,7 +59,7 @@ suite('NetworkChooseMobileTest', function() {
 
     // Reset scanning status.
     chooseMobile.deviceState = {
-      scanning: false
+      scanning: false,
     };
 
     // Every connection state but kNotConnected prevents scanning.
@@ -69,8 +69,8 @@ suite('NetworkChooseMobileTest', function() {
       chooseMobile.managedProperties = {
         connectionState: state,
         typeProperties: {
-          cellular: {}
-        }
+          cellular: {},
+        },
       };
       flush();
 
@@ -86,9 +86,9 @@ suite('NetworkChooseMobileTest', function() {
           foundNetworks: [{
             networkId: '1',
             longName: 'network_name',
-          }]
-        }
-      }
+          }],
+        },
+      },
     };
     chooseMobile.deviceState = {scanning: false};
     flush();

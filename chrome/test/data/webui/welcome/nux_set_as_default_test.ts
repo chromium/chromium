@@ -59,7 +59,7 @@ suite('SetAsDefaultTest', function() {
         return Promise.all([
           notifyPromise,
           testSetAsDefaultProxy.whenCalled('recordSuccessfullySetDefault'),
-          navigatedPromise
+          navigatedPromise,
         ]);
       });
 

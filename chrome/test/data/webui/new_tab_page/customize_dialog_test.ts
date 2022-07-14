@@ -206,7 +206,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
         customizeDialog.$.backgrounds.selectedCollection = {
           id: 'abstract',
           label: '',
-          previewImageUrl: {url: ''}
+          previewImageUrl: {url: ''},
         };
         customizeDialog.$.refreshToggle.click();
         assertEquals(1, handler.getCallCount('setDailyRefreshCollectionId'));

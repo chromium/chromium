@@ -201,8 +201,10 @@ suite('InfiniteListTest', () => {
   test('ListSelection', async () => {
     const tabItems = sampleTabItems(sampleSiteNames(2));
     const listItems = [
-      new TitleItem('Title 1'), ...tabItems, new TitleItem('Title 2'),
-      ...tabItems
+      new TitleItem('Title 1'),
+      ...tabItems,
+      new TitleItem('Title 2'),
+      ...tabItems,
     ];
 
     setupTest(listItems);

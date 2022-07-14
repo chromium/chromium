@@ -151,8 +151,8 @@ suite('CertificateManagerProvisioningTests', function() {
           composed: true,
           detail: {
             model: createSampleCertificateProvisioningProcess(false),
-            anchor: anchorForTest
-          }
+            anchor: anchorForTest,
+          },
         }));
 
     return whenDialogOpen
@@ -183,8 +183,8 @@ suite('CertificateManagerProvisioningTests', function() {
           composed: true,
           detail: {
             model: createSampleCertificateProvisioningProcess(false),
-            anchor: anchorForTest
-          }
+            anchor: anchorForTest,
+          },
         }));
     const whenRefreshCalled =
         browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
@@ -221,8 +221,8 @@ suite('DetailsDialogTests', function() {
           composed: true,
           detail: {
             model: createSampleCertificateProvisioningProcess(false),
-            anchor: anchorForTest
-          }
+            anchor: anchorForTest,
+          },
         }));
     await whenDialogOpen;
     dialog = certProvisioningList.shadowRoot!.querySelector(dialogId)!;

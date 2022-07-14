@@ -107,7 +107,9 @@ suite('CommanderWebUIBrowserTest', () => {
   test('display results view model change sends heightChanged', async () => {
     testProxy.resetResolver('heightChanged');
     webUIListenerCallback('view-model-updated', createStubViewModel(42, [
-                            'William of Orange', 'Orangutan', 'Orange Juice'
+                            'William of Orange',
+                            'Orangutan',
+                            'Orange Juice',
                           ]));
     await flushTasks();
     const height = await testProxy.whenCalled('heightChanged');
@@ -118,7 +120,9 @@ suite('CommanderWebUIBrowserTest', () => {
     const expectedResultSetId = 42;
     webUIListenerCallback(
         'view-model-updated', createStubViewModel(expectedResultSetId, [
-          'William of Orange', 'Orangutan', 'Orange Juice'
+          'William of Orange',
+          'Orangutan',
+          'Orange Juice',
         ]));
     await flushTasks();
 
@@ -133,7 +137,9 @@ suite('CommanderWebUIBrowserTest', () => {
 
   test('first option selected by default', async () => {
     webUIListenerCallback('view-model-updated', createStubViewModel(42, [
-                            'William of Orange', 'Orangutan', 'Orange Juice'
+                            'William of Orange',
+                            'Orangutan',
+                            'Orange Juice',
                           ]));
     await flushTasks();
 
@@ -166,7 +172,9 @@ suite('CommanderWebUIBrowserTest', () => {
   test('arrow keys change selection', async () => {
     const input = app.$.input;
     webUIListenerCallback('view-model-updated', createStubViewModel(42, [
-                            'William of Orange', 'Orangutan', 'Orange Juice'
+                            'William of Orange',
+                            'Orangutan',
+                            'Orange Juice',
                           ]));
     await flushTasks();
 
@@ -191,7 +199,9 @@ suite('CommanderWebUIBrowserTest', () => {
     const expectedResultSetId = 42;
     webUIListenerCallback(
         'view-model-updated', createStubViewModel(expectedResultSetId, [
-          'William of Orange', 'Orangutan', 'Orange Juice'
+          'William of Orange',
+          'Orangutan',
+          'Orange Juice',
         ]));
     await flushTasks();
 
@@ -239,7 +249,9 @@ suite('CommanderWebUIBrowserTest', () => {
     assertEquals(null, inputRow.getAttribute('aria-selected'));
 
     webUIListenerCallback('view-model-updated', createStubViewModel(42, [
-                            'William of Orange', 'Orangutan', 'Orange Juice'
+                            'William of Orange',
+                            'Orangutan',
+                            'Orange Juice',
                           ]));
     await flushTasks();
 

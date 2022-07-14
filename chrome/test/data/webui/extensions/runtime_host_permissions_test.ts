@@ -69,7 +69,7 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions.hostAccess', HostAccess.ON_SPECIFIC_SITES);
     element.set('permissions.hosts', [
       {host: 'https://example.com', granted: true},
-      {host: 'https://chromium.org', granted: true}
+      {host: 'https://chromium.org', granted: true},
     ]);
     flush();
     assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
@@ -89,8 +89,8 @@ suite('RuntimeHostPermissions', function() {
       hasAllHosts: true,
       hosts: [
         {host: 'https://example.com', granted: true},
-        {host: 'https://chromium.org', granted: true}
-      ]
+        {host: 'https://chromium.org', granted: true},
+      ],
     };
 
     element.permissions = permissions;

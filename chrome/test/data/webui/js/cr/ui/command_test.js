@@ -39,7 +39,7 @@ function createEvent(key, code, keyCode) {
     altKey: false,
     ctrlKey: true,
     metaKey: false,
-    shiftKey: false
+    shiftKey: false,
   };
 }
 

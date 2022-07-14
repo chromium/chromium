@@ -48,7 +48,7 @@ const DEFAULT_PREFS = {
   profile: {password_manager_leak_detection: {value: true}},
   signin: {
     allowed_on_next_startup:
-        {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true}
+        {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},
   },
   safebrowsing:
       {enabled: {value: true}, scout_reporting_enabled: {value: true}},

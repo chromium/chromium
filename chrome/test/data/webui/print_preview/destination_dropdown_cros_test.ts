@@ -99,7 +99,7 @@ suite(destination_dropdown_cros_test.suiteName, function() {
         setItemList([
           createDestination('One', DestinationOrigin.CROS),
           createDestination('Two', DestinationOrigin.CROS),
-          createDestination('Three', DestinationOrigin.CROS)
+          createDestination('Three', DestinationOrigin.CROS),
         ]);
 
         const itemList = getList();
@@ -212,8 +212,9 @@ suite(destination_dropdown_cros_test.suiteName, function() {
       function() {
         const destinationOne = createDestination('One', DestinationOrigin.CROS);
         setItemList([
-          destinationOne, createDestination('Two', DestinationOrigin.CROS),
-          createDestination('Three', DestinationOrigin.CROS)
+          destinationOne,
+          createDestination('Two', DestinationOrigin.CROS),
+          createDestination('Three', DestinationOrigin.CROS),
         ]);
         dropdown.value = destinationOne;
         clickDropdown();

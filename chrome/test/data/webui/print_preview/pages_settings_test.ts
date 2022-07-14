@@ -218,8 +218,10 @@ suite(pages_settings_test.suiteName, function() {
     validateState(
         [1, 2, 3, 4, 6, 46, 89, 90, 91],
         [
-          {from: 1, to: 4}, {from: 6, to: 6}, {from: 46, to: 46},
-          {from: 89, to: 91}
+          {from: 1, to: 4},
+          {from: 6, to: 6},
+          {from: 46, to: 46},
+          {from: 89, to: 91},
         ],
         '', false);
   });
@@ -305,7 +307,8 @@ suite(pages_settings_test.suiteName, function() {
 
     // Selecting custom focuses the input.
     await Promise.all([
-      selectOption(pagesSection, customValue), eventToPromise('focus', input)
+      selectOption(pagesSection, customValue),
+      eventToPromise('focus', input),
     ]);
     input.focus();
 
@@ -433,7 +436,7 @@ suite(pages_settings_test.suiteName, function() {
         const pagesSelect = pagesSection.shadowRoot!.querySelector('select')!;
         await Promise.all([
           selectOption(pagesSection, customValue),
-          eventToPromise('focus', input)
+          eventToPromise('focus', input),
         ]);
         assertEquals(customValue, pagesSelect.value);
         keyEventOn(input, 'keydown', 0, [], 'Enter');

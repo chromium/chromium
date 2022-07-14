@@ -65,7 +65,7 @@ suite('ProfilePickerMainViewTest', function() {
     loadTimeData.overrideValues({
       isGuestModeEnabled: true,
       isProfileCreationAllowed: true,
-      isAskOnStartupAllowed: true
+      isAskOnStartupAllowed: true,
     });
   }
 

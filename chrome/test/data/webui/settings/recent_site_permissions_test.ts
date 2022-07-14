@@ -59,7 +59,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
         recentPermissions: [createRawSiteException(origin, {
           setting: ContentSetting.BLOCK,
           type: contentSettingType,
-        })]
+        })],
       }];
       browserProxy.setRecentSitePermissions(mockData);
       Router.getInstance().navigateTo(routes.SITE_SETTINGS);
@@ -111,7 +111,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
             setting: ContentSetting.ALLOW,
             type: ContentSettingsTypes.PROTOCOL_HANDLERS,
           }),
-        ]
+        ],
       },
       {
         origin: origin2,
@@ -126,7 +126,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
             source: SiteSettingSource.EMBARGO,
             type: ContentSettingsTypes.CLIPBOARD,
           }),
-        ]
+        ],
       },
     ];
     browserProxy.setRecentSitePermissions(mockData);

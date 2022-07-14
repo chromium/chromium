@@ -489,8 +489,8 @@ suite(model_test.suiteName, function() {
     testDestination.capabilities!.printer!.color = {
       option: [
         {type: 'STANDARD_COLOR'},
-        {type: 'STANDARD_MONOCHROME', is_default: true}
-      ]
+        {type: 'STANDARD_MONOCHROME', is_default: true},
+      ],
     };
 
     const testDestination2 =
@@ -547,23 +547,23 @@ suite(model_test.suiteName, function() {
           custom_display_name: 'A4',
           is_default: true,
         },
-      ]
+      ],
     };
     testDestination3.capabilities!.printer!.color = {
       option: [
         {type: 'STANDARD_MONOCHROME', is_default: true},
-      ]
+      ],
     };
     testDestination3.capabilities!.printer!.duplex = {
       option: [
         {type: 'NO_DUPLEX', is_default: true},
-      ]
+      ],
     };
     testDestination3.capabilities!.printer!.dpi = {
       option: [
         {horizontal_dpi: 400, vertical_dpi: 400, is_default: true},
         {horizontal_dpi: 800, vertical_dpi: 800},
-      ]
+      ],
     };
 
     model.destination = testDestination3;
@@ -624,16 +624,17 @@ suite(model_test.suiteName, function() {
           color: {
             option: [
               {type: 'STANDARD_COLOR', is_default: true},
-              {type: 'STANDARD_MONOCHROME'}
+              {type: 'STANDARD_MONOCHROME'},
             ],
-            reset_to_default: resetToDefault
+            reset_to_default: resetToDefault,
           },
           duplex: {
             option: [
-              {type: 'NO_DUPLEX', is_default: true}, {type: 'LONG_EDGE'},
-              {type: 'SHORT_EDGE'}
+              {type: 'NO_DUPLEX', is_default: true},
+              {type: 'LONG_EDGE'},
+              {type: 'SHORT_EDGE'},
             ],
-            reset_to_default: resetToDefault
+            reset_to_default: resetToDefault,
           },
           dpi: {
             option: [
@@ -644,7 +645,7 @@ suite(model_test.suiteName, function() {
               },
               {horizontal_dpi: stickyDpi, vertical_dpi: stickyDpi},
             ],
-            reset_to_default: resetToDefault
+            reset_to_default: resetToDefault,
           },
           media_size: {
             option: [
@@ -660,11 +661,11 @@ suite(model_test.suiteName, function() {
                 width_microns: 215900,
                 height_microns: 215900,
                 custom_display_name: stickyMediaSizeDisplayName,
-              }
+              },
             ],
-            reset_to_default: resetToDefault
-          }
-        }
+            reset_to_default: resetToDefault,
+          },
+        },
       };
     };
     // Sticky settings that contain different values from the default values

@@ -135,7 +135,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
                                       text: 'baz',
                                       targetUrl: {url: 'https://baz.com'},
                                     })),
-      }
+      },
     }));
     const moduleElement =
         await recipeTasksDescriptor.initialize(0) as TaskModuleElement;
@@ -269,7 +269,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
                 info: 'bar info',
                 targetUrl: {url: 'https://bar.com'},
               },
-            ]
+            ],
           };
           handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 

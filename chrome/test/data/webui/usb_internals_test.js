@@ -193,8 +193,24 @@ function createDeviceWithValidDeviceDescriptor() {
   deviceRemote.setDeviceDescriptor({
     status: UsbTransferStatus.COMPLETED,
     data: [
-      0x12, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x40, 0x50, 0x10, 0xEF, 0x17,
-      0x21, 0x03, 0x01, 0x02, 0x00, 0x01
+      0x12,
+      0x01,
+      0x00,
+      0x02,
+      0x00,
+      0x00,
+      0x00,
+      0x40,
+      0x50,
+      0x10,
+      0xEF,
+      0x17,
+      0x21,
+      0x03,
+      0x01,
+      0x02,
+      0x00,
+      0x01,
     ],
   });
   return deviceRemote;
@@ -342,10 +358,17 @@ suite('UsbInternalsUITest', function() {
     assertEquals(11, treeItems.length);
 
     const labels = [
-      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
-      'Protocol Code: 0', 'Port Number: 0', 'Vendor Id: 0x1050',
-      'Product Id: 0x17EF', 'Device Version: 3.2.1', 'Manufacturer Name: test',
-      'WebUSB Landing Page: http://google.com', 'Active Configuration: 1'
+      'USB Version: 2.0.0',
+      'Class Code: 0 (Device)',
+      'Subclass Code: 0',
+      'Protocol Code: 0',
+      'Port Number: 0',
+      'Vendor Id: 0x1050',
+      'Product Id: 0x17EF',
+      'Device Version: 3.2.1',
+      'Manufacturer Name: test',
+      'WebUSB Landing Page: http://google.com',
+      'Active Configuration: 1',
     ];
     labels.forEach((label, i) => {
       assertEquals(label, treeItems[i].labelElement.textContent);
@@ -370,12 +393,20 @@ suite('UsbInternalsUITest', function() {
     assertEquals(14, treeItems.length);
 
     const labels = [
-      'Length (should be 18): 18', 'Descriptor Type (should be 0x01): 0x01',
-      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
-      'Protocol Code: 0', 'Control Pipe Maximum Packet Size: 64',
-      'Vendor ID: 0x1050', 'Product ID: 0x17EF', 'Device Version: 3.2.1',
-      'Manufacturer String Index: 1GET', 'Product String Index: 2GET',
-      'Serial Number Index: 0', 'Number of Configurations: 1'
+      'Length (should be 18): 18',
+      'Descriptor Type (should be 0x01): 0x01',
+      'USB Version: 2.0.0',
+      'Class Code: 0 (Device)',
+      'Subclass Code: 0',
+      'Protocol Code: 0',
+      'Control Pipe Maximum Packet Size: 64',
+      'Vendor ID: 0x1050',
+      'Product ID: 0x17EF',
+      'Device Version: 3.2.1',
+      'Manufacturer String Index: 1GET',
+      'Product String Index: 2GET',
+      'Serial Number Index: 0',
+      'Number of Configurations: 1',
     ];
     labels.forEach((label, i) => {
       assertEquals(label, treeItems[i].labelElement.textContent);
@@ -444,9 +475,13 @@ suite('UsbInternalsUITest', function() {
     assertEquals(7, treeItems.length);
 
     const labels = [
-      'Length (should be 18): 18', 'Descriptor Type (should be 0x01): 0x01',
-      'USB Version: 2.0.0', 'Class Code: 0 (Device)', 'Subclass Code: 0',
-      'Protocol Code: 0', 'Control Pipe Maximum Packet Size: 64'
+      'Length (should be 18): 18',
+      'Descriptor Type (should be 0x01): 0x01',
+      'USB Version: 2.0.0',
+      'Class Code: 0 (Device)',
+      'Subclass Code: 0',
+      'Protocol Code: 0',
+      'Control Pipe Maximum Packet Size: 64',
     ];
     labels.forEach((label, i) => {
       assertEquals(label, treeItems[i].labelElement.textContent);

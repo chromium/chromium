@@ -35,7 +35,7 @@ const preview_generation_test = {
     ChangeMarginsByPagesPerSheet: 'change margins by pages per sheet',
     ZeroDefaultMarginsClearsHeaderFooter:
         'zero default margins clears header/footer',
-  }
+  },
 };
 
 Object.assign(window, {preview_generation_test: preview_generation_test});
@@ -202,7 +202,7 @@ suite(preview_generation_test.suiteName, function() {
             marginTop: 25,
             marginRight: 40,
             marginBottom: 20,
-            marginLeft: 50
+            marginLeft: 50,
           });
           return nativeLayer.whenCalled('getPreview');
         })
@@ -223,7 +223,7 @@ suite(preview_generation_test.suiteName, function() {
             marginTop: 25,
             marginRight: 40,
             marginBottom: 20,
-            marginLeft: 50
+            marginLeft: 50,
           });
           return nativeLayer.whenCalled('getPreview');
         })

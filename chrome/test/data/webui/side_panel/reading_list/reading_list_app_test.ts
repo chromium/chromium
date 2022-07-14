@@ -72,7 +72,7 @@ suite('ReadingListAppTest', () => {
           read: true,
           displayTimeSinceUpdate: '7 minutes ago',
         },
-      ]
+      ],
     };
 
     return entries;
@@ -91,8 +91,10 @@ suite('ReadingListAppTest', () => {
 
   test('return all entries', async () => {
     const urls = [
-      'https://www.google.com', 'https://www.apple.com', 'https://www.bing.com',
-      'https://www.yahoo.com'
+      'https://www.google.com',
+      'https://www.apple.com',
+      'https://www.bing.com',
+      'https://www.yahoo.com',
     ];
     assertEntryURLs(queryItems(), urls);
   });
@@ -204,8 +206,10 @@ suite('ReadingListAppTest', () => {
 
   test('Keyboard navigation abides by item list range boundaries', async () => {
     const urls = [
-      'https://www.google.com', 'https://www.apple.com', 'https://www.bing.com',
-      'https://www.yahoo.com'
+      'https://www.google.com',
+      'https://www.apple.com',
+      'https://www.bing.com',
+      'https://www.yahoo.com',
     ];
     const selector = readingListApp.shadowRoot!.querySelector('iron-selector')!;
 

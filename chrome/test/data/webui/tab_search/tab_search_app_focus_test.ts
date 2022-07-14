@@ -177,7 +177,7 @@ suite('TabSearchAppFocusTest', () => {
       windows: [{
         active: true,
         height: windowHeight,
-        tabs: generateSampleTabsFromSiteNames(sampleSiteNames(4))
+        tabs: generateSampleTabsFromSiteNames(sampleSiteNames(4)),
       }],
       recentlyClosedTabs: generateSampleRecentlyClosedTabs(
           'Sample Tab', 1, sampleToken(0n, 1n)),

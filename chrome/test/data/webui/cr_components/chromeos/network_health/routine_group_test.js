@@ -37,7 +37,7 @@ function createRoutines() {
       type: 1,
       result: createResult(RoutineVerdict.kNoProblem),
       ariaDescription: '',
-    }
+    },
   ];
 }
 

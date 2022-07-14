@@ -83,5 +83,5 @@ AccessibilityTest.ruleIds = [
   'th-has-data-cells',
   'valid-lang',
   'video-caption',
-  'video-description'
+  'video-description',
 ];

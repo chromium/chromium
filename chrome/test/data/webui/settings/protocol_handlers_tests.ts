@@ -27,7 +27,7 @@ suite('ProtocolHandlers', function() {
         protocol: 'mailto',
         protocol_display_name: 'email',
         spec: 'http://www.google.com/%s',
-        is_default: true
+        is_default: true,
       }],
       protocol: 'mailto',
       protocol_display_name: 'email',
@@ -39,19 +39,19 @@ suite('ProtocolHandlers', function() {
           protocol: 'webcal',
           protocol_display_name: 'web calendar',
           spec: 'http://www.google1.com/%s',
-          is_default: true
+          is_default: true,
         },
         {
           host: 'www.google2.com',
           protocol: 'webcal',
           protocol_display_name: 'web calendar',
           spec: 'http://www.google2.com/%s',
-          is_default: false
-        }
+          is_default: false,
+        },
       ],
       protocol: 'webcal',
       protocol_display_name: 'web calendar',
-    }
+    },
   ];
 
   /**
@@ -64,7 +64,7 @@ suite('ProtocolHandlers', function() {
         protocol: 'mailto',
         protocol_display_name: 'email',
         spec: 'http://www.google.com/%s',
-        app_id: 'testID'
+        app_id: 'testID',
       }],
       protocol: 'mailto',
       protocol_display_name: 'email',
@@ -76,19 +76,19 @@ suite('ProtocolHandlers', function() {
           protocol: 'webcal',
           protocol_display_name: 'web calendar',
           spec: 'http://www.google1.com/%s',
-          app_id: 'testID1'
+          app_id: 'testID1',
         },
         {
           host: 'www.google2.com',
           protocol: 'webcal',
           protocol_display_name: 'web calendar',
           spec: 'http://www.google2.com/%s',
-          app_id: 'testID2'
-        }
+          app_id: 'testID2',
+        },
       ],
       protocol: 'webcal',
       protocol_display_name: 'web calendar',
-    }
+    },
   ];
 
   /**
@@ -102,7 +102,7 @@ suite('ProtocolHandlers', function() {
         protocol: 'mailto',
         protocol_display_name: 'email',
         spec: 'http://www.google1.com/%s',
-        app_id: 'testID1'
+        app_id: 'testID1',
       }],
       protocol: 'mailto',
       protocol_display_name: 'email',
@@ -114,19 +114,19 @@ suite('ProtocolHandlers', function() {
           protocol: 'webcal',
           protocol_display_name: 'web calendar',
           spec: 'http://www.google.com/%s',
-          app_id: 'testID'
+          app_id: 'testID',
         },
         {
           host: 'www.google3.com',
           protocol: 'webcal',
           protocol_display_name: 'web calendar',
           spec: 'http://www.google3.com/%s',
-          app_id: 'testID3'
-        }
+          app_id: 'testID3',
+        },
       ],
       protocol: 'webcal',
       protocol_display_name: 'web calendar',
-    }
+    },
   ];
 
   /**
@@ -137,7 +137,7 @@ suite('ProtocolHandlers', function() {
     protocol: 'web+ignored',
     protocol_display_name: 'web+ignored',
     spec: 'https://www.google.com/search?q=ignored+%s',
-    is_default: false
+    is_default: false,
   }];
 
   /**

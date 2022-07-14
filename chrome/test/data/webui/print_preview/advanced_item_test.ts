@@ -24,7 +24,7 @@ const advanced_item_test = {
     UpdateCheckbox: 'update checkbox',
     QueryName: 'query name',
     QueryOption: 'query option',
-  }
+  },
 };
 
 Object.assign(window, {advanced_item_test: advanced_item_test});

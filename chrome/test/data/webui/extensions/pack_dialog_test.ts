@@ -122,7 +122,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
       item_path: '',
       pem_path: '',
       override_flags: 0,
-      status: chrome.developerPrivate.PackStatus.SUCCESS
+      status: chrome.developerPrivate.PackStatus.SUCCESS,
     };
 
     packDialog.$.rootDirBrowse.click();
@@ -171,7 +171,7 @@ suite(extension_pack_dialog_tests.suiteName, function() {
       item_path: '',
       pem_path: '',
       override_flags: 0,
-      status: chrome.developerPrivate.PackStatus.ERROR
+      status: chrome.developerPrivate.PackStatus.ERROR,
     };
 
     packDialog.$.rootDirBrowse.click();

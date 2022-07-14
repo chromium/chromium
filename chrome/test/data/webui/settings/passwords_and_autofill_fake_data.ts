@@ -303,7 +303,7 @@ export class PasswordSectionElementFactory {
       profile: {
         password_manager_leak_detection: {
           value: true,
-        }
+        },
       },
     };
     this.document.body.appendChild(passwordsSection);
