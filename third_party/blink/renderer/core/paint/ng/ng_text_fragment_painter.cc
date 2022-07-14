@@ -406,39 +406,42 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const unsigned length = fragment_paint_info.to - fragment_paint_info.from;
   const unsigned start_offset = fragment_paint_info.from;
   const unsigned end_offset = fragment_paint_info.to;
-
-  if (LIKELY(!highlight_painter.Selection() &&
-             (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() ||
-              highlight_painter.LayerCount() == 1))) {
-    // Fast path: just paint the text, including its shadows.
-    decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
-    decoration_painter.PaintExceptLineThrough();
-    text_painter.Paint(start_offset, end_offset, length, text_style, node_id,
-                       auto_dark_mode);
-    decoration_painter.PaintOnlyLineThrough();
-  } else if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() &&
-             !highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
-    // Old slow path: paint suppressing text proper where ::selection active.
-    decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
-    decoration_painter.PaintExceptLineThrough();
-    highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
-        text_painter, start_offset, end_offset, length, text_style, node_id,
-        auto_dark_mode);
-    decoration_painter.PaintOnlyLineThrough();
-  } else if (!highlight_painter.Selection() ||
-             !highlight_painter.Selection()->ShouldPaintSelectedTextOnly()) {
-    DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
-    // New slow path: paint suppressing text proper where highlighted, then
-    // paint each highlight overlay, suppressing unless topmost highlight.
-    highlight_painter.PaintOriginatingText(text_style, node_id);
-
-    highlight_painter.PaintHighlightOverlays(
-        text_style, node_id, paint_marker_backgrounds, rotation);
+  NGHighlightPainter::Case highlight_case = highlight_painter.PaintCase();
+  switch (highlight_case) {
+    case NGHighlightPainter::kNoHighlights:
+    case NGHighlightPainter::kFastSpellingGrammar:
+      // Fast path: just paint the text, including its shadows.
+      decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+      decoration_painter.PaintExceptLineThrough();
+      text_painter.Paint(start_offset, end_offset, length, text_style, node_id,
+                         auto_dark_mode);
+      decoration_painter.PaintOnlyLineThrough();
+      if (highlight_case == NGHighlightPainter::kFastSpellingGrammar)
+        highlight_painter.FastPaintSpellingGrammarDecorations();
+      break;
+    case NGHighlightPainter::kOverlay:
+      // Slow path: paint suppressing text proper where highlighted, then
+      // paint each highlight overlay, suppressing unless topmost highlight.
+      highlight_painter.PaintOriginatingText(text_style, node_id);
+      highlight_painter.PaintHighlightOverlays(
+          text_style, node_id, paint_marker_backgrounds, rotation);
+      break;
+    case NGHighlightPainter::kOldSelection:
+      // Slow path: paint suppressing text proper where ::selection active.
+      decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+      decoration_painter.PaintExceptLineThrough();
+      highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
+          text_painter, start_offset, end_offset, length, text_style, node_id,
+          auto_dark_mode);
+      decoration_painter.PaintOnlyLineThrough();
+      break;
+    case NGHighlightPainter::kSelectionOnly:
+      // Do nothing, and paint the selection later.
+      break;
   }
 
   // Paint ::selection background.
-  if (UNLIKELY(!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() &&
-               highlight_painter.Selection())) {
+  if (UNLIKELY(highlight_case == NGHighlightPainter::kOldSelection)) {
     if (paint_marker_backgrounds) {
       highlight_painter.Selection()->PaintSelectionBackground(
           context, node, document, style, rotation);
@@ -453,10 +456,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   // Paint ::selection foreground only (for selection drag image only, unless
   // HighlightOverlayPainting is disabled).
-  if (UNLIKELY(
-          highlight_painter.Selection() &&
-          (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() ||
-           highlight_painter.Selection()->ShouldPaintSelectedTextOnly()))) {
+  if (UNLIKELY(highlight_case == NGHighlightPainter::kSelectionOnly ||
+               highlight_case == NGHighlightPainter::kOldSelection)) {
     decoration_painter.Begin(NGTextDecorationPainter::kSelection);
     decoration_painter.PaintExceptLineThrough();
     highlight_painter.Selection()->PaintSelectedText(

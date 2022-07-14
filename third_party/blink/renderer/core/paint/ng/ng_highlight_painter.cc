@@ -374,6 +374,13 @@ NGHighlightPainter::NGHighlightPainter(
     spelling_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kSpelling);
     grammar_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kGrammar);
     custom_ = MarkersFor(node_, is_ellipsis, DocumentMarker::kCustomHighlight);
+  }
+
+  paint_case_ = ComputePaintCase();
+
+  // |layers_| and |parts_| are only needed when using the full overlay painting
+  // algorithm, otherwise we can leave them empty.
+  if (paint_case_ == kOverlay) {
     Vector<HighlightLayer> layers = NGHighlightOverlay::ComputeLayers(
         GetHighlightRegistry(node_), GetSelectionStatus(selection_), custom_,
         grammar_, spelling_, target_);
@@ -442,22 +449,12 @@ void NGHighlightPainter::Paint(Phase phase) {
 
     switch (marker->GetType()) {
       case DocumentMarker::kSpelling:
-      case DocumentMarker::kGrammar: {
-        if (fragment_item_.GetNode()->GetDocument().Printing())
-          break;
-        if (phase == kBackground)
-          continue;
-
-        DocumentMarkerPainter::PaintDocumentMarker(
-            paint_info_, box_origin_, style_, marker->GetType(),
-            MarkerRectForForeground(fragment_item_, text, paint_start_offset,
-                                    paint_end_offset),
-            HighlightPaintingUtils::HighlightTextDecorationColor(
-                style_, node_,
-                marker->GetType() == DocumentMarker::kSpelling
-                    ? kPseudoIdSpellingError
-                    : kPseudoIdGrammarError));
-      } break;
+      case DocumentMarker::kGrammar:
+        if (phase == kForeground) {
+          PaintOneSpellingGrammarDecoration(
+              marker->GetType(), text, paint_start_offset, paint_end_offset);
+        }
+        break;
 
       case DocumentMarker::kTextMatch: {
         const Document& document = node_->GetDocument();
@@ -590,9 +587,93 @@ void NGHighlightPainter::Paint(Phase phase) {
   }
 }
 
+NGHighlightPainter::Case NGHighlightPainter::PaintCase() const {
+  return paint_case_;
+}
+
+NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
+  if (selection_ && selection_->ShouldPaintSelectedTextOnly())
+    return kSelectionOnly;
+  if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled())
+    return selection_ ? kOldSelection : kNoHighlights;
+
+  // This can yield false positives (weakening the optimisation below) if there
+  // are non-spelling/grammar highlights that are all outside the text fragment.
+  if (selection_ || !target_.IsEmpty() || !custom_.IsEmpty())
+    return kOverlay;
+
+  if (!spelling_.IsEmpty() || !grammar_.IsEmpty()) {
+    // Just check if there are no spelling/grammar styles at all, which is
+    // simpler and faster than checking all the relevant properties, but may
+    // yield false negatives (weakening the optimisation below).
+    bool spelling_ok =
+        spelling_.IsEmpty() || !HighlightPaintingUtils::HighlightPseudoStyle(
+                                   node_, style_, kPseudoIdSpellingError);
+    bool grammar_ok =
+        grammar_.IsEmpty() || !HighlightPaintingUtils::HighlightPseudoStyle(
+                                  node_, style_, kPseudoIdGrammarError);
+
+    // If there are only spelling and/or grammar highlights, and they use the
+    // default style that only adds decorations without adding a background or
+    // changing the text color, we don’t need the expense of overlay painting.
+    return spelling_ok && grammar_ok ? kFastSpellingGrammar : kOverlay;
+  }
+
+  return kNoHighlights;
+}
+
+void NGHighlightPainter::FastPaintSpellingGrammarDecorations() const {
+  DCHECK_EQ(paint_case_, kFastSpellingGrammar);
+  DCHECK(fragment_item_.GetNode());
+  const auto& text_node = To<Text>(*fragment_item_.GetNode());
+  const StringView text = cursor_.CurrentText();
+
+  // ::spelling-error overlay is drawn on top of ::grammar-error overlay.
+  // https://drafts.csswg.org/css-pseudo-4/#highlight-backgrounds
+  FastPaintSpellingGrammarDecorations(text_node, text, grammar_);
+  FastPaintSpellingGrammarDecorations(text_node, text, spelling_);
+}
+
+void NGHighlightPainter::FastPaintSpellingGrammarDecorations(
+    const Text& text_node,
+    const StringView& text,
+    const DocumentMarkerVector& markers) const {
+  for (const DocumentMarker* marker : markers) {
+    const unsigned marker_start_offset =
+        GetTextContentOffset(text_node, marker->StartOffset());
+    const unsigned marker_end_offset =
+        GetTextContentOffset(text_node, marker->EndOffset());
+    const unsigned paint_start_offset =
+        ClampOffset(marker_start_offset, fragment_item_);
+    const unsigned paint_end_offset =
+        ClampOffset(marker_end_offset, fragment_item_);
+    if (paint_start_offset == paint_end_offset)
+      continue;
+    PaintOneSpellingGrammarDecoration(marker->GetType(), text,
+                                      paint_start_offset, paint_end_offset);
+  }
+}
+
+void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
+    const DocumentMarker::MarkerType& marker_type,
+    const StringView& text,
+    unsigned paint_start_offset,
+    unsigned paint_end_offset) const {
+  if (fragment_item_.GetNode()->GetDocument().Printing())
+    return;
+  DocumentMarkerPainter::PaintDocumentMarker(
+      paint_info_, box_origin_, style_, marker_type,
+      MarkerRectForForeground(fragment_item_, text, paint_start_offset,
+                              paint_end_offset),
+      HighlightPaintingUtils::HighlightTextDecorationColor(
+          style_, node_,
+          marker_type == DocumentMarker::kSpelling ? kPseudoIdSpellingError
+                                                   : kPseudoIdGrammarError));
+}
+
 void NGHighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
                                               DOMNodeId node_id) {
-  DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
+  DCHECK_EQ(paint_case_, kOverlay);
 
   // First paint the shadows for the whole range.
   if (text_style.shadow) {
@@ -622,7 +703,7 @@ void NGHighlightPainter::PaintHighlightOverlays(
     DOMNodeId node_id,
     bool paint_marker_backgrounds,
     absl::optional<AffineTransform> rotation) {
-  DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
+  DCHECK_EQ(paint_case_, kOverlay);
 
   // |node| might not be a Text node (e.g. <br>), or it might be nullptr (e.g.
   // ::first-letter). In both cases, we should still try to paint kOriginating
