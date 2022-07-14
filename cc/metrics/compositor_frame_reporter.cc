@@ -94,6 +94,14 @@ constexpr base::TimeDelta kEventLatencyHistogramMax = base::Seconds(5);
 constexpr int kEventLatencyHistogramBucketCount = 100;
 constexpr base::TimeDelta kHighLatencyMin = base::Milliseconds(75);
 
+// Number of stages of the current PipelineReporter
+constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount);
+// Stores the weight of the most recent data point used in percentage when
+// predicting substages' latency. (It is stored and calculated in percentage
+// since TimeDelta calculate based on microseconds instead of nanoseconds,
+// therefore, decimals of stage durations in microseconds may be lost.)
+constexpr double kWeightOfCurStageInPercent = 25;
+
 std::string GetCompositorLatencyHistogramName(
     FrameReportType report_type,
     FrameSequenceTrackerType frame_sequence_tracker_type,
@@ -1215,6 +1223,66 @@ void CompositorFrameReporter::AdoptReporter(
 
   owned_partial_update_dependents_.push(std::move(reporter));
   DiscardOldPartialUpdateReporters();
+}
+
+void CompositorFrameReporter::CalculateStageLatencyPrediction(
+    std::vector<base::TimeDelta>& previous_predictions) {
+  // `stage_history_` should not be empty since we are calling this function
+  // from DidPresentCompositorFrame(), which means there has to be some sort of
+  // stage data.
+  DCHECK(!stage_history_.empty());
+
+  int index_of_total_latency = static_cast<int>(StageType::kTotalLatency);
+
+  // The bad case of having `previous_predictions` being 0s should never happen
+  // since this function always only record the current PipelineReporter's
+  // duration if its duration is not 0s. Investigate if such rare case happens.
+  DCHECK(!previous_predictions[index_of_total_latency].is_zero())
+      << "previous_predictions should theoretically never have duration of 0s ";
+
+  base::TimeDelta total_pipeline_latency =
+      stage_history_.back().end_time - stage_history_[0].start_time;
+
+  // Do not record current breakdown stages' duration if the total latency of
+  // the current PipelineReporter is 0s. And no further predictions could be
+  // made in this case.
+  if (total_pipeline_latency.is_zero())
+    return;
+
+  // Note that `current_stage_durations` would always have the same length as
+  // `previous_predictions`, since each index represent the breakdown stages of
+  // the PipelineReporter listed at enum class, StageType.
+  std::vector<base::TimeDelta> current_stage_durations(kNumOfStages,
+                                                       base::Microseconds(0));
+  for (auto stage : stage_history_) {
+    base::TimeDelta substageLatency = stage.end_time - stage.start_time;
+    current_stage_durations[static_cast<int>(stage.stage_type)] =
+        substageLatency;
+  }
+  current_stage_durations[index_of_total_latency] = total_pipeline_latency;
+
+  // Do not record current pipeline details or update predictions if no frame
+  // is submitted.
+  if (current_stage_durations
+          [static_cast<int>(
+               StageType::kSubmitCompositorFrameToPresentationCompositorFrame)]
+              .is_zero())
+    return;
+
+  // The previous prediction is initialized to be -1, so check if the current
+  // PipelineReporter is the first reporter ever to be calculated.
+  if (previous_predictions[index_of_total_latency] == base::Microseconds(-1)) {
+    previous_predictions = current_stage_durations;
+  } else {
+    // TODO(crbug.com/1334823): Perform latency attribution.
+
+    for (int i = 0; i < kNumOfStages; i++) {
+      previous_predictions[i] =
+          (kWeightOfCurStageInPercent * current_stage_durations[i] +
+           (100 - kWeightOfCurStageInPercent) * previous_predictions[i]) /
+          100;
+    }
+  }
 }
 
 void CompositorFrameReporter::SetPartialUpdateDecider(

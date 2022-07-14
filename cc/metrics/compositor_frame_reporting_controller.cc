@@ -23,6 +23,7 @@ using StageType = CompositorFrameReporter::StageType;
 using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 
 constexpr char kTraceCategory[] = "cc,benchmark";
+constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount);
 }  // namespace
 
 CompositorFrameReportingController::CompositorFrameReportingController(
@@ -31,7 +32,9 @@ CompositorFrameReportingController::CompositorFrameReportingController(
     int layer_tree_host_id)
     : should_report_histograms_(should_report_histograms),
       layer_tree_host_id_(layer_tree_host_id),
-      latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()) {
+      latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()),
+      previous_latency_predictions_main_(kNumOfStages, base::Microseconds(-1)),
+      previous_latency_predictions_impl_(kNumOfStages, base::Microseconds(-1)) {
   if (should_report_ukm) {
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.
@@ -316,6 +319,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     main_reporter->AddEventsMetrics(
         std::move(events_metrics.main_event_metrics));
     main_reporter->set_has_missing_content(has_missing_content);
+    main_reporter->set_reporter_type_to_main();
     submitted_compositor_frames_.emplace_back(frame_token,
                                               std::move(main_reporter));
   }
@@ -330,6 +334,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     impl_reporter->set_has_missing_content(has_missing_content);
     impl_reporter->set_is_accompanied_by_main_thread_update(
         is_activated_frame_new);
+    impl_reporter->set_reporter_type_to_impl();
     submitted_compositor_frames_.emplace_back(frame_token,
                                               std::move(impl_reporter));
   }
@@ -470,6 +475,17 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     reporter->SetVizBreakdown(details);
     reporter->TerminateFrame(termination_status,
                              details.presentation_feedback.timestamp);
+
+    switch (reporter->get_reporter_type()) {
+      case CompositorFrameReporter::ReporterType::kImpl:
+        reporter->CalculateStageLatencyPrediction(
+            previous_latency_predictions_impl_);
+        break;
+      case CompositorFrameReporter::ReporterType::kMain:
+        reporter->CalculateStageLatencyPrediction(
+            previous_latency_predictions_main_);
+        break;
+    }
 
     if (termination_status == FrameTerminationStatus::kPresentedFrame) {
       // If there are outstanding metrics from dropped frames older than this
