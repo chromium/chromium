@@ -421,6 +421,22 @@ config("compiler") {
     }
   }
 
+  # Apple compiler flags setup.
+  # ---------------------------------
+  if (is_apple) {
+    # On Intel, clang emits both Apple's "compact unwind" information and
+    # DWARF eh_frame unwind information by default, for compatibility reasons.
+    # This flag tells it to emit eh_frame informantion only for functions
+    # whose unwind information can't be expressed in the compact unwind format
+    # (which in practice means almost everything gets only compact unwind
+    # entries). This reduces object file size a bit and makes linking a bit
+    # faster.
+    # On arm64, this is already the default behavior.
+    if (current_cpu == "x64") {
+      cflags += [ "-femit-dwarf-unwind=no-compact-unwind" ]
+    }
+  }
+
   # Linux/Android/Fuchsia common flags setup.
   # ---------------------------------
   if (is_linux || is_chromeos || is_android || is_fuchsia) {
