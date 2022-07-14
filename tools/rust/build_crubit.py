@@ -35,12 +35,18 @@ from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
                          STAGE0_JSON_SHA256, THIRD_PARTY_DIR,
                          GetPackageVersion)
 
-# Trunk on 2022-06-13.
-CRUBIT_REVISION = '0a25665ed0df6d4f067bfd5855be1c24d2df3f6c'
+# Trunk on 2022-07-13.
+#
+# The revision specified below should typically be the same as the
+# `crubit_revision` specified in the //DEPS file.
+#
+# TODO(https://crbug.com/1329611): Move `CRUBIT_REVISION` to `update_rust.py`
+# (see WIP CL: https://crrev.com/c/3718281).
+CRUBIT_REVISION = '07b3390a62412543c80226db44eecc317bbfcee0'
 CRUBIT_SUB_REVISION = 1
 
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
-CRUBIT_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'crubit')
+CRUBIT_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'crubit', 'src')
 
 
 def RunCommand(command, env=None, cwd=None, fail_hard=True):
