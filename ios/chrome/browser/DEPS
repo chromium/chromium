@@ -89,6 +89,7 @@ include_rules = [
   "+components/search_provider_logos",
   "+components/security_interstitials",
   "+components/security_state",
+  "+components/segmentation_platform/public",
   "+components/send_tab_to_self",
   "+components/services/patch",
   "+components/services/unzip",

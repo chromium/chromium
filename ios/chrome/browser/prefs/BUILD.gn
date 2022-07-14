@@ -60,6 +60,7 @@ source_set("browser_prefs") {
     "//components/proxy_config",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search_engines",
+    "//components/segmentation_platform/public",
     "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/strings",
