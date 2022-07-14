@@ -6,7 +6,7 @@
 dictionary CanvasRenderingContext2DSettings {
     boolean alpha = true;
     boolean desynchronized = false;
-    [RuntimeEnabled=CanvasColorManagement] PredefinedColorSpace colorSpace = "srgb";
+    PredefinedColorSpace colorSpace = "srgb";
     [RuntimeEnabled=CanvasColorManagementV2] CanvasPixelFormat pixelFormat = "uint8";
     boolean willReadFrequently = false;
 };

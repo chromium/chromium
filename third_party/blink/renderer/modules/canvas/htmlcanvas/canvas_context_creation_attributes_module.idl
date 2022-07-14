@@ -38,7 +38,7 @@ dictionary CanvasContextCreationAttributesModule {
 
     // Canvas 2D attributes
     boolean alpha = true;  // Also used for WebGL.
-    [RuntimeEnabled=CanvasColorManagement] PredefinedColorSpace colorSpace = "srgb";
+    PredefinedColorSpace colorSpace = "srgb";
     [RuntimeEnabled=CanvasColorManagementV2] CanvasPixelFormat pixelFormat = "uint8";
     boolean willReadFrequently = false;
 

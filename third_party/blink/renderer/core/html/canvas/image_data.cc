@@ -46,11 +46,6 @@ ImageData* ImageData::ValidateAndCreate(
     ValidateAndCreateParams params,
     ExceptionState& exception_state) {
   gfx::Size size;
-  if (params.require_canvas_color_management &&
-      !RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
-    exception_state.ThrowTypeError("Overload resolution failed.");
-    return nullptr;
-  }
   if (params.require_canvas_color_management_v2 &&
       !RuntimeEnabledFeatures::CanvasColorManagementV2Enabled()) {
     exception_state.ThrowTypeError("Overload resolution failed.");

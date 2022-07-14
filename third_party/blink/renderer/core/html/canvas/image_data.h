@@ -64,10 +64,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    ValidateAndCreateParams params;
-    params.require_canvas_color_management = true;
-    return ValidateAndCreate(width, height, absl::nullopt, settings, params,
-                             exception_state);
+    return ValidateAndCreate(width, height, absl::nullopt, settings,
+                             ValidateAndCreateParams(), exception_state);
   }
 
   // Constructors that take Uint8ClampedArray, width, optional height, and
@@ -90,10 +88,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    ValidateAndCreateParams params;
-    params.require_canvas_color_management = true;
-    return ValidateAndCreate(width, height, data, settings, params,
-                             exception_state);
+    return ValidateAndCreate(width, height, data, settings,
+                             ValidateAndCreateParams(), exception_state);
   }
 
   // Constructor that takes DOMUint16Array, width, optional height, and optional
@@ -147,10 +143,6 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
     // canvas, it has historically thrown a RangeError. This flag will
     // trigger the RangeError path.
     bool context_2d_error_mode = false;
-    // Constructors in IDL files cannot specify RuntimeEnabled restrictions.
-    // This argument is passed by Create functions that should require that the
-    // CanvasColorManagement feature be enabled.
-    bool require_canvas_color_management = false;
     // Constructors in IDL files cannot specify RuntimeEnabled restrictions.
     // This argument is passed by Create functions that should require that the
     // CanvasColorManagementV2 feature be enabled.
