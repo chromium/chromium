@@ -1203,6 +1203,18 @@
       'enable': True,
     },
   },
+  'webgpu_telemetry_cts': {
+    '$mixin_append': {
+      'args': [
+        '--extra-browser-args=--force_high_performance_gpu',
+        '--retry-limit=3',
+        '--jobs=4',
+      ],
+      'linux_args': [
+        '--extra-browser-args=--enable-features=Vulkan',
+      ],
+    },
+  },
   'win10': {
     'swarming': {
       'dimensions': {

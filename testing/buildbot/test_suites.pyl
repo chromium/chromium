@@ -2915,39 +2915,56 @@
 
     'gpu_dawn_telemetry_cts_tests': {
       'webgpu_cts': {
-        'args': [
-          '--extra-browser-args=--force_high_performance_gpu',
-          '--retry-limit=3',
-          '--jobs=4',
-        ],
-        'linux_args': [
-          '--extra-browser-args=--enable-features=Vulkan',
-        ],
         'mixins': [
           'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
         ],
         'swarming': {
           'shards': 14,
         },
+      },
+      'webgpu_swiftshader_web_platform_cts': {
+        'args': [
+          '--use-webgpu-adapter=swiftshader',
+          '--test-filter=*web_platform*',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'telemetry_test_name': 'webgpu_cts',
       },
     },
 
     'gpu_dawn_telemetry_cts_tests_with_validation': {
       'webgpu_cts_with_validation': {
         'args': [
-          '--extra-browser-args=--force_high_performance_gpu',
           '--enable-dawn-backend-validation',
-          '--retry-limit=3',
-          '--jobs=4',
-        ],
-        'linux_args': [
-          '--extra-browser-args=--enable-features=Vulkan',
         ],
         'mixins': [
           'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
         ],
         'swarming': {
           'shards': 14,
+        },
+        'telemetry_test_name': 'webgpu_cts',
+      },
+      'webgpu_swiftshader_web_platform_cts_with_validation': {
+        'args': [
+          '--use-webgpu-adapter=swiftshader',
+          '--test-filter=*web_platform*',
+          '--enable-dawn-backend-validation',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+        ],
+        'swarming': {
+          'shards': 2,
         },
         'telemetry_test_name': 'webgpu_cts',
       },
