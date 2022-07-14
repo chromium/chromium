@@ -87,9 +87,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.WINDOWS_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -115,9 +112,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.WINDOWS_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -253,9 +247,6 @@ ci.builder(
     cores = 32,
     cq_mirrors_console_view = "mirrors",
     os = os.WINDOWS_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -286,9 +277,6 @@ ci.builder(
     cores = 32,
     cq_mirrors_console_view = "mirrors",
     os = os.WINDOWS_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
