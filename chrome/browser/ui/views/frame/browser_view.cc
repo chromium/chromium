@@ -911,7 +911,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 #endif
 
-  if (browser_->is_type_normal() && IsSideSearchEnabled(browser_->profile())) {
+  if (side_search::IsEnabledForBrowser(browser_.get())) {
     if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
       side_search_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
       left_aligned_side_panel_separator_ =

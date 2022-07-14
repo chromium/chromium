@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_search/side_search_prefs.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/side_search/side_search_tab_data.pb.h"
@@ -112,6 +113,10 @@ bool IsSidePanelWebContents(content::WebContents* web_contents) {
 bool IsDSESupportEnabled(const Profile* profile) {
   return base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
          IsSideSearchEnabled(profile);
+}
+
+bool IsEnabledForBrowser(const Browser* browser) {
+  return IsSideSearchEnabled(browser->profile()) && browser->is_type_normal();
 }
 
 }  // namespace side_search

@@ -301,7 +301,7 @@ void LocationBarView::Init() {
     // TODO(crbug.com/1318890): Improve the ordering heuristics for page action
     // icons and determine a way to handle simultaneous icon animations.
     if (side_search::IsDSESupportEnabled(profile_) &&
-        browser_->is_type_normal()) {
+        side_search::IsEnabledForBrowser(browser_)) {
       params.types_enabled.push_back(PageActionIconType::kSideSearch);
     }
     params.types_enabled.push_back(PageActionIconType::kSendTabToSelf);
