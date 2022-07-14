@@ -1027,7 +1027,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Clear" units="ms" expires_after="M106">
+<histogram name="V8.GCFinalizeMC.Clear" units="ms" expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1037,7 +1037,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Epilogue" units="ms" expires_after="M106">
+<histogram name="V8.GCFinalizeMC.Epilogue" units="ms" expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1046,7 +1046,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Finish" units="ms" expires_after="M106">
+<histogram name="V8.GCFinalizeMC.Finish" units="ms" expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1066,7 +1066,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Prologue" units="ms" expires_after="M106">
+<histogram name="V8.GCFinalizeMC.Prologue" units="ms" expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1075,17 +1075,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Sweep" units="ms" expires_after="M106">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>hpayer@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent in the sweeping phase of incremental latency-optimized
-    Mark-Compact GC.
-  </summary>
-</histogram>
-
-<histogram name="V8.GCFinalizeMCBackground" units="ms" expires_after="M106">
+<histogram name="V8.GCFinalizeMCBackground" units="ms" expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1095,7 +1085,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMCForeground" units="ms" expires_after="M106">
+<histogram name="V8.GCFinalizeMCForeground" units="ms" expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1117,24 +1107,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCFinalizeMCReduceMemoryBackground" units="ms"
-    expires_after="M106">
+    expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
     Time spent in the final atomic pause of incremental memory-optimized
-    Mark-Compact GC in a background isolate.
+    Mark-Compact GC in a background isolate. Recorded at the end of the garbage
+    collection.
   </summary>
 </histogram>
 
 <histogram name="V8.GCFinalizeMCReduceMemoryForeground" units="ms"
-    expires_after="M106">
+    expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
     Time spent in the final atomic pause of incremental memory-optimized
-    Mark-Compact GC in a foreground isolate.
+    Mark-Compact GC in a foreground isolate. Recorded at the end of the garbage
+    collection.
   </summary>
 </histogram>
 
