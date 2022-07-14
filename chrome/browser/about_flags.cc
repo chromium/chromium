@@ -8721,12 +8721,6 @@ const FeatureEntry kFeatureEntries[] = {
          kAutofillSaveCardUiExperimentOptions,
          "AutofillSaveCardUiExperiment")},
 
-#if BUILDFLAG(IS_MAC)
-    {"force-60hz", flag_descriptions::kForce60HzName,
-     flag_descriptions::kForce60HzDescription, kOsMac,
-     FEATURE_VALUE_TYPE(display::features::kForce60Hz)},
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_ANDROID)
     {"network-service-in-process",
      flag_descriptions::kNetworkServiceInProcessName,

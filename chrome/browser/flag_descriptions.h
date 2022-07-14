@@ -3474,11 +3474,6 @@ extern const char kSkipUndecryptablePasswordsName[];
 extern const char kSkipUndecryptablePasswordsDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_MAC)
-extern const char kForce60HzName[];
-extern const char kForce60HzDescription[];
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 extern const char kAsyncDnsName[];
 extern const char kAsyncDnsDescription[];

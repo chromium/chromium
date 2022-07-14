@@ -3475,11 +3475,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "force-60hz",
-    "owners": [ "sky" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "force-color-profile",
     "owners": [ "ccameron" ],
     // Used by developers and manual testing to test custom color profiles.

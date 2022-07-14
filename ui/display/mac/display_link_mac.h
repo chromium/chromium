@@ -95,9 +95,6 @@ class DISPLAY_EXPORT DisplayLinkMac
   base::TimeTicks recalculate_time_;
 
   std::vector<VSyncUpdatedCallback> vsync_updated_callbacks_;
-
-  // TODO(sky): temporary, will remove after doing some analysis.
-  const bool force_60hz_;
 };
 
 }  // namespace ui
