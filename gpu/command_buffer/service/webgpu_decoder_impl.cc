@@ -1524,7 +1524,6 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
                "WebGPUDecoderImpl::HandleDawnCommands", "bytes", size);
 
   if (!wire_server_->HandleCommands(shm_commands, size)) {
-    NOTREACHED();
     return error::kLostContext;
   }
 
