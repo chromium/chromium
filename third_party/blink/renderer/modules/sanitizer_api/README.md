@@ -4,7 +4,10 @@ This implements the [Sanitizer API](https://wicg.github.io/sanitizer-api/).
 
 ## Status
 
-The Sanitizer API is currently behind a flag:
+A basic version of the Sanitizer API - chiefly the `Element.setHTML` method -
+is available.
+
+The full Sanitizer API is currently behind a flag:
 * --enable-blink-features=SanitizerAPI or
 * --enable-experimental-web-platform-features or
 * chrome://flags#sanitizer-api
@@ -26,7 +29,7 @@ can be controlled via flags:
 
 * `--enable-blink-features=SanitizerAPIv0`: This includes the basic Sanitizer
   API with configuration and the `Element.setHTML` method, but not the
-  `.sanitizeFor` or `.sanitize` methods.
+  `.sanitizeFor` or `.sanitize` methods. This flag is on by default.
 * `--enable-blink-features=SanitizerAPI`: This includes `SanitizerAPv0`
   plus the sanitization methods of the `Sanitizer` object, as specified
   as of 04/2022. These APIs are likely to change.

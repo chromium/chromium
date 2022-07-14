@@ -2091,7 +2091,7 @@
     },
     {
       name: "SanitizerAPIv0",
-      status: "experimental",
+      status: "stable",
       implied_by: ["SanitizerAPI"],
     },
 

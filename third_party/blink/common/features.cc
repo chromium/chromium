@@ -959,7 +959,7 @@ const base::FeatureParam<std::string>
 const base::Feature kSanitizerAPI{"SanitizerAPI",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSanitizerAPIv0{"SanitizerAPIv0",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether the Sanitizer API allows namespaced content (SVG + MathML).
 //
