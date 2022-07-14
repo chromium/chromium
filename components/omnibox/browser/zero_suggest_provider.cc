@@ -266,7 +266,19 @@ const TemplateURL* ZeroSuggestProvider::GetTemplateURL(bool is_keyword) const {
 }
 
 const AutocompleteInput ZeroSuggestProvider::GetInput(bool is_keyword) const {
-  return input_;
+  // In zero-suggest, input is expected to empty, as it is checked against the
+  // suggest response which always has an empty query. If those don't match,
+  // the response is dropped. Ensure the input text is empty. However copy
+  // over the URL. on-focus zero-suggest on Web/SRP on Mobile relies on the
+  // URL to be set.
+  AutocompleteInput input(std::u16string(),
+                          input_.current_page_classification(),
+                          client()->GetSchemeClassifier());
+  input.set_current_url(input_.current_url());
+  input.set_current_title(input_.current_title());
+  input.set_prevent_inline_autocomplete(true);
+  input.set_allow_exact_keyword_match(false);
+  return input;
 }
 
 bool ZeroSuggestProvider::ShouldAppendExtraParams(
