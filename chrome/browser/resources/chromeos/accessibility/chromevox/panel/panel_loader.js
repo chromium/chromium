@@ -30,7 +30,6 @@ goog.require('PanelNodeMenuItemData');
 goog.require('QueueMode');
 goog.require('RecoveryStrategy');
 goog.require('Spannable');
-goog.require('StringUtil');
 goog.require('TextLog');
 goog.require('TtsCategory');
 

@@ -7,7 +7,9 @@
  * text in an input field.  This class cooperates with the Braille IME
  * that is built into Chrome OS to do the actual text editing.
  */
+
 import {EventGenerator} from '../../../common/event_generator.js';
+import {StringUtil} from '../../../common/string_util.js';
 
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';

@@ -12,6 +12,7 @@ const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
+import {StringUtil} from '../string_util.js';
 
 /**
  * The special index that represents a cursor pointing to a node without

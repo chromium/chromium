@@ -6,9 +6,7 @@
  * @fileoverview Utilities for strings.
  */
 
-goog.provide('StringUtil');
-
-StringUtil = class {
+export class StringUtil {
   constructor() {}
 
   /**
@@ -84,8 +82,7 @@ StringUtil = class {
     }
     return result;
   }
-};
-
+}
 
 /**
  * The last code point of the Unicode basic multilingual plane.
