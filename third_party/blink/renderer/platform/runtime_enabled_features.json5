@@ -466,10 +466,6 @@
       status:  {"Android": "stable", "default": "test"},
     },
     {
-      name: "ContainIntrinsicSizeAuto",
-      status: "stable",
-    },
-    {
       name: "ContentIndex",
       status:  {"Android": "stable", "default": "experimental"},
     },

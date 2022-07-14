@@ -2513,9 +2513,7 @@ CSSValue* ConsumeIntrinsicSizeLonghandNew(CSSParserTokenRange& range,
 
 CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
                                        const CSSParserContext& context) {
-  if (RuntimeEnabledFeatures::ContainIntrinsicSizeAutoEnabled())
-    return ConsumeIntrinsicSizeLonghandNew(range, context);
-  return ConsumeIntrinsicSizeLonghandOld(range, context);
+  return ConsumeIntrinsicSizeLonghandNew(range, context);
 }
 
 static CSSValue* ConsumeCrossFade(CSSParserTokenRange& args,

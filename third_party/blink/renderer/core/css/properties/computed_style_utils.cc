@@ -3051,18 +3051,13 @@ CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
         intrinsic_length->GetLength(), style);
   }
 
-  if (RuntimeEnabledFeatures::ContainIntrinsicSizeAutoEnabled()) {
-    if (!intrinsic_length)
-      return CSSIdentifierValue::Create(CSSValueID::kNone);
-    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-    if (intrinsic_length->HasAuto())
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
-    list->Append(*length);
-    return list;
-  }
   if (!intrinsic_length)
-    return CSSIdentifierValue::Create(CSSValueID::kAuto);
-  return length;
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (intrinsic_length->HasAuto())
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+  list->Append(*length);
+  return list;
 }
 
 std::unique_ptr<CrossThreadStyleValue>
