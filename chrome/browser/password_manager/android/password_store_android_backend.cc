@@ -228,6 +228,7 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
 bool IsUnrecoverableError(AndroidBackendAPIErrorCode api_error_code) {
   switch (api_error_code) {
     case AndroidBackendAPIErrorCode::kDeveloperError:
+    case AndroidBackendAPIErrorCode::kBadRequest:
       return false;
     default:
       return true;
