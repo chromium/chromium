@@ -1686,9 +1686,6 @@ int InputMethodController::ComputeWebTextInputNextPreviousFlags() const {
 }
 
 ui::TextInputAction InputMethodController::InputActionOfFocusedElement() const {
-  if (!RuntimeEnabledFeatures::EnterKeyHintAttributeEnabled())
-    return ui::TextInputAction::kDefault;
-
   AtomicString action =
       GetEnterKeyHintAttribute(GetDocument().FocusedElement());
 

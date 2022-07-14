@@ -48,7 +48,7 @@
     // HTMLElement includes ElementContentEditable
     // https://html.spec.whatwg.org/C/#contenteditable
     [CEReactions, RaisesException=Setter] attribute DOMString contentEditable;
-    [RuntimeEnabled=EnterKeyHintAttribute, CEReactions, Reflect, ReflectOnly=("enter","done","go","next","previous","search","send")] attribute DOMString enterKeyHint;
+    [CEReactions, Reflect, ReflectOnly=("enter","done","go","next","previous","search","send")] attribute DOMString enterKeyHint;
     [ImplementedAs=isContentEditableForBinding] readonly attribute boolean isContentEditable;
     [CEReactions, Reflect, ReflectOnly=("none","text","tel","url","email","numeric","decimal","search")] attribute DOMString inputMode;
 
