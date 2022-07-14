@@ -1017,6 +1017,7 @@ void PrintViewManagerBase::SetPrintingRFH(content::RenderFrameHost* rfh) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 bool PrintViewManagerBase::RegisterSystemPrintClient() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(printing::features::kEnableOopPrintDriversJobPrint.Get());
   DCHECK(!service_manager_client_id_.has_value());
   service_manager_client_id_ =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
@@ -1030,6 +1031,7 @@ bool PrintViewManagerBase::RegisterSystemPrintClient() {
 
 void PrintViewManagerBase::UnregisterSystemPrintClient() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(printing::features::kEnableOopPrintDriversJobPrint.Get());
   if (!service_manager_client_id_.has_value())
     return;
 

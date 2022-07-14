@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/printing_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
@@ -113,10 +114,12 @@ bool PrintViewManager::PrintForSystemDialogNow(
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Register this worker so that the service persists as long as the user
-  // keeps the system print dialog UI displayed.
-  if (!RegisterSystemPrintClient())
-    return false;
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+    // Register this worker so that the service persists as long as the user
+    // keeps the system print dialog UI displayed.
+    if (!RegisterSystemPrintClient())
+      return false;
+  }
 #endif
 
   SetPrintingRFH(print_preview_rfh_);
