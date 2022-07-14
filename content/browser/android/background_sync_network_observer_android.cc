@@ -31,10 +31,8 @@ void BackgroundSyncNetworkObserverAndroid::Observer::Init() {
   // Attach a Java BackgroundSyncNetworkObserver object. Its lifetime will be
   // scoped to the lifetime of this object.
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaGlobalRef<jobject> obj(
-      Java_BackgroundSyncNetworkObserver_createObserver(
-          env, reinterpret_cast<jlong>(this)));
-  j_observer_.Reset(obj);
+  j_observer_ = Java_BackgroundSyncNetworkObserver_createObserver(
+      env, reinterpret_cast<jlong>(this));
 }
 
 BackgroundSyncNetworkObserverAndroid::Observer::~Observer() {
@@ -42,7 +40,6 @@ BackgroundSyncNetworkObserverAndroid::Observer::~Observer() {
   Java_BackgroundSyncNetworkObserver_removeObserver(
       env, j_observer_, reinterpret_cast<jlong>(this));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  j_observer_.Release();
 }
 
 void BackgroundSyncNetworkObserverAndroid::Observer::
