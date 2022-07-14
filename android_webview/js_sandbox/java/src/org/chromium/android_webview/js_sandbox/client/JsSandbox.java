@@ -36,7 +36,26 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.concurrent.GuardedBy;
 
-/** Sandbox that can execute JS in a safe environment. This class is thread safe. */
+/**
+ * Sandbox that provides APIs for JavaScript evaluation in a restricted environment.
+ *
+ * JsSandbox represents a connection to an isolated process. The isolated process will be exclusive
+ * to the calling app (i.e. it doesn't share anything with, and can't be compromised by another
+ * app's isolated process).
+ * <p>
+ * Code that is run in a sandbox does not have any access to data
+ * belonging to the original app unless explicitly passed into it by using the methods of this
+ * class. This provides a security boundary between the calling app and the Javascript execution
+ * environment.
+ * <p>
+ * The calling app can only have only one isolated process at a time, so only one
+ * instance of this object can exist at a time.
+ * <p>
+ * It's safe to share a single {@link JsSandbox}
+ * object with multiple threads and use it from multiple threads at once.
+ * For example, {@link JsSandbox} can be stored at a global location and multiple threads can create
+ * their own {@link JsIsolate} objects from it but the {@link JsIsolate} object cannot be shared.
+ */
 public class JsSandbox implements AutoCloseable {
     // TODO(crbug.com/1297672): Add capability to this class to support spawning
     // different processes as needed. This might require that we have a static
@@ -74,34 +93,43 @@ public class JsSandbox implements AutoCloseable {
 
     /**
      * Feature for {@link #isFeatureSupported(String)}.
-     * <p>This features provides additional behaviour to {@link JsIsolate#close()}. When this
+     *
+     * When this
      * feature is present, {@link JsIsolate#close()} will terminate the currently running JS
-     * evaluation and close the isolate. If it is absent, {@link JsIsolate#close()} will close the
-     * isolate after all pending evaluations are run.
+     * evaluation and close the isolate. If it is absent, {@link JsIsolate#close()} cannot terminate
+     * any running or queued evaluations in the background,
+     * so the isolate will continue to consume resources until they complete.
+     * <p>
+     * Irrespective of this feature, calling {@link JsSandbox#close()} will terminate all
+     * {@link JsIsolate} objects (and the isolated process) immediately and all pending
+     * {@link JsIsolate#evaluateJavascriptAsync(String)} futures will resolve with {@link
+     * IsolateTerminatedException}.
      */
     public static final String ISOLATE_TERMINATION = "ISOLATE_TERMINATION";
 
     /**
      * Feature for {@link #isFeatureSupported(String)}.
-     * <p>This features provides additional behaviour to {@link
-     * JsIsolate#evaluateJavascriptAsync(String)} ()}. When this feature is present, we support the
-     * JS to return promises, and {@link JsIsolate#evaluateJavascriptAsync(String)} waits for the
-     * promise to resolve and returns the resolved value of the promise.
+     *
+     * When this feature is present, JS expressions may return promises. The Future returned by
+     * {@link JsIsolate#evaluateJavascriptAsync(String)} will resolve to the promise's result,
+     * once the promise resolves.
      */
     public static final String PROMISE_RETURN = "PROMISE_RETURN";
 
     /**
      * Feature for {@link #isFeatureSupported(String)}.
-     * This feature covers {@link JsIsolate#provideNamedData(String, byte[])}
-     * <p>This also covers the JS API android.consumeNamedDataAsArrayBuffer(string).
+     * When this feature is present, {@link JsIsolate#provideNamedData(String, byte[])} can be used.
+     * <p>
+     * This also covers the JS API android.consumeNamedDataAsArrayBuffer(string).
      */
     public static final String PROVIDE_CONSUME_ARRAY_BUFFER = "PROVIDE_CONSUME_ARRAY_BUFFER";
 
     /**
      * Feature for {@link #isFeatureSupported(String)}.
-     * <p>This features provides additional behaviour to {@link
-     * JsIsolate#evaluateJavascriptAsync(String)} ()}. When this feature is present, we support
-     * using the JS API WebAssembly.compile(ArrayBuffer).
+     *
+     * This features provides additional behaviour to {@link
+     * JsIsolate#evaluateJavascriptAsync(String)} ()}. When this feature is present, the JS API
+     * WebAssembly.compile(ArrayBuffer) can be used.
      */
     public static final String WASM_COMPILATION = "WASM_COMPILATION";
 
@@ -159,12 +187,17 @@ public class JsSandbox implements AutoCloseable {
     }
 
     /**
-     * Use this method to create new instances that are connected to the service. We only support
-     * creation of a single connected instance, we would need to add restrictions to enforce this.
+     * Asynchronously create and connect to the sandbox process.
+     *
+     * Only one sandbox process can exist at a time. Attempting to create a new instance before
+     * the previous instance has been closed will fail with an {@link IllegalStateException}.
      *
      * @param context When the context is destroyed, the connection will be closed. Use an
      *         application
      *     context if the connection is expected to outlive a single activity/service.
+     *
+     * @return Future that evaluates to a connected {@link JsSandbox} instance or an exception if
+     *     binding to service fails.
      */
     @NonNull
     public static ListenableFuture<JsSandbox> newConnectedInstanceAsync(@NonNull Context context) {
@@ -226,7 +259,9 @@ public class JsSandbox implements AutoCloseable {
         // This should be at the end of the constructor.
     }
 
-    /** Creates an execution isolate within which JS can be executed multiple times. */
+    /**
+     * Creates and returns an {@link JsIsolate} within which JS can be executed.
+     */
     @NonNull
     public JsIsolate createIsolate() {
         synchronized (mLock) {
@@ -268,7 +303,18 @@ public class JsSandbox implements AutoCloseable {
     }
 
     /**
-     * Feature detection interface.
+     * Checks whether a given feature is supported by the JS Sandbox implementation.
+     *
+     * The sandbox implementation is provided by the version of WebView installed on the device.
+     * The app must use this method to check which library features are supported by the device's
+     * implementation before using them.
+     * <p>
+     * A feature check should be made prior to depending
+     * on features enlisted in {@link JsSandboxFeature}.
+     *
+     * @param feature feature to be checked
+     *
+     * @return {@code true} if supported, {@code false} otherwise
      */
     public boolean isFeatureSupported(@NonNull @JsSandboxFeature String feature) {
         synchronized (mLock) {
@@ -291,6 +337,16 @@ public class JsSandbox implements AutoCloseable {
         }
     }
 
+    /**
+     * Closes the {@link JsSandbox} object and renders it unusable.
+     *
+     * The client is expected to call this method explicitly to terminate the isolated process.
+     * <p>
+     * Once closed, no more {@link JsSandbox} and {@link JsIsolate} method calls can be made.
+     * Closing will terminate the isolated process immediately. All pending evaluations are
+     * immediately terminated. Once closed, the client may call {@link
+     * JsSandbox#newConnectedInstanceAsync(Context)} to create another {@link JsSandbox}.
+     */
     @Override
     public void close() {
         doClose(new IsolateTerminatedException());
