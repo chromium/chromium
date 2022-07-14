@@ -340,8 +340,8 @@ suite('InternetDetailPage', function() {
       wifiNetwork.proxySetings = {
         type: {
           activeValue: 'Manual',
-          policySource: mojom.PolicySource.kUserPolicyEnforced
-        }
+          policySource: mojom.PolicySource.kUserPolicyEnforced,
+        },
       };
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
@@ -365,8 +365,8 @@ suite('InternetDetailPage', function() {
       wifiNetwork.proxySetings = {
         type: {
           activeValue: 'Manual',
-          policySource: mojom.PolicySource.kDevicePolicyEnforced
-        }
+          policySource: mojom.PolicySource.kDevicePolicyEnforced,
+        },
       };
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
@@ -525,8 +525,8 @@ suite('InternetDetailPage', function() {
             publicKey: 'KFhwdv4+jKpSXMW6xEUVtOe4Mo8l/xOvGmshmjiHx1Y=',
             endpoint: '192.168.66.66:32000',
             allowedIps: '0.0.0.0/0',
-          }]
-        }
+          }],
+        },
       };
       wg1.staticIpConfig = {ipAddress: {activeValue: '10.10.0.1'}};
       initManagedVpn(wg1);
@@ -1064,7 +1064,7 @@ suite('InternetDetailPage', function() {
           iccid: TEST_ICCID,
           isPrimary: true,
         }],
-        macAddress: TEST_MAC_ADDRESS
+        macAddress: TEST_MAC_ADDRESS,
       };
 
       mojoApi_.setDeviceStateForTest(deviceState);
@@ -1086,7 +1086,7 @@ suite('InternetDetailPage', function() {
           iccid: TEST_ICCID,
           isPrimary: true,
         }],
-        macAddress: MISSING_MAC_ADDRESS
+        macAddress: MISSING_MAC_ADDRESS,
       };
       mojoApi_.setDeviceStateForTest(deviceState);
       await flushAsync();

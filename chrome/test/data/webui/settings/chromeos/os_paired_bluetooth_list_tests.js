@@ -81,7 +81,7 @@ suite('OsPairedBluetoothListTest', function() {
         address: 'device-address',
         show: true,
         element: document.createElement('div'),
-      }
+      },
     }));
 
     await flushAsync();
@@ -94,7 +94,7 @@ suite('OsPairedBluetoothListTest', function() {
         address: 'device-address',
         show: false,
         element: document.createElement('div'),
-      }
+      },
     }));
     await flushAsync();
     assertFalse(getTooltip()._showing);

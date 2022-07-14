@@ -67,7 +67,7 @@ suite('NearbyShare', function() {
       kComplete: true,
       kRejected: true,
       MIN_VALUE: true,
-      MAX_VALUE: true
+      MAX_VALUE: true,
     };
 
     let key;

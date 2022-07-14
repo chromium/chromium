@@ -27,7 +27,7 @@ suite('<app-management-resize-lock-item>', () => {
     // selected app.
     const defaultArcOptions = {
       type: appManagement.mojom.AppType.kArc,
-      permissions: {}
+      permissions: {},
     };
     const defaultArcApp = await fakeHandler.addApp('app', defaultArcOptions);
     await fakeHandler.flushPipesForTesting();

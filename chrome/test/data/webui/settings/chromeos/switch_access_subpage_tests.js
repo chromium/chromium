@@ -62,32 +62,32 @@ suite('SwitchAccessSubpageTests', function() {
                 key: 'settings.a11y.switch_access.auto_scan.enabled',
                 type: chrome.settingsPrivate.PrefType.BOOLEAN,
                 value: false,
-              }
+              },
             },
             next: {
               device_key_codes: {
                 key: 'settings.a11y.switch_access.next.device_key_codes',
                 type: chrome.settingsPrivate.PrefType.DICTIONARY,
-                value: {}
-              }
+                value: {},
+              },
             },
             previous: {
               device_key_codes: {
                 key: 'settings.a11y.switch_access.previous.device_key_codes',
                 type: chrome.settingsPrivate.PrefType.DICTIONARY,
-                value: {}
-              }
+                value: {},
+              },
             },
             select: {
               device_key_codes: {
                 key: 'settings.a11y.switch_access.select.device_key_codes',
                 type: chrome.settingsPrivate.PrefType.DICTIONARY,
-                value: {}
-              }
-            }
-          }
-        }
-      }
+                value: {},
+              },
+            },
+          },
+        },
+      },
     };
   }
 
@@ -121,7 +121,7 @@ suite('SwitchAccessSubpageTests', function() {
     webUIListenerCallback('switch-access-assignments-changed', {
       select: keys.map(key => ({key, device: 'usb'})),
       next: [],
-      previous: []
+      previous: [],
     });
 
     return page.shadowRoot.querySelector('#selectLinkRow')
@@ -268,7 +268,7 @@ suite('SwitchAccessSubpageTests', function() {
     });
     const prefs = getDefaultPrefs();
     prefs.settings.a11y.switch_access.select.device_key_codes.value = {
-      25: 'usb'
+      25: 'usb',
     };
     initPage(prefs);
 

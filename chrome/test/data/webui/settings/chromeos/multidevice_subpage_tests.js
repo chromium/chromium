@@ -455,7 +455,7 @@ suite('Multidevice', function() {
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -477,7 +477,7 @@ suite('Multidevice', function() {
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -500,7 +500,7 @@ suite('Multidevice', function() {
               appsAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -523,7 +523,7 @@ suite('Multidevice', function() {
               appsAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -552,7 +552,7 @@ suite('Multidevice', function() {
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -575,7 +575,7 @@ suite('Multidevice', function() {
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -600,7 +600,7 @@ suite('Multidevice', function() {
               appsAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -624,7 +624,7 @@ suite('Multidevice', function() {
               appsAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -648,7 +648,7 @@ suite('Multidevice', function() {
               appsAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -678,7 +678,7 @@ suite('Multidevice', function() {
               appsAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -708,7 +708,7 @@ suite('Multidevice', function() {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -732,7 +732,7 @@ suite('Multidevice', function() {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+                  PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -756,7 +756,7 @@ suite('Multidevice', function() {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -780,7 +780,7 @@ suite('Multidevice', function() {
               phoneHubNotificationsState:
                   MultiDeviceFeatureState.ENABLED_BY_USER,
               notificationAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -813,7 +813,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -839,7 +839,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -865,7 +865,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -892,7 +892,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -919,7 +919,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -946,7 +946,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -972,7 +972,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
-              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED
+              appsAccessStatus: PhoneHubFeatureAccessStatus.ACCESS_GRANTED,
             });
 
         flush();
@@ -999,7 +999,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.ENABLED_BY_USER,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -1041,7 +1041,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -1073,7 +1073,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -1103,7 +1103,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -1135,7 +1135,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -1168,7 +1168,7 @@ suite('Multidevice', function() {
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.PROHIBITED_BY_POLICY,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -1200,7 +1200,7 @@ suite('Multidevice', function() {
               notificationAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
               appsAccessStatus:
-                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED
+                  PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
             });
 
         flush();
@@ -1231,7 +1231,7 @@ suite('Multidevice', function() {
               notificationAccessStatus:
                   PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
-              appsAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED
+              appsAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED,
             });
 
         flush();
@@ -1261,7 +1261,7 @@ suite('Multidevice', function() {
                   MultiDeviceFeatureState.DISABLED_BY_USER,
               notificationAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED,
               phoneHubAppsState: MultiDeviceFeatureState.DISABLED_BY_USER,
-              appsAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED
+              appsAccessStatus: PhoneHubFeatureAccessStatus.PROHIBITED,
             });
 
         flush();

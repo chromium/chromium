@@ -23,10 +23,10 @@ function getFakePrefs() {
             key: 'ash.user.bluetooth.adapter_enabled',
             type: chrome.settingsPrivate.PrefType.BOOLEAN,
             value: false,
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   };
 }
 
@@ -331,8 +331,10 @@ suite('Bluetooth', function() {
 
     test('pair device', async function() {
       bluetoothApi.simulateDevicesAddedForTest([
-        fakeUnpairedDevice1, fakeUnpairedDevice2, fakePairedDevice1,
-        fakePairedDevice2
+        fakeUnpairedDevice1,
+        fakeUnpairedDevice2,
+        fakePairedDevice1,
+        fakePairedDevice2,
       ]);
 
       await waitForListUpdateTimeout();
@@ -355,8 +357,10 @@ suite('Bluetooth', function() {
 
     test('pair dialog', async function() {
       bluetoothApi.simulateDevicesAddedForTest([
-        fakeUnpairedDevice1, fakeUnpairedDevice2, fakePairedDevice1,
-        fakePairedDevice2
+        fakeUnpairedDevice1,
+        fakeUnpairedDevice2,
+        fakePairedDevice1,
+        fakePairedDevice2,
       ]);
       await waitForListUpdateTimeout();
 
@@ -665,8 +669,10 @@ suite('Bluetooth', function() {
 
       test('Unpaired and paired devices: devices added', async function() {
         bluetoothApi.simulateDevicesAddedForTest([
-          fakeUnpairedDevice1, fakeUnpairedDevice2, fakePairedDevice1,
-          fakePairedDevice2
+          fakeUnpairedDevice1,
+          fakeUnpairedDevice2,
+          fakePairedDevice1,
+          fakePairedDevice2,
         ]);
 
         await waitForListUpdateTimeout();

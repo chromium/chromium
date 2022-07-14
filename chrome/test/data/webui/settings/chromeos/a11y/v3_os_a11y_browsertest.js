@@ -25,7 +25,7 @@ const axeOptionsExcludeLinkInTextBlock =
       'rules':
           Object.assign({}, OSSettingsAccessibilityV3Test.axeOptions.rules, {
             'link-in-text-block': {enabled: false},
-          })
+          }),
     });
 
 // TODO(crbug.com/1180696): This block prevents generation of a
@@ -37,7 +37,7 @@ const axeOptionsDocumentTitle =
       'rules':
           Object.assign({}, OSSettingsAccessibilityV3Test.axeOptions.rules, {
             'document-title': {enabled: false},
-          })
+          }),
     });
 
 const multideviceFeatureViolationFilter =
@@ -51,7 +51,7 @@ const multideviceFeatureViolationFilter =
     });
 
 const crostiniFeatureList = {
-  enabled: ['features::kCrostini']
+  enabled: ['features::kCrostini'],
 };
 
 function crostiniTestGenPreamble() {
@@ -64,7 +64,7 @@ function crostiniTestGenPreamble() {
 const crostiniConfig = {
   featureList: crostiniFeatureList,
   options: axeOptionsDocumentTitle,
-  testGenPreamble: crostiniTestGenPreamble
+  testGenPreamble: crostiniTestGenPreamble,
 };
 
 const crostiniSubpageOptionsRules = Object.assign(
@@ -75,53 +75,69 @@ const crostiniSubpageConfig = {
   options: Object.assign(
       {}, OSSettingsAccessibilityV3Test.axeOptions,
       {'rules': crostiniSubpageOptionsRules}),
-  testGenPreamble: crostiniTestGenPreamble
+  testGenPreamble: crostiniTestGenPreamble,
 };
 
 [[
-  'Basic', 'basic_a11y_v3_test.js', {options: axeOptionsExcludeLinkInTextBlock}
+  'Basic',
+  'basic_a11y_v3_test.js',
+  {options: axeOptionsExcludeLinkInTextBlock},
 ],
  [
-   'GoogleAssistant', 'google_assistant_a11y_v3_test.js',
-   {options: axeOptionsDocumentTitle}
+   'GoogleAssistant',
+   'google_assistant_a11y_v3_test.js',
+   {options: axeOptionsDocumentTitle},
  ],
  [
-   'ManageAccessibility', 'manage_accessibility_a11y_v3_test.js',
-   {options: axeOptionsDocumentTitle}
+   'ManageAccessibility',
+   'manage_accessibility_a11y_v3_test.js',
+   {options: axeOptionsDocumentTitle},
  ],
  [
-   'Multidevice', 'multidevice_a11y_v3_test.js',
-   {options: axeOptionsDocumentTitle}
+   'Multidevice',
+   'multidevice_a11y_v3_test.js',
+   {options: axeOptionsDocumentTitle},
  ],
  [
-   'CrostiniDetails', 'crostini_settings_details_a11y_v3_test.js',
-   crostiniConfig
+   'CrostiniDetails',
+   'crostini_settings_details_a11y_v3_test.js',
+   crostiniConfig,
  ],
  [
-   'CrostiniExportImport', 'crostini_settings_export_import_a11y_v3_test.js',
-   crostiniConfig
+   'CrostiniExportImport',
+   'crostini_settings_export_import_a11y_v3_test.js',
+   crostiniConfig,
  ],
  [
-   'CrostiniSharedPaths', 'crostini_settings_shared_paths_a11y_v3_test.js',
-   crostiniConfig
+   'CrostiniSharedPaths',
+   'crostini_settings_shared_paths_a11y_v3_test.js',
+   crostiniConfig,
  ],
  [
    'CrostiniSharedUsbDevices',
-   'crostini_settings_shared_usb_devices_a11y_v3_test.js', crostiniConfig
+   'crostini_settings_shared_usb_devices_a11y_v3_test.js',
+   crostiniConfig,
  ],
  [
-   'CrostiniSubpage', 'crostini_settings_subpage_a11y_v3_test.js',
-   crostiniSubpageConfig
+   'CrostiniSubpage',
+   'crostini_settings_subpage_a11y_v3_test.js',
+   crostiniSubpageConfig,
  ],
  [
-   'MultideviceFeatures', 'multidevice_features_a11y_v3_test.js',
-   {filter: multideviceFeatureViolationFilter, options: axeOptionsDocumentTitle}
+   'MultideviceFeatures',
+   'multidevice_features_a11y_v3_test.js',
+   {
+     filter: multideviceFeatureViolationFilter,
+     options: axeOptionsDocumentTitle,
+   },
  ],
  [
-   'Tts', 'tts_subpage_a11y_v3_test.js', {
+   'Tts',
+   'tts_subpage_a11y_v3_test.js',
+   {
      switches: ['enable-experimental-a11y-features'],
-     options: axeOptionsDocumentTitle
-   }
+     options: axeOptionsDocumentTitle,
+   },
  ],
 ].forEach(test => defineTest(...test));
 

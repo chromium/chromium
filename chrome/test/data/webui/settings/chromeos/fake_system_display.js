@@ -155,8 +155,8 @@ FakeSystemDisplay.prototype = {
         id: d.id,
         parentId: d.isPrimary ? '' : primaryId,
         position: chrome.system.display.LayoutPosition.RIGHT,
-        offset: 0
+        offset: 0,
       });
     }
-  }
+  },
 };

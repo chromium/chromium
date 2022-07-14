@@ -232,7 +232,7 @@ TestDevicePageBrowserProxy.prototype = {
           return Object.assign({}, app);
         }),
         !this.androidAppsReceived_);
-  }
+  },
 };
 
 function getFakePrefs() {
@@ -445,8 +445,8 @@ function getFakePrefs() {
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: 500,
         },
-      }
-    }
+      },
+    },
   };
 }
 
@@ -568,7 +568,7 @@ suite('SettingsDevicePage', function() {
           width: 3000,
           height: 2000,
           refreshRate: 100,
-        }
+        },
       ],
       bounds: {
         left: 0,
@@ -1175,7 +1175,7 @@ suite('SettingsDevicePage', function() {
               fakeSystemDisplay.getLayoutCalled.promise,
               new Promise(function(resolve, reject) {
                 setTimeout(resolve);
-              })
+              }),
             ]);
           })
           .then(function() {
@@ -1253,7 +1253,7 @@ suite('SettingsDevicePage', function() {
               fakeSystemDisplay.getLayoutCalled.promise,
               new Promise(function(resolve, reject) {
                 setTimeout(resolve);
-              })
+              }),
             ]);
           })
           .then(function() {
@@ -1276,7 +1276,7 @@ suite('SettingsDevicePage', function() {
               fakeSystemDisplay.getLayoutCalled.promise,
               new Promise(function(resolve, reject) {
                 setTimeout(resolve);
-              })
+              }),
             ]);
           })
           .then(function() {
@@ -1511,12 +1511,14 @@ suite('SettingsDevicePage', function() {
                       .requestPowerManagementSettingsCalled_);
               sendPowerManagementSettings(
                   [
-                    IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                    IdleBehavior.DISPLAY_ON
+                    IdleBehavior.DISPLAY_OFF_SLEEP,
+                    IdleBehavior.DISPLAY_OFF,
+                    IdleBehavior.DISPLAY_ON,
                   ],
                   [
-                    IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                    IdleBehavior.DISPLAY_ON
+                    IdleBehavior.DISPLAY_OFF_SLEEP,
+                    IdleBehavior.DISPLAY_OFF,
+                    IdleBehavior.DISPLAY_ON,
                   ],
                   IdleBehavior.DISPLAY_OFF_SLEEP,
                   IdleBehavior.DISPLAY_OFF_SLEEP, false /* acIdleManaged */,
@@ -1684,12 +1686,14 @@ suite('SettingsDevicePage', function() {
         const sendLid = function(lidBehavior) {
           sendPowerManagementSettings(
               [
-                IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                IdleBehavior.DISPLAY_ON
+                IdleBehavior.DISPLAY_OFF_SLEEP,
+                IdleBehavior.DISPLAY_OFF,
+                IdleBehavior.DISPLAY_ON,
               ],
               [
-                IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                IdleBehavior.DISPLAY_ON
+                IdleBehavior.DISPLAY_OFF_SLEEP,
+                IdleBehavior.DISPLAY_OFF,
+                IdleBehavior.DISPLAY_ON,
               ],
               IdleBehavior.DISPLAY_OFF, IdleBehavior.DISPLAY_OFF,
               false /* acIdleManaged */, false /* batteryIdleManaged */,
@@ -1821,12 +1825,14 @@ suite('SettingsDevicePage', function() {
                  // Send power management settings first.
                  sendPowerManagementSettings(
                      [
-                       IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                       IdleBehavior.DISPLAY_ON
+                       IdleBehavior.DISPLAY_OFF_SLEEP,
+                       IdleBehavior.DISPLAY_OFF,
+                       IdleBehavior.DISPLAY_ON,
                      ],
                      [
-                       IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                       IdleBehavior.DISPLAY_ON
+                       IdleBehavior.DISPLAY_OFF_SLEEP,
+                       IdleBehavior.DISPLAY_OFF,
+                       IdleBehavior.DISPLAY_ON,
                      ],
                      IdleBehavior.DISPLAY_ON, IdleBehavior.DISPLAY_OFF,
                      false /* acIdleManaged */, false /* batteryIdleManaged */,
@@ -1876,12 +1882,14 @@ suite('SettingsDevicePage', function() {
             .then(function() {
               sendPowerManagementSettings(
                   [
-                    IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                    IdleBehavior.DISPLAY_ON
+                    IdleBehavior.DISPLAY_OFF_SLEEP,
+                    IdleBehavior.DISPLAY_OFF,
+                    IdleBehavior.DISPLAY_ON,
                   ],
                   [
-                    IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                    IdleBehavior.DISPLAY_ON
+                    IdleBehavior.DISPLAY_OFF_SLEEP,
+                    IdleBehavior.DISPLAY_OFF,
+                    IdleBehavior.DISPLAY_ON,
                   ],
                   IdleBehavior.DISPLAY_OFF, IdleBehavior.DISPLAY_ON,
                   false /* acIdleManaged */, false /* batteryIdleManaged */,
@@ -2010,12 +2018,14 @@ suite('SettingsDevicePage', function() {
                          .hidden);
                  sendPowerManagementSettings(
                      [
-                       IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                       IdleBehavior.DISPLAY_ON
+                       IdleBehavior.DISPLAY_OFF_SLEEP,
+                       IdleBehavior.DISPLAY_OFF,
+                       IdleBehavior.DISPLAY_ON,
                      ],
                      [
-                       IdleBehavior.DISPLAY_OFF_SLEEP, IdleBehavior.DISPLAY_OFF,
-                       IdleBehavior.DISPLAY_ON
+                       IdleBehavior.DISPLAY_OFF_SLEEP,
+                       IdleBehavior.DISPLAY_OFF,
+                       IdleBehavior.DISPLAY_ON,
                      ],
                      IdleBehavior.DISPLAY_OFF_SLEEP,
                      IdleBehavior.DISPLAY_OFF_SLEEP, false /* acIdleManaged */,
@@ -2110,7 +2120,7 @@ suite('SettingsDevicePage', function() {
         name: name,
         value: value,
         preferred: preferred,
-        lockScreenSupport: lockScreenSupport
+        lockScreenSupport: lockScreenSupport,
       };
     }
 
@@ -2179,7 +2189,7 @@ suite('SettingsDevicePage', function() {
       // value set.
       browserProxy.setNoteTakingApps([
         entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
-        entry('n2', 'v2', false, LockScreenSupport.NOT_SUPPORTED)
+        entry('n2', 'v2', false, LockScreenSupport.NOT_SUPPORTED),
       ]);
       flush();
       assertEquals('v1', appSelector.value);
@@ -2189,7 +2199,7 @@ suite('SettingsDevicePage', function() {
       // Selector chooses the preferred value if set.
       browserProxy.setNoteTakingApps([
         entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
-        entry('n2', 'v2', true, LockScreenSupport.NOT_SUPPORTED)
+        entry('n2', 'v2', true, LockScreenSupport.NOT_SUPPORTED),
       ]);
       flush();
       assertEquals('v2', appSelector.value);
@@ -2199,7 +2209,7 @@ suite('SettingsDevicePage', function() {
       // Load app list.
       browserProxy.setNoteTakingApps([
         entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
-        entry('n2', 'v2', true, LockScreenSupport.NOT_SUPPORTED)
+        entry('n2', 'v2', true, LockScreenSupport.NOT_SUPPORTED),
       ]);
       flush();
       assertEquals(0, browserProxy.setPreferredAppCount_);
@@ -2230,7 +2240,7 @@ suite('SettingsDevicePage', function() {
 
       browserProxy.setNoteTakingApps([
         entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
-        entry('n2', 'v2', true, LockScreenSupport.NOT_SUPPORTED)
+        entry('n2', 'v2', true, LockScreenSupport.NOT_SUPPORTED),
       ]);
       flush();
       assertEquals(0, browserProxy.setPreferredAppCount_);
@@ -2240,7 +2250,7 @@ suite('SettingsDevicePage', function() {
     test('Deep link to preferred app', async () => {
       browserProxy.setNoteTakingApps([
         entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
-        entry('n2', 'v2', false, LockScreenSupport.NOT_SUPPORTED)
+        entry('n2', 'v2', false, LockScreenSupport.NOT_SUPPORTED),
       ]);
       browserProxy.setAndroidAppsReceived(true);
 
@@ -2344,7 +2354,7 @@ suite('SettingsDevicePage', function() {
             // Preferred app updated to be enabled on lock screen.
             browserProxy.setNoteTakingApps([
               entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
-              entry('n2', 'v2', true, LockScreenSupport.ENABLED)
+              entry('n2', 'v2', true, LockScreenSupport.ENABLED),
             ]);
             return new Promise(function(resolve) {
               stylusPage.async(resolve);
@@ -2572,7 +2582,7 @@ suite('SettingsDevicePage', function() {
       return new Promise(function(resolve) {
                browserProxy.setNoteTakingApps([
                  entry('n1', 'v1', true, LockScreenSupport.NOT_SUPPORTED),
-                 entry('n2', 'v2', false, LockScreenSupport.SUPPORTED)
+                 entry('n2', 'v2', false, LockScreenSupport.SUPPORTED),
                ]);
                stylusPage.async(resolve);
              })
@@ -2583,7 +2593,7 @@ suite('SettingsDevicePage', function() {
 
             browserProxy.setNoteTakingApps([
               entry('n1', 'v1', false, LockScreenSupport.NOT_SUPPORTED),
-              entry('n2', 'v2', true, LockScreenSupport.SUPPORTED)
+              entry('n2', 'v2', true, LockScreenSupport.SUPPORTED),
             ]);
             return new Promise(function(resolve) {
               stylusPage.async(resolve);

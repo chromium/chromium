@@ -690,7 +690,7 @@ suite('KerberosAddAccountTests', function() {
     // Cause a validation error.
     browserProxy.validateConfigResult = {
       error: KerberosErrorType.kBadConfig,
-      errorInfo: {code: KerberosConfigErrorCode.kKeyNotSupported, lineIndex: 0}
+      errorInfo: {code: KerberosConfigErrorCode.kKeyNotSupported, lineIndex: 0},
     };
 
     // Clicking the action button (aka 'Save') validates the config.

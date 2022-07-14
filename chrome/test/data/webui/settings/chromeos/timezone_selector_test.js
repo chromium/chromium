@@ -28,9 +28,9 @@ suite('TimezoneSelectorTests', function() {
         'flags': {
           'per_user_timezone_enabled': {
             value: false,
-          }
-        }
-      }
+          },
+        },
+      },
     };
     document.body.appendChild(timezoneSelector);
 
@@ -51,9 +51,9 @@ suite('TimezoneSelectorTests', function() {
         'flags': {
           'per_user_timezone_enabled': {
             value: true,
-          }
-        }
-      }
+          },
+        },
+      },
     };
     document.body.appendChild(timezoneSelector);
 

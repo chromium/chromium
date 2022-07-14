@@ -32,7 +32,7 @@ function getFakePrefs() {
       'xkb:us::eng': {
         physicalKeyboardAutoCorrectionLevel: 0,
         physicalKeyboardEnableCapitalization: false,
-      }
+      },
     },
   }];
 }

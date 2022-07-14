@@ -36,7 +36,7 @@ suite('OncMojoTest', () => {
     assertEquals(
         OncMojo.serializeSubjectAltNameMatch([
           {type: mojom.SubjectAltName_Type.kEmail, value: 'test@example.com'},
-          {type: mojom.SubjectAltName_Type.kUri, value: 'http://test.com'}
+          {type: mojom.SubjectAltName_Type.kUri, value: 'http://test.com'},
         ]),
         'EMAIL:test@example.com;URI:http://test.com');
   });
@@ -50,7 +50,7 @@ suite('OncMojoTest', () => {
     expectEqualValues('  ', []);
     expectEqualValues('EMAIL:test@example.com;uri:http://test.com', [
       {type: mojom.SubjectAltName_Type.kEmail, value: 'test@example.com'},
-      {type: mojom.SubjectAltName_Type.kUri, value: 'http://test.com'}
+      {type: mojom.SubjectAltName_Type.kUri, value: 'http://test.com'},
     ]);
     // Malformed SAN entry.
     assertEquals(

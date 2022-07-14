@@ -234,7 +234,7 @@ suite('AppNotificationsSubpageTests', function() {
       id: id,
       title: title,
       notificationPermission: permission,
-      readiness: readiness
+      readiness: readiness,
     };
   }
 

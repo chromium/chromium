@@ -87,7 +87,7 @@ suite('Multidevice', function() {
     smartLockItem.authToken =
         /** @type{chrome.quickUnlockPrivate} */ {
           lifetimeDuration: 300,
-          token: token
+          token: token,
         };
 
     // When the user requets a feature state change, an event with the relevant

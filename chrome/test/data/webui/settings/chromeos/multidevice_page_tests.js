@@ -149,7 +149,7 @@ suite('Multidevice', function() {
     multidevicePage.dispatchEvent(new CustomEvent('feature-toggle-clicked', {
       bubbles: true,
       composed: true,
-      detail: {feature: feature, enabled: enabled}
+      detail: {feature: feature, enabled: enabled},
     }));
     flush();
 
@@ -160,7 +160,7 @@ suite('Multidevice', function() {
           .dispatchEvent(new CustomEvent('token-obtained', {
             bubbles: true,
             composed: true,
-            detail: {token: 'validAuthToken', lifetimeSeconds: 300}
+            detail: {token: 'validAuthToken', lifetimeSeconds: 300},
           }));
       // Simulate closing the password prompt dialog
       multidevicePage.shadowRoot.querySelector('#multidevicePasswordPrompt')

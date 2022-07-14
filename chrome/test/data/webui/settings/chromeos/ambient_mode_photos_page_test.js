@@ -69,7 +69,7 @@ suite('AmbientModeHandler', function() {
     displayPhotosPage_(
         [
           {albumId: 'id0', checked: true, title: 'album0', url: 'url'},
-          {albumId: 'id1', checked: true, title: 'album1', url: 'url'}
+          {albumId: 'id1', checked: true, title: 'album1', url: 'url'},
         ],
         topicSource);
 
@@ -221,7 +221,7 @@ suite('AmbientModeHandler', function() {
     displayPhotosPage_(
         [
           {albumId: 'id0', checked: true, title: 'album0'},
-          {albumId: 'id1', checked: false, title: 'album1'}
+          {albumId: 'id1', checked: false, title: 'album1'},
         ],
         null);
 
@@ -248,7 +248,7 @@ suite('AmbientModeHandler', function() {
     displayPhotosPage_(
         [
           {albumId: 'id0', checked: true, title: 'album0'},
-          {albumId: 'id1', checked: false, title: 'album1'}
+          {albumId: 'id1', checked: false, title: 'album1'},
         ],
         null);
 
@@ -276,7 +276,7 @@ suite('AmbientModeHandler', function() {
     displayPhotosPage_(
         [
           {albumId: 'id0', checked: true, title: 'album0'},
-          {albumId: 'id1', checked: false, title: 'album1'}
+          {albumId: 'id1', checked: false, title: 'album1'},
         ],
         null);
 
@@ -290,7 +290,7 @@ suite('AmbientModeHandler', function() {
         [
           {albumId: 'id0', checked: true, title: 'album0'},
           {albumId: 'id1', checked: false, title: 'album1'},
-          {albumId: 'id2', checked: false, title: 'album2'}
+          {albumId: 'id2', checked: false, title: 'album2'},
         ],
         AmbientModeTopicSource.GOOGLE_PHOTOS);
 
@@ -313,7 +313,7 @@ suite('AmbientModeHandler', function() {
         [
           {albumId: 'id0', checked: true, title: 'album0'},
           {albumId: 'id1', checked: false, title: 'album1'},
-          {albumId: 'id2', checked: false, title: 'album2'}
+          {albumId: 'id2', checked: false, title: 'album2'},
         ],
         AmbientModeTopicSource.ART_GALLERY);
 
@@ -335,7 +335,7 @@ suite('AmbientModeHandler', function() {
     displayPhotosPage_(
         [
           {albumId: 'id0', checked: true, title: 'album0', url: 'url'},
-          {albumId: 'id1', checked: false, title: 'album1', url: 'url'}
+          {albumId: 'id1', checked: false, title: 'album1', url: 'url'},
         ],
         null);
 
@@ -384,7 +384,7 @@ suite('AmbientModeHandler', function() {
     displayPhotosPage_(
         [
           {albumId: 'id0', checked: true, title: 'album0', url: 'url'},
-          {albumId: 'id1', checked: true, title: 'album1', url: 'url'}
+          {albumId: 'id1', checked: true, title: 'album1', url: 'url'},
         ],
         AmbientModeTopicSource.ART_GALLERY);
 
@@ -418,7 +418,7 @@ suite('AmbientModeHandler', function() {
     displayPhotosPage_(
         [
           {albumId: 'id0', checked: true, title: 'album0', url: 'url'},
-          {albumId: 'id1', checked: false, title: 'album1', url: 'url'}
+          {albumId: 'id1', checked: false, title: 'album1', url: 'url'},
         ],
         null);
 
@@ -458,7 +458,7 @@ suite('AmbientModeHandler', function() {
     displayPhotosPage_(
         [
           {albumId: 'id0', checked: true, title: 'album0', url: 'url'},
-          {albumId: 'id1', checked: false, title: 'album1', url: 'url'}
+          {albumId: 'id1', checked: false, title: 'album1', url: 'url'},
         ],
         null);
 
@@ -574,7 +574,7 @@ suite('AmbientModeHandler', function() {
     webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.ART_GALLERY,
       albumId: 'id0',
-      url: url
+      url: url,
     });
     assertEquals(url, album0.album.url);
   });
@@ -596,7 +596,7 @@ suite('AmbientModeHandler', function() {
     webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.GOOGLE_PHOTOS,
       albumId: 'id0',
-      url: url
+      url: url,
     });
     assertFalse(!!album0.album.url);
   });
@@ -621,7 +621,7 @@ suite('AmbientModeHandler', function() {
     webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.ART_GALLERY,
       albumId: 'id0',
-      url: url
+      url: url,
     });
     assertEquals(url, album0.album.url);
 
@@ -652,7 +652,7 @@ suite('AmbientModeHandler', function() {
     webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.GOOGLE_PHOTOS,
       albumId: 'id0',
-      recentHighlightsUrls: [url, url, url, url]
+      recentHighlightsUrls: [url, url, url, url],
     });
     assertEquals(url, album0.album.recentHighlightsUrls[0]);
     assertEquals(url, album0.album.recentHighlightsUrls[1]);
@@ -701,7 +701,7 @@ suite('AmbientModeHandler', function() {
     webUIListenerCallback('album-preview-changed', {
       topicSource: AmbientModeTopicSource.GOOGLE_PHOTOS,
       albumId: 'id0',
-      recentHighlightsUrls: [url, url, url]
+      recentHighlightsUrls: [url, url, url],
     });
     assertEquals(url, album0.album.recentHighlightsUrls[0]);
     assertEquals(url, album0.album.recentHighlightsUrls[1]);
@@ -739,14 +739,14 @@ suite('AmbientModeHandler', function() {
             checked: false,
             title: createRandomString_(1),
             description: createRandomString_(1),
-            url: 'url'
+            url: 'url',
           },
           {
             albumId: 'id1',
             checked: false,
             title: createRandomString_(500),
             description: createRandomString_(500),
-            url: 'url'
+            url: 'url',
           },
         ],
         AmbientModeTopicSource.GOOGLE_PHOTOS);
@@ -766,14 +766,14 @@ suite('AmbientModeHandler', function() {
             checked: false,
             title: createRandomString_(1),
             description: createRandomString_(1),
-            url: 'url'
+            url: 'url',
           },
           {
             albumId: 'id1',
             checked: false,
             title: createRandomString_(500),
             description: createRandomString_(500),
-            url: 'url'
+            url: 'url',
           },
         ],
         AmbientModeTopicSource.GOOGLE_PHOTOS);
@@ -790,14 +790,14 @@ suite('AmbientModeHandler', function() {
             checked: false,
             title: createRandomString_(500),
             description: createRandomString_(500),
-            url: 'url'
+            url: 'url',
           },
           {
             albumId: 'id1',
             checked: false,
             title: createRandomString_(500),
             description: createRandomString_(500),
-            url: 'url'
+            url: 'url',
           },
         ],
         AmbientModeTopicSource.GOOGLE_PHOTOS);
@@ -828,14 +828,14 @@ suite('AmbientModeHandler', function() {
             checked: false,
             title: createRandomString_(1),
             description: createRandomString_(1),
-            url: 'url'
+            url: 'url',
           },
           {
             albumId: 'id1',
             checked: false,
             title: createRandomString_(500),
             description: createRandomString_(500),
-            url: 'url'
+            url: 'url',
           },
         ],
         AmbientModeTopicSource.GOOGLE_PHOTOS);
@@ -862,7 +862,7 @@ suite('AmbientModeHandler', function() {
             checked: false,
             title: createRandomString_(1),
             description: createRandomString_(1),
-            url: 'url'
+            url: 'url',
           },
         ],
         AmbientModeTopicSource.GOOGLE_PHOTOS);
@@ -892,7 +892,7 @@ suite('AmbientModeHandler', function() {
             checked: false,
             title: createRandomString_(500),
             description: createRandomString_(1),
-            url: 'url'
+            url: 'url',
           },
         ],
         AmbientModeTopicSource.GOOGLE_PHOTOS);

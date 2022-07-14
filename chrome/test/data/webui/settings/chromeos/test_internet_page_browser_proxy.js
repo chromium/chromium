@@ -10,10 +10,12 @@ import {TestBrowserProxy} from '../../test_browser_proxy.js';
 export class TestInternetPageBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
-      'showCarrierAccountDetail', 'showCellularSetupUI',
-      'configureThirdPartyVpn', 'addThirdPartyVpn',
+      'showCarrierAccountDetail',
+      'showCellularSetupUI',
+      'configureThirdPartyVpn',
+      'addThirdPartyVpn',
       'requestGmsCoreNotificationsDisabledDeviceNames',
-      'setGmsCoreNotificationsDisabledDeviceNamesCallback'
+      'setGmsCoreNotificationsDisabledDeviceNamesCallback',
     ]);
   }
 

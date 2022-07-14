@@ -87,8 +87,15 @@ suite('OSSettingsUi', function() {
 
   test('Basic sections', function() {
     const sectionNames = [
-      'internet', 'bluetooth', 'multidevice', 'osPeople', 'kerberos', 'device',
-      'personalization', 'osSearch', 'apps'
+      'internet',
+      'bluetooth',
+      'multidevice',
+      'osPeople',
+      'kerberos',
+      'device',
+      'personalization',
+      'osSearch',
+      'apps',
     ];
 
     for (const name of sectionNames) {
@@ -106,8 +113,12 @@ suite('OSSettingsUi', function() {
     await flushTasks();
 
     const sectionNames = [
-      'osPrivacy', 'osLanguages', 'files', 'osReset', 'dateTime',
-      'osAccessibility'
+      'osPrivacy',
+      'osLanguages',
+      'files',
+      'osReset',
+      'dateTime',
+      'osAccessibility',
     ];
 
     for (const name of sectionNames) {
@@ -135,9 +146,18 @@ suite('OSSettingsUi', function() {
     }
 
     const visibleSections = [
-      'internet', 'bluetooth', 'kerberos', 'device', 'osSearch', 'apps',
-      'osPrivacy', 'osLanguages', 'files', 'osReset', 'dateTime',
-      'osAccessibility'
+      'internet',
+      'bluetooth',
+      'kerberos',
+      'device',
+      'osSearch',
+      'apps',
+      'osPrivacy',
+      'osLanguages',
+      'files',
+      'osReset',
+      'dateTime',
+      'osAccessibility',
     ];
     for (const name of visibleSections) {
       const section = settingsPage.shadowRoot.querySelector(

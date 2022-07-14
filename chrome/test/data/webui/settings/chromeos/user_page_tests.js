@@ -18,29 +18,29 @@ const users = [
     displayEmail: 'test@gmail.com',
     name: 'test',
     isOwner: false,
-    isChild: false
+    isChild: false,
   },
   {
     email: 'test1@gmail.com',
     displayEmail: 'test1@gmail.com',
     name: 'test1',
     isOwner: false,
-    isChild: false
+    isChild: false,
   },
   {
     email: 'test2@gmail.com',
     displayEmail: 'test2@gmail.com',
     name: 'test2',
     isOwner: false,
-    isChild: false
+    isChild: false,
   },
   {
     email: 'owner@gmail.com',
     displayEmail: 'owner@gmail.com',
     name: 'owner',
     isOwner: true,
-    isChild: false
-  }
+    isChild: false,
+  },
 ];
 
 function createUsersPage() {
@@ -50,10 +50,10 @@ function createUsersPage() {
     cros: {
       accounts: {
         allowGuest: {
-          value: false
-          }
-        }
-      }
+          value: false,
+        },
+      },
+    },
   });
 
   document.body.appendChild(page);

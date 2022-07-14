@@ -19,7 +19,7 @@ export function FakeBluetooth() {
     name: 'Fake Adapter',
     powered: false,
     available: true,
-    discovering: false
+    discovering: false,
   };
 
   /** @type {!Array<!chrome.bluetooth.Device>} */ this.devices = [];

@@ -278,18 +278,18 @@ function registerLockScreenTests() {
         {
           key: ENABLE_LOCK_SCREEN_PREF,
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: true
+          value: true,
         },
         {
           key: 'ash.message_center.lock_screen_mode',
           type: chrome.settingsPrivate.PrefType.STRING,
-          value: 'hide'
+          value: 'hide',
         },
         {
           key: ENABLE_PIN_AUTOSUBMIT_PREF,
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false
-        }
+          value: false,
+        },
       ];
       fakeSettings = new FakeSettingsPrivate(fakePrefs);
       fakeUma = new FakeQuickUnlockUma();

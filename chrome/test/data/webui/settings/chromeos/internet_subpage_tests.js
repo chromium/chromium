@@ -78,7 +78,7 @@ suite('InternetSubpage', function() {
     setNetworksForTest(mojom.NetworkType.kCellular, networks);
     internetSubpage.tetherDeviceState = {
       type: mojom.NetworkType.kTether,
-      deviceState: mojom.DeviceStateType.kEnabled
+      deviceState: mojom.DeviceStateType.kEnabled,
     };
     internetSubpage.cellularDeviceState =
         mojoApi_.getDeviceStateForTest(mojom.NetworkType.kCellular);
@@ -179,7 +179,7 @@ suite('InternetSubpage', function() {
       ]);
       internetSubpage.tetherDeviceState = {
         type: mojom.NetworkType.kTether,
-        deviceState: mojom.DeviceStateType.kEnabled
+        deviceState: mojom.DeviceStateType.kEnabled,
       };
 
       const params = new URLSearchParams();
@@ -287,7 +287,7 @@ suite('InternetSubpage', function() {
       setNetworksForTest(mojom.NetworkType.kCellular, networks);
       internetSubpage.tetherDeviceState = {
         type: mojom.NetworkType.kTether,
-        deviceState: mojom.DeviceStateType.kEnabled
+        deviceState: mojom.DeviceStateType.kEnabled,
       };
       const deviceState =
           mojoApi_.getDeviceStateForTest(mojom.NetworkType.kCellular);
@@ -366,8 +366,8 @@ suite('InternetSubpage', function() {
                 type: mojom.VpnType.kExtension,
                 providerId: 'extension_id1',
                 providerName: 'MyExntensionVPN1',
-              }
-            }
+              },
+            },
           },
           {
             guid: 'extension1_vpn2_guid',
@@ -379,8 +379,8 @@ suite('InternetSubpage', function() {
                 type: mojom.VpnType.kExtension,
                 providerId: 'extension_id1',
                 providerName: 'MyExntensionVPN1',
-              }
-            }
+              },
+            },
           },
           {
             guid: 'extension2_vpn1_guid',
@@ -392,8 +392,8 @@ suite('InternetSubpage', function() {
                 type: mojom.VpnType.kExtension,
                 providerId: 'extension_id2',
                 providerName: 'MyExntensionVPN2',
-              }
-            }
+              },
+            },
           },
           {
             guid: 'arc_vpn1_guid',
@@ -405,8 +405,8 @@ suite('InternetSubpage', function() {
                 type: mojom.VpnType.kArc,
                 providerId: 'vpn.app.package1',
                 providerName: 'MyArcVPN1',
-              }
-            }
+              },
+            },
           },
           {
             guid: 'arc_vpn2_guid',
@@ -418,8 +418,8 @@ suite('InternetSubpage', function() {
                 type: mojom.VpnType.kArc,
                 providerId: 'vpn.app.package1',
                 providerName: 'MyArcVPN1',
-              }
-            }
+              },
+            },
           },
         ]);
       }
@@ -451,7 +451,7 @@ suite('InternetSubpage', function() {
             const mojom = chromeos.networkConfig.mojom;
             internetSubpage.deviceState = {
               type: mojom.NetworkType.kVPN,
-              deviceState: mojom.DeviceStateType.kProhibited
+              deviceState: mojom.DeviceStateType.kProhibited,
             };
 
             return flushAsync().then(() => {

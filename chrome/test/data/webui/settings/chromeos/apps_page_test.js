@@ -26,15 +26,15 @@ function getFakePrefs() {
         key: 'arc.enabledd',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
-      }
+      },
     },
     settings: {
       restore_apps_and_pages: {
         key: 'settings.restore_apps_and_pages',
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: 2,
-      }
-    }
+      },
+    },
   };
 }
 
@@ -45,15 +45,15 @@ function setPrefs(restoreOption) {
         key: 'arc.enabledd',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
-      }
+      },
     },
     settings: {
       restore_apps_and_pages: {
         key: 'settings.restore_apps_and_pages',
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: restoreOption,
-      }
-    }
+      },
+    },
   };
 }
 
@@ -207,7 +207,7 @@ suite('AppsPageTests', function() {
       id: id,
       title: title,
       notificationPermission: permission,
-      readiness: readiness
+      readiness: readiness,
     };
   }
 
@@ -508,9 +508,9 @@ suite('AppsPageTests', function() {
         arc: {
           enabled: {
             value: true,
-            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED
-          }
-        }
+            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          },
+        },
       };
       subpage.androidAppsInfo = {
         playStoreEnabled: true,

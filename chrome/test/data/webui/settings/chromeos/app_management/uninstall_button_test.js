@@ -24,7 +24,7 @@ suite('<app-management-uninstall-button', () => {
     // Create an ARC app options.
     const arcOptions = {
       type: appManagement.mojom.AppType.kArc,
-      installReason: installReason
+      installReason: installReason,
     };
 
     app = await fakeHandler.addApp('app1_id', arcOptions);

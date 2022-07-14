@@ -116,7 +116,7 @@ suite('TextToSpeechSubpageTests', function() {
     ttsPage.extensions = [{
       name: 'extension1',
       extensionId: 'extension1_id',
-      optionsPage: 'extension1_page'
+      optionsPage: 'extension1_page',
     }];
     flush();
 

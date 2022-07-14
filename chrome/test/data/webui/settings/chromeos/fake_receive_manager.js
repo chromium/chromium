@@ -47,14 +47,14 @@ export class FakeReceiveManager extends TestBrowserProxy {
         description: '',
         fileCount: 0,
         shareType: 0,
-      }
+      },
     };
     const metadata = {
       'status': nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation,
       progress: 0.0,
       token: connectionToken,
       is_original: true,
-      is_final_status: false
+      is_final_status: false,
     };
     this.observer_.onTransferUpdate(target, metadata);
     return target;

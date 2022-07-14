@@ -42,7 +42,7 @@ suite('<app-management-borealis-detail-view>', function() {
     // Add main app, and make it the currently selected app.
     const mainOptions = {
       type: appManagement.mojom.AppType.kBorealis,
-      permissions: permissions
+      permissions: permissions,
     };
     const mainApp = await fakeHandler.addApp(kBorealisClientAppId, mainOptions);
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(mainApp.id));

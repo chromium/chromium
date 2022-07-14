@@ -45,19 +45,19 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     }
     if (batteryType === BatteryType.DEFAULT) {
       bluetoothTrueWirelessImages.device.batteryInfo.defaultProperties = {
-        batteryPercentage: batteryPercentage
+        batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.LEFT_BUD) {
       bluetoothTrueWirelessImages.device.batteryInfo.leftBudInfo = {
-        batteryPercentage: batteryPercentage
+        batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.CASE) {
       bluetoothTrueWirelessImages.device.batteryInfo.caseInfo = {
-        batteryPercentage: batteryPercentage
+        batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.RIGHT_BUD) {
       bluetoothTrueWirelessImages.device.batteryInfo.rightBudInfo = {
-        batteryPercentage: batteryPercentage
+        batteryPercentage: batteryPercentage,
       };
     }
     bluetoothTrueWirelessImages.batteryType = batteryType;
@@ -74,11 +74,11 @@ suite('OsBluetoothTrueWirelessImagesElementTest', function() {
     const trueWireless = {
       leftBudImageUrl: fakeUrl,
       caseImageUrl: fakeUrl,
-      rightBudImageUrl: fakeUrl
+      rightBudImageUrl: fakeUrl,
     };
     bluetoothTrueWirelessImages.device.imageInfo = {
       defaultImageUrl: fakeUrl,
-      trueWirelessImages: trueWireless
+      trueWirelessImages: trueWireless,
     };
 
     bluetoothTrueWirelessImages.device =

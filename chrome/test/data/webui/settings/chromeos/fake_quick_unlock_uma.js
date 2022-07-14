@@ -37,5 +37,5 @@ FakeQuickUnlockUma.prototype = {
    */
   getHistogramValue: function(key) {
     return this.histogram[key];
-  }
+  },
 };

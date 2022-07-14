@@ -89,7 +89,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
         // A standalone language that doesn't support anything.
         code: 'tk',
         displayName: 'Turkmen',
-        nativeDisplayName: 'Turkmen'
+        nativeDisplayName: 'Turkmen',
       },
       {
         // Edge cases:
@@ -165,7 +165,10 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
         displayName: 'US Swahili keyboard',
         languageCodes: ['en', 'en-US', 'sw'],
         tags: [
-          'US Swahili keyboard', 'English', 'English(United States)', 'Swahili'
+          'US Swahili keyboard',
+          'English',
+          'English(United States)',
+          'Swahili',
         ],
         enabled: false,
       },
@@ -558,7 +561,7 @@ export function getFakeLanguagePrefs() {
       key: 'translate_recent_target',
       type: chrome.settingsPrivate.PrefType.STRING,
       value: 'en-US',
-    }
+    },
   ];
   if (isChromeOS) {
     fakePrefs.push({

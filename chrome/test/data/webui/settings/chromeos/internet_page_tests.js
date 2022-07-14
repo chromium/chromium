@@ -286,7 +286,7 @@ suite('InternetPage', function() {
             providerName: 'MyArcVPN2',
             appId: 'arcid2',
             lastLaunchTime: {internalValue: 2},
-          }
+          },
         ]);
         return flushAsync().then(() => {
           assertEquals(3, internetPage.vpnProviders_.length);
@@ -323,7 +323,7 @@ suite('InternetPage', function() {
             ]);
             mojoApi_.setDeviceStateForTest({
               type: mojom.NetworkType.kVPN,
-              deviceState: mojom.DeviceStateType.kEnabled
+              deviceState: mojom.DeviceStateType.kEnabled,
             });
 
             return flushAsync().then(() => {
@@ -344,7 +344,7 @@ suite('InternetPage', function() {
             ]);
             mojoApi_.setDeviceStateForTest({
               type: mojom.NetworkType.kVPN,
-              deviceState: mojom.DeviceStateType.kProhibited
+              deviceState: mojom.DeviceStateType.kProhibited,
             });
 
             return flushAsync().then(() => {
@@ -368,7 +368,7 @@ suite('InternetPage', function() {
             ]);
             mojoApi_.setDeviceStateForTest({
               type: mojom.NetworkType.kVPN,
-              deviceState: mojom.DeviceStateType.kEnabled
+              deviceState: mojom.DeviceStateType.kEnabled,
             });
 
             return flushAsync().then(() => {

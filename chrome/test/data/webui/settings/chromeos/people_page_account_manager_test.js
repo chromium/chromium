@@ -72,7 +72,7 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
         email: 'user3@example.com',
         pic: '',
         isAvailableInArc: false,
-      }
+      },
     ]);
   }
 

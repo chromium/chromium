@@ -55,7 +55,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
        */
       onPropertiesUpdated(properties) {
         bluetoothDevicesSubpage.systemProperties = properties;
-      }
+      },
     };
     bluetoothConfig.observeSystemProperties(propertiesObserver);
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES, opt_urlParams);

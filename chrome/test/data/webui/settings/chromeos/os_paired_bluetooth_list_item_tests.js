@@ -33,7 +33,7 @@ suite('OsPairedBluetoothListItemTest', function() {
    */
   async function setBatteryPercentage(batteryPercentage) {
     pairedBluetoothListItem.device.deviceProperties.batteryInfo = {
-      defaultProperties: {batteryPercentage: batteryPercentage}
+      defaultProperties: {batteryPercentage: batteryPercentage},
     };
     pairedBluetoothListItem.device = {...pairedBluetoothListItem.device};
     return flushAsync();
@@ -124,7 +124,7 @@ suite('OsPairedBluetoothListItemTest', function() {
         device.deviceProperties.deviceType = DeviceType.kComputer;
         const batteryPercentage = 60;
         device.deviceProperties.batteryInfo = {
-          defaultProperties: {batteryPercentage: batteryPercentage}
+          defaultProperties: {batteryPercentage: batteryPercentage},
         };
         pairedBluetoothListItem.device = {...device};
         await flushAsync();
@@ -158,13 +158,13 @@ suite('OsPairedBluetoothListItemTest', function() {
         const caseBatteryPercentage = 29;
         const rightBudBatteryPercentage = 39;
         device.deviceProperties.batteryInfo.leftBudInfo = {
-          batteryPercentage: leftBudBatteryPercentage
+          batteryPercentage: leftBudBatteryPercentage,
         };
         device.deviceProperties.batteryInfo.caseInfo = {
-          batteryPercentage: caseBatteryPercentage
+          batteryPercentage: caseBatteryPercentage,
         };
         device.deviceProperties.batteryInfo.rightBudInfo = {
-          batteryPercentage: rightBudBatteryPercentage
+          batteryPercentage: rightBudBatteryPercentage,
         };
         pairedBluetoothListItem.device = {...device};
         await flushAsync();

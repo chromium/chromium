@@ -22,7 +22,7 @@ suite('SettingsTrafficCountersTest', function() {
   const FAKE_TIME_IN_MICROSECONDS = BigInt(13275778457938000);
   /** @type {!mojoBase.mojom.Time} */
   const FAKE_INITIAL_LAST_RESET_TIME = {
-    internalValue: FAKE_TIME_IN_MICROSECONDS
+    internalValue: FAKE_TIME_IN_MICROSECONDS,
   };
   /** @type {string} */
   const FAKE_INITIAL_FRIENDLY_DATE = 'September 10, 2021';
@@ -272,7 +272,7 @@ suite('SettingsTrafficCountersTest', function() {
     // reset time.
     networkConfigRemote_.setLastResetTimeForTest('cellular_guid', {
       internalValue: FAKE_INITIAL_LAST_RESET_TIME.internalValue +
-          BigInt(2 * 24 * 60 * 60 * (1000 * 1000))
+          BigInt(2 * 24 * 60 * 60 * (1000 * 1000)),
     });
     networkConfigRemote_.setFriendlyDateForTest(
         'cellular_guid', EXPECTED_POST_RESET_FRIENDLY_DATE);

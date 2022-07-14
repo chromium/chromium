@@ -53,7 +53,7 @@ const multipleContainers = /** @type {!Array<!ContainerInfo>}*/
 
         },
         ipv4: '1.2.3.5',
-      }
+      },
     ]);
 
 function setCrostiniPrefs(enabled, optional = {}) {
@@ -688,7 +688,7 @@ suite('CrostiniPageTests', function() {
 
               },
               ipv4: '1.2.3.5',
-            }
+            },
           ]);
       setup(async function() {
         crostiniBrowserProxy.portOperationSuccess = true;
@@ -709,7 +709,7 @@ suite('CrostiniPageTests', function() {
               vm_name: 'not-termina',
               container_name: 'not-penguin',
             },
-          ]
+          ],
         });
 
         await flushTasks();
@@ -920,7 +920,7 @@ suite('CrostiniPageTests', function() {
               protocol_type: 0,
               label: 'Label1',
             },
-          ]
+          ],
         });
         const crToggle =
             subpage.shadowRoot.querySelector('#toggleActivationButton0-0');
@@ -957,7 +957,7 @@ suite('CrostiniPageTests', function() {
               protocol_type: 0,
               label: 'Label2',
             },
-          ]
+          ],
         });
         assertEquals(
             3, subpage.shadowRoot.querySelectorAll('.list-item').length);
@@ -978,7 +978,7 @@ suite('CrostiniPageTests', function() {
               protocol_type: 0,
               label: 'Label3',
             },
-          ]
+          ],
         });
         assertEquals(
             4, subpage.shadowRoot.querySelectorAll('.list-item').length);
@@ -1026,7 +1026,7 @@ suite('CrostiniPageTests', function() {
       const ticks = [
         {label: 'label 0', value: 0, ariaLabel: 'label 0'},
         {label: 'label 10', value: 10, ariaLabel: 'label 10'},
-        {label: 'label 100', value: 100, ariaLabel: 'label 100'}
+        {label: 'label 100', value: 100, ariaLabel: 'label 100'},
       ];
 
       const resizeableData = {
@@ -1035,7 +1035,7 @@ suite('CrostiniPageTests', function() {
         isUserChosenSize: true,
         isLowSpaceAvailable: false,
         defaultIndex: 2,
-        ticks: ticks
+        ticks: ticks,
       };
 
       const sparseDiskData = {
@@ -1044,7 +1044,7 @@ suite('CrostiniPageTests', function() {
         isUserChosenSize: false,
         isLowSpaceAvailable: false,
         defaultIndex: 2,
-        ticks: ticks
+        ticks: ticks,
       };
 
       async function clickShowDiskResize(userChosen) {
@@ -1053,7 +1053,7 @@ suite('CrostiniPageTests', function() {
           canResize: true,
           isUserChosenSize: userChosen,
           ticks: ticks,
-          defaultIndex: 2
+          defaultIndex: 2,
         });
         subpage.shadowRoot.querySelector('#showDiskResizeButton').click();
         await flushTasks();
@@ -1337,13 +1337,13 @@ suite('CrostiniPageTests', function() {
           guid: '0001',
           name: 'usb_dev1',
           sharedWith: 'termina',
-          promptBeforeSharing: false
+          promptBeforeSharing: false,
         },
         {
           guid: '0002',
           name: 'usb_dev2',
           sharedWith: null,
-          promptBeforeSharing: false
+          promptBeforeSharing: false,
         },
       ];
 

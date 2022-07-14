@@ -27,8 +27,8 @@ suite('SmartPrivacySubpageTests', function() {
         'privacy': {
           'snooping_protection_enabled': {
             value: snoopingState,
-          }
-        }
+          },
+        },
       },
     };
   }

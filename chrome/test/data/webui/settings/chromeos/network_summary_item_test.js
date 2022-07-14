@@ -36,7 +36,7 @@ suite('NetworkSummaryItem', function() {
         connectionState: mojom.ConnectionStateType.kNotConnected,
         guid: '',
         type: mojom.NetworkType.kCellular,
-        typeState: {cellular: {networkTechnology: ''}}
+        typeState: {cellular: {networkTechnology: ''}},
       },
     });
 
@@ -60,7 +60,7 @@ suite('NetworkSummaryItem', function() {
         connectionState: mojom.ConnectionStateType.kNotConnected,
         guid: '',
         type: mojom.NetworkType.kCellular,
-        typeState: {cellular: {networkTechnology: ''}}
+        typeState: {cellular: {networkTechnology: ''}},
       },
     });
 
@@ -119,8 +119,8 @@ suite('NetworkSummaryItem', function() {
         guid: '',
         type: mojom.NetworkType.kWiFi,
         typeState: {
-          wifi: {}
-        }
+          wifi: {},
+        },
       },
       deviceState: {
         deviceState: mojom.DeviceStateType.kEnabled,
@@ -145,7 +145,7 @@ suite('NetworkSummaryItem', function() {
         connectionState: mojom.ConnectionStateType.kNotConnected,
         guid: '',
         type: mojom.NetworkType.kCellular,
-        typeState: {cellular: {networkTechnology: ''}}
+        typeState: {cellular: {networkTechnology: ''}},
       },
     });
 
@@ -173,7 +173,7 @@ suite('NetworkSummaryItem', function() {
         connectionState: mojom.ConnectionStateType.kNotConnected,
         guid: '',
         type: mojom.NetworkType.kCellular,
-        typeState: {cellular: {networkTechnology: ''}}
+        typeState: {cellular: {networkTechnology: ''}},
       },
     });
 
@@ -245,7 +245,7 @@ suite('NetworkSummaryItem', function() {
             connectionState: mojom.ConnectionStateType.kNotConnected,
             guid: '',
             type: mojom.NetworkType.kCellular,
-            typeState: {cellular: {networkTechnology: ''}}
+            typeState: {cellular: {networkTechnology: ''}},
           },
         });
         flush();

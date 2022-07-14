@@ -35,7 +35,7 @@ class TestPeripheralDataAccessBrowserProxy extends TestBrowserProxy {
     /** @type {DataAccessPolicyState} */
     this.policy_state_ = {
       prefName: crosSettingPrefName,
-      isUserConfigurable: false
+      isUserConfigurable: false,
     };
   }
 
@@ -74,7 +74,7 @@ class TestMetricsConsentBrowserProxy extends TestBrowserProxy {
     /** @type {MetricsConsentState} */
     this.state_ = {
       prefName: deviceMetricsConsentPrefName,
-      isConfigurable: false
+      isConfigurable: false,
     };
   }
 
@@ -109,9 +109,9 @@ suite('PrivacyPageTests', function() {
       'device': {
         'peripheral_data_access_enabled': {
           value: true,
-        }
-      }
-    }
+        },
+      },
+    },
   };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
@@ -163,23 +163,23 @@ suite('PrivacyPageTests', function() {
       'settings': {
         'suggested_content_enabled': {
           value: true,
-        }
+        },
       },
       'cros': {
         'device': {
           'peripheral_data_access_enabled': {
             value: true,
-          }
-        }
+          },
+        },
       },
       'dns_over_https': {
         'mode': {
-          value: SecureDnsMode.AUTOMATIC
+          value: SecureDnsMode.AUTOMATIC,
         },
         'templates': {
-          value: ''
-        }
-      }
+          value: '',
+        },
+      },
     };
 
     flush();
@@ -398,18 +398,18 @@ suite('PrivacePageTest_OfficialBuild', async () => {
       'device': {
         'peripheral_data_access_enabled': {
           value: true,
-        }
+        },
       },
       'metrics': {
         'reportingEnabled': {
           value: true,
-        }
-      }
+        },
+      },
     },
     'metrics': {
       'user_consent': {
         value: false,
-      }
+      },
     },
     'dns_over_https':
         {'mode': {value: SecureDnsMode.AUTOMATIC}, 'templates': {value: ''}},
@@ -536,8 +536,8 @@ suite('PeripheralDataAccessTest', function() {
       'device': {
         'peripheral_data_access_enabled': {
           value: false,
-        }
-      }
+        },
+      },
     },
     'settings': {'local_state_device_pci_data_access_enabled': {value: false}},
     'dns_over_https':

@@ -9,7 +9,7 @@ import {mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bl
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {createDefaultBluetoothDevice, FakeBluetoothConfig,} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertNotEquals, assertTrue} from '../../../chai_assert.js';
@@ -44,7 +44,7 @@ suite('OsBluetoothSummaryTest', function() {
        */
       onPropertiesUpdated(properties) {
         bluetoothSummary.systemProperties = properties;
-      }
+      },
     };
     bluetoothConfig.observeSystemProperties(propertiesObserver);
   }

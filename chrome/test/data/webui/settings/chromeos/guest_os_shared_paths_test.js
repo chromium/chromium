@@ -45,7 +45,7 @@ suite('SharedPaths', function() {
     page.prefs = {
       guest_os: {
         paths_shared_to_vms: {value: sharedPaths},
-      }
+      },
     };
     return guestOsBrowserProxy.whenCalled('getGuestOsSharedPathsDisplayText')
         .then(() => {

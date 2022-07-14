@@ -43,7 +43,7 @@ suite('<app-management-arc-detail-view>', () => {
         PermissionType.kNotifications,
         PermissionType.kContacts,
         PermissionType.kStorage,
-      ])
+      ]),
     };
 
     // Add an arc app, and make it the currently selected app.
@@ -135,7 +135,7 @@ suite('<app-management-arc-detail-view>', () => {
     // Create an ARC app without any permissions.
     const arcOptions = {
       type: appManagement.mojom.AppType.kArc,
-      permissions: FakePageHandler.createArcPermissions([])
+      permissions: FakePageHandler.createArcPermissions([]),
     };
 
     // Add an arc app, and make it the currently selected app.

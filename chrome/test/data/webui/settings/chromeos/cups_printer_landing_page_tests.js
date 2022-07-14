@@ -535,7 +535,7 @@ suite('CupsSavedPrintersTests', function() {
               [
                 createPrinterListEntry('test3', '3', 'id3', PrinterType.SAVED),
                 createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
-                createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED)
+                createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
               ],
               searchTerm);
         });
@@ -673,7 +673,7 @@ suite('CupsSavedPrintersTests', function() {
           verifyVisiblePrinters(printerEntryListTestElement, [
             createPrinterListEntry('google', '4', 'id4', PrinterType.SAVED),
             createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
-            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED)
+            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
           ]);
           // Assert that the Show more button is hidden because printer list
           // length is <= 3.
@@ -687,7 +687,7 @@ suite('CupsSavedPrintersTests', function() {
             createPrinterListEntry('test3', '3', 'id3', PrinterType.SAVED),
             createPrinterListEntry('google', '4', 'id4', PrinterType.SAVED),
             createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
-            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED)
+            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
           ];
           verifyVisiblePrinters(
               printerEntryListTestElement, expectedVisiblePrinters);
@@ -740,7 +740,7 @@ suite('CupsSavedPrintersTests', function() {
             createPrinterListEntry('google', '4', 'id4', PrinterType.SAVED),
             createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
             createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
-            createPrinterListEntry('test3', '3', 'id3', PrinterType.SAVED)
+            createPrinterListEntry('test3', '3', 'id3', PrinterType.SAVED),
           ]);
         });
   });
@@ -783,7 +783,7 @@ suite('CupsSavedPrintersTests', function() {
             createPrinterListEntry('test5', '5', 'id5', PrinterType.SAVED),
             createPrinterListEntry('google', '4', 'id4', PrinterType.SAVED),
             createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
-            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED)
+            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
           ]);
           // Assert that the Show more button is still shown.
           assertTrue(!!savedPrintersElement.shadowRoot.querySelector(
@@ -817,7 +817,7 @@ suite('CupsSavedPrintersTests', function() {
           verifyVisiblePrinters(printerEntryListTestElement, [
             createPrinterListEntry('google', '3', 'id3', PrinterType.SAVED),
             createPrinterListEntry('google2', '4', 'id4', PrinterType.SAVED),
-            createPrinterListEntry('google3', '5', 'id5', PrinterType.SAVED)
+            createPrinterListEntry('google3', '5', 'id5', PrinterType.SAVED),
           ]);
           // Assert that the Show more button is shown since printer list length
           // is > 3.
@@ -833,7 +833,7 @@ suite('CupsSavedPrintersTests', function() {
           verifyVisiblePrinters(printerEntryListTestElement, [
             createPrinterListEntry('google2', '4', 'id4', PrinterType.SAVED),
             createPrinterListEntry('google3', '5', 'id5', PrinterType.SAVED),
-            createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED)
+            createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
           ]);
           assertTrue(!!savedPrintersElement.shadowRoot.querySelector(
               '#show-more-container'));
@@ -845,7 +845,7 @@ suite('CupsSavedPrintersTests', function() {
           verifyVisiblePrinters(printerEntryListTestElement, [
             createPrinterListEntry('google3', '5', 'id5', PrinterType.SAVED),
             createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
-            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED)
+            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
           ]);
           assertFalse(!!savedPrintersElement.shadowRoot.querySelector(
               '#show-more-container'));
@@ -879,7 +879,7 @@ suite('CupsSavedPrintersTests', function() {
           verifyVisiblePrinters(printerEntryListTestElement, [
             createPrinterListEntry('google', '3', 'id3', PrinterType.SAVED),
             createPrinterListEntry('google2', '4', 'id4', PrinterType.SAVED),
-            createPrinterListEntry('google3', '5', 'id5', PrinterType.SAVED)
+            createPrinterListEntry('google3', '5', 'id5', PrinterType.SAVED),
           ]);
           // Assert that the Show more button is shown since printer list length
           // is > 3.
@@ -898,7 +898,8 @@ suite('CupsSavedPrintersTests', function() {
                     'google2', '4', 'id4', PrinterType.SAVED),
                 createPrinterListEntry(
                     'google3', '5', 'id5', PrinterType.SAVED),
-                createPrinterListEntry('google4', '6', 'id6', PrinterType.SAVED)
+                createPrinterListEntry(
+                    'google4', '6', 'id6', PrinterType.SAVED),
               ],
               searchTerm);
           // Having a search term should hide the Show more button.
@@ -923,7 +924,7 @@ suite('CupsSavedPrintersTests', function() {
               savedPrintersElement,
               [
                 createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
-                createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED)
+                createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
               ],
               searchTerm);
           assertFalse(!!savedPrintersElement.shadowRoot.querySelector(
@@ -937,7 +938,7 @@ suite('CupsSavedPrintersTests', function() {
           const expectedVisiblePrinters = [
             createPrinterListEntry('google', '3', 'id3', PrinterType.SAVED),
             createPrinterListEntry('google2', '4', 'id4', PrinterType.SAVED),
-            createPrinterListEntry('google3', '5', 'id5', PrinterType.SAVED)
+            createPrinterListEntry('google3', '5', 'id5', PrinterType.SAVED),
           ];
           verifySearchQueryResults(
               savedPrintersElement, expectedVisiblePrinters, searchTerm);
@@ -973,7 +974,7 @@ suite('CupsSavedPrintersTests', function() {
           verifyVisiblePrinters(printerEntryListTestElement, [
             createPrinterListEntry('google', '3', 'id3', PrinterType.SAVED),
             createPrinterListEntry('google2', '4', 'id4', PrinterType.SAVED),
-            createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED)
+            createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
           ]);
           // Assert that the Show more button is shown since printer list length
           // is > 3.
@@ -986,7 +987,7 @@ suite('CupsSavedPrintersTests', function() {
             createPrinterListEntry('newPrinter', '5', 'id5', PrinterType.SAVED),
             createPrinterListEntry('google', '3', 'id3', PrinterType.SAVED),
             createPrinterListEntry('google2', '4', 'id4', PrinterType.SAVED),
-            createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED)
+            createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
           ]);
           assertTrue(!!savedPrintersElement.shadowRoot.querySelector(
               '#show-more-container'));
@@ -1000,7 +1001,7 @@ suite('CupsSavedPrintersTests', function() {
           verifyVisiblePrinters(printerEntryListTestElement, [
             createPrinterListEntry('newPrinter', '5', 'id5', PrinterType.SAVED),
             createPrinterListEntry('google', '3', 'id3', PrinterType.SAVED),
-            createPrinterListEntry('google2', '4', 'id4', PrinterType.SAVED)
+            createPrinterListEntry('google2', '4', 'id4', PrinterType.SAVED),
           ]);
           assertTrue(!!savedPrintersElement.shadowRoot.querySelector(
               '#show-more-container'));
@@ -1011,7 +1012,7 @@ suite('CupsSavedPrintersTests', function() {
           verifyVisiblePrinters(printerEntryListTestElement, [
             createPrinterListEntry('newPrinter', '5', 'id5', PrinterType.SAVED),
             createPrinterListEntry('google', '3', 'id3', PrinterType.SAVED),
-            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED)
+            createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
           ]);
           // Printer list length is <= 3, Show more button should be hidden.
           assertFalse(!!savedPrintersElement.shadowRoot.querySelector(
@@ -1119,8 +1120,12 @@ suite('CupsNearbyPrintersTests', function() {
     // Expected sort order is to sort automatic printers first then
     // sort discovered printers
     const expectedPrinterList = [
-      autoPrinterD, autoPrinterE, autoPrinterF, discoveredPrinterA,
-      discoveredPrinterB, discoveredPrinterC
+      autoPrinterD,
+      autoPrinterE,
+      autoPrinterF,
+      discoveredPrinterA,
+      discoveredPrinterB,
+      discoveredPrinterC,
     ];
 
     return flushTasks().then(() => {
@@ -1432,7 +1437,7 @@ suite('CupsNearbyPrintersTests', function() {
         createPrinterListEntry(
             'test1', 'printerAddress1', 'printerId1', PrinterType.DISCOVERD),
         createPrinterListEntry(
-            'test2', 'printerAddress2', 'printerId2', PrinterType.DISCOVERD)
+            'test2', 'printerAddress2', 'printerId2', PrinterType.DISCOVERD),
       ]);
 
       let searchTerm = 'google';
@@ -1460,7 +1465,8 @@ suite('CupsNearbyPrintersTests', function() {
                 'test1', 'printerAddress1', 'printerId1',
                 PrinterType.DISCOVERD),
             createPrinterListEntry(
-                'test2', 'printerAddress2', 'printerId2', PrinterType.DISCOVERD)
+                'test2', 'printerAddress2', 'printerId2',
+                PrinterType.DISCOVERD),
           ],
           searchTerm);
 
@@ -1486,7 +1492,8 @@ suite('CupsNearbyPrintersTests', function() {
                 'test2', 'printerAddress2', 'printerId2',
                 PrinterType.DISCOVERD),
             createPrinterListEntry(
-                'test3', 'printerAddress4', 'printerId4', PrinterType.DISCOVERD)
+                'test3', 'printerAddress4', 'printerId4',
+                PrinterType.DISCOVERD),
           ],
           searchTerm);
     });
@@ -1495,7 +1502,7 @@ suite('CupsNearbyPrintersTests', function() {
   test('NearbyPrintersNoSearchFound', function() {
     const discoveredPrinterList = [
       createCupsPrinterInfo('test1', 'printerAddress1', 'printerId1'),
-      createCupsPrinterInfo('google', 'printerAddress2', 'printerId2')
+      createCupsPrinterInfo('google', 'printerAddress2', 'printerId2'),
     ];
 
     return flushTasks().then(() => {

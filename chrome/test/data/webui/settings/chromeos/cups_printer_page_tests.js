@@ -747,7 +747,7 @@ suite('EditPrinterDialog', function() {
     page.activePrinter.printServerUri = serverAddress;
     cupsPrintersBrowserProxy.printerPpdMakeModel = {
       ppdManufacturer: manufacturer,
-      ppdModel: model
+      ppdModel: model,
     };
     // Trigger the edit dialog to open.
     page.fire('edit-cups-printer-details');
@@ -1072,7 +1072,7 @@ suite('EditPrinterDialog', function() {
 
     cupsPrintersBrowserProxy.manufacturers = {
       success: true,
-      manufacturers: ['HP']
+      manufacturers: ['HP'],
     };
     cupsPrintersBrowserProxy.models = {success: true, models: ['HP 910']};
     return initializeAndOpenEditDialog(
@@ -1389,8 +1389,8 @@ suite('PrintServerTests', function() {
         /** @type{!CupsPrintServerPrintersInfo} */ ({
           printerList: [
             createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
-            createCupsPrinterInfo('nameB', 'serverAddress', 'idB')
-          ]
+            createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
+          ],
         });
     return addPrintServer('serverAddress', PrintServerResult.NO_ERRORS)
         .then(() => {
@@ -1407,8 +1407,8 @@ suite('PrintServerTests', function() {
         /** @type{!CupsPrintServerPrintersInfo} */ ({
           printerList: [
             createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
-            createCupsPrinterInfo('nameB', 'serverAddress', 'idB')
-          ]
+            createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
+          ],
         });
 
     return flushTasks()
@@ -1420,7 +1420,7 @@ suite('PrintServerTests', function() {
                 createPrinterListEntry(
                     'nameA', 'serverAddress', 'idA', PrinterType.PRINTSERVER),
                 createPrinterListEntry(
-                    'nameB', 'serverAddress', 'idB', PrinterType.PRINTSERVER)
+                    'nameB', 'serverAddress', 'idB', PrinterType.PRINTSERVER),
               ]);
           flush();
           assertEquals(2, entryManager.printServerPrinters.length);
@@ -1449,8 +1449,8 @@ suite('PrintServerTests', function() {
         /** @type{} CupsPrintServerPrintersInfo*/ ({
           printerList: [
             createCupsPrinterInfo('nameA', 'serverAddress', 'idA'),
-            createCupsPrinterInfo('nameB', 'serverAddress', 'idB')
-          ]
+            createCupsPrinterInfo('nameB', 'serverAddress', 'idB'),
+          ],
         });
 
     return flushTasks().then(() => {
@@ -1461,7 +1461,7 @@ suite('PrintServerTests', function() {
             createPrinterListEntry(
                 'nameA', 'serverAddress', 'idA', PrinterType.PRINTSERVER),
             createPrinterListEntry(
-                'nameB', 'serverAddress', 'idB', PrinterType.PRINTSERVER)
+                'nameB', 'serverAddress', 'idB', PrinterType.PRINTSERVER),
           ]);
       flush();
       assertEquals(2, entryManager.printServerPrinters.length);

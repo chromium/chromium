@@ -173,10 +173,14 @@ suite('CupsPrinterEntry', function() {
 
   test('disableButtonWhenSavingPrinterOrDisallowedByPolicy', function() {
     const printerTypes = [
-      PrinterType.DISCOVERED, PrinterType.AUTOMATIC, PrinterType.PRINTSERVER
+      PrinterType.DISCOVERED,
+      PrinterType.AUTOMATIC,
+      PrinterType.PRINTSERVER,
     ];
     const printerIds = [
-      '#setupPrinterButton', '#automaticPrinterButton', '#savePrinterButton'
+      '#setupPrinterButton',
+      '#automaticPrinterButton',
+      '#savePrinterButton',
     ];
     for (let i = 0; i < printerTypes.length; i++) {
       printerEntryTestElement.printerEntry =

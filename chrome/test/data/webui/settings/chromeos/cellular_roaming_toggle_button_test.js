@@ -84,7 +84,7 @@ suite('CellularRoamingToggleButton', function() {
                 policySource: policySourceValue,
                 globalPolicyEnabled: globalPolicyEnabledValue,
                 perNetworkPolicyEnabled: perNetworkPolicyEnabledValue,
-                perNetworkActiveEnabled: perNetworkActiveEnabledValue
+                perNetworkActiveEnabled: perNetworkActiveEnabledValue,
               });
             }
           }
@@ -251,7 +251,7 @@ suite('CellularRoamingToggleButton', function() {
             /* allowRoaming= */ {
               activeValue: enforcementCase.perNetworkActiveEnabled,
               policySource: enforcementCase.policySource,
-              policyValue: enforcementCase.perNetworkPolicyEnabled
+              policyValue: enforcementCase.perNetworkPolicyEnabled,
             },
             /* roamingState= */ 'Home');
 

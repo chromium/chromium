@@ -78,7 +78,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: false,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -126,7 +126,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: false,
       showAppStreaming: false,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
     simulateNotificationStatusChanged(
@@ -154,7 +154,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: false,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -186,7 +186,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: false,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -237,7 +237,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: false,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -271,7 +271,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: false,
       showAppStreaming: true,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -317,7 +317,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: false,
       showAppStreaming: false,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -345,7 +345,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: false,
       showAppStreaming: true,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -376,7 +376,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: false,
       showAppStreaming: true,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -424,7 +424,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: true,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
     });
     flush();
 
@@ -455,7 +455,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: false,
       showAppStreaming: true,
-      combinedSetupSupported: true
+      combinedSetupSupported: true,
     });
     flush();
 
@@ -478,7 +478,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: false,
       showAppStreaming: false,
-      combinedSetupSupported: true
+      combinedSetupSupported: true,
     });
     flush();
 
@@ -508,7 +508,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false,
       isPhoneScreenLockEnabled: true,
-      isChromeosScreenLockEnabled: false
+      isChromeosScreenLockEnabled: false,
     });
     flush();
 
@@ -534,7 +534,7 @@ suite('Multidevice', () => {
       isChromeosScreenLockEnabled: true,
       isScreenLockEnabled_: true,
       flowState_: SetupFlowStatus.SET_LOCKSCREEN,
-      isPinNumberSelected_: false
+      isPinNumberSelected_: false,
     });
     flush();
 
@@ -557,7 +557,7 @@ suite('Multidevice', () => {
       isChromeosScreenLockEnabled: true,
       isScreenLockEnabled_: true,
       flowState_: SetupFlowStatus.SET_LOCKSCREEN,
-      isPinNumberSelected_: true
+      isPinNumberSelected_: true,
     });
     flush();
 
@@ -585,7 +585,7 @@ suite('Multidevice', () => {
       flowState_: SetupFlowStatus.SET_LOCKSCREEN,
       isPinNumberSelected_: true,
       isSetPinDone_: true,
-      isPasswordDialogShowing: true
+      isPasswordDialogShowing: true,
     });
     flush();
 
@@ -606,7 +606,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false,
       isPhoneScreenLockEnabled: true,
-      isChromeosScreenLockEnabled: true
+      isChromeosScreenLockEnabled: true,
     });
     flush();
 
@@ -622,7 +622,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false,
       isPhoneScreenLockEnabled: false,
-      isChromeosScreenLockEnabled: true
+      isChromeosScreenLockEnabled: true,
     });
     flush();
 
@@ -638,7 +638,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false,
       isPhoneScreenLockEnabled: false,
-      isChromeosScreenLockEnabled: false
+      isChromeosScreenLockEnabled: false,
     });
     flush();
 
@@ -654,7 +654,7 @@ suite('Multidevice', () => {
       showAppStreaming: false,
       combinedSetupSupported: false,
       isPhoneScreenLockEnabled: true,
-      isChromeosScreenLockEnabled: false
+      isChromeosScreenLockEnabled: false,
     });
     flush();
 
@@ -674,7 +674,7 @@ suite('Multidevice', () => {
           showAppStreaming: false,
           combinedSetupSupported: false,
           isPhoneScreenLockEnabled: true,
-          isChromeosScreenLockEnabled: false
+          isChromeosScreenLockEnabled: false,
         });
         flush();
 
@@ -691,7 +691,7 @@ suite('Multidevice', () => {
       showCameraRoll: true,
       showNotifications: false,
       showAppStreaming: false,
-      combinedSetupSupported: true
+      combinedSetupSupported: true,
     });
     flush();
 
@@ -738,7 +738,7 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: false,
       showAppStreaming: false,
-      combinedSetupSupported: true
+      combinedSetupSupported: true,
     });
     flush();
 
@@ -769,7 +769,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: false,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -821,7 +821,7 @@ suite('Multidevice', () => {
           showCameraRoll: false,
           showNotifications: false,
           showAppStreaming: false,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -854,7 +854,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -889,7 +889,7 @@ suite('Multidevice', () => {
           showCameraRoll: false,
           showNotifications: false,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -913,7 +913,7 @@ suite('Multidevice', () => {
           showCameraRoll: false,
           showNotifications: false,
           showAppStreaming: false,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -948,7 +948,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -985,7 +985,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -1008,7 +1008,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -1040,7 +1040,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -1077,7 +1077,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -1100,7 +1100,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: false,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -1130,7 +1130,7 @@ suite('Multidevice', () => {
       showCameraRoll: true,
       showNotifications: true,
       showAppStreaming: true,
-      combinedSetupSupported: true
+      combinedSetupSupported: true,
     });
     flush();
 
@@ -1163,7 +1163,7 @@ suite('Multidevice', () => {
       showCameraRoll: true,
       showNotifications: true,
       showAppStreaming: true,
-      combinedSetupSupported: true
+      combinedSetupSupported: true,
     });
     flush();
 
@@ -1195,7 +1195,7 @@ suite('Multidevice', () => {
           showCameraRoll: true,
           showNotifications: true,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -1210,7 +1210,7 @@ suite('Multidevice', () => {
           showCameraRoll: false,
           showNotifications: true,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -1221,7 +1221,7 @@ suite('Multidevice', () => {
           showCameraRoll: false,
           showNotifications: false,
           showAppStreaming: true,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 
@@ -1232,7 +1232,7 @@ suite('Multidevice', () => {
           showCameraRoll: false,
           showNotifications: false,
           showAppStreaming: false,
-          combinedSetupSupported: true
+          combinedSetupSupported: true,
         });
         flush();
 

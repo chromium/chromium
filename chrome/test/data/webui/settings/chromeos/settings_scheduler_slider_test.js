@@ -40,7 +40,7 @@ suite('SettingsSchedulerSlider', function() {
             type: chrome.settingsPrivate.PrefType.NUMBER,
             value: 120,
           },
-        }
+        },
       },
       settings: {
         clock: {
@@ -50,7 +50,7 @@ suite('SettingsSchedulerSlider', function() {
             value: false,
           },
         },
-      }
+      },
     };
     document.body.appendChild(slider);
     flush();

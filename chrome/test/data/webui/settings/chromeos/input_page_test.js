@@ -1288,7 +1288,7 @@ suite('input page', () => {
         return [];
       }
       return [
-        ...allLangsList.querySelectorAll('cr-checkbox-with-policy')
+        ...allLangsList.querySelectorAll('cr-checkbox-with-policy'),
       ].filter(checkbox => isVisible(checkbox));
     }
 

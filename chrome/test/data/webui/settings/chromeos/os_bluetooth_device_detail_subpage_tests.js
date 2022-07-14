@@ -88,7 +88,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
             /*opt_deviceType=*/ DeviceType.kMouse);
 
         device1.deviceProperties.batteryInfo = {
-          defaultProperties: {batteryPercentage: 90}
+          defaultProperties: {batteryPercentage: 90},
         };
 
         bluetoothConfig.appendToPairedDeviceList([device1]);
@@ -181,10 +181,10 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     // Emulate missing the right bud image.
     device.deviceProperties.imageInfo = {
       defaultImageUrl: fakeUrl,
-      trueWirelessImages: {leftBudImageUrl: fakeUrl, caseImageUrl: fakeUrl}
+      trueWirelessImages: {leftBudImageUrl: fakeUrl, caseImageUrl: fakeUrl},
     };
     device.deviceProperties.batteryInfo = {
-      leftBudInfo: {batteryPercentage: 90}
+      leftBudInfo: {batteryPercentage: 90},
     };
 
     bluetoothConfig.appendToPairedDeviceList([device]);
@@ -224,14 +224,14 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     // Having either default battery info or True Wireless battery info
     // should show True Wireless component if device is connected.
     device.deviceProperties.batteryInfo = {
-      defaultProperties: {batteryPercentage: 90}
+      defaultProperties: {batteryPercentage: 90},
     };
     bluetoothConfig.updatePairedDevice(device);
     await flushAsync();
     assertTrue(!!getTrueWirelessImages());
 
     device.deviceProperties.batteryInfo = {
-      rightBudInfo: {batteryPercentage: 90}
+      rightBudInfo: {batteryPercentage: 90},
     };
     bluetoothConfig.updatePairedDevice(device);
     await flushAsync();
@@ -458,7 +458,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*opt_deviceType=*/ DeviceType.kHeadset);
 
     device1.deviceProperties.batteryInfo = {
-      defaultProperties: {batteryPercentage: 90}
+      defaultProperties: {batteryPercentage: 90},
     };
     bluetoothConfig.appendToPairedDeviceList([device1]);
     await flushAsync();
@@ -671,7 +671,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*opt_deviceType=*/ DeviceType.kMouse);
 
     device1.deviceProperties.batteryInfo = {
-      defaultProperties: {batteryPercentage: 90}
+      defaultProperties: {batteryPercentage: 90},
     };
 
     bluetoothConfig.appendToPairedDeviceList([device1]);

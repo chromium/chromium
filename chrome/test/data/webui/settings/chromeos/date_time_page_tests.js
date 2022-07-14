@@ -227,7 +227,7 @@ const fakeTimeZones = [
   ['Westeros/Winterfell', '(KNG-1:00) The North Time (Winterfell)'],
   [
     'Westeros/Kings_Landing',
-    '(KNG+0:00) Westeros Standard Time (King\'s Landing)'
+    '(KNG+0:00) Westeros Standard Time (King\'s Landing)',
   ],
   ['Westeros/TheEyrie', '(KNG+1:00) The Vale Time (The Eyrie)'],
   ['Westeros/Sunspear', '(KNG+2:00) Dorne Time (Sunspear)'],

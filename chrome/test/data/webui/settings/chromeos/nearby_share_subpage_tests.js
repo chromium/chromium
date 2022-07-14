@@ -124,7 +124,7 @@ suite('NearbyShare', function() {
         'onboarding_complete': {
           value: is_onboarding_complete,
         },
-      }
+      },
     };
     subpage.isSettingsRetreived = true;
 

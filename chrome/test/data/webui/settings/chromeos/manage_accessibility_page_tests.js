@@ -79,8 +79,8 @@ suite('ManageAccessibilityPageTests', function() {
           key: 'settings.accessibility',
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: false,
-        }
-      }
+        },
+      },
     };
   }
 
@@ -236,7 +236,9 @@ suite('ManageAccessibilityPageTests', function() {
         '#shelfNavigationButtonsEnabledControl')));
 
     const allowed_subpages = [
-      'chromeVoxSubpageButton', 'selectToSpeakSubpageButton', 'ttsSubpageButton'
+      'chromeVoxSubpageButton',
+      'selectToSpeakSubpageButton',
+      'ttsSubpageButton',
     ];
 
     const subpages = page.root.querySelectorAll('cr-link-row');
@@ -351,8 +353,8 @@ suite('ManageAccessibilityPageTests', function() {
         worksOffline: false,
         installed: false,
         recommended: false,
-        value: 'fr-FR'
-      }
+        value: 'fr-FR',
+      },
     ];
     webUIListenerCallback('dictation-locales-set', locales);
     page.dictationLocaleSubtitleOverride_ = 'Testing';
@@ -395,11 +397,11 @@ suite('ManageAccessibilityPageTests', function() {
     const selectorRouteList = [
       {
         selector: '#captionsSubpageButton',
-        route: routes.MANAGE_CAPTION_SETTINGS
+        route: routes.MANAGE_CAPTION_SETTINGS,
       },
       {selector: '#displaySubpageButton', route: routes.DISPLAY},
       {selector: '#keyboardSubpageButton', route: routes.KEYBOARD},
-      {selector: '#pointerSubpageButton', route: routes.POINTERS}
+      {selector: '#pointerSubpageButton', route: routes.POINTERS},
     ];
 
     if (!isAccessibilityOSSettingsVisibilityEnabled) {

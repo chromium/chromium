@@ -26,8 +26,8 @@ suite('TextToSpeechPageTests', function() {
           key: 'settings.accessibility',
           type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: false,
-        }
-      }
+        },
+      },
     };
   }
 

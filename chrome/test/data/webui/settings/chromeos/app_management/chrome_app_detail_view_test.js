@@ -18,7 +18,7 @@ suite('<app-management-chrome-app-detail-view>', () => {
 
     const chromeOptions = {
       type: appManagement.mojom.AppType.kExtension,
-      permissions: {}
+      permissions: {},
     };
 
     // Add an chrome app, and make it the currently selected app.

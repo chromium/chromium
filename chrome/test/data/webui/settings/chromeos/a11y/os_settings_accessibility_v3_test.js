@@ -27,7 +27,7 @@ OSSettingsAccessibilityV3Test.axeOptions = {
     'color-contrast': {enabled: false},
     // The HTML language attribute isn't set by the test_loader.html dummy file.
     'html-has-lang': {enabled: false},
-  }
+  },
 };
 
 // Default accessibility audit options. Specify in test definition to use.
