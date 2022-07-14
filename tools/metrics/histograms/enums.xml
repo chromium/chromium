@@ -88674,6 +88674,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SimLockNotificationEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Clicked"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
 <enum name="SimPinOperationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Error Device Missing"/>

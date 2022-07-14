@@ -13,6 +13,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "components/onc/onc_constants.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -148,27 +149,34 @@ void ManagedSimLockNotifier::OnCellularNetworksList(
   RemoveNotification();
 }
 
-void ManagedSimLockNotifier::ShowNotification() {
-  scoped_refptr<message_center::NotificationDelegate> delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](absl::optional<int> button_index) {
-            // When clicked, open the SIM Unlock dialog in Cellular settings if
-            // we can open WebUI settings, otherwise do nothing.
-            if (TrayPopupUtils::CanOpenWebUISettings()) {
-              // TODO(b/228093904): Using GUID of network, take user to cellular
-              // details page with dialog open. Change dialog logic so that if
-              // the SIM is currently locked, entering the PIN will unlock the
-              // SIM and disable the PIN lock setting.
-              Shell::Get()
-                  ->system_tray_model()
-                  ->client()
-                  ->ShowSettingsSimUnlock();
-            } else {
-              LOG(WARNING) << "Cannot open Cellular settings since it's not "
-                              "possible to open OS Settings";
-            }
-          }));
+void ManagedSimLockNotifier::Close(bool by_user) {
+  if (by_user) {
+    chromeos::CellularMetricsLogger::RecordSimLockNotificationEvent(
+        chromeos::CellularMetricsLogger::SimLockNotificationEvent::kDismissed);
+  }
+}
 
+void ManagedSimLockNotifier::Click(
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
+  chromeos::CellularMetricsLogger::RecordSimLockNotificationEvent(
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kClicked);
+
+  // When clicked, open the SIM Unlock dialog in Cellular settings if
+  // we can open WebUI settings, otherwise do nothing.
+  if (TrayPopupUtils::CanOpenWebUISettings()) {
+    // TODO(b/228093904): Using GUID of network, take user to cellular
+    // details page with dialog open. Change dialog logic so that if
+    // the SIM is currently locked, entering the PIN will unlock the
+    // SIM and disable the PIN lock setting.
+    Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
+  } else {
+    LOG(WARNING) << "Cannot open Cellular settings since it's not "
+                    "possible to open OS Settings";
+  }
+}
+
+void ManagedSimLockNotifier::ShowNotification() {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
@@ -182,13 +190,17 @@ void ManagedSimLockNotifier::ShowNotification() {
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierManagedSimLock,
               NotificationCatalogName::kManagedSimLock),
-          message_center::RichNotificationData(), std::move(delegate),
+          message_center::RichNotificationData(),
+          base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+              weak_ptr_factory_.GetWeakPtr()),
           /*small_image=*/gfx::VectorIcon(),
           message_center::SystemNotificationWarningLevel::WARNING);
 
   message_center::MessageCenter* message_center =
       message_center::MessageCenter::Get();
   message_center->AddNotification(std::move(notification));
+  chromeos::CellularMetricsLogger::RecordSimLockNotificationEvent(
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kShown);
 }
 
 void ManagedSimLockNotifier::RemoveNotification() {

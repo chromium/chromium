@@ -9,7 +9,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -137,9 +139,14 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void RemoveNotification() {
+  void ClickOnNotification() {
+    message_center::MessageCenter::Get()->ClickOnNotification(
+        ManagedSimLockNotifier::kManagedSimLockNotificationId);
+  }
+
+  void RemoveNotification(bool by_user) {
     message_center::MessageCenter::Get()->RemoveNotification(
-        ManagedSimLockNotifier::kManagedSimLockNotificationId, false);
+        ManagedSimLockNotifier::kManagedSimLockNotificationId, by_user);
   }
 
   // Returns the managed SIM lock notification if it is shown, and null if it is
@@ -153,6 +160,7 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(ManagedSimLockNotifierTest, PolicyChanged) {
@@ -178,7 +186,7 @@ TEST_F(ManagedSimLockNotifierTest, NewActiveSession) {
 
   // Notification should be shown; proceed to remove it.
   EXPECT_TRUE(GetManagedSimLockNotification());
-  RemoveNotification();
+  RemoveNotification(/*by_user=*/false);
   EXPECT_FALSE(GetManagedSimLockNotification());
 
   LogOut();
@@ -189,7 +197,7 @@ TEST_F(ManagedSimLockNotifierTest, NewActiveSession) {
   // locked and policy is true.
   EXPECT_TRUE(GetManagedSimLockNotification());
 
-  RemoveNotification();
+  RemoveNotification(/*by_user=*/false);
   SetAllowCellularSimLock(true);
 
   LogOut();
@@ -242,7 +250,7 @@ TEST_F(ManagedSimLockNotifierTest, PrimarySimIccidChanged) {
   SetAllowCellularSimLock(false);
 
   EXPECT_TRUE(GetManagedSimLockNotification());
-  RemoveNotification();
+  RemoveNotification(/*by_user=*/false);
 
   EXPECT_FALSE(GetManagedSimLockNotification());
   // Simulate primary ICCID changed. Notification should be shown after.
@@ -269,12 +277,17 @@ TEST_F(ManagedSimLockNotifierTest, PrimarySimIccidChanged) {
 }
 
 TEST_F(ManagedSimLockNotifierTest, NotificationOnCellularOnOrOff) {
+  base::HistogramTester histograms;
+
   AddCellularDevice();
   AddCellularService();
   SetCellularSimLockEnabled(true);
   SetAllowCellularSimLock(false);
 
   EXPECT_TRUE(GetManagedSimLockNotification());
+  histograms.ExpectBucketCount(
+      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
 
   // Notification will disappear if user turns off Cellular.
   SetCellularEnabled(false);
@@ -283,6 +296,54 @@ TEST_F(ManagedSimLockNotifierTest, NotificationOnCellularOnOrOff) {
   // Notification will appear if user turns on Cellular.
   SetCellularEnabled(true);
   EXPECT_TRUE(GetManagedSimLockNotification());
+}
+
+TEST_F(ManagedSimLockNotifierTest, NotificationClicked) {
+  base::HistogramTester histograms;
+
+  AddCellularDevice();
+  AddCellularService();
+  SetCellularSimLockEnabled(true);
+  SetAllowCellularSimLock(false);
+
+  ClickOnNotification();
+
+  histograms.ExpectBucketCount(
+      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
+
+  histograms.ExpectBucketCount(
+      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kClicked, 1);
+
+  // Notification will be dismissed by the system, in which case we shouldn't
+  // be emitting the dismissed by user metric.
+  histograms.ExpectBucketCount(
+      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kDismissed, 0);
+}
+
+TEST_F(ManagedSimLockNotifierTest, NotificationDismissedByUser) {
+  base::HistogramTester histograms;
+
+  AddCellularDevice();
+  AddCellularService();
+  SetCellularSimLockEnabled(true);
+  SetAllowCellularSimLock(false);
+
+  RemoveNotification(/*by_user=*/true);
+
+  histograms.ExpectBucketCount(
+      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kShown, 1);
+
+  histograms.ExpectBucketCount(
+      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kClicked, 0);
+
+  histograms.ExpectBucketCount(
+      chromeos::CellularMetricsLogger::kSimLockNotificationEventHistogram,
+      chromeos::CellularMetricsLogger::SimLockNotificationEvent::kDismissed, 1);
 }
 
 }  // namespace ash

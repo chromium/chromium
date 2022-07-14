@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   static const char kESimPolicyAllConnectionResultHistogram[];
   static const char kPSimAllConnectionResultHistogram[];
 
+  // Histograms associated with SIM Lock notification events.
+  static const char kSimLockNotificationEventHistogram[];
+
   // PIN operations that are tracked by metrics.
   enum class SimPinOperation {
     kRequireLock = 0,
@@ -73,10 +76,21 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kChange = 4,
   };
 
+  // SIM lock notification events
+  enum class SimLockNotificationEvent {
+    kShown = 0,
+    kClicked = 1,
+    kDismissed = 2,
+    kMaxValue = kDismissed
+  };
+
   // Records the result of pin operations performed.
   static void RecordSimPinOperationResult(
       const SimPinOperation& pin_operation,
       const absl::optional<std::string>& shill_error_name = absl::nullopt);
+
+  static void RecordSimLockNotificationEvent(
+      const SimLockNotificationEvent notification_event);
 
   CellularMetricsLogger();
 

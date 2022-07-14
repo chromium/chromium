@@ -87,6 +87,10 @@ const char CellularMetricsLogger::kSimPinChangeSuccessHistogram[] =
     "Network.Cellular.Pin.ChangeSuccess";
 
 // static
+const char CellularMetricsLogger::kSimLockNotificationEventHistogram[] =
+    "Network.Ash.Cellular.SimLock.Policy.Notification.Event";
+
+// static
 const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
     base::Seconds(15);
 
@@ -113,6 +117,13 @@ CellularMetricsLogger::GetSimPinOperationResultForShillError(
   if (shill_error_name == shill::kErrorResultNotFound)
     return SimPinOperationResult::kErrorDeviceMissing;
   return SimPinOperationResult::kErrorUnknown;
+}
+
+// static
+void CellularMetricsLogger::RecordSimLockNotificationEvent(
+    const SimLockNotificationEvent notification_event) {
+  base::UmaHistogramEnumeration(kSimLockNotificationEventHistogram,
+                                notification_event);
 }
 
 // static

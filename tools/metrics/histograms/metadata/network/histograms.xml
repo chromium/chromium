@@ -59,6 +59,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Ash.Cellular.SimLock.Policy.Notification.Event"
+    enum="SimLockNotificationEvent" expires_after="2022-12-31">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records events on the notification shown when the SIM is locked and admin
+    has restricted users from PIN locking their SIMs. These are emitted once the
+    notification is shown and once when the user interacts with it.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.VPN.{VPNProviderType}.ConfigurationSource"
     enum="VPNConfigurationSource" expires_after="2022-12-31">
   <owner>chadduffin@chromium.org</owner>
