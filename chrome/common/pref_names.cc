@@ -2125,36 +2125,6 @@ const char kWebAppsIsolationState[] = "web_apps.isolation_state";
 const char kWebAppsUrlHandlerInfo[] = "web_apps.url_handler_info";
 #endif
 
-// A string representing the last version of Chrome that System Web Apps were
-// updated for.
-const char kSystemWebAppLastUpdateVersion[] =
-    "web_apps.system_web_app_last_update";
-
-// A string representing the last locale that System Web Apps were installed in.
-// This is used to refresh System Web Apps i18n when the locale is changed.
-const char kSystemWebAppLastInstalledLocale[] =
-    "web_apps.system_web_app_last_installed_language";
-
-// An int representing the number of failures to install SWAs for a given
-// version & locale pair. After 3 failures, we'll abandon this version to avoid
-// bootlooping, and wait for a new version to come along.
-const char kSystemWebAppInstallFailureCount[] =
-    "web_apps.system_web_app_failure_count";
-
-// A string representing the latest Chrome version where an attempt was made
-// to install. In the case of success, this and LastUpdateVersion will be the
-// same. If there is an installation failure, they will diverge until a
-// successful installation is made.
-extern const char kSystemWebAppLastAttemptedVersion[] =
-    "web_apps.system_web_app_last_attempted_update";
-
-// A string representing the most recent locale that was attempted to be
-// installed. In the case of success, this and LastUpdateVersion will be the
-// same. If there is an installation failure, they will diverge until a
-// successful installation is made.
-extern const char kSystemWebAppLastAttemptedLocale[] =
-    "web_apps.system_web_app_last_attempted_language";
-
 // The default audio capture device used by the Media content setting.
 const char kDefaultAudioCaptureDevice[] = "media.default_audio_capture_device";
 

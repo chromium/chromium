@@ -41,7 +41,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -635,11 +634,11 @@ void SystemWebAppManager::OnAppsSynchronized(
 
   // TODO(qjw): Figure out where install_results come from, decide if
   // installation failures need to be handled
-  pref_service_->SetString(::prefs::kSystemWebAppLastUpdateVersion,
+  pref_service_->SetString(prefs::kSystemWebAppLastUpdateVersion,
                            CurrentVersion().GetString());
-  pref_service_->SetString(::prefs::kSystemWebAppLastInstalledLocale,
+  pref_service_->SetString(prefs::kSystemWebAppLastInstalledLocale,
                            CurrentLocale());
-  pref_service_->SetInteger(::prefs::kSystemWebAppInstallFailureCount, 0);
+  pref_service_->SetInteger(prefs::kSystemWebAppInstallFailureCount, 0);
 
   // Report install duration only if the install pipeline actually installs
   // all the apps (e.g. on version upgrade).
@@ -690,10 +689,10 @@ bool SystemWebAppManager::ShouldForceInstallApps() const {
     return true;
 
   base::Version current_installed_version(
-      pref_service_->GetString(::prefs::kSystemWebAppLastUpdateVersion));
+      pref_service_->GetString(prefs::kSystemWebAppLastUpdateVersion));
 
   const std::string& current_installed_locale(
-      pref_service_->GetString(::prefs::kSystemWebAppLastInstalledLocale));
+      pref_service_->GetString(prefs::kSystemWebAppLastInstalledLocale));
 
   // If Chrome version rolls back for some reason, ensure System Web Apps are
   // always in sync with Chrome version.
@@ -709,32 +708,32 @@ bool SystemWebAppManager::ShouldForceInstallApps() const {
 
 void SystemWebAppManager::UpdateLastAttemptedInfo() {
   base::Version last_attempted_version(
-      pref_service_->GetString(::prefs::kSystemWebAppLastAttemptedVersion));
+      pref_service_->GetString(prefs::kSystemWebAppLastAttemptedVersion));
 
   const std::string& last_attempted_locale(
-      pref_service_->GetString(::prefs::kSystemWebAppLastAttemptedLocale));
+      pref_service_->GetString(prefs::kSystemWebAppLastAttemptedLocale));
 
   const bool is_retry = last_attempted_version.IsValid() &&
                         last_attempted_version == CurrentVersion() &&
                         last_attempted_locale == CurrentLocale();
   if (!is_retry) {
-    pref_service_->SetInteger(::prefs::kSystemWebAppInstallFailureCount, 0);
+    pref_service_->SetInteger(prefs::kSystemWebAppInstallFailureCount, 0);
   }
 
-  pref_service_->SetString(::prefs::kSystemWebAppLastAttemptedVersion,
+  pref_service_->SetString(prefs::kSystemWebAppLastAttemptedVersion,
                            CurrentVersion().GetString());
-  pref_service_->SetString(::prefs::kSystemWebAppLastAttemptedLocale,
+  pref_service_->SetString(prefs::kSystemWebAppLastAttemptedLocale,
                            CurrentLocale());
   pref_service_->CommitPendingWrite();
 }
 
 bool SystemWebAppManager::CheckAndIncrementRetryAttempts() {
   int installation_failures =
-      pref_service_->GetInteger(::prefs::kSystemWebAppInstallFailureCount);
+      pref_service_->GetInteger(prefs::kSystemWebAppInstallFailureCount);
   bool reached_retry_limit = installation_failures > kInstallFailureAttempts;
 
   if (!reached_retry_limit) {
-    pref_service_->SetInteger(::prefs::kSystemWebAppInstallFailureCount,
+    pref_service_->SetInteger(prefs::kSystemWebAppInstallFailureCount,
                               installation_failures + 1);
     pref_service_->CommitPendingWrite();
     return false;

@@ -711,12 +711,6 @@ extern const char kWebAppsIsolationState[];
 extern const char kWebAppsUrlHandlerInfo[];
 #endif
 
-extern const char kSystemWebAppLastUpdateVersion[];
-extern const char kSystemWebAppLastInstalledLocale[];
-extern const char kSystemWebAppInstallFailureCount[];
-extern const char kSystemWebAppLastAttemptedVersion[];
-extern const char kSystemWebAppLastAttemptedLocale[];
-
 extern const char kDefaultAudioCaptureDevice[];
 extern const char kDefaultVideoCaptureDevice[];
 extern const char kMediaDeviceIdSalt[];

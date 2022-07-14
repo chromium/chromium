@@ -57,6 +57,16 @@ extern const char kSamlPasswordChangeUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSyncOobeCompleted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSystemWebAppLastUpdateVersion[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSystemWebAppLastInstalledLocale[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSystemWebAppInstallFailureCount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSystemWebAppLastAttemptedVersion[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSystemWebAppLastAttemptedLocale[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLoginDisplayPasswordButtonEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuggestedContentEnabled[];
