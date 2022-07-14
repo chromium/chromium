@@ -86,4 +86,10 @@ public class BuildConfig {
 #else
     public static MAYBE_FINAL boolean ISOLATED_SPLITS_ENABLED MAYBE_FALSE;
 #endif
+
+#if defined(_IS_FOR_TEST)
+    public static MAYBE_FINAL boolean IS_FOR_TEST = true;
+#else
+    public static MAYBE_FINAL boolean IS_FOR_TEST MAYBE_FALSE;
+#endif
 }

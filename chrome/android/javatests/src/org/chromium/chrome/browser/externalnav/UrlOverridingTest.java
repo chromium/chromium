@@ -17,6 +17,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.PatternMatcher;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -119,6 +120,7 @@ public class UrlOverridingTest {
     public CustomTabActivityTestRule mCustomTabActivityRule = new CustomTabActivityTestRule();
 
     private static final String BASE_PATH = "/chrome/test/data/android/url_overriding/";
+    private static final String HELLO_PAGE = BASE_PATH + "hello.html";
     private static final String NAVIGATION_FROM_TIMEOUT_PAGE =
             BASE_PATH + "navigation_from_timer.html";
     private static final String NAVIGATION_FROM_TIMEOUT_WITH_FALLBACK_PAGE =
@@ -588,15 +590,25 @@ public class UrlOverridingTest {
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> RedirectHandlerTabHelper.swapHandlerFor(tab, mSpyRedirectHandler));
-
         // This is a little fragile to code changes, but better than waiting 15 real seconds.
-        Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
-                .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
-                .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
-                .doReturn(SystemClock.elapsedRealtime()
-                        + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
-                .when(mSpyRedirectHandler)
-                .currentRealtime();
+        if (RedirectHandler.isRefactoringEnabled()) {
+            Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
+                    .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
+                    .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
+                    .doReturn(SystemClock.elapsedRealtime()) // XHR callback navigation create
+                    .doReturn(SystemClock.elapsedRealtime()
+                            + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
+                    .when(mSpyRedirectHandler)
+                    .currentRealtime();
+        } else {
+            Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
+                    .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
+                    .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
+                    .doReturn(SystemClock.elapsedRealtime()
+                            + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
+                    .when(mSpyRedirectHandler)
+                    .currentRealtime();
+        }
 
         @OverrideUrlLoadingResultType
         int result = loadUrlAndWaitForIntentUrl(
@@ -809,8 +821,8 @@ public class UrlOverridingTest {
 
     private void runRedirectToOtherBrowserTest(Instrumentation.ActivityResult chooserResult) {
         Context context = ContextUtils.getApplicationContext();
-        Intent intent = new Intent(
-                Intent.ACTION_VIEW, Uri.parse(mTestServer.getURL(REDIRECT_TO_OTHER_BROWSER)));
+        String targetUrl = getRedirectToOtherBrowserUrl();
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl));
         intent.setClassName(context, ChromeLauncherActivity.class.getName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -829,6 +841,25 @@ public class UrlOverridingTest {
         InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
     }
 
+    private String getRedirectToOtherBrowserUrl() {
+        // Strip off the "https:" for intent scheme formatting.
+        String redirectUrl = mTestServer.getURL(HELLO_PAGE).substring(6);
+        byte[] param = ApiCompatibilityUtils.getBytesUtf8("PARAM_URL");
+        byte[] value = ApiCompatibilityUtils.getBytesUtf8(redirectUrl);
+        return mTestServer.getURL(REDIRECT_TO_OTHER_BROWSER)
+                + "?replace_text=" + Base64.encodeToString(param, Base64.URL_SAFE) + ":"
+                + Base64.encodeToString(value, Base64.URL_SAFE);
+    }
+
+    private IntentFilter createHelloIntentFilter() {
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addDataScheme(UrlConstants.HTTPS_SCHEME);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        filter.addDataAuthority("*", null);
+        filter.addDataPath(HELLO_PAGE, PatternMatcher.PATTERN_LITERAL);
+        return filter;
+    }
+
     @Test
     @LargeTest
     public void testRedirectToOtherBrowser_ChooseSelf() throws TimeoutException {
@@ -840,9 +871,8 @@ public class UrlOverridingTest {
 
         // Wait for the target (data) URL to load in the tab.
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getActivityTab().getUrl().getScheme(),
-                    Matchers.is(UrlConstants.DATA_SCHEME));
+            Criteria.checkThat(mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec(),
+                    Matchers.is(mTestServer.getURL(HELLO_PAGE)));
         });
     }
 
@@ -850,9 +880,7 @@ public class UrlOverridingTest {
     @LargeTest
     public void testRedirectToOtherBrowser_ChooseOther() throws TimeoutException {
         mTestContext.setResolveBrowserIntentToNonBrowserPackage(false);
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme(UrlConstants.DATA_SCHEME);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        IntentFilter filter = createHelloIntentFilter();
         Instrumentation.ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, true);
 
@@ -872,15 +900,13 @@ public class UrlOverridingTest {
     @LargeTest
     public void testRedirectToOtherBrowser_DefaultNonBrowserPackage() throws TimeoutException {
         mTestContext.setResolveBrowserIntentToNonBrowserPackage(true);
-        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
-        filter.addDataScheme(UrlConstants.DATA_SCHEME);
-        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        IntentFilter filter = createHelloIntentFilter();
         Instrumentation.ActivityMonitor viewMonitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, true);
 
         Context context = ContextUtils.getApplicationContext();
-        Intent intent = new Intent(
-                Intent.ACTION_VIEW, Uri.parse(mTestServer.getURL(REDIRECT_TO_OTHER_BROWSER)));
+        String targetUrl = getRedirectToOtherBrowserUrl();
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl));
         intent.setClassName(context, ChromeLauncherActivity.class.getName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

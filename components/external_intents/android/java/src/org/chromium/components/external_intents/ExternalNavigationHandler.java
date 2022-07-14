@@ -73,6 +73,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -506,7 +507,8 @@ public class ExternalNavigationHandler {
             params.getRedirectHandler().setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
         }
         if (DEBUG) Log.i(TAG, "clobberCurrentTab called");
-        return clobberCurrentTab(browserFallbackUrl, params.getReferrerUrl());
+        return clobberCurrentTab(browserFallbackUrl, params.getReferrerUrl(),
+                params.getInitiatorOrigin(), params.isRendererInitiated());
     }
 
     private void printDebugShouldOverrideUrlLoadingResultType(OverrideUrlLoadingResult result) {
@@ -651,7 +653,8 @@ public class ExternalNavigationHandler {
                         params.getAsyncActionTakenInMainFrameCallback().onResult(
                                 new ExternalNavigationParams.AsyncActionTakenParams(false, true));
                     }
-                    clobberCurrentTab(params.getUrl(), params.getReferrerUrl());
+                    clobberCurrentTab(params.getUrl(), params.getReferrerUrl(),
+                            params.getInitiatorOrigin(), params.isRendererInitiated());
                 } else {
                     // TODO(tedchoc): Show an indication to the user that the navigation failed
                     //                instead of silently dropping it on the floor.
@@ -674,17 +677,26 @@ public class ExternalNavigationHandler {
      *
      * @param url The new URL after clobbering the current tab.
      * @param referrerUrl The HTTP referrer URL.
+     * @param initiatorOrigin The Origin the navigation intiated from.
      * @return OverrideUrlLoadingResultType (if the tab has been clobbered, or we're launching an
      *         intent.)
      */
     @VisibleForTesting
-    protected OverrideUrlLoadingResult clobberCurrentTab(GURL url, GURL referrerUrl) {
+    protected OverrideUrlLoadingResult clobberCurrentTab(
+            GURL url, GURL referrerUrl, Origin initiatorOrigin, boolean isRendererInitiated) {
         int transitionType = PageTransition.LINK;
         final LoadUrlParams loadUrlParams = new LoadUrlParams(url, transitionType);
         if (!referrerUrl.isEmpty()) {
             Referrer referrer = new Referrer(referrerUrl.getSpec(), ReferrerPolicy.ALWAYS);
             loadUrlParams.setReferrer(referrer);
         }
+        if (RedirectHandler.isRefactoringEnabled()) {
+            // This URL came from the renderer, so it should be seen as part of the current redirect
+            // chain.
+            loadUrlParams.setIsRendererInitiated(isRendererInitiated);
+            loadUrlParams.setInitiatorOrigin(initiatorOrigin);
+        }
+
         assert mDelegate.hasValidTab() : "clobberCurrentTab was called with an empty tab.";
         // Loading URL will start a new navigation which cancels the current one
         // that this clobbering is being done for. It leads to UAF. To avoid that,
@@ -943,6 +955,19 @@ public class ExternalNavigationHandler {
                                 + "(a page waited more than %d seconds to redirect).",
                         RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS);
             }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If a navigation chain has used the history API to go back/forward external navigation is
+     * probably not expected or desirable.
+     */
+    private boolean navigationChainUsedBackOrForward(ExternalNavigationParams params) {
+        if (params.getRedirectHandler() != null
+                && params.getRedirectHandler().navigationChainUsedBackOrForward()) {
+            if (DEBUG) Log.i(TAG, "Navigation chain used back or forward.");
             return true;
         }
         return false;
@@ -1464,6 +1489,12 @@ public class ExternalNavigationHandler {
 
         if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResult.forNoOverride();
 
+        if (RedirectHandler.isRefactoringEnabled()) {
+            if (navigationChainUsedBackOrForward(params)) {
+                return OverrideUrlLoadingResult.forNoOverride();
+            }
+        }
+
         if (hasInternalScheme(params.getUrl(), targetIntent)
                 || hasContentScheme(params.getUrl(), targetIntent)
                 || hasFileSchemeInIntentURI(params.getUrl(), targetIntent)) {
@@ -1571,7 +1602,7 @@ public class ExternalNavigationHandler {
 
         return startActivity(targetIntent, shouldProxyForInstantApps, requiresIntentChooser,
                 resolvingInfos, resolveActivity, browserFallbackUrl, intentDataUrl,
-                params.getReferrerUrl());
+                params.getReferrerUrl(), params.getInitiatorOrigin(), params.isRendererInitiated());
     }
 
     // https://crbug.com/1249964
@@ -1906,7 +1937,7 @@ public class ExternalNavigationHandler {
      *              used by Instant Apps intents).
      */
     private void startActivity(Intent intent, boolean proxy) {
-        startActivity(intent, proxy, false, null, null, null, null, null);
+        startActivity(intent, proxy, false, null, null, null, null, null, null, false);
     }
 
     /**
@@ -1925,12 +1956,14 @@ public class ExternalNavigationHandler {
      * @param browserFallbackUrl The fallback URL if the user chooses not to leave this app.
      * @param intentDataUrl The URL |intent| is targeting.
      * @param referrerUrl The referrer for the navigation.
+     * @param initiatorOrigin The Origin that initiated the navigation, if any.
+     * @param isRendererInitiated True if the navigation was renderer initiated.
      * @returns The OverrideUrlLoadingResult for starting (or not starting) the Activity.
      */
     protected OverrideUrlLoadingResult startActivity(Intent intent, boolean proxy,
             boolean requiresIntentChooser, QueryIntentActivitiesSupplier resolvingInfos,
             ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl, GURL intentDataUrl,
-            GURL referrerUrl) {
+            GURL referrerUrl, Origin initiatorOrigin, boolean isRendererInitiated) {
         // Only touches disk on Kitkat. See http://crbug.com/617725 for more context.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
@@ -1947,7 +1980,8 @@ public class ExternalNavigationHandler {
                 }
                 if (requiresIntentChooser) {
                     return startActivityWithChooser(intent, resolvingInfos, resolveActivity,
-                            browserFallbackUrl, intentDataUrl, referrerUrl, context);
+                            browserFallbackUrl, intentDataUrl, referrerUrl, context,
+                            initiatorOrigin, isRendererInitiated);
                 }
                 return doStartActivity(intent, context);
             }
@@ -1981,7 +2015,8 @@ public class ExternalNavigationHandler {
     @SuppressWarnings("UseCompatLoadingForDrawables")
     private OverrideUrlLoadingResult startActivityWithChooser(final Intent intent,
             QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
-            GURL browserFallbackUrl, GURL intentDataUrl, GURL referrerUrl, Context context) {
+            GURL browserFallbackUrl, GURL intentDataUrl, GURL referrerUrl, Context context,
+            Origin initiatorOrigin, boolean isRendererInitiated) {
         ResolveInfo intentResolveInfo = resolveActivity.get();
         // If this is null, then the intent was only previously matching
         // non-default filters, so just drop it.
@@ -2049,9 +2084,11 @@ public class ExternalNavigationHandler {
                             // matches what would have happened had the regular chooser dialog shown
                             // up and the user selected this app.
                             if (UrlUtilities.isAcceptedScheme(intentDataUrl)) {
-                                clobberCurrentTab(intentDataUrl, referrerUrl);
+                                clobberCurrentTab(intentDataUrl, referrerUrl, initiatorOrigin,
+                                        isRendererInitiated);
                             } else if (!browserFallbackUrl.isEmpty()) {
-                                clobberCurrentTab(browserFallbackUrl, referrerUrl);
+                                clobberCurrentTab(browserFallbackUrl, referrerUrl, initiatorOrigin,
+                                        isRendererInitiated);
                             }
                             return;
                         }
@@ -2307,7 +2344,7 @@ public class ExternalNavigationHandler {
     private static boolean isIncomingIntentRedirect(ExternalNavigationParams params) {
         boolean isOnEffectiveIntentRedirect = params.getRedirectHandler() == null
                 ? false
-                : params.getRedirectHandler().isOnEffectiveIntentRedirectChain();
+                : params.getRedirectHandler().isOnNoninitialLoadForIntentNavigationChain();
         return (params.isFromIntent() && params.isRedirect()) || isOnEffectiveIntentRedirect;
     }
 

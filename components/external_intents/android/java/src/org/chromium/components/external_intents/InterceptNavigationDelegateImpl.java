@@ -137,7 +137,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
         redirectHandler.updateNewUrlLoading(navigationHandle.pageTransition(),
                 navigationHandle.isRedirect(), navigationHandle.hasUserGesture(),
-                lastUserInteractionTime, getLastCommittedEntryIndex(), isInitialNavigation());
+                lastUserInteractionTime, getLastCommittedEntryIndex(), isInitialNavigation(),
+                navigationHandle.isRendererInitiated());
 
         ExternalNavigationParams params =
                 buildExternalNavigationParams(navigationHandle, redirectHandler, escapedUrl)
@@ -183,7 +184,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         @PageTransition
         int transition = PageTransition.LINK;
         mClient.getOrCreateRedirectHandler().updateNewUrlLoading(transition, false, true,
-                mClient.getLastUserInteractionTime(), getLastCommittedEntryIndex(), false);
+                mClient.getLastUserInteractionTime(), getLastCommittedEntryIndex(), false, true);
     }
 
     /**

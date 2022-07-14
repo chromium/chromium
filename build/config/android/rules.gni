@@ -2169,6 +2169,10 @@ if (enable_java_templates) {
           ]
         }
       }
+
+      if (defined(testonly) && testonly) {
+        defines += [ "_IS_FOR_TEST" ]
+      }
     }
   }
 

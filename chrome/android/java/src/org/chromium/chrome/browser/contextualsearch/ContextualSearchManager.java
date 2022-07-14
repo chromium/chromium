@@ -1129,7 +1129,8 @@ public class ContextualSearchManager
             mRedirectHandler.updateNewUrlLoading(navigationHandle.pageTransition(),
                     navigationHandle.isRedirect(), navigationHandle.hasUserGesture(),
                     mLastUserInteractionTimeSupplier.get(),
-                    RedirectHandler.NO_COMMITTED_ENTRY_INDEX, true /* isInitialNavigation */);
+                    RedirectHandler.NO_COMMITTED_ENTRY_INDEX, true /* isInitialNavigation */,
+                    navigationHandle.isRendererInitiated());
             ExternalNavigationParams params =
                     new ExternalNavigationParams
                             .Builder(escapedUrl, false, navigationHandle.getReferrerUrl(),
