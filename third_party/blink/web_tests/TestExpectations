@@ -7180,6 +7180,10 @@ crbug.com/1180274 virtual/partitioned-cookies-first-party-sets/http/tests/inspec
 crbug.com/1180274 virtual/first-party-sets/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 crbug.com/1180274 virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 
+# Disabled test to land a DevTools change
+crbug.com/1344541 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
+crbug.com/1344541 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass ]
+
 # Sheriff 2022-07-11
 crbug.com/1343262 [ Win11 ] compositing/overlap-blending/reflection-opacity-huge.html [ Failure ]
 crbug.com/1343262 [ Win11 ] compositing/reflections/nested-reflection-opacity.html [ Failure ]
