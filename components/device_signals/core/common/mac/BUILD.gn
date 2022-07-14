@@ -5,7 +5,7 @@
 static_library("mac") {
   public = [ "mac_platform_delegate.h" ]
 
-  sources = [ "mac_platform_delegate.cc" ]
+  sources = [ "mac_platform_delegate.mm" ]
 
   public_deps = [
     "//components/device_signals/core/common",

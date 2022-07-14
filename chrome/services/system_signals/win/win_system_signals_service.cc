@@ -6,6 +6,10 @@
 
 #include "base/win/windows_version.h"
 #include "chrome/services/system_signals/win/metrics_utils.h"
+#include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/common/file_system_service.h"
+#include "components/device_signals/core/common/platform_delegate.h"
+#include "components/device_signals/core/system_signals/win/win_platform_delegate.h"
 #include "components/device_signals/core/system_signals/win/wmi_client.h"
 #include "components/device_signals/core/system_signals/win/wmi_client_impl.h"
 #include "components/device_signals/core/system_signals/win/wsc_client.h"
@@ -17,14 +21,18 @@ WinSystemSignalsService::WinSystemSignalsService(
     mojo::PendingReceiver<device_signals::mojom::SystemSignalsService> receiver)
     : WinSystemSignalsService(
           std::move(receiver),
+          device_signals::FileSystemService::Create(
+              std::make_unique<device_signals::WinPlatformDelegate>()),
           std::make_unique<device_signals::WmiClientImpl>(),
           std::make_unique<device_signals::WscClientImpl>()) {}
 
 WinSystemSignalsService::WinSystemSignalsService(
     mojo::PendingReceiver<device_signals::mojom::SystemSignalsService> receiver,
+    std::unique_ptr<device_signals::FileSystemService> file_system_service,
     std::unique_ptr<device_signals::WmiClient> wmi_client,
     std::unique_ptr<device_signals::WscClient> wsc_client)
     : receiver_(this, std::move(receiver)),
+      file_system_service_(std::move(file_system_service)),
       wmi_client_(std::move(wmi_client)),
       wsc_client_(std::move(wsc_client)) {}
 
@@ -33,8 +41,7 @@ WinSystemSignalsService::~WinSystemSignalsService() = default;
 void WinSystemSignalsService::GetFileSystemSignals(
     const std::vector<device_signals::GetFileSystemInfoOptions>& requests,
     GetFileSystemSignalsCallback callback) {
-  // TODO(b/231298500): Implement this.
-  std::move(callback).Run({});
+  std::move(callback).Run(file_system_service_->GetSignals(requests));
 }
 
 void WinSystemSignalsService::GetAntiVirusSignals(

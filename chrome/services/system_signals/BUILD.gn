@@ -1,0 +1,22 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("unit_tests") {
+  testonly = true
+  deps = []
+
+  if (is_win) {
+    deps += [ "//chrome/services/system_signals/win:unit_tests" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//chrome/services/system_signals/mac:unit_tests" ]
+  }
+
+  if (is_linux) {
+    deps += [ "//chrome/services/system_signals/linux:unit_tests" ]
+  }
+}

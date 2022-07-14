@@ -6,11 +6,16 @@
 
 #include <array>
 #include <memory>
+#include <utility>
 
+#include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_os_info_override_win.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/common/file_system_service.h"
+#include "components/device_signals/core/common/mock_file_system_service.h"
 #include "components/device_signals/core/common/win/win_types.h"
 #include "components/device_signals/core/system_signals/win/mock_wmi_client.h"
 #include "components/device_signals/core/system_signals/win/mock_wsc_client.h"
@@ -20,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using device_signals::MockFileSystemService;
 using device_signals::MockWmiClient;
 using device_signals::MockWscClient;
 using testing::Return;
@@ -29,6 +35,10 @@ namespace system_signals {
 class WinSystemSignalsServiceTest : public testing::Test {
  protected:
   WinSystemSignalsServiceTest() {
+    auto file_system_service =
+        std::make_unique<testing::StrictMock<MockFileSystemService>>();
+    file_system_service_ = file_system_service.get();
+
     auto wmi_client = std::make_unique<testing::StrictMock<MockWmiClient>>();
     wmi_client_ = wmi_client.get();
 
@@ -37,20 +47,54 @@ class WinSystemSignalsServiceTest : public testing::Test {
 
     mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
         fake_receiver;
+
+    // Have to use "new" since make_unique doesn't have access to friend private
+    // constructor.
     win_system_signals_service_ =
         std::unique_ptr<WinSystemSignalsService>(new WinSystemSignalsService(
-            std::move(fake_receiver), std::move(wmi_client),
-            std::move(wsc_client)));
+            std::move(fake_receiver), std::move(file_system_service),
+            std::move(wmi_client), std::move(wsc_client)));
   }
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   absl::optional<base::test::ScopedOSInfoOverride> os_info_override_;
 
+  MockFileSystemService* file_system_service_;
   MockWmiClient* wmi_client_;
   MockWscClient* wsc_client_;
   std::unique_ptr<WinSystemSignalsService> win_system_signals_service_;
 };
+
+// Tests that GetFileSystemSignals forwards the signal collection to
+// FileSystemService.
+TEST_F(WinSystemSignalsServiceTest, GetFileSystemSignals) {
+  device_signals::GetFileSystemInfoOptions options;
+  options.file_path = base::FilePath::FromUTF8Unsafe("/some/file/path");
+
+  std::vector<device_signals::GetFileSystemInfoOptions> requests;
+  requests.push_back(std::move(options));
+
+  device_signals::FileSystemItem returned_item;
+  returned_item.file_path =
+      base::FilePath::FromUTF8Unsafe("/some/other/file/path");
+  returned_item.presence = device_signals::PresenceValue::kFound;
+
+  std::vector<device_signals::FileSystemItem> response;
+  response.push_back(std::move(returned_item));
+
+  EXPECT_CALL(*file_system_service_, GetSignals(requests))
+      .WillOnce(Return(response));
+
+  base::test::TestFuture<const std::vector<device_signals::FileSystemItem>&>
+      future;
+  win_system_signals_service_->GetFileSystemSignals(requests,
+                                                    future.GetCallback());
+
+  auto results = future.Get();
+  EXPECT_EQ(results.size(), response.size());
+  EXPECT_EQ(results[0], response[0]);
+}
 
 // Tests that AV products cannot be retrieve on Win Server environments.
 TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Server) {

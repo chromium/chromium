@@ -8242,8 +8242,8 @@ test("unit_tests") {
     ]
   }
 
-  if (is_win) {
-    deps += [ "../services/system_signals/win:unit_tests" ]
+  if (is_win || is_mac || is_linux) {
+    deps += [ "../services/system_signals:unit_tests" ]
   }
 
   if (enable_pdf) {

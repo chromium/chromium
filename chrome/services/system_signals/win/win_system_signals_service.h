@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace device_signals {
+class FileSystemService;
 class WmiClient;
 class WscClient;
 }  // namespace device_signals
@@ -42,15 +43,16 @@ class WinSystemSignalsService
  private:
   friend class WinSystemSignalsServiceTest;
 
-  // Constructor that can be used by tests to mock out `wmi_client` and
-  // `wsc_client`.
+  // Constructor that can be used by tests to mock out dependencies.
   WinSystemSignalsService(
       mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
           receiver,
+      std::unique_ptr<device_signals::FileSystemService> file_system_service,
       std::unique_ptr<device_signals::WmiClient> wmi_client,
       std::unique_ptr<device_signals::WscClient> wsc_client);
 
   mojo::Receiver<device_signals::mojom::SystemSignalsService> receiver_;
+  std::unique_ptr<device_signals::FileSystemService> file_system_service_;
   std::unique_ptr<device_signals::WmiClient> wmi_client_;
   std::unique_ptr<device_signals::WscClient> wsc_client_;
   base::win::ScopedCOMInitializer scoped_com_initializer_;
