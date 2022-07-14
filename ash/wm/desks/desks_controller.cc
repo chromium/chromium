@@ -89,8 +89,7 @@ constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
 constexpr char kMoveWindowFromActiveDeskHistogramName[] =
     "Ash.Desks.MoveWindowFromActiveDesk";
 constexpr char kCloseAllUndoHistogramName[] = "Ash.Desks.CloseAllUndo";
-constexpr char kCloseAllUndoAndExpiredHistogramName[] =
-    "Ash.Desks.CloseAllUndoAndExpired";
+constexpr char kCloseAllTotalHistogramName[] = "Ash.Desks.CloseAllTotal";
 constexpr char kRemoveDeskTypeHistogramName[] = "Ash.Desks.RemoveDeskType";
 constexpr char kNumberOfWindowsClosed[] = "Ash.Desks.NumberOfWindowsClosed";
 constexpr char kNumberOfWindowsOnDesk_1_HistogramName[] =
@@ -1753,7 +1752,7 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
 void DesksController::MaybeCommitPendingDeskRemoval(
     const std::string& toast_id) {
   // This method will be invoked on both undo and expired toast.
-  base::UmaHistogramBoolean(kCloseAllUndoAndExpiredHistogramName, true);
+  base::UmaHistogramBoolean(kCloseAllTotalHistogramName, true);
 
   if (toast_id.empty() || (temporary_removed_desk_ &&
                            temporary_removed_desk_->toast_id() == toast_id)) {

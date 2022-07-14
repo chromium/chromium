@@ -7854,7 +7854,7 @@ TEST_F(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
       // Record click undo button in toast after remove all
       histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllUndo", 1);
       // Record undo toast expired
-      histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllUndoAndExpired",
+      histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllTotal",
                                         ++undo_toast_expired_count);
 
     } else {
@@ -7862,7 +7862,7 @@ TEST_F(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
       // destroyed.
       WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());
       // Record undo toast expired
-      histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllUndoAndExpired",
+      histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllTotal",
                                         ++undo_toast_expired_count);
       // Record number of windows being closed
       histogram_tester.ExpectUniqueSample("Ash.Desks.NumberOfWindowsClosed", 2,

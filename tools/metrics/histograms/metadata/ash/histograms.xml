@@ -1634,6 +1634,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.CloseAllTotal" enum="BooleanHit"
+    expires_after="2023-05-09">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted after a virtual desk being removed with close all option and undo
+    toast being shown. This metric describes the total number of times the user
+    chooses to close a desk with its windows, regardless of whether that action
+    is undone.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.CloseAllUndo" enum="BooleanHit"
     expires_after="2023-05-09">
   <owner>aprilzhou@google.com</owner>
@@ -1646,6 +1658,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.CloseAllUndoAndExpired" enum="BooleanHit"
     expires_after="2023-05-09">
+  <obsolete>
+    Made obsolete 2022-07-13 because the name and summary did not effectively
+    describe what it was recording. Replaced by Ash.Desks.CloseAllTotal.
+  </obsolete>
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
