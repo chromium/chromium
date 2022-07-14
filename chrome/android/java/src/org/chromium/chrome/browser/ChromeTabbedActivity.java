@@ -2428,7 +2428,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getCurrentTabModel().closeTab(tabToClose, nextTab, false, true, false);
 
                 // If there is no next tab to open, enter overview mode.
-                if (nextTab == null) showOverview(StartSurfaceState.SHOWING_START);
+                if (nextTab == null && !isActivityFinishingOrDestroyed()) {
+                    showOverview(StartSurfaceState.SHOWING_START);
+                }
             }, CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
         }
     }
