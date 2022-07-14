@@ -269,7 +269,7 @@ void RunCallbackHelper(CallbackAndContext* callback_and_context,
   if (frame && !callback.IsEmpty()) {
     if (value.has_value()) {
       v8::Local<v8::Value> v8_value =
-          V8ValueConverter::Create()->ToV8Value(&value.value(), context);
+          V8ValueConverter::Create()->ToV8Value(*value, context);
       v8::Local<v8::Value> argv[] = {v8_value};
       frame->CallFunctionEvenIfScriptDisabled(
           callback, v8::Object::New(isolate), /*argc=*/1, argv);

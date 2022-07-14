@@ -219,7 +219,7 @@ void V8ValueConverterImpl::SetStrategy(Strategy* strategy) {
 }
 
 v8::Local<v8::Value> V8ValueConverterImpl::ToV8Value(
-    const base::Value* value,
+    base::ValueView value,
     v8::Local<v8::Context> context) {
   v8::Context::Scope context_scope(context);
   v8::EscapableHandleScope handle_scope(context->GetIsolate());
@@ -239,65 +239,66 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Value(
 v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
-    const base::Value* value) const {
-  CHECK(value);
-  switch (value->type()) {
-    case base::Value::Type::NONE:
+    base::ValueView value) const {
+  struct Visitor {
+    const V8ValueConverterImpl* converter;
+    v8::Isolate* isolate;
+    v8::Local<v8::Object> creation_context;
+
+    v8::Local<v8::Value> operator()(absl::monostate value) {
       return v8::Null(isolate);
-
-    case base::Value::Type::BOOLEAN:
-      return v8::Boolean::New(isolate, value->GetBool());
-
-    case base::Value::Type::INTEGER: {
-      return v8::Integer::New(isolate, value->GetInt());
     }
 
-    case base::Value::Type::DOUBLE: {
-      return v8::Number::New(isolate, value->GetDouble());
+    v8::Local<v8::Value> operator()(bool value) {
+      return v8::Boolean::New(isolate, value);
     }
 
-    case base::Value::Type::STRING: {
-      const std::string* val = value->GetIfString();
-      CHECK(val);
-      return v8::String::NewFromUtf8(isolate, val->c_str(),
-                                     v8::NewStringType::kNormal, val->length())
+    v8::Local<v8::Value> operator()(int value) {
+      return v8::Integer::New(isolate, value);
+    }
+
+    v8::Local<v8::Value> operator()(double value) {
+      return v8::Number::New(isolate, value);
+    }
+
+    v8::Local<v8::Value> operator()(base::StringPiece value) {
+      return v8::String::NewFromUtf8(isolate, value.data(),
+                                     v8::NewStringType::kNormal, value.length())
           .ToLocalChecked();
     }
 
-    case base::Value::Type::LIST:
-      return ToV8Array(isolate,
-                       creation_context,
-                       static_cast<const base::ListValue*>(value));
+    v8::Local<v8::Value> operator()(const base::Value::BlobStorage& value) {
+      return converter->ToArrayBuffer(isolate, creation_context, value);
+    }
 
-    case base::Value::Type::DICTIONARY:
-      return ToV8Object(isolate,
-                        creation_context,
-                        static_cast<const base::DictionaryValue*>(value));
+    v8::Local<v8::Value> operator()(const base::Value::Dict& value) {
+      return converter->ToV8Object(isolate, creation_context, value);
+    }
 
-    case base::Value::Type::BINARY:
-      return ToArrayBuffer(isolate, creation_context, value);
+    v8::Local<v8::Value> operator()(const base::Value::List& value) {
+      return converter->ToV8Array(isolate, creation_context, value);
+    }
+  };
 
-    default:
-      LOG(ERROR) << "Unexpected value type: " << value->type();
-      return v8::Null(isolate);
-  }
+  return value.Visit(Visitor{.converter = this,
+                             .isolate = isolate,
+                             .creation_context = creation_context});
 }
 
 v8::Local<v8::Value> V8ValueConverterImpl::ToV8Array(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
-    const base::ListValue* val) const {
-  v8::Local<v8::Array> result(
-      v8::Array::New(isolate, val->GetListDeprecated().size()));
+    const base::Value::List& val) const {
+  v8::Local<v8::Array> result(v8::Array::New(isolate, val.size()));
 
   // TODO(robwu): Callers should pass in the context.
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
-  for (size_t i = 0; i < val->GetListDeprecated().size(); ++i) {
-    const base::Value& child = val->GetListDeprecated()[i];
+  for (size_t i = 0; i < val.size(); ++i) {
+    const base::Value& child = val[i];
 
     v8::Local<v8::Value> child_v8 =
-        ToV8ValueImpl(isolate, creation_context, &child);
+        ToV8ValueImpl(isolate, creation_context, child);
     CHECK(!child_v8.IsEmpty());
 
     v8::Maybe<bool> maybe =
@@ -312,17 +313,15 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8Array(
 v8::Local<v8::Value> V8ValueConverterImpl::ToV8Object(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
-    const base::DictionaryValue* val) const {
+    const base::Value::Dict& val) const {
   v8::Local<v8::Object> result(v8::Object::New(isolate));
 
   // TODO(robwu): Callers should pass in the context.
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
-  for (base::DictionaryValue::Iterator iter(*val);
-       !iter.IsAtEnd(); iter.Advance()) {
-    const std::string& key = iter.key();
+  for (const auto [key, value] : val) {
     v8::Local<v8::Value> child_v8 =
-        ToV8ValueImpl(isolate, creation_context, &iter.value());
+        ToV8ValueImpl(isolate, creation_context, value);
     CHECK(!child_v8.IsEmpty());
 
     v8::Maybe<bool> maybe = result->CreateDataProperty(
@@ -341,13 +340,12 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8Object(
 v8::Local<v8::Value> V8ValueConverterImpl::ToArrayBuffer(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
-    const base::Value* value) const {
+    const base::Value::BlobStorage& value) const {
   DCHECK(creation_context->GetCreationContextChecked() ==
          isolate->GetCurrentContext());
   v8::Local<v8::ArrayBuffer> buffer =
-      v8::ArrayBuffer::New(isolate, value->GetBlob().size());
-  memcpy(buffer->GetBackingStore()->Data(), value->GetBlob().data(),
-         value->GetBlob().size());
+      v8::ArrayBuffer::New(isolate, value.size());
+  memcpy(buffer->GetBackingStore()->Data(), value.data(), value.size());
   return buffer;
 }
 

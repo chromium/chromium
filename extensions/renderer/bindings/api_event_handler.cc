@@ -236,7 +236,7 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
   std::vector<v8::Local<v8::Value>> v8_args;
   v8_args.reserve(args.size());
   for (const auto& arg : args)
-    v8_args.push_back(converter->ToV8Value(&arg, context));
+    v8_args.push_back(converter->ToV8Value(arg, context));
 
   FireEventInContext(event_name, context, &v8_args, std::move(filter),
                      JSRunner::ResultCallback());

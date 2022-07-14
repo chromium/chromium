@@ -153,7 +153,7 @@ void CallModuleMethod(const std::string& module_name,
 
   std::vector<v8::Local<v8::Value>> arguments;
   for (const auto& arg : *args) {
-    arguments.push_back(converter->ToV8Value(&arg, context->v8_context()));
+    arguments.push_back(converter->ToV8Value(arg, context->v8_context()));
   }
 
   context->module_system()->CallModuleMethodSafe(

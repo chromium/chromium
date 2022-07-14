@@ -69,7 +69,7 @@ bool WebRequestHooks::CreateCustomEvent(
   const base::ListValue* extra_params = nullptr;
   CHECK(event_spec->GetList("extraParameters", &extra_params));
   v8::Local<v8::Value> extra_parameters_spec =
-      content::V8ValueConverter::Create()->ToV8Value(extra_params, context);
+      content::V8ValueConverter::Create()->ToV8Value(*extra_params, context);
 
   v8::Local<v8::Function> get_event = get_event_value.As<v8::Function>();
   v8::Local<v8::Value> args[] = {

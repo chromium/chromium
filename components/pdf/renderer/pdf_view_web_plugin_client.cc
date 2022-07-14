@@ -91,9 +91,8 @@ void PdfViewWebPluginClient::PostMessage(base::Value::Dict message) {
   DCHECK_EQ(isolate_, context->GetIsolate());
   v8::Context::Scope context_scope(context);
 
-  base::Value message_as_value(std::move(message));
   v8::Local<v8::Value> converted_message =
-      v8_value_converter_->ToV8Value(&message_as_value, context);
+      v8_value_converter_->ToV8Value(message, context);
 
   plugin_container_->EnqueueMessageEvent(
       blink::WebSerializedScriptValue::Serialize(isolate_, converted_message));

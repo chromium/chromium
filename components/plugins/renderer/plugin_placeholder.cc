@@ -132,7 +132,7 @@ void PluginPlaceholderBase::NotifyPlaceholderReadyForTestingCallback() {
       blink::WebSerializedScriptValue::Serialize(
           blink::MainThreadIsolate(),
           content::V8ValueConverter::Create()->ToV8Value(
-              &value,
+              value,
               element.GetDocument().GetFrame()->MainWorldScriptContext()));
   blink::WebDOMMessageEvent msg_event(message_data);
 

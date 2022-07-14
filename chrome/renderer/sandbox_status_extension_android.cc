@@ -8,6 +8,7 @@
 
 #include "base/android/build_info.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/url_constants.h"
@@ -151,6 +152,8 @@ void SandboxStatusExtension::RunCallback(
   if (!render_frame())
     return;
 
+  CHECK(status);
+
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
@@ -160,7 +163,7 @@ void SandboxStatusExtension::RunCallback(
       v8::Local<v8::Function>::New(isolate, *callback);
 
   v8::Local<v8::Value> argv[] = {
-      content::V8ValueConverter::Create()->ToV8Value(status.get(), context)};
+      content::V8ValueConverter::Create()->ToV8Value(*status, context)};
   render_frame()->GetWebFrame()->CallFunctionEvenIfScriptDisabled(
       callback_local, v8::Object::New(isolate), 1, argv);
 }

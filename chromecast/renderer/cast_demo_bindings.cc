@@ -260,7 +260,7 @@ void CastDemoBindings::OnGetAvailableWifiNetworks(
   std::unique_ptr<content::V8ValueConverter> v8_converter =
       content::V8ValueConverter::Create();
   v8::Local<v8::Value> v8_value =
-      v8_converter->ToV8Value(&network_list, context);
+      v8_converter->ToV8Value(network_list, context);
 
   resolver.Get(isolate)
       ->Resolve(context, gin::ConvertToV8(isolate, v8_value))
@@ -296,7 +296,7 @@ void CastDemoBindings::OnGetConnectionStatus(
 
   std::unique_ptr<content::V8ValueConverter> v8_converter =
       content::V8ValueConverter::Create();
-  v8::Local<v8::Value> v8_value = v8_converter->ToV8Value(&status, context);
+  v8::Local<v8::Value> v8_value = v8_converter->ToV8Value(status, context);
 
   resolver.Get(isolate)
       ->Resolve(context, gin::ConvertToV8(isolate, v8_value))

@@ -206,7 +206,7 @@ v8::MaybeLocal<v8::Value> CallMethodOnFrame(LocalFrame* local_frame,
   v8::Context::Scope context_scope(context);
   WTF::Vector<v8::Local<v8::Value>> args;
   for (const auto& argument : arguments) {
-    args.push_back(converter->ToV8Value(&argument, context));
+    args.push_back(converter->ToV8Value(argument, context));
   }
 
   v8::Local<v8::Value> object;

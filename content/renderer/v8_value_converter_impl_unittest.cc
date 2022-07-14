@@ -289,6 +289,7 @@ TEST_F(V8ValueConverterImplTest, BasicRoundTrip) {
       "  \"list\": [ \"bar\", \"foo\" ], \n"
       "  \"empty-list\": [], \n"
       "}");
+  ASSERT_TRUE(original_root);
 
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
@@ -297,7 +298,7 @@ TEST_F(V8ValueConverterImplTest, BasicRoundTrip) {
 
   V8ValueConverterImpl converter;
   v8::Local<v8::Object> v8_object =
-      converter.ToV8Value(original_root.get(), context).As<v8::Object>();
+      converter.ToV8Value(*original_root, context).As<v8::Object>();
   ASSERT_FALSE(v8_object.IsEmpty());
 
   EXPECT_EQ(original_root->DictSize(),
@@ -410,6 +411,7 @@ TEST_F(V8ValueConverterImplTest, BasicRoundTrip) {
 TEST_F(V8ValueConverterImplTest, KeysWithDots) {
   std::unique_ptr<base::Value> original =
       base::test::ParseJsonDeprecated("{ \"foo.bar\": \"baz\" }");
+  ASSERT_TRUE(original);
 
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
@@ -417,8 +419,8 @@ TEST_F(V8ValueConverterImplTest, KeysWithDots) {
   v8::Context::Scope context_scope(context);
 
   V8ValueConverterImpl converter;
-  std::unique_ptr<base::Value> copy(converter.FromV8Value(
-      converter.ToV8Value(original.get(), context), context));
+  std::unique_ptr<base::Value> copy(
+      converter.FromV8Value(converter.ToV8Value(*original, context), context));
 
   EXPECT_TRUE(*original == *copy);
 }
@@ -450,7 +452,7 @@ TEST_F(V8ValueConverterImplTest, ObjectExceptions) {
   V8ValueConverterImpl converter;
   std::unique_ptr<base::DictionaryValue> converted(
       base::DictionaryValue::From(converter.FromV8Value(object, context)));
-  EXPECT_TRUE(converted.get());
+  ASSERT_TRUE(converted.get());
   // http://code.google.com/p/v8/issues/detail?id=1342
   // EXPECT_EQ(2u, converted->size());
   // EXPECT_TRUE(IsNull(converted.get(), "foo"));
@@ -460,7 +462,7 @@ TEST_F(V8ValueConverterImplTest, ObjectExceptions) {
   // Converting to v8 value should not trigger the setter.
   converted->SetString("foo", "foo");
   v8::Local<v8::Object> copy =
-      converter.ToV8Value(converted.get(), context).As<v8::Object>();
+      converter.ToV8Value(*converted, context).As<v8::Object>();
   EXPECT_FALSE(copy.IsEmpty());
   EXPECT_EQ(2u, copy->GetPropertyNames(context).ToLocalChecked()->Length());
   EXPECT_EQ("foo", GetString(copy, "foo"));
@@ -502,7 +504,7 @@ TEST_F(V8ValueConverterImplTest, ArrayExceptions) {
   converted.reset(static_cast<base::ListValue*>(
       base::test::ParseJsonDeprecated("[ \"foo\", \"bar\" ]").release()));
   v8::Local<v8::Array> copy =
-      converter.ToV8Value(converted.get(), context).As<v8::Array>();
+      converter.ToV8Value(*converted, context).As<v8::Array>();
   ASSERT_FALSE(copy.IsEmpty());
   EXPECT_EQ(2u, copy->Length());
   EXPECT_EQ("foo", GetString(copy, 0));
@@ -566,6 +568,7 @@ TEST_F(V8ValueConverterImplTest, Prototype) {
 TEST_F(V8ValueConverterImplTest, ObjectPrototypeSetter) {
   std::unique_ptr<base::Value> original =
       base::test::ParseJsonDeprecated("{ \"foo\": \"good value\" }");
+  ASSERT_TRUE(original);
 
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
@@ -595,7 +598,7 @@ TEST_F(V8ValueConverterImplTest, ObjectPrototypeSetter) {
 
   V8ValueConverterImpl converter;
   v8::Local<v8::Object> converted =
-      converter.ToV8Value(original.get(), context).As<v8::Object>();
+      converter.ToV8Value(*original, context).As<v8::Object>();
   EXPECT_FALSE(converted.IsEmpty());
 
   // Getters/setters shouldn't be triggered.
@@ -611,10 +614,10 @@ TEST_F(V8ValueConverterImplTest, ObjectPrototypeSetter) {
   EXPECT_EQ(1, GetInt(result, "setters"));
 
   // Repeat the same exercise with a dictionary without the key.
-  base::DictionaryValue missing_key_dict;
-  missing_key_dict.SetString("otherkey", "hello");
+  base::Value::Dict missing_key_dict;
+  missing_key_dict.Set("otherkey", "hello");
   v8::Local<v8::Object> converted2 =
-      converter.ToV8Value(&missing_key_dict, context).As<v8::Object>();
+      converter.ToV8Value(missing_key_dict, context).As<v8::Object>();
   EXPECT_FALSE(converted2.IsEmpty());
 
   // Getters/setters shouldn't be triggered.
@@ -634,6 +637,7 @@ TEST_F(V8ValueConverterImplTest, ObjectPrototypeSetter) {
 TEST_F(V8ValueConverterImplTest, ArrayPrototypeSetter) {
   std::unique_ptr<base::Value> original =
       base::test::ParseJsonDeprecated("[100, 200, 300]");
+  ASSERT_TRUE(original);
 
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
@@ -663,7 +667,7 @@ TEST_F(V8ValueConverterImplTest, ArrayPrototypeSetter) {
 
   V8ValueConverterImpl converter;
   v8::Local<v8::Array> converted =
-      converter.ToV8Value(original.get(), context).As<v8::Array>();
+      converter.ToV8Value(*original, context).As<v8::Array>();
   EXPECT_FALSE(converted.IsEmpty());
 
   // Getters/setters shouldn't be triggered during the conversion.
@@ -680,10 +684,10 @@ TEST_F(V8ValueConverterImplTest, ArrayPrototypeSetter) {
   EXPECT_EQ(1, GetInt(result, "setters"));
 
   // Try again, using an array without the index.
-  base::ListValue one_item_list;
+  base::Value::List one_item_list;
   one_item_list.Append(123456);
   v8::Local<v8::Array> converted2 =
-      converter.ToV8Value(&one_item_list, context).As<v8::Array>();
+      converter.ToV8Value(one_item_list, context).As<v8::Array>();
   EXPECT_FALSE(converted2.IsEmpty());
 
   // Getters/setters shouldn't be triggered during the conversion.

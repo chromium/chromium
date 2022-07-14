@@ -27,7 +27,7 @@ void TestFeaturesNativeHandler::GetAPIFeatures(
   std::unique_ptr<JSONFeatureProviderSource> source(
       ExtensionsClient::Get()->CreateAPIFeatureSource());
   args.GetReturnValue().Set(content::V8ValueConverter::Create()->ToV8Value(
-      &source->dictionary(), context()->v8_context()));
+      source->dictionary(), context()->v8_context()));
 }
 
 }  // namespace extensions

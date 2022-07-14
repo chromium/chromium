@@ -223,12 +223,14 @@ void RuntimeHooksDelegate::InitializeTemplate(
 RequestResult RuntimeHooksDelegate::HandleGetManifest(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  DCHECK(script_context->extension());
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  CHECK(script_context->extension());
+  CHECK(script_context->extension()->manifest());
+  CHECK(script_context->extension()->manifest()->value());
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = content::V8ValueConverter::Create()->ToV8Value(
-      script_context->extension()->manifest()->value(),
+      *script_context->extension()->manifest()->value(),
       script_context->v8_context());
 
   return result;

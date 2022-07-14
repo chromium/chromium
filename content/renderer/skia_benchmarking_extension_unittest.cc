@@ -14,10 +14,10 @@
 
 namespace {
 
-testing::AssertionResult HasArg(const base::ListValue* args,
+testing::AssertionResult HasArg(const base::Value::List& args,
                                 const char name[]) {
-  for (size_t i = 0; i < args->GetListDeprecated().size(); ++i) {
-    const base::Value& arg = args->GetListDeprecated()[i];
+  for (size_t i = 0; i < args.size(); ++i) {
+    const base::Value& arg = args[i];
     if (!arg.is_dict() || arg.DictSize() != 1) {
       return testing::AssertionFailure() << " malformed argument for index "
                                          << i;
@@ -59,60 +59,70 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   benchmarking_canvas.restore();
 
   // Verify the recorded commands.
-  const base::ListValue& ops = benchmarking_canvas.Commands();
-  ASSERT_EQ(ops.GetListDeprecated().size(), static_cast<size_t>(5));
+  const base::Value::List& ops = benchmarking_canvas.Commands();
+  ASSERT_EQ(ops.size(), static_cast<size_t>(5));
 
   size_t index = 0;
   const base::Value* value;
-  const base::DictionaryValue* op;
-  const base::ListValue* op_args;
-  std::string op_name;
+  const base::Value::Dict* op;
+  const base::Value::List* op_args;
+  const std::string* op_name;
 
-  value = &ops.GetListDeprecated()[index++];
+  value = &ops[index++];
   ASSERT_TRUE(value->is_dict());
-  op = static_cast<const base::DictionaryValue*>(value);
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "Save");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetListDeprecated().size(), static_cast<size_t>(0));
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "Save");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_TRUE(op_args->empty());
 
-  value = &ops.GetListDeprecated()[index++];
+  value = &ops[index++];
   ASSERT_TRUE(value->is_dict());
-  op = static_cast<const base::DictionaryValue*>(value);
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "ClipRect");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetListDeprecated().size(), static_cast<size_t>(3));
-  EXPECT_TRUE(HasArg(op_args, "rect"));
-  EXPECT_TRUE(HasArg(op_args, "op"));
-  EXPECT_TRUE(HasArg(op_args, "anti-alias"));
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "ClipRect");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_EQ(op_args->size(), static_cast<size_t>(3));
+  EXPECT_TRUE(HasArg(*op_args, "rect"));
+  EXPECT_TRUE(HasArg(*op_args, "op"));
+  EXPECT_TRUE(HasArg(*op_args, "anti-alias"));
 
-  value = &ops.GetListDeprecated()[index++];
+  value = &ops[index++];
   ASSERT_TRUE(value->is_dict());
-  op = static_cast<const base::DictionaryValue*>(value);
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "SetMatrix");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetListDeprecated().size(), static_cast<size_t>(1));
-  EXPECT_TRUE(HasArg(op_args, "matrix"));
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "SetMatrix");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_EQ(op_args->size(), static_cast<size_t>(1));
+  EXPECT_TRUE(HasArg(*op_args, "matrix"));
 
-  value = &ops.GetListDeprecated()[index++];
+  value = &ops[index++];
   ASSERT_TRUE(value->is_dict());
-  op = static_cast<const base::DictionaryValue*>(value);
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "DrawRect");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetListDeprecated().size(), static_cast<size_t>(2));
-  EXPECT_TRUE(HasArg(op_args, "rect"));
-  EXPECT_TRUE(HasArg(op_args, "paint"));
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "DrawRect");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_EQ(op_args->size(), static_cast<size_t>(2));
+  EXPECT_TRUE(HasArg(*op_args, "rect"));
+  EXPECT_TRUE(HasArg(*op_args, "paint"));
 
-  value = &ops.GetListDeprecated()[index++];
+  value = &ops[index++];
   ASSERT_TRUE(value->is_dict());
-  op = static_cast<const base::DictionaryValue*>(value);
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "Restore");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetListDeprecated().size(), static_cast<size_t>(0));
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "Restore");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_TRUE(op_args->empty());
 }
 
 } // namespace content

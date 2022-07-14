@@ -67,7 +67,7 @@ APIRequestHandler::ArgumentAdapter::GetArguments(
         content::V8ValueConverter::Create();
     v8_arguments_.reserve(base_arguments_->size());
     for (const auto& arg : *base_arguments_)
-      v8_arguments_.push_back(converter->ToV8Value(&arg, context));
+      v8_arguments_.push_back(converter->ToV8Value(arg, context));
   }
 
   return v8_arguments_;

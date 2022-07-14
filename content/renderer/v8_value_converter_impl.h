@@ -7,14 +7,9 @@
 
 #include <map>
 
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/v8_value_converter.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}
 
 namespace content {
 
@@ -32,7 +27,7 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
   void SetStripNullFromObjects(bool val) override;
   void SetConvertNegativeZeroToInt(bool val) override;
   void SetStrategy(Strategy* strategy) override;
-  v8::Local<v8::Value> ToV8Value(const base::Value* value,
+  v8::Local<v8::Value> ToV8Value(base::ValueView value,
                                  v8::Local<v8::Context> context) override;
   std::unique_ptr<base::Value> FromV8Value(
       v8::Local<v8::Value> value,
@@ -46,17 +41,17 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
 
   v8::Local<v8::Value> ToV8ValueImpl(v8::Isolate* isolate,
                                      v8::Local<v8::Object> creation_context,
-                                     const base::Value* value) const;
+                                     base::ValueView value) const;
   v8::Local<v8::Value> ToV8Array(v8::Isolate* isolate,
+                                 v8::Local<v8::Object> creation_context,
+                                 const base::Value::List& list) const;
+  v8::Local<v8::Value> ToV8Object(v8::Isolate* isolate,
                                   v8::Local<v8::Object> creation_context,
-                                  const base::ListValue* list) const;
-  v8::Local<v8::Value> ToV8Object(
+                                  const base::Value::Dict& dictionary) const;
+  v8::Local<v8::Value> ToArrayBuffer(
       v8::Isolate* isolate,
       v8::Local<v8::Object> creation_context,
-      const base::DictionaryValue* dictionary) const;
-  v8::Local<v8::Value> ToArrayBuffer(v8::Isolate* isolate,
-                                     v8::Local<v8::Object> creation_context,
-                                     const base::Value* value) const;
+      const base::Value::BlobStorage& value) const;
 
   std::unique_ptr<base::Value> FromV8ValueImpl(FromV8ValueState* state,
                                                v8::Local<v8::Value> value,

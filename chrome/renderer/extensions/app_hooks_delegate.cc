@@ -155,7 +155,7 @@ v8::Local<v8::Value> AppHooksDelegate::GetDetails(
       base::Value::ToUniquePtrValue(extension->manifest()->value()->Clone()));
   manifest_copy->SetStringKey("id", extension->id());
   return content::V8ValueConverter::Create()->ToV8Value(
-      manifest_copy.get(), script_context->v8_context());
+      *manifest_copy, script_context->v8_context());
 }
 
 void AppHooksDelegate::GetInstallState(ScriptContext* script_context,

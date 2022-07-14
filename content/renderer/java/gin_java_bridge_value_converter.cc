@@ -9,6 +9,7 @@
 
 #include <cmath>
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_value.h"
@@ -32,7 +33,8 @@ GinJavaBridgeValueConverter::~GinJavaBridgeValueConverter() {
 v8::Local<v8::Value> GinJavaBridgeValueConverter::ToV8Value(
     const base::Value* value,
     v8::Local<v8::Context> context) const {
-  return converter_->ToV8Value(value, context);
+  CHECK(value);
+  return converter_->ToV8Value(*value, context);
 }
 
 std::unique_ptr<base::Value> GinJavaBridgeValueConverter::FromV8Value(
