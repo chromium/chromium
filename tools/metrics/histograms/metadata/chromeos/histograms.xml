@@ -1832,6 +1832,50 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Timing and number of USB devices attached.</summary>
 </histogram>
 
+<histogram base="true"
+    name="ChromeOS.USB.ExternalDeviceAttached.{USBDeviceRecognized}.{USBDeviceClass}"
+    enum="ChromeOSUsbEventTiming" expires_after="2022-12-31">
+  <owner>wonchung@google.com</owner>
+  <owner>allenwebb@chromium.org</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    Timing and number of external USB devices attached. This is emitted each
+    time an external device is attached via USB and when user logs in with an
+    external device attached.
+  </summary>
+  <token key="USBDeviceRecognized">
+    <variant name="Recognized"
+        summary="A device that was already added to the list of trusted
+                 devices"/>
+    <variant name="Unrecognized"
+        summary="A device that was not in the list of trusted devices yet"/>
+  </token>
+  <token key="USBDeviceClass">
+    <variant name="App"
+        summary="A device with only the application specific interface class"/>
+    <variant name="Audio" summary="An audio device"/>
+    <variant name="AV" summary="An audio/video device"/>
+    <variant name="Card" summary="A smart card reader"/>
+    <variant name="Comm" summary="A communication device"/>
+    <variant name="Health" summary="A personal healthcare device"/>
+    <variant name="HID" summary="A human-interface device"/>
+    <variant name="Hub" summary="A USB hub"/>
+    <variant name="Image" summary="A still image capture device"/>
+    <variant name="Misc"
+        summary="A device with only the misc. interface class"/>
+    <variant name="Other"
+        summary="All devices not covered by the other groups"/>
+    <variant name="Phys" summary="A physical device"/>
+    <variant name="Print" summary="A printer"/>
+    <variant name="Sec" summary="A security device (e.g. fingerprint reader)"/>
+    <variant name="Storage" summary="A storage device"/>
+    <variant name="Vendor"
+        summary="A device with only the vendor specific interface class"/>
+    <variant name="Video" summary="A video device"/>
+    <variant name="Wireless" summary="A wireless controller device"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.UserTypeByDeviceType.LogSegment"
     enum="UserDeviceMatrix" expires_after="2023-04-24">
   <owner>bmalcolm@chromium.org</owner>
