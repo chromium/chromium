@@ -7205,7 +7205,6 @@ crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?9-last [ Crash Failure ]
 
 # Sheriff 2022-07-13
-crbug.com/1344128 external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Skip ]
 crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure Pass ]
 crbug.com/1344210 [ Debug Linux ] http/tests/devtools/elements/styles-2/page-reload-update-sidebar.js [ Failure Pass ]
 crbug.com/1344175 [ Mac12 ] external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-root.html [ Failure Pass ]
