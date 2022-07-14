@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
+import androidx.annotation.VisibleForTesting;
+
 /**
  * This factory returns an implementation for the launcher. The factory itself is also implemented
  * downstream.
@@ -42,5 +44,11 @@ public abstract class CredentialManagerLauncherFactory {
      */
     public boolean isBackendVersionSupported() {
         return false;
+    }
+
+    @VisibleForTesting
+    public static void setFactoryForTesting(
+            CredentialManagerLauncherFactory credentialManagerLauncherFactory) {
+        sInstance = credentialManagerLauncherFactory;
     }
 }
