@@ -63,7 +63,9 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     self.assertEqual(len(update_layout_trees), 5)
     self.assertGreater(_Mean(update_layout_trees), 0.001)
 
-  @decorators.Disabled('chromeos')  # Flaky: https://crbug.com/1284873
+  @decorators.Disabled(
+      'chromeos',  # Flaky: https://crbug.com/1284873
+      'android-nougat')  # Flaky: https://crbug.com/1342706
   def testBlinkPerfTracingMetricsForMeasureFrameTime(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://color-changes-measure-frame-time.html')

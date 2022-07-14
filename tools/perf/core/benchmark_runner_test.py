@@ -98,8 +98,9 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     histograms.ImportDicts(dicts)
     return histograms
 
-  # TODO(https://crbug.com/1098412): Fix the test.
-  @decorators.Disabled('chromeos')
+  @decorators.Disabled(
+      'chromeos',  # TODO(https://crbug.com/1098412): Fix the test.
+      'android-nougat')  # Flaky: https://crbug.com/1342706
   def testTimelineBasedEndToEnd(self):
     class TestTimelineBasedBenchmark(perf_benchmark.PerfBenchmark):
       """A dummy benchmark that records a trace and runs sampleMetric on it."""

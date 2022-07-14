@@ -16,7 +16,8 @@ class TabStackTraceTest(tab_test_case.TabTestCase):
   # disabled shortly so just disable it for now.
   # All platforms except chromeos should at least have a valid minidump.
   # Disabled on Windows: https://crbug.com/971998.
-  @decorators.Disabled('snowleopard', 'chromeos', 'win')
+  @decorators.Disabled('snowleopard', 'chromeos', 'win',
+                       'android-nougat')  # Flaky: https://crbug.com/1342706
   def testValidDump(self):
     with self.assertRaises(exceptions.DevtoolsTargetCrashException) as c:
       self._tab.Navigate('chrome://crash', timeout=10)
