@@ -99,13 +99,6 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
     return;
   }
 
-  if (const net::Error result = ValidateOptions(*options); result != net::OK) {
-    std::move(callback).Run(result, absl::nullopt, absl::nullopt,
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            mojo::ScopedDataPipeProducerHandle());
-    return;
-  }
-
   if (!GetNetworkContext()) {
     mojo::ReportBadMessage("Invalid request to open socket");
     return;
@@ -129,13 +122,7 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
     return;
   }
 
-  if (const net::Error result = ValidateOptions(*options); result != net::OK) {
-    std::move(callback).Run(result, absl::nullopt, absl::nullopt);
-    return;
-  }
-
-  network::mojom::NetworkContext* const network_context = GetNetworkContext();
-  if (!network_context) {
+  if (!GetNetworkContext()) {
     mojo::ReportBadMessage("Invalid request to open socket");
     return;
   }
@@ -205,17 +192,6 @@ network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext() {
 
 RenderFrameHost* DirectSocketsServiceImpl::GetFrameHost() {
   return frame_host_;
-}
-
-net::Error DirectSocketsServiceImpl::ValidateOptions(
-    const blink::mojom::DirectSocketOptions& options) {
-  if (!frame_host_)
-    return net::ERR_CONTEXT_SHUT_DOWN;
-
-  if (options.send_buffer_size < 0 || options.receive_buffer_size < 0)
-    return net::ERR_INVALID_ARGUMENT;
-
-  return net::OK;
 }
 
 void DirectSocketsServiceImpl::AddDirectUDPSocketReceiver(

@@ -89,9 +89,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
  private:
   friend class DirectSocketsUnitTest;
 
-  // Returns net::OK if the options are valid and the connection is permitted.
-  net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options);
-
   raw_ptr<RenderFrameHost> frame_host_;
   mojo::UniqueReceiverSet<blink::mojom::DirectUDPSocket>
       direct_udp_socket_receivers_;

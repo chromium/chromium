@@ -39,6 +39,27 @@ constexpr char kUDPNetworkFailuresHistogramName[] =
 
 constexpr uint32_t readableStreamDefaultBufferSize = 32;
 
+bool CheckSendReceiveReadableStreamBufferSize(const UDPSocketOptions* options,
+                                              ExceptionState& exception_state) {
+  if (options->hasSendBufferSize() && options->sendBufferSize() == 0) {
+    exception_state.ThrowTypeError("sendBufferSize must be greater than zero.");
+    return false;
+  }
+  if (options->hasReceiveBufferSize() && options->receiveBufferSize() == 0) {
+    exception_state.ThrowTypeError(
+        "receiverBufferSize must be greater than zero.");
+    return false;
+  }
+  if (options->hasReadableStreamBufferSize() &&
+      options->readableStreamBufferSize() == 0) {
+    exception_state.ThrowTypeError(
+        "readableStreamBufferSize must be greater than zero.");
+    return false;
+  }
+
+  return true;
+}
+
 mojom::blink::DirectSocketOptionsPtr CreateUDPSocketOptions(
     const String& address,
     const uint16_t port,
@@ -49,10 +70,7 @@ mojom::blink::DirectSocketOptionsPtr CreateUDPSocketOptions(
   socket_options->remote_hostname = address;
   socket_options->remote_port = port;
 
-  if (options->hasReadableStreamBufferSize() &&
-      options->readableStreamBufferSize() == 0) {
-    exception_state.ThrowTypeError(
-        "readableStreamBufferSize must be greater than zero.");
+  if (!CheckSendReceiveReadableStreamBufferSize(options, exception_state)) {
     return {};
   }
 

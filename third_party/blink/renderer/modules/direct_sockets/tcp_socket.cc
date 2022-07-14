@@ -63,6 +63,20 @@ bool CheckKeepAliveOptionsValidity(const TCPSocketOptions* options,
   return true;
 }
 
+bool CheckSendReceiveBufferSize(const TCPSocketOptions* options,
+                                ExceptionState& exception_state) {
+  if (options->hasSendBufferSize() && options->sendBufferSize() == 0) {
+    exception_state.ThrowTypeError("sendBufferSize must be greater than zero.");
+    return false;
+  }
+  if (options->hasReceiveBufferSize() && options->receiveBufferSize() == 0) {
+    exception_state.ThrowTypeError(
+        "receiverBufferSize must be greater than zero.");
+    return false;
+  }
+  return true;
+}
+
 mojom::blink::DirectSocketOptionsPtr CreateTCPSocketOptions(
     const String& remote_address,
     const uint16_t remote_port,
@@ -80,6 +94,10 @@ mojom::blink::DirectSocketOptionsPtr CreateTCPSocketOptions(
           options->hasLocalAddress() || options->hasLocalPort();
       has_partial_local_address && !has_full_local_address) {
     exception_state.ThrowTypeError("Incomplete local address specified.");
+    return {};
+  }
+
+  if (!CheckSendReceiveBufferSize(options, exception_state)) {
     return {};
   }
 

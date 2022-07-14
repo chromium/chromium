@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
           openTcp(
             'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
             789, {
-              sendBufferSize: 0,
+              sendBufferSize: 1243,
               receiveBufferSize: 1234,
               noDelay: true,
               keepAlive: true,
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
   EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
   EXPECT_EQ(789, call.remote_port);
-  EXPECT_EQ(0, call.send_buffer_size);
+  EXPECT_EQ(1243, call.send_buffer_size);
   EXPECT_EQ(1234, call.receive_buffer_size);
   EXPECT_EQ(true, call.no_delay);
   EXPECT_TRUE(call.keep_alive_options);
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsThree) {
           openTcp(
             'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
             789, {
-              sendBufferSize: 0,
+              sendBufferSize: 1243,
               receiveBufferSize: 1234,
               noDelay: true,
               keepAlive: false
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsThree) {
   EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
   EXPECT_EQ(789, call.remote_port);
-  EXPECT_EQ(0, call.send_buffer_size);
+  EXPECT_EQ(1243, call.send_buffer_size);
   EXPECT_EQ(1234, call.receive_buffer_size);
   EXPECT_EQ(true, call.no_delay);
   EXPECT_TRUE(call.keep_alive_options);
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
           openUdp(
             'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
             789, {
-              sendBufferSize: 0,
+              sendBufferSize: 1243,
               receiveBufferSize: 1234
             }
           )
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
   EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kUdp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
   EXPECT_EQ(789, call.remote_port);
-  EXPECT_EQ(0, call.send_buffer_size);
+  EXPECT_EQ(1243, call.send_buffer_size);
   EXPECT_EQ(1234, call.receive_buffer_size);
 }
 

@@ -24,17 +24,7 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    direct_sockets_service_ =
-        std::make_unique<DirectSocketsServiceImpl>(*main_rfh());
     SimulateUserActivation();
-  }
-
-  DirectSocketsServiceImpl& direct_sockets_service() {
-    return *direct_sockets_service_;
-  }
-
-  net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options) {
-    return direct_sockets_service().ValidateOptions(options);
   }
 
   absl::optional<net::IPEndPoint> GetLocalAddr(
@@ -51,22 +41,7 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<DirectSocketsServiceImpl> direct_sockets_service_;
 };
-
-TEST_F(DirectSocketsUnitTest, RenderFrameDeleted) {
-  direct_sockets_service().RenderFrameDeleted(main_rfh());
-
-  blink::mojom::DirectSocketOptions options;
-  EXPECT_EQ(ValidateOptions(options), net::ERR_CONTEXT_SHUT_DOWN);
-}
-
-TEST_F(DirectSocketsUnitTest, WebContentsDestroyed) {
-  direct_sockets_service().WebContentsDestroyed();
-
-  blink::mojom::DirectSocketOptions options;
-  EXPECT_EQ(ValidateOptions(options), net::ERR_CONTEXT_SHUT_DOWN);
-}
 
 TEST_F(DirectSocketsUnitTest, PopulateLocalAddr) {
   blink::mojom::DirectSocketOptions options;
