@@ -161,6 +161,22 @@
       background-color: var(--google-grey-500);
     }
   }
+
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .tile:focus {
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    #backgroundsDisabledIcon,
+    #uploadIcon,
+    .selected-check {
+      background-color: ButtonText;
+    }
+
+    .selected {
+      background-color: SelectedItem;
+    }
+  }
 </style>
 <div id="backgroundsDisabled" hidden$="[[!customBackgroundDisabledByPolicy_]]">
   <div id="backgroundsDisabledIcon"></div>

@@ -144,6 +144,23 @@
     background-color: var(--ntp-selected-primary-text-color);
   }
 
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .menu-item:focus {
+      /* Use outline instead of box-shadow (which does not work) in Windows
+         HCM. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    .menu-item-icon,
+    .menu-item-icon[selected] {
+      background-color: ButtonText;
+    }
+
+    .menu-item[selected] {
+      background-color: SelectedItem;
+    }
+  }
+
   #backgroundsIcon {
     -webkit-mask-image: url(icons/backgrounds.svg);
   }

@@ -44,17 +44,27 @@
 
   #addShortcutIcon,
   .query-tile-icon {
-    -webkit-mask-image: url(chrome://resources/images/add.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--google-grey-900);
     height: 24px;
     width: 24px;
+  }
+
+  #addShortcutIcon {
+    -webkit-mask-image: url(chrome://resources/images/add.svg);
+    background-color: var(--google-grey-900);
   }
 
   .query-tile-icon {
     -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
     background-color: var(--google-grey-700);
+  }
+
+  @media (forced-colors: active) {
+    #addShortcutIcon,
+    .query-tile-icon {
+      background-color: ButtonText;
+    }
   }
 
   :host([use-white-tile-icon_]) #addShortcutIcon {
@@ -93,6 +103,15 @@
   :host-context(.focus-outline-visible) .tile:focus,
   :host-context(.focus-outline-visible) #addShortcut:focus {
     box-shadow: var(--most-visited-focus-shadow);
+  }
+
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .tile:focus,
+    :host-context(.focus-outline-visible) #addShortcut:focus {
+      /* Use outline instead of box-shadow (which does not work) in Windows
+         HCM. */
+      outline: var(--cr-focus-outline-hcm);
+    }
   }
 
   #addShortcut {
