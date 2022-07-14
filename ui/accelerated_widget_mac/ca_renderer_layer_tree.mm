@@ -24,7 +24,6 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/hdr_metadata.h"
-#include "ui/gfx/mac/io_surface_hdr_metadata.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_image_io_surface.h"
 
@@ -185,16 +184,6 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
               : kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
           kCVAttachmentMode_ShouldPropagate);
 
-      // Transfer stashed HDR metadata from the IOSurface to the CVPixelBuffer.
-      //
-      // Note: It'd be nice to find a way to set this on the IOSurface itself
-      // in some way that propagates to the CVPixelBuffer, but thus far we
-      // haven't been able to find a way.
-      gfx::HDRMetadata io_surface_hdr_metadata;
-      if (!hdr_metadata &&
-          IOSurfaceGetHDRMetadata(io_surface, io_surface_hdr_metadata)) {
-        hdr_metadata = io_surface_hdr_metadata;
-      }
       if (hdr_metadata) {
         if (!(hdr_metadata->color_volume_metadata ==
               gfx::ColorVolumeMetadata())) {

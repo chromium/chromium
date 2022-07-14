@@ -69,6 +69,4 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
 
 void GpuMemoryBuffer::SetColorSpace(const ColorSpace& color_space) {}
 
-void GpuMemoryBuffer::SetHDRMetadata(const HDRMetadata& hdr_metadata) {}
-
 }  // namespace gfx

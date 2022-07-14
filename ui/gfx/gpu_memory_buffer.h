@@ -125,10 +125,6 @@ class GFX_EXPORT GpuMemoryBuffer {
   // as an overlay. Note that this will not impact texturing from the buffer.
   virtual void SetColorSpace(const ColorSpace& color_space);
 
-  // Set the HDR metadata for use when this buffer is used as an overlay. Note
-  // that this will not impact texturing from the buffer.
-  virtual void SetHDRMetadata(const HDRMetadata& hdr_metadata);
-
   // Returns a unique identifier associated with buffer.
   virtual GpuMemoryBufferId GetId() const = 0;
 

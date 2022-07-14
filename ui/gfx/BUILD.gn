@@ -670,27 +670,6 @@ static_library("test_support") {
   }
 }
 
-if (is_mac) {
-  component("gfx_io_surface_hdr_metadata") {
-    sources = [
-      "mac/io_surface_hdr_metadata.cc",
-      "mac/io_surface_hdr_metadata.h",
-    ]
-    defines = [ "IS_GFX_IO_SURFACE_HDR_METADATA_IMPL" ]
-
-    # This is a separate component from the other sources because it depends on
-    # the mojo serialize and deserialize methods.
-    deps = [
-      ":gfx",
-      "//ui/gfx/mojom:mojom",
-    ]
-    frameworks = [
-      "CoreFoundation.framework",
-      "IOSurface.framework",
-    ]
-  }
-}
-
 test("gfx_unittests") {
   sources = [
     "animation/keyframe/keyframe_animation_unittest.cc",
@@ -848,10 +827,6 @@ test("gfx_unittests") {
 
   if (is_apple) {
     deps += [ "//ui/resources:ui_test_pak_bundle_data" ]
-  }
-
-  if (is_mac) {
-    deps += [ ":gfx_io_surface_hdr_metadata" ]
   }
 
   if (is_android) {

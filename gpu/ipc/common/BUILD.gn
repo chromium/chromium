@@ -153,7 +153,6 @@ source_set("ipc_common_sources") {
       "gpu_memory_buffer_impl_io_surface.cc",
       "gpu_memory_buffer_impl_io_surface.h",
     ]
-    deps += [ "//ui/gfx:gfx_io_surface_hdr_metadata" ]
     frameworks = [ "IOSurface.framework" ]
   }
 

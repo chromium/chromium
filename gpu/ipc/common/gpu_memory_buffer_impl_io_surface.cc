@@ -12,7 +12,6 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gfx/mac/io_surface_hdr_metadata.h"
 
 namespace gpu {
 namespace {
@@ -149,11 +148,6 @@ void GpuMemoryBufferImplIOSurface::SetColorSpace(
     return;
   color_space_ = color_space;
   IOSurfaceSetColorSpace(io_surface_, color_space);
-}
-
-void GpuMemoryBufferImplIOSurface::SetHDRMetadata(
-    const gfx::HDRMetadata& hdr_metadata) {
-  IOSurfaceSetHDRMetadata(io_surface_, hdr_metadata);
 }
 
 gfx::GpuMemoryBufferType GpuMemoryBufferImplIOSurface::GetType() const {

@@ -36,7 +36,6 @@ component("accelerated_widget_mac") {
     "//ui/events",
     "//ui/events:events_base",
     "//ui/gfx",
-    "//ui/gfx:gfx_io_surface_hdr_metadata",
     "//ui/gfx/geometry",
     "//ui/gl",
   ]

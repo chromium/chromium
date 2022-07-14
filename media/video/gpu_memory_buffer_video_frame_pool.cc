@@ -942,10 +942,6 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
         plane_resource.gpu_memory_buffer->Unmap();
         plane_resource.gpu_memory_buffer->SetColorSpace(
             video_frame->ColorSpace());
-        if (video_frame->hdr_metadata()) {
-          plane_resource.gpu_memory_buffer->SetHDRMetadata(
-              video_frame->hdr_metadata().value());
-        }
       }
     }
   }
