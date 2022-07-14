@@ -3261,7 +3261,10 @@ ArcBluetoothBridge::CreateBluetoothConnectSocket(
   if (ret == 0) {
     // connect() returns success immediately.
     sock_wrapper->file = std::move(sock);
-    base::ThreadPool::PostTask(
+    // BluetoothSocketConnect() is a blocking mojo call on the ARC side, so the
+    // callback needs to be triggered asynchronously and thus we use a PostTask
+    // here.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&ArcBluetoothBridge::OnBluetoothConnectingSocketReady,
                        weak_factory_.GetWeakPtr(), sock_wrapper.get()));
