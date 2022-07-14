@@ -364,6 +364,7 @@ extern const char kOsUIGpuURL[];
 extern const char kOsUIHistogramsURL[];
 extern const char kOsUIInvalidationsURL[];
 extern const char kOsUILockScreenNetworkURL[];
+extern const char kOsUINetExportURL[];
 extern const char kOsUINetworkURL[];
 extern const char kOsUIRestartURL[];
 extern const char kOsUISettingsURL[];
