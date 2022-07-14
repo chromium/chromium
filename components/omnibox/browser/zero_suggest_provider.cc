@@ -189,6 +189,11 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
     }
   }
 
+  if (!input.want_asynchronous_matches()) {
+    Stop(true, false);
+    return;
+  }
+
   search_terms_args.current_page_url = result_type_running_ == REMOTE_SEND_URL
                                            ? input.current_url().spec()
                                            : std::string();

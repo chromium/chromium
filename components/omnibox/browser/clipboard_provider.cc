@@ -146,7 +146,7 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
     return;
 
   // Image matched was kicked off asynchronously, so proceed when that ends.
-  if (CreateImageMatch(input))
+  if (input.want_asynchronous_matches() && CreateImageMatch(input))
     return;
 
   bool read_clipboard_content = false;
@@ -173,13 +173,16 @@ void ClipboardProvider::Start(const AutocompleteInput& input,
     return;
   }
 
+  done_ = true;
+
   // On iOS 14, accessing the clipboard contents shows a notification to the
   // user. To avoid this, all the methods above will not check the contents and
   // will return false/absl::nullopt. Instead, check the existence of content
   // without accessing the actual content and create blank matches.
-  done_ = false;
-  // Image matched was kicked off asynchronously, so proceed when that ends.
-  CheckClipboardContent(input);
+  if (input.want_asynchronous_matches()) {
+    // Image matched was kicked off asynchronously, so proceed when that ends.
+    CheckClipboardContent(input);
+  }
 }
 
 void ClipboardProvider::Stop(bool clear_cached_results,
@@ -292,6 +295,8 @@ void ClipboardProvider::CheckClipboardContent(const AutocompleteInput& input) {
   if (TemplateURLSupportsImageSearch()) {
     desired_types.insert(ClipboardContentType::Image);
   }
+
+  done_ = false;
 
   // We want to get the age here because the contents of the clipboard could
   // change after this point. We want the age of the contents we actually use,

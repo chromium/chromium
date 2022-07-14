@@ -142,6 +142,14 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
   if (!top_sites)
     return;
 
+  // If TopSites has not yet been loaded, then `OnMostVisitedUrlsAvailable` will
+  // be called asynchronously, so we need to first check that async calls are
+  // allowed for the given input.
+  if (!top_sites->loaded() && !input.want_asynchronous_matches()) {
+    return;
+  }
+
+  done_ = false;
   top_sites->GetMostVisitedURLs(
       base::BindRepeating(&MostVisitedSitesProvider::OnMostVisitedUrlsAvailable,
                           request_weak_ptr_factory_.GetWeakPtr()));
@@ -165,6 +173,7 @@ MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 
 void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
     const history::MostVisitedURLList& urls) {
+  done_ = true;
   if (BuildTileSuggest(this, client_, urls, matches_))
     NotifyListeners(true);
 }

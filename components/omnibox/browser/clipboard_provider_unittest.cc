@@ -285,6 +285,28 @@ TEST_F(ClipboardProviderTest, CreateBlankImageMatchOnStart) {
   EXPECT_FALSE(provider_->matches().back().post_content.get());
 }
 
+TEST_F(ClipboardProviderTest, SkipImageMatchGivenWantAsynchronousMatchesFalse) {
+  base::test::ScopedFeatureList feature_list;
+  base::Feature feature = omnibox::kClipboardSuggestionContentHidden;
+  feature_list.InitAndEnableFeature(feature);
+
+  auto template_url_service =
+      std::make_unique<TemplateURLService>(/*initializers=*/nullptr,
+                                           /*count=*/0);
+  client_->set_template_url_service(std::move(template_url_service));
+
+  gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
+  SetClipboardImage(test_image);
+  // When `input.want_asynchronous_matches` is set to false, the clipboard
+  // provider should skip any asynchronous logic associated with creating an
+  // image match.
+  AutocompleteInput input = CreateAutocompleteInput(OmniboxFocusType::ON_FOCUS);
+  input.set_want_asynchronous_matches(false);
+  provider_->Start(input, false);
+  ASSERT_TRUE(provider_->done());
+  ASSERT_TRUE(provider_->matches().empty());
+}
+
 TEST_F(ClipboardProviderTest, CreateURLMatchWithContent) {
   SetClipboardUrl(GURL(kClipboardURL));
   EXPECT_CALL(*client_.get(), GetSchemeClassifier())

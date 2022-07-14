@@ -514,6 +514,36 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
             prefs->GetString(omnibox::kZeroSuggestCachedResults));
 }
 
+TEST_F(ZeroSuggestProviderTest,
+       TestPsuggestZeroSuggestWantAsynchronousMatchesFalse) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  AutocompleteInput input = CreateNTPOnFocusInputForRemoteNoUrl();
+  input.set_want_asynchronous_matches(false);
+
+  GURL suggest_url = GetSuggestURL(
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
+
+  provider_->Start(input, false);
+  // Given that this is a purely synchronous provider run, the running result
+  // type should have been set to NONE.
+  ASSERT_EQ(ZeroSuggestProvider::NONE,
+            provider_->GetResultTypeRunningForTesting());
+
+  // There should be no pending network requests, given that asynchronous logic
+  // has been explicitly disabled (`want_asynchronous_matches_ == false`).
+  ASSERT_FALSE(test_loader_factory()->IsPending(suggest_url.spec()));
+  EXPECT_TRUE(provider_->done());
+  EXPECT_TRUE(provider_->matches().empty());
+
+  // Expect the provider to have not populated the results cache, given that
+  // no asynchronous network requests should have been sent to the suggestions
+  // service.
+  PrefService* prefs = client_->GetPrefs();
+  EXPECT_EQ("", prefs->GetString(omnibox::kZeroSuggestCachedResults));
+}
+
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   base::HistogramTester histogram_tester;
 
