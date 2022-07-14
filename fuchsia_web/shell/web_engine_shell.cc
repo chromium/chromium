@@ -23,12 +23,12 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "fuchsia_web/common/init_logging.h"
+#include "fuchsia_web/shell/remote_debugging_port.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "url/gurl.h"
 
@@ -36,7 +36,6 @@ fuchsia::sys::ComponentControllerPtr component_controller_;
 
 namespace {
 
-constexpr char kRemoteDebuggingPortSwitch[] = "remote-debugging-port";
 constexpr char kHeadlessSwitch[] = "headless";
 constexpr char kEnableProtectedMediaIdentifier[] =
     "enable-protected-media-identifier";
@@ -57,20 +56,6 @@ void PrintUsage() {
             << "a view." << std::endl
             << "Extra flags will be passed to "
             << "WebEngine to be processed." << std::endl;
-}
-
-absl::optional<uint16_t> ParseRemoteDebuggingPort(
-    const base::CommandLine& command_line) {
-  std::string port_str =
-      command_line.GetSwitchValueNative(kRemoteDebuggingPortSwitch);
-  int port_parsed;
-  if (!base::StringToInt(port_str, &port_parsed) || port_parsed < 0 ||
-      port_parsed > 65535) {
-    LOG(ERROR) << "Invalid value for --remote-debugging-port (must be in the "
-                  "range 0-65535).";
-    return absl::nullopt;
-  }
-  return (uint16_t)port_parsed;
 }
 
 GURL GetUrlFromArgs(const base::CommandLine::StringVector& args) {
@@ -136,13 +121,11 @@ int main(int argc, char** argv) {
   CHECK(InitLoggingFromCommandLineDefaultingToStderrForTest(  // IN-TEST
       command_line));
 
-  absl::optional<uint16_t> remote_debugging_port;
-  if (command_line->HasSwitch(kRemoteDebuggingPortSwitch)) {
-    remote_debugging_port = ParseRemoteDebuggingPort(*command_line);
-    if (!remote_debugging_port) {
-      PrintUsage();
-      return 1;
-    }
+  absl::optional<uint16_t> remote_debugging_port =
+      GetRemoteDebuggingPort(*command_line);
+  if (!remote_debugging_port) {
+    PrintUsage();
+    return 1;
   }
 
   const bool is_headless = command_line->HasSwitch(kHeadlessSwitch);
@@ -204,8 +187,7 @@ int main(int argc, char** argv) {
     features |= fuchsia::web::ContextFeatureFlags::VULKAN;
 
   create_context_params.set_features(features);
-  if (remote_debugging_port)
-    create_context_params.set_remote_debugging_port(*remote_debugging_port);
+  create_context_params.set_remote_debugging_port(*remote_debugging_port);
 
   // DRM services require cdm_data_directory to be populated, so create a
   // directory under /data and use that as the cdm_data_directory.
@@ -266,8 +248,7 @@ int main(int argc, char** argv) {
 
   // Create the browser |frame| which will contain the webpage.
   fuchsia::web::CreateFrameParams frame_params;
-  if (remote_debugging_port)
-    frame_params.set_enable_remote_debugging(true);
+  frame_params.set_enable_remote_debugging(true);
 
   fuchsia::web::FramePtr frame;
   context->CreateFrameWithParams(std::move(frame_params), frame.NewRequest());
@@ -281,19 +262,17 @@ int main(int argc, char** argv) {
   settings.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
   frame->SetContentAreaSettings(std::move(settings));
 
-  // Log the debugging port, if debugging is requested.
-  if (remote_debugging_port) {
-    context->GetRemoteDebuggingPort(
-        [](fuchsia::web::Context_GetRemoteDebuggingPort_Result result) {
-          if (result.is_err()) {
-            LOG(ERROR) << "Remote debugging service was not opened.";
-            return;
-          }
-          // Telemetry expects this exact format of log line output to retrieve
-          // the remote debugging port.
-          LOG(INFO) << "Remote debugging port: " << result.response().port;
-        });
-  }
+  // Log the debugging port.
+  context->GetRemoteDebuggingPort(
+      [](fuchsia::web::Context_GetRemoteDebuggingPort_Result result) {
+        if (result.is_err()) {
+          LOG(ERROR) << "Remote debugging service was not opened.";
+          return;
+        }
+        // Telemetry expects this exact format of log line output to retrieve
+        // the remote debugging port.
+        LOG(INFO) << "Remote debugging port: " << result.response().port;
+      });
 
   // Navigate |frame| to |url|.
   fuchsia::web::LoadUrlParams load_params;

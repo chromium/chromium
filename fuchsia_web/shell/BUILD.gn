@@ -19,6 +19,14 @@ group("shell") {
   deps = [ ":web_engine_shell" ]
 }
 
+source_set("remote_debugging_port") {
+  sources = [
+    "remote_debugging_port.cc",
+    "remote_debugging_port.h",
+  ]
+  deps = [ "//base" ]
+}
+
 fuchsia_component("web_engine_shell_component") {
   testonly = true
   manifest = "web_engine_shell.cmx"
@@ -56,6 +64,7 @@ executable("web_engine_shell_exec") {
   data = [ "data" ]
 
   deps = [
+    ":remote_debugging_port",
     "//base",
     "//fuchsia_web/common",
     "//fuchsia_web/webinstance_host/",
