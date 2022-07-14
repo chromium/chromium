@@ -4987,7 +4987,7 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     // and other non-user internal interventions.
     if (params.type != mojom::blink::FocusType::kNone &&
         params.type != mojom::blink::FocusType::kScript)
-      last_focus_type_ = params.type;
+      SetLastFocusType(params.type);
 
     for (auto& observer : focused_element_change_observers_)
       observer->DidChangeFocus();

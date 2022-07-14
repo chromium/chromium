@@ -615,10 +615,10 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
 bool MouseEventManager::SlideFocusOnShadowHostIfNecessary(
     const Element& element) {
   if (Element* delegated_target = element.GetFocusableArea()) {
-    // Use FocusTypeForward instead of FocusTypeMouse here to mean the
-    // focus has slided.
+    // Use FocusType::kMouse instead of FocusType::kForward
+    // in order to prevent :focus-visible from being set
     delegated_target->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
-                                        mojom::blink::FocusType::kForward,
+                                        mojom::blink::FocusType::kMouse,
                                         nullptr));
     return true;
   }
