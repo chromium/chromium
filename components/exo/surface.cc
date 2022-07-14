@@ -1509,6 +1509,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       } else {
         viz::TileDrawQuad* tile_quad =
             render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
+        // TODO(crbug.com/1339335): Support AA quads coming from exo.
+        constexpr bool kForceAntiAliasingOff = true;
         tile_quad->SetNew(
             quad_state, quad_rect, quad_rect,
             /* needs_blending=*/!are_contents_opaque, current_resource_.id,
@@ -1516,8 +1518,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                            current_resource_.size.height()),
             current_resource_.size,
             /* is_premultiplied=*/true,
-            /* nearest_neighbor */ false,
-            /* force_anti_aliasing_off */ false);
+            /* nearest_neighbor */ false, kForceAntiAliasingOff);
       }
       frame->resource_list.push_back(current_resource_);
     }
