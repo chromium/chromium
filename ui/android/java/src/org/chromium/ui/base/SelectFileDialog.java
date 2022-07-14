@@ -654,11 +654,16 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 return;
             }
 
-            Intent imageCapture = getImageCaptureIntent();
             if (mDirectToCamera) {
-                mWindow.showIntent(imageCapture, mCallback, R.string.low_memory_error);
+                // Android doesn't support launching an intent flexible enough to let the user
+                // decide whether to record photos _or_ videos so, when both types are requested,
+                // we choose one over the other. We currently default to photos, to maintain past
+                // behavior, but should perhaps consider showing the user a chooser instead.
+                Intent intent = acceptsOnlyType(VIDEO_TYPE) ? getVideoCaptureIntent()
+                                                            : getImageCaptureIntent();
+                mWindow.showIntent(intent, mCallback, R.string.low_memory_error);
             } else {
-                launchSelectFileWithCameraIntent(imageCapture);
+                launchSelectFileWithCameraIntent(getImageCaptureIntent());
             }
         }
     }
