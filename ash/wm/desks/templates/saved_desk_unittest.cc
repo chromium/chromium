@@ -20,9 +20,11 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
@@ -367,7 +369,7 @@ class SavedDeskTest : public OverviewTestBase {
 
     auto* save_template_button = GetSaveDeskAsTemplateButtonForRoot(root);
     ASSERT_TRUE(
-        GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
+        GetOverviewGridForRoot(root)->IsSaveDeskButtonContainerVisible());
     ClickOnView(save_template_button);
     WaitForDesksTemplatesUI();
     WaitForLibraryUI();
@@ -407,7 +409,9 @@ class SavedDeskTest : public OverviewTestBase {
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kDesksTemplates, features::kEnableSavedDesks}, {});
+        {features::kDesksTemplates, features::kEnableSavedDesks,
+         features::kDesksCloseAll},
+        {});
     OverviewTestBase::SetUp();
 
     // The `FullRestoreSaveHandler` isn't setup during tests so every window we
@@ -728,7 +732,7 @@ TEST_F(SavedDeskTest, OverviewItemsStayHiddenInTemplateGridOnDeskClose) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   auto* mini_view =
       desks_bar_view->FindMiniViewForDesk(desks_controller->active_desk());
-  ClickOnView(mini_view->close_desk_button());
+  ClickOnView(mini_view->desk_action_view()->combine_desks_button());
 
   // Expect we stay in the templates grid.
   ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
@@ -1868,7 +1872,7 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
   // Close one of the desks. Test that we remain in expanded state.
   auto* mini_view = desks_bar_view->FindMiniViewForDesk(
       DesksController::Get()->active_desk());
-  ClickOnView(mini_view->close_desk_button());
+  ClickOnView(mini_view->desk_action_view()->close_all_button());
   auto* expanded_new_desk_button =
       desks_bar_view->expanded_state_new_desk_button();
   auto* expanded_templates_button =
@@ -3867,6 +3871,56 @@ TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
             item_view->GetVisibleBounds().size());
 }
 
+// Tests that the save desk button is hidden when an active desk with windows is
+// closed and a desk with no windows is activated. Then checks to see that the
+// visibility is restored for the button when desk removal is undone.
+TEST_F(SavedDeskTest,
+       CorrectlyUpdateSaveDeskButtonVisibilityOnActiveDeskClose) {
+  auto* controller = DesksController::Get();
+  const auto& desks = controller->desks();
+
+  // We create a new desk and add an app window to the first desk so that
+  // closing the first desk with its windows will result in us going from having
+  // app windows in overview to having no app windows in overview, which should
+  // cause an update to the visibility of the save desk buttons.
+  controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ASSERT_EQ(2u, desks.size());
+  Desk* active_desk = desks[0].get();
+  Desk* inactive_desk = desks[1].get();
+  ASSERT_TRUE(active_desk->is_active());
+  ASSERT_FALSE(active_desk->ContainsAppWindows());
+  ASSERT_FALSE(inactive_desk->ContainsAppWindows());
+  const auto& window = CreateAppWindow();
+  controller->SendToDeskAtIndex(window.get(), 0);
+  ASSERT_EQ(1u, active_desk->GetAllAppWindows().size());
+
+  ToggleOverview();
+  OverviewGrid* overview_grid = GetOverviewSession()->GetGridWithRootWindow(
+      Shell::GetPrimaryRootWindow());
+
+  // Pre-check whether the save desk button is in the correct state.
+  EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
+
+  const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_EQ(2u, desks_bar_view->mini_views().size());
+  DeskMiniView* mini_view_to_be_removed =
+      desks_bar_view->FindMiniViewForDesk(active_desk);
+  ASSERT_TRUE(mini_view_to_be_removed);
+
+  // Close the active desk and check that the save desk button updates
+  // correctly.
+  ClickOnView(mini_view_to_be_removed->desk_action_view()->close_all_button());
+  EXPECT_FALSE(overview_grid->IsSaveDeskButtonContainerVisible());
+
+  // Try undoing desk close to see if the save desk button returns to the right
+  // state,
+  views::Button* undo_button =
+      DesksTestApi::GetCloseAllUndoToastDismissButton();
+  ASSERT_TRUE(undo_button);
+  ClickOnView(undo_button);
+  EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
+}
+
 using DeskSaveAndRecallTest = SavedDeskTest;
 
 TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
@@ -3996,45 +4050,6 @@ TEST_F(DeskSaveAndRecallTest, DeleteSaveAndRecallRecordsMetric) {
 
   // Assert that histogram metrics were recorded.
   histogram_tester.ExpectTotalCount(kDeleteSaveAndRecallHistogramName, 1);
-}
-
-// Tests that if we've been in the library, then switched to a different desk,
-// and then save the desk, that the desk is closed. Regression test for
-// https://crbug.com/1329350.
-TEST_F(DeskSaveAndRecallTest, ReEnterLibraryAndSaveDesk) {
-  UpdateDisplay("800x600");
-
-  auto* root = Shell::Get()->GetPrimaryRootWindow();
-
-  // Create a template that has a window. We can't use `AddEntry` here since we
-  // want a template that actually contains a window. The "Save desk for later"
-  // button is not enabled on empty desks.
-  auto test_window1 = CreateAppWindow();
-
-  OpenOverviewAndSaveTemplate(root);
-
-  DesksController* desks_controller = DesksController::Get();
-  EXPECT_EQ(1ul, desks_controller->desks().size());
-
-  // Click on the "Use template" button to launch the template.
-  SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(0);
-  ClickOnView(SavedDeskItemViewTestApi(item_view).launch_button());
-  WaitForDesksTemplatesUI();
-
-  // Verify that we're still in overview mode and that a new desk has been
-  // created and activated.
-  EXPECT_TRUE(InOverviewSession());
-  EXPECT_EQ(2ul, desks_controller->desks().size());
-  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-
-  // Now save the desk. This should close the desk.
-  auto* save_desk_button = GetSaveDeskForLaterButtonForRoot(root);
-  EXPECT_TRUE(save_desk_button);
-  ClickOnView(save_desk_button);
-  WaitForDesksTemplatesUI();
-
-  // Verify that we're back to one desk.
-  EXPECT_EQ(1ul, desks_controller->desks().size());
 }
 
 }  // namespace ash

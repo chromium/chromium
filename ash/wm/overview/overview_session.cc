@@ -1133,6 +1133,9 @@ void OverviewSession::OnDeskActivationChanged(const Desk* activated,
   for (auto* root : Shell::GetAllRootWindows()) {
     activated->GetDeskContainerForRoot(root)->AddObserver(this);
     deactivated->GetDeskContainerForRoot(root)->RemoveObserver(this);
+
+    if (auto* overview_grid = GetGridWithRootWindow(root))
+      overview_grid->UpdateSaveDeskButtons();
   }
 }
 

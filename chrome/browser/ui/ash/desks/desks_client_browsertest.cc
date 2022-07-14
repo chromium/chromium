@@ -15,6 +15,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
@@ -23,6 +24,8 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -400,7 +403,8 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksTemplatesClientTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kDesksTemplates},
+        /*enabled_features=*/{ash::features::kDesksTemplates,
+                              ash::features::kEnableSavedDesks},
         /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   DesksTemplatesClientTest(const DesksTemplatesClientTest&) = delete;
@@ -2298,6 +2302,49 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
   ash::DeskSwitchAnimationWaiter waiter;
   waiter.Wait();
   EXPECT_EQ(1, desks_controller->desks().size());
+}
+
+// Tests that if we've been in the library, then switched to a different desk,
+// and then save the desk, that the desk is closed. Regression test for
+// https://crbug.com/1329350.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
+                       SystemUIReEnterLibraryAndSaveDesk) {
+  // Create a template that has a window because the "Save desk for later"
+  // button is not enabled on empty desks.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickSaveDeskAsTemplateButton();
+
+  ash::DesksController* desks_controller = ash::DesksController::Get();
+  const auto& desks = desks_controller->desks();
+  ASSERT_EQ(1ul, desks.size());
+  ASSERT_TRUE(desks[0]->ContainsAppWindows());
+
+  // Click on the "Use template" button to launch the template.
+  ClickFirstTemplateItem();
+
+  // Verify that a new desk has been created and activated, and that it has app
+  // windows.
+  ASSERT_EQ(2ul, desks.size());
+  ASSERT_EQ(1, desks_controller->GetActiveDeskIndex());
+  ASSERT_TRUE(desks_controller->active_desk()->ContainsAppWindows());
+
+  // Now save the desk. This should close the desk.
+  auto* overview_grid = ash::GetOverviewSession()->GetGridWithRootWindow(
+      ash::Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  auto* save_desk_button = overview_grid->GetSaveDeskForLaterButton();
+  ASSERT_TRUE(save_desk_button);
+
+  // Wait for the bounds to finish animating.
+  ash::ShellTestApi().WaitForWindowFinishAnimating(
+      save_desk_button->GetWidget()->GetNativeWindow());
+  ClickButton(save_desk_button);
+  ash::WaitForDesksTemplatesUI();
+
+  // Verify that we're back to one desk.
+  EXPECT_EQ(1ul, desks.size());
 }
 
 // Tests trying to remove an invalid desk Id should return error.
