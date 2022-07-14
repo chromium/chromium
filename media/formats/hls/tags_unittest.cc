@@ -738,4 +738,119 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
   EXPECT_EQ(result.tag.can_block_reload, true);
 }
 
+TEST(HlsTagsTest, ParseXPartTag) {
+  RunTagIdenficationTest<XPartTag>("#EXT-X-PART:URI=\"foo.ts\",DURATION=1\n",
+                                   "URI=\"foo.ts\",DURATION=1");
+
+  VariableDictionary variable_dict = CreateBasicDictionary();
+  EXPECT_TRUE(variable_dict.Insert(CreateVarName("NUMBER"), "9"));
+  VariableDictionary::SubstitutionBuffer sub_buffer;
+
+  // The URI and DURATION attributes are required
+  ErrorTest<XPartTag>(absl::nullopt, variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("URI=\"foo.ts\"", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("DURATION=1", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("URI=\"\",DURATION=1", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  auto result =
+      OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1", variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+
+  // Test URI attribute
+  ErrorTest<XPartTag>("URI=\"{$UNDEFINED}.ts\",DURATION=1", variable_dict,
+                      sub_buffer, ParseStatusCode::kMalformedTag);
+  result = OkTest<XPartTag>("URI=\"{$BAR}.ts\",DURATION=1", variable_dict,
+                            sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "baz.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+
+  // Test DURATION attribute
+  result = OkTest<XPartTag>(
+      "URI=\"foo.ts\",DURATION=" + base::NumberToString(MaxSeconds()),
+      variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_TRUE(RoughlyEqual(result.tag.duration, base::Seconds(MaxSeconds())));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+  ErrorTest<XPartTag>(
+      "URI=\"foo.ts\",DURATION=" + base::NumberToString(MaxSeconds() + 1),
+      variable_dict, sub_buffer, ParseStatusCode::kValueOverflowsTimeDelta);
+
+  // Test BYTERANGE attribute
+  ErrorTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"{$UNDEFINED}\"",
+                      variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"\"", variable_dict,
+                      sub_buffer, ParseStatusCode::kMalformedTag);
+  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"12\"",
+                            variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range->length, 12u);
+  EXPECT_EQ(result.tag.byte_range->offset, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+
+  result =
+      OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"{$NUMBER}@3\"",
+                       variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range->length, 9u);
+  EXPECT_EQ(result.tag.byte_range->offset, 3u);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, false);
+
+  // Test the INDEPENDENT attribute
+  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,INDEPENDENT=YES",
+                            variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, true);
+  EXPECT_EQ(result.tag.gap, false);
+
+  for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
+    result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,INDEPENDENT=" + x,
+                              variable_dict, sub_buffer);
+    EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+    EXPECT_EQ(result.tag.duration, base::Seconds(1));
+    EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+    EXPECT_EQ(result.tag.independent, false);
+    EXPECT_EQ(result.tag.gap, false);
+  }
+
+  // Test the GAP attribute
+  result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,GAP=YES", variable_dict,
+                            sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.duration, base::Seconds(1));
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+  EXPECT_EQ(result.tag.independent, false);
+  EXPECT_EQ(result.tag.gap, true);
+
+  for (std::string x : {"NO", "Y", "TRUE", "1", "yes"}) {
+    result = OkTest<XPartTag>("URI=\"foo.ts\",DURATION=1,GAP=" + x,
+                              variable_dict, sub_buffer);
+    EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+    EXPECT_EQ(result.tag.duration, base::Seconds(1));
+    EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+    EXPECT_EQ(result.tag.independent, false);
+    EXPECT_EQ(result.tag.gap, false);
+  }
+}
+
 }  // namespace media::hls

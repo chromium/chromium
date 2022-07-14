@@ -176,6 +176,32 @@ struct MEDIA_EXPORT XPartInfTag {
   base::TimeDelta target_duration;
 };
 
+// Represents the contents of the #EXT-X-PART tag.
+struct MEDIA_EXPORT XPartTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXPart;
+  static ParseStatus::Or<XPartTag> Parse(
+      TagItem,
+      const VariableDictionary& variable_dict,
+      VariableDictionary::SubstitutionBuffer& sub_buffer);
+
+  // The resource URI for the partial segment.
+  ResolvedSourceString uri;
+
+  // The duration of the partial segment.
+  base::TimeDelta duration;
+
+  // If this partial segment is a subrange of its resource, this defines the
+  // subrange.
+  absl::optional<types::ByteRangeExpression> byte_range;
+
+  // Whether the partial segment contains an independent frame.
+  bool independent = false;
+
+  // Whether this partial segment is unavailable, similar to EXT-X-GAP for media
+  // segments.
+  bool gap = false;
+};
+
 // Represents the contents of the #EXT-X-SERVER-CONTROL tag.
 struct MEDIA_EXPORT XServerControlTag {
   static constexpr auto kName = MediaPlaylistTagName::kXServerControl;

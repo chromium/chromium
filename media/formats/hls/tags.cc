@@ -122,6 +122,32 @@ constexpr base::StringPiece GetAttributeName(XPartInfTagAttribute attribute) {
   return "";
 }
 
+// Attributes expected in `EXT-X-PART` tag contents.
+// These must remain sorted alphabetically.
+enum class XPartTagAttribute {
+  kByteRange,
+  kDuration,
+  kGap,
+  kIndependent,
+  kUri,
+  kMaxValue = kUri,
+};
+
+constexpr base::StringPiece GetAttributeName(XPartTagAttribute attribute) {
+  switch (attribute) {
+    case XPartTagAttribute::kByteRange:
+      return "BYTERANGE";
+    case XPartTagAttribute::kDuration:
+      return "DURATION";
+    case XPartTagAttribute::kGap:
+      return "GAP";
+    case XPartTagAttribute::kIndependent:
+      return "INDEPENDENT";
+    case XPartTagAttribute::kUri:
+      return "URI";
+  }
+}
+
 // Attributes expected in `EXT-X-SERVER-CONTROL tag contents.
 // These must remain sorted alphabetically.
 enum class XServerControlTagAttribute {
@@ -560,6 +586,95 @@ ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
   }
 
   return XPartInfTag{.target_duration = part_target};
+}
+
+ParseStatus::Or<XPartTag> XPartTag::Parse(
+    TagItem tag,
+    const VariableDictionary& variable_dict,
+    VariableDictionary::SubstitutionBuffer& sub_buffer) {
+  DCHECK(tag.GetName() == ToTagName(XPartTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  TypedAttributeMap<XPartTagAttribute> map;
+  types::AttributeListIterator iter(*tag.GetContent());
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(map_result));
+  }
+
+  // Parse the 'URI' attribute
+  absl::optional<ResolvedSourceString> uri;
+  if (map.HasValue(XPartTagAttribute::kUri)) {
+    auto uri_result = types::ParseQuotedString(
+        map.GetValue(XPartTagAttribute::kUri), variable_dict, sub_buffer);
+    if (uri_result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(uri_result).error());
+    }
+
+    uri = std::move(uri_result).value();
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the 'DURATION' attribute
+  base::TimeDelta duration;
+  if (map.HasValue(XPartTagAttribute::kDuration)) {
+    auto duration_result = types::ParseDecimalFloatingPoint(
+        map.GetValue(XPartTagAttribute::kDuration).SkipVariableSubstitution());
+    if (duration_result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(duration_result).error());
+    }
+
+    duration = base::Seconds(std::move(duration_result).value());
+    if (duration.is_max()) {
+      return ParseStatusCode::kValueOverflowsTimeDelta;
+    }
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the 'BYTERANGE' attribute
+  absl::optional<types::ByteRangeExpression> byte_range;
+  if (map.HasValue(XPartTagAttribute::kByteRange)) {
+    auto result =
+        types::ParseQuotedString(map.GetValue(XPartTagAttribute::kByteRange),
+                                 variable_dict, sub_buffer)
+            .MapValue(types::ByteRangeExpression::Parse);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    byte_range = std::move(result).value();
+  }
+
+  // Parse the 'INDEPENDENT' attribute
+  bool independent = false;
+  if (map.HasValue(XPartTagAttribute::kIndependent)) {
+    if (map.GetValue(XPartTagAttribute::kIndependent).Str() == "YES") {
+      independent = true;
+    }
+  }
+
+  // Parse the 'GAP' attribute
+  bool gap = false;
+  if (map.HasValue(XPartTagAttribute::kGap)) {
+    if (map.GetValue(XPartTagAttribute::kGap).Str() == "YES") {
+      gap = true;
+    }
+  }
+
+  return XPartTag{.uri = uri.value(),
+                  .duration = duration,
+                  .byte_range = byte_range,
+                  .independent = independent,
+                  .gap = gap};
 }
 
 ParseStatus::Or<XServerControlTag> XServerControlTag::Parse(TagItem tag) {

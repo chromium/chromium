@@ -199,6 +199,10 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           }
           break;
         }
+        case MediaPlaylistTagName::kXPart: {
+          // TODO(crbug.com/1266991): Integrate the EXT-X-PART tag
+          break;
+        }
         case MediaPlaylistTagName::kXServerControl: {
           auto error = ParseUniqueTag(*tag, server_control_tag);
           if (error.has_value()) {
