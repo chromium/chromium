@@ -1,5 +1,11 @@
 include_rules = [
   "+printing",
+  "+third_party/skia",
+  "+ui/base",
+  "+ui/base/cursor",
+  "+ui/base/ime",
+  "+ui/gfx",
+  "+ui/native_theme",
   "+ui/shell_dialogs",
 ]
 

@@ -64,14 +64,14 @@
 #include "ui/gtk/select_file_dialog_linux_gtk.h"
 #include "ui/gtk/settings_provider_gtk.h"
 #include "ui/gtk/window_frame_provider_gtk.h"
+#include "ui/linux/device_scale_factor_observer.h"
+#include "ui/linux/nav_button_provider.h"
+#include "ui/linux/window_button_order_observer.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/select_file_policy.h"
-#include "ui/views/linux_ui/device_scale_factor_observer.h"
-#include "ui/views/linux_ui/nav_button_provider.h"
-#include "ui/views/linux_ui/window_button_order_observer.h"
 #include "ui/views/window/window_button_order_provider.h"
 
 #if defined(USE_GIO)

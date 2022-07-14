@@ -66,8 +66,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-#include "ui/views/linux_ui/linux_ui.h"  // nogncheck
-#include "ui/views/linux_ui/linux_ui_factory.h"  // nogncheck
+#include "ui/linux/linux_ui.h"          // nogncheck
+#include "ui/linux/linux_ui_factory.h"  // nogncheck
 #endif
 
 namespace content {

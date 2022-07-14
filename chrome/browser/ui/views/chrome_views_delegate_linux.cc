@@ -12,7 +12,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/version_info/channel.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 
 namespace {
 

@@ -54,7 +54,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 namespace {

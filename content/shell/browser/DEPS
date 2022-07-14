@@ -8,11 +8,6 @@ include_rules = [
   "+services/device/public/cpp",
   "+services/network/public",
   "+services/service_manager/public/cpp",
+  "+ui/linux",
   "+ui/ozone/public",
 ]
-
-specific_include_rules = {
-  "shell_browser_main_parts\.cc": [
-    "+ui/gtk",
-  ],
-}

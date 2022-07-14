@@ -3931,6 +3931,7 @@ static_library("ui") {
       "views/window_sizer_linux.cc",
       "views/window_sizer_linux.h",
     ]
+    deps += [ "//ui/linux:linux_ui" ]
   }
 
   if (is_linux || is_chromeos_lacros || is_fuchsia) {
@@ -3948,8 +3949,8 @@ static_library("ui") {
       "//ui/base:wm_role_names",
       "//ui/base/ime",
       "//ui/events:dom_keycode_converter",
+      "//ui/linux:linux_ui_factory",
       "//ui/platform_window",
-      "//ui/views/linux_ui:linux_ui_factory",
     ]
 
     if (use_dbus) {

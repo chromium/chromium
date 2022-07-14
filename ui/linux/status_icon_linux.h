@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_LINUX_UI_STATUS_ICON_LINUX_H_
-#define UI_VIEWS_LINUX_UI_STATUS_ICON_LINUX_H_
+#ifndef UI_LINUX_STATUS_ICON_LINUX_H_
+#define UI_LINUX_STATUS_ICON_LINUX_H_
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/views/views_export.h"
 
 namespace gfx {
 class ImageSkia;
@@ -24,7 +24,7 @@ namespace views {
 // we cannot inherit from StatusIcon. So we implement the necessary methods
 // and let a wrapper class implement the StatusIcon interface and defer the
 // callbacks to a delegate. For the same reason, do not use StatusIconMenuModel.
-class VIEWS_EXPORT StatusIconLinux {
+class COMPONENT_EXPORT(LINUX_UI) StatusIconLinux {
  public:
   class Delegate {
    public:
@@ -70,4 +70,4 @@ class VIEWS_EXPORT StatusIconLinux {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_LINUX_UI_STATUS_ICON_LINUX_H_
+#endif  // UI_LINUX_STATUS_ICON_LINUX_H_

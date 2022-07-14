@@ -8,7 +8,6 @@ import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
-import("//printing/buildflags/buildflags.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
@@ -575,31 +574,8 @@ component("views") {
   }
 
   if (is_linux || is_chromeos_lacros) {
-    public_deps += [
-      "//printing/buildflags",
-      "//ui/base/cursor:theme_manager",
-    ]
-    deps += [
-      "//build:chromecast_buildflags",
-      "//ui/base/ime/linux",
-      "//ui/shell_dialogs",
-    ]
-    if (enable_basic_printing) {
-      deps += [ "//printing" ]
-    }
-    public += [
-      "linux_ui/device_scale_factor_observer.h",
-      "linux_ui/linux_ui.h",
-      "linux_ui/nav_button_provider.h",
-      "linux_ui/status_icon_linux.h",
-      "linux_ui/window_button_order_observer.h",
-      "linux_ui/window_frame_provider.h",
-    ]
-    sources += [
-      "linux_ui/linux_ui.cc",
-      "linux_ui/status_icon_linux.cc",
-    ]
-
+    deps += [ "//ui/base/ime/linux" ]
+    public_deps += [ "//ui/linux:linux_ui" ]
     if (!is_chromeos_lacros) {
       sources += [ "controls/menu/menu_config_linux.cc" ]
     }

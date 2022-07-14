@@ -4,10 +4,34 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux_native.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/window/frame_background.h"
+
+namespace {
+
+views::NavButtonProvider::ButtonState ButtonStateToNavButtonProviderState(
+    views::Button::ButtonState state) {
+  switch (state) {
+    case views::Button::STATE_NORMAL:
+      return views::NavButtonProvider::ButtonState::kNormal;
+    case views::Button::STATE_HOVERED:
+      return views::NavButtonProvider::ButtonState::kHovered;
+    case views::Button::STATE_PRESSED:
+      return views::NavButtonProvider::ButtonState::kPressed;
+    case views::Button::STATE_DISABLED:
+      return views::NavButtonProvider::ButtonState::kDisabled;
+
+    case views::Button::STATE_COUNT:
+    default:
+      NOTREACHED();
+      return views::NavButtonProvider::ButtonState::kNormal;
+  }
+}
+
+}  // namespace
 
 bool BrowserFrameViewLinuxNative::DrawFrameButtonParams::operator==(
     const DrawFrameButtonParams& other) const {
@@ -74,7 +98,9 @@ void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
       DCHECK_EQ(std::string(views::ImageButton::kViewClassName),
                 button->GetClassName());
       static_cast<views::ImageButton*>(button)->SetImage(
-          button_state, nav_button_provider_->GetImage(type, button_state));
+          button_state,
+          nav_button_provider_->GetImage(
+              type, ButtonStateToNavButtonProviderState(button_state)));
     }
   }
 }

@@ -9,10 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/linux/status_icon_linux.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/linux_ui/status_icon_linux.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {

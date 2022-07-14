@@ -15,8 +15,8 @@
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gtk/gtk_ui_platform.h"
-#include "ui/views/linux_ui/linux_ui.h"
-#include "ui/views/linux_ui/window_frame_provider.h"
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/window_frame_provider.h"
 #include "ui/views/window/frame_buttons.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)

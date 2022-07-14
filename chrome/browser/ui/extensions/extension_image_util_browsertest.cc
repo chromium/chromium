@@ -13,7 +13,7 @@
 #include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(USE_GTK)
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 namespace {

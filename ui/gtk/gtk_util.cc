@@ -27,9 +27,9 @@
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
-#include "ui/views/linux_ui/linux_ui.h"
 
 namespace gtk {
 

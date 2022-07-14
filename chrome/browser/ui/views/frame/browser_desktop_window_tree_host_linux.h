@@ -8,8 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
-#include "ui/views/linux_ui/device_scale_factor_observer.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/device_scale_factor_observer.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"  // nogncheck
 
 #if defined(USE_DBUS_MENU)

@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
-#include "ui/views/linux_ui/window_button_order_observer.h"
+#include "ui/linux/window_button_order_observer.h"
 
 // A specialization of OpaqueBrowserFrameView that is also able to
 // render client side decorations (shadow, border, and rounded corners).

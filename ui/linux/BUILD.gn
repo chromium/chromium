@@ -1,0 +1,55 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/linux/gtk/gtk.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//ui/qt/qt.gni")
+
+component("linux_ui") {
+  defines = [ "IS_LINUX_UI_IMPL" ]
+  public = [
+    "device_scale_factor_observer.h",
+    "linux_ui.h",
+    "nav_button_provider.h",
+    "status_icon_linux.h",
+    "window_button_order_observer.h",
+    "window_frame_provider.h",
+  ]
+  sources = [
+    "linux_ui.cc",
+    "status_icon_linux.cc",
+  ]
+  deps = [
+    "//build:chromecast_buildflags",
+    "//ui/base/ime/linux",
+    "//ui/native_theme",
+    "//ui/shell_dialogs",
+  ]
+  if (enable_basic_printing) {
+    deps += [ "//printing" ]
+  }
+  public_deps = [
+    "//printing/buildflags",
+    "//skia",
+    "//ui/base/cursor:theme_manager",
+  ]
+}
+
+source_set("linux_ui_factory") {
+  sources = [
+    "linux_ui_factory.cc",
+    "linux_ui_factory.h",
+  ]
+
+  public_deps = [ ":linux_ui" ]
+
+  deps = [ "//ui/base:buildflags" ]
+  if (use_gtk) {
+    # This is the only component that can interact with gtk.
+    deps += [ "//ui/gtk" ]
+  }
+  if (use_qt) {
+    deps += [ "//ui/qt" ]
+  }
+}

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/linux_ui/linux_ui_factory.h"
+#include "ui/linux/linux_ui_factory.h"
 
 #include <utility>
 
 #include "ui/base/buildflags.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 
 #if BUILDFLAG(USE_GTK)
 #include "ui/gtk/gtk_ui_factory.h"

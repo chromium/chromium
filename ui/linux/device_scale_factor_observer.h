@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_LINUX_UI_DEVICE_SCALE_FACTOR_OBSERVER_H_
-#define UI_VIEWS_LINUX_UI_DEVICE_SCALE_FACTOR_OBSERVER_H_
+#ifndef UI_LINUX_DEVICE_SCALE_FACTOR_OBSERVER_H_
+#define UI_LINUX_DEVICE_SCALE_FACTOR_OBSERVER_H_
 
 namespace views {
 
@@ -16,4 +16,4 @@ class DeviceScaleFactorObserver {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_LINUX_UI_DEVICE_SCALE_FACTOR_OBSERVER_H_
+#endif  // UI_LINUX_DEVICE_SCALE_FACTOR_OBSERVER_H_

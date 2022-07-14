@@ -21,7 +21,7 @@
 #include "ui/color/color_provider.h"
 
 #if BUILDFLAG(USE_GTK)
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 #endif
 
 namespace {

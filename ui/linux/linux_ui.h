@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_LINUX_UI_LINUX_UI_H_
-#define UI_VIEWS_LINUX_UI_LINUX_UI_H_
+#ifndef UI_LINUX_LINUX_UI_H_
+#define UI_LINUX_LINUX_UI_H_
 
 #include <memory>
 #include <string>
@@ -11,6 +11,8 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -20,9 +22,6 @@
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
 #include "ui/gfx/skia_font_delegate.h"
-#include "ui/views/buildflags.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/views_export.h"
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 #include "ui/shell_dialogs/shell_dialog_linux.h"
@@ -47,6 +46,10 @@ namespace gfx {
 class Image;
 }
 
+namespace ui {
+class NativeTheme;
+}
+
 namespace views {
 class DeviceScaleFactorObserver;
 class NavButtonProvider;
@@ -55,17 +58,18 @@ class WindowFrameProvider;
 
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
-class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
-                             public gfx::SkiaFontDelegate,
+class COMPONENT_EXPORT(LINUX_UI) LinuxUI
+    : public ui::LinuxInputMethodContextFactory,
+      public gfx::SkiaFontDelegate,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-                             public ui::ShellDialogLinux,
+      public ui::ShellDialogLinux,
 #endif
 #if BUILDFLAG(ENABLE_PRINTING)
-                             public printing::PrintingContextLinuxDelegate,
+      public printing::PrintingContextLinuxDelegate,
 #endif
-                             public ui::TextEditKeyBindingsDelegateAuraLinux,
-                             public ui::CursorThemeManager,
-                             public gfx::AnimationSettingsProviderLinux {
+      public ui::TextEditKeyBindingsDelegateAuraLinux,
+      public ui::CursorThemeManager,
+      public gfx::AnimationSettingsProviderLinux {
  public:
   using UseSystemThemeCallback =
       base::RepeatingCallback<bool(aura::Window* window)>;
@@ -235,4 +239,4 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
 
 }  // namespace views
 
-#endif  // UI_VIEWS_LINUX_UI_LINUX_UI_H_
+#endif  // UI_LINUX_LINUX_UI_H_

@@ -7,9 +7,10 @@
 
 #include <map>
 
+#include "base/containers/flat_map.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/linux_ui/nav_button_provider.h"
+#include "ui/linux/nav_button_provider.h"
 
 namespace gtk {
 
@@ -21,15 +22,16 @@ class NavButtonProviderGtk : public views::NavButtonProvider {
   // views::NavButtonProvider:
   void RedrawImages(int top_area_height, bool maximized, bool active) override;
   gfx::ImageSkia GetImage(views::NavButtonProvider::FrameButtonDisplayType type,
-                          views::Button::ButtonState state) const override;
+                          ButtonState state) const override;
   gfx::Insets GetNavButtonMargin(
       views::NavButtonProvider::FrameButtonDisplayType type) const override;
   gfx::Insets GetTopAreaSpacing() const override;
   int GetInterNavButtonSpacing() const override;
 
  private:
-  std::map<views::NavButtonProvider::FrameButtonDisplayType,
-           gfx::ImageSkia[views::Button::STATE_COUNT]>
+  std::map<
+      views::NavButtonProvider::FrameButtonDisplayType,
+      base::flat_map<views::NavButtonProvider::ButtonState, gfx::ImageSkia>>
       button_images_;
   std::map<views::NavButtonProvider::FrameButtonDisplayType, gfx::Insets>
       button_margins_;

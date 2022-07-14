@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
-#include "ui/views/linux_ui/nav_button_provider.h"
-#include "ui/views/linux_ui/window_frame_provider.h"
+#include "ui/linux/nav_button_provider.h"
+#include "ui/linux/window_frame_provider.h"
 
 // A specialization of BrowserFrameViewLinux that is also able to
 // render frame buttons using the native toolkit.

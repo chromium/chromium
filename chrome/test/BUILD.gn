@@ -2445,6 +2445,7 @@ if (!is_android) {
         "../browser/ozone_platform_browsertest.cc",
         "../browser/ui/views/frame/desktop_browser_frame_aura_linux_browsertest.cc",
       ]
+      deps += [ "//ui/linux:linux_ui" ]
     }
 
     if (is_linux || is_chromeos) {
@@ -6871,7 +6872,7 @@ test("unit_tests") {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]
     }
     if (is_linux) {
-      deps += [ "//ui/views/linux_ui:linux_ui_factory" ]
+      deps += [ "//ui/linux:linux_ui_factory" ]
     }
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
@@ -8546,6 +8547,7 @@ test("unit_tests") {
     ]
     if (is_linux) {
       sources += [ "../browser/ui/views/frame/browser_frame_view_layout_linux_native_unittest.cc" ]
+      deps += [ "//ui/linux:linux_ui" ]
     }
     if (enable_plugins) {
       sources += [ "../browser/ui/views/hung_plugin_tab_helper_unittest.cc" ]

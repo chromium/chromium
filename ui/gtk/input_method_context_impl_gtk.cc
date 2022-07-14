@@ -20,7 +20,7 @@
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/gtk/gtk_util.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 
 namespace gtk {
 

@@ -8,7 +8,7 @@
 #include "base/nix/mime_util_xdg.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 
 // static
 IconLoader::IconGroup IconLoader::GroupForFilepath(

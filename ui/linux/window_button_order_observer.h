@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_LINUX_UI_WINDOW_BUTTON_ORDER_OBSERVER_H_
-#define UI_VIEWS_LINUX_UI_WINDOW_BUTTON_ORDER_OBSERVER_H_
-
-#include "ui/views/window/frame_buttons.h"
+#ifndef UI_LINUX_WINDOW_BUTTON_ORDER_OBSERVER_H_
+#define UI_LINUX_WINDOW_BUTTON_ORDER_OBSERVER_H_
 
 namespace views {
 
@@ -21,4 +19,4 @@ class WindowButtonOrderObserver {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_LINUX_UI_WINDOW_BUTTON_ORDER_OBSERVER_H_
+#endif  // UI_LINUX_WINDOW_BUTTON_ORDER_OBSERVER_H_

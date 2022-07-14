@@ -41,7 +41,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/linux_ui/status_icon_linux.h"
+#include "ui/linux/status_icon_linux.h"
 
 namespace {
 

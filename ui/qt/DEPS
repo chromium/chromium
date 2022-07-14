@@ -5,6 +5,7 @@ include_rules = [
   "+ui/base",
   "+ui/color",
   "+ui/gfx",
+  "+ui/linux",
   "+ui/native_theme",
   "+ui/shell_dialogs",
   "+ui/views",

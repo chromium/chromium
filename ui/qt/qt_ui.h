@@ -10,8 +10,10 @@
 #include "base/component_export.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/qt/qt_interface.h"
-#include "ui/views/linux_ui/linux_ui.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "printing/printing_context_linux.h"  // nogncheck

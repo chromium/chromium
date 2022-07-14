@@ -73,8 +73,8 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
-#include "ui/views/linux_ui/linux_ui.h"
 #endif
 
 using TP = ThemeProperties;

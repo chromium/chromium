@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 
 #include <cstdio>
 #include <utility>
@@ -11,8 +11,7 @@
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #include "build/build_config.h"
-#include "ui/base/ime/linux/linux_input_method_context_factory.h"
-#include "ui/gfx/skia_font_delegate.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 

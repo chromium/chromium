@@ -9,10 +9,10 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/linux/nav_button_provider.h"
+#include "ui/linux/window_frame_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/linux_ui/nav_button_provider.h"
-#include "ui/views/linux_ui/window_frame_provider.h"
 
 namespace {
 
@@ -88,8 +88,9 @@ class TestNavButtonProvider : public views::NavButtonProvider {
     ASSERT_EQ(false, maximized);  // This only tests the restored state.
   }
 
-  gfx::ImageSkia GetImage(views::NavButtonProvider::FrameButtonDisplayType type,
-                          views::Button::ButtonState state) const override {
+  gfx::ImageSkia GetImage(
+      views::NavButtonProvider::FrameButtonDisplayType type,
+      views::NavButtonProvider::ButtonState state) const override {
     switch (type) {
       case views::NavButtonProvider::FrameButtonDisplayType::kClose:
         return GetTestImageForSize(kCloseButtonSize);
@@ -188,18 +189,35 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
   }
 
   void ResetNativeNavButtonImagesFromButtonProvider() {
-    std::vector<views::ImageButton*> buttons{close_button_, maximize_button_,
-                                             minimize_button_};
-    std::vector<views::NavButtonProvider::FrameButtonDisplayType> button_types{
-        views::NavButtonProvider::FrameButtonDisplayType::kClose,
-        views::NavButtonProvider::FrameButtonDisplayType::kMaximize,
-        views::NavButtonProvider::FrameButtonDisplayType::kMinimize};
-    for (size_t i = 0; i < buttons.size(); i++) {
-      for (views::Button::ButtonState state :
-           {views::Button::STATE_NORMAL, views ::Button::STATE_HOVERED,
-            views::Button::STATE_PRESSED}) {
-        buttons[i]->SetImage(
-            state, nav_button_provider_->GetImage(button_types[i], state));
+    struct {
+      views::ImageButton* button;
+      views::NavButtonProvider::FrameButtonDisplayType type;
+    } const kButtons[] = {
+        {minimize_button_,
+         views::NavButtonProvider::FrameButtonDisplayType::kMinimize},
+        {maximize_button_,
+         views::NavButtonProvider::FrameButtonDisplayType::kMaximize},
+        {close_button_,
+         views::NavButtonProvider::FrameButtonDisplayType::kClose},
+    };
+    struct {
+      views::Button::ButtonState button_state;
+      views::NavButtonProvider::ButtonState nav_button_provider_state;
+    } const kStates[] = {
+        {views::Button::STATE_NORMAL,
+         views::NavButtonProvider::ButtonState::kNormal},
+        {views::Button::STATE_HOVERED,
+         views::NavButtonProvider::ButtonState::kHovered},
+        {views::Button::STATE_PRESSED,
+         views::NavButtonProvider::ButtonState::kPressed},
+    };
+
+    for (const auto& button : kButtons) {
+      for (const auto& state : kStates) {
+        button.button->SetImage(
+            state.button_state,
+            nav_button_provider_->GetImage(button.type,
+                                           state.nav_button_provider_state));
       }
     }
   }

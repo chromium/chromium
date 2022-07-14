@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gtk/settings_provider.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 
 typedef struct _GParamSpec GParamSpec;
 typedef struct _GtkSettings GtkSettings;

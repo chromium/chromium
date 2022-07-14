@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_LINUX_UI_NAV_BUTTON_PROVIDER_H_
-#define UI_VIEWS_LINUX_UI_NAV_BUTTON_PROVIDER_H_
-
-#include "build/buildflag.h"
-#include "ui/views/buildflags.h"
-#include "ui/views/controls/button/button.h"
+#ifndef UI_LINUX_NAV_BUTTON_PROVIDER_H_
+#define UI_LINUX_NAV_BUTTON_PROVIDER_H_
 
 namespace chrome {
 enum class FrameButtonDisplayType;
@@ -34,7 +30,15 @@ class NavButtonProvider {
     kClose,
   };
 
-  virtual ~NavButtonProvider() {}
+  // This enum is based on views::Button::ButtonState.
+  enum class ButtonState {
+    kNormal,
+    kHovered,
+    kPressed,
+    kDisabled,
+  };
+
+  virtual ~NavButtonProvider() = default;
 
   // Redraws all images and updates all size state.  |top_area_height|
   // is the total available height to render the buttons, and buttons
@@ -45,15 +49,13 @@ class NavButtonProvider {
                             bool active) = 0;
 
   // Gets the cached button image corresponding to |type| and |state|.
-  virtual gfx::ImageSkia GetImage(
-      views::NavButtonProvider::FrameButtonDisplayType type,
-      views::Button::ButtonState state) const = 0;
+  virtual gfx::ImageSkia GetImage(FrameButtonDisplayType type,
+                                  ButtonState state) const = 0;
 
   // Gets the external margin around each button.  The left inset
   // represents the leading margin, and the right inset represents the
   // trailing margin.
-  virtual gfx::Insets GetNavButtonMargin(
-      views::NavButtonProvider::FrameButtonDisplayType type) const = 0;
+  virtual gfx::Insets GetNavButtonMargin(FrameButtonDisplayType type) const = 0;
 
   // Gets the internal spacing (padding + border) of the top area.
   // The left inset represents the leading spacing, and the right
@@ -66,4 +68,4 @@ class NavButtonProvider {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_LINUX_UI_NAV_BUTTON_PROVIDER_H_
+#endif  // UI_LINUX_NAV_BUTTON_PROVIDER_H_
