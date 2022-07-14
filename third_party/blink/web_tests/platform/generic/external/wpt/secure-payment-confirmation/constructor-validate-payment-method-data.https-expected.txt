@@ -1,26 +1,6 @@
 This is a testharness.js-based test.
 PASS Empty credentialIds field throws exception.
-FAIL Empty ID within credentialIds field throws exception. assert_throws_js: function "() => {
-    new PaymentRequest([{
-      supportedMethods: 'secure-payment-confirmation',
-      data: {
-        relyingPartyId: 'relying-party.example',
-        credentialIds: [
-          Uint8Array.from('c1', c => c.charCodeAt(0)),
-          new Uint8Array(),  // Empty
-          Uint8Array.from('c2', c => c.charCodeAt(0)),
-        ],
-        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
-        payeeOrigin: window.location.origin,
-        timeout: 60000,
-        instrument: {
-          displayName: 'X',
-          icon: 'https://example.test/icon.png',
-        },
-        rpId: 'relying-party.example',
-      },
-    }], details);
-  }" did not throw
+PASS Empty ID within credentialIds field throws exception.
 PASS Multiple IDs in credentialIds is valid.
 PASS Large credentialIds value throws exception.
 PASS Null challenge field throws exception.

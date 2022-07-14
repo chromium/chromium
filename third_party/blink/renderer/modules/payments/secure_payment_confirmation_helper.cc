@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -16,12 +17,17 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
 namespace {
-
-// Arbitrarily chosen limit of 1 hour. Keep in sync with
-// secure_payment_confirmation_app_factory.cc.
-constexpr uint32_t kMaxTimeoutInMilliseconds = 1000 * 60 * 60;
-
+bool IsEmpty(const V8UnionArrayBufferOrArrayBufferView* buffer) {
+  DCHECK(buffer);
+  switch (buffer->GetContentType()) {
+    case V8BufferSource::ContentType::kArrayBuffer:
+      return buffer->GetAsArrayBuffer()->ByteLength() == 0;
+    case V8BufferSource::ContentType::kArrayBufferView:
+      return buffer->GetAsArrayBufferView()->byteLength() == 0;
+  }
+}
 }  // namespace
 
 // static
@@ -43,11 +49,19 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
         "\"credentialIds\" field.");
     return nullptr;
   }
-
-  if (request->hasTimeout() && request->timeout() > kMaxTimeoutInMilliseconds) {
-    exception_state.ThrowRangeError(
-        "The \"secure-payment-confirmation\" method requires at most 1 hour "
-        "\"timeout\" field.");
+  for (const V8UnionArrayBufferOrArrayBufferView* id :
+       request->credentialIds()) {
+    if (IsEmpty(id)) {
+      exception_state.ThrowRangeError(
+          "The \"secure-payment-confirmation\" method requires that elements "
+          "in the \"credentialIds\" field are non-empty.");
+      return nullptr;
+    }
+  }
+  if (IsEmpty(request->challenge())) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"challenge\" field.");
     return nullptr;
   }
 
@@ -69,6 +83,13 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
         "the \"instrument.icon\" field.");
     return nullptr;
   }
+  // TODO(https://crbug.com/1342686): Check that rpId is a valid domain.
+  if (request->rpId().IsEmpty()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"rpId\" field.");
+    return nullptr;
+  }
   if ((!request->hasPayeeOrigin() && !request->hasPayeeName()) ||
       (request->hasPayeeOrigin() && request->payeeOrigin().IsEmpty()) ||
       (request->hasPayeeName() && request->payeeName().IsEmpty())) {
@@ -85,12 +106,6 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
           "URL in the \"payeeOrigin\" field.");
       return nullptr;
     }
-  }
-  if (request->rpId().IsEmpty()) {
-    exception_state.ThrowTypeError(
-        "The \"secure-payment-confirmation\" method requires a non-empty "
-        "\"rpId\" field.");
-    return nullptr;
   }
 
   // Opt Out should only be carried through if the flag is enabled.

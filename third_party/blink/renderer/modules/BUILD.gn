@@ -535,6 +535,7 @@ source_set("unit_tests") {
     "payments/payment_test_helper.cc",
     "payments/payment_test_helper.h",
     "payments/payments_validators_test.cc",
+    "payments/secure_payment_confirmation_helper_test.cc",
     "peerconnection/byte_buffer_queue_test.cc",
     "peerconnection/call_setup_state_tracker_unittest.cc",
     "peerconnection/media_stream_remote_video_source_test.cc",
