@@ -127,19 +127,6 @@ void WaylandInputEmulate::EmulatePointerMotion(
   DCHECK(wayland_proxy);
 
   auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
-
-  // If it's a toplevel window, activate it. This results in raising the the
-  // parent window and its children windows.
-  // TODO(oshima): This is probably not right because a inactive window can
-  // still receive mouse wheel event, and you may want to move a mouse pointer
-  // w/o activating a window. A window will be activated when a mouse is
-  // clicked.
-  auto window_type = wayland_proxy->GetWindowType(widget);
-  if (window_type != ui::PlatformWindowType::kTooltip &&
-      window_type != ui::PlatformWindowType::kMenu &&
-      !wayland_proxy->WindowHasPointerFocus(widget)) {
-    weston_test_activate_surface(weston_test_, wlsurface);
-  }
   bool screen_coordinates =
       wayland_proxy->GetWaylandWindowForAcceleratedWidget(widget)
           ->IsScreenCoordinatesEnabled();
