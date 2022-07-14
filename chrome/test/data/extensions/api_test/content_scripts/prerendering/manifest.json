@@ -10,12 +10,12 @@
   },
   "permissions": [
     "tabs",
-    "http://localhost/*"
+    "<all_urls>"
   ],
   "content_scripts": [
     {
       "matches": [
-        "http://*/*"
+        "http://default.test/*"
       ],
       "js": [
         "top_frame_only.js"
@@ -24,11 +24,32 @@
     },
     {
       "matches": [
-        "http://*/*"
+        "http://default.test/*"
       ],
       "js": [
         "all_frames.js"
       ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "http://match_about_blank.test/*"
+      ],
+      "js": [
+        "top_frame_only.js"
+      ],
+      "match_about_blank": true,
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://match_about_blank.test/*"
+      ],
+      "js": [
+        "all_frames.js"
+      ],
+      "match_about_blank": true,
       "run_at": "document_start",
       "all_frames": true
     }
