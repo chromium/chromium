@@ -571,10 +571,12 @@ void FillArcExtraWindowInfoFromJson(
 void FillWindowInfoFromJson(const base::Value& app,
                             app_restore::WindowInfo* out_window_info) {
   std::string window_state;
+  chromeos::WindowStateType cros_window_state =
+      chromeos::WindowStateType::kDefault;
   if (GetString(app, kWindowState, &window_state) &&
       IsValidWindowState(window_state)) {
-    out_window_info->window_state_type.emplace(
-        ToChromeOsWindowState(window_state));
+    cros_window_state = ToChromeOsWindowState(window_state);
+    out_window_info->window_state_type.emplace(cros_window_state);
   }
 
   std::string app_type;
@@ -608,7 +610,8 @@ void FillWindowInfoFromJson(const base::Value& app,
 
   std::string pre_minimized_window_state;
   if (GetString(app, kPreMinimizedWindowState, &pre_minimized_window_state) &&
-      IsValidWindowState(pre_minimized_window_state)) {
+      IsValidWindowState(pre_minimized_window_state) &&
+      cros_window_state == chromeos::WindowStateType::kMinimized) {
     out_window_info->pre_minimized_show_state_type.emplace(
         ToUiWindowState(pre_minimized_window_state));
   }
@@ -857,9 +860,11 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     app_data.SetKey(kTitle, base::Value(base::UTF16ToUTF8(app->title.value())));
   }
 
+  chromeos::WindowStateType window_state = chromeos::WindowStateType::kDefault;
   if (app->window_state_type.has_value()) {
-    app_data.SetKey(kWindowState, base::Value(ChromeOsWindowStateToString(
-                                      app->window_state_type.value())));
+    window_state = app->window_state_type.value();
+    app_data.SetKey(kWindowState,
+                    base::Value(ChromeOsWindowStateToString(window_state)));
   }
 
   // TODO(crbug.com/1311801): Add support for actual event_flag values.
@@ -908,7 +913,8 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
                     base::Value(base::NumberToString(app->display_id.value())));
   }
 
-  if (app->pre_minimized_show_state_type.has_value()) {
+  if (app->pre_minimized_show_state_type.has_value() &&
+      window_state == chromeos::WindowStateType::kMinimized) {
     app_data.SetKey(kPreMinimizedWindowState,
                     base::Value(UiWindowStateToString(
                         app->pre_minimized_show_state_type.value())));

@@ -123,6 +123,64 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_EQ(ali->tab_group_infos.value()[0], MakeSampleTabGroup());
   EXPECT_TRUE(wi->window_state_type.has_value());
   EXPECT_EQ(wi->window_state_type.value(), chromeos::WindowStateType::kNormal);
+  EXPECT_TRUE(wi->current_bounds.has_value());
+  EXPECT_EQ(wi->current_bounds.value().x(), 0);
+  EXPECT_EQ(wi->current_bounds.value().y(), 1);
+  EXPECT_EQ(wi->current_bounds.value().height(), 121);
+  EXPECT_EQ(wi->current_bounds.value().width(), 120);
+}
+
+TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
+  base::StringPiece raw_json =
+      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowserMinimized);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+
+  EXPECT_TRUE(parsed_json.has_value());
+  EXPECT_TRUE(parsed_json->is_dict());
+
+  std::unique_ptr<ash::DeskTemplate> dt =
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          *parsed_json, ash::DeskTemplateSource::kPolicy);
+
+  EXPECT_TRUE(dt != nullptr);
+  EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(kTestUuidBrowser));
+  EXPECT_EQ(dt->created_time(),
+            desk_template_conversion::ProtoTimeToTime(1633535632));
+  EXPECT_EQ(dt->template_name(), base::UTF8ToUTF16(kBrowserTemplateName));
+
+  const app_restore::RestoreData* rd = dt->desk_restore_data();
+
+  EXPECT_TRUE(rd != nullptr);
+  EXPECT_EQ(rd->app_id_to_launch_list().size(), 1UL);
+  EXPECT_NE(rd->app_id_to_launch_list().find(app_constants::kChromeAppId),
+            rd->app_id_to_launch_list().end());
+
+  const app_restore::AppRestoreData* ard =
+      rd->GetAppRestoreData(app_constants::kChromeAppId, 0);
+  EXPECT_TRUE(ard != nullptr);
+  EXPECT_TRUE(ard->display_id.has_value());
+  EXPECT_EQ(ard->display_id.value(), 100L);
+  std::unique_ptr<app_restore::AppLaunchInfo> ali =
+      ard->GetAppLaunchInfo(app_constants::kChromeAppId, 0);
+  std::unique_ptr<app_restore::WindowInfo> wi = ard->GetWindowInfo();
+  EXPECT_TRUE(ali != nullptr);
+  EXPECT_TRUE(wi != nullptr);
+  EXPECT_TRUE(ali->window_id.has_value());
+  EXPECT_EQ(ali->window_id.value(), 0);
+  EXPECT_TRUE(ali->display_id.has_value());
+  EXPECT_EQ(ali->display_id.value(), 100L);
+  EXPECT_TRUE(ali->active_tab_index.has_value());
+  EXPECT_EQ(ali->active_tab_index.value(), 1);
+  EXPECT_TRUE(ali->first_non_pinned_tab_index.has_value());
+  EXPECT_EQ(ali->first_non_pinned_tab_index.value(), 1);
+  EXPECT_TRUE(ali->urls.has_value());
+  EXPECT_EQ(ali->urls.value()[0].spec(), kBrowserUrl1);
+  EXPECT_EQ(ali->urls.value()[1].spec(), kBrowserUrl2);
+  EXPECT_TRUE(ali->tab_group_infos.has_value());
+  EXPECT_EQ(ali->tab_group_infos.value()[0], MakeSampleTabGroup());
+  EXPECT_TRUE(wi->window_state_type.has_value());
+  EXPECT_EQ(wi->window_state_type.value(),
+            chromeos::WindowStateType::kMinimized);
   EXPECT_TRUE(wi->pre_minimized_show_state_type.has_value());
   EXPECT_EQ(wi->pre_minimized_show_state_type.value(),
             ui::WindowShowState::SHOW_STATE_NORMAL);
@@ -197,9 +255,6 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_TRUE(wi_chrome->window_state_type.has_value());
   EXPECT_EQ(wi_chrome->window_state_type.value(),
             chromeos::WindowStateType::kPrimarySnapped);
-  EXPECT_TRUE(wi_chrome->pre_minimized_show_state_type.has_value());
-  EXPECT_EQ(wi_chrome->pre_minimized_show_state_type.value(),
-            ui::WindowShowState::SHOW_STATE_NORMAL);
   EXPECT_TRUE(wi_chrome->current_bounds.has_value());
   EXPECT_EQ(wi_chrome->current_bounds.value().x(), 200);
   EXPECT_EQ(wi_chrome->current_bounds.value().y(), 200);
@@ -210,9 +265,6 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_TRUE(wi_pwa->window_state_type.has_value());
   EXPECT_EQ(wi_pwa->window_state_type.value(),
             chromeos::WindowStateType::kNormal);
-  EXPECT_TRUE(wi_pwa->pre_minimized_show_state_type.has_value());
-  EXPECT_EQ(wi_pwa->pre_minimized_show_state_type.value(),
-            ui::WindowShowState::SHOW_STATE_NORMAL);
   EXPECT_TRUE(wi_pwa->current_bounds.has_value());
   EXPECT_EQ(wi_pwa->current_bounds.value().x(), 0);
   EXPECT_EQ(wi_pwa->current_bounds.value().y(), 0);

@@ -45,6 +45,23 @@ const std::string kValidPolicyTemplateBrowser =
     "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
     "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
     "1,\"first_non_pinned_tab_index\":1,\"window_id\":0,"
+    "\"display_id\":\"100\",\"event_flag\":0}]}}";
+
+const std::string kValidPolicyTemplateBrowserMinimized =
+    "{\"version\":1,\"uuid\":\"" + kTestUuidBrowser + "\",\"name\":\"" +
+    kBrowserTemplateName +
+    "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
+    "\"1633535632\",\"desk_type\":\"TEMPLATE\",\"desk\":{\"apps\":[{\"window_"
+    "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
+    "state\":\"MINIMIZED\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
+    "\"url\":\"" +
+    kBrowserUrl +
+    "\"},{\"url\":\"https://"
+    "example.com/"
+    "2\"}],\"tab_groups\":[{\"first_"
+    "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
+    "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
+    "1,\"first_non_pinned_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"event_flag\":0,\"pre_minimized_window_state\":"
     "\"NORMAL\"}]}}";
 
@@ -59,14 +76,14 @@ const std::string kValidPolicyTemplateChromeAndProgressive =
     "\"PRIMARY_SNAPPED\",\"z_index\":2,\"app_type\":\"CHROME_APP\",\"app_id\":"
     "\"" +
     desk_test_util::kTestChromeAppId1 +
-    "\",\"window_id\":0,\"display_id\":\"100\",\"event_flag\":0,\"pre_"
-    "minimized_window_state\":\"NORMAL\", \"snap_percent\":75},{\"window_"
+    "\",\"window_id\":0,\"display_id\":\"100\",\"event_flag\":0, "
+    "\"snap_percent\":75},{\"window_"
     "bound\":{\"left\":0,\"top\":0,\"height\":120,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"CHROME_APP\",\"app_id\":"
     "\"" +
     desk_test_util::kTestPwaAppId1 +
     "\",\"window_id\":1,\"display_id\":"
-    "\"100\",\"event_flag\":0,\"pre_minimized_window_state\":\"NORMAL\"}]}}";
+    "\"100\",\"event_flag\":0}]}}";
 
 const std::string kPolicyTemplateWithoutType =
     "{\"version\":1,\"uuid\":\"" + kTestUuidBrowser + "\",\"name\":\"" +
@@ -81,8 +98,7 @@ const std::string kPolicyTemplateWithoutType =
     "index\":1,\"last_index\":2,\"title\":\"sample_tab_"
     "group\",\"color\":\"GREY\",\"is_collapsed\":false}],\"active_tab_index\":"
     "1,\"first_non_pinned_tab_index\":1,\"window_id\":0,"
-    "\"display_id\":\"100\",\"event_flag\":0,\"pre_minimized_window_state\":"
-    "\"NORMAL\"}]}}";
+    "\"display_id\":\"100\",\"event_flag\":0}]}}";
 
 // Populates the given cache with test app information.
 void PopulateAppRegistryCache(AccountId account_id,
