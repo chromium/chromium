@@ -201,8 +201,9 @@ class SettingsInputMethodOptionsPageElement extends
    */
   dependentOptionsDisabled_(value) {
     // TODO(b/189909728): Sometimes the value comes as a string, other times as
-    // an integer, so handle both cases. Try to understand and fix this.
-    return value === '0' || value === 0;
+    // an integer, other times as a boolean, so handle all cases. Try to
+    // understand and fix this.
+    return value === '0' || value === 0 || value === false;
   }
 
   /**
