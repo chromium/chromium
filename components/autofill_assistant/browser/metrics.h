@@ -651,8 +651,10 @@ class Metrics {
     SIGNING_DISABLED = 4,
     // HTTP call didn't return "OK" 200. Rpc verification won't be performed.
     HTTP_FAILED = 5,
+    // Server did not provide a signature. Rpc verification won't be performed.
+    EMPTY_SIGNATURE = 6,
 
-    kMaxValue = HTTP_FAILED
+    kMaxValue = EMPTY_SIGNATURE
   };
 
   // Used for bitmasks for the InitialContactFieldsStatus,

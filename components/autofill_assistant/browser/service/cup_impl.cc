@@ -133,6 +133,13 @@ absl::optional<std::string> CUPImpl::UnpackGetActionsResponse(
     return absl::nullopt;
   }
 
+  if (actions_response.cup_data().ecdsa_signature().empty()) {
+    LOG(ERROR) << "Signature not provided for CUP RPC response";
+    Metrics::RecordCupRpcVerificationEvent(
+        Metrics::CupRpcVerificationEvent::EMPTY_SIGNATURE);
+    return absl::nullopt;
+  }
+
   std::string serialized_response = actions_response.cup_data().response();
   if (!query_signer_->ValidateResponse(
           serialized_response, actions_response.cup_data().ecdsa_signature())) {

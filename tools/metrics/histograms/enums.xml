@@ -5906,6 +5906,7 @@ others/histograms.xml -->
   <int value="3" label="RPC response verification disabled"/>
   <int value="4" label="RPC request signing disabled"/>
   <int value="5" label="HTTP error"/>
+  <int value="6" label="RPC response signature empty"/>
 </enum>
 
 <enum name="AutofillAssistantDependenciesInvalidated">

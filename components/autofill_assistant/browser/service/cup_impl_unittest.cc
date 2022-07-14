@@ -186,12 +186,37 @@ TEST(CUPImplTest, FailsToVerifyWithNonValidSignature) {
                                                kExampleNonce);
 
   autofill_assistant::ActionsResponseProto packed_response;
+  packed_response.mutable_cup_data()->set_response("a response");
   packed_response.mutable_cup_data()->set_ecdsa_signature("not a signature");
+  std::string packed_response_str;
+  packed_response.SerializeToString(&packed_response_str);
 
-  EXPECT_EQ(cup.UnpackResponse(""), absl::nullopt);
+  EXPECT_EQ(cup.UnpackResponse(packed_response_str), absl::nullopt);
   histogram_tester.ExpectUniqueSample(
       "Android.AutofillAssistant.CupRpcVerificationEvent",
       Metrics::CupRpcVerificationEvent::VERIFICATION_FAILED, 1);
+}
+
+TEST(CUPImplTest, FailsToVerifyWithEmptySignature) {
+  base::HistogramTester histogram_tester;
+  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(), RpcType::GET_ACTIONS};
+  ScriptActionRequestProto user_request;
+  std::string user_request_str;
+  user_request.SerializeToString(&user_request_str);
+
+  cup.PackAndSignRequest(user_request_str);
+  cup.GetQuerySigner().OverrideNonceForTesting(kPublicKeyVersionInt,
+                                               kExampleNonce);
+
+  autofill_assistant::ActionsResponseProto packed_response;
+  packed_response.mutable_cup_data()->set_response("a response");
+  std::string packed_response_str;
+  packed_response.SerializeToString(&packed_response_str);
+
+  EXPECT_EQ(cup.UnpackResponse(packed_response_str), absl::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.CupRpcVerificationEvent",
+      Metrics::CupRpcVerificationEvent::EMPTY_SIGNATURE, 1);
 }
 
 TEST(CUPImplTest, FailsToParseInvalidProtoResponse) {
