@@ -53,7 +53,7 @@ void AddResources(content::WebUIDataSource* source) {
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 
 #if !DCHECK_IS_ON()
-  // Add a default path to avoid crash when not debugging.
+  // Add a default path to avoid crashes when not debugging.
   source->SetDefaultResource(IDR_ASH_PERSONALIZATION_APP_TRUSTED_INDEX_HTML);
 #endif  // !DCHECK_IS_ON()
 }
