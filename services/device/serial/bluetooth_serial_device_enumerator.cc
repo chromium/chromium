@@ -51,7 +51,7 @@ BluetoothSerialDeviceEnumerator::AdapterHelper::AdapterHelper(
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::OnGotClassicAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(adapter);
 
   BluetoothAdapter::DeviceList devices = adapter->GetDevices();
