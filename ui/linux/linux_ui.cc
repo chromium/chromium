@@ -11,6 +11,7 @@
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #include "build/build_config.h"
+#include "ui/linux/cursor_theme_manager_observer.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
@@ -27,7 +28,6 @@ void LinuxUi::SetInstance(std::unique_ptr<LinuxUi> instance) {
 
   SkiaFontDelegate::SetInstance(g_linux_ui);
   ui::SetTextEditKeyBindingsDelegate(g_linux_ui);
-  ui::CursorThemeManager::SetInstance(g_linux_ui);
   gfx::AnimationSettingsProviderLinux::SetInstance(g_linux_ui);
 
   // Do not set IME instance for ozone as we delegate creating the input method
@@ -69,6 +69,20 @@ void LinuxUi::AddDeviceScaleFactorObserver(
 void LinuxUi::RemoveDeviceScaleFactorObserver(
     DeviceScaleFactorObserver* observer) {
   device_scale_factor_observer_list_.RemoveObserver(observer);
+}
+
+void LinuxUi::AddCursorThemeObserver(CursorThemeManagerObserver* observer) {
+  cursor_theme_observer_list_.AddObserver(observer);
+  std::string name = GetCursorThemeName();
+  if (!name.empty())
+    observer->OnCursorThemeNameChanged(name);
+  int size = GetCursorThemeSize();
+  if (size)
+    observer->OnCursorThemeSizeChanged(size);
+}
+
+void LinuxUi::RemoveCursorThemeObserver(CursorThemeManagerObserver* observer) {
+  cursor_theme_observer_list_.RemoveObserver(observer);
 }
 
 ui::NativeTheme* LinuxUi::GetNativeTheme(aura::Window* window) const {

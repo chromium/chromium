@@ -13,11 +13,11 @@
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/observer_list.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
@@ -47,6 +47,7 @@ class PrintDialogLinuxInterface;
 
 namespace ui {
 
+class CursorThemeManagerObserver;
 class DeviceScaleFactorObserver;
 class NativeTheme;
 class NavButtonProvider;
@@ -61,7 +62,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
     : public ui::LinuxInputMethodContextFactory,
       public gfx::SkiaFontDelegate,
       public ui::TextEditKeyBindingsDelegateAuraLinux,
-      public ui::CursorThemeManager,
       public gfx::AnimationSettingsProviderLinux {
  public:
   using UseSystemThemeCallback =
@@ -112,6 +112,12 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
   // Unregisters |observer| from receiving changes to the device scale
   // factor.
   void RemoveDeviceScaleFactorObserver(DeviceScaleFactorObserver* observer);
+
+  // Adds |observer| and makes initial OnCursorThemNameChanged() and/or
+  // OnCursorThemeSizeChanged() calls if the respective settings were set.
+  void AddCursorThemeObserver(CursorThemeManagerObserver* observer);
+
+  void RemoveCursorThemeObserver(CursorThemeManagerObserver* observer);
 
   // Returns the NativeTheme that reflects the theme used by `window`.
   ui::NativeTheme* GetNativeTheme(aura::Window* window) const;
@@ -191,6 +197,13 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
       void* listener,
       std::unique_ptr<SelectFilePolicy> policy) const = 0;
 
+  // Returns the prefererd theme name for cursor loading.
+  virtual std::string GetCursorThemeName() = 0;
+
+  // Returns the preferred size for cursor bitmaps.  A value of 64 indicates
+  // that 64x64 px bitmaps are preferred.
+  virtual int GetCursorThemeSize() = 0;
+
  protected:
   struct CmdLineArgs {
     CmdLineArgs();
@@ -222,6 +235,11 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
     return device_scale_factor_observer_list_;
   }
 
+  const base::ObserverList<CursorThemeManagerObserver>&
+  cursor_theme_observers() {
+    return cursor_theme_observer_list_;
+  }
+
   virtual ui::NativeTheme* GetNativeTheme() const = 0;
 
  private:
@@ -237,6 +255,9 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
   // Objects to notify when the device scale factor changes.
   base::ObserverList<DeviceScaleFactorObserver>::Unchecked
       device_scale_factor_observer_list_;
+
+  // Objects to notify when the cursor theme or size changes.
+  base::ObserverList<CursorThemeManagerObserver> cursor_theme_observer_list_;
 };
 
 }  // namespace ui

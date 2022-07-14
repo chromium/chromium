@@ -27,12 +27,15 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
 
 extern "C" {
 const char* XcursorLibraryPath(void);
@@ -247,16 +250,17 @@ scoped_refptr<base::RefCountedMemory> ReadCursorFile(
     const std::string& rm_xcursor_theme) {
   constexpr const char kDefaultTheme[] = "default";
   std::string themes[] = {
-      // The toolkit theme has the highest priority.
-      CursorThemeManager::GetInstance()
-          ? CursorThemeManager::GetInstance()->GetCursorThemeName()
-          : std::string(),
+#if BUILDFLAG(IS_LINUX)
+    // The toolkit theme has the highest priority.
+    LinuxUi::instance() ? LinuxUi::instance()->GetCursorThemeName()
+                        : std::string(),
+#endif
 
-      // Next try Xcursor.theme.
-      rm_xcursor_theme,
+    // Next try Xcursor.theme.
+    rm_xcursor_theme,
 
-      // As a last resort, use the default theme.
-      kDefaultTheme,
+    // As a last resort, use the default theme.
+    kDefaultTheme,
   };
 
   for (const std::string& theme : themes) {
@@ -440,11 +444,13 @@ uint32_t XCursorLoader::GetPreferredCursorSize() const {
   if (base::StringToInt(GetEnv(kXcursorSizeEnv), &size) && size > 0)
     return size;
 
+#if BUILDFLAG(IS_LINUX)
   // Let the toolkit have the next say.
-  auto* manager = CursorThemeManager::GetInstance();
-  size = manager ? manager->GetCursorThemeSize() : 0;
+  auto* linux_ui = LinuxUi::instance();
+  size = linux_ui ? linux_ui->GetCursorThemeSize() : 0;
   if (size > 0)
     return size;
+#endif
 
   // Use Xcursor.size from RESOURCE_MANAGER if available.
   if (rm_xcursor_size_)

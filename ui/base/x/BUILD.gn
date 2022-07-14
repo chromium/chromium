@@ -64,7 +64,6 @@ component("x") {
 
   public_deps = [
     "//ui/base/cursor",
-    "//ui/base/cursor:theme_manager",
     "//ui/base/cursor/mojom:cursor_type_shared",
   ]
   deps = [
@@ -93,6 +92,9 @@ component("x") {
     "//ui/strings:ui_strings_grit",
   ]
 
+  if (is_linux) {
+    public_deps += [ "//ui/linux:linux_ui" ]
+  }
   if (is_linux || is_chromeos) {
     sources += [
       "selection_owner.cc",

@@ -45,9 +45,9 @@ WaylandCursorFactory::WaylandCursorFactory(WaylandConnection* connection)
 WaylandCursorFactory::~WaylandCursorFactory() = default;
 
 void WaylandCursorFactory::ObserveThemeChanges() {
-  auto* cursor_theme_manager = CursorThemeManager::GetInstance();
-  DCHECK(cursor_theme_manager);
-  cursor_theme_observer_.Observe(cursor_theme_manager);
+  auto* linux_ui = LinuxUi::instance();
+  DCHECK(linux_ui);
+  cursor_theme_observer_.Observe(linux_ui);
 }
 
 scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(

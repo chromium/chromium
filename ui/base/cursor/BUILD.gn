@@ -24,17 +24,6 @@ component("cursor") {
   deps = [ "//ui/gfx:gfx_skia" ]
 }
 
-component("theme_manager") {
-  output_name = "ui_base_cursor_theme_manager"
-  sources = [
-    "cursor_theme_manager.cc",
-    "cursor_theme_manager.h",
-    "cursor_theme_manager_observer.h",
-  ]
-  defines = [ "IS_UI_BASE_CURSOR_THEME_MANAGER_IMPL" ]
-  public_deps = [ "//base" ]
-}
-
 source_set("unittests") {
   testonly = true
   sources = []

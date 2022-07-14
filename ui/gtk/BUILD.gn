@@ -126,7 +126,6 @@ component("gtk") {
     "//ui/aura",
     "//ui/base",
     "//ui/base:buildflags",
-    "//ui/base/cursor:theme_manager",
     "//ui/base/ime",
     "//ui/base/ime/linux",
     "//ui/color",

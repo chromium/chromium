@@ -12,8 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
-#include "ui/base/cursor/cursor_theme_manager.h"
-#include "ui/base/cursor/cursor_theme_manager_observer.h"
+#include "ui/linux/cursor_theme_manager_observer.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
@@ -73,7 +73,10 @@ class WaylandCursorFactory : public BitmapCursorFactory,
 
   const raw_ptr<WaylandConnection> connection_;
 
-  base::ScopedObservation<CursorThemeManager, CursorThemeManagerObserver>
+  base::ScopedObservation<LinuxUi,
+                          CursorThemeManagerObserver,
+                          &LinuxUi::AddCursorThemeObserver,
+                          &LinuxUi::RemoveCursorThemeObserver>
       cursor_theme_observer_{this};
 
   // Name of the current theme.

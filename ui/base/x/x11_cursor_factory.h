@@ -13,9 +13,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/cursor/cursor_theme_manager.h"
-#include "ui/base/cursor/cursor_theme_manager_observer.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/linux/cursor_theme_manager_observer.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
 
 namespace ui {
 class X11Cursor;
@@ -56,8 +59,13 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
 
   std::map<mojom::CursorType, scoped_refptr<X11Cursor>> default_cursors_;
 
-  base::ScopedObservation<CursorThemeManager, CursorThemeManagerObserver>
+#if BUILDFLAG(IS_LINUX)
+  base::ScopedObservation<LinuxUi,
+                          CursorThemeManagerObserver,
+                          &LinuxUi::AddCursorThemeObserver,
+                          &LinuxUi::RemoveCursorThemeObserver>
       cursor_theme_observation_{this};
+#endif
 };
 
 }  // namespace ui

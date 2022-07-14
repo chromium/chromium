@@ -8,6 +8,7 @@ import("//ui/qt/qt.gni")
 component("linux_ui") {
   defines = [ "IS_LINUX_UI_IMPL" ]
   public = [
+    "cursor_theme_manager_observer.h",
     "device_scale_factor_observer.h",
     "linux_ui.h",
     "nav_button_provider.h",
@@ -27,7 +28,6 @@ component("linux_ui") {
   public_deps = [
     "//printing/buildflags",
     "//skia",
-    "//ui/base/cursor:theme_manager",
   ]
 }
 
@@ -39,7 +39,10 @@ source_set("linux_ui_factory") {
 
   public_deps = [ ":linux_ui" ]
 
-  deps = [ "//ui/base:buildflags" ]
+  deps = [
+    "//base",
+    "//ui/base:buildflags",
+  ]
   if (use_gtk) {
     # This is the only component that can interact with gtk.
     deps += [ "//ui/gtk" ]

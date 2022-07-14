@@ -56,9 +56,11 @@ scoped_refptr<PlatformCursor> X11CursorFactory::CreateAnimatedCursor(
 }
 
 void X11CursorFactory::ObserveThemeChanges() {
-  auto* cursor_theme_manager = CursorThemeManager::GetInstance();
-  DCHECK(cursor_theme_manager);
-  cursor_theme_observation_.Observe(cursor_theme_manager);
+#if BUILDFLAG(IS_LINUX)
+  auto* linux_ui = LinuxUi::instance();
+  DCHECK(linux_ui);
+  cursor_theme_observation_.Observe(linux_ui);
+#endif
 }
 
 void X11CursorFactory::OnCursorThemeNameChanged(
