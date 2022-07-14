@@ -56,6 +56,20 @@ void RequestQueue<T>::ScheduleRequest(std::unique_ptr<T> request) {
 }
 
 template <typename T>
+void RequestQueue<T>::ScheduleRetriedRequest(
+    Request request,
+    const base::TimeDelta& min_backoff_delay) {
+  DCHECK(request.backoff_entry);
+  DCHECK(request.fetch);
+  request.backoff_entry->InformOfRequest(false);
+  if (request.backoff_entry->GetTimeUntilRelease() < min_backoff_delay) {
+    request.backoff_entry->SetCustomReleaseTime(base::TimeTicks::Now() +
+                                                min_backoff_delay);
+  }
+  PushImpl(std::move(request));
+}
+
+template <typename T>
 void RequestQueue<T>::PushImpl(Request request) {
   pending_requests_.push_back(std::move(request));
   std::push_heap(
@@ -119,14 +133,7 @@ void RequestQueue<T>::StartNextRequest() {
 template <typename T>
 void RequestQueue<T>::RetryRequest(const base::TimeDelta& min_backoff_delay) {
   DCHECK(active_request_);
-  active_request_->backoff_entry->InformOfRequest(false);
-  if (active_request_->backoff_entry->GetTimeUntilRelease() <
-      min_backoff_delay) {
-    active_request_->backoff_entry->SetCustomReleaseTime(
-        base::TimeTicks::Now() + min_backoff_delay);
-  }
-  PushImpl(std::move(*active_request_));
-  active_request_.reset();
+  ScheduleRetriedRequest(reset_active_request(), min_backoff_delay);
 }
 
 template <typename T>

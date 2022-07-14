@@ -257,7 +257,10 @@ class ExtensionDownloader {
   void CreateManifestLoader();
 
   // Retries the active request with some backoff delay.
-  void RetryManifestFetchRequest(int network_error_code, int response_code);
+  void RetryManifestFetchRequest(
+      RequestQueue<ManifestFetchData>::Request request,
+      int network_error_code,
+      int response_code);
 
   // Reports failures if we failed to fetch the manifest or the fetched manifest
   // was invalid.
@@ -274,6 +277,7 @@ class ExtensionDownloader {
   // AddFailureDataOnManifestFetchFailed when fetching of update manifest
   // failed.
   void RetryRequestOrHandleFailureOnManifestFetchFailure(
+      RequestQueue<ManifestFetchData>::Request request,
       const network::SimpleURLLoader& loader,
       const int response_code);
 

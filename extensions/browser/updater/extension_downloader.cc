@@ -599,21 +599,21 @@ void ExtensionDownloader::CreateManifestLoader() {
                      base::Unretained(this)));
 }
 
-void ExtensionDownloader::RetryManifestFetchRequest(int network_error_code,
-                                                    int response_code) {
+void ExtensionDownloader::RetryManifestFetchRequest(
+    RequestQueue<ManifestFetchData>::Request request,
+    int network_error_code,
+    int response_code) {
   constexpr base::TimeDelta backoff_delay;
-  const ExtensionIdSet& extension_ids =
-      manifests_queue_.active_request()->GetExtensionIds();
+  const ExtensionIdSet& extension_ids = request.fetch->GetExtensionIds();
   NotifyExtensionsDownloadStageChanged(
       extension_ids,
       ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST_RETRY);
   const ExtensionDownloaderDelegate::FailureData failure_data =
       ExtensionDownloaderDelegate::FailureData::CreateFromNetworkResponse(
-          network_error_code, response_code,
-          manifests_queue_.active_request_failure_count());
+          network_error_code, response_code, request.failure_count());
   for (const ExtensionId& id : extension_ids)
     delegate_->OnExtensionDownloadRetry(id, failure_data);
-  manifests_queue_.RetryRequest(backoff_delay);
+  manifests_queue_.ScheduleRetriedRequest(std::move(request), backoff_delay);
 }
 
 void ExtensionDownloader::ReportManifestFetchFailure(
@@ -679,14 +679,14 @@ bool ExtensionDownloader::TryFetchingExtensionsFromCache(
 }
 
 void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
+    RequestQueue<ManifestFetchData>::Request request,
     const network::SimpleURLLoader& loader,
     const int response_code) {
   bool all_force_installed_extensions =
-      manifests_queue_.active_request()->is_all_external_policy_download();
+      request.fetch->is_all_external_policy_download();
 
   const int net_error = loader.NetError();
-  const int request_failure_count =
-      manifests_queue_.active_request_failure_count();
+  const int request_failure_count = request.failure_count();
   // If the device is offline, do not retry for force installed extensions,
   // try installing it from cache. Try fetching from cache only on first attempt
   // in this case, because we will retry the request only if there was no entry
@@ -694,25 +694,25 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
   // fetch extension from cache again.
   if (net_error == net::ERR_INTERNET_DISCONNECTED &&
       all_force_installed_extensions && request_failure_count == 0) {
-    if (!TryFetchingExtensionsFromCache(manifests_queue_.active_request()))
-      RetryManifestFetchRequest(net_error, response_code);
+    if (!TryFetchingExtensionsFromCache(request.fetch.get()))
+      RetryManifestFetchRequest(std::move(request), net_error, response_code);
     return;
   }
   if (ShouldRetryRequest(&loader) && request_failure_count < kMaxRetries) {
-    RetryManifestFetchRequest(loader.NetError(), response_code);
+    RetryManifestFetchRequest(std::move(request), loader.NetError(),
+                              response_code);
     return;
   }
   const GURL url = loader.GetFinalURL();
   RETRY_HISTOGRAM("ManifestFetchFailure", request_failure_count, url);
   if (all_force_installed_extensions) {
-    if (TryFetchingExtensionsFromCache(manifests_queue_.active_request()))
+    if (TryFetchingExtensionsFromCache(request.fetch.get()))
       return;
     const ExtensionDownloaderDelegate::FailureData failure_data =
         ExtensionDownloaderDelegate::FailureData::CreateFromNetworkResponse(
-            net_error, response_code,
-            manifests_queue_.active_request_failure_count());
+            net_error, response_code, request.failure_count());
     ReportManifestFetchFailure(
-        manifests_queue_.active_request(),
+        request.fetch.get(),
         ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED,
         failure_data);
   } else {
@@ -720,7 +720,7 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
         ExtensionDownloaderDelegate::FailureData::CreateFromNetworkResponse(
             net_error, response_code, request_failure_count);
     ReportManifestFetchFailure(
-        manifests_queue_.active_request(),
+        request.fetch.get(),
         ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED,
         failure_data);
   }
@@ -728,6 +728,19 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
 
 void ExtensionDownloader::OnManifestLoadComplete(
     std::unique_ptr<std::string> response_body) {
+  // Remove the current loader and active request from the queue. This allows us
+  // to handle any next steps for the request (such as retrying it)
+  // asynchronously without blocking the next load in the queue. If the current
+  // request needs to be retried, it can be scheduled as another entry in the
+  // queue.
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      std::move(manifest_loader_);
+  const GURL url = loader->GetFinalURL();
+  DCHECK(loader);
+
+  RequestQueue<ManifestFetchData>::Request request =
+      manifests_queue_.reset_active_request();
+
   // There is a chance that some other request has exactly some URL, so we won't
   // fetch it twice.
   std::vector<std::unique_ptr<ManifestFetchData>> duplicates =
@@ -735,21 +748,13 @@ void ExtensionDownloader::OnManifestLoadComplete(
           [](const GURL& full_url, const ManifestFetchData& fetch) {
             return fetch.full_url() == full_url;
           },
-          manifests_queue_.active_request()->full_url()));
+          request.fetch->full_url()));
   for (std::unique_ptr<ManifestFetchData>& fetch : duplicates) {
     NotifyExtensionsDownloadStageChanged(
         fetch->GetExtensionIds(),
         ExtensionDownloaderDelegate::Stage::DOWNLOADING_MANIFEST);
-    manifests_queue_.active_request()->Merge(std::move(fetch));
+    request.fetch->Merge(std::move(fetch));
   }
-
-  // Move loader from class-wide field to the local variable in order to make
-  // ExtensionDownloader reentrable.
-  std::unique_ptr<network::SimpleURLLoader> loader =
-      std::move(manifest_loader_);
-  const GURL url = loader->GetFinalURL();
-  DCHECK(manifests_queue_.active_request());
-  DCHECK(loader);
 
   int response_code = -1;
   if (loader->ResponseInfo() && loader->ResponseInfo()->headers)
@@ -757,8 +762,7 @@ void ExtensionDownloader::OnManifestLoadComplete(
 
   VLOG(2) << response_code << " " << url;
 
-  const int request_failure_count =
-      manifests_queue_.active_request_failure_count();
+  const int request_failure_count = request.failure_count();
 
   // We want to try parsing the manifest, and if it indicates updates are
   // available, we want to fire off requests to fetch those updates.
@@ -766,21 +770,19 @@ void ExtensionDownloader::OnManifestLoadComplete(
     RETRY_HISTOGRAM("ManifestFetchSuccess", request_failure_count, url);
     VLOG(2) << "beginning manifest parse for " << url;
     NotifyExtensionsDownloadStageChanged(
-        manifests_queue_.active_request()->GetExtensionIds(),
+        request.fetch->GetExtensionIds(),
         ExtensionDownloaderDelegate::Stage::PARSING_MANIFEST);
-    auto callback = base::BindOnce(
-        &ExtensionDownloader::HandleManifestResults,
-        weak_ptr_factory_.GetWeakPtr(),
-        std::move(manifests_queue_.reset_active_request().fetch));
+    auto callback = base::BindOnce(&ExtensionDownloader::HandleManifestResults,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   std::move(request.fetch));
     ParseUpdateManifest(*response_body, std::move(callback));
   } else {
     VLOG(1) << "Failed to fetch manifest '" << url.possibly_invalid_spec()
             << "' response code:" << response_code;
-    RetryRequestOrHandleFailureOnManifestFetchFailure(*loader, response_code);
+    RetryRequestOrHandleFailureOnManifestFetchFailure(std::move(request),
+                                                      *loader, response_code);
   }
   file_url_loader_factory_.reset();
-  if (manifests_queue_.active_request())
-    manifests_queue_.reset_active_request();
 
   // If we have any pending manifest requests, fire off the next one.
   manifests_queue_.StartNextRequest();

@@ -43,6 +43,8 @@ class RequestQueue {
     Request(std::unique_ptr<net::BackoffEntry> backoff_entry,
             std::unique_ptr<T> fetch)
         : backoff_entry(std::move(backoff_entry)), fetch(std::move(fetch)) {}
+
+    int failure_count() { return backoff_entry->failure_count(); }
     std::unique_ptr<net::BackoffEntry> backoff_entry;
     std::unique_ptr<T> fetch;
   };
@@ -65,6 +67,11 @@ class RequestQueue {
   // Add the given request to the queue, and starts the next request if no
   // request is currently being processed.
   void ScheduleRequest(std::unique_ptr<T> request);
+
+  // Add the request which already was in the queue, but we've decided to retry
+  // it. The queue will take care of the retry backoff.
+  void ScheduleRetriedRequest(Request request,
+                              const base::TimeDelta& min_backoff_delay);
 
   bool empty() const;
   size_t size() const;
