@@ -243,6 +243,7 @@ const char kChromeUIWebApksHost[] = "webapks";
 #else
 const char kChromeUIAppServiceInternalsHost[] = "app-service-internals";
 const char kChromeUINearbyInternalsHost[] = "nearby-internals";
+const char kChromeUINearbyInternalsURL[] = "chrome://nearby-internals";
 const char kChromeUIBookmarksSidePanelHost[] =
     "bookmarks-side-panel.top-chrome";
 const char kChromeUIBookmarksSidePanelURL[] =
@@ -330,6 +331,8 @@ const char kChromeUIManageMirrorSyncURL[] = "chrome://manage-mirrorsync";
 const char kChromeUIMobileSetupHost[] = "mobilesetup";
 const char kChromeUIMobileSetupURL[] = "chrome://mobilesetup/";
 const char kChromeUIMultiDeviceInternalsHost[] = "multidevice-internals";
+const char kChromeUIMultiDeviceInternalsURL[] =
+    "chrome://multidevice-internals";
 const char kChromeUIMultiDeviceSetupHost[] = "multidevice-setup";
 const char kChromeUIMultiDeviceSetupUrl[] = "chrome://multidevice-setup";
 const char kChromeUINetworkHost[] = "network";
@@ -391,6 +394,8 @@ const char kOsUIGpuURL[] = "os://gpu";
 const char kOsUIHistogramsURL[] = "os://histograms";
 const char kOsUIInvalidationsURL[] = "os://invalidations";
 const char kOsUILockScreenNetworkURL[] = "os://lock-network";
+const char kOsUIMultiDeviceInternalsURL[] = "os://multidevice-internals";
+const char kOsUINearbyInternalsURL[] = "os://nearby-internals";
 const char kOsUINetworkURL[] = "os://network";
 const char kOsUINetExportURL[] = "os://net-export";
 const char kOsUIRestartURL[] = "os://restart";

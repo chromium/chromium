@@ -10,6 +10,7 @@ namespace multidevice {
 
 const char kChromeUIProximityAuthHost[] = "proximity-auth";
 const char kChromeUIProximityAuthURL[] = "chrome://proximity-auth/";
+const char kOsUIProximityAuthURL[] = "os://proximity-auth";
 
 }  // namespace multidevice
 
