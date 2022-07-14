@@ -268,6 +268,8 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 updateVisualViewportHeight();
             } else if (AssistantModel.PEEK_MODE_DISABLED == propertyKey) {
                 mContent.setPeekModeDisabled(model.get(AssistantModel.PEEK_MODE_DISABLED));
+            } else if (AssistantModel.HANDLE_BACK_PRESS == propertyKey) {
+                mContent.setHandleBackPress(model.get(AssistantModel.HANDLE_BACK_PRESS));
             }
         });
 

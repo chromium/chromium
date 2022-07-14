@@ -382,6 +382,10 @@ void UiControllerAndroid::SetupForState() {
 
   UpdateActions(ui_delegate_->GetUserActions());
   AutofillAssistantState state = execution_delegate_->GetState();
+  Java_AssistantModel_setHandleBackPress(
+      AttachCurrentThread(), GetModel(),
+      state != AutofillAssistantState::BROWSE);
+
   bool should_prompt_action_expand_sheet =
       ui_delegate_->ShouldPromptActionExpandSheet();
   switch (state) {
