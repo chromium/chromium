@@ -524,8 +524,25 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     }
   }
 
-  if (oof_data->oof_positioned_fragmentainer_descendants.IsEmpty())
+  PropagateOOFFragmentainerDescendants(fragment, offset, relative_offset,
+                                       containing_block_adjustment,
+                                       fixedpos_containing_block);
+}
+
+void NGContainerFragmentBuilder::PropagateOOFFragmentainerDescendants(
+    const NGPhysicalFragment& fragment,
+    LogicalOffset offset,
+    LogicalOffset relative_offset,
+    LayoutUnit containing_block_adjustment,
+    const NGContainingBlock<LogicalOffset>* fixedpos_containing_block) {
+  NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();
+  if (!oof_data || oof_data->oof_positioned_fragmentainer_descendants.IsEmpty())
     return;
+
+  const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
+  const NGPhysicalBoxFragment* box_fragment =
+      DynamicTo<NGPhysicalBoxFragment>(&fragment);
+  bool is_column_spanner = box_fragment && box_fragment->IsColumnSpanAll();
 
   auto& out_of_flow_fragmentainer_descendants =
       oof_data->oof_positioned_fragmentainer_descendants;
