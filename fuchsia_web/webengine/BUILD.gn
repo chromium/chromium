@@ -593,7 +593,6 @@ test("web_engine_unittests") {
     ":web_engine_core",
     ":web_engine_unittests_fake_instance_manifest",
     "//base/test:test_support",
-    "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
     "//components/url_rewrite/common",
     "//components/url_rewrite/mojom",

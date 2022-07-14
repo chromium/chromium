@@ -379,7 +379,6 @@ test("web_runner_integration_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/cast/message_port",
     "//fuchsia_web/common/test:run_all_integration_tests",
     "//fuchsia_web/runners/common/modular",
     "//net:test_support",
