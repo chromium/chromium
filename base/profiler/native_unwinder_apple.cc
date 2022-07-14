@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/profiler/frame_pointer_unwinder.h"
+#include "base/profiler/native_unwinder_apple.h"
+
+#include <pthread/stack_np.h>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/profiler/module_cache.h"
+#include "base/profiler/native_unwinder.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_APPLE)
-#include <pthread/stack_np.h>
-#endif
 
 namespace {
 
@@ -23,10 +22,8 @@ namespace {
 // NB: The caller *must* ensure that there are 2+ uintptr_t's worth of memory at
 // `frame_pointer`.
 uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
-#if BUILDFLAG(IS_APPLE)
   if (__builtin_available(macOS 10.14, iOS 12, *))
     return pthread_stack_frame_decode_np(frame_pointer, return_address);
-#endif
   const uintptr_t* fp = reinterpret_cast<uintptr_t*>(frame_pointer);
   uintptr_t next_frame = *fp;
   *return_address = *(fp + 1);
@@ -37,15 +34,15 @@ uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
 
 namespace base {
 
-FramePointerUnwinder::FramePointerUnwinder() = default;
+NativeUnwinderApple::NativeUnwinderApple() = default;
 
-bool FramePointerUnwinder::CanUnwindFrom(const Frame& current_frame) const {
+bool NativeUnwinderApple::CanUnwindFrom(const Frame& current_frame) const {
   return current_frame.module && current_frame.module->IsNative();
 }
 
-UnwindResult FramePointerUnwinder::TryUnwind(RegisterContext* thread_context,
-                                             uintptr_t stack_top,
-                                             std::vector<Frame>* stack) const {
+UnwindResult NativeUnwinderApple::TryUnwind(RegisterContext* thread_context,
+                                            uintptr_t stack_top,
+                                            std::vector<Frame>* stack) const {
   // We expect the frame corresponding to the |thread_context| register state to
   // exist within |stack|.
   DCHECK_GT(stack->size(), 0u);
@@ -102,6 +99,10 @@ UnwindResult FramePointerUnwinder::TryUnwind(RegisterContext* thread_context,
 
   NOTREACHED();
   return UnwindResult::kCompleted;
+}
+
+std::unique_ptr<Unwinder> CreateNativeUnwinder(ModuleCache* module_cache) {
+  return std::make_unique<NativeUnwinderApple>();
 }
 
 }  // namespace base

@@ -6,6 +6,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/profiler/module_cache.h"
+#include "base/profiler/native_unwinder.h"
 #include "build/build_config.h"
 
 namespace base {

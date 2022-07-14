@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/profiler/native_unwinder.h"
 #include "base/profiler/win32_stack_frame_unwinder.h"
 #include "build/build_config.h"
 
@@ -90,6 +91,10 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
 
   NOTREACHED();
   return UnwindResult::kCompleted;
+}
+
+std::unique_ptr<Unwinder> CreateNativeUnwinder(ModuleCache* module_cache) {
+  return std::make_unique<NativeUnwinderWin>();
 }
 
 }  // namespace base
