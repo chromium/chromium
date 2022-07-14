@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -442,20 +443,23 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
   static AttributeTriggers attribute_triggers[] = {
       {html_names::kDirAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnDirAttrChanged},
-      {html_names::kFocusgroupAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::OnFocusgroupAttrChanged},
       {html_names::kFormAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnFormAttrChanged},
       {html_names::kLangAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnLangAttrChanged},
       {html_names::kNonceAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnNonceAttrChanged},
+
+      {html_names::kFocusgroupAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::ReparseAttribute},
       {html_names::kTabindexAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::OnTabIndexAttrChanged},
+       &HTMLElement::ReparseAttribute},
       {xml_names::kLangAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::OnXMLLangAttrChanged},
+       &HTMLElement::ReparseAttribute},
       {html_names::kPopupAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::OnPopupAttrChanged},
+       &HTMLElement::ReparseAttribute},
+      {html_names::kHoverpopupAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::ReparseAttribute},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
@@ -2021,8 +2025,7 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   }
 }
 
-void HTMLElement::OnFocusgroupAttrChanged(
-    const AttributeModificationParams& params) {
+void HTMLElement::ReparseAttribute(const AttributeModificationParams& params) {
   Element::ParseAttribute(params);
 }
 
@@ -2039,21 +2042,6 @@ void HTMLElement::OnNonceAttrChanged(
     const AttributeModificationParams& params) {
   if (params.new_value != g_empty_atom)
     setNonce(params.new_value);
-}
-
-void HTMLElement::OnTabIndexAttrChanged(
-    const AttributeModificationParams& params) {
-  Element::ParseAttribute(params);
-}
-
-void HTMLElement::OnXMLLangAttrChanged(
-    const AttributeModificationParams& params) {
-  Element::ParseAttribute(params);
-}
-
-void HTMLElement::OnPopupAttrChanged(
-    const AttributeModificationParams& params) {
-  Element::ParseAttribute(params);
 }
 
 ElementInternals* HTMLElement::attachInternals(

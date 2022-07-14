@@ -81,6 +81,10 @@ class PopupData final : public GarbageCollected<PopupData> {
     animation_finished_listener_ = listener;
   }
 
+  HeapHashMap<WeakMember<Element>, TaskHandle>& hoverPopupTasks() {
+    return hover_popup_tasks_;
+  }
+
   HTMLSelectMenuElement* ownerSelectMenuElement() const {
     return owner_select_menu_element_;
   }
@@ -92,6 +96,7 @@ class PopupData final : public GarbageCollected<PopupData> {
     visitor->Trace(invoker_);
     visitor->Trace(previously_focused_element_);
     visitor->Trace(animation_finished_listener_);
+    visitor->Trace(hover_popup_tasks_);
     visitor->Trace(owner_select_menu_element_);
   }
 
@@ -105,6 +110,9 @@ class PopupData final : public GarbageCollected<PopupData> {
   // We hold a strong reference to the animation finished listener, so that we
   // can confirm that the listeners get removed before cleanup.
   Member<PopupAnimationFinishedEventListener> animation_finished_listener_;
+  // Map from triggering elements to a TaskHandle for the task that will invoke
+  // the pop-up.
+  HeapHashMap<WeakMember<Element>, TaskHandle> hover_popup_tasks_;
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.
