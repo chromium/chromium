@@ -216,10 +216,13 @@ class SideSearchBrowserControllerTest
     }
   }
 
-  views::ImageButton* GetSideButtonClosePanelFor(Browser* browser) {
-    return static_cast<views::ImageButton*>(
-        GetSidePanelFor(browser)->GetViewByID(static_cast<int>(
-            SideSearchBrowserController::VIEW_ID_SIDE_PANEL_CLOSE_BUTTON)));
+  views::Button* GetSideButtonClosePanelFor(Browser* browser) {
+    views::View* button_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kSidePanelCloseButtonElementId,
+            browser->window()->GetElementContext());
+    return button_view ? views::AsViewClass<views::Button>(button_view)
+                       : nullptr;
   }
 
   virtual SidePanel* GetSidePanelFor(Browser* browser) {

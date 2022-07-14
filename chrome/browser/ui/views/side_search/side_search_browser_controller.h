@@ -34,7 +34,6 @@ class SideSearchBrowserController
  public:
   enum SideSearchViewID {
     VIEW_ID_NONE = 0,
-    VIEW_ID_SIDE_PANEL_CLOSE_BUTTON,
     VIEW_ID_SIDE_PANEL_TITLE_LABEL,
   };
 

@@ -223,8 +223,8 @@ class HeaderView : public views::View {
     close_button_ = AddChildView(std::make_unique<HeaderButton>(
         vector_icons::kCloseIcon, std::move(callback)));
     views::InstallCircleHighlightPathGenerator(close_button_);
-    close_button_->SetID(SideSearchBrowserController::SideSearchViewID::
-                             VIEW_ID_SIDE_PANEL_CLOSE_BUTTON);
+    close_button_->SetProperty(views::kElementIdentifierKey,
+                               kSidePanelCloseButtonElementId);
     close_button_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_SEARCH_CLOSE_BUTTON));
     close_button_->SetTooltipText(

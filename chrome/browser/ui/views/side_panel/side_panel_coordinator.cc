@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -51,6 +52,7 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
     const gfx::VectorIcon& icon,
     const gfx::Insets& margin_insets,
     const std::u16string& tooltip_text,
+    ui::ElementIdentifier view_id,
     int dip_size) {
   auto button = views::CreateVectorImageButtonWithNativeTheme(pressed_callback,
                                                               icon, dip_size);
@@ -65,6 +67,7 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
   button->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification().WithAlignment(views::LayoutAlignment::kEnd));
+  button->SetProperty(views::kElementIdentifierKey, view_id);
 
   return button;
 }
@@ -473,6 +476,7 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
       base::BindRepeating(&SidePanelCoordinator::Close, base::Unretained(this)),
       views::kIcCloseIcon, gfx::Insets(),
       l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE),
+      kSidePanelCloseButtonElementId,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
 
