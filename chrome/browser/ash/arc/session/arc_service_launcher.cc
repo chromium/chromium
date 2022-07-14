@@ -106,7 +106,7 @@
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 
 // Delay for repeatedly checking if the TPM is owned or not.
@@ -172,7 +172,7 @@ void ArcServiceLauncher::Initialize() {
   // If we have ARC HWDRM then we need to wait for the CdmFactoryDaemon service
   // to advertise avalability so that arc-prepare-host-generated-dir can query
   // it via D-Bus for the CDM client information.
-  chromeos::CdmFactoryDaemonClient::Get()->WaitForServiceToBeAvailable(
+  ash::CdmFactoryDaemonClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&ArcServiceLauncher::OnCdmFactoryDaemonAvailable,
                      weak_factory_.GetWeakPtr(), /*from_timeout=*/false));
 

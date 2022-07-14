@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -67,7 +68,6 @@
 #include "chromeos/dbus/arc/arc_midis_client.h"
 #include "chromeos/dbus/arc/arc_obb_mounter_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
-#include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -139,7 +139,7 @@ void InitializeDBus() {
   InitializeDBusClient<AttestationClient>(bus);
   InitializeDBusClient<AuthPolicyClient>(bus);
   InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
-  InitializeDBusClient<chromeos::CdmFactoryDaemonClient>(bus);
+  InitializeDBusClient<CdmFactoryDaemonClient>(bus);
   InitializeDBusClient<chromeos::CecServiceClient>(bus);
   InitializeDBusClient<ChunneldClient>(bus);
   InitializeDBusClient<CiceroneClient>(bus);
@@ -300,7 +300,7 @@ void ShutdownDBus() {
   CiceroneClient::Shutdown();
   ChunneldClient::Shutdown();
   chromeos::CecServiceClient::Shutdown();
-  chromeos::CdmFactoryDaemonClient::Shutdown();
+  CdmFactoryDaemonClient::Shutdown();
   BiodClient::Shutdown();
   AuthPolicyClient::Shutdown();
   AttestationClient::Shutdown();

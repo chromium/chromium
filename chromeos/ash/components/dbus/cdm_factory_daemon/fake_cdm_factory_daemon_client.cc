@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cdm_factory_daemon/fake_cdm_factory_daemon_client.h"
+#include "chromeos/ash/components/dbus/cdm_factory_daemon/fake_cdm_factory_daemon_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeCdmFactoryDaemonClient::FakeCdmFactoryDaemonClient() = default;
 FakeCdmFactoryDaemonClient::~FakeCdmFactoryDaemonClient() = default;
@@ -27,4 +27,4 @@ void FakeCdmFactoryDaemonClient::WaitForServiceToBeAvailable(
   std::move(callback).Run(true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

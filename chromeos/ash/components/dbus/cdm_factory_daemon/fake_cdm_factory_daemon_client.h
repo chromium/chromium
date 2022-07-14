@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CDM_FACTORY_DAEMON_FAKE_CDM_FACTORY_DAEMON_CLIENT_H_
-#define CHROMEOS_DBUS_CDM_FACTORY_DAEMON_FAKE_CDM_FACTORY_DAEMON_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_FAKE_CDM_FACTORY_DAEMON_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_FAKE_CDM_FACTORY_DAEMON_CLIENT_H_
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation of CdmFactoryDaemonClient. This is currently a no-op
 // fake.
@@ -32,6 +32,6 @@ class FakeCdmFactoryDaemonClient : public CdmFactoryDaemonClient {
       WaitForServiceToBeAvailableCallback callback) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CDM_FACTORY_DAEMON_FAKE_CDM_FACTORY_DAEMON_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CDM_FACTORY_DAEMON_FAKE_CDM_FACTORY_DAEMON_CLIENT_H_
