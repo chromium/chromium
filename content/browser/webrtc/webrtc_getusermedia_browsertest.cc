@@ -517,8 +517,16 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // This test calls getUserMedia and checks for aspect ratio behavior.
+// TODO(1337302): Flaky for tsan, mac, lacros.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TestGetUserMediaAspectRatio4To3 \
+  DISABLED_TestGetUserMediaAspectRatio4To3
+#else
+#define MAYBE_TestGetUserMediaAspectRatio4To3 TestGetUserMediaAspectRatio4To3
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
-                       TestGetUserMediaAspectRatio4To3) {
+                       MAYBE_TestGetUserMediaAspectRatio4To3) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("/media/getusermedia.html"));
@@ -548,8 +556,16 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // This test calls getUserMedia and checks for aspect ratio behavior.
+// TODO(1337302): Flaky for tsan, mac, lacros.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TestGetUserMediaAspectRatio1To1 \
+  DISABLED_TestGetUserMediaAspectRatio1To1
+#else
+#define MAYBE_TestGetUserMediaAspectRatio1To1 TestGetUserMediaAspectRatio1To1
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
-                       TestGetUserMediaAspectRatio1To1) {
+                       MAYBE_TestGetUserMediaAspectRatio1To1) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("/media/getusermedia.html"));
