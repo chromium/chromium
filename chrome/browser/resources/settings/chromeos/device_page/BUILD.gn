@@ -36,6 +36,9 @@ js_library("audio") {
     "../..:router",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
 }
 
 js_library("device_page") {

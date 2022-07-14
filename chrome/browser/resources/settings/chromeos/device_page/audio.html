@@ -1,4 +1,55 @@
- <!-- Output section -->
- <template is="dom-if" if="[[showAudioInfo]]">
-   <div id="audioSubpageTitle">$i18n{audioTitle}</div>
- </template>
+<style include="settings-shared">
+  .audio-output-slider {
+    width: 100px;
+  }
+
+  .audio-slider-wrapper {
+    align-items: center;
+    display: flex;
+  }
+
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .settings-box:first-of-type {
+    border-top: none;
+  }
+
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > .settings-box  {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+</style>
+
+<!-- Output section -->
+<template is="dom-if" if="[[showAudioInfo]]">
+  <div id="output">
+    <h2 id="audioOutputTitle">$i18n{audioOutputTitle}</h2>
+    <div id="audioOutputSubsection" class="subsection">
+      <div class="settings-box">
+        <div class="start settings-box-text" id="audioOutputVolumeLabel">
+          $i18n{audioVolumeTitle}
+        </div>
+        <div class="audio-slider-wrapper" id="audioOutputSliderWrapper">
+          <iron-icon id="audioOutputSliderVolumeDownIcon"
+              icon="settings:volume-down">
+          </iron-icon>
+          <cr-slider class="audio-output-slider"
+              min="0"
+              max="100"
+              value="50">
+          </cr-slider>
+          <iron-icon id="audioOutputSliderVolumeUpIcon"
+              icon="settings:volume-up">
+          </iron-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

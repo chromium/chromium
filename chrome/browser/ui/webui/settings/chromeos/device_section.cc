@@ -758,6 +758,8 @@ void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
 void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kAudioStrings[] = {
       {"audioTitle", IDS_SETTINGS_AUDIO_TITLE},
+      {"audioOutputTitle", IDS_SETTINGS_AUDIO_OUTPUT_TITLE},
+      {"audioVolumeTitle", IDS_SETTINGS_AUDIO_VOLUME_TITLE},
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);

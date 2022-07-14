@@ -701,7 +701,9 @@ suite('SettingsDevicePage', function() {
     test('subpage visibility', function() {
       assertEquals(routes.AUDIO, Router.getInstance().getCurrentRoute());
       assertTrue(
-          isVisible(audioPage.shadowRoot.querySelector('#audioSubpageTitle')));
+          isVisible(audioPage.shadowRoot.querySelector('#audioOutputTitle')));
+      assertTrue(isVisible(
+          audioPage.shadowRoot.querySelector('#audioOutputSubsection')));
     });
   });
 
