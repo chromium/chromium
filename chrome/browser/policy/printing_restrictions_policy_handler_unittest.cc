@@ -18,7 +18,6 @@
 
 namespace policy {
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class PrintingRestrictionsPolicyHandlerTest : public testing::Test {
  protected:
   void SetPolicy(base::Value value) {
@@ -128,6 +127,8 @@ TEST_F(PrintingRestrictionsPolicyHandlerTest, NoHeightInCustomSize) {
     })";
   CheckInvalidPolicy(kNoHeightInCustomSize);
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 class PrintPdfAsImageRestrictionsPolicyHandlerTest : public testing::Test {
  protected:

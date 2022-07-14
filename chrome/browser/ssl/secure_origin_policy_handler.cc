@@ -20,11 +20,8 @@ SecureOriginPolicyHandler::SecureOriginPolicyHandler(const char* policy_name,
     : SchemaValidatingPolicyHandler(policy_name,
                                     schema.GetKnownProperty(policy_name),
                                     SCHEMA_ALLOW_UNKNOWN) {
-  DCHECK(
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-      policy_name == key::kUnsafelyTreatInsecureOriginAsSecure ||
-#endif
-      policy_name == key::kOverrideSecurityRestrictionsOnInsecureOrigin);
+  DCHECK(policy_name == key::kUnsafelyTreatInsecureOriginAsSecure ||
+         policy_name == key::kOverrideSecurityRestrictionsOnInsecureOrigin);
 }
 
 SecureOriginPolicyHandler::~SecureOriginPolicyHandler() = default;
