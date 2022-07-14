@@ -28,9 +28,9 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.metrics.test.ShadowRecordUserAction;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
@@ -53,8 +53,7 @@ import org.chromium.url.ShadowGURL;
  * Test for {@link HomepageSettings} to check the UI components and the interactions.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowGURL.class, ShadowUrlFormatter.class, ShadowLooper.class,
-                ShadowRecordUserAction.class})
+@Config(shadows = {ShadowGURL.class, ShadowUrlFormatter.class, ShadowLooper.class})
 public class HomepageSettingsUnitTest {
     private static final String ASSERT_MESSAGE_SWITCH_ENABLE = "Switch should be enabled.";
     private static final String ASSERT_MESSAGE_SWITCH_DISABLE = "Switch should be disabled.";
@@ -107,6 +106,8 @@ public class HomepageSettingsUnitTest {
     private ActivityScenario<TestActivity> mActivityScenario;
     private TestActivity mActivity;
 
+    private UserActionTester mActionTester;
+
     private ChromeSwitchPreference mSwitch;
     private RadioButtonGroupHomepagePreference mRadioGroupPreference;
 
@@ -124,14 +125,15 @@ public class HomepageSettingsUnitTest {
             // Needed for HomepageSettings to inflate correctly.
             mActivity.setTheme(R.style.ColorOverlay_ChromiumAndroid);
         });
+        mActionTester = new UserActionTester();
     }
 
     @After
     public void tearDown() {
-        ShadowRecordUserAction.reset();
         mActivityScenario.close();
         PartnerBrowserCustomizations.setInstanceForTesting(null);
         HomepagePolicyManager.setInstanceForTests(null);
+        mActionTester.tearDown();
     }
 
     private void launchHomepageSettings() {
@@ -554,7 +556,6 @@ public class HomepageSettingsUnitTest {
     private void assertUserActionRecorded(boolean recorded) {
         Assert.assertEquals(
                 "User action <Settings.Homepage.LocationChanged_V2> record differently.", recorded,
-                ShadowRecordUserAction.getSamples().contains(
-                        "Settings.Homepage.LocationChanged_V2"));
+                mActionTester.getActions().contains("Settings.Homepage.LocationChanged_V2"));
     }
 }

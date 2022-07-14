@@ -16,16 +16,20 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -359,6 +363,16 @@ public final class CachingUmaRecorderTest {
         public int getHistogramTotalCountForTesting(String name) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public void addUserActionCallbackForTesting(Callback<String> callback) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void removeUserActionCallbackForTesting(Callback<String> callback) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Test
@@ -458,6 +472,16 @@ public final class CachingUmaRecorderTest {
         public int getHistogramTotalCountForTesting(String name) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public void addUserActionCallbackForTesting(Callback<String> callback) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void removeUserActionCallbackForTesting(Callback<String> callback) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Test
@@ -510,5 +534,59 @@ public final class CachingUmaRecorderTest {
         });
         thread.start();
         return thread;
+    }
+
+    @Test
+    public void testUserActionCallbacksTriggeredWithoutDelegate() {
+        CachingUmaRecorder cachingRecorder = new CachingUmaRecorder();
+
+        AtomicInteger callbackCount = new AtomicInteger();
+        Callback<String> testCallback1 = (result) -> callbackCount.incrementAndGet();
+        cachingRecorder.addUserActionCallbackForTesting(testCallback1);
+
+        // Ensure that the callback is notified if attached to the caching recorder (will not
+        // be notified once a delegate is responsible).
+        Assert.assertEquals(0, callbackCount.get());
+        cachingRecorder.recordUserAction("TEST", 0);
+        Assert.assertEquals(1, callbackCount.get());
+        cachingRecorder.recordUserAction("TEST", 0);
+        Assert.assertEquals(2, callbackCount.get());
+
+        // Remove the callback and ensure it is no longer called.
+        cachingRecorder.removeUserActionCallbackForTesting(testCallback1);
+        Assert.assertEquals(2, callbackCount.get());
+        cachingRecorder.recordUserAction("TEST", 0);
+        Assert.assertEquals(2, callbackCount.get());
+    }
+
+    @Test
+    public void testUserActionCallbacksSwappedBetweenDelegates() {
+        CachingUmaRecorder cachingRecorder = new CachingUmaRecorder();
+
+        Callback<String> testCallback1 = (result) -> {};
+        Callback<String> testCallback2 = (result) -> {};
+        cachingRecorder.addUserActionCallbackForTesting(testCallback1);
+        cachingRecorder.addUserActionCallbackForTesting(testCallback2);
+
+        // Validate that previously added callbacks are passed to the new delegate.
+        UmaRecorder delegate1 = Mockito.mock(UmaRecorder.class);
+        cachingRecorder.setDelegate(delegate1);
+        verify(delegate1).addUserActionCallbackForTesting(testCallback1);
+        verify(delegate1).addUserActionCallbackForTesting(testCallback2);
+
+        // Validate that previously added callbacks are removed from the previous delegate, and
+        // passed to the new delegate.
+        UmaRecorder delegate2 = Mockito.mock(UmaRecorder.class);
+        cachingRecorder.setDelegate(delegate2);
+        verify(delegate1).removeUserActionCallbackForTesting(testCallback1);
+        verify(delegate1).removeUserActionCallbackForTesting(testCallback2);
+        verify(delegate2).addUserActionCallbackForTesting(testCallback1);
+        verify(delegate2).addUserActionCallbackForTesting(testCallback2);
+
+        // Ensure a callback added later is also added correctly.
+        Callback<String> testCallback3 = (result) -> {};
+        cachingRecorder.addUserActionCallbackForTesting(testCallback3);
+        verifyZeroInteractions(delegate1);
+        verify(delegate2).addUserActionCallbackForTesting(testCallback3);
     }
 }

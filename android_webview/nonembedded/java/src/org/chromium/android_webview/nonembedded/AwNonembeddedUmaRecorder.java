@@ -20,6 +20,7 @@ import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord.Metadata;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord.RecordType;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.UmaRecorder;
@@ -160,6 +161,16 @@ public class AwNonembeddedUmaRecorder implements UmaRecorder {
 
     @Override
     public int getHistogramTotalCountForTesting(String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addUserActionCallbackForTesting(Callback<String> callback) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeUserActionCallbackForTesting(Callback<String> callback) {
         throw new UnsupportedOperationException();
     }
 

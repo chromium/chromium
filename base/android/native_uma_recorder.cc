@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/base_jni_headers/NativeUmaRecorder_jni.h"
@@ -157,6 +158,16 @@ class HistogramCache {
 
 LazyInstance<HistogramCache>::Leaky g_histograms;
 
+struct ActionCallbackWrapper {
+  base::ActionCallback action_callback;
+};
+
+static void OnActionRecorded(const JavaRef<jobject>& callback,
+                             const std::string& action,
+                             TimeTicks action_time) {
+  RunStringCallbackAndroid(callback, action);
+}
+
 }  // namespace
 
 jlong JNI_NativeUmaRecorder_RecordBooleanHistogram(
@@ -268,6 +279,26 @@ jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
       actual_count -= snapshot_data->second->TotalCount();
   }
   return actual_count;
+}
+
+static jlong JNI_NativeUmaRecorder_AddActionCallbackForTesting(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& callback) {
+  // Create a wrapper for the ActionCallback, so it can life on the heap until
+  // RemoveActionCallbackForTesting() is called.
+  auto* wrapper = new ActionCallbackWrapper{base::BindRepeating(
+      &OnActionRecorded, ScopedJavaGlobalRef<jobject>(env, callback))};
+  base::AddActionCallback(wrapper->action_callback);
+  return reinterpret_cast<intptr_t>(wrapper);
+}
+
+static void JNI_NativeUmaRecorder_RemoveActionCallbackForTesting(
+    JNIEnv* env,
+    jlong callback_id) {
+  DCHECK(callback_id);
+  auto* wrapper = reinterpret_cast<ActionCallbackWrapper*>(callback_id);
+  base::RemoveActionCallback(wrapper->action_callback);
+  delete wrapper;
 }
 
 }  // namespace android

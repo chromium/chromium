@@ -6,8 +6,9 @@ package org.chromium.base.test.util;
 
 import androidx.annotation.GuardedBy;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.metrics.UmaRecorderHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * A util class that records UserActions.
  */
-public class UserActionTester implements RecordUserAction.UserActionCallback {
+public class UserActionTester implements Callback<String> {
     @GuardedBy("mActions")
     private List<String> mActions;
 
@@ -24,7 +25,7 @@ public class UserActionTester implements RecordUserAction.UserActionCallback {
         ThreadUtils.runOnUiThreadBlocking(new Runnable() {
             @Override
             public void run() {
-                RecordUserAction.setActionCallbackForTesting(UserActionTester.this);
+                UmaRecorderHolder.get().addUserActionCallbackForTesting(UserActionTester.this);
             }
         });
     }
@@ -33,13 +34,13 @@ public class UserActionTester implements RecordUserAction.UserActionCallback {
         ThreadUtils.runOnUiThreadBlocking(new Runnable() {
             @Override
             public void run() {
-                RecordUserAction.removeActionCallbackForTesting();
+                UmaRecorderHolder.get().removeUserActionCallbackForTesting(UserActionTester.this);
             }
         });
     }
 
     @Override
-    public void onActionRecorded(String action) {
+    public void onResult(String action) {
         synchronized (mActions) {
             mActions.add(action);
         }

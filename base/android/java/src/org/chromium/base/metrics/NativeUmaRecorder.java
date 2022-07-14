@@ -4,6 +4,7 @@
 
 package org.chromium.base.metrics;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
@@ -30,6 +31,7 @@ import java.util.Map;
      */
     private final Map<String, Long> mNativeHints =
             Collections.synchronizedMap(new HashMap<String, Long>());
+    private Map<Callback<String>, Long> mUserActionTestingCallbackNativePtrs;
 
     @Override
     public void recordBooleanHistogram(String name, boolean sample) {
@@ -79,6 +81,31 @@ import java.util.Map;
         return NativeUmaRecorderJni.get().getHistogramTotalCountForTesting(name, 0);
     }
 
+    @Override
+    public void addUserActionCallbackForTesting(Callback<String> callback) {
+        long ptr = NativeUmaRecorderJni.get().addActionCallbackForTesting(callback);
+        if (mUserActionTestingCallbackNativePtrs == null) {
+            mUserActionTestingCallbackNativePtrs = Collections.synchronizedMap(new HashMap<>());
+        }
+        mUserActionTestingCallbackNativePtrs.put(callback, ptr);
+    }
+
+    @Override
+    public void removeUserActionCallbackForTesting(Callback<String> callback) {
+        if (mUserActionTestingCallbackNativePtrs == null) {
+            assert false
+                : "Attempting to remove a user action callback without previously registering any.";
+            return;
+        }
+        Long ptr = mUserActionTestingCallbackNativePtrs.remove(callback);
+        if (ptr == null) {
+            assert false : "Attempting to remove a user action callback that was never previously"
+                           + " registered.";
+            return;
+        }
+        NativeUmaRecorderJni.get().removeActionCallbackForTesting(ptr);
+    }
+
     private long getNativeHint(String name) {
         Long hint = mNativeHints.get(name);
         // Note: If key is null, we don't have it cached. In that case, pass 0
@@ -117,5 +144,8 @@ import java.util.Map;
 
         int getHistogramValueCountForTesting(String name, int sample, long snapshotPtr);
         int getHistogramTotalCountForTesting(String name, long snapshotPtr);
+
+        long addActionCallbackForTesting(Callback<String> callback);
+        void removeActionCallbackForTesting(long callbackId);
     }
 }

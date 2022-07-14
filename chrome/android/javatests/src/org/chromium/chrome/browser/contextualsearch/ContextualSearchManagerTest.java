@@ -1060,7 +1060,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         }
 
         @Override
-        public void onActionRecorded(String action) {
+        public void onResult(String action) {
             for (String entry : mUserActionPrefixes) {
                 if (action.startsWith(entry)) {
                     mUserActionCounts.put(entry, mUserActionCounts.get(entry) + 1);

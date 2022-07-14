@@ -4,6 +4,8 @@
 
 package org.chromium.base.metrics;
 
+import org.chromium.base.Callback;
+
 /** An empty implementation of {@link UmaRecorder}. */
 /* package */ class NoopUmaRecorder implements UmaRecorder {
     @Override
@@ -31,4 +33,10 @@ package org.chromium.base.metrics;
     public int getHistogramTotalCountForTesting(String name) {
         return 0;
     }
+
+    @Override
+    public void addUserActionCallbackForTesting(Callback<String> callback) {}
+
+    @Override
+    public void removeUserActionCallbackForTesting(Callback<String> callback) {}
 }
