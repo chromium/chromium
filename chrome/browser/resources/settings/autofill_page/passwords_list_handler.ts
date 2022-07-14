@@ -33,19 +33,13 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordListItemElement, PasswordMoreActionsClickedEvent} from './password_list_item.js';
+import {PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME, PASSWORD_VIEW_PAGE_CLICKED_EVENT_NAME, PasswordListItemElement, PasswordMoreActionsClickedEvent, PasswordViewPageClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 import {PasswordRemovalUrlParams} from './password_view.js';
 import {getTemplate} from './passwords_list_handler.html.js';
-
-declare global {
-  interface HTMLElementEventMap {
-    'password-more-actions-clicked': PasswordMoreActionsClickedEvent;
-  }
-}
 
 export interface PasswordsListHandlerElement {
   $: {
@@ -59,6 +53,8 @@ export interface PasswordsListHandlerElement {
     removalToast: CrToastElement,
   };
 }
+
+type FocusConfig = Map<string, string|(() => void)>;
 
 const PasswordsListHandlerElementBase =
     RouteObserverMixin(PasswordRemovalMixin(PasswordRequestorMixin(
@@ -149,6 +145,18 @@ export class PasswordsListHandlerElement extends
         type: String,
         value: '',
       },
+
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
+      },
+
+      enablePasswordViewPage_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordViewPage');
+        },
+      },
     };
   }
 
@@ -166,12 +174,19 @@ export class PasswordsListHandlerElement extends
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
+  focusConfig: FocusConfig;
+  private enablePasswordViewPage_: boolean;
+
   override ready() {
     super.ready();
 
     this.addEventListener(
-        'password-more-actions-clicked',
+        PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME,
         this.passwordMoreActionsClickedHandler_);
+
+    this.addEventListener(
+        PASSWORD_VIEW_PAGE_CLICKED_EVENT_NAME,
+        this.onPasswordViewPageClickedEvent);
   }
 
   override connectedCallback() {
@@ -235,6 +250,10 @@ export class PasswordsListHandlerElement extends
     super.onPasswordRemoveDialogPasswordsRemoved(event);
     this.displayRemovalNotification_(
         event.detail.removedFromAccount, event.detail.removedFromDevice);
+  }
+
+  private onPasswordViewPageClickedEvent(event: PasswordViewPageClickedEvent) {
+    this.activePassword_ = event.detail;
   }
 
   private isPasswordEditable_() {
@@ -388,6 +407,20 @@ export class PasswordsListHandlerElement extends
         this.activePassword_.entry.username === this.firstSignedInAccountEmail_;
     // It's not useful to move a password for an account into that same account.
     return this.allowMoveToAccountOption && !isFirstSignedInAccountPassword;
+  }
+
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
+    if (!this.enablePasswordViewPage_) {
+      return;
+    }
+    assert(!oldConfig);
+    this.focusConfig.set(routes.PASSWORD_VIEW.path, () => {
+      if (!this.activePassword_) {
+        return;
+      }
+      focusWithoutInk(this.activePassword_);
+      this.activePassword_ = null;
+    });
   }
 }
 

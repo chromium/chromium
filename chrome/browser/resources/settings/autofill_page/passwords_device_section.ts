@@ -200,6 +200,8 @@ export class PasswordsDeviceSectionElement extends
         },
         reflectToAttribute: true,
       },
+
+      focusConfig: Object,
     };
   }
 
@@ -226,6 +228,7 @@ export class PasswordsDeviceSectionElement extends
   private currentRoute_: Route|null;
   private devicePasswordsLabel_: string;
   private isPasswordViewPageEnabled_: boolean;
+  focusConfig: Map<string, string|(() => void)>;
   private accountStorageOptInStateListener_:
       AccountStorageOptInStateChangedListener|null = null;
 
