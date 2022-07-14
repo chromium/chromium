@@ -56198,6 +56198,7 @@ from previous Chrome versions.
   <int value="-1603026968"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:disabled"/>
   <int value="-1601374850" label="DialMediaRouteProvider:disabled"/>
+  <int value="-1600187674" label="ClipboardUnsanitizedContent:enabled"/>
   <int value="-1599538279" label="enable-md-policy-page"/>
   <int value="-1598785167" label="RequestDesktopSiteAdditions:disabled"/>
   <int value="-1597088741" label="RequestDesktopSiteAdditions:enabled"/>
@@ -56788,6 +56789,7 @@ from previous Chrome versions.
   <int value="-1250222445" label="WebMidi:enabled"/>
   <int value="-1248478422" label="enable-zip-archiver-packer"/>
   <int value="-1246840031" label="OptInImeMenu:disabled"/>
+  <int value="-1246477455" label="ClipboardUnsanitizedContent:disabled"/>
   <int value="-1245617305" label="NewProfilePicker:enabled"/>
   <int value="-1244772303" label="NtpRealboxMatchOmniboxTheme:enabled"/>
   <int value="-1243694853" label="DeferAllScript:disabled"/>

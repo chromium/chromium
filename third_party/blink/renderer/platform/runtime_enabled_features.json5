@@ -388,6 +388,10 @@
       status: "experimental",
     },
     {
+      name: "ClipboardUnsanitizedContent",
+      status: "experimental",
+    },
+    {
       name: "CloseWatcher",
       status: "experimental",
     },

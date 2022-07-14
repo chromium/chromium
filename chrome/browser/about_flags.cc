@@ -8883,6 +8883,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSeamlessRefreshRateSwitching)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"clipboard-unsanitized-content",
+     flag_descriptions::kClipboardUnsanitizedContentName,
+     flag_descriptions::kClipboardUnsanitizedContentDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kClipboardUnsanitizedContent)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -102,6 +102,12 @@ const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =
     "Broker file operations on disk cache running in the Network Service. This "
     "is no-op when the Network Service is running in the browser process.";
 
+const char kClipboardUnsanitizedContentName[] =
+    "Clipboard unsanitized read and write";
+const char kClipboardUnsanitizedContentDescription[] =
+    "Allows reading/writing unsanitized content from/to the clipboard. "
+    "Currently, it is only applicable to HTML format. See crbug.com/1268679.";
+
 const char kCSSContainerQueriesName[] = "Enable CSS Container Queries";
 const char kCSSContainerQueriesDescription[] =
     "Enables support for @container, inline-size and block-size values for the "

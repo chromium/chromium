@@ -801,6 +801,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kTimedHTMLParserBudget;
 // CSSOverflowForReplacedElements, if necessary, due to compat issues.
 BLINK_COMMON_EXPORT extern const base::Feature kCSSOverflowForReplacedElements;
 
+// Allows reading/writing unsanitized content from/to the clipboard. Currently,
+// it is only applicable to HTML format. See crbug.com/1268679.
+BLINK_COMMON_EXPORT extern const base::Feature kClipboardUnsanitizedContent;
+
 }  // namespace features
 }  // namespace blink
 

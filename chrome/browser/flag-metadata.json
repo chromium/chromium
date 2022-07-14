@@ -909,6 +909,16 @@
     "expiry_milestone": 110
   },
   {
+    "name": "clipboard-unsanitized-content",
+    "owners": [
+      "ansollan@microsoft.com",
+      "asully@chromium.org",
+      "snianu@microsoft.com",
+      "chrome-owp-storage@google.com"
+    ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "closed-tab-cache",
     "owners": [
       "altimin@chromium.org",
