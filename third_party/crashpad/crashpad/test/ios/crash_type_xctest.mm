@@ -286,7 +286,13 @@
     return;
   }
   [rootObject_ crashWithDyldErrorString];
+#if defined(ARCH_CPU_X86_64)
   [self verifyCrashReportException:EXC_BAD_INSTRUCTION];
+#elif defined(ARCH_CPU_ARM64)
+  [self verifyCrashReportException:EXC_BREAKPOINT];
+#else
+#error Port to your CPU architecture
+#endif
   NSArray* vector = [rootObject_ getAnnotations][@"vector"];
   // This message is set by dyld-353.2.1/src/ImageLoaderMachO.cpp
   // ImageLoaderMachO::doInitialization().
