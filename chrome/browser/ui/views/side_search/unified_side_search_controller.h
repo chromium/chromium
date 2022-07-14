@@ -14,8 +14,10 @@
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
+#include "chrome/browser/ui/views/side_search/default_search_icon_source.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view.h"
 
@@ -56,13 +58,16 @@ class UnifiedSideSearchController
   void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
 
-  // Create a WebView to host the side search WebContents.
-  std::unique_ptr<views::View> GetSideSearchView();
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
  private:
   BrowserView* GetBrowserView() const;
+
+  // Create a WebView to host the side search WebContents.
+  std::unique_ptr<views::View> GetSideSearchView();
+
+  // Creates a ImageModel for the current DSE's favicon.
+  ui::ImageModel GetSideSearchIcon();
 
   // Clears the side contents for the currently active tab in this browser
   // window and the view in the side search registry.
