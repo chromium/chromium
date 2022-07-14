@@ -114,24 +114,27 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
   SimulateUserLogin(account_id_1);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
             controller_->GetBacklightColor(account_id_1));
-  // Expect the Wallpaper color to be set after user signs in.
+  // Expect the Wallpaper color to be not set.
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 1);
-  histogram_tester().ExpectTotalCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", 1);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 0);
+  EXPECT_EQ(SK_ColorTRANSPARENT, displayed_color());
+
   controller_->SetBacklightColor(
-      personalization_app::mojom::BacklightColor::kRainbow, account_id_1);
-  EXPECT_EQ(personalization_app::mojom::BacklightColor::kRainbow,
+      personalization_app::mojom::BacklightColor::kBlue, account_id_1);
+  ClearLogin();
+
+  // Simulate re-login for user1 and expect blue color to be set.
+  SimulateUserLogin(account_id_1);
+  EXPECT_EQ(ConvertBacklightColorToSkColor(
+                personalization_app::mojom::BacklightColor::kBlue),
+            displayed_color());
+  EXPECT_EQ(personalization_app::mojom::BacklightColor::kBlue,
             controller_->GetBacklightColor(account_id_1));
 
   // Simulate login for user2.
   SimulateUserLogin(account_id_2);
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kWallpaper,
             controller_->GetBacklightColor(account_id_2));
-
-  SimulateUserLogin(account_id_1);
-  EXPECT_EQ(personalization_app::mojom::BacklightColor::kRainbow,
-            controller_->GetBacklightColor(account_id_1));
 }
 
 TEST_F(KeyboardBacklightColorControllerTest,
