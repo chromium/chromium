@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.transition.Transition;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -55,6 +56,8 @@ public class OptionalButtonCoordinatorTest {
     private OptionalButtonView mMockOptionalButtonView;
     @Mock
     private UserEducationHelper mMockUserEducationHelper;
+    @Mock
+    private Callback<Transition> mMockBeginDelayedTransition;
 
     @Captor
     ArgumentCaptor<Callback<Integer>> mCallbackArgumentCaptor;
@@ -217,8 +220,7 @@ public class OptionalButtonCoordinatorTest {
 
         // Button should be disabled.
         verify(mockButtonView).setEnabled(false);
-        // Animation should only happen at the first call.
-        verify(mMockOptionalButtonView, times(1)).updateButtonWithAnimation(buttonData);
+        verify(mMockOptionalButtonView, times(2)).updateButtonWithAnimation(buttonData);
     }
 
     @Test

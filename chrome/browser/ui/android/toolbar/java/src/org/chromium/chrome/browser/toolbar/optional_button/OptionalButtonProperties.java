@@ -16,8 +16,12 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 class OptionalButtonProperties {
+    // We skip equality checks because some controllers update their button by changing the
+    // ButtonSpec value on the same ButtonData instance. In addition we don't split this into
+    // BUTTON_SPEC and CAN_SHOW because it would be hard to avoid two animations when both the spec
+    // and visibility change at the same time.
     public static final WritableObjectPropertyKey<ButtonData> BUTTON_DATA =
-            new WritableObjectPropertyKey<>();
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<Callback<Integer>> TRANSITION_STARTED_CALLBACK =
             new WritableObjectPropertyKey<>();

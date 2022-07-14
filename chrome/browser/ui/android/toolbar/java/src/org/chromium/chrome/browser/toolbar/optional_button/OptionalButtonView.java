@@ -36,6 +36,7 @@ import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 
@@ -66,10 +67,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private String mActionChipLabelString;
     private int mBackgroundColorFilter;
     private Runnable mOnBeforeHideTransitionCallback;
+    private Callback<Transition> mFakeBeginTransitionForTesting;
     private Handler mHandlerForTesting;
 
     private @State int mState;
 
+    private @AdaptiveToolbarButtonVariant int mCurrentButtonVariant =
+            AdaptiveToolbarButtonVariant.NONE;
+    private boolean mCanCurrentButtonShow;
     private @ButtonType int mCurrentButtonType;
     private @ButtonType int mNextButtonType;
 
@@ -147,6 +152,13 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
      *         attributes. If null then this view starts a hide transition.
      */
     void updateButtonWithAnimation(@Nullable ButtonData buttonData) {
+        // If we receive the same button with the same visibility then there's no need to update.
+        if (buttonData != null
+                && mCurrentButtonVariant == buttonData.getButtonSpec().getButtonVariant()
+                && mCanCurrentButtonShow == buttonData.canShow()) {
+            return;
+        }
+
         if (mTransitionRoot == null || mIsAnimationAllowedPredicate == null) {
             throw new IllegalStateException(
                     "Both transitionRoot and animationAllowedPredicate must be set before starting "
@@ -174,11 +186,15 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         if (buttonData == null || !buttonData.canShow()) {
+            mCurrentButtonVariant = AdaptiveToolbarButtonVariant.NONE;
+            mCanCurrentButtonShow = false;
             hide(canAnimate);
             return;
         }
 
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
+        mCurrentButtonVariant = buttonSpec.getButtonVariant();
+        mCanCurrentButtonShow = buttonData.canShow();
 
         mIconDrawable = buttonSpec.getDrawable();
         mNextButtonType = buttonSpec.isDynamicAction() ? ButtonType.DYNAMIC : ButtonType.STATIC;
@@ -195,9 +211,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mContentDescription =
                 getContext().getResources().getString(buttonSpec.getContentDescriptionResId());
 
-        if (mIconDrawable == null) {
-            hide(canAnimate);
-        } else if (mState == State.HIDDEN && mActionChipLabelString == null) {
+        if (mState == State.HIDDEN && mActionChipLabelString == null) {
             showIcon(canAnimate);
         } else if (canAnimate && mActionChipLabelString != null) {
             animateActionChipExpansion();
@@ -505,7 +519,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // Begin a transition, all layout changes after this call will be animated. The animation
         // starts at the next frame.
-        TransitionManager.beginDelayedTransition(mTransitionRoot, createSwapIconTransition());
+        beginDelayedTransition(createSwapIconTransition());
 
         // Default transition.
         if (!isRevertingToStatic) {
@@ -553,7 +567,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // Begin a transition, all layout changes after this call will be animated. The animation
         // starts at the next frame.
-        TransitionManager.beginDelayedTransition(mTransitionRoot, createActionChipTransition());
+        beginDelayedTransition(createActionChipTransition());
 
         mButton.setVisibility(VISIBLE);
         mAnimationImage.setVisibility(GONE);
@@ -574,7 +588,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private void animateActionChipCollapse() {
         // Begin a transition, all layout changes after this call will be animated. The animation
         // starts at the next frame.
-        TransitionManager.beginDelayedTransition(mTransitionRoot, createActionChipTransition());
+        beginDelayedTransition(createActionChipTransition());
 
         mActionChipLabel.setVisibility(GONE);
         setWidth(mCollapsedStateWidthPx);
@@ -589,7 +603,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
         // Begin a transition, all layout changes after this call will be animated. The animation
         // starts at the next frame.
-        TransitionManager.beginDelayedTransition(mTransitionRoot, transition);
+        beginDelayedTransition(transition);
 
         mButton.setVisibility(GONE);
         mBackground.setVisibility(GONE);
@@ -620,7 +634,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // Begin a transition, all layout changes after this call will be animated. The animation
         // starts at the next frame.
-        TransitionManager.beginDelayedTransition(mTransitionRoot, transition);
+        beginDelayedTransition(transition);
 
         setWidth(mCollapsedStateWidthPx);
         mButton.setVisibility(VISIBLE);
@@ -628,5 +642,20 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mBackground.setVisibility(mNextButtonType == ButtonType.DYNAMIC ? VISIBLE : GONE);
 
         mState = State.RUNNING_SHOW_TRANSITION;
+    }
+
+    @VisibleForTesting
+    public void setFakeBeginDelayedTransitionForTesting(
+            Callback<Transition> fakeBeginDelayedTransition) {
+        mFakeBeginTransitionForTesting = fakeBeginDelayedTransition;
+    }
+
+    private void beginDelayedTransition(Transition transition) {
+        if (mFakeBeginTransitionForTesting != null) {
+            mFakeBeginTransitionForTesting.onResult(transition);
+            return;
+        }
+
+        TransitionManager.beginDelayedTransition(mTransitionRoot, transition);
     }
 }

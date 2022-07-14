@@ -151,7 +151,11 @@ public class OptionalButtonCoordinator {
     }
 
     /**
-     * Updates the color filter of the background to match the current theme/website color.
+     * Updates the color filter of the background to match the current address bar background color.
+     * This color is only used when showing a contextual action button (when {@link
+     * #updateButton(ButtonData)} is called with a {@link
+     * org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec} where {@code isDynamicAction()} is
+     * true).
      * @param backgroundColor
      */
     public void setBackgroundColorFilter(int backgroundColor) {

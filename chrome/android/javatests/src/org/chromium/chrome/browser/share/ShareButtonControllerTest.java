@@ -119,7 +119,7 @@ public final class ShareButtonControllerTest {
             String shareString =
                     mActivityTestRule.getActivity().getResources().getString(R.string.share);
 
-            assertTrue(shareString.equals(experimentalButton.getContentDescription()));
+            assertEquals(shareString, experimentalButton.getContentDescription());
         }
     }
 
