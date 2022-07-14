@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
@@ -92,6 +93,8 @@ bool RegisterDownloadsMountPoint(Profile* profile, const base::FilePath& path) {
 
 // Registers a mount point for Android files to ExternalMountPoints.
 bool RegisterAndroidFilesMountPoint() {
+  if (base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
+    return false;
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   return mount_points->RegisterFileSystem(
@@ -1298,9 +1301,10 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
                  Volume::CreateForMediaView(arc::kAudioRootDocumentId));
     DoMountEvent(chromeos::MOUNT_ERROR_NONE,
                  Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
-    DoMountEvent(
-        chromeos::MOUNT_ERROR_NONE,
-        Volume::CreateForAndroidFiles(base::FilePath(util::kAndroidFilesPath)));
+    if (!base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
+      DoMountEvent(chromeos::MOUNT_ERROR_NONE,
+                   Volume::CreateForAndroidFiles(
+                       base::FilePath(util::kAndroidFilesPath)));
   } else {
     DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
                    *Volume::CreateForMediaView(arc::kImagesRootDocumentId));
@@ -1310,9 +1314,10 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
                    *Volume::CreateForMediaView(arc::kAudioRootDocumentId));
     DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
                    *Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
-    DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
-                   *Volume::CreateForAndroidFiles(
-                       base::FilePath(util::kAndroidFilesPath)));
+    if (!base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
+      DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
+                     *Volume::CreateForAndroidFiles(
+                         base::FilePath(util::kAndroidFilesPath)));
   }
 
   documents_provider_root_manager_->SetEnabled(enabled);
