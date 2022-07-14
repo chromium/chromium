@@ -28,9 +28,9 @@ enum class FedCmRequestIdTokenStatus {
   kManifestHttpNotFound,
   kManifestNoResponse,
   kManifestInvalidResponse,
-  kClientMetadataHttpNotFound,
-  kClientMetadataNoResponse,
-  kClientMetadataInvalidResponse,
+  kClientMetadataHttpNotFound,     // obsolete
+  kClientMetadataNoResponse,       // obsolete
+  kClientMetadataInvalidResponse,  // obsolete
   kAccountsHttpNotFound,
   kAccountsNoResponse,
   kAccountsInvalidResponse,
@@ -38,7 +38,7 @@ enum class FedCmRequestIdTokenStatus {
   kIdTokenNoResponse,
   kIdTokenInvalidResponse,
   kIdTokenInvalidRequest,
-  kClientMetadataMissingPrivacyPolicyUrl,
+  kClientMetadataMissingPrivacyPolicyUrl,  // obsolete
   kThirdPartyCookiesBlocked,
   kDisabledInSettings,
   kDisabledInFlags,
@@ -48,7 +48,7 @@ enum class FedCmRequestIdTokenStatus {
   kManifestNotInManifestList,
   kManifestListTooBig,
   kDisabledEmbargo,
-  kUserInterfaceTimedOut,
+  kUserInterfaceTimedOut,  // obsolete
 
   kMaxValue = kUserInterfaceTimedOut
 };

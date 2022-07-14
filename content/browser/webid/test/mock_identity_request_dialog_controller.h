@@ -32,6 +32,7 @@ class MockIdentityRequestDialogController
                     const ClientIdData&,
                     IdentityRequestAccount::SignInMode,
                     AccountSelectionCallback));
+  MOCK_METHOD0(DestructorCalled, void());
 };
 
 }  // namespace content

@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -42,13 +43,7 @@ namespace content {
 
 namespace {
 static constexpr base::TimeDelta kDefaultTokenRequestDelay = base::Seconds(3);
-// TODO(yigu): We need to make sure the delay is greater than the time required
-// for a successful flow based on `Blink.FedCm.Timing.TurnaroundTime`.
-// https://crbug.com/1298316.
-// TODO(crbug.com/1329633): We temporarily use 120s to make the UI more
-// accessible. We should try not to dismiss it automatically if a user is
-// interacting with it using keyboard or accessibility tools.
-static constexpr base::TimeDelta kRequestRejectionDelay = base::Seconds(120);
+static constexpr base::TimeDelta kMaxRejectionTime = base::Seconds(60);
 
 // Maximum number of provider URLs in the manifest list.
 // TODO(cbiesinger): Determine what the right number is.
@@ -222,16 +217,18 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
   }
 }
 
+// TODO(crbug.com/1344150): Use normal distribution after sufficient data is
+// collected.
+base::TimeDelta GetRandomRejectionTime() {
+  return kMaxRejectionTime * base::RandDouble();
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : DocumentService(host, std::move(receiver)),
-      delay_timer_(FROM_HERE,
-                   kRequestRejectionDelay,
-                   this,
-                   &FederatedAuthRequestImpl::OnRejectRequest),
       token_request_delay_(kDefaultTokenRequestDelay) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
@@ -293,8 +290,6 @@ void FederatedAuthRequestImpl::RequestToken(const GURL& provider,
   nonce_ = nonce;
   prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
   start_time_ = base::TimeTicks::Now();
-  if (!ShouldCompleteRequestImmediately())
-    delay_timer_.Reset();
 
   if (!GetApiPermissionContext()) {
     CompleteRequest(FederatedAuthRequestResult::kError, "",
@@ -771,8 +766,11 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
       GetApiPermissionContext()->RecordDismissAndEmbargo(origin());
     }
 
+    // Reject the promise immediately if the UI is dismissed without selecting
+    // an account. Meanwhile, we fuzz the rejection time for other failures to
+    // make it indistinguishable.
     CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_call_callback=*/false);
+                    /*should_call_callback=*/true);
     return;
   }
 
@@ -962,6 +960,12 @@ void FederatedAuthRequestImpl::CompleteRequest(
     RequestTokenStatus status =
         FederatedAuthRequestResultToRequestTokenStatus(result);
     std::move(auth_request_callback_).Run(status, id_token);
+  } else {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FederatedAuthRequestImpl::OnRejectRequest,
+                       weak_ptr_factory_.GetWeakPtr()),
+        GetRandomRejectionTime());
   }
 }
 
@@ -1108,18 +1112,7 @@ FederatedAuthRequestImpl::GetSharingPermissionContext() {
 void FederatedAuthRequestImpl::OnRejectRequest() {
   if (auth_request_callback_) {
     DCHECK(!logout_callback_);
-    // If we have completed the request, e.g. when the token is returned or the
-    // API is aborted, `auth_request_callback_` would be null so we won't double
-    // count. If the request was failed but we have not yet rejected the
-    // promise, e.g. when the user has declined the permission or the API is
-    // disabled etc., we have already reported the errors to console. i.e.
-    // `errors_logged_to_console_` would be true so we won't double count
-    // either. We record `kUserInterfaceTimedOut` only when the UI is displayed
-    // and then time out without user interaction.
-    if (!errors_logged_to_console_) {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kUserInterfaceTimedOut);
-    }
+    DCHECK(errors_logged_to_console_);
     CompleteRequest(FederatedAuthRequestResult::kError, "",
                     /*should_call_callback=*/true);
   }

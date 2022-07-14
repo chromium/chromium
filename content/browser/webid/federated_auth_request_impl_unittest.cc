@@ -1283,8 +1283,9 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectRequestTokenStatusUKM(TokenStatus::kSuccess);
 }
 
-// Test that request fails if user does not select an account.
-TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
+// Test that request fails if UI is dismissed without an account being selected.
+TEST_F(BasicFederatedAuthRequestImplTest,
+       MetricsForUIDismissedWithoutSelectingAccount) {
   base::HistogramTester histogram_tester_;
 
   AccountList displayed_accounts;
@@ -1309,6 +1310,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
 
   EXPECT_EQ(kConfigurationValid.accounts.size(), 1u);
   MockConfiguration configuration = kConfigurationValid;
+  configuration.wait_for_callback = false;
   configuration.customized_dialog = true;
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
@@ -1337,6 +1339,54 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
   ExpectRequestTokenStatusUKM(TokenStatus::kNotSelectAccount);
+}
+
+// Test that request is not completed if user ignores the UI.
+TEST_F(BasicFederatedAuthRequestImplTest, UIIsIgnored) {
+  base::HistogramTester histogram_tester_;
+
+  // The UI will not be destroyed during the test.
+  EXPECT_CALL(*mock_dialog_controller(), DestructorCalled()).Times(0);
+
+  AccountList displayed_accounts;
+  EXPECT_CALL(*mock_dialog_controller(),
+              ShowAccountsDialog(_, _, _, _, _, _, _))
+      .WillOnce(Invoke(
+          [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
+              base::span<const content::IdentityRequestAccount> accounts,
+              const IdentityProviderMetadata& idp_metadata,
+              const ClientIdData& client_id_data, SignInMode sign_in_mode,
+              IdentityRequestDialogController::AccountSelectionCallback
+                  on_selected) {
+            displayed_accounts = AccountList(accounts.begin(), accounts.end());
+            // Pretends that the user ignored the UI by not selecting an
+            // account.
+          }));
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.wait_for_callback = false;
+  configuration.customized_dialog = true;
+  RequestExpectations expectations = {
+      /*return_status=*/absl::nullopt,
+      /*devtools_issue_status=*/absl::nullopt,
+      FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  task_environment()->FastForwardBy(base::Minutes(10));
+
+  EXPECT_FALSE(auth_helper_.was_callback_called());
+  ASSERT_FALSE(displayed_accounts.empty());
+
+  // Only the time to show the account dialog gets recorded.
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 0);
+
+  // The UI will be destroyed after the test is done.
+  EXPECT_CALL(*mock_dialog_controller(), DestructorCalled()).Times(1);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
@@ -1522,28 +1572,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForUnrelatedOrigin) {
   ASSERT_NE(main_test_rfh()->GetLastCommittedOrigin(), kUnrelatedOrigin);
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
-}
-
-// Test that the request completes eventually in the case that the token request
-// times out.
-TEST_F(BasicFederatedAuthRequestImplTest, TokenRequestTimesOut) {
-  MockConfiguration configuration = kConfigurationValid;
-  configuration.delay_token_response = true;
-  RequestExpectations expectations = {RequestTokenStatus::kError,
-                                      FederatedAuthRequestResult::kError,
-                                      FETCH_ENDPOINT_ALL_REQUEST_TOKEN};
-  // RunAuthTest() fast forwards time by a sufficient amount to cause the
-  // request to timeout. `MockConfiguration::delay_token_response` disables
-  // the auto-run logic for the token request response and enables emulating
-  // the server being very slow to return a token request response.
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
-
-  // Resolve token request. The callback should not be called.
-  test_network_request_manager_->RunDelayedCallbacks();
-
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kUserInterfaceTimedOut, 1);
-  ExpectRequestTokenStatusUKM(TokenStatus::kUserInterfaceTimedOut);
 }
 
 class FederatedAuthRequestImplTestCancelConsistency

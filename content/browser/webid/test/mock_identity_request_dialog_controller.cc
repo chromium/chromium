@@ -11,7 +11,8 @@ namespace content {
 MockIdentityRequestDialogController::MockIdentityRequestDialogController() =
     default;
 
-MockIdentityRequestDialogController::~MockIdentityRequestDialogController() =
-    default;
+MockIdentityRequestDialogController::~MockIdentityRequestDialogController() {
+  DestructorCalled();
+}
 
 }  // namespace content

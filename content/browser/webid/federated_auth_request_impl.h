@@ -13,7 +13,6 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
@@ -203,7 +202,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::TimeTicks show_accounts_dialog_time_;
   base::TimeTicks select_account_time_;
   base::TimeTicks token_response_time_;
-  base::DelayTimer delay_timer_;
   base::TimeDelta token_request_delay_;
   bool errors_logged_to_console_{false};
   RequestTokenCallback auth_request_callback_;
