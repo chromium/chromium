@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_ICON_VIEW_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/side_search/default_search_icon_source.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
@@ -64,8 +64,8 @@ class SideSearchIconView : public PageActionIconView,
 
   raw_ptr<Browser> browser_ = nullptr;
 
-  // Source for the default search icon image used by this page action.
-  DefaultSearchIconSource default_search_icon_source_;
+  // Subscription to change notifications to the default search icon source.
+  base::CallbackListSubscription icon_changed_subscription_;
 
   // Animates out the side search icon label after a fixed period of time. This
   // keeps the label visible for long enough to give users an opportunity to

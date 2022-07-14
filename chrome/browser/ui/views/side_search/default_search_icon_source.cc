@@ -14,25 +14,10 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/canvas_image_source.h"
 
-DefaultSearchIconSource::DefaultSearchIconSource(
-    Browser* browser,
-    IconChangedSubscription icon_changed_subscription)
-    : browser_(browser),
-      icon_changed_subscription_(std::move(icon_changed_subscription)) {
-  // `template_url_service` may be null in tests.
-  if (auto* template_url_service =
-          TemplateURLServiceFactory::GetForProfile(browser->profile())) {
-    template_url_service_observation_.Observe(template_url_service);
-
-    // Call this initially in case the default URL has already been set.
-    OnTemplateURLServiceChanged();
-  }
-}
-
 DefaultSearchIconSource::~DefaultSearchIconSource() = default;
 
 void DefaultSearchIconSource::OnTemplateURLServiceChanged() {
-  icon_changed_subscription_.Run();
+  callback_list_.Notify();
 }
 
 void DefaultSearchIconSource::OnTemplateURLServiceShuttingDown() {
@@ -65,9 +50,24 @@ ui::ImageModel DefaultSearchIconSource::GetIconImage() const {
   return ui::ImageModel::FromImage(GetRawIconImage());
 }
 
+base::CallbackListSubscription
+DefaultSearchIconSource::RegisterIconChangedSubscription(
+    IconChangedSubscription icon_changed_subscription) {
+  return callback_list_.Add(std::move(icon_changed_subscription));
+}
+
+DefaultSearchIconSource::DefaultSearchIconSource(Browser* browser)
+    : BrowserUserData<DefaultSearchIconSource>(*browser) {
+  // `template_url_service` may be null in tests.
+  if (auto* template_url_service =
+          TemplateURLServiceFactory::GetForProfile(browser->profile())) {
+    template_url_service_observation_.Observe(template_url_service);
+  }
+}
+
 gfx::Image DefaultSearchIconSource::GetRawIconImage() const {
   content::WebContents* active_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+      GetBrowser().tab_strip_model()->GetActiveWebContents();
   if (!active_contents)
     return gfx::Image();
 
@@ -84,5 +84,7 @@ void DefaultSearchIconSource::OnIconFetched(const gfx::Image& icon) {
   // will now have been cached by ChromeOmniboxClient's FaviconCache and
   // subsequent calls asking for the favicon will now return synchronously.
   // Notify clients so they can attempt to fetch the latest icon.
-  icon_changed_subscription_.Run();
+  callback_list_.Notify();
 }
+
+BROWSER_USER_DATA_KEY_IMPL(DefaultSearchIconSource);

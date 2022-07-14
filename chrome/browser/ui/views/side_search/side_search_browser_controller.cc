@@ -105,10 +105,12 @@ class DseImageView : public views::ImageView {
  public:
   METADATA_HEADER(DseImageView);
   explicit DseImageView(Browser* browser)
-      : default_search_icon_source_(
-            browser,
-            base::BindRepeating(&DseImageView::UpdateIconImage,
-                                base::Unretained(this))) {
+      : browser_(browser),
+        icon_changed_subscription_(
+            DefaultSearchIconSource::GetOrCreateForBrowser(browser)
+                ->RegisterIconChangedSubscription(
+                    base::BindRepeating(&DseImageView::UpdateIconImage,
+                                        base::Unretained(this)))) {
     SetFlipCanvasOnPaintForRTLUI(false);
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(0, views::LayoutProvider::Get()->GetDistanceMetric(
@@ -119,11 +121,13 @@ class DseImageView : public views::ImageView {
 
   void UpdateIconImage() {
     // Attempt to get the default search engine's favicon.
-    auto icon_image = default_search_icon_source_.GetIconImage();
+    auto* default_search_icon_source =
+        DefaultSearchIconSource::GetOrCreateForBrowser(browser_);
+    auto icon_image = default_search_icon_source->GetIconImage();
 
     // Use the DSE's icon image if available.
     if (!icon_image.IsEmpty()) {
-      SetImage(default_search_icon_source_.GetIconImage());
+      SetImage(default_search_icon_source->GetIconImage());
       return;
     }
 
@@ -141,7 +145,10 @@ class DseImageView : public views::ImageView {
   }
 
  private:
-  DefaultSearchIconSource default_search_icon_source_;
+  Browser* const browser_;
+
+  // Subscription to change notifications to the default search icon source.
+  base::CallbackListSubscription icon_changed_subscription_;
 };
 
 BEGIN_METADATA(DseImageView, views::ImageView)

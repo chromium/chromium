@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_search/default_search_icon_source.h"
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #include "chrome/browser/ui/views/side_search/unified_side_search_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,10 +49,11 @@ SideSearchIconView::SideSearchIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate),
       browser_(browser),
-      default_search_icon_source_(
-          browser,
-          base::BindRepeating(&SideSearchIconView::UpdateIconImage,
-                              base::Unretained(this))) {
+      icon_changed_subscription_(
+          DefaultSearchIconSource::GetOrCreateForBrowser(browser)
+              ->RegisterIconChangedSubscription(
+                  base::BindRepeating(&SideSearchIconView::UpdateIconImage,
+                                      base::Unretained(this)))) {
   image()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey, kSideSearchButtonElementId);
   SetVisible(false);
@@ -167,7 +169,8 @@ const gfx::VectorIcon& SideSearchIconView::GetVectorIcon() const {
 }
 
 ui::ImageModel SideSearchIconView::GetSizedIconImage(int size) const {
-  return default_search_icon_source_.GetSizedIconImage(size);
+  return DefaultSearchIconSource::GetOrCreateForBrowser(browser_)
+      ->GetSizedIconImage(size);
 }
 
 std::u16string SideSearchIconView::GetTextForTooltipAndAccessibleName() const {

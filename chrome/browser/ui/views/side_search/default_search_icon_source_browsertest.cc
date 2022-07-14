@@ -48,13 +48,13 @@ IN_PROC_BROWSER_TEST_F(DefaultSearchIconBrowserTest,
   // Tracks whether the client was notified of a change to the default search
   // icon source.
   bool client_notified = false;
-  DefaultSearchIconSource dse_icon_source(
-      browser(), base::BindLambdaForTesting([&]() { client_notified = true; }));
+  const auto subscription =
+      DefaultSearchIconSource::GetOrCreateForBrowser(browser())
+          ->RegisterIconChangedSubscription(
+              base::BindLambdaForTesting([&]() { client_notified = true; }));
 
-  // Following construction the client should have been notified of a change to
-  // the icon source.
-  EXPECT_TRUE(client_notified);
-  client_notified = false;
+  // Clients should not have yet been notified of an icon change.
+  EXPECT_FALSE(client_notified);
 
   // The client should be notified if the default search provider has changed.
   for (int i = 0; i < 3; ++i) {
