@@ -503,12 +503,9 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     blink::UserAgentBrandVersionType output_version_type) {
   std::string greasey_brand;
   std::string greasey_version;
-  // The updated algorithm is enabled by default, but we maintain the ability
-  // to opt out of it either via Finch (setting updated_algorithm to false) or
-  // via an enterprise policy escape hatch.
   if (enable_updated_grease_by_policy &&
       base::GetFieldTrialParamByFeatureAsBool(features::kGreaseUACH,
-                                              "updated_algorithm", true)) {
+                                              "updated_algorithm", false)) {
     const std::vector<std::string> greasey_chars = {
         " ", "(", ":", "-", ".", "/", ")", ";", "=", "?", "_"};
     const std::vector<std::string> greased_versions = {"8", "99", "24"};
