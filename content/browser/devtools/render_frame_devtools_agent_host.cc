@@ -194,16 +194,21 @@ bool DevToolsAgentHost::IsDebuggerAttached(WebContents* web_contents) {
 void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-    // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
-    // multiple FrameTrees. This probably needs to iterate over all FrameTrees.
-    // Investigate.
-    for (FrameTreeNode* node : wc->GetPrimaryFrameTree().Nodes()) {
-      if (!node->current_frame_host() || !ShouldCreateDevToolsForNode(node))
-        continue;
-      if (!node->current_frame_host()->IsRenderFrameLive())
-        continue;
-      result->push_back(RenderFrameDevToolsAgentHost::GetOrCreateFor(node));
-    }
+    // Inner web contents such as portals or guestviews are already handled by
+    // ForEachRenderFrameHost.
+    if (wc->GetOutermostWebContents() != wc)
+      continue;
+    wc->GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+        [](DevToolsAgentHost::List* result,
+           RenderFrameHost* render_frame_host) {
+          FrameTreeNode* node = FrameTreeNode::From(render_frame_host);
+          if (!ShouldCreateDevToolsForNode(node))
+            return;
+          if (!render_frame_host->IsRenderFrameLive())
+            return;
+          result->push_back(RenderFrameDevToolsAgentHost::GetOrCreateFor(node));
+        },
+        result));
   }
 }
 
