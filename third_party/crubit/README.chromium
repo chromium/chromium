@@ -25,4 +25,5 @@ See also:
   packaging and distribution via `gclient sync`)
 
 Local Modifications:
-- TODO(lukasza): BUILD.gn that covers `src/rs_bindings_from_cc/support'
+- Added BUILD.gn that covers `src/rs_bindings_from_cc/support'
+  (see https://crrev.com/c/3756719)

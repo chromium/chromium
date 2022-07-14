@@ -152,14 +152,8 @@ template("rs_bindings_from_cc") {
     deps = _bindings_deps
     deps += [
       ":${_gen_bindings_target_name}",
+      "//third_party/crubit:deps_of_rs_api_impl",
       _bindings_target,
-
-      # TODO(crbug.com/1297592): Declare the dependencies (the generated
-      # ..._rs_api_impl.cc file #includes headers like
-      # "third_party/crubit/rs_bindings_from_cc/support/offsetof.h"
-      # without telling GN about it...).
-      # See also `deps_for_generated_cc_file` in `crubit/rs_bindings_from_cc/BUILD`.
-      #"//third_party/crubit:rs_api_impl_support/TODO",
     ]
 
     rs_sources = [ _rs_out_path ]
@@ -168,11 +162,7 @@ template("rs_bindings_from_cc") {
     rs_deps = _bindings_deps
     rs_deps += [
       ":${_gen_bindings_target_name}",
-      # TODO(crbug.com/1297592): Add required dependencies (the generated bindings will
-      # depend on these extra crates if the generated bindings cover a C++ struct).
-      # See also `deps_for_generated_rs_file` in `crubit/rs_bindings_from_cc/BUILD`.
-      #"//third_party/rust/memoffset/v0_6:TODO",
-      #"//third_party/rust/static_assertions/v1:TODO",
+      "//third_party/crubit:deps_of_rs_api",
     ]
   }
 

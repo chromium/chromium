@@ -7,4 +7,8 @@
 
 int AddViaCc(int x, int y);
 
+struct CcPodStruct {
+  int value;
+};
+
 #endif  // BUILD_RUST_TESTS_TEST_RS_BINDINGS_FROM_CC_SELF_CONTAINED_TARGET_HEADER2_H_
