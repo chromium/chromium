@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "base/auto_reset.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -53,6 +54,10 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
       const MultiDeviceNotificationPresenter&) = delete;
 
   ~MultiDeviceNotificationPresenter() override;
+
+  // Disables notifications for tests.
+  static std::unique_ptr<base::AutoReset<bool>>
+  DisableNotificationsForTesting();
 
   // Removes the notification created by NotifyPotentialHostExists() or does
   // nothing if that notification is not currently displayed.

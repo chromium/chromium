@@ -30,6 +30,8 @@ namespace ash {
 
 namespace {
 
+bool g_disable_notifications_for_test_ = false;
+
 const char kNotifierMultiDevice[] = "ash.multi_device_setup";
 
 }  // namespace
@@ -150,6 +152,13 @@ void MultiDeviceNotificationPresenter::OnBecameEligibleForWifiSync() {
   ShowNotification(kWifiSyncNotificationId, title, message, optional_fields);
   base::UmaHistogramEnumeration("MultiDeviceSetup_NotificationShown",
                                 NotificationType::kWifiSyncAnnouncement);
+}
+
+// static
+std::unique_ptr<base::AutoReset<bool>>
+MultiDeviceNotificationPresenter::DisableNotificationsForTesting() {
+  return std::make_unique<base::AutoReset<bool>>(
+      &g_disable_notifications_for_test_, true);
 }
 
 void MultiDeviceNotificationPresenter::RemoveMultiDeviceSetupNotification() {
@@ -298,6 +307,9 @@ void MultiDeviceNotificationPresenter::ShowNotification(
     const std::u16string& title,
     const std::u16string& message,
     message_center::RichNotificationData optional_fields) {
+  if (g_disable_notifications_for_test_)
+    return;
+
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
