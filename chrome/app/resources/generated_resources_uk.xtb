@@ -1262,6 +1262,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Додати Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронізація почнеться, щойно ви вийдете з її налаштувань</translation>
+<translation id="2162705204091149050">Перегляд інформації про ваш веб-переглядач, ОС, пристрій, установлене програмне забезпечення та файли</translation>
 <translation id="2162926944953615670">Немає профілів eSIM</translation>
 <translation id="2163470535490402084">Щоб увійти в <ph name="DEVICE_TYPE" />, під’єнайтеся до Інтернету.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і ще 1 перемикач</translation>
@@ -1814,6 +1815,7 @@
 <translation id="2667144577800272420">Зараз їх можна відкривати не лише в додатку <ph name="APP_NAME" />. Після зміни додатки <ph name="APP_NAME_2" /> та <ph name="APP_NAME_3" /> більше не зможуть відкривати підтримувані посилання.</translation>
 <translation id="2667463864537187133">Керувати перевіркою орфографії</translation>
 <translation id="2669241540496514785">Не вдалося відкрити додаток <ph name="APP_NAME" /></translation>
+<translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> транслює вкладку Chrome.</translation>
 <translation id="2670403088701171361">Заборонити сайтам доступ до тексту й зображень у буфері обміну</translation>
 <translation id="2670429602441959756">Ця сторінка містить функції, які не підтримуються в режимі віртуальної реальності. Вихід…</translation>
@@ -2181,6 +2183,7 @@
 <translation id="3008232374986381779">Запускайте інструменти, редактори й ІСР Linux на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Скинути дозволи</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви сьогодні підключилися до мережі Wi-Fi та завантажили оновлення. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}one{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення до кінцевого терміну. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}few{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення до кінцевого терміну. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}many{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення до кінцевого терміну. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}other{Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви підключилися до мережі Wi-Fi та завантажили оновлення до кінцевого терміну. Ви також можете використовувати підключення з тарифікацією трафіку (може стягуватися плата).}}</translation>
+<translation id="3009178788565917040">Вихід</translation>
 <translation id="3009300415590184725">Дійсно скасувати процес налаштування служби передавання мобільних даних?</translation>
 <translation id="3009779501245596802">Проіндексовані бази даних</translation>
 <translation id="3010279545267083280">Пароль видалено</translation>
@@ -2511,6 +2514,7 @@
 <translation id="3359256513598016054">Обмеження політики сертифіката</translation>
 <translation id="3360297538363969800">Помилка друку. Перевірте принтер і повторіть спробу.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}one{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}few{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}many{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}other{Пристрій <ph name="DEVICE_NAME" /> надсилає вам <ph name="ATTACHMENTS" />.}}</translation>
+<translation id="3363202073972776113">Цим новим профілем керуватиме ваша організація. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Від вашого адміністратора: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Використовуйте Ctrl або Alt</translation>
 <translation id="3368922792935385530">Підключено</translation>
@@ -2545,6 +2549,7 @@
 <translation id="339722927132407568">Зависає</translation>
 <translation id="3399432415385675819">Сповіщення будуть вимкнені</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> герц) – з накладанням</translation>
+<translation id="3401484564516348917">Перегляд інформації про ваш веб-переглядач, ОС, пристрій, установлене програмне забезпечення, значення реєстру та файли</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{На цьому пристрої зберігається {COUNT} пароль}one{На цьому пристрої зберігається {COUNT} пароль}few{На цьому пристрої зберігаються {COUNT} паролі}many{На цьому пристрої зберігаються {COUNT} паролів}other{На цьому пристрої зберігається {COUNT} пароля}}</translation>
 <translation id="3402255108239926910">Виберіть аватар</translation>
 <translation id="3402585168444815892">Реєстрація в демоверсії</translation>
@@ -2791,6 +2796,7 @@
 <translation id="3627879631695760395">Установити додаток <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Вимкнути Bluetooth</translation>
 <translation id="3629631988386925734">Щоб увімкнути Smart Lock, введіть пароль. Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях.</translation>
+<translation id="3629664892718440872">Запам’ятати цей вибір</translation>
 <translation id="3630132874740063857">Ваш номер телефону</translation>
 <translation id="3630995161997703415">Додайте цей сайт на полицю, щоб завжди мати його під рукою</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Дозволивши пристроям з ОС Chrome автоматично надсилати звіти, ви допомагаєте нам визначити найважливіші проблеми та напрямки покращення операційної системи. Ці звіти можуть містити дані про збої ОС Chrome, застосовані функції та обсяг пам’яті, який ви зазвичай використовуєте.<ph name="END_PARAGRAPH1" />
@@ -3280,6 +3286,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Доступ до повного контролю над пристроями MIDI заблоковано</translation>
+<translation id="4087328411748538168">Показувати справа</translation>
 <translation id="4089235344645910861">Налаштування збережено. Почато синхронізацію.</translation>
 <translation id="4090103403438682346">Увімкнути перевірений доступ</translation>
 <translation id="4090947011087001172">Скинути дозволи для сайту <ph name="SITE" />?</translation>
@@ -3564,6 +3571,7 @@
 <translation id="4377058670119819762">Дає змогу прокручувати панель вкладок праворуч і ліворуч, коли всі вкладки вже не вміщаються на екрані.</translation>
 <translation id="4377363674125277448">Виникла проблема із сертифікатом сервера.</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="4378308539633073595">Прокрутити вперед</translation>
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4378556263712303865">Заявка пристрою</translation>
 <translation id="4379281552162875326">Видалити "<ph name="APP_NAME" />"?</translation>
@@ -3973,6 +3981,7 @@
 <translation id="4779766576531456629">Перейменувати мобільну мережу eSIM-карти</translation>
 <translation id="4780321648949301421">Зберегти сторінку як...</translation>
 <translation id="4781443161433589743">Вас захищає найнадійніша система безпеки Chrome</translation>
+<translation id="4782861709165039462">Усі мікрофони вимкнено за допомогою перемикача на пристрої</translation>
 <translation id="4785719467058219317">Ви використовуєте ключ безпеки, не зареєстрований на цьому веб-сайті</translation>
 <translation id="4785914069240823137">Скасувати обрізування</translation>
 <translation id="4788092183367008521">Перевірте з’єднання з мережею та повторіть спробу.</translation>
@@ -4739,6 +4748,7 @@
 <translation id="5548075230008247516">Скасовано вибір усіх елементів. Ви вийшли з режиму вибору.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" і ще 1 вкладка}one{"<ph name="TAB_TITLE" />" і ще # вкладка}few{"<ph name="TAB_TITLE" />" і ще # вкладки}many{"<ph name="TAB_TITLE" />" і ще # вкладок}other{"<ph name="TAB_TITLE" />" і ще # вкладки}}</translation>
 <translation id="5548606607480005320">Перевірка безпеки</translation>
+<translation id="5548644592758170183">Показувати зліва</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Клавіатура та введення тексту</translation>
 <translation id="5553089923092577885">Зіставлення політик сертифікатів</translation>
@@ -7369,6 +7379,7 @@
 <translation id="8120505434908124087">Установити профіль eSIM-карти</translation>
 <translation id="812260729110117038">Рекламодавці й видавці можуть досліджувати ефективність оголошень, не відстежуючи ваші дії на різних сайтах.</translation>
 <translation id="81238879832906896">Жовто-біла квітка</translation>
+<translation id="8123975449645947908">Прокрутити назад</translation>
 <translation id="8124313775439841391">Керований ONC</translation>
 <translation id="813082847718468539">Перегляд інформації про сайт</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
@@ -8227,6 +8238,7 @@
 <translation id="8980345560318123814">Надсилати відгуки</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – аварійне завершення роботи</translation>
 <translation id="8981825781894055334">Недостатньо паперу</translation>
+<translation id="8983018820925880511">Цим новим профілем керуватиме <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Сайт <ph name="ORIGIN" /> може змінювати файл "<ph name="FILENAME" />"</translation>
 <translation id="8984694057134206124">Пристрій зможуть бачити всі користувачі впродовж <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Вітаємо в додатку Steam для Chromebook</translation>
@@ -8287,6 +8299,7 @@
 <translation id="9037640663275993951">Пристрій заборонений</translation>
 <translation id="9037818663270399707">З'єднання неконфіденційне в усьому мережевому трафіку</translation>
 <translation id="9037965129289936994">Показати оригінал</translation>
+<translation id="9038489124413477075">Папка без назви</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{У вас залишилася одна спроба.}one{У вас залишилася # спроба.}few{У вас залишилося # спроби.}many{У вас залишилося # спроб.}other{У вас залишилося # спроби.}}</translation>
 <translation id="9040473193163777637">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome? Щоб зробити це, утримуйте обидві клавіші гучності впродовж п’яти секунд.</translation>
 <translation id="9040661932550800571">Оновити пароль для <ph name="ORIGIN" />?</translation>
@@ -8323,6 +8336,7 @@
 <translation id="9075413375877487220">Це розширення не відповідає вимогам Безпечного перегляду з розширеним захистом.</translation>
 <translation id="9076283476770535406">На ньому може бути вміст для дорослих</translation>
 <translation id="9076523132036239772">На жаль, не вдалося підтвердити вашу електронну адресу чи пароль. Спробуйте спершу під’єднатися до мережі.</translation>
+<translation id="9076821103818989526">Бічна панель</translation>
 <translation id="9076977315710973122">Мережевий файлообмінник</translation>
 <translation id="9078193189520575214">Застосовуються зміни…</translation>
 <translation id="9078316009970372699">Вимкнути миттєву точку доступу</translation>

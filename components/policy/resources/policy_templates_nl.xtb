@@ -108,6 +108,11 @@
 
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen.</translation>
 <translation id="1123650965531933634">Het recht voor vensterplaatsing wordt automatisch geweigerd voor alle sites.</translation>
+<translation id="112496019059412872">Bepaalt of de functie Wachtwoord onthouden aanstaat in het dialoogvenster voor Kerberos-verificatie. Wachtwoorden worden versleuteld opgeslagen op een schijf, alleen toegankelijk voor de systeemdaemon van Kerberos en tijdens een gebruikerssessie.
+
+          Als dit beleid wordt toegepast of niet is ingesteld, kunnen gebruikers besluiten of Kerberos-wachtwoorden worden onthouden, zodat deze niet opnieuw hoeven worden opgegeven. Kerberos-tickets worden automatisch opgehaald tenzij aanvullende verificatie vereist is (verificatie in 2 stappen).
+
+          Als dit beleid niet wordt toegepast, worden wachtwoorden nooit onthouden en worden alle eerder opgeslagen wachtwoorden verwijderd. Gebruikers moeten elke keer dat ze zich moeten verifiëren bij het Kerberos-systeem, hun wachtwoord opgeven. Afhankelijk van de serverinstelling gebeurt dit normaal elke 8 uur tot een aantal maanden.</translation>
 <translation id="1133622335785078255">Gebruikers toestaan om secundaire profielen te maken en gebruiken, en om de gastmodus te gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
 <translation id="1133814529606590009">Als je het beleid toepast, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsen te verbeteren.
 
@@ -4858,6 +4863,12 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Als je het beleid niet toepast, staat WPAD-optimalisatie uit, waardoor <ph name="PRODUCT_NAME" /> langer moet wachten op DNS-gebaseerde WPAD-servers.
 
       Ongeacht of dit beleid is ingesteld, kan de gebruiker de instelling voor WPAD-optimalisatie niet wijzigen.</translation>
+<translation id="6365249741643189510">Dit beleid geeft Projector toestemming om schermopnamen te maken, er een transcript van te maken en ze te uploaden naar Drive voor zakelijke gebruikers.
+      Dit beleid is niet van toepassing voor gebruikers van Family Link.
+      Dit beleid heeft geen invloed op het <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" />-beleid voor gebruikers van Family Link.
+
+      Als je het beleid toepast of niet instelt, staat Projector aan.
+      Als je het beleid niet toepast, staat Projector uit.</translation>
 <translation id="6366574325767783825">Als je het beleid instelt op True of niet instelt, accepteert <ph name="PRODUCT_NAME" /> webcontent die wordt getoond als Signed HTTP Exchange.
 
       Als je het beleid instelt op False, worden Signed HTTP Exchanges niet geladen.</translation>
@@ -4983,6 +4994,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="6518102411616460786">Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt</translation>
 <translation id="6520802717075138474">Zoekmachines importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="6521971538031711337">Voorkomen dat een beheerde gebruiker de hostnaam van het apparaat instelt</translation>
+<translation id="652593254122955308">Time-out tot inactief profiel wordt gesloten</translation>
 <translation id="6532026122543921610">Tenzij het beleid <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> de automatische tijdzonedetectie uitzet, wordt de methode voor automatische tijdzonedetectie uiteengezet als het beleid wordt ingesteld. Gebruikers kunnen deze methode niet wijzigen.
 
       Je kunt het beleid instellen op:
@@ -7161,6 +7173,13 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als je dit beleid niet instelt, wordt de standaardconfiguratie voor de netwerksandbox gebruikt. Dit verschilt afhankelijk van de <ph name="PRODUCT_NAME" />-release, actieve praktijktests en het platform.
       Dit beleid is bedoeld om bedrijven de flexibiliteit te bieden om de netwerksandbox uit te zetten als ze software van derden gebruiken die niet geschikt is voor het sandboxen van de netwerkservice.</translation>
 <translation id="8842208363354615697">Toestaan dat de modus 'Alleen HTTPS' wordt aangezet</translation>
+<translation id="8850156309475162935">Hiermee wordt een actie gestart als de computer inactief is.
+
+        Als je dit beleid hebt ingesteld op een positief getal, is dit een aantal minuten. Na dat aantal minuten zonder gebruikersinvoer sluit <ph name="PRODUCT_NAME" /> alle browservensters en wordt de profielkiezer getoond.
+
+        Als dit beleid is ingesteld op een waarde van 5 of lager of niet is ingesteld, gebeurt er niets als de computer inactief is.
+
+        'Gebruikersinvoer' wordt gedefinieerd door API's voor het besturingssysteem en omvat bijvoorbeeld de muis bewegen of typen op het toetsenbord.</translation>
 <translation id="885147810817138322">Media-aanbevelingen tonen aan gebruikers</translation>
 <translation id="8852579753940989645">Code-integriteit van weergaveprogramma aanzetten</translation>
 <translation id="8854571659927427063">Als je het beleid toepast, worden de bookmarks van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden de bookmarks niet geïmporteerd bij de eerste uitvoering.
@@ -7272,6 +7291,13 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8983537551095611459">De lijst met extensie-ID's instellen die zijn vrijgesteld van de opschoonprocedure voor beperkte beheerde gastsessies</translation>
 <translation id="8983539044126123594">Inloggen met extra Google-accounts aanzetten</translation>
 <translation id="8992176907758534924">Niet toestaan dat sites afbeeldingen tonen</translation>
+<translation id="8994954504552592260">Hiermee zet je de migratie van door <ph name="MS_AD_NAME" /> beheerde apparaten naar cloudbeheer aan. Met dit beleid kun je op afstand een contactloze migratie van meerdere apparaten in een bedrijf starten. Bovendien is de migratie zo transparant mogelijk voor de eindgebruikers.
+
+      Als je dit beleid toepast en de inschrijvings-ID al is geüpload naar de DMServer, wordt de powerwash-functie van een apparaat op afstand geactiveerd.
+
+      Als je dit beleid niet toepast of niet instelt, wordt de powerwash-functie van een apparaat niet op afstand geactiveerd, onafhankelijk van de uploadstatus van de inschrijvings-ID.
+
+      Deze check wordt geactiveerd als het inlogscherm wordt geladen en wordt daarna elk uur opnieuw geprobeerd (als het inlogscherm actief blijft op het apparaat). Hierdoor wordt voorkomen dat de migratie middenin een gebruikerssessie start, wat problemen kan veroorzaken voor eindgebruikers.</translation>
 <translation id="9007632512838819703">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />.
 
       De spellingcontrole voor talen wordt verplicht uitgezet. Niet-herkende talen in de lijst worden genegeerd.

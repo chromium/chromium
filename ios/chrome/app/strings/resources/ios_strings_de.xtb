@@ -17,6 +17,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="1063454504051558093">Anderes Passwort verwenden…</translation>
 <translation id="1066060668811609597">Synchronisierung verwalten</translation>
 <translation id="1076421457278169141">Code gescannt</translation>
+<translation id="1076785341346483463">Mit verwaltetem Konto synchronisieren</translation>
 <translation id="1084365883616172403">Facebook-Beitrag gepostet</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="1104948393051856124">Akzeptieren &amp; weiter</translation>
@@ -494,6 +495,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5168414296986405587">Entwickelt für iPadOS</translation>
 <translation id="5173088371991956744">Zur Synchronisierung muss deine Identität bestätigt werden</translation>
 <translation id="5181140330217080051">Download wird ausgeführt...</translation>
+<translation id="5184329579814168207">In Chrome öffnen</translation>
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5188482106078495165">Deine Cookie-Einstellung gilt für alle Tabs. Wenn du eine neue Einstellung auf einen geöffneten Tab anwenden möchtest, aktualisiere den Tab.</translation>
 <translation id="5190835502935405962">Lesezeichenleiste</translation>

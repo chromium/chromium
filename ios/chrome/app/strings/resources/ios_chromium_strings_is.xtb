@@ -74,6 +74,7 @@
 <translation id="5945387852661427312">Þú ert að skrá þig út af reikningi sem stýrt er af <ph name="DOMAIN" /> og veitir í leiðinni stjórnanda lénsins umsjón með Chromium gögnunum þínum. Gögnin þín verða tengd við þennan reikning til frambúðar. Ef þú skráir þig út af Chromium verður gögnunum þínum á þessu tæki eytt, en þau verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="5983312940147103417">Bættu Chromium</translation>
 <translation id="602807004951640891">Með því að nota Chromium samþykkirðu <ph name="BEGIN_LINK_TOS" />þjónustuskilmálana<ph name="END_LINK_TOS" />.</translation>
+<translation id="6062449165341879460"><ph name="DOMAIN" /> fyrirtækisins þíns fær aðgang að Chromium gögnunum þínum, bókamerkjum, ferli, aðgangsorðum og öðrum stillingum sem þú geymir á þessum reikningi. Þegar þú skráir þig út verður gögnunum þínum eytt úr þessu tæki.  Hins vegar verða gögnin þín geymd á stýrða Google reikningnum þínum og verða aðgengileg fyrirtækinu þínu. Fyrirtækið þitt getur líka stillt notendareglur sem eru sértækar fyrir reikninginn þinn og geta breytt virkni Chromium.</translation>
 <translation id="6119647025869519954">Til að gera Chromium að sjálfgefnum vafra:
 1. Opnaðu Stillingar
 2. Ýttu á „Sjálfgefið vafraforrit“

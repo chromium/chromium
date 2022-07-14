@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">Спіс чытання</translation>
 <translation id="1264309058268477500">Розныя</translation>
 <translation id="1264974993859112054">Спорт</translation>
+<translation id="1266469291454105242">Разблакіроўка прылады</translation>
 <translation id="1269516672602708785">Хутка стварыць новы сайт з дапамогай Google Сайтаў</translation>
 <translation id="1270502636509132238">Спосаб прыняцця</translation>
 <translation id="1281476433249504884">Укладчык 1</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">Сустрэчы і знаёмствы</translation>
 <translation id="1753706481035618306">Нумар старонкі</translation>
 <translation id="1755621011177747277">Усынаўленне/удачарэнне</translation>
+<translation id="1756026472674246267">Адкрыць спасылку ў новай укладцы</translation>
 <translation id="175656076281618225">Ілюзіянізм</translation>
 <translation id="1757773103848038814">Монашырынны шрыфт</translation>
 <translation id="1763864636252898013">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: аперацыйная сістэма прылады не давярае сертыфікату бяспекі гэтага дамена. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">Скасаваць плацеж</translation>
 <translation id="2148613324460538318">Дадаць картку</translation>
 <translation id="2149968176347646218">Падключэнне не з'яўляецца бяспечным</translation>
+<translation id="2153609454945889823">Усталяваць сэрвісы Google Play для AR?</translation>
 <translation id="2154054054215849342">Для вашага дамена сінхранізацыя недаступная</translation>
 <translation id="2154484045852737596">Рэдагаваць картку</translation>
 <translation id="2161656808144014275">Тэкст</translation>
@@ -832,6 +835,7 @@
 <translation id="3229277193950731405">Скапіраваць радок з версіяй</translation>
 <translation id="323107829343500871">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Заўсёды выяўляць важнае змесціва на гэтым сайце</translation>
+<translation id="3238395604961564389">Адкрыць спасылку ў акне ў рэжыме інкогніта</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць выгляд браўзера, націсніце Tab, затым Enter</translation>
 <translation id="3240791268468473923">Быў адкрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="324180406144491771">Спасылкі "<ph name="HOST_NAME" />" заблакіраваны</translation>
@@ -944,6 +948,7 @@
 <translation id="3531780078352352885">Аркушы задання</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> запытвае дазвол на выкарыстанне мікрафона</translation>
 <translation id="3533328374079021623">Паштовая скрынка 5</translation>
+<translation id="3542768452570884558">Адкрыць спасылку ў новым акне</translation>
 <translation id="3550112004925580947">Індустрыя гасціннасці</translation>
 <translation id="3552297013052089404">Шрыфт без засечак</translation>
 <translation id="3558573058928565255">Светлы час дня</translation>
@@ -1114,11 +1119,13 @@
 <translation id="4040350669425716613">Вышэйшыя навучальныя ўстановы</translation>
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4058922952496707368">Ключ "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Выкарыстоўваць разблакіроўку прылады для хутчэйшага пацвярджэння картак</translation>
 <translation id="4067098466788473230">Гранты і стыпендыі на навучанне</translation>
 <translation id="4067263367174615723">C1 (канверт)</translation>
 <translation id="4067947977115446013">Дадайце сапраўдны адрас</translation>
 <translation id="4072193657607981494">Ідзе загрузка палітык</translation>
 <translation id="4072486802667267160">Адбылася памылка апрацоўкi вашага заказу. Паўтарыце спробу.</translation>
+<translation id="4073376909608563327">Не ўдалося выкарыстаць функцыю разблакіроўкі прылады</translation>
 <translation id="4073797364926776829">Праглядзець картку</translation>
 <translation id="4075732493274867456">Кліент і сервер не падтрымліваюць агульную версію пратакола SLL або набор шыфраў.</translation>
 <translation id="4079302484614802869">Канфігурацыяй проксі зададзена выкарыстоўваць URL-адрас сцэнарыя .pac, а не фіксаваныя проксі-серверы.</translation>
@@ -1411,6 +1418,7 @@
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
 <translation id="484671803914931257">Атрымайце скідку ад прадаўца "<ph name="MERCHANT_NAME" />" і не толькі</translation>
+<translation id="484988093836683706">Выкарыстоўваць функцыю разблакіроўкі прылады</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="4852429274334674023">Аперацыйныя сістэмы</translation>
 <translation id="485316830061041779">Нямецкая</translation>
@@ -1798,6 +1806,7 @@
 <translation id="5921185718311485855">уключана</translation>
 <translation id="5921639886840618607">Захаваць картку ва Уліковы запіс Google?</translation>
 <translation id="5922853866070715753">Амаль гатова</translation>
+<translation id="5923492272538889093">Выкарыстоўваць разблакіроўку прылады замест CVC?</translation>
 <translation id="5928444777041341328">Дом і сад</translation>
 <translation id="5932224571077948991">Сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман</translation>
 <translation id="5937560539988385583">Старонка перакладзена</translation>
@@ -1971,6 +1980,7 @@
 <translation id="643051589346665201">Змяніць пароль Google</translation>
 <translation id="6433490469411711332">Змена кантактных звестак</translation>
 <translation id="6433595998831338502">Хост <ph name="HOST_NAME" /> адмовіўся ад падключэння.</translation>
+<translation id="6433797564277305076">Пацвярджайце карткі хутчэй, выкарыстоўваючы функцыю разблакіроўкі прылады</translation>
 <translation id="6440503408713884761">Ігнаруецца</translation>
 <translation id="6443406338865242315">Якія пашырэнні і ўбудовы вы ўсталявалі.</translation>
 <translation id="6446163441502663861">Kahu (канверт)</translation>
@@ -2177,6 +2187,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Гэта картка не можа быць зараз захавана}one{Гэтыя карткі не могуць быць зараз захаваны}few{Гэтыя карткі не могуць быць зараз захаваны}many{Гэтыя карткі не могуць быць зараз захаваны}other{Гэтыя карткі не могуць быць зараз захаваны}}</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7058163556978339998">Браўзер <ph name="BROWSER" /> спраўдзіў, што выдаўцом сертыфіката гэтага сайта з'яўляецца <ph name="ISSUER" />.</translation>
+<translation id="7058774143982824355">Сэрвіс аналізу пароляў у файлах CSV</translation>
 <translation id="7061777300866737982">Бяспека і абароненасць дома</translation>
 <translation id="7062635574500127092">Сіне-зялёны</translation>
 <translation id="706295145388601875">Дадавайце адрасы і кіруйце імі праз налады Chrome</translation>
@@ -2442,6 +2453,7 @@
 <translation id="7696089921647603491">Класічны рок і старыя хіты</translation>
 <translation id="7697066736081121494">Prc8 (канверт)</translation>
 <translation id="769721561045429135">Зараз у вас ёсць карткі, якія могуць выкарыстоўвацца толькі на гэтай прыладзе. Націсніце "Працягнуць", каб праглядзець карткі.</translation>
+<translation id="7698864304447945242">Абнавіць сэрвісы Google Play для AR?</translation>
 <translation id="7699293099605015246">Артыкулы зараз недаступныя</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Перайсці на сайт <ph name="SITE" /> (небяспечна)<ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@
 <translation id="7723047071702270851">Рэдагаваць картку</translation>
 <translation id="7734285854693414638">Хутка стварыць новую форму ў Формах Google</translation>
 <translation id="773466115871691567">Заўсёды перакладаць старонкі на наступнай мове: <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="7736959720849233795">Скапіраваць адрас спасылкі</translation>
 <translation id="7740996059027112821">Стандартны</translation>
 <translation id="77424286611022110">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Небяспечнае змесціва заблакіравана.</translation>

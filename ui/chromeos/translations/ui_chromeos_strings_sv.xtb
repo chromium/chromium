@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Skyddat</translation>
 <translation id="2638942478653899953">Det gick inte att nå Google Drive. <ph name="BEGIN_LINK" />Logga ut<ph name="END_LINK" /> och sedan in igen.</translation>
 <translation id="2649120831653069427">Regnbågsfisk</translation>
+<translation id="2653059201992392941">Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="2663066752008346276">burmesiska/Myanmar med myansan-tangentbord</translation>
 <translation id="2664412712123763093">Filens plats</translation>
 <translation id="2718540689505416944">Installera appen med Linux</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">lettiska</translation>
 <translation id="5489965683297092283">Filtret <ph name="FILTER_NAME" /> är av.</translation>
 <translation id="5494920125229734069">Markera alla</translation>
+<translation id="5500104704744051184">Du kan inte använda det här nätverket förrän du anger PUK-koden</translation>
 <translation id="5500122897333236901">isländska</translation>
 <translation id="5508696409934741614">Punkter</translation>
 <translation id="5522908512596376669">Fillistan har ändrats till listvy.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> objekt</translation>
 <translation id="642282551015776456">Det här namnet får inte användas som namn på en fil eller mapp</translation>
 <translation id="6423031066725912715">vietnamesiskt tangentbord (TCVN)</translation>
+<translation id="6430271654280079150">Du har 1 försök kvar.</translation>
 <translation id="6485131920355264772">Det gick inte att hämta information om lagringsutrymme</translation>
 <translation id="6495925982925244349">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="649877868557234318">Extraherar <ph name="FILE_NAME" /> till <ph name="FOLDER_NAME" /></translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903">Synkroniserar <ph name="NUMBER_OF_FILES" /> objekt ...</translation>
 <translation id="8600173386174225982">Fillistan har ändrats till miniatyrvy.</translation>
 <translation id="8601932370724196034">Bildfil för Crostini</translation>
+<translation id="8608515571837163082">Fel pinkod har angetts för många gånger. Ange den åttasiffriga PUK-koden (Personal Unblocking Key) som du har fått från operatören.</translation>
 <translation id="8609695766746872526">isländska</translation>
 <translation id="863903787380594467">Fel pinkod. Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>

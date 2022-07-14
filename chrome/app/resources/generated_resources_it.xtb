@@ -1247,6 +1247,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Aggiungi Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronizzazione inizierà quando esci dalle impostazioni di sincronizzazione</translation>
+<translation id="2162705204091149050">Lettura di informazioni su browser, sistema operativo, dispositivo, software installato e file</translation>
 <translation id="2162926944953615670">Nessun profilo eSIM disponibile</translation>
 <translation id="2163470535490402084">Connettiti a Internet per accedere al tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e 1 altro sensore</translation>
@@ -1796,6 +1797,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2667144577800272420">Ci sono altre app impostate per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestisci controllo ortografico</translation>
 <translation id="2669241540496514785">Impossibile aprire <ph name="APP_NAME" /></translation>
+<translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> condivide una scheda Chrome.</translation>
 <translation id="2670403088701171361">Non consentire ai siti di vedere testo o immagini negli appunti</translation>
 <translation id="2670429602441959756">Questa pagina contiene funzioni non ancora supportate nella realtà virtuale. Uscita in corso...</translation>
@@ -2163,6 +2165,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3008232374986381779">Esegui strumenti, editor e IDE di Linux sul dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento oggi stesso. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}other{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento prima della scadenza. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}}</translation>
+<translation id="3009178788565917040">Uscita</translation>
 <translation id="3009300415590184725">Annullare la procedura di configurazione del servizio dati mobile?</translation>
 <translation id="3009779501245596802">Indexed databases</translation>
 <translation id="3010279545267083280">Password eliminata</translation>
@@ -2493,6 +2496,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3359256513598016054">Vincoli criteri certificati</translation>
 <translation id="3360297538363969800">Errore di stampa. Controlla la stampante e riprova.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}other{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}}</translation>
+<translation id="3363202073972776113">Questo nuovo profilo verrà gestito dalla tua organizzazione. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Dal tuo amministratore: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Usa il tasto CTRL o ALT</translation>
 <translation id="3368922792935385530">Connesso</translation>
@@ -2527,6 +2531,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="339722927132407568">Si blocca</translation>
 <translation id="3399432415385675819">Le notifiche verranno disattivate</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) - interlacciata</translation>
+<translation id="3401484564516348917">Lettura di informazioni su browser, sistema operativo, dispositivo, software installato, valori di registro e file</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{Su questo dispositivo è memorizzata {COUNT} password}other{Su questo dispositivo sono memorizzate {COUNT} password}}</translation>
 <translation id="3402255108239926910">Scegli un avatar</translation>
 <translation id="3402585168444815892">Registrazione alla modalità demo</translation>
@@ -2773,6 +2778,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3627879631695760395">Installa <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Disattivare il Bluetooth</translation>
 <translation id="3629631988386925734">Inserisci la password per attivare Smart Lock. La prossima volta potrai usare il telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni.</translation>
+<translation id="3629664892718440872">Ricorda questa scelta</translation>
 <translation id="3630132874740063857">Il tuo telefono</translation>
 <translation id="3630995161997703415">Aggiungi questo sito alla barra delle app per usarlo in qualsiasi momento</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi Chrome OS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in Chrome OS. Questi report possono includere, ad esempio, informazioni su quando Chrome OS ha un arresto anomalo, sulle funzionalità che utilizzi e sulla quantità di memoria solitamente impiegata.<ph name="END_PARAGRAPH1" />
@@ -3262,6 +3268,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Controllo totale dei dispositivi MIDI negato</translation>
+<translation id="4087328411748538168">Mostra a destra</translation>
 <translation id="4089235344645910861">Impostazioni salvate. Sincronizzazione avviata.</translation>
 <translation id="4090103403438682346">Attiva Accesso verificato</translation>
 <translation id="4090947011087001172">Reimpostare le autorizzazioni per il sito <ph name="SITE" />?</translation>
@@ -3546,6 +3553,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4377058670119819762">Viene attivato lo scorrimento verso sinistra e verso destra della tabstrip quando è completa.</translation>
 <translation id="4377363674125277448">Si è verificato un problema con il certificato del server.</translation>
 <translation id="4378154925671717803">Telefono</translation>
+<translation id="4378308539633073595">Scorri in avanti</translation>
 <translation id="4378551569595875038">Connessione...</translation>
 <translation id="4378556263712303865">Richiesta dispositivo</translation>
 <translation id="4379281552162875326">Vuoi disinstallare "<ph name="APP_NAME" />"?</translation>
@@ -3954,6 +3962,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4779766576531456629">Rinomina rete mobile eSIM</translation>
 <translation id="4780321648949301421">Salva pagina con nome...</translation>
 <translation id="4781443161433589743">Stai usando la funzionalità di sicurezza più efficace di Chrome</translation>
+<translation id="4782861709165039462">Tutti i microfoni sono disattivati dall'interruttore hardware del dispositivo</translation>
 <translation id="4785719467058219317">Stai usando un token di sicurezza non registrato su questo sito web</translation>
 <translation id="4785914069240823137">Annulla ritaglio</translation>
 <translation id="4788092183367008521">Controlla la connessione di rete e riprova.</translation>
@@ -4720,6 +4729,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5548075230008247516">Tutti gli elementi deselezionati, modalità di selezione disattivata.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 altra scheda}other{"<ph name="TAB_TITLE" />" e altre # schede}}</translation>
 <translation id="5548606607480005320">Controllo di sicurezza</translation>
+<translation id="5548644592758170183">Mostra a sinistra</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Tastiera e input di testo</translation>
 <translation id="5553089923092577885">Mapping dei criteri dei certificati</translation>
@@ -7344,6 +7354,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8120505434908124087">Installa profilo eSIM</translation>
 <translation id="812260729110117038">Gli inserzionisti e i publisher possono esaminare l'efficacia degli annunci senza tracciarti tra i siti.</translation>
 <translation id="81238879832906896">Fiore bianco e giallo</translation>
+<translation id="8123975449645947908">Scorri indietro</translation>
 <translation id="8124313775439841391">ONC gestito</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8131740175452115882">Conferma</translation>
@@ -8199,6 +8210,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8980345560318123814">Report di feedback</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Bloccata</translation>
 <translation id="8981825781894055334">Carta in esaurimento</translation>
+<translation id="8983018820925880511">Questo nuovo profilo verrà gestito da <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> può modificare il file <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Sarai visibile a tutti per <ph name="MINUTES" /> minuti. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Ti diamo il benvenuto in Steam per Chromebook</translation>
@@ -8259,6 +8271,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9037640663275993951">Il dispositivo non è consentito</translation>
 <translation id="9037818663270399707">La connessione non è privata per tutto il traffico di rete</translation>
 <translation id="9037965129289936994">Mostra originale</translation>
+<translation id="9038489124413477075">Cartella senza nome</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Hai ancora a disposizione un tentativo.}other{Hai ancora a disposizione # tentativi.}}</translation>
 <translation id="9040473193163777637">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS? In questo caso, tieni premuti entrambi i tasti del volume per 5 secondi.</translation>
 <translation id="9040661932550800571">Aggiornare la password per <ph name="ORIGIN" />?</translation>
@@ -8295,6 +8308,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9075413375877487220">Questa estensione non è ritenuta attendibile da Navigazione sicura avanzata.</translation>
 <translation id="9076283476770535406">Può includere contenuti per adulti</translation>
 <translation id="9076523132036239772">Spiacenti, impossibile verificare l'indirizzo email o la password. Prova a collegarti a una rete prima.</translation>
+<translation id="9076821103818989526">Riquadro laterale</translation>
 <translation id="9076977315710973122">Condivisione SMB</translation>
 <translation id="9078193189520575214">Applicazione delle modifiche in corso…</translation>
 <translation id="9078316009970372699">Disabilita tethering istantaneo</translation>

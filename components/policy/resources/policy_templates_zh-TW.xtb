@@ -108,6 +108,11 @@
 
       如果你設定這項政策，使用者將無法變更設定。</translation>
 <translation id="1123650965531933634">預設拒絕對所有網站授予視窗放置權限</translation>
+<translation id="112496019059412872">控管是否在 Kerberos 驗證對話方塊中啟用「記住密碼」功能。密碼會加密儲存在磁碟上，且只能在使用者工作階段中透過 Kerberos 系統常駐程式存取。
+
+          如果啟用或不設定這項政策，使用者可以決定系統是否要記住 Kerberos 密碼，這樣日後就不必再輸入。除非使用者需要進行其他驗證 (雙重驗證)，否則系統會自動擷取 Kerberos 票證。
+
+          如果停用這項政策，系統不會記住任何密碼，並且會將先前儲存的所有密碼移除。每次使用者需要透過 Kerberos 系統進行驗證時，都必須輸入密碼。根據伺服器的設定而定，通常每 8 小時到數個月需要輸入一次密碼。</translation>
 <translation id="1133622335785078255">允許使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="1133814529606590009">如果將這項政策設為啟用，系統會將輸入網址匿名資料收集功能設為一律開啟；該功能會將使用者造訪的網頁網址傳送給 Google，協助改善搜尋與瀏覽服務。
 
@@ -4841,6 +4846,13 @@
       如果將這項政策設為停用，系統會關閉 WPAD 最佳化功能，導致 <ph name="PRODUCT_NAME" /> 等待 DNS WPAD 伺服器的時間增加。
 
       無論這項政策是否有設定，使用者都無法變更 WPAD 最佳化設定。</translation>
+<translation id="6365249741643189510">這項政策會授予 Projector 權限，讓企業版使用者能建立及轉錄螢幕畫面錄製內容，並上傳至雲端硬碟。
+
+      這項政策不適用於 Family Link 使用者。
+      這項政策不會影響 Family Link 使用者的 <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> 政策。
+
+      如果啟用這項政策或不設定，系統會啟用 Projector。
+      如果停用這項政策，Projector 也會隨之停用。</translation>
 <translation id="6366574325767783825">如果將這項政策設為 True 或不設定，<ph name="PRODUCT_NAME" /> 將接受透過 Signed HTTP Exchange 提供的網路內容。
 
       如果將這項政策設為 False，系統將無法載入 Signed HTTP Exchange。</translation>
@@ -4965,6 +4977,7 @@
 <translation id="6518102411616460786">等待目標版本跟上版本降級</translation>
 <translation id="6520802717075138474">第一次執行時從預設瀏覽器匯入搜尋引擎</translation>
 <translation id="6521971538031711337">禁止受管理的使用者設定裝置主機名稱</translation>
+<translation id="652593254122955308">逾時直到閒置的設定檔關閉為止</translation>
 <translation id="6532026122543921610">除非 <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> 政策停用了自動偵測時區的功能，否則你可以透過這項政策概括設定自動偵測時區的方法，且使用者無法變更這項設定。
 
      這項政策可設定的值：
@@ -7119,6 +7132,13 @@
       如果不設定這項政策，系統會使用網路沙箱的預設設定。這可能會因 <ph name="PRODUCT_NAME" /> 版本、目前執行的實測和平台而異。
       設置這項政策是為了讓企業能彈性停用網路沙箱，避免第三方軟體干擾網路服務沙箱運作。</translation>
 <translation id="8842208363354615697">允許啟用僅限 HTTPS 模式</translation>
+<translation id="8850156309475162935">在電腦閒置時觸發動作。
+
+        如果這項政策設為正數：這個數值代表的是分鐘數。如果使用者在上述時間內沒有輸入內容，<ph name="PRODUCT_NAME" /> 將關閉所有瀏覽器視窗，然後顯示設定檔選擇畫面。
+
+        如果這個政策的值小於 5 或不設定：電腦進入閒置狀態後不會觸發任何動作。
+
+        「使用者輸入內容」是由 Operating System API 定義，其中包含移動滑鼠或鍵盤輸入等內容。</translation>
 <translation id="885147810817138322">向使用者顯示媒體推薦內容</translation>
 <translation id="8852579753940989645">啟用轉譯器程式碼完整性功能</translation>
 <translation id="8854571659927427063">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入書籤。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何書籤。
@@ -7231,6 +7251,13 @@
 <translation id="8983537551095611459">設定擴充功能 ID 清單，從有限制的受管理訪客工作階段清除程序中排除這些擴充功能</translation>
 <translation id="8983539044126123594">允許使用其他 Google 帳戶登入</translation>
 <translation id="8992176907758534924">不允許任何網站顯示圖片</translation>
+<translation id="8994954504552592260">允許將 <ph name="MS_AD_NAME" /> 管理的裝置遷移至雲端管理服務。這項政策允許遠端遷移公司中的多部裝置，不用實際接觸即可開始遷移。此外，遷移作業會盡可能提供充足資訊，方便使用者掌握進度。
+
+      如果啟用這項政策，且註冊 ID 已上傳至 DMServer，系統會觸發遠端裝置的 Powerwash 功能。
+
+      如果停用這項政策設或不設定，無論註冊 ID 的上傳狀態為何，系統都不會觸發遠端裝置的 Powerwash 功能。
+
+      每次載入登入畫面時，系統都會觸發這項檢查作業。如果裝置持續停留在登入畫面上，系統會每小時觸發一次。這樣可以避免遷移作業在使用者工作階段期間啟動，進而造成使用者遇到潛在問題。</translation>
 <translation id="9007632512838819703">這項政策已遭淘汰，請改用 <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />。
 
       這項政策會強制停用語言拼字檢查功能。系統會忽略該清單中無法辨識的語言。

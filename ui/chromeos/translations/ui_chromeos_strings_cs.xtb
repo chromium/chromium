@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2163152940313951844">Neplatný znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugalština s klávesnicí USA – mezinárodní (PC)</translation>
+<translation id="2193661397560634290">Využito <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Zjednodušená čínština</translation>
 <translation id="22085916256174561">korejština</translation>
 <translation id="2208919847696382164">Instalovat aplikaci pro Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">turečtina s klávesnicí F</translation>
 <translation id="2732839045120506979">vietnamština VNI</translation>
 <translation id="2735623501230989521">Udělujete nástroji Parallels Desktop oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Zaplnili jste celé své úložiště Google Workspace.</translation>
 <translation id="2771816809568414714">Sýr</translation>
 <translation id="2781645665747935084">Belgická klávesnice</translation>
 <translation id="2782104745158847185">Při instalaci aplikace pro Linux došlo k chybě</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Použijte kratší název</translation>
 <translation id="2949781154072577687">Formátování disku <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Medúza</translation>
+<translation id="2958458230122209142">Na samostatném úložišti o velikosti <ph name="TOTAL_SPACE" /> už máte jen <ph name="REMAINING_PERCENTAGE" /> % místa.</translation>
 <translation id="2977940621473452797">Tento soubor je určen pro počítač se softwarem Macintosh. S vaším zařízením se systémem ChromeOS není kompatibilní. Vyhledejte v Internetovém obchodě Chrome vhodnou náhradní aplikaci.</translation>
 <translation id="2984337792991268709">Dnes <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Obnovování položek (<ph name="COUNT" />)…</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Všechny soubory uložené v této složce se automaticky zálohují online.</translation>
 <translation id="6825883775269213504">ruština</translation>
 <translation id="6847101934483209767">Položka <ph name="ENTRY_NAME" /> byla odebrána z výběru.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> už nemá žádné volné místo v úložišti Google Workspace.</translation>
 <translation id="6856459657722366306">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="6861394552169064235">perština</translation>
 <translation id="6862635236584086457">Všechny soubory uložené v této složce se automaticky zálohují online</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">švédština</translation>
 <translation id="6990081529015358884">Došlo vám místo</translation>
 <translation id="6998711733709403587">Vybrané soubory: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
+<translation id="7008426324576352165">K dokončení nahrávání vaše organizace potřebuje víc úložného prostoru.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalace se nezdařila.</translation>
 <translation id="7031639531908619281">turečtina</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">dánština</translation>
 <translation id="8965697826696209160">Nedostatek místa.</translation>
 <translation id="8997962250644902079">čínština (tradiční) – pchin-jin</translation>
+<translation id="8998871447376656508">K nahrání na Disk Google není dost volného místa.</translation>
 <translation id="9003940392834790328">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>
 <translation id="9017798300203431059">Ruská fonetická klávesnice</translation>
 <translation id="9034924485347205037">Soubory systému Linux</translation>
 <translation id="9035012421917565900">Položky nelze přesunout zpět do týmu <ph name="DESTINATION_NAME" />. Tuto akci proto nebude možné vrátit zpět.</translation>
 <translation id="9035689366572880647">Zadejte aktuální PIN</translation>
+<translation id="9037777873893411148">*Úložiště organizace je plné</translation>
 <translation id="9038620279323455325">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Zvolte jiný název.</translation>
 <translation id="9046895021617826162">Připojení selhalo</translation>
 <translation id="9065512565307033593">Pokud se vám nepodaří provést ověření, bude vám zakázán přístup k síti.</translation>

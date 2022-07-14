@@ -1725,6 +1725,9 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="274769314493317695">Se per il criterio <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_WHITELIST" />, la configurazione del criterio <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
+<translation id="2751959596774212778">WebSQL in contesti non sicuri è disattivato per impostazione predefinita a partire da M107 e verrà completamente rimosso in M110.
+          Se il criterio viene impostato su false o se non viene configurato, in contesti non sicuri WebSQL rimarrà attivo fino alla fine di M106, quindi disattivato da M107.
+          Se questo criterio viene impostato su true, in contesti non sicuri WebSQL verrà attivato.</translation>
 <translation id="2752046642026416564">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> può utilizzare gli host di messaggistica nativi installati a livello di utente.
 
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> può utilizzare questi host solo se sono installati a livello di sistema.</translation>
@@ -5541,6 +5544,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se selezioni l'opzione "U2F", il funzionamento dell'autenticazione a due fattori integrata dipenderà dalla specifica FIDO U2F.
 
       Se selezioni l'opzione "U2F_EXTENDED", l'autenticazione a due fattori integrata fornirà le funzioni U2F più alcune estensioni per la singola attestazione.</translation>
+<translation id="6998179760789945134">Disattiva WebSQL in contesti non sicuri, a meno che non venga attivato dal flag di Chrome.</translation>
 <translation id="6999948519306285655">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        La configurazione del criterio consente di specificare un URL a un file proxy .pac. Questo criterio viene applicato solo se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificato e hai selezionato <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -7285,6 +7289,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="8919100556245407184">Il periodo di tempo, in giorni, dopo il post di scadenza dell'aggiornamento automatico trascorso il quale l'utente viene disconnesso dall'account se la versione di <ph name="PRODUCT_OS_NAME" /> è precedente a quella specificata nel criterio <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />.</translation>
 <translation id="8919369436496201075">Consenti al dispositivo di ricevere aggiornamenti LTS</translation>
 <translation id="8921669704201370845">Attiva reporting su cloud di <ph name="PRODUCT_NAME" /> per profilo gestito</translation>
+<translation id="8922494933893518624">Forza l'attivazione di WebSQL in contesti non sicuri.</translation>
 <translation id="8930064580550462145">Durante l'accesso tramite la schermata di blocco, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
 
       Se per questo criterio viene impostato il valore -2, verrà usato lo stesso valore del limite relativo al tempo di accesso offline nella schermata di accesso del criterio <ph name="POLICY" />.

@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">מאובטחת</translation>
 <translation id="2638942478653899953">‏לא ניתן היה להגיע אל Google Drive‏. <ph name="BEGIN_LINK" />יש לצאת<ph name="END_LINK" /> ואז להתחבר שוב.</translation>
 <translation id="2649120831653069427">דג</translation>
+<translation id="2653059201992392941">נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="2663066752008346276">‏בורמזית/מיאנמר עם מקלדת Myansan</translation>
 <translation id="2664412712123763093">מיקום הקובץ</translation>
 <translation id="2718540689505416944">‏התקנת אפליקציה עם Linux</translation>
@@ -529,6 +530,7 @@
 <translation id="5489067830765222292">לטבית</translation>
 <translation id="5489965683297092283">המסנן <ph name="FILTER_NAME" /> מושבת.</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
+<translation id="5500104704744051184">‏לא תהיה לך אפשרות להשתמש ברשת הזו עד להזנת PUK</translation>
 <translation id="5500122897333236901">איסלנדית</translation>
 <translation id="5508696409934741614">נקודות</translation>
 <translation id="5522908512596376669">רשימת הקבצים מוצגת עכשיו בתצוגת רשימה.</translation>
@@ -634,6 +636,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> פריטים</translation>
 <translation id="642282551015776456">ייתכן שלא ניתן להשתמש בשם זה כשם קובץ או תיקייה</translation>
 <translation id="6423031066725912715">‏וייטנאמית עם מקלדת TCVN</translation>
+<translation id="6430271654280079150">נותר לך עוד ניסיון אחד.</translation>
 <translation id="6485131920355264772">נכשל בקבלת מידע על שטח האחסון</translation>
 <translation id="6495925982925244349">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="649877868557234318">מתבצע חילוץ של הקובץ <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>
@@ -900,6 +903,7 @@
 <translation id="8579285237314169903">מתבצע סנכרון ל-<ph name="NUMBER_OF_FILES" /> פריטים...</translation>
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
+<translation id="8608515571837163082">‏הוזן קוד אימות שגוי יותר מדי פעמים. צריך להזין את המפתח האישי לביטול החסימה (PUK) בן 8 הספרות שקיבלת מהספק.</translation>
 <translation id="8609695766746872526">איסלנדית</translation>
 <translation id="863903787380594467">קוד האימות שגוי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – יציאה</translation>

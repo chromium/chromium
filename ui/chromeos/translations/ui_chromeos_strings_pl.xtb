@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2163152940313951844">Nieprawidłowy znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">Portugalski z klawiaturą amerykańską międzynarodową (PC)</translation>
+<translation id="2193661397560634290">Wykorzystano <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">chiński uproszczony</translation>
 <translation id="22085916256174561">Koreański</translation>
 <translation id="2208919847696382164">Zainstaluj za pomocą Linuksa</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">Turecki z klawiaturą F</translation>
 <translation id="2732839045120506979">Wietnamski VNI</translation>
 <translation id="2735623501230989521">Przyznaj aplikacji Parallels Desktop uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Wykorzystujesz całe swoje indywidualne miejsce na dane w Google Workspace.</translation>
 <translation id="2771816809568414714">Ser</translation>
 <translation id="2781645665747935084">belgijska klawiatura</translation>
 <translation id="2782104745158847185">Błąd podczas instalowania aplikacji na Linuksa</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Użyj krótszej nazwy</translation>
 <translation id="2949781154072577687">Formatuję: <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Meduza</translation>
+<translation id="2958458230122209142">Mało miejsca na dane – pozostało <ph name="REMAINING_PERCENTAGE" />% z <ph name="TOTAL_SPACE" /> indywidualnego miejsca na dane.</translation>
 <translation id="2977940621473452797">Ten plik został opracowany z myślą o komputerach Mac. Jest on niezgodny z Twoim urządzeniem z Chrome OS. Poszukaj odpowiedniej aplikacji zastępczej w Chrome Web Store.</translation>
 <translation id="2984337792991268709">Dzisiaj, <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Przywracam elementy (<ph name="COUNT" />)…</translation>
@@ -670,6 +673,7 @@
 <translation id="6823166707458800069">Wszystkie pliki przechowywane w tym folderze są automatycznie zapisywane online.</translation>
 <translation id="6825883775269213504">Rosyjski</translation>
 <translation id="6847101934483209767">Usunięto z zaznaczenia element <ph name="ENTRY_NAME" />.</translation>
+<translation id="6848194403851638089">Organizacja <ph name="ORGANIZATION_NAME" /> wykorzystuje całe swoje miejsce na dane w Google Workspace.</translation>
 <translation id="6856459657722366306">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="6861394552169064235">Perski</translation>
 <translation id="6862635236584086457">Wszystkie pliki przechowywane w tym folderze są automatycznie zapisywane online</translation>
@@ -701,6 +705,7 @@
 <translation id="6989942356279143254">Szwedzki</translation>
 <translation id="6990081529015358884">Nie masz już miejsca</translation>
 <translation id="6998711733709403587">Wybrano <ph name="SELCTED_FOLDERS_COUNT" /> foldery(ów)</translation>
+<translation id="7008426324576352165">Aby ukończyć przesyłanie, Twoja organizacja potrzebuje więcej miejsca na dane.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalacja nie powiodła się.</translation>
 <translation id="7031639531908619281">Turecki</translation>
@@ -934,11 +939,13 @@
 <translation id="8919081441417203123">Duński</translation>
 <translation id="8965697826696209160">Nie ma wystarczającej ilości miejsca.</translation>
 <translation id="8997962250644902079">Chiński (tradycyjny) pinyin</translation>
+<translation id="8998871447376656508">Na Dysku Google jest za mało wolnego miejsca, aby można było przesłać pliki.</translation>
 <translation id="9003940392834790328">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
 <translation id="9017798300203431059">rosyjska klawiatura fonetyczna</translation>
 <translation id="9034924485347205037">Pliki Linuksa</translation>
 <translation id="9035012421917565900">Nie można przenieść elementów z powrotem do: „<ph name="DESTINATION_NAME" />”, więc tej czynności nie da się cofnąć.</translation>
 <translation id="9035689366572880647">Podaj bieżący kod PIN</translation>
+<translation id="9037777873893411148">* Brak miejsca na dane w organizacji</translation>
 <translation id="9038620279323455325">Istnieje już plik o nazwie „<ph name="FILE_NAME" />”. Wybierz inną nazwę.</translation>
 <translation id="9046895021617826162">Łączenie nie powiodło się</translation>
 <translation id="9065512565307033593">Jeśli nie uda Ci się dokonać weryfikacji, dostęp do sieci zostanie wyłączony.</translation>

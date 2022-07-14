@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Unalindwa</translation>
 <translation id="2638942478653899953">Hifadhi ya Google haikuweza kupatikana. Tafadhali  <ph name="BEGIN_LINK" />ondoka<ph name="END_LINK" /> na uingie tena.</translation>
 <translation id="2649120831653069427">Samakiupinde</translation>
+<translation id="2653059201992392941">Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Kibama (Myama) kwenye kibodi ya Myansan</translation>
 <translation id="2664412712123763093">Mahali faili ilipo</translation>
 <translation id="2718540689505416944">Sakinisha programu ukitumia Linux</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">Kilativia</translation>
 <translation id="5489965683297092283">Kichujio cha <ph name="FILTER_NAME" /> kimezimwa.</translation>
 <translation id="5494920125229734069">Chagua zote</translation>
+<translation id="5500104704744051184">Hutaweza kutumia mtandao huu hadi utakapoweka PUK</translation>
 <translation id="5500122897333236901">Kiaislandi</translation>
 <translation id="5508696409934741614">Nukta</translation>
 <translation id="5522908512596376669">Umebadilisha orodha ya faili kuwa mwonekano wa orodha.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044">Faili <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Jina hili halifai kutumiwe kama faili ya jina la folda</translation>
 <translation id="6423031066725912715">Kivietinamu kwenye kibodi ya TCVN</translation>
+<translation id="6430271654280079150">Umebakisha jaribio 1.</translation>
 <translation id="6485131920355264772">Imeshindwa kupata maelezo ya nafasi</translation>
 <translation id="6495925982925244349">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unadhibitiwa na Msimamizi wako, Maelezo</translation>
 <translation id="649877868557234318">Inachukua <ph name="FILE_NAME" /> iweke kwenye <ph name="FOLDER_NAME" /></translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903">Inasasisha vipengee <ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Orodha ya faili imebadilishwa kuwa mwonekano wa kijipicha.</translation>
 <translation id="8601932370724196034">Picha ya faili ya Crostini</translation>
+<translation id="8608515571837163082">Umeweka PIN isiyo sahihi mara nyingi mno. Weka Nambari Binafsi ya Kufungua (PUK) yenye tarakimu 8 uliyopewa na mtoa huduma.</translation>
 <translation id="8609695766746872526">Kiaislandi</translation>
 <translation id="863903787380594467">PIN si sahihi. Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Mlango</translation>

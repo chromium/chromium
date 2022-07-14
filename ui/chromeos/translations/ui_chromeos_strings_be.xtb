@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Абаронена</translation>
 <translation id="2638942478653899953">Не ўдалося атрымаць доступ да Google Дыска. <ph name="BEGIN_LINK" />Выйдзіце<ph name="END_LINK" /> і зноў увайдзіце ва ўліковы запіс.</translation>
 <translation id="2649120831653069427">Радужная рыбка</translation>
+<translation id="2653059201992392941">Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Бірманская (М'янма) з раскладкай Myansan</translation>
 <translation id="2664412712123763093">Месцазнаходжанне файла</translation>
 <translation id="2718540689505416944">Усталяваць праграму з дапамогай Linux</translation>
@@ -527,6 +528,7 @@
 <translation id="5489067830765222292">Латышская</translation>
 <translation id="5489965683297092283">Выключаны фільтр "<ph name="FILTER_NAME" />".</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
+<translation id="5500104704744051184">Вы не зможаце выкарыстоўваць гэту сетку, пакуль не ўведзяце PUK-код</translation>
 <translation id="5500122897333236901">Ісландская</translation>
 <translation id="5508696409934741614">Кропкі</translation>
 <translation id="5522908512596376669">Спіс файлаў перайшоў у рэжым спіса.</translation>
@@ -632,6 +634,7 @@
 <translation id="6395575651121294044">Элементаў: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Гэту назву нельга выкарыстоўваць як назву файла або папкі</translation>
 <translation id="6423031066725912715">В'етнамская (раскладка TCVN)</translation>
+<translation id="6430271654280079150">У вас засталася 1 спроба.</translation>
 <translation id="6485131920355264772">Не ўдалося атрымаць звесткі пра вольнае месца</translation>
 <translation id="6495925982925244349">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="649877868557234318">Выманне файла "<ph name="FILE_NAME" />" ажыццяўляецца ў папку "<ph name="FOLDER_NAME" />"</translation>
@@ -898,6 +901,7 @@
 <translation id="8579285237314169903">Ідзе сінхранізацыя элементаў (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Спіс файлаў перайшоў у рэжым мініяцюр.</translation>
 <translation id="8601932370724196034">Файл вобраза Crostini</translation>
+<translation id="8608515571837163082">Занадта шмат разоў быў уведзены няправільны PIN-код. Увядзіце 8-значны PUK-код, атрыманы ад аператара.</translation>
 <translation id="8609695766746872526">Ісландская</translation>
 <translation id="863903787380594467">Няправільны PIN-код. Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>

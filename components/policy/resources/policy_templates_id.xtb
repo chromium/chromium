@@ -108,6 +108,11 @@
 
       Jika kebijakan ini disetel, pengguna tidak dapat mengubahnya.</translation>
 <translation id="1123650965531933634">Tolak izin Penempatan Jendela di semua situs secara default</translation>
+<translation id="112496019059412872">Mengontrol apakah fitur 'Ingat sandi' diaktifkan di dialog autentikasi Kerberos. Sandi disimpan dan dienkripsi di disk, serta hanya dapat diakses oleh daemon sistem Kerberos dan selama sesi pengguna.
+
+          Jika kebijakan ini disetel ke aktif atau tidak disetel, pengguna dapat menentukan apakah sandi Kerberos akan diingat, sehingga pengguna tidak perlu memasukkannya lagi. Tiket Kerberos diambil secara otomatis, kecuali jika diperlukan autentikasi tambahan (autentikasi 2 langkah).
+
+          Jika kebijakan ini disetel ke nonaktif, sandi tidak akan diingat dan semua sandi yang disimpan sebelumnya akan dihapus. Pengguna harus memasukkan sandinya setiap kali mereka perlu melakukan autentikasi dengan sistem Kerberos. Hal ini biasanya terjadi antara setiap 8 jam hingga beberapa bulan, tergantung pada setelan server.</translation>
 <translation id="1133622335785078255">Izinkan pengguna membuat dan menggunakan profil sekunder, serta menggunakan mode tamu di browser <ph name="LACROS_NAME" /></translation>
 <translation id="1133814529606590009">Jika kebijakan disetel ke Aktif berarti pengumpulan data anonim yang menyertakan URL, yang mengirimkan informasi URL halaman yang dikunjungi oleh pengguna kepada Google untuk menyempurnakan penelusuran dan penjelajahan, akan selalu aktif.
 
@@ -4969,6 +4974,12 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif, pengoptimalan WPAD akan dinonaktifkan, yang menyebabkan <ph name="PRODUCT_NAME" /> menunggu lebih lama untuk server WPAD berbasis DNS.
 
       Tanpa mempertimbangkan apakah kebijakan ini disetel atau tidak disetel, pengguna tidak dapat mengubah setelan pengoptimalan WPAD.</translation>
+<translation id="6365249741643189510">Kebijakan ini memberi Projector izin untuk membuat dan mentranskripsikan rekaman layar dan mengupload ke Drive bagi pengguna versi bisnis.
+      Kebijakan ini tidak memengaruhi pengguna Family Link.
+      Kebijakan ini tidak memengaruhi kebijakan <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> bagi pengguna Family Link.
+
+      Jika kebijakan ini disetel ke aktif atau tidak disetel, Projector akan diaktifkan.
+      Jika kebijakan ini disetel ke nonaktif, Projector akan dinonaktifkan.</translation>
 <translation id="6366574325767783825">Jika kebijakan disetel ke True (Benar) atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menerima konten web yang ditayangkan sebagai Signed HTTP Exchange.
 
       Jika kebijakan disetel ke Salah (False), Signed HTTP Exchange tidak akan dimuat.</translation>
@@ -5095,6 +5106,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6518102411616460786">Tunggu saluran target juga mengalami downgrade saluran rilis</translation>
 <translation id="6520802717075138474">Impor mesin telusur dari browser default saat pertama kali dijalankan</translation>
 <translation id="6521971538031711337">Cegah pengguna terkelola mengonfigurasi nama host perangkat</translation>
+<translation id="652593254122955308">Waktu tunggu hingga profil tidak ada aktivitas ditutup</translation>
 <translation id="6532026122543921610">Kecuali kebijakan <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> menonaktifkan deteksi zona waktu otomatis, menetapkan kebijakan akan menguraikan metode deteksi zona waktu otomatis, yang tidak dapat diubah pengguna.
 
       Jika kebijakan ditetapkan ke:
@@ -7276,6 +7288,13 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika kebijakan ini tidak disetel, konfigurasi default untuk sandbox jaringan akan digunakan. Konfigurasi default ini dapat bervariasi bergantung pada rilis <ph name="PRODUCT_NAME" />, uji coba kolom yang sedang berjalan, dan platform.
       Kebijakan ini dimaksudkan untuk memberikan fleksibilitas kepada perusahaan guna menonaktifkan sandbox jaringan jika perusahaan menggunakan software pihak ketiga yang mengganggu sandbox layanan jaringan.</translation>
 <translation id="8842208363354615697">Mengizinkan pengaktifan Mode Khusus HTTPS</translation>
+<translation id="8850156309475162935">Memicu tindakan saat komputer sedang tidak ada aktivitas.
+
+        Jika kebijakan ini disetel ke angka positif: angka ini merupakan jumlah menit. Setelah beberapa menit tanpa input pengguna, <ph name="PRODUCT_NAME" /> akan menutup semua jendela browser, dan menampilkan Pemilih Profil.
+
+        Jika kebijakan ini disetel ke angka kurang dari 5, atau tidak disetel: tidak ada yang terjadi saat komputer tidak ada aktivitas.
+
+        "Input pengguna" ditentukan oleh Operating System API, dan menyertakan hal-hal seperti menggerakkan mouse atau mengetik di keyboard.</translation>
 <translation id="885147810817138322">Tampilkan rekomendasi media kepada pengguna</translation>
 <translation id="8852579753940989645">Mengaktifkan Integritas Kode Perender</translation>
 <translation id="8854571659927427063">Jika kebijakan disetel ke Aktif, bookmark akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada bookmark yang akan diimpor saat pertama kali dijalankan.
@@ -7390,6 +7409,13 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8983537551095611459">Mengonfigurasi daftar ID ekstensi yang dikecualikan dari prosedur pembersihan sesi tamu terkelola yang dibatasi.</translation>
 <translation id="8983539044126123594">Aktifkan login dengan Akun Google tambahan</translation>
 <translation id="8992176907758534924">Jangan izinkan situs apa pun menampilkan gambar</translation>
+<translation id="8994954504552592260">Mengaktifkan migrasi perangkat yang dikelola <ph name="MS_AD_NAME" /> ke pengelolaan cloud. Kebijakan ini memungkinkan migrasi nirsentuh beberapa perangkat di perusahaan untuk dimulai dari jarak jauh. Selain itu, proses migrasi akan dibuat setransparan mungkin bagi pengguna akhir.
+
+      Jika kebijakan ini disetel ke aktif dan ID pendaftaran telah diupload ke DMServer, powerwash di perangkat akan dimulai dari jarak jauh.
+
+      Jika kebijakan ini disetel ke nonaktif atau tidak disetel, powerwash di perangkat tidak akan dimulai dari jarak jauh, terlepas dari status upload ID pendaftaran.
+
+      Pemeriksaan ini akan dimulai setiap kali layar login dimuat, lalu dicoba lagi setiap jam (selama perangkat masih menampilkan layar login). Tindakan ini mencegah migrasi dimulai di tengah-tengah sesi pengguna, yang akan menyebabkan potensi masalah bagi pengguna akhir.</translation>
 <translation id="9007632512838819703">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />.
 
       Menonaktifkan secara paksa fitur pemeriksa ejaan bahasa. Bahasa yang tidak dikenal dalam daftar tersebut akan diabaikan.

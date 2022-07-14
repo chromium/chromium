@@ -1280,6 +1280,7 @@
 <translation id="2180620921879609685">모든 페이지에서 콘텐츠 차단</translation>
 <translation id="2182058453334755893">클립보드에 복사됨</translation>
 <translation id="2184515124301515068">사이트의 소리 재생 여부를 Chrome이 결정(권장)</translation>
+<translation id="2186206192313702726">Google 렌즈</translation>
 <translation id="2186711480981247270">다른 기기에서 공유된 페이지</translation>
 <translation id="2187675480456493911">계정에 연결된 다른 기기와 동기화되어 있습니다. 다른 사용자가 수정한 설정은 동기화되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">서버 인증서 가져오기 오류</translation>
@@ -1813,6 +1814,7 @@
 <translation id="2667144577800272420">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 앱은 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="2667463864537187133">맞춤법 검사 관리</translation>
 <translation id="2669241540496514785"><ph name="APP_NAME" /> 앱을 열 수 없음</translation>
+<translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />이(가) Chrome 탭을 공유합니다.</translation>
 <translation id="2670403088701171361">사이트에서 클립보드에 저장된 텍스트 또는 이미지를 확인하도록 허용하지 않음</translation>
 <translation id="2670429602441959756">이 페이지에는 아직 VR에서 지원되지 않는 기능이 있습니다. 종료합니다...</translation>
@@ -2180,6 +2182,7 @@
 <translation id="3008232374986381779"><ph name="DEVICE_TYPE" />에서 Linux 도구, 편집기, IDE를 실행합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}}</translation>
+<translation id="3009178788565917040">출력</translation>
 <translation id="3009300415590184725">모바일 데이터 서비스 설정 과정을 취소하시겠습니까?</translation>
 <translation id="3009779501245596802">색인화된 데이터베이스</translation>
 <translation id="3010279545267083280">비밀번호 삭제됨</translation>
@@ -3565,6 +3568,7 @@
 <translation id="4377058670119819762">탭 표시줄이 탭으로 가득 찼을 때 좌우로 스크롤할 수 있도록 합니다.</translation>
 <translation id="4377363674125277448">서버의 인증서에 문제가 발생했습니다.</translation>
 <translation id="4378154925671717803">전화기</translation>
+<translation id="4378308539633073595">앞으로 스크롤</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4378556263712303865">기기 요청</translation>
 <translation id="4379281552162875326">‘<ph name="APP_NAME" />’ 앱을 제거하시겠습니까?</translation>
@@ -3942,7 +3946,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4742334355511750246">이미지 표시가 허용되지 않음</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />애플리케이션 업데이트 방법 알아보기<ph name="END_LINK" /></translation>
-<translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 숨기기 취소}other{사이트 숨기기 취소}}</translation>
+<translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
 <translation id="474609389162964566">"Hey Google"로 어시스턴트에 액세스</translation>
 <translation id="4746351372139058112">메시지</translation>
 <translation id="4748783296226936791">사이트에서는 흔히 사용되지 않는 키보드, 게임 컨트롤러, 기타 기기가 필요한 기능을 지원하기 위해 주로 HID 기기에 연결합니다.</translation>
@@ -4177,7 +4181,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4972129977812092092">프린터 수정</translation>
 <translation id="4972164225939028131">잘못된 비밀번호</translation>
 <translation id="4972737347717125191">사이트에서 가상 현실 기기 및 데이터의 사용을 요청할 수 있음</translation>
-<translation id="4973325300212422370">{NUM_TABS,plural, =1{사이트 숨기기}other{사이트 숨기기}}</translation>
+<translation id="4973325300212422370">{NUM_TABS,plural, =1{사이트 음소거}other{사이트 음소거}}</translation>
 <translation id="497403230787583386">보안 확인이 완료되었습니다. 문서가 인쇄됩니다.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">액세스 확인</translation>
@@ -7370,6 +7374,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8120505434908124087">eSIM 프로필 설치</translation>
 <translation id="812260729110117038">광고주와 게시자는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.</translation>
 <translation id="81238879832906896">노란색과 흰색 꽃</translation>
+<translation id="8123975449645947908">뒤로 스크롤</translation>
 <translation id="8124313775439841391">관리되는 ONC</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8131740175452115882">확인</translation>
@@ -8286,6 +8291,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9037640663275993951">허용되지 않는 기기입니다.</translation>
 <translation id="9037818663270399707">연결이 일부 네트워크 트래픽에 비공개로 설정되어 있지 않습니다.</translation>
 <translation id="9037965129289936994">원본 보기</translation>
+<translation id="9038489124413477075">이름이 없는 폴더</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{앞으로 1번 더 시도할 수 있습니다.}other{앞으로 #번 더 시도할 수 있습니다.}}</translation>
 <translation id="9040473193163777637">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 볼륨 키 2개를 5초 동안 동시에 길게 누르세요.</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> 비밀번호를 업데이트하시겠습니까?</translation>

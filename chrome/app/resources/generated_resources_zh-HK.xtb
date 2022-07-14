@@ -354,6 +354,7 @@
 <translation id="1340527397989195812">透過「檔案」應用程式備份裝置中的媒體。</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
+<translation id="1344377983938103876">正在開啟「<ph name="URL" />」...</translation>
 <translation id="134589511016534552">媒體分頁亦會在「開啟的分頁」部分顯示</translation>
 <translation id="1346630054604077329">確認並重新啟動</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -1813,6 +1814,7 @@
 <translation id="2667144577800272420">其他應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」無法開啟支援的連結。</translation>
 <translation id="2667463864537187133">管理拼字檢查</translation>
 <translation id="2669241540496514785">無法開啟 <ph name="APP_NAME" />。</translation>
+<translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
 <translation id="2670403088701171361">不允許網站查看剪貼簿中的文字或圖片</translation>
 <translation id="2670429602441959756">此網頁包含尚未支援 VR 模式的功能。即將退出…</translation>
@@ -2180,6 +2182,7 @@
 <translation id="3008232374986381779">在您的 <ph name="DEVICE_TYPE" /> 上執行 Linux 工具、編輯器和整合開發環境 (IDE)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您在今天內連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。}other{<ph name="MANAGER" /> 要求您連接 Wi-Fi 並在期限前下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。}}</translation>
+<translation id="3009178788565917040">輸出</translation>
 <translation id="3009300415590184725">您確定要取消流動數據服務設定程序嗎？</translation>
 <translation id="3009779501245596802">索引數據庫</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
@@ -3567,6 +3570,7 @@
 <translation id="4377058670119819762">當分頁列滿載時可以左右捲動分頁列。</translation>
 <translation id="4377363674125277448">伺服器憑證有問題。</translation>
 <translation id="4378154925671717803">電話號碼</translation>
+<translation id="4378308539633073595">向前捲動</translation>
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4378556263712303865">裝置申請</translation>
 <translation id="4379281552162875326">要解除安裝「<ph name="APP_NAME" />」嗎？</translation>
@@ -6966,6 +6970,7 @@
 <translation id="7753735457098489144">儲存空間不足，因此無法完成安裝。如要釋出空間，請刪除裝置儲存空間內的檔案。</translation>
 <translation id="7754347746598978109">不允許使用 JavaScript</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
+<translation id="7755134875397410803">為協助你完成工作，當你在網站上使用 Google 助理時，系統會將該網站的網址和內容，連同你透過 Google 助理提交的資訊，一併傳送給 Google。這類資訊可能會儲存在你的 Google 帳戶中。你可以在 Chrome 設定中停用 Google 助理。<ph name="LEARN_MORE" /></translation>
 <translation id="7755287808199759310">您的家長可以為您解除封鎖此網站</translation>
 <translation id="7757592200364144203">變更裝置名稱</translation>
 <translation id="7757739382819740102">附近所有聯絡人都可與您分享內容。此操作需要您的核准。</translation>
@@ -7369,6 +7374,7 @@
 <translation id="8120505434908124087">安裝 eSIM 卡設定檔</translation>
 <translation id="812260729110117038">廣告客戶和發佈者無需追蹤您的網站瀏覽記錄，就能瞭解廣告成效。</translation>
 <translation id="81238879832906896">黃色和白色的花</translation>
+<translation id="8123975449645947908">向後捲動</translation>
 <translation id="8124313775439841391">管理 ONC</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8131740175452115882">確定</translation>
@@ -8285,6 +8291,7 @@
 <translation id="9037640663275993951">不允許使用裝置</translation>
 <translation id="9037818663270399707">您的連線有部分網絡流量不屬於私人連線</translation>
 <translation id="9037965129289936994">顯示原文</translation>
+<translation id="9038489124413477075">未命名的資料夾</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{您還可再試 1 次。}other{您還可再試 # 次。}}</translation>
 <translation id="9040473193163777637">係咪要啟動 Chrome OS 內置嘅螢幕閱讀器 ChromeVox？係嘅話就請同時㩒住校高同校低音量鍵五秒。</translation>
 <translation id="9040661932550800571">要更新 <ph name="ORIGIN" /> 的密碼嗎？</translation>

@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">Списък за четене</translation>
 <translation id="1264309058268477500">Алтернативна</translation>
 <translation id="1264974993859112054">Спорт</translation>
+<translation id="1266469291454105242">Отключване на устройството</translation>
 <translation id="1269516672602708785">Бързо създаване на сайт в Google Сайтове</translation>
 <translation id="1270502636509132238">Начин на вземане</translation>
 <translation id="1281476433249504884">Стакер 1</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">Запознанства и лични обяви</translation>
 <translation id="1753706481035618306">Номер на страницата</translation>
 <translation id="1755621011177747277">Осиновяване</translation>
+<translation id="1756026472674246267">Отваряне на връзката в нов раздел</translation>
 <translation id="175656076281618225">Илюзионно изкуство</translation>
 <translation id="1757773103848038814">Непропорционален шрифт</translation>
 <translation id="1763864636252898013">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; операционната система на устройството ви няма доверие на сертификата му за сигурност. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">Анулиране на плащането</translation>
 <translation id="2148613324460538318">Добавяне на карта</translation>
 <translation id="2149968176347646218">Връзката не е защитена</translation>
+<translation id="2153609454945889823">Да се инсталират ли услугите за Google Play за AR?</translation>
 <translation id="2154054054215849342">Синхронизирането не е налице за въведения от вас домейн</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
 <translation id="2161656808144014275">Текст</translation>
@@ -832,6 +835,7 @@
 <translation id="3229277193950731405">Копиране на низа за версията</translation>
 <translation id="323107829343500871">Въведете кода за проверка за <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Важното съдържание на този сайт да се открива винаги</translation>
+<translation id="3238395604961564389">Отваряне на връзката в прозорец в режим „инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
 <translation id="3240791268468473923">Листът за несъответстващи идентификационни данни за сигурни плащания е отворен</translation>
 <translation id="324180406144491771">Връзките от тип <ph name="HOST_NAME" /> са блокирани</translation>
@@ -945,6 +949,7 @@
 <translation id="3531780078352352885">Листове за заданието</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> иска да използва микрофона ви</translation>
 <translation id="3533328374079021623">Пощенска кутия 5</translation>
+<translation id="3542768452570884558">Отваряне на връзката в нов прозорец</translation>
 <translation id="3550112004925580947">Туристически отрасъл</translation>
 <translation id="3552297013052089404">Безсерифен шрифт</translation>
 <translation id="3558573058928565255">През деня</translation>
@@ -1115,11 +1120,13 @@
 <translation id="4040350669425716613">Колежи и университети</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">Ключ „<ph name="SUBKEY" />“: <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Използвайте функцията за отключване на устройството, за да потвърждавате карти по-бързо</translation>
 <translation id="4067098466788473230">Стипендии и безвъзмездна помощ за обучение</translation>
 <translation id="4067263367174615723">C1 (плик)</translation>
 <translation id="4067947977115446013">Добавяне на валиден адрес</translation>
 <translation id="4072193657607981494">Правилата се зареждат</translation>
 <translation id="4072486802667267160">При обработването на поръчката ви възникна грешка. Моля, опитайте отново.</translation>
+<translation id="4073376909608563327">Отключването на устройството не може да се използва</translation>
 <translation id="4073797364926776829">Преглед на картата</translation>
 <translation id="4075732493274867456">Клиентът и сървърът не поддържат обща версия или пакет за шифроване за протокола SSL.</translation>
 <translation id="4079302484614802869">За конфигурацията на прокси сървъра е зададено да използва URL адрес на скрипт във формат .pac, а не фиксирани прокси сървъри.</translation>
@@ -1412,6 +1419,7 @@
 <translation id="4840250757394056958">Преглед на историята ви в Chrome</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="484671803914931257">Получаване на отстъпки за <ph name="MERCHANT_NAME" /> и др.</translation>
+<translation id="484988093836683706">Използване на отключването на устройството</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="4852429274334674023">Операционни системи</translation>
 <translation id="485316830061041779">немски</translation>
@@ -1799,6 +1807,7 @@
 <translation id="5921185718311485855">Включено</translation>
 <translation id="5921639886840618607">Картата да се запази ли в профила в Google?</translation>
 <translation id="5922853866070715753">Почти готово</translation>
+<translation id="5923492272538889093">Искате ли да използвате отключването на устройството вместо код за проверка?</translation>
 <translation id="5928444777041341328">Дом и градина</translation>
 <translation id="5932224571077948991">На сайта се показват натрапчиви или подвеждащи реклами</translation>
 <translation id="5937560539988385583">Страницата е преведена</translation>
@@ -1972,6 +1981,7 @@
 <translation id="643051589346665201">Промяна на паролата за Google</translation>
 <translation id="6433490469411711332">Редактиране на информацията за връзка</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> отказа да установи връзка.</translation>
+<translation id="6433797564277305076">Потвърждавайте картите си по-бързо, като от сега нататък използвате функцията за отключване на устройството</translation>
 <translation id="6440503408713884761">Пренебрегнато</translation>
 <translation id="6443406338865242315">Кои разширения и приставки сте инсталирали</translation>
 <translation id="6446163441502663861">Kahu (плик)</translation>
@@ -2178,6 +2188,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Тази карта не може да бъде запазена в момента}other{Тези карти не могат да бъдат запазени в момента}}</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> потвърди, че сертификатът на този уебсайт е издаден от <ph name="ISSUER" />.</translation>
+<translation id="7058774143982824355">Услуга за синтактичен анализ на пароли в CSV файл</translation>
 <translation id="7061777300866737982">Сигурност и охрана на дома</translation>
 <translation id="7062635574500127092">синьо-зелено</translation>
 <translation id="706295145388601875">Добавяне на адреси и управлението им от настройките на Chrome</translation>
@@ -2442,6 +2453,7 @@
 <translation id="7696089921647603491">Класически рок и песни от миналото</translation>
 <translation id="7697066736081121494">Prc8 (плик)</translation>
 <translation id="769721561045429135">В момента имате карти, които могат да се използват само на това устройство. Кликнете върху „Напред“, за да ги прегледате.</translation>
+<translation id="7698864304447945242">Да се актуализират ли услугите за Google Play за AR?</translation>
 <translation id="7699293099605015246">В момента няма статии</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Продължаване към <ph name="SITE" /> (опасно)<ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@
 <translation id="7723047071702270851">Редактиране на картата</translation>
 <translation id="7734285854693414638">Бързо създаване на формуляр в Google Формуляри</translation>
 <translation id="773466115871691567">Страниците на <ph name="SOURCE_LANGUAGE" /> да се превеждат винаги</translation>
+<translation id="7736959720849233795">Копиране на адреса на връзката</translation>
 <translation id="7740996059027112821">Стандартна</translation>
 <translation id="77424286611022110">На този сайт се показват натрапчиви или подвеждащи реклами. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Блокирахме опасно съдържание.</translation>

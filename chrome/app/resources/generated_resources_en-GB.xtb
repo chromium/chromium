@@ -1814,6 +1814,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2667144577800272420">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" /> and <ph name="APP_NAME_3" /> from opening supported links.</translation>
 <translation id="2667463864537187133">Manage spell check</translation>
 <translation id="2669241540496514785">Couldn't open <ph name="APP_NAME" /></translation>
+<translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> is sharing a Chrome tab.</translation>
 <translation id="2670403088701171361">Don't allow sites to see text or images on your clipboard</translation>
 <translation id="2670429602441959756">This page contains features not yet supported in VR. Exiting...</translation>
@@ -2181,6 +2182,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3008232374986381779">Run Linux tools, editors and IDEs on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
+<translation id="3009178788565917040">Output</translation>
 <translation id="3009300415590184725">Are you sure you want to cancel the mobile data service set-up process?</translation>
 <translation id="3009779501245596802">Indexed Databases</translation>
 <translation id="3010279545267083280">Password deleted</translation>
@@ -3568,6 +3570,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4377058670119819762">Enables tab strip to scroll left and right when full.</translation>
 <translation id="4377363674125277448">There was a problem with server's certificate.</translation>
 <translation id="4378154925671717803">Phone</translation>
+<translation id="4378308539633073595">Scroll forwards</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4378556263712303865">Device requisition</translation>
 <translation id="4379281552162875326">Uninstall '<ph name="APP_NAME" />'?</translation>
@@ -7373,6 +7376,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8120505434908124087">Install eSIM profile</translation>
 <translation id="812260729110117038">Advertisers and publishers can study the effectiveness of ads in a way that does not track you across sites.</translation>
 <translation id="81238879832906896">Yellow and white flower</translation>
+<translation id="8123975449645947908">Scroll backwards</translation>
 <translation id="8124313775439841391">Managed ONC</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8131740175452115882">Confirm</translation>
@@ -8289,6 +8293,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9037640663275993951">Device is not allowed</translation>
 <translation id="9037818663270399707">Your connection is not private for all network traffic</translation>
 <translation id="9037965129289936994">Show Original</translation>
+<translation id="9038489124413477075">Unnamed Folder</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{You have one attempt remaining.}other{You have # attempts remaining.}}</translation>
 <translation id="9040473193163777637">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press and hold both volume keys for five seconds.</translation>
 <translation id="9040661932550800571">Update password for <ph name="ORIGIN" />?</translation>

@@ -116,6 +116,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1263231323834454256">Lasīšanas saraksts</translation>
 <translation id="1264309058268477500">Alternatīva</translation>
 <translation id="1264974993859112054">Sports</translation>
+<translation id="1266469291454105242">Ierīces atbloķēšana</translation>
 <translation id="1269516672602708785">Ātri izveidot jaunu vietni pakalpojumā Google vietnes</translation>
 <translation id="1270502636509132238">Saņemšanas veids</translation>
 <translation id="1281476433249504884">1. izvades vieta</translation>
@@ -330,6 +331,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1753068535428855445">Randiņi un iepazīšanās sludinājumi</translation>
 <translation id="1753706481035618306">Lapas numurs</translation>
 <translation id="1755621011177747277">Adopcija</translation>
+<translation id="1756026472674246267">Atvērt saiti jaunā cilnē</translation>
 <translation id="175656076281618225">Maģija</translation>
 <translation id="1757773103848038814">Vienplatuma fonts</translation>
 <translation id="1763864636252898013">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu jūsu ierīces operētājsistēmā. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
@@ -455,6 +457,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="214556005048008348">Atcelt maksājumu</translation>
 <translation id="2148613324460538318">Pievienot karti</translation>
 <translation id="2149968176347646218">Savienojums nav drošs</translation>
+<translation id="2153609454945889823">Vai instalēt Google Play PR pakalpojumus?</translation>
 <translation id="2154054054215849342">Sinhronizācija jūsu domēnam nav pieejama.</translation>
 <translation id="2154484045852737596">Kartes informācijas rediģēšana</translation>
 <translation id="2161656808144014275">Teksts</translation>
@@ -832,6 +835,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3229277193950731405">Kopēt versijas virkni</translation>
 <translation id="323107829343500871">Ievadiet kredītkartes <ph name="CREDIT_CARD" /> CVC</translation>
 <translation id="3234666976984236645">Vienmēr noteikt nozīmīgu saturu šajā vietnē</translation>
+<translation id="3238395604961564389">Atvērt saiti inkognito režīma logā</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pielāgotu pārlūka izskatu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3240791268468473923">Ir atvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” saites ir bloķētas</translation>
@@ -945,6 +949,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3531780078352352885">Uzdevuma lapas</translation>
 <translation id="3532844647053365774">Vietnē <ph name="HOST" /> tiek pieprasīta atļauja lietot jūsu mikrofonu.</translation>
 <translation id="3533328374079021623">5. pastkaste</translation>
+<translation id="3542768452570884558">Atvērt saiti jaunā logā</translation>
 <translation id="3550112004925580947">Viesmīlības nozare</translation>
 <translation id="3552297013052089404">Sans Serif fonts</translation>
 <translation id="3558573058928565255">diena</translation>
@@ -1114,11 +1119,13 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4040350669425716613">Koledžas un universitātes</translation>
 <translation id="4056223980640387499">Sēpija</translation>
 <translation id="4058922952496707368">Atslēga <ph name="SUBKEY" />: <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Izmantojiet ierīces atbloķēšanu, lai ātrāk apstiprinātu kartes</translation>
 <translation id="4067098466788473230">Stipendijas mācībām</translation>
 <translation id="4067263367174615723">C1 (aploksne)</translation>
 <translation id="4067947977115446013">Derīgas adreses pievienošana</translation>
 <translation id="4072193657607981494">Notiek politiku ielāde</translation>
 <translation id="4072486802667267160">Apstrādājot pasūtījumu, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
+<translation id="4073376909608563327">Nevarēja izmantot ierīces atbloķēšanu</translation>
 <translation id="4073797364926776829">Skatīt karti</translation>
 <translation id="4075732493274867456">Klients un serveris neatbalsta bieži lietoto SSL protokola versiju vai šifra komplektu.</translation>
 <translation id="4079302484614802869">Starpniekserveris ir iestatīts, lai tas lietotu .pac skripta URL, nevis fiksētus starpniekserverus.</translation>
@@ -1411,6 +1418,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4840250757394056958">Skatīt Chrome vēsturi</translation>
 <translation id="484462545196658690">Autom.</translation>
 <translation id="484671803914931257">Saņemiet atlaides, iepērkoties pie <ph name="MERCHANT_NAME" /> un citiem tirgotājiem</translation>
+<translation id="484988093836683706">Izmantot ierīces atbloķēšanu</translation>
 <translation id="4850886885716139402">Skatīt</translation>
 <translation id="4852429274334674023">Operētājsistēmas</translation>
 <translation id="485316830061041779">Vācu valoda</translation>
@@ -1798,6 +1806,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5921185718311485855">Iesl.</translation>
 <translation id="5921639886840618607">Vai saglabāt kartes datus Google kontā?</translation>
 <translation id="5922853866070715753">Gandrīz pabeigts</translation>
+<translation id="5923492272538889093">Vai vēlaties izmantot ierīces atbloķēšanu, nevis CVC?</translation>
 <translation id="5928444777041341328">Māja un dārzs</translation>
 <translation id="5932224571077948991">Vietnē tiek rādītas traucējošas vai maldinošas reklāmas</translation>
 <translation id="5937560539988385583">Lapa pārtulkota</translation>
@@ -1971,6 +1980,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="643051589346665201">Mainīt Google paroli</translation>
 <translation id="6433490469411711332">Kontaktinformācijas rediģēšana</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> noraidīja savienojuma izveidi.</translation>
+<translation id="6433797564277305076">Turpmāk apstipriniet kartes ātrāk, izmantojot ierīces atbloķēšanu</translation>
 <translation id="6440503408713884761">Ignorēts</translation>
 <translation id="6443406338865242315">Kurus paplašinājumus un spraudņus esat instalējis</translation>
 <translation id="6446163441502663861">Kahu (aploksne)</translation>
@@ -2177,6 +2187,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Šo karti pašlaik nevar saglabāt}zero{Pašlaik nevar saglabāt šīs kartes}one{Pašlaik nevar saglabāt šīs kartes}other{Pašlaik nevar saglabāt šīs kartes}}</translation>
 <translation id="7053983685419859001">Bloķēt</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> apstiprināja, ka <ph name="ISSUER" /> izsniedza šīs vietnes sertifikātu.</translation>
+<translation id="7058774143982824355">CSV failā saglabātu paroļu parsētāja pakalpojums</translation>
 <translation id="7061777300866737982">Mājokļa drošība un aizsardzība</translation>
 <translation id="7062635574500127092">Zilganzaļa</translation>
 <translation id="706295145388601875">Chrome iestatījumos pievienojiet un pārvaldiet adreses.</translation>
@@ -2441,6 +2452,7 @@ Papildu informācija:
 <translation id="7696089921647603491">Klasiskais roks un “vecie gabali”</translation>
 <translation id="7697066736081121494">Prc8 (aploksne)</translation>
 <translation id="769721561045429135">Pašlaik dažas kartes varat izmantot tikai šajā ierīcē. Lai pārskatītu kartes, noklikšķiniet uz Turpināt.</translation>
+<translation id="7698864304447945242">Vai atjaunināt Google Play PR pakalpojumus?</translation>
 <translation id="7699293099605015246">Raksti pašlaik nav pieejami</translation>
 <translation id="7701040980221191251">Nav</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Apmeklēt vietni <ph name="SITE" /> (nav droša)<ph name="END_LINK" /></translation>
@@ -2453,6 +2465,7 @@ Papildu informācija:
 <translation id="7723047071702270851">Kartes informācijas rediģēšana</translation>
 <translation id="7734285854693414638">Ātri izveidot jaunu veidlapu pakalpojumā Google veidlapas</translation>
 <translation id="773466115871691567">Vienmēr tulkot lapas šādā valodā: <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="7736959720849233795">Kopēt saites adresi</translation>
 <translation id="7740996059027112821">Standarta</translation>
 <translation id="77424286611022110">Šajā vietnē tiek rādītas traucējošas vai maldinošas reklāmas. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Bloķēts bīstams saturs</translation>

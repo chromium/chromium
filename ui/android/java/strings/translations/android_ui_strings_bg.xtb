@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="2405260961377511836">Не могат да се изберат снимки</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
 <translation id="6315516427814392808">Предишната операция не можа да завърши поради недостиг на памет</translation>
 <translation id="6555463879959038093">Копирането в буферната памет не бе успешно</translation>

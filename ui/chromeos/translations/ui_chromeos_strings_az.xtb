@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="2163152940313951844">Yanlış simvol: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">ABŞ Beynəlxalq kompüter klaviaturası ilə Portuqal dili</translation>
+<translation id="2193661397560634290"><ph name="SPACE_USED" /> istifadə edilib</translation>
 <translation id="2198315389084035571">Sadələşmiş Çin</translation>
 <translation id="22085916256174561">Koreya</translation>
 <translation id="2208919847696382164">Linux ilə quraşdırın</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">F klaviaturası ilə Türk dili</translation>
 <translation id="2732839045120506979">Vyetnam dili (VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop'a <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
+<translation id="2764206540577097904">Bütün fərdi Google Workspace yaddaşınızdan istifadə etmisiniz.</translation>
 <translation id="2771816809568414714">Pendir</translation>
 <translation id="2781645665747935084">Belçikalı</translation>
 <translation id="2782104745158847185">Linux tətbiqini quraşdırarkən xəta baş verdi</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Qısa ad istifadə edin</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> formatlanır...</translation>
 <translation id="2951236788251446349">Meduza</translation>
+<translation id="2958458230122209142">Yaddaş azdır. <ph name="TOTAL_SPACE" /> fərdi yaddaşdan <ph name="REMAINING_PERCENTAGE" />% qalıb.</translation>
 <translation id="2977940621473452797">Bu fayl Macintosh proqram təminatından istifadə edən kompüter üçündür. Bu, ChromeOS işlədən cihazınız üçün uyğun deyil.</translation>
 <translation id="2984337792991268709">Bu gün <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> element bərpa edilir...</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Bu qovluqda saxlanan bütün fayllar avtomatik olaraq onlayn yedəklənir.</translation>
 <translation id="6825883775269213504">Rus</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> seçimdən silindi.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> bütün Google Workspace yaddaşından istifadə edib.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="6861394552169064235">Fars</translation>
 <translation id="6862635236584086457">Bütün fayllar bu qovluqda saxlandı və avtomatik güncəlləşdi.</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">İsveç</translation>
 <translation id="6990081529015358884">Boş yer bitdi</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> qovluqlar seçildi</translation>
+<translation id="7008426324576352165">Yükləməni tamamlamaq üçün təşkilatınız daha çox yaddaş tələb edir.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Quraşdırma uğursuz oldu.</translation>
 <translation id="7031639531908619281">Türk</translation>
@@ -931,11 +936,13 @@
 <translation id="8919081441417203123">Danimarka</translation>
 <translation id="8965697826696209160">Yer çatmır.</translation>
 <translation id="8997962250644902079">Çin dili (Ənənəvi) Pinyin</translation>
+<translation id="8998871447376656508">Yükləməni tamamlamaq üçün Google Diskinizdə kifayət qədər boş yer yoxdur.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
 <translation id="9017798300203431059">Rus fonetikası</translation>
 <translation id="9034924485347205037">Linux faylları</translation>
 <translation id="9035012421917565900">Element yenidən "<ph name="DESTINATION_NAME" />" təyinatına köçürülə bilməz, ona görə də bu əməliyyat geri qaytara bilməyəcəksiniz.</translation>
 <translation id="9035689366572880647">Cari PİN'i daxil edin</translation>
+<translation id="9037777873893411148">*Təşkilatın yaddaşı doludur</translation>
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı fayl artıq mövcuddur. Fərqli ad seçin.</translation>
 <translation id="9046895021617826162">Qoşulma uğursuz oldu</translation>
 <translation id="9065512565307033593">Doğrulamaq alınmasa, şəbəkəyə girişiniz deaktiv ediləcək.</translation>

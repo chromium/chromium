@@ -17,6 +17,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1063454504051558093">Utilizza un'altra password…</translation>
 <translation id="1066060668811609597">Gestisci la sincronizzazione</translation>
 <translation id="1076421457278169141">Scansione del codice eseguita</translation>
+<translation id="1076785341346483463">Sincronizza con account gestito</translation>
 <translation id="1084365883616172403">Pubblicazione su Facebook completata.</translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Accetta e continua</translation>
@@ -494,6 +495,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5168414296986405587">Realizzato per iPadOS</translation>
 <translation id="5173088371991956744">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="5181140330217080051">Download in corso</translation>
+<translation id="5184329579814168207">Apri in Chrome</translation>
 <translation id="5186185447130319458">Privata</translation>
 <translation id="5188482106078495165">L'impostazione relativa ai cookie viene applicata a tutte le schede. Per applicare una nuova impostazione a una scheda aperta, ricarica la scheda.</translation>
 <translation id="5190835502935405962">Barra dei Preferiti</translation>

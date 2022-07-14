@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">ایمن شد</translation>
 <translation id="2638942478653899953">‏دسترسی به Google Drive امکان‌پذیر نیست. لطفاً <ph name="BEGIN_LINK" />از سیستم خارج شوید<ph name="END_LINK" /> و دوباره وارد شوید.</translation>
 <translation id="2649120831653069427">ماهی رنگین‌مکان</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="2663066752008346276">میانماری/برمه‌ای با صفحه‌کلید میانسان</translation>
 <translation id="2664412712123763093">محل فایل</translation>
 <translation id="2718540689505416944">‏نصب برنامه با Linux</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">لتونیایی</translation>
 <translation id="5489965683297092283">فیلتر <ph name="FILTER_NAME" /> خاموش است.</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
+<translation id="5500104704744051184">‏تا زمانی‌که PUK را وارد نکنید، نمی‌توانید از این شبکه استفاده کنید</translation>
 <translation id="5500122897333236901">ایسلندی</translation>
 <translation id="5508696409934741614">نقطه‌ها</translation>
 <translation id="5522908512596376669">نمای فهرست فایل به نمای فهرستی تغییر کرده است.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> مورد</translation>
 <translation id="642282551015776456">این نام ممکن است به‌عنوان نام فایلی از پوشه استفاده نشود</translation>
 <translation id="6423031066725912715">‏ویتنامی با صفحه‌کلید TCVN</translation>
+<translation id="6430271654280079150">۱ تلاش دیگر دارید.</translation>
 <translation id="6485131920355264772">دریافت اطلاعات فضا انجام نشد</translation>
 <translation id="6495925982925244349">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، جزئیات</translation>
 <translation id="649877868557234318">درحال استخراج <ph name="FILE_NAME" /> در <ph name="FOLDER_NAME" /></translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903">در حال همگام‌سازی <ph name="NUMBER_OF_FILES" /> مورد...</translation>
 <translation id="8600173386174225982">فهرست فایل به نمای تصویر کوچک تغییر کرده است.</translation>
 <translation id="8601932370724196034">‏فایل تصویری Crostini</translation>
+<translation id="8608515571837163082">‏پین نادرست دفعات زیادی وارد شده است. «کلید لغو انسداد شخصی» (PUK‏) ۸ رقمی را که شرکت مخابراتی ارائه کرده است وارد کنید.</translation>
 <translation id="8609695766746872526">ایسلندی</translation>
 <translation id="863903787380594467">پین اشتباه است. <ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - درگاه</translation>

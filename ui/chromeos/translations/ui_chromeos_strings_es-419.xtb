@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Segura</translation>
 <translation id="2638942478653899953">No se pudo establecer conexión con Google Drive. <ph name="BEGIN_LINK" />Sal de la cuenta<ph name="END_LINK" /> y vuelve a acceder.</translation>
 <translation id="2649120831653069427">Pez arco iris</translation>
+<translation id="2653059201992392941">Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="2663066752008346276">Birmano con teclado Myansan</translation>
 <translation id="2664412712123763093">Ubicación del archivo</translation>
 <translation id="2718540689505416944">Instalar la app con Linux</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">Letón</translation>
 <translation id="5489965683297092283">El filtro <ph name="FILTER_NAME" /> está desactivado.</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
+<translation id="5500104704744051184">Para usar esta red, debes ingresar la PUK.</translation>
 <translation id="5500122897333236901">Islandés</translation>
 <translation id="5508696409934741614">Puntos</translation>
 <translation id="5522908512596376669">La lista de archivos cambió a la vista de lista.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementos</translation>
 <translation id="642282551015776456">Este nombre no se puede utilizar como archivo del nombre de la carpeta</translation>
 <translation id="6423031066725912715">Vietnamita con teclado TCVN</translation>
+<translation id="6430271654280079150">Te queda 1 intento.</translation>
 <translation id="6485131920355264772">No se pudo recuperar la información sobre el espacio.</translation>
 <translation id="6495925982925244349">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, administrada por tu administrador, detalles</translation>
 <translation id="649877868557234318">Extrayendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> elementos…</translation>
 <translation id="8600173386174225982">La lista de archivos cambió a la vista de miniaturas.</translation>
 <translation id="8601932370724196034">Archivo de imagen de Crostini</translation>
+<translation id="8608515571837163082">Se ingresó el PIN de forma incorrecta demasiadas veces. Ingresa la clave personal de desbloqueo (PUK) de 8 dígitos que te proporcionó el proveedor.</translation>
 <translation id="8609695766746872526">Islandés</translation>
 <translation id="863903787380594467">El PIN es incorrecto. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" />: puerto</translation>

@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Kuvikelwe</translation>
 <translation id="2638942478653899953">I-Google Drayivu ayikwazanga ukufinyelelwa. Sicela <ph name="BEGIN_LINK" />uphume ngemvume<ph name="END_LINK" /> uphinde ungene ngemvume.</translation>
 <translation id="2649120831653069427">I-Rainbowfish</translation>
+<translation id="2653059201992392941">Unemizamo engu-<ph name="RETRIES" /> esele.</translation>
 <translation id="2663066752008346276">Isi-Burmese/Myanmar ngekhibhodi ye-Myansan</translation>
 <translation id="2664412712123763093">Indawo yefayela</translation>
 <translation id="2718540689505416944">Faka uhlelo lokusebenza nge-Linux</translation>
@@ -527,6 +528,7 @@
 <translation id="5489067830765222292">Latvian</translation>
 <translation id="5489965683297092283">Isihlungi esithi <ph name="FILTER_NAME" /> sivaliwe.</translation>
 <translation id="5494920125229734069">Khetha konke</translation>
+<translation id="5500104704744051184">Ngeke ukwazi ukusebenzisa le nethiwekhi uze ufake i-PUK</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Amachashazi</translation>
 <translation id="5522908512596376669">Uhlu lwefayela lushintshele kuhlu lokubuka.</translation>
@@ -632,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> izinto</translation>
 <translation id="642282551015776456">Leli gama akumele lisetshenziswe njengefayela noma igama lefayela</translation>
 <translation id="6423031066725912715">Isi-Vietnamese esinekhibhodi ye-TCVN</translation>
+<translation id="6430271654280079150">Unokuzama oku-1 okusele.</translation>
 <translation id="6485131920355264772">Yehlulekile ukuthola ulwazi lesikhala</translation>
 <translation id="6495925982925244349">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, kuphethwe umlawuli wakho, imininingwane</translation>
 <translation id="649877868557234318">Ikhipha i-<ph name="FILE_NAME" /> ku-<ph name="FOLDER_NAME" /></translation>
@@ -898,6 +901,7 @@
 <translation id="8579285237314169903">Ivumelanisa izinto ezingu-<ph name="NUMBER_OF_FILES" />...</translation>
 <translation id="8600173386174225982">Uhlu lwefayela lushintshele ekubukeni kwesithonjana.</translation>
 <translation id="8601932370724196034">Ifayela lesithombe se-Crostini</translation>
+<translation id="8608515571837163082">Iphinikhodi engalungile ifakwe izikhathi eziningi kakhulu. Faka ukhiye we-Personal Unblocking Key (PUK) onamadijithi ayi-8 onikezwe inkampani yenethiwekhi.</translation>
 <translation id="8609695766746872526">Icelandic</translation>
 <translation id="863903787380594467">Iphinikhodi engalungile. Unemizamo engu-<ph name="RETRIES" /> esele.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Imbobo</translation>

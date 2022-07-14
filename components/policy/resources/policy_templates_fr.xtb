@@ -1723,6 +1723,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="274769314493317695">Si <ph name="PRINTERS_WHITELIST" /> est sélectionné pour la règle <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Cette règle étant obsolète, veuillez utiliser la règle <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> à la place.</translation>
+<translation id="2751959596774212778">Dans les contextes non sécurisés, WebSQL est désactivé par défaut à partir de M107 et sera entièrement supprimé dans M110.
+          Si cette règle est définie sur "False" ou n'est pas configurée, WebSQL restera activé dans des contextes non sécurisés jusqu'à la fin de M106, puis sera désactivé à partir de M107.
+          Si cette règle est définie sur "True", WebSQL est activé dans des contextes non sécurisés.</translation>
 <translation id="2752046642026416564">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> peut utiliser les hôtes de messagerie native installés au niveau de l'utilisateur.
 
       Si elle est désactivée, <ph name="PRODUCT_NAME" /> ne peut utiliser ces hôtes que s'ils sont installés au niveau du système.</translation>
@@ -5529,6 +5532,7 @@ Si vous sélectionnez les options suivantes :
       Si vous sélectionnez "U2F", le deuxième facteur intégré se comporte conformément à la norme FIDO U2F.
 
       Si vous sélectionnez "U2F_EXTENDED", le deuxième facteur intégré fournit les fonctionnalités U2F ainsi que certaines extensions pour chaque attestation.</translation>
+<translation id="6998179760789945134">Désactiver WebSQL dans les contextes non sécurisés, sauf activation par l'indicateur Chrome.</translation>
 <translation id="6999948519306285655">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
 
        Elle permet de définir l'URL d'un fichier .pac proxy. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné l'option <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> dans la règle <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -7281,6 +7285,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8919100556245407184">Durée en jours, après l'expiration de la mise à jour automatique, au terme de laquelle l'utilisateur est déconnecté si la version de <ph name="PRODUCT_OS_NAME" /> est antérieure à la version <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> spécifiée.</translation>
 <translation id="8919369436496201075">Autoriser l'appareil à recevoir des mises à jour LTS</translation>
 <translation id="8921669704201370845">Activer la création de rapports cloud <ph name="PRODUCT_NAME" /> pour un profil géré</translation>
+<translation id="8922494933893518624">Forcer l'activation de WebSQL dans les contextes non sécurisés.</translation>
 <translation id="8930064580550462145">Lors de la connexion via l'écran de verrouillage, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut s'effectuer sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
       Si cette règle est définie sur -2, elle correspondra à la valeur limite du délai de connexion hors connexion de l'écran de connexion, qui provient de <ph name="POLICY" />.

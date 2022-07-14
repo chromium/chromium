@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Денес</translation>
 <translation id="2163152940313951844">Неважечки знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">португалски со американска меѓународна компјутерска тастатура</translation>
+<translation id="2193661397560634290">Искористено: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">поедноставен кинески</translation>
 <translation id="22085916256174561">корејски</translation>
 <translation id="2208919847696382164">Инсталирај со Linux</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">турски со F-тастатура</translation>
 <translation id="2732839045120506979">виетнамски VNI</translation>
 <translation id="2735623501230989521">Дајте ѝ дозвола на Parallels Desktop да пристапува до датотеките во папката „<ph name="FOLDER_NAME" />“</translation>
+<translation id="2764206540577097904">Го искористивте целиот ваш индивидуален капацитет на Google Workspace.</translation>
 <translation id="2771816809568414714">Сирење</translation>
 <translation id="2781645665747935084">Белгиски</translation>
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Користете пократко име</translation>
 <translation id="2949781154072577687">Се форматира <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Медуза</translation>
+<translation id="2958458230122209142">Мал капацитет. Преостануваат <ph name="REMAINING_PERCENTAGE" /> % од вашиот индивидуален капацитет на <ph name="TOTAL_SPACE" />.</translation>
 <translation id="2977940621473452797">Датотекава е создадена за компјутер што користи софтвер на Macintosh. Таа не е компатибилна со вашиот уред што извршува Chrome OS. Пребарајте ја „Веб-продавницата на Chrome“ за да најдете соодветна апликација за замена.</translation>
 <translation id="2984337792991268709">Денес <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Се враќаат <ph name="COUNT" /> ставки…</translation>
@@ -669,6 +672,7 @@
 <translation id="6823166707458800069">Автоматски се прави резервна копија онлајн од сите датотеки зачувани во папкава.</translation>
 <translation id="6825883775269213504">руски</translation>
 <translation id="6847101934483209767">Го отстранивте <ph name="ENTRY_NAME" /> од изборот.</translation>
+<translation id="6848194403851638089"><ph name="ORGANIZATION_NAME" /> го искористи целиот свој капацитет на Google Workspace.</translation>
 <translation id="6856459657722366306">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="6861394552169064235">персиски</translation>
 <translation id="6862635236584086457">Од сите датотеки зачувани во оваа папка автоматски се прави резервна копија онлајн</translation>
@@ -700,6 +704,7 @@
 <translation id="6989942356279143254">шведски</translation>
 <translation id="6990081529015358884">Немате веќе простор</translation>
 <translation id="6998711733709403587">Избрани се <ph name="SELCTED_FOLDERS_COUNT" /> папки</translation>
+<translation id="7008426324576352165">Вашата организација има потреба од повеќе капацитет за да го заврши прикачувањево.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Инсталацијата не успеа.</translation>
 <translation id="7031639531908619281">турски</translation>
@@ -933,11 +938,13 @@
 <translation id="8919081441417203123">дански</translation>
 <translation id="8965697826696209160">Нема доволно простор.</translation>
 <translation id="8997962250644902079">кинески (традиционален) пинјин</translation>
+<translation id="8998871447376656508">Нема доволно слободен простор на вашиот Google Drive за да се заврши прикачувањево.</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>
 <translation id="9017798300203431059">фонетски руски</translation>
 <translation id="9034924485347205037">Датотеки на Linux</translation>
 <translation id="9035012421917565900">Ставките не може да се преместат назад во „<ph name="DESTINATION_NAME" />“, па нема да може да го вратите дејствово.</translation>
 <translation id="9035689366572880647">Внесете го тековниот PIN-код</translation>
+<translation id="9037777873893411148">*Капацитетот на организацијата е полн</translation>
 <translation id="9038620279323455325">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Одберете друго име.</translation>
 <translation id="9046895021617826162">Поврзувањето не успеа</translation>
 <translation id="9065512565307033593">Ако не успеете да потврдите, пристапот до мрежата ќе ви биде оневозможен.</translation>

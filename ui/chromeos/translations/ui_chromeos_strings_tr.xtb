@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Güvenlik sağlandı</translation>
 <translation id="2638942478653899953">Google Drive'a erişilemedi. Lütfen <ph name="BEGIN_LINK" />çıkıp<ph name="END_LINK" /> tekrar giriş yapın.</translation>
 <translation id="2649120831653069427">Gökkuşağı Balığı</translation>
+<translation id="2653059201992392941"><ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="2663066752008346276">Myansan klavye ile Burmaca/Myanmar</translation>
 <translation id="2664412712123763093">Dosya konumu</translation>
 <translation id="2718540689505416944">Uygulamayı Linux ile yükle</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">Letonca</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtresi kapalı.</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
+<translation id="5500104704744051184">PUK'u girmeden bu ağı kullanamazsınız</translation>
 <translation id="5500122897333236901">İzlanda dili</translation>
 <translation id="5508696409934741614">Noktalar</translation>
 <translation id="5522908512596376669">Dosya listesi, liste görünümü olarak değiştirildi.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> öğe</translation>
 <translation id="642282551015776456">Bu ad, dosya veya klasör adı olarak kullanılamaz</translation>
 <translation id="6423031066725912715">TCVN klavye ile Vietnamca</translation>
+<translation id="6430271654280079150">1 deneme hakkınız kaldı.</translation>
 <translation id="6485131920355264772">Alan bilgileri alınamadı</translation>
 <translation id="6495925982925244349">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> dosyası <ph name="FOLDER_NAME" /> klasörüne çıkarılıyor</translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> öğe senkronize ediliyor...</translation>
 <translation id="8600173386174225982">Dosya listesi, küçük resim görünümü olarak değiştirildi.</translation>
 <translation id="8601932370724196034">Crostini resim dosyası</translation>
+<translation id="8608515571837163082">Çok sayıda yanlış PIN girildi. Operatörünüz tarafından sağlanan 8 basamaklı Kişisel Engelleme Anahtarınızı (PUK) girin.</translation>
 <translation id="8609695766746872526">İzlandaca</translation>
 <translation id="863903787380594467">Yanlış PIN. <ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Bağlantı noktası</translation>

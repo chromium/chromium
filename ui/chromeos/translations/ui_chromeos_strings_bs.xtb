@@ -138,6 +138,7 @@
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2163152940313951844">Nevažeći znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2184934335987813305">portugalski s međunarodnom SAD tastaturom za PC</translation>
+<translation id="2193661397560634290">Iskorišteno: <ph name="SPACE_USED" /></translation>
 <translation id="2198315389084035571">Pojednostavljeni kineski</translation>
 <translation id="22085916256174561">korejski</translation>
 <translation id="2208919847696382164">Instaliraj s Linuxom</translation>
@@ -201,6 +202,7 @@
 <translation id="2724954091494693138">turski s tastaturom F</translation>
 <translation id="2732839045120506979">vijetnamski VNI</translation>
 <translation id="2735623501230989521">Odobrite da Parallels Desktop pristupa fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
+<translation id="2764206540577097904">Iskoristili ste svu svoju privatnu pohranu na Google Workspaceu.</translation>
 <translation id="2771816809568414714">Sir</translation>
 <translation id="2781645665747935084">belgijska</translation>
 <translation id="2782104745158847185">Greška prilikom instalacije Linux aplikacije</translation>
@@ -221,6 +223,7 @@
 <translation id="2943503720238418293">Koristite kraći naziv</translation>
 <translation id="2949781154072577687">Formatiranje diska <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Meduza</translation>
+<translation id="2958458230122209142">Preostalo je malo pohrane, još <ph name="REMAINING_PERCENTAGE" />% od ukupno <ph name="TOTAL_SPACE" /> u vašoj privatnoj pohrani.</translation>
 <translation id="2977940621473452797">Ovaj fajl je dizajniran za računar koji koristi Macintosh softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. Pretražite Chrome Web trgovinu da pronađete odgovarajuću zamjensku aplikaciju.</translation>
 <translation id="2984337792991268709">Danas u <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Vraćanje sljedećeg broja stavki: <ph name="COUNT" />…</translation>
@@ -670,6 +673,7 @@
 <translation id="6823166707458800069">Za sve fajlove koje sačuvate u ovom folderu se automatski kreira sigurnosna kopija na mreži.</translation>
 <translation id="6825883775269213504">ruski</translation>
 <translation id="6847101934483209767">Stavka <ph name="ENTRY_NAME" /> je uklonjena iz odabira.</translation>
+<translation id="6848194403851638089">Organizacija <ph name="ORGANIZATION_NAME" /> iskoristila je svu svoju pohranu na Google Workspaceu.</translation>
 <translation id="6856459657722366306">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="6861394552169064235">perzijski</translation>
 <translation id="6862635236584086457">Za sve datoteke spremljene u ovoj mapi automatski se izrađuje sigurnosna kopija na mreži</translation>
@@ -701,6 +705,7 @@
 <translation id="6989942356279143254">švedski</translation>
 <translation id="6990081529015358884">Nestalo vam je prostora</translation>
 <translation id="6998711733709403587">Broj odabranih foldera: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
+<translation id="7008426324576352165">Vaša organizacija treba imati više pohrane da bi se prijenos dovršio.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalacija nije uspjela:</translation>
 <translation id="7031639531908619281">turski</translation>
@@ -934,11 +939,13 @@
 <translation id="8919081441417203123">danski</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
 <translation id="8997962250644902079">kineski (tradicionalni) pinyin</translation>
+<translation id="8998871447376656508">Nema dovoljno slobodnog prostora na Google disku da biste dovršili prijenos.</translation>
 <translation id="9003940392834790328">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja vaš administrator, detalji</translation>
 <translation id="9017798300203431059">Ruska fonetska</translation>
 <translation id="9034924485347205037">Linux fajlovi</translation>
 <translation id="9035012421917565900">Stavke se ne mogu premjestiti nazad u "<ph name="DESTINATION_NAME" />", tako da nećete moći opozvati ovu radnju.</translation>
 <translation id="9035689366572880647">Unesite trenutni PIN</translation>
+<translation id="9037777873893411148">*Pohrana organizacije je puna</translation>
 <translation id="9038620279323455325">Fajl s nazivom "<ph name="FILE_NAME" />" već postoji. Odaberite drugi naziv fajla.</translation>
 <translation id="9046895021617826162">Povezivanje nije uspjelo</translation>
 <translation id="9065512565307033593">Ako ne uspijete potvrditi, onemogućit će vam se pristup mreži.</translation>

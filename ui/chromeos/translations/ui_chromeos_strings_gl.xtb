@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Protexida</translation>
 <translation id="2638942478653899953">Non se puido acceder a Google Drive. <ph name="BEGIN_LINK" />Pecha sesión<ph name="END_LINK" /> e volve iniciala.</translation>
 <translation id="2649120831653069427">Peixe arco iris</translation>
+<translation id="2653059201992392941">Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="2663066752008346276">Birmano (Myanmar) con teclado myansan</translation>
 <translation id="2664412712123763093">Localización do ficheiro</translation>
 <translation id="2718540689505416944">Instalar aplicación con Linux</translation>
@@ -527,6 +528,7 @@
 <translation id="5489067830765222292">Letón</translation>
 <translation id="5489965683297092283">Desactivouse o filtro <ph name="FILTER_NAME" />.</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
+<translation id="5500104704744051184">Non poderás usar esta rede mentres non metas o PUK</translation>
 <translation id="5500122897333236901">Islandés</translation>
 <translation id="5508696409934741614">Puntos</translation>
 <translation id="5522908512596376669">A lista de ficheiros cambiou á vista de lista.</translation>
@@ -632,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementos</translation>
 <translation id="642282551015776456">Non se pode utilizar este nome como nome de ficheiro de cartafol</translation>
 <translation id="6423031066725912715">Vietnamita con teclado TCVN</translation>
+<translation id="6430271654280079150">Quédache 1 intento.</translation>
 <translation id="6485131920355264772">Non se puido recuperar a información sobre o espazo</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
 <translation id="649877868557234318">Extraendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
@@ -898,6 +901,7 @@
 <translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> elementos...</translation>
 <translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
+<translation id="8608515571837163082">Meteuse un PIN incorrecto demasiadas veces. Escribe a clave de desbloqueo persoal (PUK) de 8 díxitos que che facilitou o operador.</translation>
 <translation id="8609695766746872526">Islandés</translation>
 <translation id="863903787380594467">O PIN é incorrecto. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" />: porto</translation>

@@ -116,6 +116,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1264309058268477500">Alternar</translation>
 <translation id="1264974993859112054">Deportes</translation>
+<translation id="1266469291454105242">Desbloqueo do dispositivo</translation>
 <translation id="1269516672602708785">Crear rapidamente un sitio novo en Google Sites</translation>
 <translation id="1270502636509132238">Método de recollida</translation>
 <translation id="1281476433249504884">Amontoador 1</translation>
@@ -330,6 +331,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1753068535428855445">Citas e anuncios persoais</translation>
 <translation id="1753706481035618306">Número de páxina</translation>
 <translation id="1755621011177747277">Adopción</translation>
+<translation id="1756026472674246267">Abrir ligazón nunha pestana nova</translation>
 <translation id="175656076281618225">Maxia</translation>
 <translation id="1757773103848038814">Tipo de letra monoespazado</translation>
 <translation id="1763864636252898013">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o sistema operativo do teu dispositivo non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
@@ -455,6 +457,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="214556005048008348">Cancelar pago</translation>
 <translation id="2148613324460538318">Engadir tarxeta</translation>
 <translation id="2149968176347646218">A conexión non é segura</translation>
+<translation id="2153609454945889823">Queres instalar Servizos de Google Play para realidade aumentada?</translation>
 <translation id="2154054054215849342">A sincronización non está dispoñible para o teu dominio</translation>
 <translation id="2154484045852737596">Editar tarxeta</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -832,6 +835,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3229277193950731405">Copiar cadea da versión</translation>
 <translation id="323107829343500871">Introduce o código CVC da tarxeta <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detectar sempre contido importante neste sitio</translation>
+<translation id="3238395604961564389">Abrir ligazón nunha ventá do modo de incógnito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar o aspecto do navegador, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3240791268468473923">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está aberta</translation>
 <translation id="324180406144491771">As ligazóns de “<ph name="HOST_NAME" />” están bloqueadas</translation>
@@ -945,6 +949,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3531780078352352885">Follas do traballo</translation>
 <translation id="3532844647053365774">O host <ph name="HOST" /> quere usar o teu micrófono</translation>
 <translation id="3533328374079021623">Caixa de correo 5</translation>
+<translation id="3542768452570884558">Abrir ligazón nunha ventá nova</translation>
 <translation id="3550112004925580947">Hostalaría</translation>
 <translation id="3552297013052089404">Tipo de letra sen serifas</translation>
 <translation id="3558573058928565255">Hora do día</translation>
@@ -1115,11 +1120,13 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4040350669425716613">Facultades e universidades</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Utiliza o desbloqueo do dispositivo para confirmar as tarxetas máis rápido</translation>
 <translation id="4067098466788473230">Bolsas de estudo e prácticas</translation>
 <translation id="4067263367174615723">C1 (sobre)</translation>
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
 <translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Produciuse un erro ao procesar a túa solicitude. Téntao de novo.</translation>
+<translation id="4073376909608563327">Non se puido usar o desbloqueo do dispositivo</translation>
 <translation id="4073797364926776829">Ver tarxeta</translation>
 <translation id="4075732493274867456">O cliente e o servidor non admiten unha versión do protocolo SSL ou o paquete de cifraxe comúns.</translation>
 <translation id="4079302484614802869">A configuración do proxy está establecida para utilizar un URL de script .pac, non servidores proxy fixos.</translation>
@@ -1412,6 +1419,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4840250757394056958">Ver historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="484671803914931257">Obtén un desconto en <ph name="MERCHANT_NAME" /> e noutros comerciantes</translation>
+<translation id="484988093836683706">Usar desbloqueo do dispositivo</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="4852429274334674023">Sistemas operativos</translation>
 <translation id="485316830061041779">Alemán</translation>
@@ -1799,6 +1807,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5921185718311485855">Activado</translation>
 <translation id="5921639886840618607">Queres gardar a tarxeta na Conta de Google?</translation>
 <translation id="5922853866070715753">Case está listo</translation>
+<translation id="5923492272538889093">Queres usar o desbloqueo do dispositivo en lugar do CVC?</translation>
 <translation id="5928444777041341328">Casa e xardín</translation>
 <translation id="5932224571077948991">O sitio mostra anuncios enganosos ou intrusivos</translation>
 <translation id="5937560539988385583">Traduciuse a páxina</translation>
@@ -1972,6 +1981,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="643051589346665201">Cambiar contrasinal de Google</translation>
 <translation id="6433490469411711332">Editar información de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> rexeitou a conexión.</translation>
+<translation id="6433797564277305076">A partir de agora, confirma as tarxetas máis rápido co desbloqueo do dispositivo</translation>
 <translation id="6440503408713884761">Política ignorada</translation>
 <translation id="6443406338865242315">As extensións e os complementos que teñas instalados</translation>
 <translation id="6446163441502663861">Kahu (sobre)</translation>
@@ -2178,6 +2188,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Esta tarxeta non se pode gardar neste momento}other{Estas tarxetas non se poden gardar neste momento}}</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> verificou que <ph name="ISSUER" /> emitiu o certificado deste sitio web.</translation>
+<translation id="7058774143982824355">Servizo de análise de ficheiros CSV de contrasinais</translation>
 <translation id="7061777300866737982">Seguranza doméstica</translation>
 <translation id="7062635574500127092">Verde azulado</translation>
 <translation id="706295145388601875">Engade e xestiona enderezos na configuración de Chrome</translation>
@@ -2442,6 +2453,7 @@ Detalles adicionais:
 <translation id="7696089921647603491">Clásicos do rock e do pop</translation>
 <translation id="7697066736081121494">Prc8 (sobre)</translation>
 <translation id="769721561045429135">Neste momento, tes tarxetas que só se poden utilizar neste dispositivo. Fai clic en Continuar para revisar as tarxetas.</translation>
+<translation id="7698864304447945242">Queres actualizar Servizos de Google Play para realidade aumentada?</translation>
 <translation id="7699293099605015246">Os artigos non están dispoñibles neste momento</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Ir a <ph name="SITE" /> (non seguro)<ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@ Detalles adicionais:
 <translation id="7723047071702270851">Edita a tarxeta</translation>
 <translation id="7734285854693414638">Crear rapidamente un novo formulario en Formularios de Google</translation>
 <translation id="773466115871691567">Traducir sempre páxinas en <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="7736959720849233795">Copiar enderezo da ligazón</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="77424286611022110">Este sitio mostra anuncios intrusivos ou enganosos. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Bloqueouse contido perigoso.</translation>

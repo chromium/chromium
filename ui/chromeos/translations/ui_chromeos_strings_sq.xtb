@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">I siguruar</translation>
 <translation id="2638942478653899953">"Disku i Google" është i paarritshëm. <ph name="BEGIN_LINK" />Dil<ph name="END_LINK" /> dhe identifikohu përsëri.</translation>
 <translation id="2649120831653069427">Peshku</translation>
+<translation id="2653059201992392941">Ke <ph name="RETRIES" /> përpjekje të mbetura.</translation>
 <translation id="2663066752008346276">Birmanisht/Mianmar me tastierë Myansan</translation>
 <translation id="2664412712123763093">Vendndodhja e skedarit</translation>
 <translation id="2718540689505416944">Instalo aplikacionin me Linux</translation>
@@ -527,6 +528,7 @@
 <translation id="5489067830765222292">Letonisht</translation>
 <translation id="5489965683297092283">Filtri <ph name="FILTER_NAME" /> është joaktiv.</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
+<translation id="5500104704744051184">Nuk do të mund ta përdorësh këtë rrjet derisa të futësh kodin PUK</translation>
 <translation id="5500122897333236901">Islandisht</translation>
 <translation id="5508696409934741614">Pika</translation>
 <translation id="5522908512596376669">Lista e skedarëve ka ndryshuar në pamjen e listës.</translation>
@@ -632,6 +634,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> artikuj</translation>
 <translation id="642282551015776456">Ky emër nuk mund të përdoret si emër skedari ose dosjeje</translation>
 <translation id="6423031066725912715">Vietnamisht me tastierë TCVN</translation>
+<translation id="6430271654280079150">Ke 1 përpjekje të mbetur.</translation>
 <translation id="6485131920355264772">Dështoi në marrjen e informacionit të hapësirës</translation>
 <translation id="6495925982925244349">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, detaje</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> po nxirret te "<ph name="FOLDER_NAME" />"</translation>
@@ -898,6 +901,7 @@
 <translation id="8579285237314169903">Po sinkronizohen <ph name="NUMBER_OF_FILES" /> artikuj...</translation>
 <translation id="8600173386174225982">Lista e skedarëve ka ndryshuar në pamjen e miniaturës.</translation>
 <translation id="8601932370724196034">Skedar imazhi Crostini</translation>
+<translation id="8608515571837163082">Është futur shumë herë një kod PIN i gabuar. Fut "Çelësin personal të zhbllokimit" (PUK) me 8 shifra të dhënë nga operatori celular.</translation>
 <translation id="8609695766746872526">Islandisht</translation>
 <translation id="863903787380594467">Kodi PIN është i pasaktë. Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - porta</translation>

@@ -116,6 +116,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Deportes</translation>
+<translation id="1266469291454105242">Desbloqueo del dispositivo</translation>
 <translation id="1269516672602708785">Crea un sitio nuevo en Google Sites rápidamente</translation>
 <translation id="1270502636509132238">Método de retiro</translation>
 <translation id="1281476433249504884">Apilador 1</translation>
@@ -330,6 +331,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1753068535428855445">Citas y anuncios personales</translation>
 <translation id="1753706481035618306">Número de página</translation>
 <translation id="1755621011177747277">Adopción</translation>
+<translation id="1756026472674246267">Abrir vínculo en una pestaña nueva</translation>
 <translation id="175656076281618225">Magia</translation>
 <translation id="1757773103848038814">Fuente monoespaciada</translation>
 <translation id="1763864636252898013">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el sistema operativo del dispositivo no confía en el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
@@ -455,6 +457,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="214556005048008348">Cancelar pago</translation>
 <translation id="2148613324460538318">Agregar tarjeta</translation>
 <translation id="2149968176347646218">La conexión no es segura</translation>
+<translation id="2153609454945889823">¿Quieres instalar los Servicios de Google Play para RA?</translation>
 <translation id="2154054054215849342">El servicio de sincronización no está disponible para tu dominio</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -833,6 +836,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3229277193950731405">Copiar string de la versión</translation>
 <translation id="323107829343500871">Ingresar el CVC de la tarjeta <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Siempre detectar contenido importante en este sitio</translation>
+<translation id="3238395604961564389">Abrir el vínculo en una ventana de incógnito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar el estilo del navegador</translation>
 <translation id="3240791268468473923">Se abrió la hoja inferior para indicar que las credenciales de pago seguro no coinciden</translation>
 <translation id="324180406144491771">Los vínculos “<ph name="HOST_NAME" />” están bloqueados</translation>
@@ -946,6 +950,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3531780078352352885">Hojas del trabajo</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> desea usar tu micrófono</translation>
 <translation id="3533328374079021623">Buzón 5</translation>
+<translation id="3542768452570884558">Abrir el vínculo en una ventana nueva</translation>
 <translation id="3550112004925580947">Industria hotelera</translation>
 <translation id="3552297013052089404">Fuente Sans Serif</translation>
 <translation id="3558573058928565255">Hora del día</translation>
@@ -1116,11 +1121,13 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4040350669425716613">Colegios universitarios y universidades</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">Usa el desbloqueo del dispositivo para confirmar las tarjetas más rápido.</translation>
 <translation id="4067098466788473230">Subsidios y becas para estudiantes</translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
 <translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Se produjo un error al procesar tu pedido. Vuelve a intentarlo.</translation>
+<translation id="4073376909608563327">No se pudo usar el desbloqueo del dispositivo</translation>
 <translation id="4073797364926776829">Ver tarjeta</translation>
 <translation id="4075732493274867456">El cliente y el servidor no admiten un conjunto de cifrado o una versión de protocolo SSL en común.</translation>
 <translation id="4079302484614802869">El proxy está configurado para usar una URL de script .pac, no servidores proxy fijos.</translation>
@@ -1413,6 +1420,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="484671803914931257">Obtén descuentos en <ph name="MERCHANT_NAME" /> y más</translation>
+<translation id="484988093836683706">Usar el desbloqueo del dispositivo</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4852429274334674023">Sistemas operativos</translation>
 <translation id="485316830061041779">Alemán</translation>
@@ -1800,6 +1808,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5921185718311485855">Sí</translation>
 <translation id="5921639886840618607">¿Quieres guardar la tarjeta en la Cuenta de Google?</translation>
 <translation id="5922853866070715753">Ya casi</translation>
+<translation id="5923492272538889093">¿Quieres usar el desbloqueo del dispositivo en lugar del CVC?</translation>
 <translation id="5928444777041341328">Hogar y jardín</translation>
 <translation id="5932224571077948991">El sitio muestra anuncios intrusivos o engañosos</translation>
 <translation id="5937560539988385583">Se tradujo la página</translation>
@@ -1973,6 +1982,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="643051589346665201">Cambiar la contraseña de Google</translation>
 <translation id="6433490469411711332">Editar la información de contacto</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> rechazó la conexión.</translation>
+<translation id="6433797564277305076">A partir de ahora, usa el desbloqueo del dispositivo para confirmar tus tarjetas más rápido.</translation>
 <translation id="6440503408713884761">Ignorada</translation>
 <translation id="6443406338865242315">Las extensiones y complementos que instalaste</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -2179,6 +2189,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{No se puede guardar esta tarjeta en este momento}other{No se pueden guardar estas tarjetas en este momento}}</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
+<translation id="7058774143982824355">Servicio del analizador de contraseñas CSV</translation>
 <translation id="7061777300866737982">Seguridad en el hogar</translation>
 <translation id="7062635574500127092">Verde azulado</translation>
 <translation id="706295145388601875">Agrega y administra direcciones en la configuración de Chrome</translation>
@@ -2436,13 +2447,14 @@ Detalles adicionales:
 <translation id="7681273392938116652">Deportes de fantasía</translation>
 <translation id="7682287625158474539">Envío</translation>
 <translation id="7682451652090915298">Rugby</translation>
-<translation id="7687186412095877299">Completa los formularios de pago con la información que tengas guardada</translation>
+<translation id="7687186412095877299">Completa los formularios de pago con tus formas de pago guardadas.</translation>
 <translation id="7687305263118037187">Se agotó el tiempo de espera para reintentar</translation>
 <translation id="7687451951329798396">¿Qué dicen otras fuentes?</translation>
 <translation id="7693583928066320343">Orden de páginas recibido</translation>
 <translation id="7696089921647603491">Rock clásico</translation>
 <translation id="7697066736081121494">Prc8 (Envelope)</translation>
 <translation id="769721561045429135">En este momento, tienes tarjetas que pueden usarse solo en este dispositivo. Haz clic en Continuar para revisar las tarjetas.</translation>
+<translation id="7698864304447945242">¿Quieres actualizar los Servicios de Google Play para RA?</translation>
 <translation id="7699293099605015246">Los artículos no están disponibles en este momento</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Continuar a <ph name="SITE" /> (no seguro)<ph name="END_LINK" /></translation>
@@ -2455,6 +2467,7 @@ Detalles adicionales:
 <translation id="7723047071702270851">Editar tarjeta</translation>
 <translation id="7734285854693414638">Crea un formulario nuevo en Formularios de Google rápidamente</translation>
 <translation id="773466115871691567">Traducir siempre las páginas en <ph name="SOURCE_LANGUAGE" /></translation>
+<translation id="7736959720849233795">Copiar la dirección del vínculo</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="77424286611022110">Este sitio muestra anuncios intrusivos o engañosos. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Se bloqueó contenido peligroso.</translation>

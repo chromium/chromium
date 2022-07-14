@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Gesichert</translation>
 <translation id="2638942478653899953">Google Drive konnte nicht erreicht werden. Bitte <ph name="BEGIN_LINK" />melde dich ab<ph name="END_LINK" /> und melde dich dann erneut an.</translation>
 <translation id="2649120831653069427">Regenbogenfisch</translation>
+<translation id="2653059201992392941">Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="2663066752008346276">Burmesisch (Myanmar) mit Myansan-Tastatur</translation>
 <translation id="2664412712123763093">Dateispeicherort</translation>
 <translation id="2718540689505416944">App mit Linux installieren</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">Lettisch</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" />-Filter ist aus.</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
+<translation id="5500104704744051184">Du kannst dieses Mobilfunknetz erst verwenden, wenn du die PUK eingegeben hast</translation>
 <translation id="5500122897333236901">Isländisch</translation>
 <translation id="5508696409934741614">Punkte</translation>
 <translation id="5522908512596376669">Die Dateiliste wird jetzt in der Listenansicht angezeigt.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> Elemente</translation>
 <translation id="642282551015776456">Dieser Name darf nicht als Datei- oder Ordnername verwendet werden.</translation>
 <translation id="6423031066725912715">Vietnamesisch mit TCVN-Tastatur</translation>
+<translation id="6430271654280079150">Du hast noch 1 Versuch.</translation>
 <translation id="6485131920355264772">Angaben zum Speicherplatz konnten nicht abgerufen werden.</translation>
 <translation id="6495925982925244349">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> wird in <ph name="FOLDER_NAME" /> extrahiert</translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> Elemente werden synchronisiert...</translation>
 <translation id="8600173386174225982">Die Dateiliste wird jetzt in der Miniaturansicht angezeigt.</translation>
 <translation id="8601932370724196034">Crostini-Bilddatei</translation>
+<translation id="8608515571837163082">Es wurde zu oft die falsche PIN eingegeben. Gib den achtstelligen PIN-Entsperrschlüssel (PUK) ein, den du vom Mobilfunkanbieter erhalten hast.</translation>
 <translation id="8609695766746872526">Isländisch</translation>
 <translation id="863903787380594467">Falsche PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>

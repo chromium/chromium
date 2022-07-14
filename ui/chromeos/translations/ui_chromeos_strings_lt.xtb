@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">Apsaugota</translation>
 <translation id="2638942478653899953">Nepavyko pasiekti „Google“ disko. <ph name="BEGIN_LINK" />Atsijunkite<ph name="END_LINK" /> ir vėl prisijunkite.</translation>
 <translation id="2649120831653069427">Vaivorykštinė žuvis</translation>
+<translation id="2653059201992392941">Liko bandymų: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Birmiečių k. (Mianmaro) su „Myansan“ klaviatūra</translation>
 <translation id="2664412712123763093">Failo vieta</translation>
 <translation id="2718540689505416944">Programos diegimas naudojant „Linux“</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">Latvių k.</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> filtras išjungtas.</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
+<translation id="5500104704744051184">Negalėsite naudoti šio tinklo, kol įvesite PUK kodą</translation>
 <translation id="5500122897333236901">Islandų</translation>
 <translation id="5508696409934741614">Taškai</translation>
 <translation id="5522908512596376669">Failų sąrašas pakeistas į sąrašo rodinį.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044">Elementų: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="642282551015776456">Šio pavadinimo negalima naudoti kaip aplanko pavadinimo</translation>
 <translation id="6423031066725912715">Vietnamiečių k. su TCVN klaviatūra</translation>
+<translation id="6430271654280079150">Liko vienas bandymas.</translation>
 <translation id="6485131920355264772">Nepavyko nuskaityti vietos informacijos</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, išsami informacija</translation>
 <translation id="649877868557234318">Failas <ph name="FILE_NAME" /> išarchyvuojamas į aplanką „<ph name="FOLDER_NAME" />“</translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903">Sinchronizuojama elementų: <ph name="NUMBER_OF_FILES" />…</translation>
 <translation id="8600173386174225982">Failų sąrašas pakeistas į miniatiūrų rodinį.</translation>
 <translation id="8601932370724196034">„Crostini“ vaizdo failas</translation>
+<translation id="8608515571837163082">Per daug kartų įvestas netinkamas PIN kodas. Įveskite operatoriaus pateiktą aštuonių skaitmenų asmeninį blokavimo panaikinimo raktą (PUK kodą).</translation>
 <translation id="8609695766746872526">Islandų k.</translation>
 <translation id="863903787380594467">Netinkamas PIN kodas. Liko bandymų: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – prievadas</translation>

@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">защитена</translation>
 <translation id="2638942478653899953">Не можа да се установи връзка с Google Диск. Моля, <ph name="BEGIN_LINK" />излезте от профила си<ph name="END_LINK" /> и влезте отново.</translation>
 <translation id="2649120831653069427">Риба дъга</translation>
+<translation id="2653059201992392941">Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="2663066752008346276">Бирмански с клавиатура Myansan</translation>
 <translation id="2664412712123763093">Местоположение на файла</translation>
 <translation id="2718540689505416944">Инсталиране на приложението с Linux</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">Латвийски</translation>
 <translation id="5489965683297092283">Филтърът „<ph name="FILTER_NAME" />“ е изключен.</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
+<translation id="5500104704744051184">Няма да можете да използвате тази мрежа, докато не въведете PUK кода</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
 <translation id="5522908512596376669">Списъкът с файлове е превключен към списъчен изглед.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> елемента</translation>
 <translation id="642282551015776456">Това име не може да се използва като име на файл или на папка</translation>
 <translation id="6423031066725912715">Виетнамски с клавиатура TCVN</translation>
+<translation id="6430271654280079150">Остава ви 1 опит.</translation>
 <translation id="6485131920355264772">Извличането на информацията за мястото не бе успешно</translation>
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> се извлича в(ъв) „<ph name="FOLDER_NAME" />“</translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> елемента се синхронизират...</translation>
 <translation id="8600173386174225982">Списъкът с файлове е превключен към изглед с миниизображения.</translation>
 <translation id="8601932370724196034">Файл с образ на Crostini</translation>
+<translation id="8608515571837163082">Въведохте грешен ПИН код твърде много пъти. Въведете 8-цифрения PUK код, предоставен от оператора.</translation>
 <translation id="8609695766746872526">Исландски</translation>
 <translation id="863903787380594467">Неправилен ПИН код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Порт</translation>

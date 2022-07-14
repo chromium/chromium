@@ -1250,6 +1250,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Дадаць сетку Wi-Fi...</translation>
 <translation id="2162155940152307086">Сінхранізацыя пачнецца, як толькі вы закрыеце старонку налад сінхранізацыі</translation>
+<translation id="2162705204091149050">Доступ да інфармацыі пра браўзер, АС, прыладу, усталяванае праграмнае забеспячэнне і файлы</translation>
 <translation id="2162926944953615670">Даступных профіляў eSIM-карты няма</translation>
 <translation id="2163470535490402084">Каб увайсці на прыладу <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і яшчэ 1 пераключальнік</translation>
@@ -1799,6 +1800,7 @@
 <translation id="2667144577800272420">Іншыя праграмы наладжаны адкрываць такія ж спасылкі, што і <ph name="APP_NAME" />. Праграмы "<ph name="APP_NAME_2" />" і "<ph name="APP_NAME_3" />" перастануць адкрываць адпаведныя спасылкі.</translation>
 <translation id="2667463864537187133">Кіраванне праверкай правапісу</translation>
 <translation id="2669241540496514785">Немагчыма адкрыць праграму <ph name="APP_NAME" /></translation>
+<translation id="2669454659051515572">Усе, хто карыстаецца гэтай прыладай, могуць бачыць спампаваныя файлы</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> абагульвае ўкладку Chrome.</translation>
 <translation id="2670403088701171361">Не дазваляць сайтам праглядаць тэкст і відарысы ў буферы абмену</translation>
 <translation id="2670429602441959756">Функцыі на гэтай старонцы не падтрымліваюцца ў VR. Выконваецца выхад...</translation>
@@ -2165,6 +2167,7 @@
 <translation id="3008232374986381779">Выкарыстоўвайце інструменты Linux, рэдактары і IDE на сваёй прыладзе <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Скінуць дазволы</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> патрабуе ад вас падключыцца сёння да сеткі Wi-Fi і спампаваць абнаўленне. Вы можаце таксама спампаваць яго праз падключэнне з улікам трафіка (можа спаганяцца плата).}one{<ph name="MANAGER" /> патрабуе ад вас падключыцца да сеткі Wi-Fi і спампаваць абнаўленне да заканчэння тэрміну. Вы можаце таксама спампаваць яго праз падключэнне з улікам трафіка (можа спаганяцца плата).}few{<ph name="MANAGER" /> патрабуе ад вас падключыцца да сеткі Wi-Fi і спампаваць абнаўленне да заканчэння тэрміну. Вы можаце таксама спампаваць яго праз падключэнне з улікам трафіка (можа спаганяцца плата).}many{<ph name="MANAGER" /> патрабуе ад вас падключыцца да сеткі Wi-Fi і спампаваць абнаўленне да заканчэння тэрміну. Вы можаце таксама спампаваць яго праз падключэнне з улікам трафіка (можа спаганяцца плата).}other{<ph name="MANAGER" /> патрабуе ад вас падключыцца да сеткі Wi-Fi і спампаваць абнаўленне да заканчэння тэрміну. Вы можаце таксама спампаваць яго праз падключэнне з улікам трафіка (можа спаганяцца плата).}}</translation>
+<translation id="3009178788565917040">Выхад</translation>
 <translation id="3009300415590184725">Сапраўды скасаваць наладжванне сэрвісу мабільнай перадачы даных?</translation>
 <translation id="3009779501245596802">Індэксаваныя базы даных</translation>
 <translation id="3010279545267083280">Пароль выдалены.</translation>
@@ -2495,6 +2498,7 @@
 <translation id="3359256513598016054">Абмежаванні палітыкі сертыфікатаў</translation>
 <translation id="3360297538363969800">Памылка друку. Праверце прынтар і паўтарыце спробу.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}one{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}few{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}many{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}other{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}}</translation>
+<translation id="3363202073972776113">Новым профілем будзе кіраваць ваша арганізацыя. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">Паведамленне ад адміністратара: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Выкарыстоўвайце або Ctrl, або Alt</translation>
 <translation id="3368922792935385530">Падключана</translation>
@@ -2529,6 +2533,7 @@
 <translation id="339722927132407568">Ёсць завісанні</translation>
 <translation id="3399432415385675819">Апавяшчэнні будуць выключаны</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Гц) – празрадковая разгортка</translation>
+<translation id="3401484564516348917">Доступ да інфармацыі пра браўзер, АС, прыладу, усталяванае праграмнае забеспячэнне, значэнні рэестра і файлы</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{На гэтай прыладзе захаваны {COUNT} пароль}one{На гэтай прыладзе захаваны {COUNT} пароль}few{На гэтай прыладзе захавана {COUNT} паролі}many{На гэтай прыладзе захавана {COUNT} пароляў}other{На гэтай прыладзе захавана {COUNT} пароля}}</translation>
 <translation id="3402255108239926910">Выберыце аватар</translation>
 <translation id="3402585168444815892">Рэгістрацыя ў дэманстрацыйным рэжыме</translation>
@@ -2775,6 +2780,7 @@
 <translation id="3627879631695760395">Усталяваць <ph name="APP" />...</translation>
 <translation id="3628275722731025472">Выключыць Bluetooth</translation>
 <translation id="3629631988386925734">Каб уключыць Smart Lock, увядзіце пароль. Наступны раз прылада <ph name="DEVICE_TYPE" /> будзе разблакіравана з дапамогай вашага тэлефона. Вы можаце выключыць Smart Lock у Наладах.</translation>
+<translation id="3629664892718440872">Запомніць гэты выбар</translation>
 <translation id="3630132874740063857">Ваш тэлефон</translation>
 <translation id="3630995161997703415">Дадайце гэты сайт на вашу паліцу, каб мець да яго доступ у любы час</translation>
 <translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Вы можаце дазволіць прыладам з Chrome OS адпраўляць аўтаматычныя справаздачы, каб дапамагаць нам выяўляць, над чым трэба працаваць у першую чаргу. У гэтыя справаздачы можа ўключацца, у прыватнасці, інфармацыя пра збоі ў Chrome OS, а таксама пра тое, якія функцыі вы выкарыстоўвалі і які аб'ём памяці быў звычайна задзейнічаны.<ph name="END_PARAGRAPH1" />
@@ -3264,6 +3270,7 @@
 
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="408721682677442104">Поўны кантроль над прыладамі MIDI забаронены</translation>
+<translation id="4087328411748538168">Паказваць справа</translation>
 <translation id="4089235344645910861">Налады захаваныя. Сінхранізацыя пачалася.</translation>
 <translation id="4090103403438682346">Уключыць спраўджаны доступ</translation>
 <translation id="4090947011087001172">Скінуць дазволы сайта для <ph name="SITE" />?</translation>
@@ -3548,6 +3555,7 @@
 <translation id="4377058670119819762">Дазваляе прагортваць панэль укладак, калі іх вельмі шмат, улева і ўправа.</translation>
 <translation id="4377363674125277448">Узнікла праблема з сертыфікатам сервера.</translation>
 <translation id="4378154925671717803">Тэлефон</translation>
+<translation id="4378308539633073595">Прагартаць наперад</translation>
 <translation id="4378551569595875038">Падключэнне...</translation>
 <translation id="4378556263712303865">Заяўка на прыладу</translation>
 <translation id="4379281552162875326">Выдаліць праграму "<ph name="APP_NAME" />"?</translation>
@@ -3956,6 +3964,7 @@
 <translation id="4779766576531456629">Перайменаваць сотавую сетку eSIM-карты</translation>
 <translation id="4780321648949301421">Захаваць старонку як...</translation>
 <translation id="4781443161433589743">Вы выкарыстоўваеце самую надзейную абарону Chrome</translation>
+<translation id="4782861709165039462">Усе мікрафоны адключаны з дапамогай апаратнага пераключальніка</translation>
 <translation id="4785719467058219317">Вы выкарыстоўваеце ключ бяспекі, не зарэгістраваны на гэтым вэб-сайце</translation>
 <translation id="4785914069240823137">Скасаваць абрэзку</translation>
 <translation id="4788092183367008521">Праверце падключэнне да сеткі і паўтарыце спробу.</translation>
@@ -4722,6 +4731,7 @@
 <translation id="5548075230008247516">Вы скасавалі выбар усіх элементаў і выйшлі з рэжыму выбару.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" і яшчэ 1 укладка}one{"<ph name="TAB_TITLE" />" і яшчэ # укладка}few{"<ph name="TAB_TITLE" />" і яшчэ # укладкі}many{"<ph name="TAB_TITLE" />" і яшчэ # укладак}other{"<ph name="TAB_TITLE" />" і яшчэ # укладкі}}</translation>
 <translation id="5548606607480005320">Праверка бяспекі</translation>
+<translation id="5548644592758170183">Паказваць злева</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Клавіятура і ўвод тэксту</translation>
 <translation id="5553089923092577885">Супастаўленні палітык сертыфікатаў</translation>
@@ -7353,6 +7363,7 @@
 <translation id="8120505434908124087">Усталяваць профіль eSIM-карты</translation>
 <translation id="812260729110117038">Рэкламадаўцы і выдаўцы змогуць ацэньваць эфектыўнасць рэкламы, не адсочваючы пры гэтым вашы дзеянні ў інтэрнэце.</translation>
 <translation id="81238879832906896">Жоўта-белая кветка</translation>
+<translation id="8123975449645947908">Прагартаць назад</translation>
 <translation id="8124313775439841391">ONC пад кіраваннем</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
@@ -8211,6 +8222,7 @@
 <translation id="8980345560318123814">Адпраўка справаздач</translation>
 <translation id="8980951173413349704">Збой <ph name="WINDOW_TITLE" /></translation>
 <translation id="8981825781894055334">Мала паперы</translation>
+<translation id="8983018820925880511">Новым профілем будзе кіраваць <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Сайт <ph name="ORIGIN" /> можа змяняць файл <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Ваша прылада будзе бачнай усім яшчэ <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="8985191021574400965">Вітаем у Steam для Chromebook</translation>
@@ -8271,6 +8283,7 @@
 <translation id="9037640663275993951">Няма дазволу на выкарыстанне гэтай прылады</translation>
 <translation id="9037818663270399707">Падключэнне не з'яўляецца прыватным для ўсяго сеткавага трафіка</translation>
 <translation id="9037965129289936994">Паказаць арыгінал</translation>
+<translation id="9038489124413477075">Папка без назвы</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{У вас засталася адна спроба.}one{У вас засталася # спроба.}few{У вас засталося # спробы.}many{У вас засталося # спроб.}other{У вас засталося # спробы.}}</translation>
 <translation id="9040473193163777637">Актываваць ChromeVox – убудаваную праграму чытання з экрана для Chrome OS? Для актывацыі націсніце і ўтрымлівайце пяць секунд абедзве клавішы гучнасці.</translation>
 <translation id="9040661932550800571">Абнавіць пароль для сайта <ph name="ORIGIN" />?</translation>
@@ -8304,6 +8317,7 @@
 <translation id="9075413375877487220">Гэта пашырэнне не адпавядае стандартам Палепшанага Бяспечнага прагляду.</translation>
 <translation id="9076283476770535406">Можа змяшчаць матэрыялы для дарослых</translation>
 <translation id="9076523132036239772">На жаль, адрас вашай электроннай пошты або ваш пароль спраўдзіць не ўдалося. Спачатку падключыцеся да сеткі.</translation>
+<translation id="9076821103818989526">Бакавая панэль</translation>
 <translation id="9076977315710973122">Абагульванне файлаў праз SMB</translation>
 <translation id="9078193189520575214">Абнаўленне...</translation>
 <translation id="9078316009970372699">Выключыць Імгненны рэжым мадэма</translation>

@@ -74,6 +74,7 @@
 <translation id="5945387852661427312">Estás iniciando sesión cunha conta xestionada por <ph name="DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chromium, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chromium, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
 <translation id="5983312940147103417">Mellora Chromium</translation>
 <translation id="602807004951640891">Ao usar Chromium, aceptas as <ph name="BEGIN_LINK_TOS" />Condicións de servizo<ph name="END_LINK_TOS" />.</translation>
+<translation id="6062449165341879460">A túa organización (<ph name="DOMAIN" />) terá acceso aos teus datos de Chromium, así como aos marcadores, ao historial, aos contrasinais e a outras opcións de configuración que almacenes nesta conta. Cando peches sesión, os datos borraranse deste dispositivo.  Non obstante, permanecerán almacenados na túa Conta de Google xestionada e estarán dispoñibles para a túa organización. Esta tamén pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chromium.</translation>
 <translation id="6119647025869519954">Para facer que Chromium sexa o teu navegador predeterminado, sigue estes pasos:
 1. Abre Configuración
 2. Toca Aplicación de navegador predeterminada

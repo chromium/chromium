@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1264309058268477500">पर्यायी</translation>
 <translation id="1264974993859112054">क्रीडा</translation>
+<translation id="1266469291454105242">डिव्हाइस अनलॉक</translation>
 <translation id="1269516672602708785">Google Sites मध्ये नवीन साइट झटपट तयार करा</translation>
 <translation id="1270502636509132238">घेण्याची पद्धत</translation>
 <translation id="1281476433249504884">स्टॅकर १</translation>
@@ -330,6 +331,7 @@
 <translation id="1753068535428855445">डेटिंग आणि वैयक्तिक गोष्टी</translation>
 <translation id="1753706481035618306">पृष्ठ क्रमांक</translation>
 <translation id="1755621011177747277">दत्तक प्रक्रिया</translation>
+<translation id="1756026472674246267">नवीन टॅब मध्ये लिंक उघडा</translation>
 <translation id="175656076281618225">जादू</translation>
 <translation id="1757773103848038814">Monospace फॉंट</translation>
 <translation id="1763864636252898013">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट तुम्हाला डिव्हाइसच्या ऑपरेटिंग सिस्टमद्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
@@ -455,6 +457,7 @@
 <translation id="214556005048008348">पेमेंट रद्द करा</translation>
 <translation id="2148613324460538318">कार्ड जोडा</translation>
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नाही</translation>
+<translation id="2153609454945889823">Google Play Services for AR इंस्टॉल करायचे आहे का?</translation>
 <translation id="2154054054215849342">आपल्या डोमेनसाठी सिंक उपलब्ध नाही</translation>
 <translation id="2154484045852737596">कार्ड संपादित करा</translation>
 <translation id="2161656808144014275">मजकूर</translation>
@@ -832,6 +835,7 @@
 <translation id="3229277193950731405">आवृत्तीची स्ट्रिंग कॉपी करा</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> साठी CVC प्रविष्‍ट करा</translation>
 <translation id="3234666976984236645">नेहमी या साइटवर महत्त्वाचा आशय शोधा</translation>
+<translation id="3238395604961564389">गुप्त विंडो मध्ये लिंक उघडा</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या ब्राउझरचे रूप कस्टमाइझ करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="3240791268468473923">सुरक्षित पेमेंट क्रेडेंशियल याची जुळणारे कोणतेही क्रेडेंशियल नाही ही शीट उघडली आहे</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” लिंक ब्लॉक केल्या आहेत</translation>
@@ -944,6 +948,7 @@
 <translation id="3531780078352352885">जॉब पत्रके</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ला तुमचा मायक्रोफोन वापरायचा आहे</translation>
 <translation id="3533328374079021623">मेलबॉक्स ५</translation>
+<translation id="3542768452570884558">नवीन विंडो मध्ये लिंक उघडा</translation>
 <translation id="3550112004925580947">आदरातिथ्याशी संबंधित उद्योग</translation>
 <translation id="3552297013052089404">Sans-Serif फॉंट</translation>
 <translation id="3558573058928565255">दिवसापर्यंत</translation>
@@ -1114,11 +1119,13 @@
 <translation id="4040350669425716613">महाविद्यालये आणि विद्यापीठे</translation>
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4058922952496707368">की "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">कार्डची झटपट खात्री करण्यासाठी डिव्हाइस अनलॉक वापरा</translation>
 <translation id="4067098466788473230">शैक्षणिक अनुदाने आणि शिष्यवृत्ती</translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">वैध पत्ता जोडा</translation>
 <translation id="4072193657607981494">धोरणे लोड करत आहे</translation>
 <translation id="4072486802667267160">तुमच्या मागणीवर प्रक्रिया करताना एरर आली, कृपया पुन्हा प्रयत्न करा.</translation>
+<translation id="4073376909608563327">डिव्हाइस अनलॉक वापरता आले नाही</translation>
 <translation id="4073797364926776829">कार्ड पहा</translation>
 <translation id="4075732493274867456">क्लायंट आणि सर्व्हर एक सामान्य SSL प्रोटोकॉल आवृत्ती किंवा सायफर संचाला सपोर्ट करीत नाही.</translation>
 <translation id="4079302484614802869">प्रॉक्सी कॉंफिगरेशन .pac स्क्रिप्ट URL वापरण्‍यास सेट करण्‍यात आले आहे, निश्चित प्रॉक्सी सर्व्हर नव्हे.</translation>
@@ -1411,6 +1418,7 @@
 <translation id="4840250757394056958">तुमचा Chrome इतिहास पहा</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> आणि आणखी बऱ्याच गोष्टींवर सवलत मिळवा</translation>
+<translation id="484988093836683706">डिव्हाइस अनलॉक वापरा</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4852429274334674023">ऑपरेटिंग सिस्टीम</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -1798,6 +1806,7 @@
 <translation id="5921185718311485855">सुरू करा</translation>
 <translation id="5921639886840618607">Google खात्यात कार्ड सेव्ह करायचे?</translation>
 <translation id="5922853866070715753">जवळजवळ पूर्ण झाले</translation>
+<translation id="5923492272538889093">CVC ऐवजी डिव्हाइस अनलॉक ‌वापरायचे आहे का?</translation>
 <translation id="5928444777041341328">घर आणि बाग</translation>
 <translation id="5932224571077948991">साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते</translation>
 <translation id="5937560539988385583">पेजचे भाषांतर केले</translation>
@@ -1972,6 +1981,7 @@
 <translation id="643051589346665201">Google पासवर्ड बदला</translation>
 <translation id="6433490469411711332">संपर्क माहिती संपादित करा</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> नी कनेक्ट करण्यास नकार दिला.</translation>
+<translation id="6433797564277305076">आतापासून डिव्‍हाइस अनलॉक वापरून तुमच्‍या कार्डची झटपट खात्री करा</translation>
 <translation id="6440503408713884761">दुर्लक्ष केले</translation>
 <translation id="6443406338865242315">तुम्ही कोणती एक्स्टेंशन आणि प्लग-इन इंस्टॉल केली आहेत</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -2178,6 +2188,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{हे कार्ड आत्ता सेव्ह केले जाऊ शकत नाही}other{ही कार्डे आत्ता सेव्ह केली जाऊ शकत नाहीत}}</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> ने या वेबसाइटचे सर्टिफिकेट जारी केले आहे हे <ph name="BROWSER" /> ने पडताळले.</translation>
+<translation id="7058774143982824355">CSV पासवर्ड पार्सर सेवा</translation>
 <translation id="7061777300866737982">घराशी संबंधित सुरक्षितता आणि सुरक्षा</translation>
 <translation id="7062635574500127092">हिरवट निळा</translation>
 <translation id="706295145388601875">Chrome सेटिंग्जमध्ये ॲड्रेस जोडा आणि व्यवस्थापित करा</translation>
@@ -2442,6 +2453,7 @@
 <translation id="7696089921647603491">क्लासिक रॉक आणि जुनी गाणी</translation>
 <translation id="7697066736081121494">Prc8 (Envelope)</translation>
 <translation id="769721561045429135">सध्या, तुमच्याकडे अशी कार्डे आहेत जी फक्त या डिव्हाइसवर वापरली जाऊ शकतात. कार्डांचे पुनरावलोकन करण्यासाठी सुरू ठेवा क्लिक करा.</translation>
+<translation id="7698864304447945242">Google Play Services for AR अपडेट करायचे आहे का?</translation>
 <translation id="7699293099605015246">लेख आत्ता उपलब्ध नाहीत</translation>
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> (असुरक्षित) वर सुरू ठेवा<ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@
 <translation id="7723047071702270851">कार्ड संपादित करा</translation>
 <translation id="7734285854693414638">Google Forms मध्ये नवीन फॉर्म झटपट तयार करा</translation>
 <translation id="773466115871691567">नेहमी पेज <ph name="SOURCE_LANGUAGE" />मध्ये भाषांतरित करा</translation>
+<translation id="7736959720849233795">लिंकचा अ‍ॅड्रेस कॉपी करा</translation>
 <translation id="7740996059027112821">साधारण</translation>
 <translation id="77424286611022110">ही साइट नको असलेल्या किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">धोकादायक आशय ब्लॉक केला.</translation>

@@ -116,6 +116,7 @@
 <translation id="1263231323834454256">रीडिंग लिस्ट</translation>
 <translation id="1264309058268477500">वैकल्पिक ट्रे</translation>
 <translation id="1264974993859112054">खेल-कूद</translation>
+<translation id="1266469291454105242">डिवाइस को अनलॉक करने की सुविधा</translation>
 <translation id="1269516672602708785">Google Sites में जल्दी से नई साइट बनाएं</translation>
 <translation id="1270502636509132238">पिकअप का तरीका</translation>
 <translation id="1281476433249504884">स्टैकर 1</translation>
@@ -331,6 +332,7 @@
 <translation id="1753068535428855445">डेटिंग और निजी मामलों से जुड़ी सेवाएं</translation>
 <translation id="1753706481035618306">पृष्‍ठ संख्‍या</translation>
 <translation id="1755621011177747277">गोद लेना</translation>
+<translation id="1756026472674246267">लिंक को नए टैब में खोलें</translation>
 <translation id="175656076281618225">मैजिक</translation>
 <translation id="1757773103848038814">मोनोस्पेस फ़ॉन्ट</translation>
 <translation id="1763864636252898013">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र आपके डिवाइस के ऑपरेटिंग सिस्टम द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
@@ -456,6 +458,7 @@
 <translation id="214556005048008348">भुगतान न करें</translation>
 <translation id="2148613324460538318">कार्ड जोड़ें</translation>
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नहीं है</translation>
+<translation id="2153609454945889823">Google Play Services for AR को इंस्टॉल करें?</translation>
 <translation id="2154054054215849342">आपके डोमेन के लिए सिंक करने की सुविधा उपलब्‍ध नहीं है</translation>
 <translation id="2154484045852737596">कार्ड में बदलाव करें</translation>
 <translation id="2161656808144014275">लेख संदेश</translation>
@@ -832,6 +835,7 @@
 <translation id="3229277193950731405">वर्शन स्ट्रिंग को कॉपी करें</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> का CVC डालें.</translation>
 <translation id="3234666976984236645">इस साइट पर हमेशा महत्‍वपूर्ण सामग्री का पता लगाएं</translation>
+<translation id="3238395604961564389">लिंक को गुप्त विंडो में खोलें</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3240791268468473923">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट खुली है</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” के लिंक ब्लॉक किए गए हैं</translation>
@@ -945,6 +949,7 @@
 <translation id="3531780078352352885">जॉब की शीट</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> वेबसाइट आपके माइक्रोफ़ोन का इस्तेमाल करना चाहती है</translation>
 <translation id="3533328374079021623">मेलबॉक्स 5</translation>
+<translation id="3542768452570884558">लिंक को नई विंडो में खोलें</translation>
 <translation id="3550112004925580947">हॉस्पिटैलिटी इंडस्ट्री</translation>
 <translation id="3552297013052089404">Sans-serif फ़ॉन्ट</translation>
 <translation id="3558573058928565255">दिन के समय</translation>
@@ -1115,11 +1120,13 @@
 <translation id="4040350669425716613">कॉलेज और यूनिवर्सिटी</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">कुंजी "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
+<translation id="4063924980214801036">कार्ड की पुष्टि जल्दी करने के लिए, डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल करें</translation>
 <translation id="4067098466788473230">शिक्षा के लिए मिलने वाले अनुदान और स्कॉलरशिप</translation>
 <translation id="4067263367174615723">सी1 (एन्वेलप)</translation>
 <translation id="4067947977115446013">मान्य पता जोड़ें</translation>
 <translation id="4072193657607981494">नीतियांं लोड हो रही हैं</translation>
 <translation id="4072486802667267160">आपका आदेश संसाधित करते समय गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
+<translation id="4073376909608563327">डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल नहीं किया जा सका</translation>
 <translation id="4073797364926776829">कार्ड देखें</translation>
 <translation id="4075732493274867456">क्लाइंट और सर्वर, सामान्य SSL प्रोटोकॉल वर्शन या सिफ़र सुइट का समर्थन नहीं करते हैं.</translation>
 <translation id="4079302484614802869">प्रॉक्‍सी कॉन्‍फ़िगरेशन को .pac स्‍क्रिप्‍ट यूआरएल का उपयोग करने के लिए सेट किया जाता है, फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर के लिए नहीं.</translation>
@@ -1412,6 +1419,7 @@
 <translation id="4840250757394056958">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> और कई अन्य पर छूट पाएं</translation>
+<translation id="484988093836683706">डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल करें</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="4852429274334674023">ऑपरेटिंग सिस्टम</translation>
 <translation id="485316830061041779">जर्मन</translation>
@@ -1799,6 +1807,7 @@
 <translation id="5921185718311485855">चालू है</translation>
 <translation id="5921639886840618607">कार्ड को Google खाते में सेव करें?</translation>
 <translation id="5922853866070715753">करीब-करीब हो गया है</translation>
+<translation id="5923492272538889093">सीवीसी के बजाय डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल करें?</translation>
 <translation id="5928444777041341328">घर और बगीचा</translation>
 <translation id="5932224571077948991">साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं</translation>
 <translation id="5937560539988385583">पेज का अनुवाद हो गया</translation>
@@ -1972,6 +1981,7 @@
 <translation id="643051589346665201">Google पासवर्ड बदलें</translation>
 <translation id="6433490469411711332">संपर्क जानकारी में बदलाव करें</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ने कनेक्ट करने से मना कर दिया है.</translation>
+<translation id="6433797564277305076">अब से, कार्ड को अनलॉक करने की सुविधा का इस्तेमाल करके, अपने कार्ड की पुष्टि जल्दी करें</translation>
 <translation id="6440503408713884761">अनदेखा किया गया</translation>
 <translation id="6443406338865242315">आपने कौनसे एक्सटेंशन और प्लग इन इंस्टॉल किए हैं</translation>
 <translation id="6446163441502663861">काहू (एन्वेलप)</translation>
@@ -2178,6 +2188,7 @@
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{यह कार्ड इस समय सेव नहीं किया जा सकता}one{ये कार्ड इस समय सेव नहीं किए जा सकते}other{ये कार्ड इस समय सेव नहीं किए जा सकते}}</translation>
 <translation id="7053983685419859001">ब्लॉक करें</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ने पुष्टि की है कि <ph name="ISSUER" /> ने इस वेबसाइट को प्रमाणपत्र दिया है.</translation>
+<translation id="7058774143982824355">CSV पासवर्ड वाली फ़ाइल के लिए पार्सर सेवा</translation>
 <translation id="7061777300866737982">घर की सुरक्षा</translation>
 <translation id="7062635574500127092">हरा-नीला</translation>
 <translation id="706295145388601875">Chrome की सेटिंग में वेब पते जोड़ें और मैनेज करें</translation>
@@ -2442,6 +2453,7 @@
 <translation id="7696089921647603491">पुराना रॉक म्यूज़िक और गाने</translation>
 <translation id="7697066736081121494">पीआरसी8 (एन्वेलप)</translation>
 <translation id="769721561045429135">फ़िलहाल आपके पास सिर्फ़ इसी डिवाइस पर इस्तेमाल किए जा सकने वाले कार्ड हैं. कार्ड देखने के लिए जारी रखें पर क्लिक करें.</translation>
+<translation id="7698864304447945242">Google Play Services for AR को अपडेट करें?</translation>
 <translation id="7699293099605015246">फ़िलहाल लेख उपलब्ध नहीं हैं</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> में आगे बढ़ें (असुरक्षित)<ph name="END_LINK" /></translation>
@@ -2454,6 +2466,7 @@
 <translation id="7723047071702270851">कार्ड में बदलाव करें</translation>
 <translation id="7734285854693414638">Google Forms में जल्दी से नया फ़ॉर्म बनाएं</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> भाषा के पेज का हमेशा अनुवाद करें</translation>
+<translation id="7736959720849233795">लिंक का पता कॉपी करें</translation>
 <translation id="7740996059027112821">मानक</translation>
 <translation id="77424286611022110">इस साइट पर, तंग करने वाले या गुमराह करने वाले विज्ञापन दिखते हैं. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">खतरनाक सामग्री ब्लॉक की गई.</translation>

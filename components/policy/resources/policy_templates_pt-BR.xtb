@@ -108,6 +108,11 @@
 
       Se você definir a política, os usuários não poderão mudá-la.</translation>
 <translation id="1123650965531933634">Nega a permissão para posicionamento de janelas em todos os sites por padrão</translation>
+<translation id="112496019059412872">Controla se o recurso "Lembrar senha" está ativado na caixa de diálogo de autenticação do Kerberos. As senhas são armazenadas de maneira criptografada no disco. Elas só podem ser acessadas pelo daemon do sistema Kerberos e durante uma sessão do usuário.
+
+          Se esta política for ativada ou não estiver definida, o usuário vai poder decidir se as senhas do Kerberos serão memorizadas para que ele não precise digitá-las novamente. Os tíquetes do Kerberos serão buscados automaticamente, a não ser que uma autenticação extra seja necessária (autenticação de dois fatores).
+
+          Se esta política for desativada, as senhas nunca vão ser lembradas e todas as senhas armazenadas anteriormente serão removidas. O usuário vai precisar inserir a senha sempre que tiver que fazer autenticação no sistema Kerberos. Dependendo das configurações do servidor, isso vai acontecer no mínimo a cada oito horas, mas é possível definir até intervalos de meses.</translation>
 <translation id="1133622335785078255">Permitir que usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
 <translation id="1133814529606590009">Se a política for definida como "Ativada", a coleta de dados anônimos inseridos no URL (que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e navegação) ficará sempre ativa.
 
@@ -4945,6 +4950,12 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como "Desativada", a otimização da WPAD será desativada e o <ph name="PRODUCT_NAME" /> precisará esperar mais por servidores de WPAD baseados em DNS.
 
       Em qualquer um dos casos, não será possível mudar a configuração de otimização da WPAD.</translation>
+<translation id="6365249741643189510">Esta política concede ao Projector permissão para criar, transcrever e fazer upload de gravações de tela para o Drive para usuários corporativos.
+      Esta política não afeta usuários do Family Link.
+      Esta política não afeta a política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para usuários do Family Link.
+
+      Se ela não for definida, o Projector vai ser ativado.
+      Se ela for desativada, o Projector vai ser desativado.</translation>
 <translation id="6366574325767783825">Se a política for definida como verdadeira ou não for definida, o <ph name="PRODUCT_NAME" /> aceitará conteúdos da Web exibidos como Signed HTTP Exchanges.
 
       Se ela for definida como falsa, conteúdos Signed HTTP Exchanges não serão carregados.</translation>
@@ -5071,6 +5082,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6518102411616460786">Esperar que o canal conclua o downgrade de canal</translation>
 <translation id="6520802717075138474">Importar mecanismos de pesquisa do navegador padrão na primeira execução</translation>
 <translation id="6521971538031711337">Impedir que o usuário gerenciado configure o nome do host do dispositivo</translation>
+<translation id="652593254122955308">Tempo limite até o perfil inativo ser fechado</translation>
 <translation id="6532026122543921610">A menos que a política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desative a detecção automática de fuso horário, a definição da política especificará o método de detecção automática, que não poderá ser modificado pelos usuários.
 
       Se a política for definida como:
@@ -7253,6 +7265,13 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política não for definida, será usada a configuração padrão para o sandbox de rede. Ela pode variar dependendo da versão do <ph name="PRODUCT_NAME" />, da execução de testes de campo e da plataforma.
       Esta política tem como objetivo oferecer às empresas flexibilidade para desativar o sandbox de rede, caso elas usem um software de terceiros que interfira nesse tipo de sandbox.</translation>
 <translation id="8842208363354615697">Permitir que o HTTPS-Only Mode seja ativado</translation>
+<translation id="8850156309475162935">Aciona uma ação quando o computador está inativo.
+
+        Se esta política for definida como um número positivo, esse número vai indicar a quantidade de minutos. Depois da quantidade definida de minutos sem entrada do usuário, <ph name="PRODUCT_NAME" /> todas as janelas do navegador são fechadas e o seletor de perfil aparece.
+
+        Se esta política for menor que 5 ou se não for definida, nada vai acontecer quando o computador estiver inativo.
+
+        A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui itens como mover o mouse ou digitar no teclado.</translation>
 <translation id="885147810817138322">Exibir recomendações de mídia aos usuários</translation>
 <translation id="8852579753940989645">Ativar integridade do código renderizador</translation>
 <translation id="8854571659927427063">Se a política for definida como ativada, os favoritos serão importados do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhum favorito será importado durante a primeira execução.
@@ -7364,6 +7383,13 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8983537551095611459">Configurar a lista de IDs de extensão isenta do processo de limpeza da sessão de visitante gerenciada restrita</translation>
 <translation id="8983539044126123594">Ativar o login com mais Contas do Google</translation>
 <translation id="8992176907758534924">Não permitir que nenhum site exiba imagens</translation>
+<translation id="8994954504552592260">Ativar a migração de dispositivos gerenciados por <ph name="MS_AD_NAME" /> no gerenciamento de nuvem. Esta política permite o início remoto de uma migração sem toque de vários dispositivos em uma empresa. O processo de migração vai ser o mais transparente possível para os usuários finais.
+
+      Se a política for ativada e o ID de registro já tiver sido enviado ao DMServer, o sistema vai acionar um Powerwash do dispositivo remoto.
+
+      Se a política for desativada ou não for definida, o Powerwash do dispositivo remoto não vai ser acionado, independente do status de upload do ID de registro.
+
+      Essa verificação ocorre sempre que a tela de login é carregada e é repetida de hora em hora quando o dispositivo permanece na tela de login. Isso evita que a migração seja iniciada no meio de uma sessão do usuário, o que pode causar problemas para usuários finais.</translation>
 <translation id="9007632512838819703">Esta política está obsoleta. Use <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" />.
 
       Força a desativação da correção ortográfica de idiomas. Idiomas não reconhecidos incluídos na lista serão ignorados.

@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="2638942478653899953">Google डिस्क तक नहीं पहुंचा जा सका. कृपया <ph name="BEGIN_LINK" />लॉग आउट करें<ph name="END_LINK" /> और वापस प्रवेश करें.</translation>
 <translation id="2649120831653069427">रेनबोफ़िश</translation>
+<translation id="2653059201992392941">आपके पास <ph name="RETRIES" /> मौके बचे हैं.</translation>
 <translation id="2663066752008346276">मयन्सन कीबोर्ड के साथ बर्मीज़/म्यांमार</translation>
 <translation id="2664412712123763093">फ़ाइल की जगह</translation>
 <translation id="2718540689505416944">Linux पर ऐप्लिकेशन की मदद से इंस्टॉल करें</translation>
@@ -528,6 +529,7 @@
 <translation id="5489067830765222292">लातवियन</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> फ़िल्टर बंद है.</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
+<translation id="5500104704744051184">जब तक PUK नहीं डाला जाता, तब तक इस नेटवर्क का इस्तेमाल नहीं किया जा सकेगा</translation>
 <translation id="5500122897333236901">आइसलैंडिक</translation>
 <translation id="5508696409934741614">बिंदु</translation>
 <translation id="5522908512596376669">फ़ाइल की सूची को अब सूची की तरह दिखाया जा रहा है.</translation>
@@ -633,6 +635,7 @@
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> आइटम</translation>
 <translation id="642282551015776456">यह नाम कि‍सी फ़ाइल या फ़ोल्‍डर के लि‍ए उपयोग नहीं कि‍या जा सकता</translation>
 <translation id="6423031066725912715">टीसीवीएन कीबोर्ड के साथ वियतनामीज़</translation>
+<translation id="6430271654280079150">आपके पास 1 मौका बचा है.</translation>
 <translation id="6485131920355264772">स्थान जानकारी पाने में विफल रहा</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, जानकारी</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> को <ph name="FOLDER_NAME" /> में एक्सट्रैक्ट किया जा रहा है</translation>
@@ -899,6 +902,7 @@
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> आइटम समन्‍वयित कर रहा है...</translation>
 <translation id="8600173386174225982">फ़ाइल की सूची अब थंबनेल की तरह दिखाई जा रही है.</translation>
 <translation id="8601932370724196034">Crostini इमेज फ़ाइल</translation>
+<translation id="8608515571837163082">कई बार गलत पिन डाला गया. मोबाइल और इंटरनेट सेवा देने वाली कंपनी से मिली आठ अंकों वाली निजी अनब्लॉकिंग कुंजी (PUK) डालें.</translation>
 <translation id="8609695766746872526">आइसलैंडिक</translation>
 <translation id="863903787380594467">आपने गलत पिन डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>

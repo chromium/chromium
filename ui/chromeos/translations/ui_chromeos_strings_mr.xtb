@@ -193,6 +193,7 @@
 <translation id="2621713457727696555">सुरक्षित</translation>
 <translation id="2638942478653899953">Google ड्राइव्ह पर्यंत पोहोचणे शक्य नाही. कृपया <ph name="BEGIN_LINK" />लॉग आउट करा<ph name="END_LINK" /> आणि परत लॉग इन करा.</translation>
 <translation id="2649120831653069427">रेनबोफिश</translation>
+<translation id="2653059201992392941">तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
 <translation id="2663066752008346276">म्यानसान कीबोर्डसह बर्मीज/म्यानमार</translation>
 <translation id="2664412712123763093">फाइलचे स्थान</translation>
 <translation id="2718540689505416944">Linux सह अ‍ॅप इंस्टॉल करा</translation>
@@ -528,6 +529,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5489067830765222292">ला‍टवियन</translation>
 <translation id="5489965683297092283"><ph name="FILTER_NAME" /> फिल्टर बंद आहे.</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
+<translation id="5500104704744051184">तुम्ही PUK एंटर करेपर्यंत तुम्हाला हे नेटवर्क वापरता येणार नाही</translation>
 <translation id="5500122897333236901">आइसलँडिक</translation>
 <translation id="5508696409934741614">बिंदू</translation>
 <translation id="5522908512596376669">फाइल सूची सूची दृश्यमध्ये बदलली गेली आहे.</translation>
@@ -633,6 +635,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> आयटम</translation>
 <translation id="642282551015776456">हे नाव एखाद्या फाइल किंवा फोल्डरचे नाव म्हणून वापरले जाऊ शकत नाही</translation>
 <translation id="6423031066725912715">TCVN कीबोर्डसह व्हिएतनामी</translation>
+<translation id="6430271654280079150">तुमच्याकडे एक प्रयत्न शिल्लक आहे.</translation>
 <translation id="6485131920355264772">स्थान माहिती पुनर्प्राप्त करण्यात अयशस्वी</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ही <ph name="FOLDER_NAME" /> मध्ये एक्स्ट्रॅक्ट करत आहे</translation>
@@ -899,6 +902,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> आयटम संकालित करीत आहे...</translation>
 <translation id="8600173386174225982">फाइल सूची थंबनेल व्ह्यूमध्ये बदलली गेली आहे.</translation>
 <translation id="8601932370724196034">Crostini इमेज फाइल</translation>
+<translation id="8608515571837163082">बऱ्याच वेळा चुकीचा पिन एंटर केला होता. वाहकाद्वारे पुरवलेली आठ अंकी वैयक्तिक अनब्लॉक करण्याची की (PUK) एंटर करा.</translation>
 <translation id="8609695766746872526">आइसलँडिक</translation>
 <translation id="863903787380594467">चुकीचा पिन. तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>
