@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +33,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
@@ -43,6 +44,7 @@ import androidx.browser.customtabs.CustomTabsSession;
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
+import org.chromium.base.Log;
 import org.chromium.customtabsclient.shared.CustomTabsHelper;
 import org.chromium.customtabsclient.shared.ServiceConnection;
 import org.chromium.customtabsclient.shared.ServiceConnectionCallback;
@@ -55,7 +57,7 @@ import java.util.List;
  */
 public class MainActivity
         extends AppCompatActivity implements OnClickListener, ServiceConnectionCallback {
-    private static final String TAG = "CustomTabsClientExample";
+    private static final String TAG = "CustomTabsClientEx";
     private static final String TOOLBAR_COLOR = "#ef6c00";
 
     private EditText mEditText;
@@ -105,6 +107,15 @@ public class MainActivity
         @Override
         public void onNavigationEvent(int navigationEvent, Bundle extras) {
             Log.w(TAG, "onNavigationEvent: Code = " + navigationEvent);
+        }
+
+        @Override
+        public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
+            if (callbackName.equals("onVerticalScrollEvent") && args != null) {
+                Log.w(TAG,
+                        "onVerticalScrollEvent: isDirectionUp = "
+                                + args.getBoolean("isDirectionUp"));
+            }
         }
     }
 

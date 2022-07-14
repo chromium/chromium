@@ -13,29 +13,38 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
+import org.chromium.content.browser.GestureListenerManagerImpl;
+import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -43,6 +52,7 @@ import org.chromium.content_public.browser.WebContents;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
 public class CustomTabActivityTabControllerUnitTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
@@ -55,12 +65,20 @@ public class CustomTabActivityTabControllerUnitTest {
 
     @Mock
     private Profile mProfile;
+    @Mock
+    private GestureListenerManagerImpl mGestureListenerManagerImpl;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mProfile);
         mTabController = env.createTabController();
+        GestureListenerManagerImpl.setInstanceForTesting(mGestureListenerManagerImpl);
+    }
+
+    @After
+    public void tearDown() {
+        GestureListenerManagerImpl.setInstanceForTesting(null);
     }
 
     @Test
@@ -196,5 +214,86 @@ public class CustomTabActivityTabControllerUnitTest {
         mTabController.finishNativeInitialization();
         Tab tab = env.prepareTab();
         assertTrue(tab.isIncognito());
+    }
+
+    @Test
+    public void doesNotAddListenersForSignalsIfFeatureIsDisabled() {
+        env.reachNativeInit(mTabController);
+
+        verify(mGestureListenerManagerImpl, never()).addListener(any(GestureStateListener.class));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void addsListenersForSignalsIfFeatureIsEnabled() {
+        env.reachNativeInit(mTabController);
+
+        verify(mGestureListenerManagerImpl).addListener(any(GestureStateListener.class));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void removesGestureStateListenerWhenWebContentsWillSwap() {
+        env.reachNativeInit(mTabController);
+
+        ArgumentCaptor<GestureStateListener> gestureStateListenerArgumentCaptor =
+                ArgumentCaptor.forClass(GestureStateListener.class);
+        verify(mGestureListenerManagerImpl)
+                .addListener(gestureStateListenerArgumentCaptor.capture());
+
+        ArgumentCaptor<TabObserver> tabObserverArgumentCaptor =
+                ArgumentCaptor.forClass(TabObserver.class);
+        verify(env.tabProvider.getTab(), atLeastOnce())
+                .addObserver(tabObserverArgumentCaptor.capture());
+
+        for (TabObserver observer : tabObserverArgumentCaptor.getAllValues()) {
+            observer.webContentsWillSwap(env.tabProvider.getTab());
+        }
+        verify(mGestureListenerManagerImpl)
+                .removeListener(gestureStateListenerArgumentCaptor.getValue());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void sendsSignalsForScrollStartThenEnd() {
+        env.reachNativeInit(mTabController);
+
+        ArgumentCaptor<GestureStateListener> gestureStateListenerArgumentCaptor =
+                ArgumentCaptor.forClass(GestureStateListener.class);
+        verify(mGestureListenerManagerImpl)
+                .addListener(gestureStateListenerArgumentCaptor.capture());
+
+        // Start scrolling down.
+        gestureStateListenerArgumentCaptor.getValue().onScrollStarted(0, 100, false);
+        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(false));
+        // End scrolling at 50%.
+        gestureStateListenerArgumentCaptor.getValue().onScrollEnded(50, 100);
+        // We shouldn't make any more calls.
+        verify(env.connection, times(1)).notifyVerticalScrollEvent(eq(env.session), anyBoolean());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    public void sendsSignalsForScrollStartDirectionChangeThenEnd() {
+        env.reachNativeInit(mTabController);
+
+        ArgumentCaptor<GestureStateListener> gestureStateListenerArgumentCaptor =
+                ArgumentCaptor.forClass(GestureStateListener.class);
+        verify(mGestureListenerManagerImpl)
+                .addListener(gestureStateListenerArgumentCaptor.capture());
+
+        // Start by scrolling down.
+        gestureStateListenerArgumentCaptor.getValue().onScrollStarted(0, 100, false);
+        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(false));
+        // Change direction to up at 10%.
+        gestureStateListenerArgumentCaptor.getValue().onVerticalScrollDirectionChanged(true, .1f);
+        verify(env.connection).notifyVerticalScrollEvent(eq(env.session), eq(true));
+        // Change direction to down at 5%.
+        gestureStateListenerArgumentCaptor.getValue().onVerticalScrollDirectionChanged(false, .05f);
+        verify(env.connection, times(2)).notifyVerticalScrollEvent(eq(env.session), eq(false));
+        // End scrolling at 50%.
+        gestureStateListenerArgumentCaptor.getValue().onScrollEnded(50, 100);
+        // We shouldn't make any more calls.
+        verify(env.connection, times(3)).notifyVerticalScrollEvent(eq(env.session), anyBoolean());
     }
 }
