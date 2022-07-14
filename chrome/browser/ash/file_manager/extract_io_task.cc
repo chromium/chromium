@@ -72,13 +72,13 @@ void ExtractIOTask::ZipListenerCallback(uint64_t bytes) {
 }
 
 void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
-  progress_.state = success ? State::kSuccess : State::kError;
   if (success) {
     // Open a new window to show the extracted content.
     platform_util::ShowItemInFolder(profile_, directory);
   }
   DCHECK_GT(extractCount_, 0);
   if (--extractCount_ == 0) {
+    progress_.state = success ? State::kSuccess : State::kError;
     RecordUmaExtractStatus(progress_.state == State::kSuccess
                                ? ExtractStatus::kSuccess
                                : ExtractStatus::kUnknownError);
