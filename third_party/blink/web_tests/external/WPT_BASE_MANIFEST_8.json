@@ -127945,6 +127945,66 @@
        {}
       ]
      ],
+     "gradient": {
+      "gradient-eval-001.tentative.html": [
+       "384f46da293777f7aa52c37eb673188da742df65",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-001-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "gradient-eval-002.tentative.html": [
+       "e393c4c69d0858e856833cf30ba4f68722fbeed3",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/gradient-eval-002-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ]
+     },
      "gradient-border-box.html": [
       "2938c5ea99e1e41c64c1d58e69806270318bccf9",
       [
@@ -159163,6 +159223,84 @@
       ],
       "block-aspect-ratio-043.html": [
        "98fd3697dc3e68b9a102b74bf70e8c4075792bb5",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-044.html": [
+       "e78a1f1f12d51d62cd62e971725f9da626ed3d06",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-045.html": [
+       "2c86bd4417bfb7b0ef3df305d07928fc3b76aef9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-046.html": [
+       "3deb786fcb963881b18cec7e237139578ad1e280",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-047.html": [
+       "5f7cad5803cb98b1392ac69b16bd0727fe416f77",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-048.html": [
+       "12ae22c26badc8b2070af11aec390c7a4d13fd32",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "block-aspect-ratio-049.html": [
+       "7e25b6e626fa6a3f6b865b411515bedc033a3b01",
        [
         null,
         [
@@ -278159,6 +278297,16 @@
       "f3193036766e428bf946e81b7df72bfc7f4901db",
       []
      ],
+     "gradient": {
+      "gradient-eval-001-ref.html": [
+       "37c9cf8d8be5d5f59227722e560adb0713e439cb",
+       []
+      ],
+      "gradient-eval-002-ref.html": [
+       "199cf5a369d35fcb53cf5bc990f20da685ec5edb",
+       []
+      ]
+     },
      "gradient-border-box-ref.html": [
       "5b219cea6c20ba46ebba7d7bb890af3923d90a54",
       []

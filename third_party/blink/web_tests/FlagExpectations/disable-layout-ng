@@ -11,6 +11,8 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-046.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-048.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-display/display-flow-root-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-040.html [ Failure ]
 crbug.com/626703 external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
