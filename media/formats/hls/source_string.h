@@ -83,6 +83,12 @@ class MEDIA_EXPORT GenericSourceString {
   // string. Returns the substring that was consumed.
   GenericSourceString Consume(size_t count = base::StringPiece::npos);
 
+  // Finds the first occurrence of the given character, and returns the
+  // substring prefixing that character. The prefix and character are consumed
+  // from this string. If the given character does not appear anywhere in this
+  // string, the entire string is consumed and returned.
+  GenericSourceString ConsumeDelimiter(char c);
+
   // Produces a `ResolvedSourceString` by bypassing variable substitution.
   // This is useful for passing strings that must not contain variables to
   // functions consuming strings that may or may not have contained variable

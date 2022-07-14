@@ -446,4 +446,54 @@ ParseStatus::Or<InstreamId> InstreamId::Parse(ResolvedSourceString str) {
   return InstreamId(type, static_cast<uint8_t>(number));
 }
 
+AudioChannels::AudioChannels(DecimalInteger max_channels,
+                             std::vector<std::string> audio_coding_identifiers)
+    : max_channels_(max_channels),
+      audio_coding_identifiers_(std::move(audio_coding_identifiers)) {}
+
+AudioChannels::AudioChannels(const AudioChannels&) = default;
+
+AudioChannels::AudioChannels(AudioChannels&&) = default;
+
+AudioChannels& AudioChannels::operator=(const AudioChannels&) = default;
+
+AudioChannels& AudioChannels::operator=(AudioChannels&&) = default;
+
+AudioChannels::~AudioChannels() = default;
+
+ParseStatus::Or<AudioChannels> AudioChannels::Parse(ResolvedSourceString str) {
+  // First parameter is a decimal-integer indicating the number of channels
+  const auto max_channels_str = str.ConsumeDelimiter('/');
+  auto max_channels_result = ParseDecimalInteger(max_channels_str);
+  if (max_channels_result.has_error()) {
+    return ParseStatus(ParseStatusCode::kFailedToParseAudioChannels)
+        .AddCause(std::move(max_channels_result).error());
+  }
+  const auto max_channels = std::move(max_channels_result).value();
+
+  // Second parameter (optional) is a comma-seperated list of audio coding
+  // identifiers.
+  auto audio_coding_identifiers_str = str.ConsumeDelimiter('/');
+  std::vector<std::string> audio_coding_identifiers;
+  while (!audio_coding_identifiers_str.Empty()) {
+    const auto identifier = audio_coding_identifiers_str.ConsumeDelimiter(',');
+
+    constexpr auto is_valid_coding_identifier_char = [](char c) -> bool {
+      return base::IsAsciiUpper(c) || base::IsAsciiDigit(c) || c == '-';
+    };
+
+    // Each string must be non-empty and consist only of the allowed characters
+    if (identifier.Empty() ||
+        !base::ranges::all_of(identifier.Str(),
+                              is_valid_coding_identifier_char)) {
+      return ParseStatusCode::kFailedToParseAudioChannels;
+    }
+
+    audio_coding_identifiers.emplace_back(identifier.Str());
+  }
+
+  // Ignore any remaining parameters for forward-compatibility
+  return AudioChannels(max_channels, std::move(audio_coding_identifiers));
+}
+
 }  // namespace media::hls::types

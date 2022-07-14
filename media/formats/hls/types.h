@@ -219,6 +219,38 @@ class MEDIA_EXPORT InstreamId {
   uint8_t number_;
 };
 
+// Represents the contents of the 'CHANNELS' attribute on the 'EXT-X-MEDIA' tag
+// for an audio stream.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.6.1:~:text=If%20the%20TYPE%20attribute%20is%20AUDIO%2C%20then%20the%20first%20parameter%20is%20a
+class MEDIA_EXPORT AudioChannels {
+ public:
+  AudioChannels(const AudioChannels&);
+  AudioChannels(AudioChannels&&);
+  AudioChannels& operator=(const AudioChannels&);
+  AudioChannels& operator=(AudioChannels&&);
+  ~AudioChannels();
+
+  static ParseStatus::Or<AudioChannels> Parse(ResolvedSourceString);
+
+  // Returns the max number of independent, simultaneous audio channels present
+  // in any media segment in the associated rendition.
+  DecimalInteger GetMaxChannels() const { return max_channels_; }
+
+  // Returns the list of audio coding identifiers, which are strings of
+  // characters in the set [A-Z], [0-9], '-'. This list may be empty, or may
+  // only contain "-", indicating that the audio is only channel-based.
+  const std::vector<std::string>& GetAudioCodingIdentifiers() const {
+    return audio_coding_identifiers_;
+  }
+
+ private:
+  AudioChannels(DecimalInteger max_channels,
+                std::vector<std::string> audio_coding_identifiers);
+
+  DecimalInteger max_channels_;
+  std::vector<std::string> audio_coding_identifiers_;
+};
+
 }  // namespace media::hls::types
 
 #endif  // MEDIA_FORMATS_HLS_TYPES_H_

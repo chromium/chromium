@@ -26,6 +26,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kFailedToParseByteRange);
     PARSE_STATUS_CODE_CASE(kFailedToParseStableId);
     PARSE_STATUS_CODE_CASE(kFailedToParseInstreamId);
+    PARSE_STATUS_CODE_CASE(kFailedToParseAudioChannels);
     PARSE_STATUS_CODE_CASE(kInvalidPlaylistVersion);
     PARSE_STATUS_CODE_CASE(kUnknownPlaylistType);
     PARSE_STATUS_CODE_CASE(kMalformedAttributeList);

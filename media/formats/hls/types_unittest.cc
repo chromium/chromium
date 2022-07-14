@@ -4,6 +4,8 @@
 
 #include "media/formats/hls/types.h"
 
+#include <initializer_list>
+#include <string>
 #include <utility>
 
 #include "base/location.h"
@@ -864,6 +866,60 @@ TEST(HlsTypesTest, ParseInstreamId) {
   ok_test("CC4", types::InstreamId::Type::kCc, 4);
   ok_test("SERVICE1", types::InstreamId::Type::kService, 1);
   ok_test("SERVICE63", types::InstreamId::Type::kService, 63);
+}
+
+TEST(HlsTypesTest, ParseAudioChannels) {
+  constexpr auto ok_test =
+      [](base::StringPiece str, types::DecimalInteger max_channels,
+         const std::initializer_list<std::string>& audio_coding_identifiers,
+         const base::Location& from = base::Location::Current()) {
+        auto result = types::AudioChannels::Parse(
+            ResolvedSourceString::CreateForTesting(str));
+        ASSERT_TRUE(result.has_value()) << from.ToString();
+        const auto value = std::move(result).value();
+        EXPECT_EQ(value.GetMaxChannels(), max_channels) << from.ToString();
+        EXPECT_TRUE(base::ranges::equal(value.GetAudioCodingIdentifiers(),
+                                        audio_coding_identifiers))
+            << from.ToString();
+      };
+  constexpr auto error_test = [](base::StringPiece str,
+                                 const base::Location& from =
+                                     base::Location::Current()) {
+    auto result = types::AudioChannels::Parse(
+        ResolvedSourceString::CreateForTesting(str));
+    ASSERT_TRUE(result.has_error()) << from.ToString();
+    EXPECT_EQ(std::move(result).error().code(),
+              ParseStatusCode::kFailedToParseAudioChannels)
+        << from.ToString();
+  };
+
+  // First parameter must be a valid DecimalInteger
+  error_test("");
+  error_test("/");
+  error_test("-1");
+  error_test("-1/");
+  error_test("/1");
+  error_test("/FOO");
+  error_test("1.5");
+  ok_test("1", 1, {});
+  ok_test("0", 0, {});
+  ok_test("2/", 2, {});
+  ok_test("99/", 99, {});
+
+  // Second parameter must be a valid list of audio coding identifiers
+  error_test("2/foo");
+  error_test("2/+");
+  error_test("2/,");
+  error_test("2/FOO,,");
+  ok_test("2/FOO", 2, {"FOO"});
+  ok_test("2/FOO,", 2, {"FOO"});
+  ok_test("2/FOO,BAR", 2, {"FOO", "BAR"});
+  ok_test("2/FOO-BAR,8AZ", 2, {"FOO-BAR", "8AZ"});
+  ok_test("2/-", 2, {"-"});
+
+  // Additional parameters are ignored
+  ok_test("2//19090zz**-0/", 2, {});
+  ok_test("2/FOO/19090zz**-0", 2, {"FOO"});
 }
 
 }  // namespace media::hls

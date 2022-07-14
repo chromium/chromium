@@ -23,6 +23,7 @@ enum class ParseStatusCode : StatusCodeType {
   kFailedToParseByteRange,
   kFailedToParseStableId,
   kFailedToParseInstreamId,
+  kFailedToParseAudioChannels,
   kInvalidPlaylistVersion,
   kUnknownPlaylistType,
   kMalformedAttributeList,

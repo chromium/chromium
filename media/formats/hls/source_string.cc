@@ -80,6 +80,15 @@ GenericSourceString<ResolutionState>::Consume(size_t count) {
   return consumed;
 }
 
+template <typename ResolutionState>
+GenericSourceString<ResolutionState>
+GenericSourceString<ResolutionState>::ConsumeDelimiter(char c) {
+  const auto index = Str().find_first_of(c);
+  const auto prefix = Consume(index);
+  Consume(1);
+  return prefix;
+}
+
 template <>
 ResolvedSourceString SourceString::SkipVariableSubstitution() const {
   return ResolvedSourceString(
