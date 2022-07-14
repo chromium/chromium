@@ -100,7 +100,7 @@ class WebView {
   // clients may be null, but should both be null or not together.
   // |is_hidden| defines the initial visibility of the page.
   // |is_prerendering| defines whether the page is being prerendered by the
-  // Prerender2 feature (see content/browser/prerender/README.md).
+  // Prerender2 feature (see content/browser/preloading/prerender/README.md).
   // [is_inside_portal] defines whether the page is inside_portal.
   // [is_fenced_frame] defines whether the page is for a fenced frame.
   // |compositing_enabled| dictates whether accelerated compositing should be

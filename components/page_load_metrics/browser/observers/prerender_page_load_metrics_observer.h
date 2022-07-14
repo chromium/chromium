@@ -24,7 +24,7 @@ extern const char
 
 }  // namespace internal
 
-// Prerender2 (content/browser/prerender/README.md):
+// Prerender2 (content/browser/preloading/prerender/README.md):
 // Records custom page load timing metrics for prerendered page loads.
 class PrerenderPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {

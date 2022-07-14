@@ -231,7 +231,7 @@ class SearchSuggestionParser {
     bool should_prefetch_;
 
     // Should this result trigger Prerender2? See
-    // content/browser/prerender/README.md for more information.
+    // content/browser/preloading/prerender/README.md for more information.
     bool should_prerender_;
   };
 

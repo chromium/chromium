@@ -23,7 +23,8 @@ namespace content {
 // The action to take for each interface is specified in the given
 // `MojoBinderPolicyMap`, and kDefer is used when no policy is specified.
 //
-// See content/browser/prerender/README.md for more about capability control.
+// See content/browser/preloading/prerender/README.md for more about capability
+// control.
 class CONTENT_EXPORT MojoBinderPolicyApplier {
  public:
   enum class Mode {

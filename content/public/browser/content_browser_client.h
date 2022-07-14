@@ -1183,8 +1183,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // frame that is being prerendered.
   //
   // Prerender2 limits inactivated pages' capabilities by controlling when to
-  // bind Mojo interfaces. See content/browser/prerender/README.md for more
-  // about capability control.
+  // bind Mojo interfaces. See content/browser/preloading/prerender/README.md
+  // for more about capability control.
   //
   // The embedder can add entries to `policy_map` for interfaces that it
   // registers in `RegisterBrowserInterfaceBindersForFrame()` and

@@ -527,7 +527,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   bool inside_portal_ = false;
 
   // Whether the page is being prerendered by the Prerender2
-  // feature. See content/browser/prerender/README.md.
+  // feature. See content/browser/preloading/prerender/README.md.
   //
   // This is ordinarily initialized by WebViewImpl immediately after creating
   // this Page. Once initialized, it can only transition from true to false on

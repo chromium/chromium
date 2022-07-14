@@ -4817,7 +4817,7 @@
   },
   {
     "name": "omnibox-trigger-for-prerender2",
-    "owners": [ "//content/browser/prerender/OWNERS" ],
+    "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 106
   },
   {
@@ -5526,7 +5526,7 @@
   },
   {
     "name": "search-suggestion-for-prerender2",
-    "owners": [ "//content/browser/prerender/OWNERS" ],
+    "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 106
   },
   {

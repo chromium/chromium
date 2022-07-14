@@ -379,13 +379,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //
   // In the other direction, a RenderFrameHost can also transfer to a different
   // FrameTreeNode! Prior to the advent of prerendered pages
-  // (content/browser/prerender/README.md), that was not true, and it could be
-  // assumed that the return value of RenderFrameHost::GetFrameTreeNodeId() was
-  // constant over the lifetime of the RenderFrameHost. But with prerender
-  // activations, the main frame of the prerendered page transfers to a new
-  // FrameTreeNode, so newer code should no longer make that assumption. This
-  // transfer only happens for main frames (currently only during a prerender
-  // activation navigation) and never happens for subframes.
+  // (content/browser/preloading/prerender/README.md), that was not true, and it
+  // could be assumed that the return value of
+  // RenderFrameHost::GetFrameTreeNodeId() was constant over the lifetime of the
+  // RenderFrameHost. But with prerender activations, the main frame of the
+  // prerendered page transfers to a new FrameTreeNode, so newer code should no
+  // longer make that assumption. This transfer only happens for main frames
+  // (currently only during a prerender activation navigation) and never happens
+  // for subframes.
   //
   // If a stable identifier is needed, GetGlobalId() always refers to this
   // RenderFrameHost, while this RenderFrameHost might host multiple documents

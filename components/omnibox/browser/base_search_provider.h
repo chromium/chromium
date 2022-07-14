@@ -133,7 +133,8 @@ class BaseSearchProvider : public AutocompleteProvider {
   static const char kShouldPrefetchKey[];
 
   // Indicates whether the server said a match should be prerendered by
-  // Prerender2. See content/browser/prerender/README.md for more information.
+  // Prerender2. See content/browser/preloading/prerender/README.md for more
+  // information.
   static const char kShouldPrerenderKey[];
 
   // Used to store metadata from the server response, which is needed for
