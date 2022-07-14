@@ -579,7 +579,7 @@
 <translation id="2505268675989099013">保护帐号</translation>
 <translation id="2509167091171468975">食品杂货零售店</translation>
 <translation id="2512101340618156538">不得使用（默认）</translation>
-<translation id="2512413427717747692">将 Chrome 设为 默认浏览器的按钮，按下 Enter 键即可在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
+<translation id="2512413427717747692">“将 Chrome 设为默认浏览器”按钮，按下 Enter 键即可在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
 <translation id="2515629240566999685">检查您所在区域的网络信号</translation>
 <translation id="2515761554693942801">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过触控 ID 来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="LINK_TEXT" />相应信息。</translation>
 <translation id="2521385132275182522">钉装（右下角）</translation>
@@ -879,7 +879,7 @@
 <translation id="3366477098757335611">查看您的卡</translation>
 <translation id="3369192424181595722">时钟错误</translation>
 <translation id="3369459162151165748">车辆零部件与配件</translation>
-<translation id="3371064404604898522">将 Chrome 设置为默认浏览器</translation>
+<translation id="3371064404604898522">将 Chrome 设为默认浏览器</translation>
 <translation id="337363190475750230">已取消配置</translation>
 <translation id="3375754925484257129">运行 Chrome 安全检查</translation>
 <translation id="3377144306166885718">服务器使用的 TLS 版本已过时。</translation>
@@ -1701,7 +1701,7 @@
 <translation id="5607240918979444548">Architecture-C</translation>
 <translation id="5610142619324316209">检查网络连接</translation>
 <translation id="5610807607761827392">您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理信用卡和地址信息。</translation>
-<translation id="561165882404867731">使用“Google 翻译”服务来翻译此页面</translation>
+<translation id="561165882404867731">使用 Google 翻译来翻译此页面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 想使用您计算机的位置信息</translation>
 <translation id="561669346091975195">科幻与奇幻电视节目</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> 将您重定向的次数过多。</translation>
@@ -2950,7 +2950,7 @@
 <translation id="917450738466192189">服务器证书无效。</translation>
 <translation id="9174623988242579721">定制车与高性能车</translation>
 <translation id="9174917557437862841">标签页切换按钮，按 Enter 键可切换到此标签页</translation>
-<translation id="9179703756951298733">请在 Chrome 设置中管理您的付款和信用卡信息</translation>
+<translation id="9179703756951298733">在 Chrome 设置中管理您的付款和信用卡信息</translation>
 <translation id="9183302530794969518">Google 文档</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不受支持的协议。</translation>
 <translation id="9187461866967718678">极限运动</translation>

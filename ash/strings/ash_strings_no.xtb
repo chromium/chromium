@@ -589,7 +589,7 @@ Koble enheten til strøm.</translation>
 <translation id="4421231901400348175">Deler kontroll av skjermen med <ph name="HELPER_NAME" /> via fjernhjelp.</translation>
 <translation id="4424159417645388645">Skrivebord 5</translation>
 <translation id="4430019312045809116">Volum</translation>
-<translation id="4435022394553622295">Se varsler og apper fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
+<translation id="4435022394553622295">Se varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Appene er sortert etter navn</translation>
 <translation id="4445159312344259901">Logg inn for å låse opp</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 viktig varsel}other{# viktige varsler}}</translation>
