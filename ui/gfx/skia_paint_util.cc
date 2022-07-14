@@ -61,7 +61,9 @@ sk_sp<cc::PaintShader> CreateGradientShader(const gfx::Point& start_point,
                                             const gfx::Point& end_point,
                                             SkColor start_color,
                                             SkColor end_color) {
-  SkColor grad_colors[2] = {start_color, end_color};
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  SkColor4f grad_colors[2] = {SkColor4f::FromColor(start_color),
+                              SkColor4f::FromColor(end_color)};
   SkPoint grad_points[2] = {gfx::PointToSkPoint(start_point),
                             gfx::PointToSkPoint(end_point)};
 

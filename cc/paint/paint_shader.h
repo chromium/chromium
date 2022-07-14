@@ -53,47 +53,47 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
 
   static sk_sp<PaintShader> MakeEmpty();
 
-  static sk_sp<PaintShader> MakeColor(SkColor color);
+  static sk_sp<PaintShader> MakeColor(SkColor4f color);
 
   // TODO(crbug.com/1155544) SkMatrix is deprecated in favor of SkM44.
   static sk_sp<PaintShader> MakeLinearGradient(
       const SkPoint* points,
-      const SkColor* colors,
+      const SkColor4f colors[],
       const SkScalar* pos,
       int count,
       SkTileMode mode,
       uint32_t flags = 0,
       const SkMatrix* local_matrix = nullptr,
-      SkColor fallback_color = SK_ColorTRANSPARENT);
+      SkColor4f fallback_color = SkColors::kTransparent);
 
   static sk_sp<PaintShader> MakeRadialGradient(
       const SkPoint& center,
       SkScalar radius,
-      const SkColor colors[],
+      const SkColor4f colors[],
       const SkScalar pos[],
       int color_count,
       SkTileMode mode,
       uint32_t flags = 0,
       const SkMatrix* local_matrix = nullptr,
-      SkColor fallback_color = SK_ColorTRANSPARENT);
+      SkColor4f fallback_color = SkColors::kTransparent);
 
   static sk_sp<PaintShader> MakeTwoPointConicalGradient(
       const SkPoint& start,
       SkScalar start_radius,
       const SkPoint& end,
       SkScalar end_radius,
-      const SkColor colors[],
+      const SkColor4f colors[],
       const SkScalar pos[],
       int color_count,
       SkTileMode mode,
       uint32_t flags = 0,
       const SkMatrix* local_matrix = nullptr,
-      SkColor fallback_color = SK_ColorTRANSPARENT);
+      SkColor4f fallback_color = SkColors::kTransparent);
 
   static sk_sp<PaintShader> MakeSweepGradient(
       SkScalar cx,
       SkScalar cy,
-      const SkColor colors[],
+      const SkColor4f colors[],
       const SkScalar pos[],
       int color_count,
       SkTileMode mode,
@@ -101,7 +101,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       SkScalar end_degrees,
       uint32_t flags = 0,
       const SkMatrix* local_matrix = nullptr,
-      SkColor fallback_color = SK_ColorTRANSPARENT);
+      SkColor4f fallback_color = SkColors::kTransparent);
 
   // |tile_rect| is not null only if the |image| is paint worklet backed.
   static sk_sp<PaintShader> MakeImage(const PaintImage& image,
@@ -226,11 +226,11 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   sk_sp<PaintShader> CreatePaintWorkletRecord(
       ImageProvider* image_provider) const;
 
-  void SetColorsAndPositions(const SkColor* colors,
+  void SetColorsAndPositions(const SkColor4f* colors,
                              const SkScalar* positions,
                              int count);
   void SetMatrixAndTiling(const SkMatrix* matrix, SkTileMode tx, SkTileMode ty);
-  void SetFlagsAndFallback(uint32_t flags, SkColor fallback_color);
+  void SetFlagsAndFallback(uint32_t flags, SkColor4f fallback_color);
 
   Type shader_type_ = Type::kShaderCount;
 
@@ -239,7 +239,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   SkScalar start_radius_ = 0;
   SkTileMode tx_ = SkTileMode::kClamp;
   SkTileMode ty_ = SkTileMode::kClamp;
-  SkColor fallback_color_ = SK_ColorTRANSPARENT;
+  SkColor4f fallback_color_ = SkColors::kTransparent;
   ScalingBehavior scaling_behavior_ = ScalingBehavior::kRasterAtScale;
 
   absl::optional<SkMatrix> local_matrix_;
@@ -260,7 +260,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   // will be rasterized.
   absl::optional<gfx::SizeF> tile_scale_;
 
-  std::vector<SkColor> colors_;
+  std::vector<SkColor4f> colors_;
   std::vector<SkScalar> positions_;
 
   // Cached intermediates, for Paint objects that may not be thread-safe

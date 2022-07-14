@@ -297,9 +297,10 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
       SkScalar bottom_gradient_start = 1.f - top_gradient_end;
       SkScalar color_positions[4] = {0.f, top_gradient_end,
                                      bottom_gradient_start, 1.f};
-      SkColor colors[4] = {gradient_params_.color_from,
-                           gradient_params_.color_to, gradient_params_.color_to,
-                           gradient_params_.color_from};
+      SkColor4f colors[4] = {SkColor4f::FromColor(gradient_params_.color_from),
+                             SkColor4f::FromColor(gradient_params_.color_to),
+                             SkColor4f::FromColor(gradient_params_.color_to),
+                             SkColor4f::FromColor(gradient_params_.color_from)};
 
       flags.setShader(cc::PaintShader::MakeLinearGradient(
           in_view_coordinates, colors, color_positions, 4, SkTileMode::kClamp));

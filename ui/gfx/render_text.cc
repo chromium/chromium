@@ -144,9 +144,15 @@ sk_sp<cc::PaintShader> CreateFadeShader(const FontList& font_list,
 
   const SkPoint points[2] = { PointToSkPoint(text_rect.origin()),
                               PointToSkPoint(text_rect.top_right()) };
+  // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+  // SkColor4f.
+  std::vector<SkColor4f> colors4f;
+  colors4f.reserve(colors.size());
+  for (auto& c : colors)
+    colors4f.push_back(SkColor4f::FromColor(c));
   return cc::PaintShader::MakeLinearGradient(
-      &points[0], &colors[0], &positions[0], static_cast<int>(colors.size()),
-      SkTileMode::kClamp);
+      &points[0], &colors4f[0], &positions[0],
+      static_cast<int>(colors4f.size()), SkTileMode::kClamp);
 }
 
 // Converts a FontRenderParams::Hinting value to the corresponding

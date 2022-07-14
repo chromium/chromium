@@ -74,7 +74,7 @@ class PaintOpSerializationTestUtils {
     shader->start_radius_ = 13.4f;
     shader->tx_ = SkTileMode::kRepeat;
     shader->ty_ = SkTileMode::kMirror;
-    shader->fallback_color_ = SkColorSetARGB(254, 252, 250, 248);
+    shader->fallback_color_ = {0.99f, 0.98f, 0.97f, 0.99f};
     shader->scaling_behavior_ = PaintShader::ScalingBehavior::kRasterAtScale;
     if (use_matrix) {
       shader->local_matrix_.emplace(SkMatrix::I());
@@ -88,8 +88,9 @@ class PaintOpSerializationTestUtils {
     shader->start_degrees_ = 123;
     shader->end_degrees_ = 456;
     // TODO(vmpstr): Add PaintImage/PaintRecord.
-    shader->colors_ = {SkColorSetARGB(1, 2, 3, 4), SkColorSetARGB(5, 6, 7, 8),
-                       SkColorSetARGB(9, 0, 1, 2)};
+    shader->colors_ = {{0.1f, 0.2f, 0.3f, 0.4f},
+                       {0.05f, 0.15f, 0.25f, 0.35f},
+                       {0.0f, 0.5f, 0.9f, 0.1f}};
     shader->positions_ = {0.f, 0.4f, 1.f};
   }
 };
@@ -1127,7 +1128,7 @@ std::vector<PaintFlags> test_flags = {
       flags.setStrokeJoin(PaintFlags::kBevel_Join);
       flags.setStyle(PaintFlags::kStroke_Style);
       flags.setFilterQuality(PaintFlags::FilterQuality::kMedium);
-      flags.setShader(PaintShader::MakeColor(SkColorSetARGB(1, 2, 3, 4)));
+      flags.setShader(PaintShader::MakeColor({0.1f, 0.2f, 0.3f, 0.4f}));
       return flags;
     }(),
     [] {
@@ -1159,7 +1160,8 @@ std::vector<PaintFlags> test_flags = {
       looper_builder.addLayer(layer_info);
       flags.setLooper(looper_builder.detach());
 
-      sk_sp<PaintShader> shader = PaintShader::MakeColor(SK_ColorTRANSPARENT);
+      sk_sp<PaintShader> shader =
+          PaintShader::MakeColor(SkColors::kTransparent);
       PaintOpSerializationTestUtils::FillArbitraryShaderValues(shader.get(),
                                                                true);
       flags.setShader(std::move(shader));
@@ -1168,13 +1170,14 @@ std::vector<PaintFlags> test_flags = {
     }(),
     [] {
       PaintFlags flags;
-      flags.setShader(PaintShader::MakeColor(SkColorSetARGB(12, 34, 56, 78)));
+      flags.setShader(PaintShader::MakeColor({0.1f, 0.2f, 0.3f, 0.4f}));
 
       return flags;
     }(),
     [] {
       PaintFlags flags;
-      sk_sp<PaintShader> shader = PaintShader::MakeColor(SK_ColorTRANSPARENT);
+      sk_sp<PaintShader> shader =
+          PaintShader::MakeColor(SkColors::kTransparent);
       PaintOpSerializationTestUtils::FillArbitraryShaderValues(shader.get(),
                                                                false);
       flags.setShader(std::move(shader));
@@ -1184,9 +1187,9 @@ std::vector<PaintFlags> test_flags = {
     [] {
       PaintFlags flags;
       SkPoint points[2] = {SkPoint::Make(1, 2), SkPoint::Make(3, 4)};
-      SkColor colors[3] = {SkColorSetARGB(1, 2, 3, 4),
-                           SkColorSetARGB(4, 3, 2, 1),
-                           SkColorSetARGB(0, 10, 20, 30)};
+      SkColor4f colors[3] = {{0.1f, 0.2f, 0.3f, 0.4f},
+                             {0.4f, 0.3f, 0.2f, 0.1f},
+                             {0.2f, 0.4f, 0.6f, 0.0f}};
       SkScalar positions[3] = {0.f, 0.3f, 1.f};
       flags.setShader(PaintShader::MakeLinearGradient(points, colors, positions,
                                                       3, SkTileMode::kMirror));
@@ -1195,9 +1198,9 @@ std::vector<PaintFlags> test_flags = {
     }(),
     [] {
       PaintFlags flags;
-      SkColor colors[3] = {SkColorSetARGB(1, 2, 3, 4),
-                           SkColorSetARGB(4, 3, 2, 1),
-                           SkColorSetARGB(0, 10, 20, 30)};
+      SkColor4f colors[3] = {{0.1f, 0.2f, 0.3f, 0.4f},
+                             {0.4f, 0.3f, 0.2f, 0.1f},
+                             {0.2f, 0.4f, 0.6f, 0.0f}};
       flags.setShader(PaintShader::MakeSweepGradient(
           0.2f, -0.8f, colors, nullptr, 3, SkTileMode::kMirror, 10, 20));
       return flags;

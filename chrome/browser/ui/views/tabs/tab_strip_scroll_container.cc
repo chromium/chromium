@@ -91,9 +91,12 @@ class TabStripContainerOverflowIndicator : public views::View {
   // views::View overrides:
   void OnPaint(gfx::Canvas* canvas) override {
     // TODO(tbergquist): Handle themes with titlebar background images.
-    SkColor frame_color = tab_strip_->controller()->GetFrameColor(
-        BrowserFrameActiveState::kUseCurrent);
-    SkColor shadow_color = GetColorProvider()->GetColor(ui::kColorShadowBase);
+    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+    SkColor4f frame_color =
+        SkColor4f::FromColor(tab_strip_->controller()->GetFrameColor(
+            BrowserFrameActiveState::kUseCurrent));
+    SkColor4f shadow_color = SkColor4f::FromColor(
+        GetColorProvider()->GetColor(ui::kColorShadowBase));
 
     // Mirror how the indicator is painted for the right vs left sides.
     SkPoint points[2];
@@ -105,7 +108,7 @@ class TabStripContainerOverflowIndicator : public views::View {
       points[1].iset(GetContentsBounds().origin().x(), GetContentsBounds().y());
     }
 
-    SkColor colors[5];
+    SkColor4f colors[5];
     SkScalar color_positions[5];
     // Paint an opaque region on the outside.
     colors[0] = frame_color;
@@ -116,7 +119,8 @@ class TabStripContainerOverflowIndicator : public views::View {
     // Paint a shadow-like gradient on the inside.
     colors[2] = shadow_color;
     colors[3] = shadow_color;
-    colors[4] = SkColorSetA(shadow_color, SK_AlphaTRANSPARENT);
+    colors[4] = shadow_color;
+    colors[4].fA = 0.0f;
     color_positions[2] = static_cast<float>(kOpaqueWidth) / kTotalWidth;
     color_positions[3] =
         static_cast<float>(kOpaqueWidth + kShadowSpread) / kTotalWidth;

@@ -72,8 +72,10 @@ AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {
 void AnimatingSquare::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
   const SkColor color = SkColorSetRGB((5 - index_) * 51, 0, index_ * 51);
-  const SkColor colors[2] = {color,
-                             color_utils::HSLShift(color, {-1.0, -1.0, 0.75})};
+  // TODO(crbug/1308932): Remove this FromColor and make all SkColor4f.
+  const SkColor4f colors[2] = {
+      SkColor4f::FromColor(color),
+      SkColor4f::FromColor(color_utils::HSLShift(color, {-1.0, -1.0, 0.75}))};
   cc::PaintFlags flags;
   gfx::Rect local_bounds = gfx::Rect(layer()->size());
   const float dsf = canvas->UndoDeviceScaleFactor();

@@ -230,29 +230,29 @@ void NativeThemeMac::PaintScrollBarTrackGradient(
     ColorScheme color_scheme) const {
   gfx::Canvas paint_canvas(canvas, 1.0f);
   // Select colors.
-  std::vector<SkColor> gradient_colors;
+  std::vector<SkColor4f> gradient_colors;
   bool dark_mode = color_scheme == ColorScheme::kDark;
   if (extra_params.is_overlay) {
     if (dark_mode) {
-      gradient_colors = {SkColorSetARGB(0x28, 0xD8, 0xD8, 0xD8),
-                         SkColorSetARGB(0x26, 0xCC, 0xCC, 0xCC),
-                         SkColorSetARGB(0x26, 0xCC, 0xCC, 0xCC),
-                         SkColorSetARGB(0x26, 0xCC, 0xCC, 0xCC)};
+      gradient_colors = {SkColor4f{0.847f, 0.847f, 0.847f, 0.157f},
+                         SkColor4f{0.8f, 0.8f, 0.8f, 0.149f},
+                         SkColor4f{0.8f, 0.8f, 0.8f, 0.149f},
+                         SkColor4f{0.8f, 0.8f, 0.8f, 0.149f}};
     } else {
-      gradient_colors = {SkColorSetARGB(0xC6, 0xF8, 0xF8, 0xF8),
-                         SkColorSetARGB(0xC2, 0xF8, 0xF8, 0xF8),
-                         SkColorSetARGB(0xC2, 0xF8, 0xF8, 0xF8),
-                         SkColorSetARGB(0xC2, 0xF8, 0xF8, 0xF8)};
+      gradient_colors = {SkColor4f{0.973f, 0.973f, 0.973f, 0.776f},
+                         SkColor4f{0.973f, 0.973f, 0.973f, 0.761f},
+                         SkColor4f{0.973f, 0.973f, 0.973f, 0.761f},
+                         SkColor4f{0.973f, 0.973f, 0.973f, 0.761f}};
     }
   } else {
     // Non-overlay scroller track colors are not transparent. On Safari, they
     // are, but on all other macOS applications they are not.
     if (dark_mode) {
-      gradient_colors = {SkColorSetRGB(0x2D, 0x2D, 0x2D),
-                         SkColorSetRGB(0x2B, 0x2B, 0x2B)};
+      gradient_colors = {SkColor4f{0.176f, 0.176f, 0.176f, 1.0f},
+                         SkColor4f{0.169f, 0.169f, 0.169f, 1.0f}};
     } else {
-      gradient_colors = {SkColorSetRGB(0xFA, 0xFA, 0xFA),
-                         SkColorSetRGB(0xFA, 0xFA, 0xFA)};
+      gradient_colors = {SkColor4f{0.98f, 0.98f, 0.98f, 1.0f},
+                         SkColor4f{0.98f, 0.98f, 0.98f, 1.0f}};
     }
   }
 

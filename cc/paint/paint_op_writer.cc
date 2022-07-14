@@ -544,7 +544,9 @@ void PaintOpWriter::Write(const PaintShader* shader,
   }
 
   WriteSize(shader->colors_.size());
-  WriteData(shader->colors_.size() * sizeof(SkColor), shader->colors_.data());
+  WriteData(shader->colors_.size() *
+                (shader->colors_.size() > 0 ? sizeof(shader->colors_[0]) : 0u),
+            shader->colors_.data());
 
   WriteSize(shader->positions_.size());
   WriteData(shader->positions_.size() * sizeof(SkScalar),

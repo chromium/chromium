@@ -858,8 +858,11 @@ SkRect HeadsUpDisplayLayerImpl::DrawMemoryDisplay(PaintCanvas* canvas,
                   memory_entry_.total_budget_in_bytes) *
                  180;
 
-  SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorGREEN,
-                      SkColorSetARGB(255, 255, 140, 0), SK_ColorRED};
+  SkColor4f colors[] = {SkColors::kRed,
+                        SkColors::kGreen,
+                        SkColors::kGreen,
+                        {1.0f, 0.55f, 0.0f, 1.0f},
+                        SkColors::kRed};
   const SkScalar pos[] = {SkFloatToScalar(0.2f), SkFloatToScalar(0.4f),
                           SkFloatToScalar(0.6f), SkFloatToScalar(0.8f),
                           SkFloatToScalar(1.0f)};

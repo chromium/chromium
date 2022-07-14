@@ -228,9 +228,15 @@ class LinearGradient final : public Gradient {
     }
 
     SkPoint pts[2] = {FloatPointToSkPoint(p0_), FloatPointToSkPoint(p1_)};
+    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+    // SkColor4f.
+    std::vector<SkColor4f> colors4f;
+    colors4f.reserve(colors.size());
+    for (auto& color : colors)
+      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeLinearGradient(
-        pts, colors.data(), pos.data(), static_cast<int>(colors.size()),
-        tile_mode, flags, &local_matrix, fallback_color);
+        pts, colors4f.data(), pos.data(), static_cast<int>(colors4f.size()),
+        tile_mode, flags, &local_matrix, SkColor4f::FromColor(fallback_color));
   }
 
  private:
@@ -286,10 +292,16 @@ class RadialGradient final : public Gradient {
       return PaintShader::MakeEmpty();
     }
 
+    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+    // SkColor4f.
+    std::vector<SkColor4f> colors4f;
+    colors4f.reserve(colors.size());
+    for (auto& color : colors)
+      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeTwoPointConicalGradient(
         FloatPointToSkPoint(p0_), radius0, FloatPointToSkPoint(p1_), radius1,
-        colors.data(), pos.data(), static_cast<int>(colors.size()), tile_mode,
-        flags, matrix, fallback_color);
+        colors4f.data(), pos.data(), static_cast<int>(colors4f.size()),
+        tile_mode, flags, matrix, SkColor4f::FromColor(fallback_color));
   }
 
  private:
@@ -341,10 +353,16 @@ class ConicGradient final : public Gradient {
       matrix = &*adjusted_local_matrix;
     }
 
+    // TODO(crbug/1308932): Remove this helper vector colors4f and make all
+    // SkColor4f.
+    std::vector<SkColor4f> colors4f;
+    colors4f.reserve(colors.size());
+    for (auto& color : colors)
+      colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeSweepGradient(
-        position_.x(), position_.y(), colors.data(), pos.data(),
-        static_cast<int>(colors.size()), tile_mode, start_angle_, end_angle_,
-        flags, matrix, fallback_color);
+        position_.x(), position_.y(), colors4f.data(), pos.data(),
+        static_cast<int>(colors4f.size()), tile_mode, start_angle_, end_angle_,
+        flags, matrix, SkColor4f::FromColor(fallback_color));
   }
 
  private:

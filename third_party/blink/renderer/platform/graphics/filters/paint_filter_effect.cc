@@ -31,7 +31,7 @@ sk_sp<PaintFilter> PaintFilterEffect::CreateImageFilter() {
   } else {
     // ShaderPaintFilter requires shader to be non-null
     return sk_make_sp<ShaderPaintFilter>(
-        cc::PaintShader::MakeColor(flags_.getColor()), 255,
+        cc::PaintShader::MakeColor(flags_.getColor4f()), 255,
         flags_.getFilterQuality(), dither);
   }
 }

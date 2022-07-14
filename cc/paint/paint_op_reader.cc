@@ -566,7 +566,8 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
                    kInsufficientRemainingBytes_Read_PaintShader_ColorSize);
     return;
   }
-  size_t colors_bytes = colors_size * sizeof(SkColor);
+  size_t colors_bytes =
+      colors_size * (colors_size > 0 ? sizeof(ref.colors_[0]) : 0u);
   if (colors_bytes > remaining_bytes_) {
     SetInvalid(DeserializationError::
                    kInsufficientRemainingBytes_Read_PaintShader_ColorBytes);

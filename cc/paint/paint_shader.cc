@@ -65,7 +65,7 @@ sk_sp<PaintShader> PaintShader::MakeEmpty() {
   return shader;
 }
 
-sk_sp<PaintShader> PaintShader::MakeColor(SkColor color) {
+sk_sp<PaintShader> PaintShader::MakeColor(SkColor4f color) {
   sk_sp<PaintShader> shader(new PaintShader(Type::kColor));
 
   // Just one color. Store it in the fallback color. Easy.
@@ -76,13 +76,13 @@ sk_sp<PaintShader> PaintShader::MakeColor(SkColor color) {
 }
 
 sk_sp<PaintShader> PaintShader::MakeLinearGradient(const SkPoint points[],
-                                                   const SkColor colors[],
+                                                   const SkColor4f colors[],
                                                    const SkScalar pos[],
                                                    int count,
                                                    SkTileMode mode,
                                                    uint32_t flags,
                                                    const SkMatrix* local_matrix,
-                                                   SkColor fallback_color) {
+                                                   SkColor4f fallback_color) {
   sk_sp<PaintShader> shader(new PaintShader(Type::kLinearGradient));
 
   // There are always two points, the start and the end.
@@ -98,13 +98,13 @@ sk_sp<PaintShader> PaintShader::MakeLinearGradient(const SkPoint points[],
 
 sk_sp<PaintShader> PaintShader::MakeRadialGradient(const SkPoint& center,
                                                    SkScalar radius,
-                                                   const SkColor colors[],
+                                                   const SkColor4f colors[],
                                                    const SkScalar pos[],
                                                    int count,
                                                    SkTileMode mode,
                                                    uint32_t flags,
                                                    const SkMatrix* local_matrix,
-                                                   SkColor fallback_color) {
+                                                   SkColor4f fallback_color) {
   sk_sp<PaintShader> shader(new PaintShader(Type::kRadialGradient));
 
   shader->center_ = center;
@@ -122,13 +122,13 @@ sk_sp<PaintShader> PaintShader::MakeTwoPointConicalGradient(
     SkScalar start_radius,
     const SkPoint& end,
     SkScalar end_radius,
-    const SkColor colors[],
+    const SkColor4f colors[],
     const SkScalar pos[],
     int count,
     SkTileMode mode,
     uint32_t flags,
     const SkMatrix* local_matrix,
-    SkColor fallback_color) {
+    SkColor4f fallback_color) {
   sk_sp<PaintShader> shader(new PaintShader(Type::kTwoPointConicalGradient));
 
   shader->start_point_ = start;
@@ -145,7 +145,7 @@ sk_sp<PaintShader> PaintShader::MakeTwoPointConicalGradient(
 
 sk_sp<PaintShader> PaintShader::MakeSweepGradient(SkScalar cx,
                                                   SkScalar cy,
-                                                  const SkColor colors[],
+                                                  const SkColor4f colors[],
                                                   const SkScalar pos[],
                                                   int color_count,
                                                   SkTileMode mode,
@@ -153,7 +153,7 @@ sk_sp<PaintShader> PaintShader::MakeSweepGradient(SkScalar cx,
                                                   SkScalar end_degrees,
                                                   uint32_t flags,
                                                   const SkMatrix* local_matrix,
-                                                  SkColor fallback_color) {
+                                                  SkColor4f fallback_color) {
   sk_sp<PaintShader> shader(new PaintShader(Type::kSweepGradient));
 
   shader->center_ = SkPoint::Make(cx, cy);
@@ -223,7 +223,7 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
          sizeof(shader->id_) +
          PaintOpWriter::GetRecordSize(shader->record_.get()) +
          sizeof(shader->colors_.size()) +
-         shader->colors_.size() * sizeof(SkColor) +
+         shader->colors_.size() * sizeof(SkColor4f) +
          sizeof(shader->positions_.size()) +
          shader->positions_.size() * sizeof(SkScalar);
 }
@@ -386,6 +386,13 @@ sk_sp<SkShader> PaintShader::GetSkShader(
   SkSamplingOptions sampling(
       PaintFlags::FilterQualityToSkSamplingOptions(quality));
 
+  // TODO(crbug/1308932): Remove this helper vector colors and make all
+  // SkColor4f.
+  std::vector<SkColor> colors;
+  colors.reserve(colors.size());
+  for (auto& c : colors_)
+    colors.push_back(c.toSkColor());
+
   switch (shader_type_) {
     case Type::kEmpty:
       return SkShaders::Empty();
@@ -394,29 +401,37 @@ sk_sp<SkShader> PaintShader::GetSkShader(
       break;
     case Type::kLinearGradient: {
       SkPoint points[2] = {start_point_, end_point_};
+      // TODO(crbug/1308932): Remove this helper vector colors and make all
+      // SkColor4f.
       return SkGradientShader::MakeLinear(
-          points, colors_.data(),
+          points, colors.data(),
           positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors_.size()), tx_, flags_,
+          static_cast<int>(colors.size()), tx_, flags_,
           base::OptionalOrNullptr(local_matrix_));
     }
     case Type::kRadialGradient:
+      // TODO(crbug/1308932): Remove this helper vector colors and make all
+      // SkColor4f.
       return SkGradientShader::MakeRadial(
-          center_, start_radius_, colors_.data(),
+          center_, start_radius_, colors.data(),
           positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors_.size()), tx_, flags_,
+          static_cast<int>(colors.size()), tx_, flags_,
           base::OptionalOrNullptr(local_matrix_));
     case Type::kTwoPointConicalGradient:
+      // TODO(crbug/1308932): Remove this helper vector colors and make all
+      // SkColor4f.
       return SkGradientShader::MakeTwoPointConical(
-          start_point_, start_radius_, end_point_, end_radius_, colors_.data(),
+          start_point_, start_radius_, end_point_, end_radius_, colors.data(),
           positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors_.size()), tx_, flags_,
+          static_cast<int>(colors.size()), tx_, flags_,
           base::OptionalOrNullptr(local_matrix_));
     case Type::kSweepGradient:
+      // TODO(crbug/1308932): Remove this helper vector colors and make all
+      // SkColor4f.
       return SkGradientShader::MakeSweep(
-          center_.x(), center_.y(), colors_.data(),
+          center_.x(), center_.y(), colors.data(),
           positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors_.size()), tx_, start_degrees_, end_degrees_,
+          static_cast<int>(colors.size()), tx_, start_degrees_, end_degrees_,
           flags_, base::OptionalOrNullptr(local_matrix_));
     case Type::kImage:
       if (sk_cached_image_) {
@@ -453,7 +468,7 @@ sk_sp<SkShader> PaintShader::GetSkShader(
 
   // If we didn't create a shader for whatever reason, create a fallback
   // color one.
-  return SkShaders::Color(fallback_color_);
+  return SkShaders::Color(fallback_color_.toSkColor());
 }
 
 void PaintShader::ResolveSkObjects(const gfx::SizeF* raster_scale,
@@ -476,7 +491,7 @@ void PaintShader::ResolveSkObjects(const gfx::SizeF* raster_scale,
   }
 }
 
-void PaintShader::SetColorsAndPositions(const SkColor* colors,
+void PaintShader::SetColorsAndPositions(const SkColor4f* colors,
                                         const SkScalar* positions,
                                         int count) {
 #if DCHECK_IS_ON()
@@ -498,7 +513,8 @@ void PaintShader::SetMatrixAndTiling(const SkMatrix* matrix,
   ty_ = ty;
 }
 
-void PaintShader::SetFlagsAndFallback(uint32_t flags, SkColor fallback_color) {
+void PaintShader::SetFlagsAndFallback(uint32_t flags,
+                                      SkColor4f fallback_color) {
   flags_ = flags;
   fallback_color_ = fallback_color;
 }
@@ -516,7 +532,7 @@ bool PaintShader::IsOpaque() const {
       if (tx_ == SkTileMode::kDecal)
         return false;
       for (const auto& c : colors_)
-        if (SkColorGetA(c) != 0xFF)
+        if (!c.isOpaque())
           return false;
       return true;
     case Type::kTwoPointConicalGradient:
@@ -538,7 +554,7 @@ bool PaintShader::IsOpaque() const {
       NOTREACHED();
       break;
   }
-  return SkColorGetA(fallback_color_) == 0xFF;
+  return fallback_color_.isOpaque();
 }
 
 bool PaintShader::IsValid() const {

@@ -300,8 +300,10 @@ void MediaNotificationBackgroundImpl::Paint(gfx::Canvas* canvas,
     // Draw a gradient to fade the color background and the image together.
     gfx::Rect draw_bounds = GetGradientBounds(*view);
 
-    const SkColor colors[2] = {
-        background_color, SkColorSetA(background_color, SK_AlphaTRANSPARENT)};
+    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+    const SkColor4f colors[2] = {SkColor4f::FromColor(background_color),
+                                 SkColor4f::FromColor(SkColorSetA(
+                                     background_color, SK_AlphaTRANSPARENT))};
     const SkPoint points[2] = {GetGradientStartPoint(draw_bounds),
                                GetGradientEndPoint(draw_bounds)};
 
@@ -319,8 +321,10 @@ void MediaNotificationBackgroundImpl::Paint(gfx::Canvas* canvas,
     // and the image together.
     gfx::Rect draw_bounds = GetBottomGradientBounds(*view);
 
-    const SkColor colors[2] = {
-        background_color, SkColorSetA(background_color, SK_AlphaTRANSPARENT)};
+    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+    const SkColor4f colors[2] = {SkColor4f::FromColor(background_color),
+                                 SkColor4f::FromColor(SkColorSetA(
+                                     background_color, SK_AlphaTRANSPARENT))};
     const SkPoint points[2] = {gfx::PointToSkPoint(draw_bounds.bottom_center()),
                                gfx::PointToSkPoint(draw_bounds.top_center())};
 

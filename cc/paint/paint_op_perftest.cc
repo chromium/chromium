@@ -137,7 +137,7 @@ TEST_F(PaintOpPerfTest, ManyFlagsOps) {
   looper_builder.addLayer(layer_info);
   flags.setLooper(looper_builder.detach());
 
-  sk_sp<PaintShader> shader = PaintShader::MakeColor(SK_ColorTRANSPARENT);
+  sk_sp<PaintShader> shader = PaintShader::MakeColor(SkColors::kTransparent);
   flags.setShader(std::move(shader));
 
   SkPath path;
