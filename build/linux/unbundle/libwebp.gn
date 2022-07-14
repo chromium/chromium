@@ -14,7 +14,7 @@ pkg_config("system_libwebp") {
 }
 
 shim_headers("libwebp_shim") {
-  root_path = "src"
+  root_path = "src/src"
   headers = [
     "webp/decode.h",
     "webp/demux.h",
