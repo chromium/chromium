@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase_list.h"
 #include "base/files/file_util.h"
 #include "base/strings/escape.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
@@ -130,6 +129,9 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
   }
 };
 
+class DumpAccessibilityAccNameTestExceptUIA
+    : public DumpAccessibilityAccNameTest {};
+
 // Revert CL 3721405 once crbug.com/1260585 (implement MathML UIA) is fixed,
 // also see related crbug.com/1272996 (MathML tests fail on UIA).
 class DumpAccessibilityMathMLNodeTest : public DumpAccessibilityNodeTest {
@@ -163,13 +165,6 @@ struct TestPassToString {
   }
 };
 
-std::vector<ui::AXApiType::Type> TreeTestPassesExceptUIA() {
-  std::vector<ui::AXApiType::Type> passes =
-      ui::AXInspectTestHelper::TreeTestPasses();
-  base::Erase(passes, ui::AXApiType::kWinUIA);
-  return passes;
-}
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityNodeTest,
@@ -182,15 +177,23 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
     TestPassToString());
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         DumpAccessibilityNodeWithoutMathMLTest,
-                         ::testing::ValuesIn(TreeTestPassesExceptUIA()),
-                         TestPassToString());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityAccNameTestExceptUIA,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
+    TestPassToString());
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         DumpAccessibilityMathMLNodeTest,
-                         ::testing::ValuesIn(TreeTestPassesExceptUIA()),
-                         TestPassToString());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityNodeWithoutMathMLTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
+    TestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityMathMLNodeTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
+    TestPassToString());
 
 // ARIA tests.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, AccessibilityAriaScrollbar) {
@@ -520,7 +523,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameComboboxFocusable) {
   RunAccNameTest(FILE_PATH_LITERAL("name-combobox-focusable.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameDivContentOnly) {
+// TODO(crbug.com/1329523): disabled on UIA
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTestExceptUIA,
+                       NameDivContentOnly) {
   RunAccNameTest(FILE_PATH_LITERAL("name-div-content-only.html"));
 }
 

@@ -160,6 +160,9 @@ void DumpAccessibilityEventsTest::RunEventTest(
   RunTest(event_file, "accessibility/event");
 }
 
+class DumpAccessibilityEventsTestExceptUIA
+    : public DumpAccessibilityEventsTest {};
+
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityEventsTestPassToString {
   std::string operator()(
@@ -174,8 +177,16 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(ui::AXInspectTestHelper::EventTestPasses()),
     DumpAccessibilityEventsTestPassToString());
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityEventsTestExceptUIA,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
+    DumpAccessibilityEventsTestPassToString());
+
 // This test suite is empty on some OSes.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DumpAccessibilityEventsTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    DumpAccessibilityEventsTestExceptUIA);
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaAtomicChanged) {
@@ -842,12 +853,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menulist-focus.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// TODO(crbug.com/1327652): disabled on UIA
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsMenuListNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-next.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        MAYBE_AccessibilityEventsMenuWithOptgroupListNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-with-optgroup-next.html"));
 }
@@ -886,10 +898,11 @@ class NavigationApiDumpAccessibilityEventsTest
   }
 };
 
+// TODO(crbug.com/1327652): disabled on UIA.
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationApiDumpAccessibilityEventsTest,
-    ::testing::ValuesIn(ui::AXInspectTestHelper::EventTestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
     DumpAccessibilityEventsTestPassToString());
 
 // This test suite is empty on some OSes.

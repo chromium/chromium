@@ -144,6 +144,8 @@ void DumpAccessibilityTreeTestWithIgnoredNodes::ChooseFeatures(
                                             disabled_features);
 }
 
+class DumpAccessibilityTreeTestExceptUIA : public DumpAccessibilityTreeTest {};
+
 class DumpAccessibilityTreeWithoutLayoutNGTest
     : public DumpAccessibilityTreeTest {
  public:
@@ -186,6 +188,12 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTest,
     ::testing::ValuesIn(ui::AXInspectTestHelper::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityTreeTestExceptUIA,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
     DumpAccessibilityTreeTestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(
@@ -734,7 +742,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-details-multiple.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+// TODO(crbug.com/1329847): disabled on UIA
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestExceptUIA,
                        AccessibilityAriaDetailsRoles) {
   RunAriaTest(FILE_PATH_LITERAL("aria-details-roles.html"));
 }

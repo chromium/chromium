@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/cxx20_erase_list.h"
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -64,6 +65,32 @@ class DumpAccessibilityTestBase
 
     std::string dir(std::string() + "accessibility/" + type);
     RunTest(test_file, dir.c_str());
+  }
+
+  template <std::vector<ui::AXApiType::Type> TestPasses(),
+            ui::AXApiType::TypeConstant type>
+  static std::vector<ui::AXApiType::Type> TestPassesExcept() {
+    std::vector<ui::AXApiType::Type> passes = TestPasses();
+    base::Erase(passes, type);
+    return passes;
+  }
+
+  template <ui::AXApiType::TypeConstant type>
+  static std::vector<ui::AXApiType::Type> TreeTestPassesExcept() {
+    return TestPassesExcept<ui::AXInspectTestHelper::TreeTestPasses, type>();
+  }
+
+  template <ui::AXApiType::TypeConstant type>
+  static std::vector<ui::AXApiType::Type> EventTestPassesExcept() {
+    return TestPassesExcept<ui::AXInspectTestHelper::EventTestPasses, type>();
+  }
+
+  static std::vector<ui::AXApiType::Type> TreeTestPassesExceptUIA() {
+    return TreeTestPassesExcept<ui::AXApiType::kWinUIA>();
+  }
+
+  static std::vector<ui::AXApiType::Type> EventTestPassesExceptUIA() {
+    return EventTestPassesExcept<ui::AXApiType::kWinUIA>();
   }
 
  protected:
