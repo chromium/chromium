@@ -52,4 +52,23 @@ TEST_F(EnterpriseAuthenticationAppLinkPolicyHandlerTest, ValidPolicy) {
   ASSERT_TRUE(pref_value);
   EXPECT_EQ(expected, *pref_value);
 }
+
+TEST_F(EnterpriseAuthenticationAppLinkPolicyHandlerTest, InvalidPolicy) {
+  PolicyMap policy;
+  policy.Set(policy::key::kEnterpriseAuthenticationAppLinkPolicy,
+             POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
+             base::JSONReader::Read(
+                 "["
+                 "  {"
+                 "    \"abc\": \"https://www.testserver1.com/login\""
+                 "  },"
+                 "]"),
+             nullptr);
+  this->UpdateProviderPolicy(policy);
+  const base::Value* pref_value = nullptr;
+
+  EXPECT_FALSE(store_->GetValue(
+      android_webview::prefs::kEnterpriseAuthAppLinkPolicy, &pref_value));
+  ASSERT_FALSE(pref_value);
+}
 }  // namespace policy

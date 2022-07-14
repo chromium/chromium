@@ -43,8 +43,13 @@ bool EnterpriseAuthenticationAppLinkPolicyHandler::CheckPolicySettings(
 
   std::vector<std::string> invalid_policies;
   for (const auto& entry : value->GetList()) {
-    if (!ValidatePolicyEntry(entry.FindStringKey("url")))
-      invalid_policies.push_back(entry.GetString());
+    const std::string* url = entry.FindStringKey("url");
+    if (!url) {
+      invalid_policies.push_back(
+          "Invalid policy: Required key 'url' does not exists");
+    } else if (!ValidatePolicyEntry(url)) {
+      invalid_policies.push_back("Invalid url: " + *url);
+    }
   }
 
   if (!invalid_policies.empty()) {

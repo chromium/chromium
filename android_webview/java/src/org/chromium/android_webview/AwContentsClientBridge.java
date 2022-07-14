@@ -423,6 +423,7 @@ public class AwContentsClientBridge {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER
                         | Intent.FLAG_ACTIVITY_REQUIRE_DEFAULT);
