@@ -214,13 +214,13 @@ void WebAuthenticationProxyService::OnParseCreateResponse(
     RequestId request_id,
     data_decoder::DataDecoder::ValueOrError value_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (value_or_error.error) {
+  if (!value_or_error.has_value()) {
     std::move(respond_callback)
-        .Run("Parsing responseJson failed: " + *value_or_error.error);
+        .Run("Parsing responseJson failed: " + value_or_error.error());
     return;
   }
   auto [response, error] =
-      webauthn_proxy::MakeCredentialResponseFromValue(*value_or_error.value);
+      webauthn_proxy::MakeCredentialResponseFromValue(*value_or_error);
   if (!response) {
     std::move(respond_callback).Run("Invalid responseJson: " + error);
     return;
@@ -245,13 +245,13 @@ void WebAuthenticationProxyService::OnParseGetResponse(
     RequestId request_id,
     data_decoder::DataDecoder::ValueOrError value_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (value_or_error.error) {
+  if (!value_or_error.has_value()) {
     std::move(respond_callback)
-        .Run("Parsing responseJson failed: " + *value_or_error.error);
+        .Run("Parsing responseJson failed: " + value_or_error.error());
     return;
   }
   auto [response, error] =
-      webauthn_proxy::GetAssertionResponseFromValue(*value_or_error.value);
+      webauthn_proxy::GetAssertionResponseFromValue(*value_or_error);
   if (!response) {
     std::move(respond_callback).Run("Invalid responseJson: " + error);
     return;

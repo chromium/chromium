@@ -36,13 +36,13 @@ void TranslationResponseParser::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK(complete_callback_);
 
-  if (!result.value) {
-    LOG(ERROR) << "JSON parsing failed: " << *result.error;
+  if (!result.has_value()) {
+    LOG(ERROR) << "JSON parsing failed: " << result.error();
     std::move(complete_callback_).Run(nullptr);
     return;
   }
 
-  auto* translations = result.value->FindListPath("data.translations");
+  auto* translations = result->FindListPath("data.translations");
   if (!translations) {
     LOG(ERROR) << "Can't find translations result list.";
     std::move(complete_callback_).Run(nullptr);

@@ -413,7 +413,7 @@ void PhotosService::OnJsonReceived(
 void PhotosService::OnJsonParsed(
     const std::string& token,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
     }
@@ -421,7 +421,7 @@ void PhotosService::OnJsonParsed(
     return;
   }
 
-  auto* memories = result.value->FindListPath("memory");
+  auto* memories = result->FindListPath("memory");
   if (!memories) {
     base::UmaHistogramCustomCounts("NewTabPage.Photos.DataResponseCount", 0, 0,
                                    10, 11);

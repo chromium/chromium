@@ -407,8 +407,8 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
           auto json_handler =
               [](FetchWeatherCallback callback,
                  data_decoder::DataDecoder::ValueOrError result) {
-                if (result.value) {
-                  std::move(callback).Run(ToWeatherInfo(result.value.value()));
+                if (result.has_value()) {
+                  std::move(callback).Run(ToWeatherInfo(*result));
                 } else {
                   DVLOG(1) << "Failed to parse weather json.";
                   std::move(callback).Run(absl::nullopt);

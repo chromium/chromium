@@ -53,7 +53,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
     SafeDialDeviceDescriptionParser::ParseCallback callback,
     const GURL& app_url,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value || !result.value->is_dict()) {
+  if (!result.has_value() || !result->is_dict()) {
     std::move(callback).Run(
         ParsedDialDeviceDescription(),
         SafeDialDeviceDescriptionParser::ParsingError::kInvalidXml);
@@ -62,7 +62,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
 
   bool unique_device = true;
   const base::Value* device_element = data_decoder::FindXmlElementPath(
-      *result.value, {"root", "device"}, &unique_device);
+      *result, {"root", "device"}, &unique_device);
   if (!device_element) {
     NotifyParsingError(
         std::move(callback),

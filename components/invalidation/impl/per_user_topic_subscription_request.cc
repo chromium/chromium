@@ -189,7 +189,7 @@ void PerUserTopicSubscriptionRequest::OnURLFetchCompleteInternal(
 
 void PerUserTopicSubscriptionRequest::OnJsonParse(
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     RecordRequestStatus(SubscriptionStatus::kParsingFailure, type_, topic_);
     RunCompletedCallbackAndMaybeDie(
         Status(StatusCode::FAILED, base::StringPrintf("Body parse error")),
@@ -198,7 +198,7 @@ void PerUserTopicSubscriptionRequest::OnJsonParse(
     return;
   }
 
-  const std::string* topic_name = GetTopicName(*result.value);
+  const std::string* topic_name = GetTopicName(*result);
   if (topic_name) {
     RecordRequestStatus(SubscriptionStatus::kSuccess, type_, topic_);
     RunCompletedCallbackAndMaybeDie(Status(StatusCode::SUCCESS, std::string()),

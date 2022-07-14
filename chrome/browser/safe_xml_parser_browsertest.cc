@@ -63,13 +63,11 @@ class SafeXmlParserTest : public InProcessBrowserTest {
                       data_decoder::DataDecoder::ValueOrError result) {
     base::ScopedClosureRunner runner(std::move(quit_loop_closure));
     if (!expected_value) {
-      EXPECT_FALSE(result.value);
-      EXPECT_TRUE(result.error);
+      EXPECT_FALSE(result.has_value());
       return;
     }
-    EXPECT_FALSE(result.error);
-    ASSERT_TRUE(result.value);
-    EXPECT_EQ(*expected_value, *result.value);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*expected_value, *result);
   }
 };
 

@@ -218,15 +218,15 @@ void OnSafeJSONParse(
     uint8_t parse_flags,
     FileBackedRulesetSource::IndexAndPersistJSONRulesetCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     std::move(callback).Run(IndexAndPersistJSONRulesetResult::CreateErrorResult(
-        GetErrorWithFilename(json_path, *result.error)));
+        GetErrorWithFilename(json_path, result.error())));
     return;
   }
 
   base::ElapsedTimer timer;
   ReadJSONRulesResult read_result = ParseRulesFromJSON(
-      source.id(), json_path, *result.value, source.rule_count_limit(),
+      source.id(), json_path, *result, source.rule_count_limit(),
       source.is_dynamic_ruleset());
 
   std::move(callback).Run(IndexAndPersistRuleset(source, std::move(read_result),

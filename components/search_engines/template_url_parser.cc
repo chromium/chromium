@@ -167,13 +167,13 @@ class SafeTemplateURLParser {
 
 void SafeTemplateURLParser::OnXmlParseComplete(
     data_decoder::DataDecoder::ValueOrError value_or_error) {
-  if (value_or_error.error) {
-    DLOG(ERROR) << "Failed to parse XML: " << *value_or_error.error;
+  if (!value_or_error.has_value()) {
+    DLOG(ERROR) << "Failed to parse XML: " << value_or_error.error();
     std::move(callback_).Run(nullptr);
     return;
   }
 
-  const base::Value& root = *value_or_error.value;
+  const base::Value& root = *value_or_error;
 
   // Get the namespaces used in the XML document, which will be used
   // to access nodes by tag name in GetChildElementsByTag().

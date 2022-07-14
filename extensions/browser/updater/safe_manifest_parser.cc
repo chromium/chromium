@@ -168,15 +168,15 @@ bool ParseSingleAppTag(const base::Value& app_element,
 void ParseXmlDone(ParseUpdateManifestCallback callback,
                   data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!result.value) {
-    ManifestParseFailure failure("Failed to parse XML: " + *result.error,
+  if (!result.has_value()) {
+    ManifestParseFailure failure("Failed to parse XML: " + result.error(),
                                  ManifestInvalidError::XML_PARSING_FAILED);
     ReportError(std::move(callback), failure);
     return;
   }
 
   auto results = std::make_unique<UpdateManifestResults>();
-  base::Value& root = *result.value;
+  base::Value& root = *result;
 
   // Look for the required namespace declaration.
   std::string gupdate_ns;

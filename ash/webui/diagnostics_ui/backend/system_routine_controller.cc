@@ -582,17 +582,15 @@ void SystemRoutineController::OnPowerRoutineResultFetched(
 void SystemRoutineController::OnPowerRoutineJsonParsed(
     mojom::RoutineType routine_type,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
                          /*percent_change=*/0, /*seconds_elapsed=*/0);
-    DVLOG(2) << "JSON parsing failed: " << *result.error;
+    DVLOG(2) << "JSON parsing failed: " << result.error();
     return;
   }
 
-  const base::Value& parsed_json = *result.value;
-
-  if (parsed_json.type() != base::Value::Type::DICTIONARY) {
+  if (!result->is_dict()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
                          /*percent_change=*/0, /*seconds_elapsed=*/0);
@@ -600,8 +598,9 @@ void SystemRoutineController::OnPowerRoutineJsonParsed(
     return;
   }
 
-  const base::Value* result_details_dict =
-      parsed_json.FindDictKey(kResultDetailsKey);
+  const base::Value::Dict& parsed_json = result->GetDict();
+  const base::Value::Dict* result_details_dict =
+      parsed_json.FindDict(kResultDetailsKey);
   if (!result_details_dict) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
@@ -612,8 +611,8 @@ void SystemRoutineController::OnPowerRoutineJsonParsed(
 
   absl::optional<double> charge_percent_opt =
       routine_type == mojom::RoutineType::kBatteryCharge
-          ? result_details_dict->FindDoubleKey(kChargePercentKey)
-          : result_details_dict->FindDoubleKey(kDischargePercentKey);
+          ? result_details_dict->FindDouble(kChargePercentKey)
+          : result_details_dict->FindDouble(kDischargePercentKey);
   if (!charge_percent_opt.has_value()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,

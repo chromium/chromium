@@ -79,18 +79,18 @@ TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
   // a process.
   base::RunLoop run_loop;
   DataDecoder decoder;
-  absl::optional<base::Value> result;
+  DataDecoder::ValueOrError result;
   decoder.ParseJson(
       // The magic 122.416294033786585 number comes from
       // https://github.com/serde-rs/json/issues/707
       "[ 122.416294033786585 ]",
       base::BindLambdaForTesting(
           [&run_loop, &result](DataDecoder::ValueOrError value_or_error) {
-            result = std::move(value_or_error.value);
+            result = std::move(value_or_error);
             run_loop.Quit();
           }));
   run_loop.Run();
-  EXPECT_TRUE(result);
+  ASSERT_TRUE(result.has_value());
   ASSERT_TRUE(result->is_list());
   base::Value::List& list = result->GetList();
   ASSERT_EQ(1u, list.size());

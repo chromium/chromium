@@ -705,13 +705,13 @@ void TtsControllerImpl::StripSSMLHelper(
     data_decoder::DataDecoder::ValueOrError result) {
   // Error checks.
   // If invalid xml, return original utterance text.
-  if (!result.value) {
+  if (!result.has_value()) {
     std::move(on_ssml_parsed).Run(utterance);
     return;
   }
 
   std::string root_tag_name;
-  data_decoder::GetXmlElementTagName(*result.value, &root_tag_name);
+  data_decoder::GetXmlElementTagName(*result, &root_tag_name);
   // Root element must be <speak>.
   if (root_tag_name.compare("speak") != 0) {
     std::move(on_ssml_parsed).Run(utterance);
@@ -720,7 +720,7 @@ void TtsControllerImpl::StripSSMLHelper(
 
   std::string parsed_text;
   // Change from unique_ptr to base::Value* so recursion will work.
-  PopulateParsedText(&parsed_text, &(*result.value));
+  PopulateParsedText(&parsed_text, &*result);
 
   // Run with parsed_text.
   std::move(on_ssml_parsed).Run(parsed_text);

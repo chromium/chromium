@@ -223,15 +223,15 @@ void TaskModuleService::OnDataLoaded(network::SimpleURLLoader* loader,
 void TaskModuleService::OnJsonParsed(
     TaskModuleCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+  if (!result.has_value()) {
     std::move(callback).Run(nullptr);
     return;
   }
 
   // We receive a list of tasks ordered from highest to lowest priority. We only
   // support showing a single task though. Therefore, pick the first task.
-  auto* tasks = result.value->FindListPath(
-      base::StringPrintf("update.%s", GetTasksKey()));
+  auto* tasks =
+      result->FindListPath(base::StringPrintf("update.%s", GetTasksKey()));
   if (!tasks || tasks->GetListDeprecated().size() == 0) {
     std::move(callback).Run(nullptr);
     return;

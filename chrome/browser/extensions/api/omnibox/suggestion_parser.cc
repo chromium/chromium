@@ -140,25 +140,25 @@ void ConstructResultFromValue(
     std::move(callback).Run(std::move(result));
   };
 
-  if (value_or_error.error) {
-    run_callback_with_error(std::move(*value_or_error.error));
+  if (!value_or_error.has_value()) {
+    run_callback_with_error(std::move(value_or_error.error()));
     return;
   }
 
-  DCHECK(value_or_error.value);
+  DCHECK(value_or_error.has_value());
 
   // From this point on, we hope that everything is valid (e.g., that we don't
   // get non-dictionary values or unexpected top-level types. But, if we did,
   // emit a generic error.
   constexpr char kGenericError[] = "Invalid XML";
 
-  if (!value_or_error.value->is_dict()) {
+  if (!value_or_error->is_dict()) {
     run_callback_with_error(kGenericError);
     return;
   }
 
   std::vector<const base::Value*> entries;
-  const base::Value& root_node = *value_or_error.value;
+  const base::Value& root_node = *value_or_error;
   if (has_multiple_entries) {
     if (!PopulateEntriesFromNode(root_node, &entries)) {
       run_callback_with_error(kGenericError);

@@ -391,12 +391,12 @@ void CastMessageHandler::HandleCastInternalMessage(
     const std::string& destination_id,
     const std::string& namespace_,
     data_decoder::DataDecoder::ValueOrError parse_result) {
-  if (!parse_result.value) {
-    ReportParseError(*parse_result.error);
+  if (!parse_result.has_value()) {
+    ReportParseError(parse_result.error());
     return;
   }
 
-  base::Value& payload = *parse_result.value;
+  base::Value& payload = *parse_result;
   if (!payload.is_dict()) {
     ReportParseError("Parsed message not a dictionary");
     return;

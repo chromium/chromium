@@ -513,22 +513,26 @@ bool AuthenticatorCommon::IsFocused() const {
 
 void AuthenticatorCommon::OnLargeBlobCompressed(
     uint64_t original_size,
-    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
-  if (result.value) {
+    base::expected<mojo_base::BigBuffer, std::string> result) {
+  if (result.has_value()) {
     ctap_get_assertion_request_->large_blob_write = device::LargeBlob(
-        device::fido_parsing_utils::Materialize(*result.value), original_size);
+        device::fido_parsing_utils::Materialize(*result), original_size);
   }
   StartGetAssertionRequest(/*allow_skipping_pin_touch=*/true);
 }
 
 void AuthenticatorCommon::OnLargeBlobUncompressed(
     device::AuthenticatorGetAssertionResponse response,
-    data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
+    base::expected<mojo_base::BigBuffer, std::string> result) {
+  absl::optional<mojo_base::BigBuffer> value;
+  if (result.has_value())
+    value = std::move(*result);
+
   CompleteGetAssertionRequest(
       blink::mojom::AuthenticatorStatus::SUCCESS,
       CreateGetAssertionResponse(
           std::move(response),
-          device::fido_parsing_utils::MaterializeOrNull(result.value)));
+          device::fido_parsing_utils::MaterializeOrNull(value)));
 }
 
 // mojom::Authenticator

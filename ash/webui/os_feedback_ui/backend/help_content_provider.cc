@@ -279,12 +279,12 @@ void HelpContentProvider::OnResponseJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   SearchResponsePtr response = SearchResponse::New();
 
-  if (result.value) {
-    PopulateSearchResponse(*result.value, response);
+  if (result.has_value()) {
+    PopulateSearchResponse(*result, response);
   } else {
     LOG(ERROR)
         << "HelpContentProvider data decoder failed to parse json. Error: "
-        << *result.error;
+        << result.error();
   }
 
   std::move(callback).Run(std::move(response));
