@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/url_constants.h"
@@ -34,6 +35,7 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 namespace media_router {
@@ -117,7 +119,10 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromContextMenu) {
   menu.ExecuteCommand(IDC_ROUTE_MEDIA, 0);
   EXPECT_TRUE(dialog_controller->IsShowingMediaRouterDialog());
 
+  views::test::WidgetDestroyedWaiter waiter(
+      CastDialogView::GetCurrentDialogWidget());
   dialog_controller->HideMediaRouterDialog();
+  waiter.Wait();
   EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
 }
 
@@ -134,8 +139,11 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromAppMenu) {
   app_menu_test_api->ExecuteCommand(IDC_ROUTE_MEDIA);
   EXPECT_TRUE(dialog_controller->IsShowingMediaRouterDialog());
 
+  views::test::WidgetDestroyedWaiter waiter(
+      CastDialogView::GetCurrentDialogWidget());
   dialog_controller->HideMediaRouterDialog();
   EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
+  waiter.Wait();
 }
 
 // TODO(crbug.com/1004635) Disabled on Linux due to flakiness.
@@ -157,8 +165,12 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
 
   dialog_controller->ShowMediaRouterDialog(MediaRouterDialogOpenOrigin::PAGE);
   EXPECT_TRUE(ToolbarIconExists());
+
+  views::test::WidgetDestroyedWaiter waiter(
+      CastDialogView::GetCurrentDialogWidget());
   // Clicking on the toolbar icon should hide both the dialog and the icon.
   PressToolbarIcon();
+  waiter.Wait();
   EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
   EXPECT_FALSE(ToolbarIconExists());
 
@@ -252,21 +264,32 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   EXPECT_TRUE(dialog_controller->IsShowingMediaRouterDialog());
 
   // Reload the browser and wait.
-  content::TestNavigationObserver reload_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  reload_observer.Wait();
+  {
+    views::test::WidgetDestroyedWaiter waiter(
+        CastDialogView::GetCurrentDialogWidget());
+    content::TestNavigationObserver reload_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    reload_observer.Wait();
 
-  // The reload should have closed the dialog.
-  EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
+    waiter.Wait();
+    // The reload should have closed the dialog.
+    EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
+  }
+
   PressToolbarIcon();
   EXPECT_TRUE(dialog_controller->IsShowingMediaRouterDialog());
 
-  // Navigate away.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  {
+    views::test::WidgetDestroyedWaiter waiter(
+        CastDialogView::GetCurrentDialogWidget());
+    // Navigate away.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  // The navigation should have closed the dialog.
-  EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
+    // The navigation should have closed the dialog.
+    waiter.Wait();
+    EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());
+  }
   SetAlwaysShowActionPref(false);
 }
 
