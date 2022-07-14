@@ -1704,6 +1704,16 @@ bool RenderProcessHostImpl::Init() {
   CreateMessageFilters();
   RegisterMojoInterfaces();
 
+  // Call this now and not in OnProcessLaunched in case any mojo calls get
+  // dispatched before this.
+  GetRendererInterface()->InitializeRenderer(
+      GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
+          browser_context_),
+      GetContentClient()->browser()->GetFullUserAgent(),
+      GetContentClient()->browser()->GetReducedUserAgent(),
+      GetContentClient()->browser()->GetUserAgentMetadata(),
+      storage_partition_impl_->cors_exempt_header_list());
+
   if (run_renderer_in_process()) {
     DCHECK(g_renderer_main_thread_factory);
     // Crank up a thread and run the initialization there.  With the way that
@@ -4971,13 +4981,6 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   }
 
   // Pass bits of global renderer state to the renderer.
-  GetRendererInterface()->InitializeRenderer(
-      GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
-          browser_context_),
-      GetContentClient()->browser()->GetFullUserAgent(),
-      GetContentClient()->browser()->GetReducedUserAgent(),
-      GetContentClient()->browser()->GetUserAgentMetadata(),
-      storage_partition_impl_->cors_exempt_header_list());
   NotifyRendererOfLockedStateUpdate();
 
   // Send the initial system color info to the renderer.
