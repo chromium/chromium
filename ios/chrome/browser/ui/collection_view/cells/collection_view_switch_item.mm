@@ -110,7 +110,8 @@ const CGFloat kVerticalPadding = 16;
 
 - (void)useScaledFont:(BOOL)useScaledFont {
   MaybeSetUILabelScaledFont(useScaledFont, _textLabel,
-                            [[MDCTypography fontLoader] mediumFontOfSize:14]);
+                            [UIFont systemFontOfSize:14
+                                              weight:UIFontWeightMedium]);
 }
 
 + (UIColor*)defaultTextColorForState:(UIControlState)state {

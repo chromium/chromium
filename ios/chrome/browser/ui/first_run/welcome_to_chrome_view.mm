@@ -593,8 +593,9 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (void)configureTitleLabel {
-  self.titleLabel.font = [[MDCTypography fontLoader]
-      regularFontOfSize:kTitleLabelFontSize[[self widthSizeClassIdiom]]];
+  self.titleLabel.font =
+      [UIFont systemFontOfSize:kTitleLabelFontSize[[self widthSizeClassIdiom]]
+                        weight:UIFontWeightRegular];
 }
 
 - (void)configureImageView {
@@ -626,8 +627,9 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   NSRange fullRange = NSMakeRange(0, parsedString.string.length);
   NSURL* URL =
       [NSURL URLWithString:base::SysUTF8ToNSString(kTermsOfServiceUrl)];
-  UIFont* font = [[MDCTypography fontLoader]
-      regularFontOfSize:kTOSTOSTextViewFontSize[[self widthSizeClassIdiom]]];
+  UIFont* font = [UIFont
+      systemFontOfSize:kTOSTOSTextViewFontSize[[self widthSizeClassIdiom]]
+                weight:UIFontWeightRegular];
   NSMutableParagraphStyle* style =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   style.alignment = NSTextAlignmentCenter;
@@ -648,15 +650,17 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (void)configureOptInLabel {
-  self.optInLabel.font = [[MDCTypography fontLoader]
-      regularFontOfSize:kOptInLabelFontSize[[self widthSizeClassIdiom]]];
+  self.optInLabel.font =
+      [UIFont systemFontOfSize:kOptInLabelFontSize[[self widthSizeClassIdiom]]
+                        weight:UIFontWeightRegular];
   SetLabelLineHeight(self.optInLabel,
                      kOptInLabelLineHeight[[self widthSizeClassIdiom]]);
 }
 
 - (void)configureManagedLabel {
-  self.managedLabel.font = [[MDCTypography fontLoader]
-      regularFontOfSize:kManagedLabelFontSize[[self widthSizeClassIdiom]]];
+  self.managedLabel.font =
+      [UIFont systemFontOfSize:kManagedLabelFontSize[[self widthSizeClassIdiom]]
+                        weight:UIFontWeightRegular];
   self.managedLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   SetLabelLineHeight(self.managedLabel,
                      kManagedLabelLineHeight[[self widthSizeClassIdiom]]);
@@ -672,8 +676,9 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (void)configureOKButton {
-  UIFont* font = [[MDCTypography fontLoader]
-      mediumFontOfSize:kOKButtonTitleLabelFontSize[[self widthSizeClassIdiom]]];
+  UIFont* font = [UIFont
+      systemFontOfSize:kOKButtonTitleLabelFontSize[[self widthSizeClassIdiom]]
+                weight:UIFontWeightMedium];
   [self.OKButton setTitleFont:font forState:UIControlStateNormal];
   CGSize size = [self.OKButton
       sizeThatFits:CGSizeMake(CGFLOAT_MAX,

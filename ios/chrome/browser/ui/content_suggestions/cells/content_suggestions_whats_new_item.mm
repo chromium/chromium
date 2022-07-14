@@ -123,8 +123,8 @@ const CGFloat kIconSize = 24;
 
 // Configures the `promoLabel` with the `text`.
 + (void)configureLabel:(UILabel*)promoLabel withText:(NSString*)text {
-  promoLabel.font =
-      [[MDCTypography fontLoader] regularFontOfSize:kLabelFontSize];
+  promoLabel.font = [UIFont systemFontOfSize:kLabelFontSize
+                                      weight:UIFontWeightRegular];
   promoLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   promoLabel.numberOfLines = 0;
 

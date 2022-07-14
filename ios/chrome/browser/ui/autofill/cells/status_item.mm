@@ -88,7 +88,7 @@ const CGFloat kHorizontalPadding = 16;
     [verticalCenteringView addSubview:_errorImageView];
 
     _textLabel = [[UILabel alloc] init];
-    _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:16];
+    _textLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightMedium];
     _textLabel.numberOfLines = 0;
     _textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     // The label's position will be centered with Auto Layout but this ensures

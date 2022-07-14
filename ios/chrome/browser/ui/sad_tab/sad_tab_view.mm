@@ -310,8 +310,8 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     [_titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
     [_titleLabel setNumberOfLines:0];
     [_titleLabel setTextColor:[UIColor colorNamed:kTextPrimaryColor]];
-    [_titleLabel setFont:[[MDCTypography fontLoader]
-                             regularFontOfSize:kTitleLabelFontSize]];
+    [_titleLabel setFont:[UIFont systemFontOfSize:kTitleLabelFontSize
+                                           weight:UIFontWeightRegular]];
   }
   return _titleLabel;
 }
@@ -324,8 +324,8 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
     // Set base text styling for footer.
     NSDictionary<NSAttributedStringKey, id>* footerAttributes = @{
-      NSFontAttributeName :
-          [[MDCTypography fontLoader] regularFontOfSize:kFooterLabelFontSize],
+      NSFontAttributeName : [UIFont systemFontOfSize:kFooterLabelFontSize
+                                              weight:UIFontWeightRegular],
       NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     };
     NSMutableAttributedString* footerText =
@@ -540,8 +540,8 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     [_messageTextView setAttributedText:[self messageTextViewAttributedText]];
     _messageTextView.textContainer.lineFragmentPadding = 0.0f;
     [_messageTextView setTextColor:[UIColor colorNamed:kTextSecondaryColor]];
-    [_messageTextView setFont:[[MDCTypography fontLoader]
-                                  regularFontOfSize:kMessageTextViewFontSize]];
+    [_messageTextView setFont:[UIFont systemFontOfSize:kMessageTextViewFontSize
+                                                weight:UIFontWeightRegular]];
     [_messageTextView setUserInteractionEnabled:NO];
   }
   return _messageTextView;

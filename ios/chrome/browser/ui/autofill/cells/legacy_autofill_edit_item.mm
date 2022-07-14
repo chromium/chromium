@@ -171,11 +171,12 @@ const CGFloat kLabelAndFieldGap = 5;
 
 - (void)updateWithFontScaling:(BOOL)withFontScaling {
   MaybeSetUILabelScaledFont(withFontScaling, self.textLabel,
-                            [[MDCTypography fontLoader] mediumFontOfSize:14]);
+                            [UIFont systemFontOfSize:14
+                                              weight:UIFontWeightMedium]);
   self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  MaybeSetUITextFieldScaledFont(
-      withFontScaling, self.textField,
-      [[MDCTypography fontLoader] lightFontOfSize:16]);
+  MaybeSetUITextFieldScaledFont(withFontScaling, self.textField,
+                                [UIFont systemFontOfSize:16
+                                                  weight:UIFontWeightLight]);
   self.textField.textColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 

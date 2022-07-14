@@ -121,8 +121,8 @@ const CGFloat kPrefHeight = 300;
 
   // Title.
   NSMutableDictionary* attrsDictionary = [NSMutableDictionary
-      dictionaryWithObject:[[MDCTypography fontLoader]
-                               mediumFontOfSize:kTitleLabelFontSize]
+      dictionaryWithObject:[UIFont systemFontOfSize:kTitleLabelFontSize
+                                             weight:UIFontWeightMedium]
                     forKey:NSFontAttributeName];
   [attrsDictionary setObject:UIColorFromRGB(kTitleLabelFontColor)
                       forKey:NSForegroundColorAttributeName];

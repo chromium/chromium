@@ -138,13 +138,14 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
 
   _textLabel = [[UILabel alloc] init];
   _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
+  _textLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightMedium];
   _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [contentView addSubview:_textLabel];
 
   _detailTextLabel = [[UILabel alloc] init];
   _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _detailTextLabel.font = [[MDCTypography fontLoader] regularFontOfSize:14];
+  _detailTextLabel.font = [UIFont systemFontOfSize:14
+                                            weight:UIFontWeightRegular];
   _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [contentView addSubview:_detailTextLabel];
 }
