@@ -895,7 +895,7 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
   }
 
   if (status.error_code == net::OK) {
-    DCHECK_GT(status.completion_time, network_loader_start_time_);
+    DCHECK_GE(status.completion_time, network_loader_start_time_);
     base::TimeDelta elapsed =
         status.completion_time - network_loader_start_time_;
     if (memory_cache_was_used_) {
