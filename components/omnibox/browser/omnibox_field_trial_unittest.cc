@@ -373,11 +373,7 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
       {{omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
         {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "j"}}}},
       {});
-#if BUILDFLAG(IS_ANDROID)
-  int expected_age_threshold_days = 7;
-#else
-  int expected_age_threshold_days = 60;
-#endif
+  const int expected_age_threshold_days = 60;
   age_threshold = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
   EXPECT_EQ(expected_age_threshold_days,
             base::TimeDelta(base::Time::Now() - age_threshold).InDays());
