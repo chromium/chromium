@@ -4414,47 +4414,6 @@ TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAtRuleCounterStyle));
 }
 
-TEST_F(StyleEngineTest, CounterStyleDisabledInShadowDOM) {
-  ScopedCSSAtRuleCounterStyleInShadowDOMForTest
-      counter_style_in_shadow_dom_disabled(false);
-
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <style>
-      @counter-style foo { symbols: A; }
-    </style>
-    <ol id="foo" style="list-style-type: foo"><li></li></ol>
-    <div id="host"></div>
-  )HTML");
-
-  Element* host = GetDocument().getElementById("host");
-  ShadowRoot& shadow_root =
-      host->AttachShadowRootInternal(ShadowRootType::kOpen);
-  shadow_root.setInnerHTML(R"HTML(
-    <style>
-      @counter-style bar { symbols: B; }
-    </style>
-    <ol id="foo" style="list-style-type: foo"><li></li></ol>
-    <ol id="bar" style="list-style-type: bar"><li></li></ol>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-
-  // Only @counter-style rules defined in the document scope are effective,
-  // matching the spec status as of Feb 2021.
-
-  LayoutObject* document_foo =
-      GetDocument().getElementById("foo")->firstChild()->GetLayoutObject();
-  EXPECT_EQ("A. ", GetListMarkerText(document_foo));
-
-  LayoutObject* shadow_foo =
-      shadow_root.getElementById("foo")->firstChild()->GetLayoutObject();
-  EXPECT_EQ("A. ", GetListMarkerText(shadow_foo));
-
-  LayoutObject* shadow_bar =
-      shadow_root.getElementById("bar")->firstChild()->GetLayoutObject();
-  EXPECT_EQ("1. ", GetListMarkerText(shadow_bar));
-}
-
 TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
   // <input> get assigned "font: -webkit-small-control" in the UA sheet.
   Element* body = GetDocument().body();

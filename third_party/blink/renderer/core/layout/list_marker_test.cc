@@ -231,8 +231,6 @@ TEST_F(ListMarkerTest, RemoveOverrideOfSameScopeCounterStyle) {
 }
 
 TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
-  ScopedCSSAtRuleCounterStyleInShadowDOMForTest scope(true);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       @counter-style foo {

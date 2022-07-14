@@ -94,13 +94,6 @@ void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
 }
 
 void ScopedStyleResolver::AddCounterStyleRules(const RuleSet& rule_set) {
-  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleInShadowDOMEnabled()) {
-    // Our support of @counter-style rules in shadow DOM is experimental and
-    // non-standard. See https://github.com/w3c/csswg-drafts/issues/5693
-    if (!GetTreeScope().RootNode().IsDocumentNode())
-      return;
-  }
-
   if (rule_set.CounterStyleRules().IsEmpty())
     return;
   EnsureCounterStyleMap().AddCounterStyles(rule_set);
