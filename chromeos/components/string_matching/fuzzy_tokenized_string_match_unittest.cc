@@ -96,6 +96,40 @@ class FuzzyTokenizedStringMatchTest : public testing::Test {};
 // relevance scores. See the README for details.
 // TODO(crbug.com/1336160): Expand benchmarking tests.
 
+// TODO(crbug.com/1288662): Make matching less permissive where the strings
+// are short and the matching is multi-block (e.g. "chat" vs "caret").
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkAppsShortNamesMultiBlock) {
+  std::u16string query1 = u"chat";
+  std::vector<std::u16string> texts1 = {u"Chat", u"Caret", u"Calendar",
+                                        u"Camera", u"Chrome"};
+  for (const auto& text : texts1) {
+    const double relevance = CalculateRelevance(query1, text);
+    VLOG(1) << FormatRelevanceResult(query1, text, relevance,
+                                     /*query_first*/ true);
+  }
+
+  std::u16string query2 = u"ses";
+  std::vector<std::u16string> texts2 = {u"Sheets", u"Slides"};
+  for (const auto& text : texts2) {
+    const double relevance = CalculateRelevance(query2, text);
+    VLOG(1) << FormatRelevanceResult(query2, text, relevance,
+                                     /*query_first*/ true);
+  }
+}
+
+// TODO(crbug.com/1332374): Reduce permissivity currently afforded by block
+// matching algorithm.
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkAssistantAndGamesWeather) {
+  std::u16string query = u"weather";
+  std::vector<std::u16string> texts = {u"weather", u"War Thunder",
+                                       u"Man Eater"};
+  for (const auto& text : texts) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ true);
+  }
+}
+
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkChromeMultiBlock) {
   std::u16string text = u"Chrome";
   // N.B. "c", "ch", "chr", are not multiblock matches to "Chrome", but are
@@ -139,6 +173,23 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkChromeTransposition) {
   }
 }
 
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkGamesArk) {
+  std::u16string query = u"ark";
+  // Intended string matching guidelines for these cases:
+  // - Favor full token matches over partial token matches.
+  // - Favor prefix matches over non-prefix matches.
+  // - Do not penalize for unmatched lengths of text.
+  std::vector<std::u16string> texts = {u"PixARK", u"LOST ARK",
+                                       u"ARK: Survival Evolved"};
+  for (const auto& text : texts) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ true);
+  }
+  // TODO(crbug.com/1342440): Add expectation that scores are strictly
+  // increasing, once the implementation achieves this.
+}
+
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkGamesAssassinsCreed) {
   std::u16string text = {u"Assassin's Creed"};
   // Variations on punctuation and spelling
@@ -164,6 +215,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsScreenshot) {
   }
 }
 
+// TODO(crbug.com/1323910): Improve word order flexibility.
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsDesk) {
   std::u16string text = u"Create a new desk";
   std::u16string text_lower = u"create a new desk";
@@ -203,6 +255,44 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsDesk) {
     const double relevance = CalculateRelevance(query, text);
     VLOG(1) << FormatRelevanceResult(query, text, relevance,
                                      /*query_first*/ false);
+  }
+}
+
+// TODO(crbug.com/1327090): Reduce/remove penalties for unmatched text.
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkKeyboardShortcutsEmojiPicker) {
+  std::u16string text = u"Open Emoji picker";
+  std::vector<std::u16string> queries = {u"emoj", u"emoji", u"emoji ",
+                                         u"emoji p", u"emoji pi"};
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+  }
+}
+
+// TODO(crbug.com/1325088): Improve word order flexibility.
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkKeyboardShortcutsIncognitoWindow) {
+  std::u16string query = u"Open a new window in incognito mode";
+  std::vector<std::u16string> texts = {u"new window incognito",
+                                       u"new incognito window"};
+  for (const auto& text : texts) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ true);
+  }
+}
+
+// TODO(crbug.com/1336160): Introduce some kind of agnosticism to text length.
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkSettingsPreferences) {
+  std::u16string query = u"preferences";
+  std::vector<std::u16string> texts = {
+      u"Android preferences", u"Caption preferences", u"System preferences",
+      u"External storage preferences"};
+  for (const auto& text : texts) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ true);
   }
 }
 
