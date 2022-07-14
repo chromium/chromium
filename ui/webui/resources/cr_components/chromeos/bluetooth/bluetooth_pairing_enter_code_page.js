@@ -81,7 +81,7 @@ export class SettingsBluetoothPairingEnterCodeElement extends
       keys_: {
         type: Array,
         computed: 'computeKeys_(code)',
-      }
+      },
     };
   }
 

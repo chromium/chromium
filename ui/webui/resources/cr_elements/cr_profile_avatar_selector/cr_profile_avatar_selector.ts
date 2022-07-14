@@ -46,7 +46,7 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /**

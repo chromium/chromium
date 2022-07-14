@@ -51,7 +51,7 @@ export class SettingsBluetoothPairingConfirmCodePageElement extends
           cancel: ButtonState.ENABLED,
           pair: ButtonState.ENABLED,
         },
-      }
+      },
     };
   }
 

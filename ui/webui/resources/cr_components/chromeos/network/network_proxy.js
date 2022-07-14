@@ -73,7 +73,7 @@ Polymer({
     proxyTypes_: {
       type: Array,
       value: ['Direct', 'PAC', 'WPAD', 'Manual'],
-      readOnly: true
+      readOnly: true,
     },
 
     /**
@@ -233,7 +233,7 @@ Polymer({
       proxy.excludeDomains =
           proxy.excludeDomains || this.savedExcludeDomains_ || {
             activeValue: [],
-            policySource: chromeos.networkConfig.mojom.PolicySource.kNone
+            policySource: chromeos.networkConfig.mojom.PolicySource.kNone,
           };
     }
     return proxy;

@@ -84,7 +84,7 @@ var cr = cr || function(global) {
      * element has the attribute then the value is true.
      * Use only for properties of type {boolean}.
      */
-    BOOL_ATTR: 'boolAttr'
+    BOOL_ATTR: 'boolAttr',
   };
 
   /**
@@ -451,6 +451,6 @@ var cr = cr || function(global) {
     /** Whether this is on iOS. */
     get isIOS() {
       return /CriOS/.test(navigator.userAgent);
-    }
+    },
   };
 }(this);

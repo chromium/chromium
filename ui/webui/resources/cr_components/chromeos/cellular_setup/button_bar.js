@@ -31,7 +31,7 @@ Polymer({
     forwardButtonLabel: {
       type: String,
       value: '',
-    }
+    },
   },
 
   /**
@@ -99,5 +99,5 @@ Polymer({
         assertNotReached();
         return cellularSetup.ButtonState.ENABLED;
     }
-  }
+  },
 });

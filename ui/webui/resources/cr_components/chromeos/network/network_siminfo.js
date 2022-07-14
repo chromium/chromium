@@ -20,7 +20,7 @@ const TOGGLE_DEBOUNCE_MS = 500;
  */
 const State = {
   SIM_LOCKED: 0,
-  SIM_UNLOCKED: 1
+  SIM_UNLOCKED: 1,
 };
 
 Polymer({
@@ -89,7 +89,7 @@ Polymer({
     isActiveSim_: {
       type: Boolean,
       value: false,
-      computed: 'computeIsActiveSim_(networkState, deviceState)'
+      computed: 'computeIsActiveSim_(networkState, deviceState)',
     },
 
     /** @private {!State} */
@@ -106,7 +106,7 @@ Polymer({
       value() {
         return loadTimeData.valueExists('isSimLockPolicyEnabled') &&
             loadTimeData.getBoolean('isSimLockPolicyEnabled');
-      }
+      },
     },
 
     /** @private {boolean} */

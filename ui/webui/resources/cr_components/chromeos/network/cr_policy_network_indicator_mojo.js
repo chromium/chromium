@@ -76,5 +76,5 @@ Polymer({
     const matches = !!this.property &&
         this.property.activeValue === this.property.policyValue;
     return this.getIndicatorTooltip(this.indicatorType, '', matches);
-  }
+  },
 });

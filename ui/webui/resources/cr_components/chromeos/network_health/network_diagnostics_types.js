@@ -44,11 +44,11 @@ export const RoutineGroup = {
   FIREWALL: 4,
   DNS: 5,
   GOOGLE_SERVICES: 6,
-  ARC: 7
+  ARC: 7,
 };
 
 export const Icons = {
   TEST_FAILED: 'test_failed.png',
   TEST_NOT_RUN: 'test_not_run.png',
-  TEST_PASSED: 'test_passed.png'
+  TEST_PASSED: 'test_passed.png',
 };

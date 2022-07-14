@@ -62,7 +62,7 @@
     for (let i = 0; i < this.deviceCount; i++) {
       const deviceName = deviceNames[i % 4];
       devices.push({
-        remoteDevice: {deviceName: deviceName, deviceId: deviceName + '--' + i}
+        remoteDevice: {deviceName: deviceName, deviceId: deviceName + '--' + i},
       });
     }
     return new Promise(function(resolve, reject) {

@@ -14,7 +14,7 @@ const ErrorType = {
   INCORRECT_PUK: 'incorrect-puk',
   MISMATCHED_PIN: 'mismatched-pin',
   INVALID_PIN: 'invalid-pin',
-  INVALID_PUK: 'invalid-puk'
+  INVALID_PUK: 'invalid-puk',
 };
 
 const DIGITS_ONLY_REGEX = /^[0-9]+$/;
@@ -159,7 +159,7 @@ Polymer({
       value() {
         return loadTimeData.valueExists('isSimLockPolicyEnabled') &&
             loadTimeData.getBoolean('isSimLockPolicyEnabled');
-      }
+      },
     },
 
     /** @private {boolean} */

@@ -49,7 +49,7 @@ cr.define('cr.ui', function() {
     decorate() {
       ListItem.prototype.decorate.apply(this, arguments);
       this.textContent = this.dataItem;
-    }
+    },
   };
 
   /**
@@ -356,7 +356,7 @@ cr.define('cr.ui', function() {
       }
 
       List.prototype.redraw.call(this);
-    }
+    },
   };
 
   /**
@@ -445,7 +445,7 @@ cr.define('cr.ui', function() {
         return -1;
       }
       return index + 1;
-    }
+    },
   };
 
   // #cr_define_end
@@ -453,6 +453,6 @@ cr.define('cr.ui', function() {
   return {
     Grid: Grid,
     GridItem: GridItem,
-    GridSelectionController: GridSelectionController
+    GridSelectionController: GridSelectionController,
   };
 });

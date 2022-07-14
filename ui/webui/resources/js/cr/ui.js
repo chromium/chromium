@@ -221,6 +221,6 @@ cr.define('cr.ui', function() {
     define: define,
     limitInputWidth: limitInputWidth,
     toCssPx: toCssPx,
-    swallowDoubleClick: swallowDoubleClick
+    swallowDoubleClick: swallowDoubleClick,
   };
 });

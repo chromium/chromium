@@ -75,7 +75,7 @@ Polymer({
      */
     forwardButtonLabel_: {
       type: String,
-    }
+    },
   },
 
   listeners: {
@@ -141,5 +141,5 @@ Polymer({
    */
   shouldShowEsimFlow_(currentPage) {
     return currentPage === cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
-  }
+  },
 });

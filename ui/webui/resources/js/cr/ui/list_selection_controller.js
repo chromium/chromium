@@ -304,7 +304,7 @@ cr.define('cr.ui', function() {
           e.preventDefault();
         }
       }
-    }
+    },
   };
 
   // #cr_define_end

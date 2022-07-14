@@ -62,5 +62,5 @@ Polymer({
     }
     this.value.port.activeValue = port;
     this.fire('proxy-input-change', this.value);
-  }
+  },
 });

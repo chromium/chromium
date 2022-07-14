@@ -153,7 +153,7 @@ Polymer({
     isActivationCodeInvalidFormat_: {
       type: Boolean,
       value: false,
-    }
+    },
   },
 
   /**
@@ -345,9 +345,9 @@ Polymer({
           video: {
             height: 130,
             width: 482,
-            facingMode: useUserFacingCamera ? 'user' : 'environment'
+            facingMode: useUserFacingCamera ? 'user' : 'environment',
           },
-          audio: false
+          audio: false,
         })
         .then(stream => {
           this.stream_ = stream;
@@ -431,7 +431,7 @@ Polymer({
     this.fire('activation-code-updated', {
       activationCode: this.validateActivationCode_(this.activationCode) ?
           this.activationCode :
-          null
+          null,
     });
   },
 
@@ -658,5 +658,5 @@ Polymer({
     // Because this string contains '<' and '>' characters, we cannot use i18n
     // methods.
     return loadTimeData.getString('scanQrCodeInputError');
-  }
+  },
 });

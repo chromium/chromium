@@ -605,6 +605,6 @@ cr.define('cellularSetup', function() {
   return {
     PSimPageName: PSimPageName,
     PSimUIState: PSimUIState,
-    getTimeoutMsForPSimUIState: getTimeoutMsForPSimUIState
+    getTimeoutMsForPSimUIState: getTimeoutMsForPSimUIState,
   };
 });

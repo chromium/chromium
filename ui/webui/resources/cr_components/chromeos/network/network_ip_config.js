@@ -138,7 +138,7 @@ Polymer({
           'ipv6.ipAddress',
         ];
       },
-      readOnly: true
+      readOnly: true,
     },
 
     /**
@@ -252,7 +252,7 @@ Polymer({
       }
       if (!this.ipConfig_.ipv4) {
         this.ipConfig_.ipv4 = {
-          type: chromeos.networkConfig.mojom.IPConfigType.kIPv4
+          type: chromeos.networkConfig.mojom.IPConfigType.kIPv4,
         };
       }
       this.setIpv4Defaults_(this.ipConfig_.ipv4);
@@ -362,7 +362,7 @@ Polymer({
       // expects a ManagedProperty and routingPrefix has the same type as
       // netmask.
       'ipv4.netmask': this.getIPFieldEditType_(staticIpConfig.routingPrefix),
-      'ipv4.gateway': this.getIPFieldEditType_(staticIpConfig.gateway)
+      'ipv4.gateway': this.getIPFieldEditType_(staticIpConfig.gateway),
     };
   },
 
@@ -390,7 +390,7 @@ Polymer({
       field: 'staticIpConfig',
       value: this.ipConfig_.ipv4 ?
           this.getIPConfigProperties_(this.ipConfig_.ipv4) :
-          {}
+          {},
     });
   },
 
@@ -416,5 +416,5 @@ Polymer({
       classes += ' indented';
     }
     return classes;
-  }
+  },
 });

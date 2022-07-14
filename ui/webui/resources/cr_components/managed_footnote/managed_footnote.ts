@@ -57,7 +57,7 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
       showDeviceInfo: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

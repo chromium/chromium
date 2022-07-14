@@ -45,5 +45,5 @@ Polymer({
    */
   isProfileSelected_(profile) {
     return this.selectedProfile === profile;
-  }
+  },
 });

@@ -368,7 +368,7 @@ cr.define('cr.ui', function() {
           separatorRequired = true;
         }
       }
-    }
+    },
   };
 
   /** @suppress {globalThis} This standalone function is used like method. */

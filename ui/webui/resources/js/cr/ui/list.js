@@ -441,7 +441,7 @@ cr.define('cr.ui', function() {
           marginBottom: 0,
           width: 0,
           marginLeft: 0,
-          marginRight: 0
+          marginRight: 0,
         };
       }
       const item = opt_item || this.cachedMeasuredItem_ ||
@@ -490,7 +490,7 @@ cr.define('cr.ui', function() {
         marginBottom: mb,
         width: Math.max(0, w),
         marginLeft: ml,
-        marginRight: mr
+        marginRight: mr,
       };
     },
 
@@ -1005,7 +1005,7 @@ cr.define('cr.ui', function() {
         return {
           first: 0,
           length: this.dataModel.length,
-          last: this.dataModel.length
+          last: this.dataModel.length,
         };
       } else {
         const firstIndex = this.getIndexForListOffset_(scrollTop);
@@ -1014,7 +1014,7 @@ cr.define('cr.ui', function() {
         return {
           first: firstIndex,
           length: lastIndex - firstIndex + 1,
-          last: lastIndex + 1
+          last: lastIndex + 1,
         };
       }
     },

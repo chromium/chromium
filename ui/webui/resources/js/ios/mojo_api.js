@@ -56,8 +56,8 @@ Mojo.bindInterface = function(interfaceName, requestHandle) {
     name: 'Mojo.bindInterface',
     args: {
       interfaceName: interfaceName,
-      requestHandle: requestHandle.takeNativeHandle_()
-    }
+      requestHandle: requestHandle.takeNativeHandle_(),
+    },
   });
 };
 
@@ -134,8 +134,8 @@ MojoHandle.prototype.watch = function(signals, callback) {
     args: {
       handle: this.nativeHandle_,
       signals: signalsValue,
-      callbackId: Mojo.internal.watchCallbacksHolder.getNextCallbackId()
-    }
+      callbackId: Mojo.internal.watchCallbacksHolder.getNextCallbackId(),
+    },
   });
   Mojo.internal.watchCallbacksHolder.addWatchCallback(watchId, callback);
 
@@ -160,7 +160,7 @@ MojoHandle.prototype.writeMessage = function(buffer, handles) {
       handle: this.nativeHandle_,
       buffer: buffer,
       handles: nativeHandles,
-    }
+    },
   });
 };
 
@@ -296,6 +296,6 @@ Mojo.internal.watchCallbacksHolder = (function() {
     callCallback: callCallback,
     getNextCallbackId: getNextCallbackId,
     addWatchCallback: addWatchCallback,
-    removeWatchCallback: removeWatchCallback
+    removeWatchCallback: removeWatchCallback,
   };
 })();

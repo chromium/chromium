@@ -62,7 +62,7 @@ export class CrToolbarSearchFieldElement extends
 
       isSpinnerShown_: {
         type: Boolean,
-        computed: 'computeIsSpinnerShown_(spinnerActive, showingSearch)'
+        computed: 'computeIsSpinnerShown_(spinnerActive, showingSearch)',
       },
 
       searchFocused_: {type: Boolean, value: false},

@@ -106,7 +106,7 @@ let ProcessingRoot;
           element.setAttribute(propName, /** @type {string} */ (value));
         }
       });
-    }
+    },
   };
 
   const prefixes = [''];

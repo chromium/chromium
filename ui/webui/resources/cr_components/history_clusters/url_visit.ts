@@ -115,7 +115,7 @@ class VisitRowElement extends MenuContainerElementBase {
       unusedUrlForDisplay_: {
         type: String,
         computed: 'computeUrlForDisplay_(visit)',
-      }
+      },
     };
   }
 

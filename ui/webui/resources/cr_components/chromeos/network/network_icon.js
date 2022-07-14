@@ -59,7 +59,7 @@ Polymer({
     ariaLabel: {
       type: String,
       reflectToAttribute: true,
-      computed: 'computeAriaLabel_(locale, networkState)'
+      computed: 'computeAriaLabel_(locale, networkState)',
     },
   },
 

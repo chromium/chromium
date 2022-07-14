@@ -37,7 +37,7 @@ cr.define('multidevice_setup', function() {
         type: Boolean,
         computed: 'shouldForwardButtonBeDisabled_(' +
             'passwordPageForwardButtonDisabled_, visiblePageName)',
-        notify: true
+        notify: true,
       },
 
       /**

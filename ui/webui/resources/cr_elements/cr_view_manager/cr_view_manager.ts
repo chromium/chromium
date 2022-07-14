@@ -45,7 +45,7 @@ viewAnimations.set('slide-in-fade-in-ltr', element => {
   const animation = element.animate(
       [
         {transform: 'translateX(-8px)', opacity: 0},
-        {transform: 'translateX(0)', opacity: 1}
+        {transform: 'translateX(0)', opacity: 1},
       ],
       {
         duration: 300,
@@ -60,7 +60,7 @@ viewAnimations.set('slide-in-fade-in-rtl', element => {
   const animation = element.animate(
       [
         {transform: 'translateX(8px)', opacity: 0},
-        {transform: 'translateX(0)', opacity: 1}
+        {transform: 'translateX(0)', opacity: 1},
       ],
       {
         duration: 300,

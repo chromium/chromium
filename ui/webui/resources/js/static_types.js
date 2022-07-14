@@ -53,7 +53,7 @@ function createTypes(ignore, literal) {
 const rules = {
   createHTML: createTypes,
   createScript: createTypes,
-  createScriptURL: createTypes
+  createScriptURL: createTypes,
 };
 
 /**

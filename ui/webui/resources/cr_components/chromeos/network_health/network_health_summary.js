@@ -194,8 +194,10 @@ Polymer({
    */
   showSettingsLink_(network) {
     const validStates = [
-      NetworkState.kConnected, NetworkState.kConnecting, NetworkState.kPortal,
-      NetworkState.kOnline
+      NetworkState.kConnected,
+      NetworkState.kConnecting,
+      NetworkState.kPortal,
+      NetworkState.kOnline,
     ];
     return validStates.includes(network.state);
   },

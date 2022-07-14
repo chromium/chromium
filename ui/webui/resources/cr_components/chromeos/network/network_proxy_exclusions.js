@@ -28,8 +28,8 @@ Polymer({
       value() {
         return [];
       },
-      notify: true
-    }
+      notify: true,
+    },
   },
 
   /**
@@ -41,5 +41,5 @@ Polymer({
     const index = event.model.index;
     this.splice('exclusions', index, 1);
     this.fire('proxy-exclusions-change');
-  }
+  },
 });

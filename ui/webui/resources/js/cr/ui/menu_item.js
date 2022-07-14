@@ -264,7 +264,7 @@ cr.define('cr.ui', function() {
           this.checked = this.command.checked;
           break;
       }
-    }
+    },
   };
   /**
    * Whether the menu item is disabled or not.

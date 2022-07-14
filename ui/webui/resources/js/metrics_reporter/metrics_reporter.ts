@@ -77,7 +77,7 @@ export class MetricsReporterImpl implements MetricsReporter {
     callbackRouter.onGetMark.addListener(
         (name: string) => ({
           markedTime:
-              this.marks_.has(name) ? timeToMojo(this.marks_.get(name)!) : null
+              this.marks_.has(name) ? timeToMojo(this.marks_.get(name)!) : null,
         }));
 
     callbackRouter.onClearMark.addListener(

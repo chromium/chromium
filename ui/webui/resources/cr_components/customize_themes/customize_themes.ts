@@ -76,7 +76,7 @@ export class CustomizeThemesElement extends CustomizeThemesElementBase {
       showManagedThemeDialog_: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

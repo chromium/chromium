@@ -199,7 +199,7 @@ Polymer({
             carrier: this.cellularMetadata.carrier,
             MEID: this.cellularMetadata.meid,
             IMEI: this.cellularMetadata.imei,
-            MDN: this.cellularMetadata.mdn
+            MDN: this.cellularMetadata.mdn,
           },
           this.cellularMetadata.paymentUrl.url);
       return;

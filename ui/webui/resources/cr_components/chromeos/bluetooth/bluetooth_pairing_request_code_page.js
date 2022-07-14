@@ -76,7 +76,7 @@ export class SettingsBluetoothRequestCodePageElement extends
       pinCode_: {
         type: String,
         value: '',
-      }
+      },
     };
   }
 

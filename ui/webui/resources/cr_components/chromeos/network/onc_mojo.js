@@ -794,7 +794,7 @@
             signalStrength: 0,
             simLocked: false,
             supportNetworkScan: false,
-          }
+          },
         };
         break;
       case mojom.NetworkType.kEthernet:
@@ -809,7 +809,7 @@
             carrier: '',
             hasConnectedToHost: false,
             signalStrength: 0,
-          }
+          },
         };
         break;
       case mojom.NetworkType.kVPN:
@@ -818,7 +818,7 @@
             providerName: '',
             type: mojom.VpnType.kOpenVPN,
             openVpn: {},
-          }
+          },
         };
         break;
       case mojom.NetworkType.kWiFi:
@@ -831,7 +831,7 @@
             signalStrength: 0,
             isSyncable: false,
             isConfiguredByActiveUser: false,
-          }
+          },
         };
         break;
     }
@@ -863,9 +863,9 @@
           typeConfig: {
             wifi: {
               security: mojom.SecurityType.kNone,
-              hiddenSsid: mojom.HiddenSsidMode.kAutomatic
-            }
-          }
+              hiddenSsid: mojom.HiddenSsidMode.kAutomatic,
+            },
+          },
         };
         break;
     }
@@ -1116,7 +1116,7 @@
     return {
       activeValue: s,
       policySource: chromeos.networkConfig.mojom.PolicySource.kNone,
-      policyValue: undefined
+      policyValue: undefined,
     };
   }
 
@@ -1128,7 +1128,7 @@
     return {
       activeValue: n,
       policySource: chromeos.networkConfig.mojom.PolicySource.kNone,
-      policyValue: 0
+      policyValue: 0,
     };
   }
 
@@ -1140,7 +1140,7 @@
     return {
       activeValue: b,
       policySource: chromeos.networkConfig.mojom.PolicySource.kNone,
-      policyValue: false
+      policyValue: false,
     };
   }
 
@@ -1151,7 +1151,7 @@
     return {
       lastResetTime: null,
       autoReset: false,
-      userSpecifiedResetDay: 1
+      userSpecifiedResetDay: 1,
     };
   }
 
@@ -1409,7 +1409,7 @@
       }
       result.push(/* @type {!chromeos.networkConfig.mojom.SubjectAltName} */ {
         type: type,
-        value: value[0]
+        value: value[0],
       });
     }
     return result;

@@ -351,7 +351,7 @@ cr.define('cr.ui', function() {
           this.hideMenu();
           break;
       }
-    }
+    },
   };
 
   // Export

@@ -53,7 +53,7 @@ Polymer({
       type: Array,
       value() {
         return [];
-      }
+      },
     },
 
     /**
@@ -69,7 +69,7 @@ Polymer({
           accessPointName: kDefaultAccessPointName,
           name: kOtherAccessPointName,
         };
-      }
+      },
     },
 
     /**
@@ -81,7 +81,7 @@ Polymer({
       value() {
         return ['accessPointName', 'username', 'password'];
       },
-      readOnly: true
+      readOnly: true,
     },
 
     /**
@@ -94,10 +94,10 @@ Polymer({
         return {
           'accessPointName': 'String',
           'username': 'String',
-          'password': 'Password'
+          'password': 'Password',
         };
       },
-      readOnly: true
+      readOnly: true,
     },
 
     /** @private */
@@ -106,7 +106,7 @@ Polymer({
       value() {
         return loadTimeData.valueExists('useAttachApn') &&
             loadTimeData.getBoolean('useAttachApn');
-      }
+      },
     },
 
     /** @private */
@@ -392,5 +392,5 @@ Polymer({
    */
   isApnItemSelected_(item) {
     return item.accessPointName === this.selectedApn_;
-  }
+  },
 });

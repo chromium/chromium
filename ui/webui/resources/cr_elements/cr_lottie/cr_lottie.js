@@ -209,7 +209,7 @@ Polymer({
     const clientRect = canvasElement.getBoundingClientRect();
     const drawSize = {
       width: clientRect.width * devicePixelRatio,
-      height: clientRect.height * devicePixelRatio
+      height: clientRect.height * devicePixelRatio,
     };
     return drawSize;
   },
@@ -289,7 +289,7 @@ Polymer({
     const message = [{
       animationData,
       drawSize: this.getCanvasDrawBufferSize_(),
-      params: {loop: !this.singleLoop, autoplay: this.autoplay}
+      params: {loop: !this.singleLoop, autoplay: this.autoplay},
     }];
     if (!this.hasTransferredCanvas_) {
       message[0].canvas = this.offscreenCanvas_;

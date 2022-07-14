@@ -70,7 +70,7 @@ cr.define('cr.ui', function() {
 
               // Accept nodes that are non-hidden and focusable.
               return NodeFilter.FILTER_ACCEPT;
-            }
+            },
           }),
           false);
 

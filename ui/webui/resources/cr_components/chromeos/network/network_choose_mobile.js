@@ -48,7 +48,7 @@ Polymer({
       type: Array,
       value() {
         return [];
-      }
+      },
     },
   },
 
@@ -85,7 +85,7 @@ Polymer({
     this.mobileNetworkList_ = cellular.foundNetworks || [];
     if (!this.mobileNetworkList_.length) {
       this.mobileNetworkList_ = [
-        {networkId: 'none', longName: this.i18n('networkCellularNoNetworks')}
+        {networkId: 'none', longName: this.i18n('networkCellularNoNetworks')},
       ];
     }
     // Set selectedMobileNetworkId_ after the dom-repeat has been stamped.

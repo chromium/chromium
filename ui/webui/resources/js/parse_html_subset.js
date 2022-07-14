@@ -59,7 +59,7 @@
         return node.tagName === 'A' &&
             (value.startsWith('chrome://') || value.startsWith('https://') ||
              value === '#');
-      }
+      },
     ],
     [
       'target',
@@ -67,7 +67,7 @@
         // Only allow a[target='_blank'].
         // TODO(dbeam): are there valid use cases for target !== '_blank'?
         return node.tagName === 'A' && value === '_blank';
-      }
+      },
     ],
   ]);
 
@@ -86,7 +86,7 @@
       (node, value) => {
         // Only allow img[src] starting with chrome://
         return node.tagName === 'IMG' && value.startsWith('chrome://');
-      }
+      },
     ],
     ['tabindex', allowAttribute],
     ['aria-hidden', allowAttribute],

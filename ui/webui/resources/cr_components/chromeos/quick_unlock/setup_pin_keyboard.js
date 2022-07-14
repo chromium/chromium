@@ -25,7 +25,7 @@
 /** @enum {string} */
 /* #export */ const ProblemType = {
   WARNING: 'warning',
-  ERROR: 'error'
+  ERROR: 'error',
 };
 
 Polymer({
@@ -98,7 +98,7 @@ Polymer({
       type: Object,
       value() {
         return function() {};
-      }
+      },
     },
 
     /**

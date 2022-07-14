@@ -41,7 +41,7 @@ cr.define('cr.ui', function() {
      * The popop's top edge is aligned with the bottom edge of the anchor.
      * The popup's left edge is aligned with the left edge of the anchor.
      */
-    BELOW: 4  // p: top, a: bottom, p: left, a: left
+    BELOW: 4,  // p: top, a: bottom, p: left, a: left
   };
 
   /**
@@ -69,7 +69,7 @@ cr.define('cr.ui', function() {
         top: 0,
         bottom: docElement.clientHeight,
         left: 0,
-        right: docElement.clientWidth
+        right: docElement.clientWidth,
       };
     } else {
       availRect = popupElement.offsetParent.getBoundingClientRect();
@@ -243,6 +243,6 @@ cr.define('cr.ui', function() {
   return {
     AnchorType: AnchorType,
     positionPopupAroundElement: positionPopupAroundElement,
-    positionPopupAtPoint: positionPopupAtPoint
+    positionPopupAtPoint: positionPopupAtPoint,
   };
 });

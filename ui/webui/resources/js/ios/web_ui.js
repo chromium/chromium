@@ -15,7 +15,7 @@ window['chrome']['send'] = function(message, args) {
   __gCrWeb.message.invokeOnHost({
     'command': 'webui.chromeSend',
     'message': message,
-    'arguments': args || []
+    'arguments': args || [],
   });
 };
 

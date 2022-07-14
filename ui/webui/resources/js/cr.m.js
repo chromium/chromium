@@ -261,7 +261,7 @@ export const PropertyKind = {
    * element has the attribute then the value is true.
    * Use only for properties of type {boolean}.
    */
-  BOOL_ATTR: 'boolAttr'
+  BOOL_ATTR: 'boolAttr',
 };
 
 /**

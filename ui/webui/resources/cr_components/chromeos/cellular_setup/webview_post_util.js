@@ -84,7 +84,7 @@ cr.define('webviewPost.util', function() {
       code: WEBVIEW_REDIRECT_SCRIPT + '(' +
           'document.getElementById(\'' + WEBVIEW_REDIRECT_FORM_ID + '\'),' +
           ' \'' + escape(paymentUrl) + '\',' +
-          ' \'' + escape(postData || '') + '\');'
+          ' \'' + escape(postData || '') + '\');',
     });
   }
 

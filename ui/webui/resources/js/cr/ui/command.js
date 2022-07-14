@@ -261,7 +261,7 @@ cr.define('cr.ui', function() {
           }
         }
       }
-    }
+    },
   };
 
   /**
@@ -301,7 +301,7 @@ cr.define('cr.ui', function() {
       this.canExecute_ = !!canExecute;
       this.stopPropagation();
       this.preventDefault();
-    }
+    },
   };
 
   // Export

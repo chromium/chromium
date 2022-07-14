@@ -40,7 +40,7 @@ export class CertificateProvisioningListElement extends
         type: Array,
         value() {
           return [];
-        }
+        },
       },
 
       /**

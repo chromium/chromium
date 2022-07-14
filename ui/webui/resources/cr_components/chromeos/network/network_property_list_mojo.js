@@ -85,7 +85,7 @@ Polymer({
     hasAnyInputFocused_: {
       type: Boolean,
       value: false,
-    }
+    },
   },
 
   /** @private */

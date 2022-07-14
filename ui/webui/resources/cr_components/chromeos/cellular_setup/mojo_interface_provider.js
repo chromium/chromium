@@ -84,6 +84,6 @@ cr.define('cellular_setup', function() {
     getCellularSetupRemote,
     setESimManagerRemoteForTesting,
     getESimManagerRemote,
-    observeESimManager
+    observeESimManager,
   };
 });

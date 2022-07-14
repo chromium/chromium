@@ -272,7 +272,7 @@ cr.define('cr.ui', function() {
           e.changes = indexes.map(function(index) {
             return {
               index: Number(index),
-              selected: this.changedIndexes_[index]
+              selected: this.changedIndexes_[index],
             };
           }, this);
           this.dispatchEvent(e);

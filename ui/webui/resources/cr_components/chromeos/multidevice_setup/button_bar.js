@@ -32,7 +32,7 @@ Polymer({
     shouldShowShadow: {
       type: Boolean,
       value: false,
-    }
+    },
   },
 
   /** @private */

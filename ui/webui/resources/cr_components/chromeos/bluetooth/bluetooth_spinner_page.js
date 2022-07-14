@@ -32,7 +32,7 @@ export class SettingsBluetoothSpinnerPageElement extends PolymerElement {
           cancel: ButtonState.ENABLED,
           pair: ButtonState.DISABLED,
         },
-      }
+      },
     };
   }
 }

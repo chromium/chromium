@@ -22,7 +22,7 @@ cr.define('settings', function() {
     CHOOSE_PIN_OR_PASSWORD: 2,
     ENTER_PIN: 3,
     CONFIRM_PIN: 4,
-    MAX_BUCKET: 5
+    MAX_BUCKET: 5,
   };
   /**
    * Helper function to send the progress of the pin setup to be recorded in the
@@ -37,13 +37,15 @@ cr.define('settings', function() {
       return;
     }
     chrome.send('metricsHandler:recordInHistogram', [
-      PinUnlockUmaHistogramName, currentProgress, LockScreenProgress.MAX_BUCKET
+      PinUnlockUmaHistogramName,
+      currentProgress,
+      LockScreenProgress.MAX_BUCKET,
     ]);
   };
 
   // #cr_define_end
   return {
     recordLockScreenProgress: recordLockScreenProgress,
-    LockScreenProgress: LockScreenProgress
+    LockScreenProgress: LockScreenProgress,
   };
 });

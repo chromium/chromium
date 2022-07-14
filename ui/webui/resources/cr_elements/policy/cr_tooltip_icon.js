@@ -16,7 +16,7 @@ Polymer({
     tooltipPosition: {
       type: String,
       value: 'top',
-    }
+    },
   },
 
   /** @return {!Element} */

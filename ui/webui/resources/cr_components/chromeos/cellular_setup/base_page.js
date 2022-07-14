@@ -31,7 +31,7 @@ Polymer({
     messageIcon: {
       type: String,
       value: '',
-    }
+    },
   },
 
   /**
@@ -56,5 +56,5 @@ Polymer({
    */
   isMessageIconShown_() {
     return !!this.messageIcon;
-  }
+  },
 });

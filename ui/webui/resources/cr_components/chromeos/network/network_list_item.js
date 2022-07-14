@@ -26,7 +26,7 @@ Polymer({
       reflectToAttribute: true,
       observer: 'disabledChanged_',
       computed: 'computeDisabled_(deviceState, deviceState.inhibitReason,' +
-          'disableItem)'
+          'disableItem)',
     },
 
     /**

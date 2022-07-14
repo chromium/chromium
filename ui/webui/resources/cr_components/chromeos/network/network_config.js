@@ -2393,5 +2393,5 @@ Polymer({
       // Reset error if user starts typing new password.
       this.setError_('');
     }
-  }
+  },
 });
