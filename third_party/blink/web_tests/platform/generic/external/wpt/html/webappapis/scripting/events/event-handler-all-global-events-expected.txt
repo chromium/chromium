@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 345 tests; 339 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 345 tests; 343 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -10,10 +10,10 @@ PASS onauxclick: the default value must be null
 PASS onauxclick: the content attribute must be compiled into a function as the corresponding property
 PASS onauxclick: the content attribute must execute when an event is dispatched
 PASS onauxclick: dispatching an Event at a <meta> element must trigger element.onauxclick
-FAIL onbeforeinput: must be on the appropriate locations for GlobalEventHandlers assert_true: Window has an own property named "onbeforeinput" expected true got false
-FAIL onbeforeinput: the default value must be null assert_equals: The default value of the property is null for a Window instance expected (object) null but got (undefined) undefined
-FAIL onbeforeinput: the content attribute must be compiled into a function as the corresponding property assert_equals: The onbeforeinput property must be a function expected "function" but got "undefined"
-FAIL onbeforeinput: the content attribute must execute when an event is dispatched assert_true: Dispatching an event must run the code expected true got undefined
+PASS onbeforeinput: must be on the appropriate locations for GlobalEventHandlers
+PASS onbeforeinput: the default value must be null
+PASS onbeforeinput: the content attribute must be compiled into a function as the corresponding property
+PASS onbeforeinput: the content attribute must execute when an event is dispatched
 PASS onbeforeinput: dispatching an Event at a <meta> element must trigger element.onbeforeinput
 PASS onbeforematch: must be on the appropriate locations for GlobalEventHandlers
 PASS onbeforematch: the default value must be null

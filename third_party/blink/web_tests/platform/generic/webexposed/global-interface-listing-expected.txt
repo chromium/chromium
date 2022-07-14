@@ -1793,6 +1793,7 @@ interface Document : Node
     getter onauxclick
     getter onbeforecopy
     getter onbeforecut
+    getter onbeforeinput
     getter onbeforematch
     getter onbeforepaste
     getter onbeforexrselect
@@ -2000,6 +2001,7 @@ interface Document : Node
     setter onauxclick
     setter onbeforecopy
     setter onbeforecut
+    setter onbeforeinput
     setter onbeforematch
     setter onbeforepaste
     setter onbeforexrselect
@@ -3195,6 +3197,7 @@ interface HTMLElement : Element
     getter onanimationiteration
     getter onanimationstart
     getter onauxclick
+    getter onbeforeinput
     getter onbeforematch
     getter onbeforexrselect
     getter onblur
@@ -3322,6 +3325,7 @@ interface HTMLElement : Element
     setter onanimationiteration
     setter onanimationstart
     setter onauxclick
+    setter onbeforeinput
     setter onbeforematch
     setter onbeforexrselect
     setter onblur
@@ -5130,6 +5134,7 @@ interface MathMLElement : Element
     getter onanimationiteration
     getter onanimationstart
     getter onauxclick
+    getter onbeforeinput
     getter onbeforematch
     getter onbeforexrselect
     getter onblur
@@ -5238,6 +5243,7 @@ interface MathMLElement : Element
     setter onanimationiteration
     setter onanimationstart
     setter onauxclick
+    setter onbeforeinput
     setter onbeforematch
     setter onbeforexrselect
     setter onblur
@@ -7342,6 +7348,7 @@ interface SVGElement : Element
     getter onanimationiteration
     getter onanimationstart
     getter onauxclick
+    getter onbeforeinput
     getter onbeforematch
     getter onbeforexrselect
     getter onblur
@@ -7452,6 +7459,7 @@ interface SVGElement : Element
     setter onanimationiteration
     setter onanimationstart
     setter onauxclick
+    setter onbeforeinput
     setter onbeforematch
     setter onbeforexrselect
     setter onblur
@@ -11603,6 +11611,7 @@ namespace CSS
     getter onanimationstart
     getter onappinstalled
     getter onauxclick
+    getter onbeforeinput
     getter onbeforeinstallprompt
     getter onbeforematch
     getter onbeforeprint
@@ -11824,6 +11833,7 @@ namespace CSS
     setter onanimationstart
     setter onappinstalled
     setter onauxclick
+    setter onbeforeinput
     setter onbeforeinstallprompt
     setter onbeforematch
     setter onbeforeprint

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 333 tests; 324 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 333 tests; 327 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS shadowed blur (document.body)
 PASS shadowed error (document.body)
 PASS shadowed focus (document.body)
@@ -24,7 +24,7 @@ PASS shadowed unhandledrejection (document.body)
 PASS shadowed unload (document.body)
 PASS not shadowed abort (document.body)
 PASS not shadowed auxclick (document.body)
-FAIL not shadowed beforeinput (document.body) assert_equals: alternative body should reflect expected (object) null but got (undefined) undefined
+PASS not shadowed beforeinput (document.body)
 PASS not shadowed beforematch (document.body)
 PASS not shadowed cancel (document.body)
 PASS not shadowed canplay (document.body)
@@ -135,7 +135,7 @@ PASS shadowed unhandledrejection (document.createElement("body"))
 PASS shadowed unload (document.createElement("body"))
 PASS not shadowed abort (document.createElement("body"))
 PASS not shadowed auxclick (document.createElement("body"))
-FAIL not shadowed beforeinput (document.createElement("body")) assert_equals: body should reflect expected (object) null but got (undefined) undefined
+PASS not shadowed beforeinput (document.createElement("body"))
 PASS not shadowed beforematch (document.createElement("body"))
 PASS not shadowed cancel (document.createElement("body"))
 PASS not shadowed canplay (document.createElement("body"))
@@ -246,7 +246,7 @@ PASS shadowed unhandledrejection (window)
 PASS shadowed unload (window)
 PASS not shadowed abort (window)
 PASS not shadowed auxclick (window)
-FAIL not shadowed beforeinput (window) assert_equals: body should reflect expected (object) null but got (undefined) undefined
+PASS not shadowed beforeinput (window)
 PASS not shadowed beforematch (window)
 PASS not shadowed cancel (window)
 PASS not shadowed canplay (window)
