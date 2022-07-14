@@ -71,9 +71,12 @@ struct CrosScreenInfo {
 // Interface to bind CrosWindowManagement and CrosWindowManagementObserver.
 // Implemented by CrosWindowManagementContext which is a keyed service.
 interface CrosWindowManagementFactory {
-  // Binds a CrosWindowManagement interface associated with
-  // CrosWindowManagementFactory. Its lifetime is tied to that of the pipe.
-  Create(pending_associated_receiver<CrosWindowManagement> receiver);
+  // Binds a CrosWindowManagement and a CrosWindowManagementStartObserver
+  // interfaces associated with CrosWindowManagementFactory. Their lifetimes are
+  // tied to that of the pipe.
+  Create(
+      pending_associated_receiver<CrosWindowManagement> receiver,
+      pending_associated_remote<CrosWindowManagementStartObserver> observer_remote);
 };
 
 // Chrome OS Window Management API for System Extensions.
@@ -118,7 +121,8 @@ interface CrosWindowManagement {
 
 // Interface used by the browser to send the `start` event to Window Management
 // System Extensions service workers. This is only bound once when the system
-// extension is installed and the event is dispatched.
+// extension is installed and the event is dispatched. Bound using
+// CrosWindowManagementFactory.Create.
 interface CrosWindowManagementStartObserver {
   // Notify the renderer that it should dispatch the `start` event. Currently,
   // start is only dispatched when the System Extension is installed.

@@ -7,6 +7,7 @@
 
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #include "ui/aura/window.h"
 
@@ -18,45 +19,44 @@ namespace ash {
 
 class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
  public:
-  explicit WindowManagementImpl(int32_t render_process_host_id);
-  ~WindowManagementImpl() override = default;
+  explicit WindowManagementImpl(
+      int32_t render_process_host_id,
+      mojo::PendingAssociatedRemote<
+          blink::mojom::CrosWindowManagementStartObserver>
+          observer_pending_remote);
+  ~WindowManagementImpl() override;
 
+  // Sends a 'start' event to the renderer through the
+  // blink::mojom::CrosWindowManagementStartObserver interface.
+  void DispatchStartEvent();
+
+  // blink::mojom::CrosWindowManagement
   void GetAllWindows(GetAllWindowsCallback callback) override;
-
   void MoveTo(const base::UnguessableToken& id,
               int32_t x,
               int32_t y,
               MoveToCallback callback) override;
-
   void MoveBy(const base::UnguessableToken& id,
               int32_t delta_x,
               int32_t delta_y,
               MoveByCallback callback) override;
-
   void ResizeTo(const base::UnguessableToken& id,
                 int32_t width,
                 int32_t height,
                 ResizeToCallback callback) override;
-
   void ResizeBy(const base::UnguessableToken& id,
                 int32_t delta_width,
                 int32_t delta_height,
                 ResizeByCallback callback) override;
-
   void SetFullscreen(const base::UnguessableToken& id,
                      bool fullscreen,
                      SetFullscreenCallback callback) override;
-
   void Maximize(const base::UnguessableToken& id,
                 MaximizeCallback callback) override;
-
   void Minimize(const base::UnguessableToken& id,
                 MinimizeCallback callback) override;
-
   void Focus(const base::UnguessableToken& id, FocusCallback callback) override;
-
   void Close(const base::UnguessableToken& id, CloseCallback callback) override;
-
   void GetAllScreens(GetAllScreensCallback callback) override;
 
  private:
@@ -70,6 +70,10 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
   views::Widget* GetWidget(const base::UnguessableToken& id);
 
   int32_t render_process_host_id_;
+
+  // Used to send events to the renderer.
+  mojo::AssociatedRemote<blink::mojom::CrosWindowManagementStartObserver>
+      observer_;
 };
 
 }  // namespace ash

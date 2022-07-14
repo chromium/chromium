@@ -29,23 +29,11 @@ CrosWindowManagement& CrosWindowManagement::From(
   return *supplement;
 }
 
-void CrosWindowManagement::BindWindowManagerStartObserver(
-    ExecutionContext* execution_context,
-    mojo::PendingReceiver<mojom::blink::CrosWindowManagementStartObserver>
-        receiver) {
-  // The InterfaceProvider pipe, which calls binders, is destroyed before the
-  // ExecutionContext, so `execution_context` should never be null.
-  DCHECK(execution_context);
-  auto& window_management = CrosWindowManagement::From(*execution_context);
-  window_management.BindWindowManagerStartObserverImpl(std::move(receiver));
-}
-
 CrosWindowManagement::CrosWindowManagement(ExecutionContext& execution_context)
     : Supplement(execution_context),
-      ExecutionContextClient(&execution_context),
-      cros_window_management_factory_(&execution_context),
-      cros_window_management_(&execution_context),
-      receiver_(this, &execution_context) {
+      ExecutionContextClient(&execution_context) {
+  // Set up a two way connection to the browser so we can make calls and receive
+  // events.
   auto factory_receiver =
       cros_window_management_factory_.BindNewPipeAndPassReceiver(
           execution_context.GetTaskRunner(TaskType::kMiscPlatformAPI));
@@ -54,13 +42,16 @@ CrosWindowManagement::CrosWindowManagement(ExecutionContext& execution_context)
 
   auto impl_receiver = cros_window_management_.BindNewEndpointAndPassReceiver(
       execution_context.GetTaskRunner(TaskType::kMiscPlatformAPI));
-  cros_window_management_factory_->Create(std::move(impl_receiver));
+  auto observer_remote = observer_receiver_.BindNewEndpointAndPassRemote(
+      execution_context.GetTaskRunner(TaskType::kMiscPlatformAPI));
+  cros_window_management_factory_->Create(std::move(impl_receiver),
+                                          std::move(observer_remote));
 }
 
 void CrosWindowManagement::Trace(Visitor* visitor) const {
   visitor->Trace(cros_window_management_factory_);
   visitor->Trace(cros_window_management_);
-  visitor->Trace(receiver_);
+  visitor->Trace(observer_receiver_);
   visitor->Trace(windows_);
   visitor->Trace(screens_);
   Supplement<ExecutionContext>::Trace(visitor);
@@ -147,13 +138,6 @@ void CrosWindowManagement::ScreensCallback(
 void CrosWindowManagement::DispatchStartEvent() {
   DLOG(INFO) << "Dispatching event";
   DispatchEvent(*Event::Create(event_type_names::kStart));
-}
-
-void CrosWindowManagement::BindWindowManagerStartObserverImpl(
-    mojo::PendingReceiver<mojom::blink::CrosWindowManagementStartObserver>
-        receiver) {
-  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
-                                          TaskType::kInternalDefault));
 }
 
 }  // namespace blink

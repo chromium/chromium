@@ -28,8 +28,19 @@
 
 namespace ash {
 
-WindowManagementImpl::WindowManagementImpl(int32_t render_process_host_id)
-    : render_process_host_id_(render_process_host_id) {}
+WindowManagementImpl::WindowManagementImpl(
+    int32_t render_process_host_id,
+    mojo::PendingAssociatedRemote<
+        blink::mojom::CrosWindowManagementStartObserver>
+        pending_associated_remote)
+    : render_process_host_id_(render_process_host_id),
+      observer_(std::move(pending_associated_remote)) {}
+
+WindowManagementImpl::~WindowManagementImpl() = default;
+
+void WindowManagementImpl::DispatchStartEvent() {
+  observer_->DispatchStartEvent();
+}
 
 void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
   std::vector<blink::mojom::CrosWindowInfoPtr> windows;

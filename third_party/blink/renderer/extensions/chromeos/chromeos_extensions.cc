@@ -75,13 +75,6 @@ void ChromeOSExtensions::InitServiceWorkerGlobalScope(
     ServiceWorkerGlobalScope& worker_global_scope) {
   if (!RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled())
     return;
-
-  if (RuntimeEnabledFeatures::BlinkExtensionChromeOSWindowManagementEnabled()) {
-    auto& interface_registry = worker_global_scope.GetInterfaceRegistry();
-    interface_registry.AddInterface(WTF::BindRepeating(
-        &CrosWindowManagement::BindWindowManagerStartObserver,
-        WrapWeakPersistent(&worker_global_scope)));
-  }
 }
 
 }  // namespace blink
