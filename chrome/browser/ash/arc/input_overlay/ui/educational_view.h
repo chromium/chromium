@@ -35,7 +35,7 @@ class EducationalView : public views::View {
   ~EducationalView() override;
 
  private:
-  void Init(views::View* parent);
+  void Init(const gfx::Size& parent_size);
   void OnAcceptedPressed();
   // Shadow has to be added after the view is added to its parent to display the
   // shadow correctly.

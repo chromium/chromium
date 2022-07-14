@@ -226,7 +226,7 @@ void DisplayOverlayController::OnMenuEntryPressed() {
   SetDisplayMode(DisplayMode::kMenu);
 
   input_menu_view_ = parent_view->AddChildView(
-      InputMenuView::BuildMenuView(this, menu_entry_));
+      InputMenuView::BuildMenuView(this, menu_entry_, parent_view->size()));
   // Hide the menu entry when the menu is displayed.
   menu_entry_->SetVisible(false);
 }

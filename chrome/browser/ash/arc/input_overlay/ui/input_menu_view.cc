@@ -44,9 +44,15 @@ namespace arc {
 namespace input_overlay {
 
 namespace {
+// If the parent's width smaller than |kParentWidthThreshold|, it uses smaller
+// specs.
+constexpr int kParentWidthThreshold = 376;
 // Whole Menu measurements.
 constexpr int kMenuWidth = 328;
+constexpr int kMenuWidthSmall = 280;
 constexpr int kMenuHeight = 244;
+constexpr int kMenuMarginRight = 32;
+constexpr int kMenuMarginRightSmall = 24;
 
 // Individual entries and header.
 constexpr int kHeaderMinHeight = 64;
@@ -64,6 +70,7 @@ constexpr int kCloseInset = 8;
 // String styles/sizes.
 constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kTitleFontSize = 20;
+constexpr int kTitleFontSizeSmall = 16;
 constexpr int kBodyFontSize = 13;
 
 // About Alpha style.
@@ -72,6 +79,7 @@ constexpr int kAlphaCornerRadius = 4;
 constexpr int kAlphaHeight = 16;
 constexpr int kAlphaSidePadding = 4;
 constexpr int kAlphaLeftMargin = 8;
+constexpr int kAlphaLeftMarginSmall = 4;
 
 constexpr char kFeedbackUrl[] =
     "https://docs.google.com/forms/d/e/"
@@ -91,6 +99,25 @@ GURL GetAssembleUrl(DisplayOverlayController& controller) {
   url = net::AppendQueryParameter(url, kOsVersion,
                                   base::SysInfo::OperatingSystemVersion());
   return url;
+}
+
+int GetMenuWidth(int parent_width) {
+  return parent_width < kParentWidthThreshold ? kMenuWidthSmall : kMenuWidth;
+}
+
+int GetMenuMarginRight(int parent_width) {
+  return parent_width < kParentWidthThreshold ? kMenuMarginRightSmall
+                                              : kMenuMarginRight;
+}
+
+int GetTitleFontSize(int parent_width) {
+  return parent_width < kParentWidthThreshold ? kTitleFontSizeSmall
+                                              : kTitleFontSize;
+}
+
+int GetAlphaLeftMargin(int parent_width) {
+  return parent_width < kParentWidthThreshold ? kAlphaLeftMarginSmall
+                                              : kAlphaLeftMargin;
 }
 
 }  // namespace
@@ -135,14 +162,15 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
 // static
 std::unique_ptr<InputMenuView> InputMenuView::BuildMenuView(
     DisplayOverlayController* display_overlay_controller,
-    views::View* entry_view) {
+    views::View* entry_view,
+    const gfx::Size& parent_size) {
   // Ensure there is only one menu at any time.
   if (display_overlay_controller->HasMenuView())
     display_overlay_controller->RemoveInputMenuView();
 
   auto menu_view_ptr =
       std::make_unique<InputMenuView>(display_overlay_controller, entry_view);
-  menu_view_ptr->Init();
+  menu_view_ptr->Init(parent_size);
 
   return menu_view_ptr;
 }
@@ -160,7 +188,7 @@ void InputMenuView::CloseMenu() {
     display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
 }
 
-void InputMenuView::Init() {
+void InputMenuView::Init(const gfx::Size& parent_size) {
   DCHECK(display_overlay_controller_);
   DCHECK(ash::AshColorProvider::Get());
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -171,7 +199,7 @@ void InputMenuView::Init() {
   SetBackground(views::CreateRoundedRectBackground(bg_color, kCornerRadius));
   SkColor color = color_provider->GetContentLayerColor(
       ash::AshColorProvider::ContentLayerType::kTextColorPrimary);
-
+  int menu_width = GetMenuWidth(parent_size.width());
   {
     // Title, main control for the feature and close button.
     auto header_view = std::make_unique<views::View>();
@@ -185,7 +213,8 @@ void InputMenuView::Init() {
             /*view_defining_max_width=*/nullptr, color,
             /*font_list=*/
             gfx::FontList({kGoogleSansFont}, gfx::Font::FontStyle::NORMAL,
-                          kTitleFontSize, gfx::Font::Weight::MEDIUM),
+                          GetTitleFontSize(parent_size.width()),
+                          gfx::Font::Weight::MEDIUM),
             /*line_height=*/kHeaderMinHeight));
 
     auto* alpha_label =
@@ -237,8 +266,9 @@ void InputMenuView::Init() {
     SetCustomToggleColor(game_control_toggle_);
     alpha_label->SetProperty(
         views::kMarginsKey,
-        CalculateInsets(header_view.get(), kAlphaLeftMargin, /*right=*/0,
-                        /*other_spacing=*/kCloseInset));
+        CalculateInsets(header_view.get(),
+                        GetAlphaLeftMargin(parent_size.width()), /*right=*/0,
+                        /*other_spacing=*/kCloseInset, menu_width));
 
     AddChildView(std::move(header_view));
     AddChildView(BuildSeparator());
@@ -267,9 +297,9 @@ void InputMenuView::Init() {
             ash::PillButton::Type::kIconless,
             /*icon=*/nullptr));
     edit_button_->SetEnabled(game_control_toggle_->GetIsOn());
-    key_mapping_label->SetBorder(views::CreateEmptyBorder(
-        CalculateInsets(customize_view.get(), /*left=*/kSideInset,
-                        /*right=*/kSideInset, /*other_spacing=*/0)));
+    key_mapping_label->SetBorder(views::CreateEmptyBorder(CalculateInsets(
+        customize_view.get(), /*left=*/kSideInset,
+        /*right=*/kSideInset, /*other_spacing=*/0, menu_width)));
     AddChildView(std::move(customize_view));
     AddChildView(BuildSeparator());
   }
@@ -298,9 +328,9 @@ void InputMenuView::Init() {
         game_control_toggle_->GetIsOn() &&
         display_overlay_controller_->GetInputMappingViewVisible());
     SetCustomToggleColor(show_mapping_toggle_);
-    mapping_label->SetBorder(views::CreateEmptyBorder(
-        CalculateInsets(hint_view.get(), /*left=*/kSideInset,
-                        /*right=*/kSideInset, /*other_spacing=*/0)));
+    mapping_label->SetBorder(views::CreateEmptyBorder(CalculateInsets(
+        hint_view.get(), /*left=*/kSideInset,
+        /*right=*/kSideInset, /*other_spacing=*/0, menu_width)));
     AddChildView(std::move(hint_view));
     AddChildView(BuildSeparator());
   }
@@ -319,9 +349,15 @@ void InputMenuView::Init() {
     AddChildView(std::move(feedback_button));
   }
 
-  SetSize(gfx::Size(kMenuWidth, kMenuHeight));
-  SetPosition(gfx::Point(entry_view_->x() - width() + entry_view_->width(),
-                         entry_view_->y()));
+  SetSize(gfx::Size(menu_width, kMenuHeight));
+  int x = std::max(0, parent_size.width() - width() -
+                          GetMenuMarginRight(parent_size.width()));
+  if (x < GetMenuMarginRight(parent_size.width())) {
+    // Set the menu in the middle if there is not enough margin on the left
+    // side.
+    x = std::max(0, (parent_size.width() - width()) / 2);
+  }
+  SetPosition(gfx::Point(x, entry_view_->y()));
 }
 
 std::unique_ptr<views::View> InputMenuView::BuildSeparator() {
@@ -377,13 +413,14 @@ void InputMenuView::OnButtonSendFeedbackPressed() {
 gfx::Insets InputMenuView::CalculateInsets(views::View* view,
                                            int left,
                                            int right,
-                                           int other_spacing) const {
+                                           int other_spacing,
+                                           int menu_width) const {
   int total_width = 0;
   for (auto* child : view->children())
     total_width += child->GetPreferredSize().width();
 
   int right_inset =
-      std::max(0, kMenuWidth - (total_width + left + right + other_spacing));
+      std::max(0, menu_width - (total_width + left + right + other_spacing));
   return gfx::Insets::TLBR(0, left, 0, right_inset);
 }
 

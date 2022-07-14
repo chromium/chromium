@@ -31,10 +31,9 @@ namespace input_overlay {
 
 namespace {
 // Full view size.
-constexpr int kDialogWidthLandscape = 416;
-constexpr int kDialogHeightLandscape = 380;
-constexpr int kDialogWidthPortrait = 320;
-constexpr int kDialogHeightPortrait = 305;
+constexpr int kDialogWidthMax = 416;
+constexpr int kDialogWidthMin = 100;
+constexpr int kDialogMarginMin = 24;
 
 // About title style.
 constexpr int kDialogShadowElevation = 3;
@@ -97,12 +96,11 @@ int GetBorderSides(bool portrait_mode) {
   return portrait_mode ? kBorderSidesPortrait : kBorderSidesLandscape;
 }
 
-int GetDialogWidth(bool portrait_mode) {
-  return portrait_mode ? kDialogWidthPortrait : kDialogWidthLandscape;
-}
+int GetDialogWidth(int parent_width) {
+  if (parent_width < kDialogWidthMax + 2 * kDialogMarginMin)
+    return std::max(kDialogWidthMin, parent_width - 2 * kDialogMarginMin);
 
-int GetDialogHeight(bool portrait_mode) {
-  return portrait_mode ? kDialogHeightPortrait : kDialogHeightLandscape;
+  return kDialogWidthMax;
 }
 
 int GetTitleFontSize(bool portrait_mode) {
@@ -117,7 +115,7 @@ EducationalView* EducationalView::Show(
     views::View* parent) {
   auto educational_view = std::make_unique<EducationalView>(
       display_overlay_controller, parent->width());
-  educational_view->Init(parent);
+  educational_view->Init(parent->size());
   auto* view_ptr = parent->AddChildView(std::move(educational_view));
   view_ptr->AddShadow();
 
@@ -128,13 +126,12 @@ EducationalView::EducationalView(
     DisplayOverlayController* display_overlay_controller,
     int parent_width)
     : display_overlay_controller_(display_overlay_controller) {
-  portrait_mode_ = parent_width < kDialogWidthLandscape;
+  portrait_mode_ = parent_width < kDialogWidthMax;
 }
 
 EducationalView::~EducationalView() {}
 
-void EducationalView::Init(views::View* parent) {
-  DCHECK(parent);
+void EducationalView::Init(const gfx::Size& parent_size) {
   DCHECK(display_overlay_controller_);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -144,6 +141,7 @@ void EducationalView::Init(views::View* parent) {
   SetBackground(views::CreateRoundedRectBackground(
       GetDialogBackgroundBaseColor(), kDialogCornerRadius));
 
+  const int parent_width = parent_size.width();
   {
     // UI's banner.
     const gfx::ImageSkia* skia_banner =
@@ -159,7 +157,8 @@ void EducationalView::Init(views::View* parent) {
       // TODO(djacobo): Confirm scale factor, for now 70% looks fine.
       resized_banner = gfx::ImageSkiaOperations::CreateResizedImage(
           *skia_banner, skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(kDialogWidthPortrait * 0.7, kBannerHeightPortrait * 0.7));
+          gfx::Size(GetDialogWidth(parent_width) * 0.7,
+                    kBannerHeightPortrait * 0.7));
     }
     auto banner =
         std::make_unique<views::ImageView>(ui::ImageModel::FromImageSkia(
@@ -237,7 +236,7 @@ void EducationalView::Init(views::View* parent) {
                                               GetBorderRow3(portrait_mode_),
                                               GetBorderSides(portrait_mode_)));
     description_label->SetMultiLine(true);
-    description_label->SetMaximumWidth(GetDialogWidth(portrait_mode_) -
+    description_label->SetMaximumWidth(GetDialogWidth(parent_width) -
                                        2 * GetBorderSides(portrait_mode_));
     description_label->SetSize(gfx::Size());
   }
@@ -266,7 +265,6 @@ void EducationalView::Init(views::View* parent) {
       gfx::Insets::TLBR(0, 0, GetBorderRow4(portrait_mode_), 0)));
   const auto ui_size = GetPreferredSize();
   SetSize(ui_size);
-  const auto parent_size = parent->size();
   SetPosition(gfx::Point((parent_size.width() - ui_size.width()) / 2,
                          (parent_size.height() - ui_size.height()) / 2));
 }
