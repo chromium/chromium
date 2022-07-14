@@ -11,12 +11,12 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace chromeos {

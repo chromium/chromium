@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/fake_hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_manager_client.h"
 
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const char* kDefaultEuiccPath = "/org/chromium/Hermes/Euicc/0";
@@ -74,10 +74,10 @@ void FakeHermesManagerClient::ParseCommandLineSwitch() {
   // Parse hermes stub commandline switch. Stubs are setup only if a value
   // of "on" is passed.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kHermesFake))
+  if (!command_line->HasSwitch(chromeos::switches::kHermesFake))
     return;
   std::string switch_value =
-      command_line->GetSwitchValueASCII(switches::kHermesFake);
+      command_line->GetSwitchValueASCII(chromeos::switches::kHermesFake);
   if (switch_value != "on")
     return;
 
@@ -100,4 +100,4 @@ void FakeHermesManagerClient::NotifyAvailableEuiccListChanged() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

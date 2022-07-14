@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_FAKE_HERMES_MANAGER_CLIENT_H_
-#define CHROMEOS_DBUS_HERMES_FAKE_HERMES_MANAGER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_MANAGER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_MANAGER_CLIENT_H_
 
 #include "base/component_export.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation for HermesManagerClient.
 class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesManagerClient
@@ -42,6 +42,6 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesManagerClient
   base::WeakPtrFactory<FakeHermesManagerClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HERMES_FAKE_HERMES_MANAGER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_MANAGER_CLIENT_H_

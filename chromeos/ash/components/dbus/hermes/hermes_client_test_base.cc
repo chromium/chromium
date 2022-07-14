@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/hermes_client_test_base.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -53,4 +53,4 @@ void HermesClientTestBase::InitMockBus() {
   bus_ = new dbus::MockBus(options);
 }
 
-}  // namespace chromeos
+}  // namespace ash

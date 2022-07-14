@@ -200,27 +200,27 @@ class EuiccStatusUploaderTest : public testing::Test {
   }
 
   void SetupEuicc(int euicc_id = 0) {
-    chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
+    ash::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
         dbus::ObjectPath(GetEuiccPath(euicc_id)), GetEid(euicc_id),
         /*is_active=*/true, euicc_id);
   }
 
   void SetUpDeviceProfiles(const EuiccTestData& data, bool add_to_onc = true) {
     // Create |data.euicc_count| fake EUICCs.
-    chromeos::HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
+    ash::HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
     for (int euicc_id = 0; euicc_id < data.euicc_count; euicc_id++) {
       SetupEuicc(euicc_id);
     }
 
     for (const auto& test_profile : data.profiles) {
-      chromeos::HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+      ash::HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
           dbus::ObjectPath(test_profile.profile_path),
           dbus::ObjectPath(GetEuiccPath(/*euicc_id=*/0)), test_profile.iccid,
           test_profile.guid, "service_provider", "activation_code",
           test_profile.service_path, test_profile.state,
           hermes::profile::ProfileClass::kOperational,
-          chromeos::HermesEuiccClient::TestInterface::
-              AddCarrierProfileBehavior::kAddProfileWithService);
+          ash::HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithService);
 
       if (test_profile.managed) {
         chromeos::NetworkHandler::Get()
@@ -254,7 +254,7 @@ class EuiccStatusUploaderTest : public testing::Test {
 
     // TODO(crbug.com/1269719): Make FakeHermesEuiccClient trigger OnEuiccReset
     // directly.
-    static_cast<chromeos::HermesEuiccClient::Observer*>(status_uploader)
+    static_cast<ash::HermesEuiccClient::Observer*>(status_uploader)
         ->OnEuiccReset(dbus::ObjectPath());
   }
 

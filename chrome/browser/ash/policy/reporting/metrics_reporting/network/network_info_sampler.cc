@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -74,9 +74,9 @@ void NetworkInfoSampler::MaybeCollect(OptionalMetricCallback callback) {
     // Report EIDs for cellular connections.
     if (type.Equals(::ash::NetworkTypePattern::Cellular())) {
       for (const auto& euicc_path :
-           ::chromeos::HermesManagerClient::Get()->GetAvailableEuiccs()) {
-        ::chromeos::HermesEuiccClient::Properties* properties =
-            ::chromeos::HermesEuiccClient::Get()->GetProperties(euicc_path);
+           ::ash::HermesManagerClient::Get()->GetAvailableEuiccs()) {
+        ::ash::HermesEuiccClient::Properties* properties =
+            ::ash::HermesEuiccClient::Get()->GetProperties(euicc_path);
         interface->add_eids(properties->eid().value());
       }
     }

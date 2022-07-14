@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 HermesResponseStatus HermesResponseStatusFromErrorName(
     const std::string& error_name) {
@@ -116,4 +116,4 @@ std::ostream& operator<<(std::ostream& stream, HermesResponseStatus status) {
   return stream << (static_cast<int>(status));
 }
 
-}  // namespace chromeos
+}  // namespace ash

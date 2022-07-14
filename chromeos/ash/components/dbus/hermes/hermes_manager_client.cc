@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/hermes/fake_hermes_manager_client.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -18,7 +18,7 @@
 #include "dbus/property.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -131,4 +131,4 @@ HermesManagerClient* HermesManagerClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

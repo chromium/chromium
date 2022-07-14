@@ -23,7 +23,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"

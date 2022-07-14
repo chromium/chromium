@@ -6,9 +6,3 @@ include_rules = [
   "+components/prefs",
   "+grit/ui_chromeos_resources.h",
 ]
-
-specific_include_rules = {
-  "status_area_widget_unittest.cc": [
-    "+chromeos/dbus/hermes",
-  ],
-}

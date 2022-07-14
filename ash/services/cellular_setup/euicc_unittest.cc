@@ -11,11 +11,11 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/fake_network_connection_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

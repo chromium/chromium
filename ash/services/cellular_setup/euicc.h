@@ -7,11 +7,11 @@
 
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "base/gtest_prod_util.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace dbus {

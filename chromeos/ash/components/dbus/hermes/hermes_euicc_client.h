@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_HERMES_EUICC_CLIENT_H_
-#define CHROMEOS_DBUS_HERMES_HERMES_EUICC_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_EUICC_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_EUICC_CLIENT_H_
 
 #include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "dbus/property.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // HermesEuiccClient is used to talk to the Hermes Euicc objects.
 class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
@@ -243,11 +243,11 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::HermesEuiccClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::HermesEuiccClient;
 }
 
-#endif  // CHROMEOS_DBUS_HERMES_HERMES_EUICC_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_EUICC_CLIENT_H_

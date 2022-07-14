@@ -12,10 +12,10 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,9 +61,9 @@ class NetworkInfoSamplerTest : public ::testing::Test {
 };
 
 TEST_F(NetworkInfoSamplerTest, AllTypes) {
-  ::chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
+  ::ash::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
       dbus::ObjectPath("path0"), kEid0, true, 1);
-  ::chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
+  ::ash::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
       dbus::ObjectPath("path1"), kEid1, true, 2);
 
   device_client_->AddDevice(kEthernetPath, shill::kTypeEthernet, "ethernet");

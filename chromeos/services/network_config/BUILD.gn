@@ -13,8 +13,8 @@ static_library("network_config") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/dbus/hermes",
     "//chromeos/components/sync_wifi:network_eligibility_checker",
-    "//chromeos/dbus/hermes",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
     "//chromeos/network",

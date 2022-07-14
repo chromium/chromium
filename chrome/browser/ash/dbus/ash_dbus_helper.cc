@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/federated/federated_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
@@ -74,7 +75,6 @@
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/gnubby/gnubby_client.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -155,7 +155,7 @@ void InitializeDBus() {
   InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<FuseBoxReverseClient>(bus);
   InitializeDBusClient<chromeos::GnubbyClient>(bus);
-  chromeos::hermes_clients::Initialize(bus);
+  hermes_clients::Initialize(bus);
 #if BUILDFLAG(ENABLE_HIBERNATE)
   InitializeDBusClient<HibermanClient>(bus);
 #endif
@@ -285,7 +285,7 @@ void ShutdownDBus() {
 #if BUILDFLAG(ENABLE_HIBERNATE)
   HibermanClient::Shutdown();
 #endif
-  chromeos::hermes_clients::Shutdown();
+  hermes_clients::Shutdown();
   chromeos::GnubbyClient::Shutdown();
   FuseBoxReverseClient::Shutdown();
   FederatedClient::Shutdown();

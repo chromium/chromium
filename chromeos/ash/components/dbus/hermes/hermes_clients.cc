@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/hermes_clients.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 
-#include "chromeos/dbus/hermes/fake_hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 
-namespace chromeos {
-namespace hermes_clients {
+namespace ash::hermes_clients {
 
 void Initialize(dbus::Bus* system_bus) {
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -37,5 +36,4 @@ void Shutdown() {
   HermesProfileClient::Shutdown();
 }
 
-}  // namespace hermes_clients
-}  // namespace chromeos
+}  // namespace ash::hermes_clients

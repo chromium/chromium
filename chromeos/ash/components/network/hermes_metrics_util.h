@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_HERMES_METRICS_UTIL_H_
 
 #include "base/component_export.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 
 namespace chromeos {
 namespace hermes_metrics {

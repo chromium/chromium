@@ -7,8 +7,8 @@
 #include "ash/services/cellular_setup/esim_test_base.h"
 #include "ash/services/cellular_setup/esim_test_utils.h"
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
 namespace ash::cellular_setup {

@@ -10,11 +10,11 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -47,8 +47,8 @@ em::RemoteCommand GenerateResetEuiccCommandProto(
 }
 
 void VerifyEuiccProfileCount(size_t expected_count) {
-  chromeos::HermesEuiccClient::Properties* euicc_properties =
-      chromeos::HermesEuiccClient::Get()->GetProperties(
+  ash::HermesEuiccClient::Properties* euicc_properties =
+      ash::HermesEuiccClient::Get()->GetProperties(
           dbus::ObjectPath(kTestEuiccPath));
   EXPECT_EQ(expected_count,
             euicc_properties->installed_carrier_profiles().value().size());
@@ -110,7 +110,7 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
     helper_->hermes_euicc_test()->AddFakeCarrierProfile(
         dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive,
         /*activation_code=*/"",
-        chromeos::HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+        ash::HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
             kAddProfileWithService);
   }
 

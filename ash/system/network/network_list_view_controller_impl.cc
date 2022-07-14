@@ -20,7 +20,7 @@
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -96,7 +96,7 @@ bool IsESimSupported() {
   // Check both the SIM slot infos and the number of EUICCs because the former
   // comes from Shill and the latter from Hermes, and so there may be instances
   // where one may be true while they other isn't.
-  if (chromeos::HermesManagerClient::Get()->GetAvailableEuiccs().empty())
+  if (HermesManagerClient::Get()->GetAvailableEuiccs().empty())
     return false;
 
   for (const auto& sim_info : *cellular_device->sim_infos) {

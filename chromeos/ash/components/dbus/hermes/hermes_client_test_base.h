@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_HERMES_CLIENT_TEST_BASE_H_
-#define CHROMEOS_DBUS_HERMES_HERMES_CLIENT_TEST_BASE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_CLIENT_TEST_BASE_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_CLIENT_TEST_BASE_H_
 
 #include "base/test/task_environment.h"
 #include "dbus/object_proxy.h"
@@ -13,7 +13,7 @@ namespace dbus {
 class MockBus;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // Base class for Hermes client unittests.
 class HermesClientTestBase : public testing::Test {
@@ -50,6 +50,6 @@ class HermesClientTestBase : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HERMES_HERMES_CLIENT_TEST_BASE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_CLIENT_TEST_BASE_H_

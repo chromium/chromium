@@ -12,6 +12,8 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -29,7 +31,6 @@ class NetworkProfileHandler;
 class NetworkStateHandler;
 class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
-enum class HermesResponseStatus;
 
 // Handles provisioning eSIM profiles via policy.
 //

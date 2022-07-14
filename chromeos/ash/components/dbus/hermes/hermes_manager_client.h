@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_HERMES_MANAGER_CLIENT_H_
-#define CHROMEOS_DBUS_HERMES_HERMES_MANAGER_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_MANAGER_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_MANAGER_CLIENT_H_
 
 #include <string>
 #include <vector>
@@ -18,7 +18,7 @@ class Bus;
 class ObjectPath;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // HermesManagerClient is used to talk to the main Hermes Manager dbus object.
 class COMPONENT_EXPORT(HERMES_CLIENT) HermesManagerClient {
@@ -81,11 +81,11 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesManagerClient {
   base::ObserverList<HermesManagerClient::Observer>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::HermesManagerClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::HermesManagerClient;
 }
 
-#endif  // CHROMEOS_DBUS_HERMES_HERMES_MANAGER_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_MANAGER_CLIENT_H_

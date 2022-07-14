@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/hermes_test_utils.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_test_utils.h"
 
-#include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 
-namespace chromeos {
-namespace hermes_test_utils {
+namespace ash::hermes_test_utils {
 
 void CopyHermesStatus(HermesResponseStatus* dest_status,
                       HermesResponseStatus status) {
   *dest_status = status;
 }
 
-}  // namespace hermes_test_utils
-}  // namespace chromeos
+}  // namespace ash::hermes_test_utils

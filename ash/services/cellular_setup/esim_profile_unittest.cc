@@ -10,9 +10,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/fake_network_connection_handler.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

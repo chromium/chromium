@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_HERMES_PROFILE_CLIENT_H_
-#define CHROMEOS_DBUS_HERMES_HERMES_PROFILE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_PROFILE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_PROFILE_CLIENT_H_
 
 #include <string>
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "dbus/property.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
@@ -19,7 +19,7 @@ class ObjectPath;
 class ObjectProxy;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // HermesProfileClient is used to talk to Hermes profile objects.
 class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
@@ -139,11 +139,11 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
   base::ObserverList<HermesProfileClient::Observer>::Unchecked observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::HermesProfileClient;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::HermesProfileClient;
 }
 
-#endif  // CHROMEOS_DBUS_HERMES_HERMES_PROFILE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_PROFILE_CLIENT_H_

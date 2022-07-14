@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/fake_hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -10,16 +10,16 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -572,4 +572,4 @@ void FakeHermesEuiccClient::QueueInstalledProfile(
   installed_profile_queue_map_[euicc_path] = std::move(installed_profile_queue);
 }
 
-}  // namespace chromeos
+}  // namespace ash

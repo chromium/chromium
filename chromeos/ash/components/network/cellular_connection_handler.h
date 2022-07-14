@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "dbus/object_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

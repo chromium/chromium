@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/fake_hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_profile_client.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -16,7 +16,7 @@
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const char* kCellularDevicePath = "/device/cellular1";
@@ -246,4 +246,4 @@ void FakeHermesProfileClient::NotifyPropertyChanged(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

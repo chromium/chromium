@@ -6,6 +6,9 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
@@ -13,9 +16,6 @@
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/policy_util.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_
-#define CHROMEOS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_
 
 #include <ostream>
 #include <string>
 #include "base/callback.h"
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // Enum values the represent response status of hermes client method calls.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -52,12 +52,11 @@ HermesResponseStatus COMPONENT_EXPORT(HERMES_CLIENT)
 std::ostream& COMPONENT_EXPORT(HERMES_CLIENT) operator<<(
     std::ostream& stream,
     HermesResponseStatus status);
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::HermesResponseStatus;
-using ::chromeos::HermesResponseStatusFromErrorName;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::HermesResponseStatus;
 }
 
-#endif  // CHROMEOS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_RESPONSE_STATUS_H_

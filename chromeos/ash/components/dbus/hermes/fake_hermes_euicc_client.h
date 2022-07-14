@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_FAKE_HERMES_EUICC_CLIENT_H_
-#define CHROMEOS_DBUS_HERMES_FAKE_HERMES_EUICC_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_EUICC_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_EUICC_CLIENT_H_
 
 #include <queue>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation for HermesEuiccClient. This class also interacts with
 // fake shill clients to setup fake cellular services corresponding to eSIM
@@ -157,6 +157,6 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   base::WeakPtrFactory<FakeHermesEuiccClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HERMES_FAKE_HERMES_EUICC_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_EUICC_CLIENT_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_HERMES_TEST_UTILS_H_
-#define CHROMEOS_DBUS_HERMES_HERMES_TEST_UTILS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_TEST_UTILS_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_TEST_UTILS_H_
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 
-namespace chromeos {
+namespace ash {
 
 enum class HermesResponseStatus;
 
@@ -28,6 +28,6 @@ void CopyHermesStatus(HermesResponseStatus* dest_status,
                       HermesResponseStatus status);
 
 }  // namespace hermes_test_utils
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HERMES_HERMES_TEST_UTILS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_HERMES_TEST_UTILS_H_

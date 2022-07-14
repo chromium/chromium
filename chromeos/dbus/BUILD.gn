@@ -80,7 +80,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/easy_unlock:unit_tests",
     "//chromeos/dbus/fwupd:test_support",
     "//chromeos/dbus/gnubby:unit_tests",
-    "//chromeos/dbus/hermes:test_support",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
     "//chromeos/dbus/shill:test_support",

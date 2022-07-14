@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/hermes/constants.h"
-#include "chromeos/dbus/hermes/fake_hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/hermes/constants.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -19,7 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 HermesEuiccClient* g_instance = nullptr;
@@ -281,4 +281,4 @@ HermesEuiccClient* HermesEuiccClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

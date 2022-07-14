@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/hermes/constants.h"
-#include "chromeos/dbus/hermes/fake_hermes_profile_client.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/hermes/constants.h"
+#include "chromeos/ash/components/dbus/hermes/fake_hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/object_manager.h"
@@ -81,7 +81,7 @@ void Property<hermes::profile::ProfileClass>::AppendSetValueToWriter(
 
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 HermesProfileClient* g_instance = nullptr;
@@ -249,4 +249,4 @@ HermesProfileClient* HermesProfileClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

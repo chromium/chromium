@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -127,11 +127,11 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (bus) {
-    chromeos::hermes_clients::Initialize(bus);
+    ash::hermes_clients::Initialize(bus);
     ash::CrasAudioClient::Initialize(bus);
     chromeos::PowerManagerClient::Initialize(bus);
   } else {
-    chromeos::hermes_clients::InitializeFakes();
+    ash::hermes_clients::InitializeFakes();
     ash::CrasAudioClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
   }

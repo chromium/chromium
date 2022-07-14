@@ -7,8 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

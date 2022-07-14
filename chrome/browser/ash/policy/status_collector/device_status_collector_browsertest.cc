@@ -3924,7 +3924,7 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
       }
     }
     for (const auto& slotInfo : kFakeSimSlots) {
-      chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
+      ash::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
           dbus::ObjectPath(slotInfo.object_path), slotInfo.eid,
           slotInfo.is_active, slotInfo.physical_slot);
     }

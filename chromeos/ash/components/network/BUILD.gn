@@ -15,13 +15,13 @@ source_set("network") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
     "//chromeos/ash/components/network/proxy",
     "//chromeos/components/feature_usage",
     "//chromeos/components/onc",
     "//chromeos/dbus/common",
-    "//chromeos/dbus/hermes",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
@@ -158,8 +158,8 @@ source_set("network") {
 source_set("test_support") {
   testonly = true
   public_deps = [
+    "//chromeos/ash/components/dbus/hermes",
     "//chromeos/components/onc",
-    "//chromeos/dbus/hermes",
     "//chromeos/network",
     "//dbus",
   ]

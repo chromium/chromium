@@ -89,8 +89,8 @@ EuiccStatusUploader::EuiccStatusUploader(
     return;
   }
 
-  hermes_manager_observation_.Observe(chromeos::HermesManagerClient::Get());
-  hermes_euicc_observation_.Observe(chromeos::HermesEuiccClient::Get());
+  hermes_manager_observation_.Observe(ash::HermesManagerClient::Get());
+  hermes_euicc_observation_.Observe(ash::HermesEuiccClient::Get());
   cloud_policy_client_observation_.Observe(client_);
 
   auto* network_handler = chromeos::NetworkHandler::Get();
@@ -187,7 +187,7 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() const {
 
   status.SetIntKey(
       kLastUploadedEuiccStatusEuiccCountKey,
-      chromeos::HermesManagerClient::Get()->GetAvailableEuiccs().size());
+      ash::HermesManagerClient::Get()->GetAvailableEuiccs().size());
 
   base::Value esim_profiles(base::Value::Type::LIST);
 
@@ -240,7 +240,7 @@ void EuiccStatusUploader::MaybeUploadStatus() {
     return;
   }
 
-  if (chromeos::HermesManagerClient::Get()->GetAvailableEuiccs().empty()) {
+  if (ash::HermesManagerClient::Get()->GetAvailableEuiccs().empty()) {
     VLOG(1) << "No EUICC available on the device.";
     return;
   }

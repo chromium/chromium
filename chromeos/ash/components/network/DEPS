@@ -9,6 +9,7 @@ include_rules = [
   "+base",
   "+base/component_export.h",
   "+chromeos/test",
+  "+chromeos/ash/components/dbus",
   "+chromeos/dbus",
   "+chromeos/components/feature_usage",
   "+chromeos/components/onc",

@@ -68,6 +68,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -75,8 +77,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -2342,9 +2342,9 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
     if ((*device)->type() == shill::kTypeCellular) {
       std::vector<std::string> eids;
       for (const auto& euicc_path :
-           chromeos::HermesManagerClient::Get()->GetAvailableEuiccs()) {
-        chromeos::HermesEuiccClient::Properties* properties =
-            chromeos::HermesEuiccClient::Get()->GetProperties(euicc_path);
+           ash::HermesManagerClient::Get()->GetAvailableEuiccs()) {
+        ash::HermesEuiccClient::Properties* properties =
+            ash::HermesEuiccClient::Get()->GetProperties(euicc_path);
         interface->add_eids(properties->eid().value());
       }
     }

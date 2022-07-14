@@ -6,9 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/hermes/hermes_client_test_base.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_test_utils.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_test_utils.h"
 #include "dbus/bus.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -19,7 +19,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -426,4 +426,4 @@ TEST_F(HermesEuiccClientTest, TestResetMemory) {
   EXPECT_EQ(1u, on_euicc_reset_calls.size());
 }
 
-}  // namespace chromeos
+}  // namespace ash

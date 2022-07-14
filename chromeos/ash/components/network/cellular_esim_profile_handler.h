@@ -12,11 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "components/prefs/pref_service.h"
 
 class PrefService;

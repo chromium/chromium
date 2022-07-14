@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/network/network_policy_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "net/base/backoff_entry.h"
@@ -32,8 +32,8 @@ namespace policy {
 // profiles to DMServer.
 class EuiccStatusUploader
     : public chromeos::NetworkPolicyObserver,
-      public chromeos::HermesManagerClient::Observer,
-      public chromeos::HermesEuiccClient::Observer,
+      public ash::HermesManagerClient::Observer,
+      public ash::HermesEuiccClient::Observer,
       public chromeos::ManagedCellularPrefHandler::Observer,
       public CloudPolicyClient::Observer {
  public:
@@ -84,10 +84,10 @@ class EuiccStatusUploader
   void OnServiceAccountSet(CloudPolicyClient* client,
                            const std::string& account_email) override {}
 
-  // chromeos::HermesManagerClient:
+  // ash::HermesManagerClient:
   void OnAvailableEuiccListChanged() override;
 
-  // chromeos::HermesEuiccClient:
+  // ash::HermesEuiccClient:
   void OnEuiccReset(const dbus::ObjectPath& euicc_path) override;
 
   // chromeos::ManagedCellularPrefHandler:
@@ -116,11 +116,11 @@ class EuiccStatusUploader
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   net::BackoffEntry retry_entry_;
 
-  base::ScopedObservation<chromeos::HermesManagerClient,
-                          chromeos::HermesManagerClient::Observer>
+  base::ScopedObservation<ash::HermesManagerClient,
+                          ash::HermesManagerClient::Observer>
       hermes_manager_observation_{this};
-  base::ScopedObservation<chromeos::HermesEuiccClient,
-                          chromeos::HermesEuiccClient::Observer>
+  base::ScopedObservation<ash::HermesEuiccClient,
+                          ash::HermesEuiccClient::Observer>
       hermes_euicc_observation_{this};
   base::ScopedObservation<CloudPolicyClient, CloudPolicyClient::Observer>
       cloud_policy_client_observation_{this};

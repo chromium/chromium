@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_HERMES_FAKE_HERMES_PROFILE_CLIENT_H_
-#define CHROMEOS_DBUS_HERMES_FAKE_HERMES_PROFILE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_PROFILE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_PROFILE_CLIENT_H_
 
 #include <map>
 #include <memory>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation for HermesProfileClient.
 class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
@@ -72,6 +72,6 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
   PropertiesMap properties_map_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_HERMES_FAKE_HERMES_PROFILE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_HERMES_FAKE_HERMES_PROFILE_CLIENT_H_

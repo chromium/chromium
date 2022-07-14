@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
-#include "chromeos/dbus/hermes/hermes_client_test_base.h"
-#include "chromeos/dbus/hermes/hermes_response_status.h"
-#include "chromeos/dbus/hermes/hermes_test_utils.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_test_utils.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
@@ -14,7 +14,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -155,4 +155,4 @@ TEST_F(HermesProfileClientTest, TestRenameProfile) {
   EXPECT_EQ(status, HermesResponseStatus::kErrorInvalidParameter);
 }
 
-}  // namespace chromeos
+}  // namespace ash
