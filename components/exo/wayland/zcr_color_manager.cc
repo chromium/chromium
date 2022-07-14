@@ -23,6 +23,8 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/base/wayland/color_manager_util.h"
+#include "ui/display/display.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -41,8 +43,8 @@ namespace {
 
 constexpr auto kDefaultColorSpace = gfx::ColorSpace::CreateSRGB();
 
-// Wrapper around a |gfx::ColorSpace| that tracks additional data useful to the
-// protocol. These live as wayland resource data.
+// Wrapper around a |gfx::ColorSpace| that tracks additional data useful to
+// the protocol. These live as wayland resource data.
 class ColorManagerColorSpace {
  public:
   explicit ColorManagerColorSpace(gfx::ColorSpace color_space)
@@ -57,6 +59,7 @@ class ColorManagerColorSpace {
 
   virtual ~ColorManagerColorSpace() = default;
 
+  wl_resource* output_resource;
   const gfx::ColorSpace color_space;
   const zcr_color_manager_v1_eotf_names eotf;
   const SkColorSpacePrimaries primaries;
@@ -74,6 +77,8 @@ class ColorManagerColorSpace {
         static_cast<int>(FLOAT_TO_PARAM(primaries.fWX)),
         static_cast<int>(FLOAT_TO_PARAM(primaries.fWY)));
     zcr_color_space_v1_send_done(color_space_resource);
+    if (output_resource)
+      wl_output_send_done(output_resource);
   }
 
   virtual void SendCustomColorSpaceInfo(wl_resource* color_space_resource) {}
@@ -162,6 +167,49 @@ class ColorManagerSurface final : public SurfaceObserver {
   std::unique_ptr<ScopedSurface> scoped_surface_;
 };
 
+class ColorManagerObserver : public WaylandDisplayObserver {
+ public:
+  ColorManagerObserver(WaylandDisplayHandler* wayland_display_handler,
+                       wl_resource* color_management_output_resource,
+                       wl_resource* output_resource)
+      : wayland_display_handler_(wayland_display_handler),
+        color_management_output_resource_(color_management_output_resource),
+        output_resource_(output_resource) {}
+
+  ColorManagerObserver(const ColorManagerObserver&) = delete;
+  ColorManagerObserver& operator=(const ColorManagerObserver&) = delete;
+
+  ~ColorManagerObserver() = default;
+
+  // Overridden from WaylandDisplayObserver:
+  bool SendDisplayMetrics(const display::Display& display,
+                          uint32_t changed_metrics) override {
+    if (!(changed_metrics &
+          display::DisplayObserver::DISPLAY_METRIC_COLOR_SPACE)) {
+      return false;
+    }
+
+    zcr_color_management_output_v1_send_color_space_changed(
+        color_management_output_resource_);
+    return true;
+  }
+
+  gfx::ColorSpace GetColorSpace() const {
+    return gfx::ColorSpace::CreateSRGB();
+  }
+
+  WaylandDisplayHandler* wayland_display_handler() {
+    return wayland_display_handler_;
+  }
+
+  wl_resource* GetOutputResource() { return output_resource_; }
+
+ private:
+  WaylandDisplayHandler* wayland_display_handler_;
+  wl_resource* const color_management_output_resource_;
+  wl_resource* output_resource_;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // zcr_color_management_color_space_v1_interface:
 
@@ -186,26 +234,14 @@ void color_management_output_get_color_space(
     struct wl_client* client,
     struct wl_resource* color_management_output_resource,
     uint32_t id) {
-  auto* display_handler =
-      GetUserDataAs<WaylandDisplayHandler>(color_management_output_resource);
-  if (!display_handler)
-    return;
-
-  display::Display display;
-  bool exists = display::Screen::GetScreen()->GetDisplayWithDisplayId(
-      display_handler->id(), &display);
-  if (!exists) {
-    // WaylandDisplayHandler is created asynchronously, and the
-    // display can be deleted before created. This usually won't happen
-    // in real environment, but can happen in test environment.
-    return;
-  }
-  // TODO(mrfemi): replace with actual snapshot color space.
-  auto snapshot_color_space = gfx::ColorSpace::CreateSRGB();
+  auto* color_management_output_observer =
+      GetUserDataAs<ColorManagerObserver>(color_management_output_resource);
 
   // create new zcr color space for the current color space of the output
-  auto color_space =
-      std::make_unique<ColorManagerColorSpace>(snapshot_color_space);
+  auto color_space = std::make_unique<ColorManagerColorSpace>(
+      color_management_output_observer->GetColorSpace());
+  color_space->output_resource =
+      color_management_output_observer->GetOutputResource();
 
   wl_resource* color_space_resource =
       wl_resource_create(client, &zcr_color_space_v1_interface, 1, id);
@@ -217,10 +253,6 @@ void color_management_output_get_color_space(
 void color_management_output_destroy(
     struct wl_client* client,
     struct wl_resource* color_management_output_resource) {
-  auto* display_handler =
-      GetUserDataAs<WaylandDisplayHandler>(color_management_output_resource);
-  if (display_handler)
-    display_handler->UnsetColorManagementOutputResource();
   wl_resource_destroy(color_management_output_resource);
 }
 
@@ -436,15 +468,15 @@ void color_manager_get_color_management_output(
     struct wl_resource* output) {
   wl_resource* color_management_output_resource = wl_resource_create(
       client, &zcr_color_management_output_v1_interface, 1, id);
-
   auto* display_handler = GetUserDataAs<WaylandDisplayHandler>(output);
-  if (!display_handler)
-    return;
+  auto color_management_output_observer =
+      std::make_unique<ColorManagerObserver>(
+          display_handler, color_management_output_resource, output);
 
-  wl_resource_set_implementation(color_management_output_resource,
-                                 &color_management_output_v1_implementation,
-                                 display_handler, nullptr);
-  display_handler->OnGetColorManagementOutput(color_management_output_resource);
+  display_handler->AddObserver(color_management_output_observer.get());
+  SetImplementation(color_management_output_resource,
+                    &color_management_output_v1_implementation,
+                    std::move(color_management_output_observer));
 }
 
 void color_manager_get_color_management_surface(
