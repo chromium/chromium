@@ -78,6 +78,13 @@ void Metrics::CrashUploadAttempted(bool successful) {
   UMA_HISTOGRAM_BOOLEAN("Crashpad.CrashUpload.AttemptSuccessful", successful);
 }
 
+#if BUILDFLAG(IS_APPLE)
+// static
+void Metrics::CrashUploadErrorCode(int error_code) {
+  base::UmaHistogramSparse("Crashpad.CrashUpload.ErrorCode", error_code);
+}
+#endif
+
 // static
 void Metrics::CrashUploadSkipped(CrashSkippedReason reason) {
   UMA_HISTOGRAM_ENUMERATION(

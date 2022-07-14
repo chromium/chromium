@@ -15,8 +15,10 @@
 #include "util/ios/ios_intermediate_dump_writer.h"
 
 #include <fcntl.h>
+#include <mach/mach.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/check.h"
@@ -86,6 +88,73 @@ bool IOSIntermediateDumpWriter::Close() {
   return RawLoggingCloseFile(fd);
 }
 
+bool IOSIntermediateDumpWriter::AddPropertyCString(IntermediateDumpKey key,
+                                                   size_t max_length,
+                                                   const char* value) {
+  constexpr size_t kMaxStringBytes = 1024;
+  if (max_length > kMaxStringBytes) {
+    CRASHPAD_RAW_LOG("AddPropertyCString max_length too large");
+    return false;
+  }
+
+  char buffer[kMaxStringBytes];
+  size_t string_length;
+  if (ReadCStringInternal(value, buffer, max_length, &string_length)) {
+    return Property(key, buffer, string_length);
+  }
+  return false;
+}
+
+bool IOSIntermediateDumpWriter::ReadCStringInternal(const char* value,
+                                                    char* buffer,
+                                                    size_t max_length,
+                                                    size_t* string_length) {
+  size_t length = 0;
+  while (length < max_length) {
+    vm_address_t data_address = reinterpret_cast<vm_address_t>(value + length);
+    // Calculate bytes to read past `data_address`, either the number of bytes
+    // to the end of the page, or the remaining bytes in `buffer`, whichever is
+    // smaller.
+    size_t data_to_end_of_page =
+        getpagesize() - (data_address - trunc_page(data_address));
+    size_t remaining_bytes_in_buffer = max_length - length;
+    size_t bytes_to_read =
+        std::min(data_to_end_of_page, remaining_bytes_in_buffer);
+
+    char* buffer_start = buffer + length;
+    size_t bytes_read = 0;
+    kern_return_t kr =
+        vm_read_overwrite(mach_task_self(),
+                          data_address,
+                          bytes_to_read,
+                          reinterpret_cast<vm_address_t>(buffer_start),
+                          &bytes_read);
+    if (kr != KERN_SUCCESS || bytes_read <= 0) {
+      CRASHPAD_RAW_LOG("ReadCStringInternal vm_read_overwrite failed");
+      return false;
+    }
+
+    char* nul = static_cast<char*>(memchr(buffer_start, '\0', bytes_read));
+    if (nul != nullptr) {
+      length += nul - buffer_start;
+      *string_length = length;
+      return true;
+    }
+    length += bytes_read;
+  }
+  CRASHPAD_RAW_LOG("unterminated string");
+  return false;
+}
+
+bool IOSIntermediateDumpWriter::AddPropertyInternal(IntermediateDumpKey key,
+                                                    const char* value,
+                                                    size_t value_length) {
+  ScopedVMRead<char> vmread;
+  if (!vmread.Read(value, value_length))
+    return false;
+  return Property(key, vmread.get(), value_length);
+}
+
 bool IOSIntermediateDumpWriter::ArrayMapStart() {
   const CommandType command_type = CommandType::kMapStart;
   return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type));
@@ -123,17 +192,14 @@ bool IOSIntermediateDumpWriter::RootMapEnd() {
   return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type));
 }
 
-bool IOSIntermediateDumpWriter::AddPropertyInternal(IntermediateDumpKey key,
-                                                    const char* value,
-                                                    size_t value_length) {
-  ScopedVMRead<char> vmread;
-  if (!vmread.Read(value, value_length))
-    return false;
+bool IOSIntermediateDumpWriter::Property(IntermediateDumpKey key,
+                                         const void* value,
+                                         size_t value_length) {
   const CommandType command_type = CommandType::kProperty;
   return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type)) &&
          RawLoggingWriteFile(fd_, &key, sizeof(key)) &&
          RawLoggingWriteFile(fd_, &value_length, sizeof(size_t)) &&
-         RawLoggingWriteFile(fd_, vmread.get(), value_length);
+         RawLoggingWriteFile(fd_, value, value_length);
 }
 
 }  // namespace internal

@@ -24,6 +24,10 @@
 #include "util/file/file_io.h"
 #include "util/file/filesystem.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "util/mac/xattr.h"
+#endif
+
 namespace crashpad {
 namespace test {
 namespace {
@@ -510,6 +514,46 @@ TEST_F(CrashReportDatabaseTest, DuelingUploads) {
   EXPECT_EQ(db()->RecordUploadComplete(std::move(upload_report), std::string()),
             CrashReportDatabase::kNoError);
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(CrashReportDatabaseTest, InterruptedIOSUploads) {
+  CrashReportDatabase::Report report;
+  CreateCrashReport(&report);
+
+  std::unique_ptr<const CrashReportDatabase::UploadReport> upload_report;
+  EXPECT_EQ(db()->GetReportForUploading(report.uuid, &upload_report),
+            CrashReportDatabase::kNoError);
+
+  // Set upload_start_time to 10 minutes ago.
+  time_t ten_minutes_ago = time(nullptr) - 10 * 60;
+  ASSERT_TRUE(
+      WriteXattrTimeT(report.file_path,
+                      "org.chromium.crashpad.database.upload_start_time",
+                      ten_minutes_ago));
+
+  std::vector<CrashReportDatabase::Report> reports;
+  EXPECT_EQ(db()->GetPendingReports(&reports), CrashReportDatabase::kNoError);
+  ASSERT_EQ(reports.size(), 1u);
+  reports.clear();
+  EXPECT_EQ(db()->GetCompletedReports(&reports), CrashReportDatabase::kNoError);
+  EXPECT_TRUE(reports.empty());
+
+  // Getting a stale report will automatically skip it.
+  std::unique_ptr<const CrashReportDatabase::UploadReport> upload_report_2;
+  EXPECT_EQ(db()->GetReportForUploading(report.uuid, &upload_report_2),
+            CrashReportDatabase::kReportNotFound);
+  EXPECT_FALSE(upload_report_2);
+
+  // Confirm report was moved from pending to completed.
+  EXPECT_EQ(db()->GetPendingReports(&reports), CrashReportDatabase::kNoError);
+  EXPECT_TRUE(reports.empty());
+  EXPECT_EQ(db()->GetCompletedReports(&reports), CrashReportDatabase::kNoError);
+  ASSERT_EQ(reports.size(), 1u);
+
+  EXPECT_EQ(db()->RecordUploadComplete(std::move(upload_report), std::string()),
+            CrashReportDatabase::kReportNotFound);
+}
+#endif
 
 TEST_F(CrashReportDatabaseTest, UploadAlreadyUploaded) {
   CrashReportDatabase::Report report;

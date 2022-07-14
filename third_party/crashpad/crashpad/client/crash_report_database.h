@@ -328,13 +328,21 @@ class CrashReportDatabase {
   virtual OperationStatus GetCompletedReports(std::vector<Report>* reports) = 0;
 
   //! \brief Obtains and locks a report object for uploading to a collection
-  //!     server.
+  //!     server. On iOS the file lock is released and mutual-exclusion is kept
+  //!     via a file attribute.
   //!
   //! Callers should upload the crash report using the FileReader provided.
   //! Callers should then call RecordUploadComplete() to record a successful
   //! upload. If RecordUploadComplete() is not called, the upload attempt will
   //! be recorded as unsuccessful and the report lock released when \a report is
   //! destroyed.
+  //!
+  //! On iOS, holding a lock during a slow upload can lead to watchdog kills if
+  //! the app is suspended mid-upload. Instead, if the client can obtain the
+  //! lock, the database sets a lock-time file attribute and releases the lock.
+  //! The attribute is cleared when the upload is completed. The lock-time
+  //! attribute can be used to prevent file access from other processes, or to
+  //! discard reports that likely were terminated mid-upload.
   //!
   //! \param[in] uuid The unique identifier for the crash report record.
   //! \param[out] report A crash report record for the report to be uploaded.

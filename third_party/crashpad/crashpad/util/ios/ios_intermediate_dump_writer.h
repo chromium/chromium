@@ -175,9 +175,27 @@ class IOSIntermediateDumpWriter final {
         key, reinterpret_cast<const char*>(value), value_length);
   }
 
+  //! \return Returns `true` if able to vm_read a string of \a value  and write
+  //!     a kProperty command with the \a key \a value up to a NUL byte.
+  //!     The string cannot be longer than \a max_length with a maximum string
+  //!     length of 1024.
+  bool AddPropertyCString(IntermediateDumpKey key,
+                          size_t max_length,
+                          const char* value);
+
  private:
-  //! \return Returns `true` if able to write a kProperty command  with the
-  //!     \a key \a value \a count tuple.
+  //! \return Returns `true` if able to vm_read_overwrite \a value into
+  //!     \a buffer while only reading one page at a time up to a NUL byte.
+  //!     Sets the final length of \a buffer to \a string_length.
+  //!     Returns `false` if unable to vm_read \a value or when no NUL byte can
+  //!     be found within /a max_length (unterminated).
+  bool ReadCStringInternal(const char* value,
+                           char* buffer,
+                           size_t max_length,
+                           size_t* string_length);
+
+  //! \return Returns `true` if able to vm_read \a value \a count and write a
+  //!     kProperty command  with the \a key \a value \a count tuple.
   bool AddPropertyInternal(IntermediateDumpKey key,
                            const char* value,
                            size_t value_length);
@@ -204,6 +222,12 @@ class IOSIntermediateDumpWriter final {
 
   //! \return Returns `true` if able to write a kRootMapEnd command.
   bool RootMapEnd();
+
+  //! \return Returns `true` if able to write a kProperty command with the
+  //!     \a key \a value \a value_length tuple.
+  bool Property(IntermediateDumpKey key,
+                const void* value,
+                size_t value_length);
 
   int fd_;
 };

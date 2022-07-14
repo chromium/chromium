@@ -118,12 +118,26 @@ void WriteProperty(IOSIntermediateDumpWriter* writer,
 //! \param[in] writer The dump writer
 //! \param[in] key The key to write.
 //! \param[in] value Memory to be written.
-//! \param[in] count Length of \a data.
+//! \param[in] value_length Length of \a data.
 void WritePropertyBytes(IOSIntermediateDumpWriter* writer,
                         IntermediateDumpKey key,
                         const void* value,
                         size_t value_length) {
   if (!writer->AddPropertyBytes(key, value, value_length))
+    WriteError(key);
+}
+
+//! \brief Call AddPropertyCString with raw error log.
+//!
+//! \param[in] writer The dump writer
+//! \param[in] key The key to write.
+//! \param[in] max_length The maximum string length.
+//! \param[in] value Memory to be written.
+void WritePropertyCString(IOSIntermediateDumpWriter* writer,
+                          IntermediateDumpKey key,
+                          size_t max_length,
+                          const char* value) {
+  if (!writer->AddPropertyCString(key, max_length, value))
     WriteError(key);
 }
 
@@ -495,80 +509,6 @@ void WriteAppleCrashReporterAnnotations(
                        IntermediateDumpKey::kAnnotationsCrashInfoMessage2,
                        reinterpret_cast<const void*>(crash_info->message2),
                        message_len);
-  }
-}
-
-void WriteDyldErrorStringAnnotation(
-    IOSIntermediateDumpWriter* writer,
-    const uint64_t address,
-    const symtab_command* symtab_command_ptr,
-    const dysymtab_command* dysymtab_command_ptr,
-    const segment_command_64* text_seg_ptr,
-    const segment_command_64* linkedit_seg_ptr,
-    vm_size_t slide) {
-  if (text_seg_ptr == nullptr || linkedit_seg_ptr == nullptr ||
-      symtab_command_ptr == nullptr) {
-    return;
-  }
-
-  ScopedVMRead<symtab_command> symtab_command;
-  ScopedVMRead<dysymtab_command> dysymtab_command;
-  ScopedVMRead<segment_command_64> text_seg;
-  ScopedVMRead<segment_command_64> linkedit_seg;
-  if (!symtab_command.Read(symtab_command_ptr) ||
-      !text_seg.Read(text_seg_ptr) || !linkedit_seg.Read(linkedit_seg_ptr) ||
-      (dysymtab_command_ptr && !dysymtab_command.Read(dysymtab_command_ptr))) {
-    CRASHPAD_RAW_LOG("Unable to load dyld symbol table.");
-  }
-
-  uint64_t file_slide =
-      (linkedit_seg->vmaddr - text_seg->vmaddr) - linkedit_seg->fileoff;
-  uint64_t strings = address + (symtab_command->stroff + file_slide);
-  nlist_64* symbol_ptr = reinterpret_cast<nlist_64*>(
-      address + (symtab_command->symoff + file_slide));
-
-  // If a dysymtab is present, use it to filter the symtab for just the
-  // portion used for extdefsym. If no dysymtab is present, the entire symtab
-  // will need to be consulted.
-  uint32_t symbol_count = symtab_command->nsyms;
-  if (dysymtab_command_ptr) {
-    symbol_ptr += dysymtab_command->iextdefsym;
-    symbol_count = dysymtab_command->nextdefsym;
-  }
-
-  for (uint32_t i = 0; i < symbol_count; i++, symbol_ptr++) {
-    ScopedVMRead<nlist_64> symbol;
-    if (!symbol.Read(symbol_ptr)) {
-      CRASHPAD_RAW_LOG("Unable to load dyld symbol table symbol.");
-      return;
-    }
-
-    if (!symbol->n_value)
-      continue;
-
-    ScopedVMRead<const char> symbol_name;
-    if (!symbol_name.Read(strings + symbol->n_un.n_strx)) {
-      CRASHPAD_RAW_LOG("Unable to load dyld symbol name.");
-    }
-
-    if (strcmp(symbol_name.get(), "_error_string") == 0) {
-      ScopedVMRead<const char> symbol_value;
-      if (!symbol_value.Read(symbol->n_value + slide)) {
-        CRASHPAD_RAW_LOG("Unable to load dyld symbol value.");
-      }
-      // 1024 here is distinct from kMaxMessageSize above, because it refers to
-      // a precisely-sized buffer inside dyld.
-      const size_t value_len = strnlen(symbol_value.get(), 1024);
-      if (value_len) {
-        WriteProperty(writer,
-                      IntermediateDumpKey::kAnnotationsDyldErrorString,
-                      symbol_value.get(),
-                      value_len);
-      }
-      return;
-    }
-
-    continue;
   }
 }
 
@@ -980,10 +920,8 @@ void InProcessIntermediateDumpHandler::WriteModuleInfo(
     }
 
     if (image->imageFilePath) {
-      WriteProperty(writer,
-                    IntermediateDumpKey::kName,
-                    image->imageFilePath,
-                    strlen(image->imageFilePath));
+      WritePropertyCString(
+          writer, IntermediateDumpKey::kName, PATH_MAX, image->imageFilePath);
     }
     uint64_t address = FromPointerCast<uint64_t>(image->imageLoadAddress);
     WriteProperty(writer, IntermediateDumpKey::kAddress, &address);
@@ -995,10 +933,8 @@ void InProcessIntermediateDumpHandler::WriteModuleInfo(
   {
     IOSIntermediateDumpWriter::ScopedArrayMap modules(writer);
     if (image_infos->dyldPath) {
-      WriteProperty(writer,
-                    IntermediateDumpKey::kName,
-                    image_infos->dyldPath,
-                    strlen(image_infos->dyldPath));
+      WritePropertyCString(
+          writer, IntermediateDumpKey::kName, PATH_MAX, image_infos->dyldPath);
     }
     uint64_t address =
         FromPointerCast<uint64_t>(image_infos->dyldImageLoadAddress);
@@ -1129,10 +1065,6 @@ void InProcessIntermediateDumpHandler::WriteModuleInfoAtAddress(
   // Make sure that the basic load command structure doesn’t overflow the
   // space allotted for load commands, as well as iterating through ncmds.
   vm_size_t slide = 0;
-  const symtab_command* symtab_command = nullptr;
-  const dysymtab_command* dysymtab_command = nullptr;
-  const segment_command_64* linkedit_seg = nullptr;
-  const segment_command_64* text_seg = nullptr;
   for (uint32_t cmd_index = 0, cumulative_cmd_size = 0;
        cmd_index <= header->ncmds && cumulative_cmd_size < header->sizeofcmds;
        ++cmd_index, cumulative_cmd_size += command->cmdsize) {
@@ -1145,20 +1077,11 @@ void InProcessIntermediateDumpHandler::WriteModuleInfoAtAddress(
       const segment_command_64* segment_ptr =
           reinterpret_cast<const segment_command_64*>(command_ptr);
       if (strcmp(segment->segname, SEG_TEXT) == 0) {
-        text_seg = segment_ptr;
         WriteProperty(writer, IntermediateDumpKey::kSize, &segment->vmsize);
         slide = address - segment->vmaddr;
       } else if (strcmp(segment->segname, SEG_DATA) == 0) {
         WriteDataSegmentAnnotations(writer, segment_ptr, slide);
-      } else if (strcmp(segment->segname, SEG_LINKEDIT) == 0) {
-        linkedit_seg = segment_ptr;
       }
-    } else if (command->cmd == LC_SYMTAB) {
-      symtab_command =
-          reinterpret_cast<const struct symtab_command*>(command_ptr);
-    } else if (command->cmd == LC_DYSYMTAB) {
-      dysymtab_command =
-          reinterpret_cast<const struct dysymtab_command*>(command_ptr);
     } else if (command->cmd == LC_ID_DYLIB) {
       ScopedVMRead<dylib_command> dylib;
       if (!dylib.Read(command_ptr)) {
@@ -1195,16 +1118,6 @@ void InProcessIntermediateDumpHandler::WriteModuleInfoAtAddress(
   }
 
   WriteProperty(writer, IntermediateDumpKey::kFileType, &header->filetype);
-
-  if (is_dyld && header->filetype == MH_DYLINKER) {
-    WriteDyldErrorStringAnnotation(writer,
-                                   address,
-                                   symtab_command,
-                                   dysymtab_command,
-                                   text_seg,
-                                   linkedit_seg,
-                                   slide);
-  }
 }
 
 void InProcessIntermediateDumpHandler::WriteDataSegmentAnnotations(
@@ -1286,12 +1199,10 @@ void InProcessIntermediateDumpHandler::WriteCrashpadAnnotationsList(
     }
 
     IOSIntermediateDumpWriter::ScopedArrayMap annotation_map(writer);
-    const size_t name_len = strnlen(reinterpret_cast<const char*>(node->name()),
-                                    Annotation::kNameMaxLength);
-    WritePropertyBytes(writer,
-                       IntermediateDumpKey::kAnnotationName,
-                       reinterpret_cast<const void*>(node->name()),
-                       name_len);
+    WritePropertyCString(writer,
+                         IntermediateDumpKey::kAnnotationName,
+                         Annotation::kNameMaxLength,
+                         reinterpret_cast<const char*>(node->name()));
     WritePropertyBytes(writer,
                        IntermediateDumpKey::kAnnotationValue,
                        reinterpret_cast<const void*>(node->value()),

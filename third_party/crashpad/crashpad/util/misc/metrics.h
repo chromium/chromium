@@ -63,6 +63,12 @@ class Metrics {
   //! \brief Reports on a crash upload attempt, and if it succeeded.
   static void CrashUploadAttempted(bool successful);
 
+#if BUILDFLAG(IS_APPLE) || DOXYGEN
+  //! \brief Records error codes from
+  //!     `+[NSURLConnection sendSynchronousRequest:returningResponse:error:]`.
+  static void CrashUploadErrorCode(int error_code);
+#endif
+
   //! \brief Values for CrashUploadSkipped().
   //!
   //! \note These are used as metrics enumeration values, so new values should

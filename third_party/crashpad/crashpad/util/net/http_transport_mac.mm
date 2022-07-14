@@ -25,6 +25,7 @@
 #include "package.h"
 #include "util/file/file_io.h"
 #include "util/misc/implicit_cast.h"
+#include "util/misc/metrics.h"
 #include "util/net/http_body.h"
 
 // An implementation of NSInputStream that reads from a
@@ -257,6 +258,7 @@ bool HTTPTransportMac::ExecuteSynchronously(std::string* response_body) {
 #pragma clang diagnostic pop
 
     if (error) {
+      Metrics::CrashUploadErrorCode(error.code);
       LOG(ERROR) << [[error localizedDescription] UTF8String] << " ("
                  << [[error domain] UTF8String] << " " << [error code] << ")";
       return false;

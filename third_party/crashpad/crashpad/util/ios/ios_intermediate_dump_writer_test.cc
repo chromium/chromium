@@ -15,8 +15,10 @@
 #include "util/ios/ios_intermediate_dump_writer.h"
 
 #include <fcntl.h>
+#include <mach/mach.h>
 
 #include "base/files/scoped_file.h"
+#include "base/mac/scoped_mach_vm.h"
 #include "base/posix/eintr_wrapper.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -99,6 +101,78 @@ TEST_F(IOSIntermediateDumpWriterTest, Property) {
   std::string contents;
   ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
   std::string result("\5\1\0\a\0\0\0\0\0\0\0version", 18);
+  ASSERT_EQ(contents, result);
+}
+
+TEST_F(IOSIntermediateDumpWriterTest, PropertyString) {
+  EXPECT_TRUE(writer_->Open(path()));
+  EXPECT_TRUE(writer_->AddPropertyCString(Key::kVersion, 64, "version"));
+
+  std::string contents;
+  ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
+  std::string result("\5\1\0\a\0\0\0\0\0\0\0version", 18);
+  ASSERT_EQ(contents, result);
+}
+
+TEST_F(IOSIntermediateDumpWriterTest, PropertyStringShort) {
+  EXPECT_TRUE(writer_->Open(path()));
+  EXPECT_FALSE(
+      writer_->AddPropertyCString(Key::kVersion, 7, "versionnnnnnnnnnnn"));
+}
+
+TEST_F(IOSIntermediateDumpWriterTest, PropertyStringLong) {
+  EXPECT_TRUE(writer_->Open(path()));
+
+  char* bad_string = nullptr;
+  EXPECT_FALSE(writer_->AddPropertyCString(Key::kVersion, 1025, bad_string));
+}
+
+TEST_F(IOSIntermediateDumpWriterTest, MissingPropertyString) {
+  char* region;
+  vm_size_t page_size = getpagesize();
+  vm_size_t region_size = page_size * 2;
+  ASSERT_EQ(vm_allocate(mach_task_self(),
+                        reinterpret_cast<vm_address_t*>(&region),
+                        region_size,
+                        VM_FLAGS_ANYWHERE),
+            0);
+  base::mac::ScopedMachVM vm_owner(reinterpret_cast<vm_address_t>(region),
+                                   region_size);
+
+  // Fill first page with 'A' and second with 'B'.
+  memset(region, 'A', page_size);
+  memset(region + page_size, 'B', page_size);
+
+  // Drop a NUL 10 bytes from the end of the first page and into the second
+  // page.
+  region[page_size - 10] = '\0';
+  region[page_size + 10] = '\0';
+
+  // Read a string that spans two pages.
+  EXPECT_TRUE(writer_->Open(path()));
+  EXPECT_TRUE(
+      writer_->AddPropertyCString(Key::kVersion, 64, region + page_size - 5));
+  std::string contents;
+  ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
+  std::string result("\x5\x1\0\xF\0\0\0\0\0\0\0AAAAABBBBBBBBBB", 26);
+  ASSERT_EQ(contents, result);
+
+  // Dealloc second page.
+  ASSERT_EQ(vm_deallocate(mach_task_self(),
+                          reinterpret_cast<vm_address_t>(region + page_size),
+                          page_size),
+            0);
+
+  // Reading the same string should fail when the next page is dealloc-ed.
+  EXPECT_FALSE(
+      writer_->AddPropertyCString(Key::kVersion, 64, region + page_size - 5));
+
+  // Ensure we can read the first string without loading the second page.
+  EXPECT_TRUE(writer_->Open(path()));
+  EXPECT_TRUE(
+      writer_->AddPropertyCString(Key::kVersion, 64, region + page_size - 20));
+  ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
+  result.assign("\x5\x1\0\n\0\0\0\0\0\0\0AAAAAAAAAA", 21);
   ASSERT_EQ(contents, result);
 }
 
