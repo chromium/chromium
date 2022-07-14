@@ -16,7 +16,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
-import './nearby_shared_icons.js';
+import './nearby_shared_icons.html.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
@@ -25,6 +25,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getContactManager, observeContactManager} from './nearby_contact_manager.js';
+import {getTemplate} from './nearby_contact_visibility.html.js';
 import {NearbySettings} from './nearby_share_settings_behavior.js';
 
 /** @enum {string} */
@@ -109,7 +110,7 @@ export class NearbyContactVisibilityElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

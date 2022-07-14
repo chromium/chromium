@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../shared/nearby_page_template.js';
-import '../../shared/nearby_shared_icons.js';
+import '../../shared/nearby_shared_icons.html.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -21,6 +21,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {NearbyContactVisibilityElement} from './nearby_contact_visibility.js';
 import {NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingCompleteMetrics, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingManageContactsMetrics, processOnePageOnboardingVisibilityPageShownMetrics} from './nearby_metrics_logger.js';
 import {NearbySettings} from './nearby_share_settings_behavior.js';
+import {getTemplate} from './nearby_visibility_page.html.js';
 
 /**
  * @constructor
@@ -38,7 +39,7 @@ export class NearbyVisibilityPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

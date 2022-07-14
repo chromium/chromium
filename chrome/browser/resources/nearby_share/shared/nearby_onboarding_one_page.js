@@ -20,6 +20,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
+import {getTemplate} from './nearby_onboarding_one_page.html.js';
 import {getNearbyShareSettings} from './nearby_share_settings.js';
 import {NearbySettings} from './nearby_share_settings_behavior.js';
 
@@ -51,7 +52,7 @@ export class NearbyOnboardingOnePageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
