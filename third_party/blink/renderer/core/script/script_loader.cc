@@ -863,7 +863,12 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
         //
         // <specdef label="fetch-an-inline-module-script-graph"
         // href="https://html.spec.whatwg.org/C/#fetch-an-inline-module-script-graph">
-        const KURL& source_url = element_document.Url();
+        KURL source_url = element_document.Url();
+        // Strip any fragment identifiers from the source URL reported to
+        // DevTools, so that breakpoints hit reliably for inline module
+        // scripts, see crbug.com/1338257 for more details.
+        if (source_url.HasFragmentIdentifier())
+          source_url.RemoveFragmentIdentifier();
         Modulator* modulator = Modulator::From(
             ToScriptStateForMainWorld(context_window->GetFrame()));
 
