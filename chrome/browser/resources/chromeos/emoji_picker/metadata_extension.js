@@ -74,7 +74,11 @@ export const CATEGORY_METADATA = [
     icon: 'emoji_picker:insert_emoticon',
     active: true,
   },
-  // TODO(b/213141035): insert symbols metadata back.
+  {
+    name: 'symbol',
+    icon: 'emoji_picker_v2:symbol_omega',
+    active: false,
+  },
   {
     name: 'emoticon',
     icon: 'emoji_picker_v2:emoticon_gssmiley',
@@ -138,6 +142,14 @@ const CATEGORY_TABS = {
     {name: 'Worrying', pagination: 4,},
     {name: 'Pointing',},
     {name: 'Sparkling',},
+  ],
+  'symbol': [
+    {name: 'Arrows', pagination: 1,},
+    {name: 'Bullet/Stars',},
+    {name: 'Currency',},
+    {name: 'Letterlike', pagination: 2,},
+    {name: 'Math',},
+    {name: 'Miscellaneous',},
   ],
 };
 

@@ -36,6 +36,7 @@ suite('emoji-search', () => {
           '/emoji_test_ordering_remaining.json',
         ],
         'emoticon': ['/emoticon_test_ordering.json'],
+        'symbol': ['/symbol_test_ordering.json'],
       },
     });
 

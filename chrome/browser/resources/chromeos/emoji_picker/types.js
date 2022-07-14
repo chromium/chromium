@@ -53,5 +53,6 @@ export let EmojiGroupElement;
  */
 export const CategoryEnum = {
   EMOJI: 'emoji',
-  EMOTICON: 'emoticon'
+  EMOTICON: 'emoticon',
+  SYMBOL: 'symbol',
 };
