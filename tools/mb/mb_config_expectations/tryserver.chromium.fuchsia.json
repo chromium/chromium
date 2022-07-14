@@ -2,7 +2,7 @@
   "fuchsia-arm64-cast": {
     "gn_args": {
       "dcheck_always_on": true,
-      "is_chromecast": true,
+      "enable_cast_receiver": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -62,7 +62,7 @@
   "fuchsia-x64-cast": {
     "gn_args": {
       "dcheck_always_on": true,
-      "is_chromecast": true,
+      "enable_cast_receiver": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,

@@ -3340,11 +3340,11 @@
     ],
 
     'release_bot_fuchsia_arm64_cast': [
-      'release_bot', 'fuchsia', 'arm64', 'cast', 'no_symbols',
+      'release_bot', 'fuchsia', 'arm64', 'cast_receiver', 'no_symbols',
     ],
 
     'release_bot_fuchsia_cast': [
-      'release_bot', 'fuchsia', 'cast', 'cast', 'no_symbols',
+      'release_bot', 'fuchsia', 'cast_receiver', 'no_symbols',
     ],
 
     'release_bot_fuchsia_cfv2_script': [
@@ -3484,11 +3484,11 @@
     ],
 
     'release_trybot_fuchsia_arm64_cast': [
-      'release_trybot', 'fuchsia', 'arm64', 'cast',
+      'release_trybot', 'fuchsia', 'arm64', 'cast_receiver',
     ],
 
     'release_trybot_fuchsia_cast': [
-      'release_trybot', 'fuchsia', 'cast',
+      'release_trybot', 'fuchsia', 'cast_receiver',
     ],
 
     'release_trybot_minimal_symbols_reclient': [
@@ -3735,6 +3735,10 @@
 
     'cast_audio': {
       'gn_args': 'is_cast_audio_only=true'
+    },
+
+    'cast_receiver': {
+      'gn_args': 'enable_cast_receiver=true'
     },
 
     'cfi': {

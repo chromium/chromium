@@ -676,8 +676,7 @@ group("gn_all") {
     deps += [ "//third_party/breakpad:symupload($host_toolchain)" ]
   }
 
-  # TODO(crbug.com/1330636): Remove the Fuchsia `is_chromecast` condition.
-  if (is_cast_android || is_castos || (is_fuchsia && is_chromecast)) {
+  if (is_cast_android || is_castos || (is_fuchsia && enable_cast_receiver)) {
     deps += [ "//chromecast:cast_test_lists" ]
   }
 
