@@ -252,13 +252,26 @@ void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
 }
 
 void IndexedDBContextImpl::GetUsageImpl(GetUsageCallback usage_callback) {
-  std::vector<storage::mojom::StorageUsageInfoPtr> result;
+  // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+  // StorageUsageInfo is converted.
+  std::map<url::Origin, storage::mojom::StorageUsageInfoPtr> usage_map;
   for (const auto& bucket_locator : GetAllBuckets()) {
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-    // StorageUsageInfo is converted.
-    result.emplace_back(storage::mojom::StorageUsageInfo::New(
-        bucket_locator.storage_key.origin(), GetBucketDiskUsage(bucket_locator),
-        GetBucketLastModified(bucket_locator)));
+    const auto& origin = bucket_locator.storage_key.origin();
+    if (usage_map.find(origin) != usage_map.end()) {
+      usage_map[origin]->total_size_bytes += GetBucketDiskUsage(bucket_locator);
+      const auto& last_modified = GetBucketLastModified(bucket_locator);
+      if (usage_map[origin]->last_modified < last_modified) {
+        usage_map[origin]->last_modified = last_modified;
+      }
+    } else {
+      usage_map[origin] = storage::mojom::StorageUsageInfo::New(
+          origin, GetBucketDiskUsage(bucket_locator),
+          GetBucketLastModified(bucket_locator));
+    }
+  }
+  std::vector<storage::mojom::StorageUsageInfoPtr> result;
+  for (const auto& it : usage_map) {
+    result.emplace_back(it.second->Clone());
   }
   std::move(usage_callback).Run(std::move(result));
 }
@@ -1091,6 +1104,11 @@ base::FilePath IndexedDBContextImpl::GetLevelDBPath(
   DCHECK(!is_incognito());
   return GetDataPath(bucket_locator)
       .Append(indexed_db::GetLevelDBFileName(bucket_locator));
+}
+
+base::FilePath IndexedDBContextImpl::GetLevelDBPathForTesting(
+    const storage::BucketLocator& bucket_locator) const {
+  return GetLevelDBPath(bucket_locator);
 }
 
 int64_t IndexedDBContextImpl::ReadUsageFromDisk(

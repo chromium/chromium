@@ -2628,6 +2628,7 @@ test("content_unittests") {
     "//components/power_scheduler",
     "//components/services/quarantine/public/mojom",
     "//components/services/storage",
+    "//components/services/storage:filesystem_proxy_factory",
     "//components/services/storage:test_support",
     "//components/services/storage/dom_storage:local_storage_proto",
     "//components/services/storage/public/cpp",

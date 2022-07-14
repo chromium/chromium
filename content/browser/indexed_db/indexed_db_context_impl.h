@@ -222,6 +222,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void RegisterBucketLocatorToSkipQuotaLookupForTesting(
       const storage::BucketLocator& bucket_locator);
 
+  // In unit tests where you want to verify usage, this is an easy way to get
+  // the path to populate data at.
+  base::FilePath GetLevelDBPathForTesting(
+      const storage::BucketLocator& bucket_locator) const;
+
  private:
   friend class base::RefCountedThreadSafe<IndexedDBContextImpl>;
 
