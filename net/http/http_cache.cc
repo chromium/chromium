@@ -350,6 +350,9 @@ void HttpCache::OnExternalCacheHit(
   if (!disk_cache_.get() || mode_ == DISABLE)
     return;
 
+  if (IsSplitCacheEnabled() && network_isolation_key.IsTransient())
+    return;
+
   HttpRequestInfo request_info;
   request_info.url = url;
   request_info.method = http_method;
@@ -453,6 +456,9 @@ Error HttpCache::CheckResourceExistence(
   if (!disk_cache_)
     return ERR_CACHE_MISS;
 
+  if (IsSplitCacheEnabled() && network_isolation_key.IsTransient())
+    return ERR_CACHE_MISS;
+
   HttpRequestInfo request_info;
   request_info.url = url;
   request_info.method = std::string(method);
@@ -511,7 +517,7 @@ std::string HttpCache::GenerateCacheKey(
     // double-keyed (and makes it an invalid url so that it doesn't get
     // confused with a single-keyed entry). Separate the origin and url
     // with invalid whitespace character |kDoubleKeySeparator|.
-    DCHECK(network_isolation_key.IsFullyPopulated());
+    DCHECK(!network_isolation_key.IsTransient());
     std::string subframe_document_resource_prefix =
         is_subframe_document_resource ? kSubframeDocumentResourcePrefix : "";
     isolation_key =
@@ -706,6 +712,9 @@ void HttpCache::DoomMainEntryForUrl(const GURL& url,
                                     const NetworkIsolationKey& isolation_key,
                                     bool is_subframe_document_resource) {
   if (!disk_cache_)
+    return;
+
+  if (IsSplitCacheEnabled() && isolation_key.IsTransient())
     return;
 
   HttpRequestInfo temp_info;

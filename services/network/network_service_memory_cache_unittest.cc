@@ -236,14 +236,14 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
 
   bool CanServeFromMemoryCache(
       const ResourceRequest& request,
-      net::NetworkIsolationKey& network_isolation_key) {
+      const net::NetworkIsolationKey& network_isolation_key) {
     return CanServeFromMemoryCache(request, network_isolation_key,
                                    CrossOriginEmbedderPolicy());
   }
 
   bool CanServeFromMemoryCache(
       const ResourceRequest& request,
-      net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkIsolationKey& network_isolation_key,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy) {
     return memory_cache()
         .CanServe(request, network_isolation_key, cross_origin_embedder_policy)
@@ -364,6 +364,19 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_Basic) {
   StoreResponseToMemoryCache(request);
 
   ASSERT_TRUE(CanServeFromMemoryCache(request));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_NetworkIsolationKeyIsTransient) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kSplitCacheByNetworkIsolationKey);
+
+  ResourceRequest request = CreateRequest("/cacheable");
+  StoreResponseToMemoryCache(request);
+
+  ASSERT_TRUE(CanServeFromMemoryCache(request));
+  ASSERT_FALSE(CanServeFromMemoryCache(
+      request, net::NetworkIsolationKey::CreateTransient()));
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_InvalidURL) {

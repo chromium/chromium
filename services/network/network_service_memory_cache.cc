@@ -289,8 +289,10 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   // TODO(https://crbug.com/1339708): Support automatically assigned network
   // isolation key for request from browsers. See comments in
   // CorsURLLoaderFactory::CorsURLLoaderFactory.
-  if (!network_isolation_key.IsFullyPopulated())
+  if (net::HttpCache::IsSplitCacheEnabled() &&
+      network_isolation_key.IsTransient()) {
     return absl::nullopt;
+  }
 
   const GURL& url = resource_request.url;
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
