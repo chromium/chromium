@@ -193,9 +193,6 @@ try_.compilator_builder(
     main_list_view = "try",
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 try_.builder(

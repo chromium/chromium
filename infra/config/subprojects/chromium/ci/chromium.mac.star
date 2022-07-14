@@ -79,9 +79,6 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -108,9 +105,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     os = os.MAC_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -139,9 +133,6 @@ ci.builder(
     ),
     cpu = cpu.ARM64,
     os = os.MAC_DEFAULT,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -167,9 +158,6 @@ ci.builder(
         short_name = "bld",
     ),
     os = os.MAC_DEFAULT,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.thin_tester(
