@@ -17,6 +17,9 @@ extern const size_t kMaxMetaTagAttributeLength;
 // Remove this after preinstalled apps are migrated.
 extern const char kWebAppsMigratedPreinstalledApps[];
 
+// Maximum allowed screenshot ratio between the max dimension and min dimension.
+extern const double kMaximumScreenshotRatio;
+
 }  // namespace webapps
 
 #endif  // COMPONENTS_WEBAPPS_COMMON_CONSTANTS_H_

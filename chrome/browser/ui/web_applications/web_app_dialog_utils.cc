@@ -49,10 +49,16 @@ void OnWebAppInstallShowInstallDialog(
     case WebAppInstallFlow::kInstallSite:
       web_app_info->user_display_mode = UserDisplayMode::kStandalone;
       if (base::FeatureList::IsEnabled(
-              features::kDesktopPWAsDetailedInstallDialog)) {
+              features::kDesktopPWAsDetailedInstallDialog) &&
+          webapps::AppBannerManager::FromWebContents(initiator_web_contents)
+              ->screenshots()
+              .size()) {
         chrome::ShowWebAppDetailedInstallDialog(
             initiator_web_contents, std::move(web_app_info),
-            std::move(web_app_acceptance_callback), iph_state);
+            std::move(web_app_acceptance_callback),
+            webapps::AppBannerManager::FromWebContents(initiator_web_contents)
+                ->screenshots(),
+            iph_state);
         return;
       } else {
         chrome::ShowPWAInstallBubble(

@@ -367,6 +367,7 @@ InstallableParams AppBannerManager::ParamsToPerformInstallableWebAppCheck() {
   params.valid_manifest = true;
   params.has_worker = !features::SkipBannerServiceWorkerCheck();
   params.wait_for_worker = !features::SkipBannerServiceWorkerCheck();
+  params.fetch_screenshots = true;
 
   return params;
 }
@@ -453,7 +454,7 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   primary_icon_url_ = data.primary_icon_url;
   primary_icon_ = *data.primary_icon;
   has_maskable_primary_icon_ = data.has_maskable_primary_icon;
-
+  screenshots_ = data.screenshots;
   // If we triggered the installability check on page load, then it's possible
   // we don't have enough engagement yet. If that's the case, return here but
   // don't call Terminate(). We wait for OnEngagementEvent to tell us that we
@@ -495,6 +496,7 @@ void AppBannerManager::ResetCurrentPageData() {
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
   install_path_tracker_.Reset();
+  screenshots_.clear();
 }
 
 void AppBannerManager::Terminate() {

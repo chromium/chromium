@@ -193,6 +193,7 @@ class AppBannerManager : public content::WebContentsObserver,
   const SkBitmap& primary_icon() const { return primary_icon_; }
   bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
   const GURL& validated_url() { return validated_url_; }
+  const std::vector<SkBitmap>& screenshots() { return screenshots_; }
 
   // Tracks the route taken to an install of a PWA (whether the bottom sheet
   // was shown or the infobar/install) and what triggered it (install source).
@@ -366,6 +367,9 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // The current banner pipeline state for this page load.
   State state_ = State::INACTIVE;
+
+  // The screenshots to show in the install UI.
+  std::vector<SkBitmap> screenshots_;
 
  private:
   friend class AppBannerManagerTest;

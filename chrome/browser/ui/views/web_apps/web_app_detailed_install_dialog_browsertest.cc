@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -24,14 +25,20 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
 
     AddGeneratedIcon(&install_info->icon_bitmaps.any, kIconSize, kIconColor);
 
+    const std::vector<SkBitmap> screenshots = {
+        CreateSquareIcon(kScreenshotSize, SK_ColorGREEN),
+        CreateSquareIcon(kScreenshotSize, SK_ColorBLACK),
+        CreateSquareIcon(kScreenshotSize, SK_ColorBLUE)};
+
     chrome::ShowWebAppDetailedInstallDialog(
         browser()->tab_strip_model()->GetWebContentsAt(0),
-        std::move(install_info), base::DoNothing(),
+        std::move(install_info), base::DoNothing(), screenshots,
         chrome::PwaInProductHelpState::kNotShown);
   }
 
  private:
   static constexpr int kIconSize = 40;
+  static constexpr int kScreenshotSize = 300;
   static constexpr SkColor kIconColor = SK_ColorGREEN;
 };
 

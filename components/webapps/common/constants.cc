@@ -11,4 +11,8 @@ const size_t kMaxMetaTagAttributeLength = 2000;
 const char kWebAppsMigratedPreinstalledApps[] =
     "web_apps.migrated_default_apps";
 
+// Maximum dimension can't be more than 2.3 times as long as the minimum
+// dimension for screenshots.
+const double kMaximumScreenshotRatio = 2.3;
+
 }  // namespace webapps

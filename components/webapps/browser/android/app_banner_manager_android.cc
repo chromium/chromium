@@ -183,7 +183,6 @@ void AppBannerManagerAndroid::ResetCurrentPageData() {
   AppBannerManager::ResetCurrentPageData();
   native_app_data_.Reset();
   native_app_package_ = "";
-  screenshots_.clear();
 }
 
 std::unique_ptr<AddToHomescreenParams>
@@ -350,13 +349,6 @@ void AppBannerManagerAndroid::OnInstallEvent(
       }
       break;
   }
-}
-
-void AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
-    const InstallableData& data) {
-  screenshots_ = data.screenshots;
-
-  AppBannerManager::OnDidPerformInstallableWebAppCheck(data);
 }
 
 void AppBannerManagerAndroid::CreateJavaBannerManager(

@@ -141,9 +141,6 @@ class AppBannerManagerAndroid : public AppBannerManager,
   void OnInstallEvent(AddToHomescreenInstaller::Event event,
                       const AddToHomescreenParams& a2hs_params);
 
-  void OnDidPerformInstallableWebAppCheck(
-      const InstallableData& result) override;
-
   base::WeakPtr<AppBannerManagerAndroid> GetAndroidWeakPtr();
 
   // Java-side object containing data about a native app.
@@ -194,9 +191,6 @@ class AppBannerManagerAndroid : public AppBannerManager,
 
   // Title to display in the banner for native app.
   std::u16string native_app_title_;
-
-  // The screenshots to show in the install UI.
-  std::vector<SkBitmap> screenshots_;
 
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 };

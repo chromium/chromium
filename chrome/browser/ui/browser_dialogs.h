@@ -245,6 +245,7 @@ void ShowWebAppDetailedInstallDialog(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     AppInstallationAcceptanceCallback callback,
+    const std::vector<SkBitmap>& screenshots,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
 // Sets whether |ShowPWAInstallBubble| should accept immediately without any

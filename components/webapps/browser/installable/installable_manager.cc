@@ -18,6 +18,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
+#include "components/webapps/common/constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -50,10 +51,6 @@ const int kMinimumScreenshotSizeInPx = 320;
 
 // Maximum dimension size in pixels for screenshots.
 const int kMaximumScreenshotSizeInPx = 3840;
-
-// Maximum dimension can't be more than 2.3 times as long as the minimum
-// dimension for screenshots.
-const double kMaximumScreenshotRatio = 2.3;
 
 // Maximum dimension size in pixels for icons.
 const int kMaximumIconSizeInPx = std::numeric_limits<int>::max();
