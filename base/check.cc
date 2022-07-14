@@ -37,9 +37,7 @@ void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
   // reporting and at most report once per thread.
   static std::atomic<bool> has_dumped = false;
   if (!has_dumped.load(std::memory_order_relaxed)) {
-    const std::string str = base::StringPrintf(
-        "%s:%d: %s", log_message->file(), log_message->line(),
-        log_message->GetMessageWithoutPrefix().c_str());
+    const std::string str = log_message->BuildCrashString();
     // Copy the LogMessage message to stack memory to make sure it can be
     // recovered in crash dumps.
     // TODO(pbos): Surface DCHECK_MESSAGE well in crash reporting to make this

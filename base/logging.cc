@@ -911,8 +911,22 @@ LogMessage::~LogMessage() {
   }
 }
 
-std::string LogMessage::GetMessageWithoutPrefix() const {
-  return str().substr(message_start_);
+std::string LogMessage::BuildCrashString() const {
+  return BuildCrashString(file(), line(), str().c_str() + message_start_);
+}
+
+std::string LogMessage::BuildCrashString(const char* file,
+                                         int line,
+                                         const char* message_without_prefix) {
+  // Only log last path component.
+  if (file) {
+    const char* slash = strrchr(file, '/');
+    if (slash) {
+      file = slash + 1;
+    }
+  }
+
+  return base::StringPrintf("%s:%d: %s", file, line, message_without_prefix);
 }
 
 // writes the common header info to the stream

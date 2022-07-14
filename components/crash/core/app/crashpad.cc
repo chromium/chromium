@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
+#include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/client/annotation_list.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
@@ -47,6 +48,26 @@
 namespace crash_reporter {
 
 namespace {
+
+void SetLogFatalCrashKey(const char* file,
+                         int line,
+                         const char* message_without_prefix) {
+  static crashpad::StringAnnotation<512> crash_key("LOG_FATAL");
+  crash_key.Set(logging::LogMessage::BuildCrashString(file, line,
+                                                      message_without_prefix));
+}
+
+void AbslAbortHook(const char* file,
+                   int line,
+                   const char* buf_start,
+                   const char* prefix_end,
+                   const char* buf_end) {
+  SetLogFatalCrashKey(file, line, prefix_end);
+
+  // IMMEDIATE_CRASH() generates better stack dumps than the abort() that absl::
+  // would trigger if this returns.
+  IMMEDIATE_CRASH();
+}
 
 base::FilePath* g_database_path;
 
@@ -72,19 +93,8 @@ bool LogMessageHandler(int severity,
   }
   base::AutoReset<bool> guard(&guarded, true);
 
-  // Only log last path component.  This matches logging.cc.
-  if (file) {
-    const char* slash = strrchr(file, '/');
-    if (slash) {
-      file = slash + 1;
-    }
-  }
-
   CHECK_LE(message_start, string.size());
-  std::string message = base::StringPrintf("%s:%d: %s", file, line,
-                                           string.c_str() + message_start);
-  static crashpad::StringAnnotation<512> crash_key("LOG_FATAL");
-  crash_key.Set(message);
+  SetLogFatalCrashKey(file, line, string.c_str() + message_start);
 
   // Rather than including the code to force the crash here, allow the caller to
   // do it.
@@ -190,6 +200,12 @@ bool InitializeCrashpadImpl(bool initial_client,
   // preferable to having all occurrences show up in DumpWithoutCrashing() at
   // the same file and line.
   base::debug::SetDumpWithoutCrashingFunction(DumpWithoutCrashing);
+
+  // TODO(pbos): Update this to not rely on a _internal namespace once there's
+  // a public API in absl::.
+  // Note: If this fails to compile because of an absl roll, this is fair to
+  // remove if you file a crbug.com/new and assign it to pbos@.
+  absl::raw_logging_internal::RegisterAbortHook(&AbslAbortHook);
 
 #if BUILDFLAG(IS_APPLE)
   // On Mac, we only want the browser to initialize the database, but not the

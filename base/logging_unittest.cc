@@ -905,12 +905,14 @@ TEST_F(LoggingTest, ScopedVmoduleSwitches) {
   }
 }
 
-TEST_F(LoggingTest, GetMessageWithoutPrefixStripsPrefix) {
-  EXPECT_EQ("", LogMessage("", 0, LOGGING_ERROR).GetMessageWithoutPrefix());
+TEST_F(LoggingTest, BuildCrashString) {
+  EXPECT_EQ("file.cc:42: ",
+            LogMessage("file.cc", 42, LOGGING_ERROR).BuildCrashString());
 
-  LogMessage msg("", 0, LOGGING_ERROR);
+  // BuildCrashString() should strip path/to/file prefix.
+  LogMessage msg("../foo/bar/file.cc", 42, LOGGING_ERROR);
   msg.stream() << "Hello";
-  EXPECT_EQ("Hello", msg.GetMessageWithoutPrefix());
+  EXPECT_EQ("file.cc:42: Hello", msg.BuildCrashString());
 }
 
 #if !BUILDFLAG(USE_RUNTIME_VLOG)
