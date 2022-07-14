@@ -116,10 +116,6 @@ extern const ui::ClassProperty<bool>* const kWindowManagerManagesOpacityKey;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<WindowStateType>* const kWindowStateTypeKey;
 
-// A property key to toggle Float window state change.
-COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-extern const ui::ClassProperty<bool>* const kWindowToggleFloatKey;
-
 // A property key whose value is shown in alt-tab/overview mode. If non-value
 // is set, the window's title is used.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

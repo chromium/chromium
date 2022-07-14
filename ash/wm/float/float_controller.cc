@@ -12,6 +12,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check_op.h"
 #include "chromeos/ui/base/display_util.h"
@@ -175,11 +176,6 @@ bool FloatController::CanFloatWindowInTablet(aura::Window* window) {
   return true;
 }
 
-bool FloatController::IsFloated(const aura::Window* window) const {
-  DCHECK(window);
-  return float_window_ == window;
-}
-
 void FloatController::MaybeTuckFloatedWindow() {
   if (scoped_window_tucker_)
     return;
@@ -278,12 +274,16 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
     MaybeUpdateWindowUIAndBoundsForTablet(float_window_);
 }
 
+void FloatController::ToggleFloat(aura::Window* window) {
+  WindowState* window_state = WindowState::Get(window);
+  const WMEvent toggle_event(window_state->IsFloated() ? WM_EVENT_RESTORE
+                                                       : WM_EVENT_FLOAT);
+  window_state->OnWMEvent(&toggle_event);
+}
+
 void FloatController::Float(aura::Window* window) {
   if (window == float_window_)
     return;
-
-  // TODO(shidi): temporary remove the DCHECK, will implement proper trigger
-  // on crbug/1339095.
 
   // Only one floating window is allowed, reset previously floated window.
   ResetFloatedWindow();
@@ -316,9 +316,11 @@ void FloatController::Unfloat(aura::Window* window) {
 }
 
 void FloatController::ResetFloatedWindow() {
-  // TODO(shidi): Remove `kWindowToggleFloatKey` and implement event trigger.
-  if (float_window_)
-    float_window_->SetProperty(chromeos::kWindowToggleFloatKey, false);
+  if (float_window_) {
+    DCHECK(WindowState::Get(float_window_)->IsFloated());
+    ToggleFloat(float_window_);
+    float_window_ = nullptr;
+  }
 }
 
 void FloatController::MaybeUpdateWindowUIAndBoundsForTablet(

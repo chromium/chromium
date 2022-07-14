@@ -72,6 +72,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -97,7 +98,6 @@
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "chromeos/ui/wm/features.h"
-#include "chromeos/ui/wm/window_util.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
@@ -826,7 +826,7 @@ void HandleToggleFloating() {
   DCHECK(window);
   // TODO(sammiequon|shidi): Add some UI like a bounce if a window cannot be
   // floated.
-  chromeos::ToggleFloating(window);
+  Shell::Get()->float_controller()->ToggleFloat(window);
   base::RecordAction(UserMetricsAction("Accel_Toggle_Floating"));
 }
 

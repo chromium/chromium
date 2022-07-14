@@ -9,6 +9,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -21,7 +22,8 @@ namespace ash {
 // |float_container|.
 class ASH_EXPORT FloatController : public aura::WindowObserver,
                                    public TabletModeObserver,
-                                   public display::DisplayObserver {
+                                   public display::DisplayObserver,
+                                   public chromeos::FloatControllerBase {
  public:
   // The possible corners that a floated window can be placed in tablet mode.
   // The default is `kBottomRight` and this is changed by dragging the window.
@@ -52,9 +54,6 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // floated.
   gfx::Rect GetPreferredFloatWindowTabletBounds(aura::Window* window);
 
-  // Return true if `window` is floated, otherwise false.
-  bool IsFloated(const aura::Window* window) const;
-
   // Tucks or untucks `float_window_`. Does nothing if the window is already
   // tucked or untucked.
   void MaybeTuckFloatedWindow();
@@ -82,6 +81,9 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+
+  // chromeos::FloatControllerBase:
+  void ToggleFloat(aura::Window* window) override;
 
  private:
   class ScopedWindowTucker;

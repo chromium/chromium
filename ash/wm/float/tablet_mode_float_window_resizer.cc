@@ -36,7 +36,7 @@ void TabletModeFloatWindowResizer::Drag(const gfx::PointF& location_in_parent,
 void TabletModeFloatWindowResizer::CompleteDrag() {
   aura::Window* float_window = GetTarget();
   auto* float_controller = Shell::Get()->float_controller();
-  DCHECK(float_controller->IsFloated(float_window));
+  DCHECK(WindowState::Get(float_window)->IsFloated());
   float_controller->OnDragCompleted(last_location_in_parent_);
 }
 

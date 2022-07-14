@@ -16,8 +16,6 @@ source_set("wm") {
     "desks/desks_helper.h",
     "features.cc",
     "features.h",
-    "window_util.cc",
-    "window_util.h",
   ]
 
   deps = [

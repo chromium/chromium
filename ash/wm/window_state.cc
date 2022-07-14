@@ -1146,21 +1146,6 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
-  // `kWindowToggleFloatKey` is only used to toggle float event, not an
-  // indicator of window's float state. this is created to allow access from
-  // both chromeos/ash and avoid recursive call to `kWindowStateTypeKey`.
-  // TODO(shidi): Create API to allow outside access and remove this property.
-  if (key == chromeos::kWindowToggleFloatKey) {
-    DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
-    if (IsFloated()) {
-      // If window is already floated, unfloat and restore.
-      Restore();
-    } else {
-      WMEvent event(WM_EVENT_FLOAT);
-      OnWMEvent(&event);
-      return;
-    }
-  }
   if (key == chromeos::kWindowStateTypeKey) {
     if (!ignore_property_change_) {
       // This change came from somewhere else. Revert it.

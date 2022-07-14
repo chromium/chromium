@@ -19,8 +19,8 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_header.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -532,9 +532,8 @@ void FrameCaptionButtonContainerView::FloatButtonPressed() {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   aura::Window* window = GetWidget()->GetNativeWindow();
   WindowStateType old_state = window->GetProperty(kWindowStateTypeKey);
-
-  // Float current window.
-  ToggleFloating(window);
+  // Toggle float current window.
+  FloatControllerBase::Get()->ToggleFloat(window);
   UpdateCaptionButtonState(true);
 
   // Update the tooltip if float/unfloat has been successful.

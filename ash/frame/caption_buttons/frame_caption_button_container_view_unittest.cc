@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/events/test/event_generator.h"
@@ -377,19 +378,19 @@ TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
   widget->GetContentsView()->AddChildView(&container);
   container.Layout();
   FrameCaptionButtonContainerView::TestApi testApi(&container);
-  FloatController* controller = Shell::Get()->float_controller();
   ClickFloatButton(&testApi);
   auto* window_state = WindowState::Get(widget->GetNativeWindow());
   // Check if window is floated.
   auto* window = widget->GetNativeWindow();
   EXPECT_TRUE(window_state->IsFloated());
-  EXPECT_TRUE(window->GetProperty(chromeos::kWindowToggleFloatKey));
-  EXPECT_TRUE(controller->IsFloated(window));
+  EXPECT_EQ(window->GetProperty(chromeos::kWindowStateTypeKey),
+            chromeos::WindowStateType::kFloated);
   ClickFloatButton(&testApi);
   // Check if window is unfloated.
   EXPECT_TRUE(window_state->IsNormalStateType());
-  EXPECT_FALSE(controller->IsFloated(window));
-  EXPECT_FALSE(window->GetProperty(chromeos::kWindowToggleFloatKey));
+  EXPECT_FALSE(window_state->IsFloated());
+  EXPECT_EQ(window->GetProperty(chromeos::kWindowStateTypeKey),
+            chromeos::WindowStateType::kNormal);
 }
 
 }  // namespace ash
