@@ -69,6 +69,7 @@ void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
   create_params.initial_show_state =
       static_cast<ui::WindowShowState>(show_state);
   create_params.initial_bounds = bounds;
+  create_params.restore_id = additional_state->restore_window_id;
   Browser* browser = Browser::Create(create_params);
   for (size_t i = 0; i < additional_state->urls.size(); i++) {
     chrome::AddTabAt(

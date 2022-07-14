@@ -2413,6 +2413,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SetWindowProperties) {
   loop2.Run();
 }
 
+// TODO(crbug.com/1333965): Add some tests to launch LaCros browser.
+
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientArcTest() {

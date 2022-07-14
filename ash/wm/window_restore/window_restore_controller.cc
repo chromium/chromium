@@ -543,15 +543,16 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
   // is quite common for some widgets to explicitly call Show() after
   // initialized.
   // TODO(sammiequon): Instead of disabling activation when creating the widget
-  // and enabling it here, use ShowInactive() instead of Show() when the widget
-  // is created.
+  // and enabling it here, use `ShowInactive()` instead of `Show()` when the
+  // widget is created.
   restore_property_clear_callbacks_.emplace(
       window, base::BindOnce(&WindowRestoreController::ClearLaunchedKey,
                              weak_ptr_factory_.GetWeakPtr(), window));
 
   // Also, for some ARC and chrome apps, the client can request activation after
   // showing. We cannot detect this, so we use a timeout to keep the window not
-  // activatable for a while longer.
+  // activatable for a while longer. Classic browser and lacros windows are
+  // expected to call `ShowInactive()` where the browser is created.
   const AppType app_type =
       static_cast<AppType>(window->GetProperty(aura::client::kAppType));
   // Prevent apply activation delay on ARC ghost window. It should be only apply

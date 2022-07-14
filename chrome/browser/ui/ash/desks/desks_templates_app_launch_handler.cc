@@ -295,10 +295,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
     if (app_id != app_constants::kLacrosAppId)
       continue;
 
-    for (const auto& window_iter : iter.second) {
-      const std::unique_ptr<app_restore::AppRestoreData>& app_restore_data =
-          window_iter.second;
-
+    for (const auto& [restore_window_id, app_restore_data] : iter.second) {
       if (!app_restore_data->active_tab_index.has_value() ||
           !app_restore_data->urls.has_value()) {
         LOG(WARNING) << "Corrupted data for the Lacros window found";
@@ -312,7 +309,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
               app_restore_data->window_state_type.value_or(
                   chromeos::WindowStateType::kDefault)),
           app_restore_data->active_tab_index.value(),
-          GetBrowserAppName(app_restore_data, app_id));
+          GetBrowserAppName(app_restore_data, app_id), restore_window_id);
     }
   }
   restore_data()->RemoveApp(app_constants::kLacrosAppId);

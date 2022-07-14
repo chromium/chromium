@@ -434,12 +434,14 @@ BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
     const gfx::Rect& bounds,
     ui::WindowShowState show_state,
     int32_t active_tab_index,
-    const std::string& app_name)
+    const std::string& app_name,
+    int32_t restore_window_id)
     : urls(urls),
       bounds(bounds),
       show_state(show_state),
       active_tab_index(active_tab_index),
-      app_name(app_name) {}
+      app_name(app_name),
+      restore_window_id(restore_window_id) {}
 
 BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
     RestoreFromDeskTemplate&&) = default;
@@ -731,7 +733,8 @@ void BrowserManager::CreateBrowserWithRestoredData(
     const gfx::Rect& bounds,
     const ui::WindowShowState show_state,
     int32_t active_tab_index,
-    const std::string& app_name) {
+    const std::string& app_name,
+    int32_t restore_window_id) {
   auto result = MaybeStart(browser_util::InitialBrowserAction(
       mojom::InitialBrowserAction::kDoNotOpenWindow));
   // The service will not be available, return immediately.
@@ -739,7 +742,7 @@ void BrowserManager::CreateBrowserWithRestoredData(
     return;
 
   windows_to_restore_.emplace_back(urls, bounds, show_state, active_tab_index,
-                                   app_name);
+                                   app_name, restore_window_id);
   if (result == MaybeStartResult::kRunning)
     RestoreWindowsFromTemplate();
 }
@@ -1645,7 +1648,8 @@ void BrowserManager::RestoreWindowsFromTemplate() {
   for (const auto& data : windows_to_restore_) {
     crosapi::mojom::DeskTemplateStatePtr additional_state =
         crosapi::mojom::DeskTemplateState::New(data.urls, data.active_tab_index,
-                                               data.app_name);
+                                               data.app_name,
+                                               data.restore_window_id);
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->desk_template_ash()

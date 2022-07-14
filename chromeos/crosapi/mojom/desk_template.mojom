@@ -20,6 +20,8 @@ struct DeskTemplateState {
   uint32 active_index@1;
 
   [MinVersion=2] string? browser_app_name@2;
+
+  [MinVersion=3] int64 restore_window_id@3;
 };
 
 // Interface for desk template clients.  Implemented by lacros-chrome.
