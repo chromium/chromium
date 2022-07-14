@@ -10,13 +10,13 @@ package org.chromium.chrome.browser.fullscreen;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Region;
-import android.os.Build;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -53,6 +54,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -65,6 +68,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -76,6 +80,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add({
         ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
+@Batch(Batch.PER_CLASS)
 public class FullscreenManagerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -190,6 +195,31 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    public void testBackPressExitPersistentFullscreen() {
+        testBackPressExitPersistentFullscreenInternal();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Fullscreen"})
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    public void testBackPressExitPersistentFullscreen_backGestureRefactor() {
+        testBackPressExitPersistentFullscreenInternal();
+    }
+
+    private void testBackPressExitPersistentFullscreenInternal() {
+        launchOnFullscreenMode(LONG_HTML_TEST_PAGE);
+        Assert.assertTrue(getPersistentFullscreenMode());
+
+        Espresso.pressBack();
+
+        Assert.assertFalse(getPersistentFullscreenMode());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Fullscreen"})
     public void testDelayedPersistentFullscreen() {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -213,18 +243,34 @@ public class FullscreenManagerTest {
     }
 
     private boolean getPersistentFullscreenMode() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        boolean b1 = TestThreadUtils.runOnUiThreadBlockingNoException(
                 mActivityTestRule.getActivity()
                         .getFullscreenManager()::getPersistentFullscreenMode);
+        Boolean b2 = TestThreadUtils.runOnUiThreadBlockingNoException(
+                mActivityTestRule.getActivity()
+                        .getFullscreenManager()
+                        .getPersistentFullscreenModeSupplier()::get);
+        Assert.assertTrue("Fullscreen mode supplier is holding a different value.",
+                (b2 == null && !b1) || Objects.equals(b1, b2));
+        return b1;
+    }
+
+    private void launchOnFullscreenMode(String url) {
+        mActivityTestRule.startMainActivityWithURL(url);
+
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
+
+        FullscreenTestUtils.waitForFullscreenFlag(tab, false, mActivityTestRule.getActivity());
+        FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
+        FullscreenTestUtils.togglePersistentFullscreenAndAssert(
+                tab, true, mActivityTestRule.getActivity());
     }
 
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
     public void testPersistentFullscreenChangingUiFlags() throws InterruptedException {
-        // Exiting fullscreen via UI Flags is not supported in versions prior to MR2.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
-
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();

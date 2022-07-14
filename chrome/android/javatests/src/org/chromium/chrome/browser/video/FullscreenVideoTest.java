@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.video;
 
 import android.graphics.Rect;
 import android.support.test.InstrumentationRegistry;
-import android.view.KeyEvent;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -17,20 +17,22 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.FullscreenTestUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.media.MediaSwitches;
@@ -44,26 +46,14 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
+@Batch(Batch.PER_CLASS)
 public class FullscreenVideoTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
     public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
-    private static final int TEST_TIMEOUT = 3000;
-    private boolean mIsTabFullscreen;
     private ChromeActivity mActivity;
-
-    private class FullscreenToggleListener implements FullscreenManager.Observer {
-        @Override
-        public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-            mIsTabFullscreen = true;
-        }
-        @Override
-        public void onExitFullscreen(Tab tab) {
-            mIsTabFullscreen = false;
-        }
-    }
 
     @Before
     public void setUp() throws InterruptedException {
@@ -77,26 +67,30 @@ public class FullscreenVideoTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/458368")
+    @DisabledTest(message = "Flaky https://crbug.com/458368 https://crbug.com/1331504")
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testExitFullscreenNotifiesTabObservers() {
-        String url = mTestServerRule.getServer().getURL(
-                "/chrome/test/data/android/media/video-fullscreen.html");
-        mActivityTestRule.loadUrl(url);
-        Tab tab = mActivity.getActivityTab();
-        FullscreenManager.Observer listener = new FullscreenToggleListener();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getFullscreenManager().addObserver(listener));
+        testExitFullscreenNotifiesTabObserversInternal();
+    }
 
-        TestTouchUtils.singleClickView(
-                InstrumentationRegistry.getInstrumentation(), tab.getView(), 500, 500);
-        waitForVideoToEnterFullscreen();
-        // Key events have to be dispached on UI thread.
-        KeyUtils.singleKeyEventActivity(
-                InstrumentationRegistry.getInstrumentation(), mActivity, KeyEvent.KEYCODE_BACK);
+    @Test
+    @MediumTest
+    @DisabledTest(message = "Flaky https://crbug.com/458368 https://crbug.com/1331504")
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    public void testExitFullscreenNotifiesTabObservers_backGestureRefactor() {
+        testExitFullscreenNotifiesTabObserversInternal();
+    }
+
+    private void testExitFullscreenNotifiesTabObserversInternal() {
+        String url = launchOnFullscreenMode();
+
+        Espresso.pressBack();
 
         waitForTabToExitFullscreen();
-        Assert.assertEquals("URL mismatch after exiting fullscreen video", url,
-                mActivity.getActivityTab().getUrl().getSpec());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals("URL mismatch after exiting fullscreen video", url,
+                    mActivity.getActivityTab().getUrl().getSpec());
+        });
     }
 
     /**
@@ -113,9 +107,6 @@ public class FullscreenVideoTest {
         mActivityTestRule.loadUrl(url);
 
         final Tab tab = mActivity.getActivityTab();
-        FullscreenManager.Observer listener = new FullscreenToggleListener();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getFullscreenManager().addObserver(listener));
 
         // Start playback to guarantee it's properly loaded.
         WebContents webContents = mActivity.getCurrentWebContents();
@@ -137,13 +128,23 @@ public class FullscreenVideoTest {
         Assert.assertEquals(expectedSize, tab.getWebContents().getFullscreenVideoSize());
     }
 
+    private String launchOnFullscreenMode() {
+        String url = mTestServerRule.getServer().getURL(
+                "/chrome/test/data/android/media/video-fullscreen.html");
+        mActivityTestRule.loadUrl(url);
+        final Tab tab = mActivity.getActivityTab();
+
+        TestTouchUtils.singleClickView(
+                InstrumentationRegistry.getInstrumentation(), tab.getView(), 500, 500);
+        waitForVideoToEnterFullscreen();
+        return url;
+    }
+
     void waitForVideoToEnterFullscreen() {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> mIsTabFullscreen, TEST_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        FullscreenTestUtils.waitForFullscreenFlag(mActivity.getActivityTab(), true, mActivity);
     }
 
     void waitForTabToExitFullscreen() {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> !mIsTabFullscreen, TEST_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        FullscreenTestUtils.waitForFullscreenFlag(mActivity.getActivityTab(), false, mActivity);
     }
 }
