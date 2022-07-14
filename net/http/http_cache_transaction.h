@@ -616,12 +616,16 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Initial request with which Start() was invoked.
   raw_ptr<const HttpRequestInfo> initial_request_ = nullptr;
 
-  raw_ptr<const HttpRequestInfo, DanglingUntriaged> request_ = nullptr;
+  // `custom_request_` is assigned to `request_` after allocation. It must be
+  // declared before `request_` so that it will be destroyed afterwards to
+  // prevent that pointer from dangling.
+  std::unique_ptr<HttpRequestInfo> custom_request_;
+
+  raw_ptr<const HttpRequestInfo> request_ = nullptr;
 
   std::string method_;
   RequestPriority priority_;
   NetLogWithSource net_log_;
-  std::unique_ptr<HttpRequestInfo> custom_request_;
   HttpRequestHeaders request_headers_copy_;
   // If extra_headers specified a "if-modified-since" or "if-none-match",
   // |external_validation_| contains the value of those headers.
