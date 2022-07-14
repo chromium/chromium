@@ -316,6 +316,9 @@ void FastPairRepositoryImpl::OnGetSavedDevices(
     GetSavedDevicesCallback callback,
     absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
   QP_LOG(INFO) << __func__;
+
+  RecordGetSavedDevicesResult(/*success=*/user_devices.has_value());
+
   if (!user_devices) {
     QP_LOG(WARNING)
         << __func__

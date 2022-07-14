@@ -196,6 +196,9 @@ const char kSavedDeviceUpdateOptInStatusRetroactiveResult[] =
 const char kSavedDeviceUpdateOptInStatusSubsequentResult[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
     "SubsequentPairingProtocol";
+const char kSavedDeviceGetDevicesResult[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.GetSavedDevices.Result";
+
 }  // namespace
 
 namespace ash {
@@ -568,6 +571,10 @@ void RecordSavedDevicesUpdatedOptInStatusResult(const Device& device,
                                 success);
       break;
   }
+}
+
+void RecordGetSavedDevicesResult(bool success) {
+  base::UmaHistogramBoolean(kSavedDeviceGetDevicesResult, success);
 }
 
 }  // namespace quick_pair

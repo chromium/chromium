@@ -864,6 +864,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.SavedDevices.GetSavedDevices.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of fetching a user's list of Saved Devices
+    and opt-in status from the Footprints server. The fetching is initiated when
+    a user opens the Saved Device Bluetooth sub-age. This metric is emitted
+    following the fetching data attempt in the FastPairRepository.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.SavedDevices.Remove.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>julietlevesque@google.com</owner>

@@ -267,6 +267,9 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordSavedDevicesUpdatedOptInStatusResult(const Device& device,
                                                 bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordGetSavedDevicesResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 
