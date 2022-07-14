@@ -24,7 +24,7 @@ class UkmDebugDataExtractor {
 
   ~UkmDebugDataExtractor();
 
-  // Returns UKM data structured in a DictionaryValue.
+  // Returns UKM data structured in a dictionary.
   static base::Value GetStructuredData(const UkmService* ukm_service);
 
   // Convert uint64 to pair of int32 to match the spec of Value. JS doesn't

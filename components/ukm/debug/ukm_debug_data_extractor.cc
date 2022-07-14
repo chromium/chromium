@@ -37,29 +37,28 @@ std::string GetName(const ukm::builders::EntryDecoder& decoder, uint64_t hash) {
   return it->second;
 }
 
-base::Value ConvertEntryToValue(const ukm::builders::DecodeMap& decode_map,
-                                const mojom::UkmEntry& entry) {
-  base::DictionaryValue entry_value;
+base::Value::Dict ConvertEntryToDict(const ukm::builders::DecodeMap& decode_map,
+                                     const mojom::UkmEntry& entry) {
+  base::Value::Dict entry_dict;
 
   const auto it = decode_map.find(entry.event_hash);
   if (it == decode_map.end()) {
-    entry_value.SetKey(
-        "name", UkmDebugDataExtractor::UInt64AsPairOfInt(entry.event_hash));
+    entry_dict.Set("name",
+                   UkmDebugDataExtractor::UInt64AsPairOfInt(entry.event_hash));
   } else {
-    entry_value.SetKey("name", base::Value(it->second.name));
+    entry_dict.Set("name", it->second.name);
 
-    base::ListValue metrics_list;
+    base::Value::List metrics_list;
     for (const auto& metric : entry.metrics) {
-      base::DictionaryValue metric_value;
-      metric_value.SetKey("name",
-                          base::Value(GetName(it->second, metric.first)));
-      metric_value.SetKey(
-          "value", UkmDebugDataExtractor::UInt64AsPairOfInt(metric.second));
-      metrics_list.Append(std::move(metric_value));
+      base::Value::Dict metric_dict;
+      metric_dict.Set("name", GetName(it->second, metric.first));
+      metric_dict.Set("value",
+                      UkmDebugDataExtractor::UInt64AsPairOfInt(metric.second));
+      metrics_list.Append(std::move(metric_dict));
     }
-    entry_value.SetKey("metrics", std::move(metrics_list));
+    entry_dict.Set("metrics", std::move(metrics_list));
   }
-  return std::move(entry_value);
+  return entry_dict;
 }
 
 }  // namespace
@@ -71,12 +70,11 @@ UkmDebugDataExtractor::~UkmDebugDataExtractor() = default;
 // static
 base::Value UkmDebugDataExtractor::UInt64AsPairOfInt(uint64_t v) {
   // Convert int64_t to pair of int. Passing int64_t in base::Value is not
-  // supported. The pair of int will be passed as a ListValue.
-  base::Value::ListStorage int_pair;
-  int_pair.push_back(
-      base::Value(static_cast<int>((v >> 32) & BIT_FILTER_LAST32)));
-  int_pair.push_back(base::Value(static_cast<int>(v & BIT_FILTER_LAST32)));
-  return base::Value(int_pair);
+  // supported. The pair of int will be passed as a List.
+  base::Value::List int_pair;
+  int_pair.Append(static_cast<int>((v >> 32) & BIT_FILTER_LAST32));
+  int_pair.Append(static_cast<int>(v & BIT_FILTER_LAST32));
+  return base::Value(std::move(int_pair));
 }
 
 // static
@@ -85,17 +83,15 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
   if (!ukm_service)
     return {};
 
-  base::DictionaryValue ukm_data;
+  base::Value::Dict ukm_data;
 
-  ukm_data.SetKey("state", base::Value(ukm_service->recording_enabled_));
-  ukm_data.SetKey("client_id", base::Value(base::StringPrintf(
-                                   "%016" PRIx64, ukm_service->client_id_)));
-  ukm_data.SetKey("session_id",
-                  base::Value(static_cast<int>(ukm_service->session_id_)));
+  ukm_data.Set("state", ukm_service->recording_enabled_);
+  ukm_data.Set("client_id",
+               base::StringPrintf("%016" PRIx64, ukm_service->client_id_));
+  ukm_data.Set("session_id", static_cast<int>(ukm_service->session_id_));
 
-  ukm_data.SetKey(
-      "is_sampling_enabled",
-      base::Value(static_cast<bool>(ukm_service->IsSamplingConfigured())));
+  ukm_data.Set("is_sampling_enabled",
+               static_cast<bool>(ukm_service->IsSamplingConfigured()));
 
   std::map<SourceId, SourceData> source_data;
   for (const auto& kv : ukm_service->recordings_.sources) {
@@ -106,32 +102,30 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
     source_data[v->source_id].entries.push_back(v.get());
   }
 
-  base::ListValue sources_list;
+  base::Value::List sources_list;
   for (const auto& kv : source_data) {
     const auto* src = kv.second.source.get();
 
-    base::DictionaryValue source_value;
+    base::Value::Dict source_dict;
     if (src) {
-      source_value.SetKey("id",
-                          UkmDebugDataExtractor::UInt64AsPairOfInt(src->id()));
-      source_value.SetKey("url", base::Value(src->url().spec()));
+      source_dict.Set("id",
+                      UkmDebugDataExtractor::UInt64AsPairOfInt(src->id()));
+      source_dict.Set("url", base::Value(src->url().spec()));
     } else {
-      source_value.SetKey("id",
-                          UkmDebugDataExtractor::UInt64AsPairOfInt(kv.first));
+      source_dict.Set("id", UkmDebugDataExtractor::UInt64AsPairOfInt(kv.first));
     }
 
-    base::ListValue entries_list;
+    base::Value::List entries_list;
     for (auto* entry : kv.second.entries) {
-      entries_list.Append(
-          ConvertEntryToValue(ukm_service->decode_map_, *entry));
+      entries_list.Append(ConvertEntryToDict(ukm_service->decode_map_, *entry));
     }
 
-    source_value.SetKey("entries", std::move(entries_list));
+    source_dict.Set("entries", std::move(entries_list));
 
-    sources_list.Append(std::move(source_value));
+    sources_list.Append(std::move(source_dict));
   }
-  ukm_data.SetKey("sources", std::move(sources_list));
-  return std::move(ukm_data);
+  ukm_data.Set("sources", std::move(sources_list));
+  return base::Value(std::move(ukm_data));
 }
 
 }  // namespace debug
