@@ -112,7 +112,6 @@ class TabGridViewBinder {
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             updateColor(view, model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
-            updateThumbnail(view, model);
             updateFavicon(view, model);
             if (TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.getValue()) {
                 ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);

@@ -491,6 +491,7 @@ public class TabContentManager {
                 }
                 if (jpeg != null) {
                     if (ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION.getValue()) {
+                        // TODO(crbug.com/1344354): compare the height instead of pixel tolerance.
                         double jpegAspectRatio = jpeg.getHeight() == 0
                                 ? 0
                                 : 1.0 * jpeg.getWidth() / jpeg.getHeight();
