@@ -289,6 +289,7 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   bool ShouldAutoDetermineCompositingToLCDTextSetting() override {
     return false;
   }
+  bool AllowsScrollResampling() override { return false; }
 
  private:
   cc::FakeLayerTreeFrameSink* last_created_frame_sink_ = nullptr;
