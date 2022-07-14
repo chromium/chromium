@@ -315,10 +315,10 @@ test(() => {
   assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
 
   style.animation = "2 default";
-  assert_equals(style.animation, '0s ease 0s 2 normal none running default');
-  assert_equals(computedStyle.animation, '0s ease 0s 2 normal none running default');
-  assert_equals(style.webkitAnimation, '0s ease 0s 2 normal none running default');
-  assert_equals(computedStyle.webkitAnimation, '0s ease 0s 2 normal none running default');
+  assert_equals(style.animation, '');
+  assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
+  assert_equals(style.webkitAnimation, '');
+  assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
 }, "Invalid animation shorthand values.");
 </script>
 </body>

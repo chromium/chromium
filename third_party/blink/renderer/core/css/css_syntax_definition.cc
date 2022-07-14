@@ -22,7 +22,7 @@ namespace {
 //
 // https://drafts.csswg.org/css-values-4/#identifier-value
 //
-// TODO(crbug.com/882285): Make 'default' invalid as <custom-ident>.
+// TODO(https://crbug.com/1344170): This code may be unneeded.
 bool IsReservedIdentToken(const CSSParserToken& token) {
   if (token.GetType() != kIdentToken)
     return false;
@@ -91,9 +91,6 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
     case CSSSyntaxType::kTransformList:
       return css_parsing_utils::ConsumeTransformList(range, context);
     case CSSSyntaxType::kCustomIdent:
-      // TODO(crbug.com/882285): Make 'default' invalid as <custom-ident>.
-      if (IsReservedIdentToken(range.Peek()))
-        return nullptr;
       return css_parsing_utils::ConsumeCustomIdent(range, context);
     default:
       NOTREACHED();
@@ -137,7 +134,8 @@ const CSSValue* CSSSyntaxDefinition::Parse(CSSParserTokenRange range,
                                            const CSSParserContext& context,
                                            bool is_animation_tainted) const {
   if (IsUniversal()) {
-    // TODO(crbug.com/882285): Make 'default' invalid as <custom-ident>.
+    // The 'default' keyword is reserved despite not being a CSS-wide keyword.
+    // TODO(https://crbug.com/1344170): This code may be unneeded.
     if (CouldConsumeReservedKeyword(range))
       return nullptr;
     return CSSVariableParser::ParseVariableReferenceValue(range, context,

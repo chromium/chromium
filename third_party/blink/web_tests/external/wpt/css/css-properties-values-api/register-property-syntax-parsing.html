@@ -145,6 +145,7 @@ assert_invalid("initial", "initial");
 assert_invalid("inherit", "inherit");
 assert_invalid("unset", "unset");
 assert_invalid("revert", "revert");
+assert_invalid("revert-layer", "revert-layer");
 assert_invalid("default", "default");
 assert_invalid("<length>|initial", "10px");
 assert_invalid("<length>|INHERIT", "10px");
@@ -153,12 +154,17 @@ assert_invalid("<color>|REVert", "red");
 assert_invalid("<integer>|deFAUlt", "1");
 
 // Invalid initialValue
+// The 6 tests that follow are not clearly backed by the specification,
+// but (at least other than the one for 'default') they're probably a
+// good idea and we should change the spec.  See
+// https://github.com/w3c/css-houdini-drafts/issues/1076 .
 assert_invalid("*", "initial");
 assert_invalid("*", "inherit");
 assert_invalid("*", "unset");
 assert_invalid("*", "revert");
 assert_invalid("*", "revert-layer");
 assert_invalid("*", "default");
+// ... end possibly-invalid tests.
 assert_invalid("<custom-ident>", "initial");
 assert_invalid("<custom-ident>", "inherit");
 assert_invalid("<custom-ident>", "unset");

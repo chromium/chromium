@@ -1633,8 +1633,9 @@ const CSSValue* ColorScheme::ParseSingleValue(
   CSSValueList* values = CSSValueList::CreateSpaceSeparated();
   do {
     CSSValueID id = range.Peek().Id();
-    // 'normal' is handled above, and 'default' is reserved for future use.
-    if (id == CSSValueID::kNormal || id == CSSValueID::kDefault) {
+    // 'normal' is handled above, and needs to be excluded from
+    // ConsumeCustomIdent below.
+    if (id == CSSValueID::kNormal) {
       return nullptr;
     }
     CSSValue* value =

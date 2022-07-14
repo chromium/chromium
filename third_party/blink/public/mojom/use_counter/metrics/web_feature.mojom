@@ -1978,7 +1978,7 @@ enum WebFeature {
   kActivatedImplicitRootScroller = 2625,
   kCSSUnknownNamespacePrefixInSelector = 2626,
   kPageLifeCycleFreeze = 2627,
-  kDefaultInCustomIdent = 2628,
+  kOBSOLETE_DefaultInCustomIdent = 2628,
   kHTMLAnchorElementHrefTranslateAttribute = 2629,
   kWebKitUserModifyEffective = 2630,
   kPlainTextEditingEffective = 2631,

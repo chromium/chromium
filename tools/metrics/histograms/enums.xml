@@ -39037,7 +39037,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2625" label="ActivatedImplicitRootScroller"/>
   <int value="2626" label="CSSUnknownNamespacePrefixInSelector"/>
   <int value="2627" label="PageLifeCycleFreeze"/>
-  <int value="2628" label="DefaultInCustomIdent"/>
+  <int value="2628" label="OBSOLETE_DefaultInCustomIdent"/>
   <int value="2629" label="HTMLAnchorElementHrefTranslateAttribute"/>
   <int value="2630" label="WebKitUserModifyEffective"/>
   <int value="2631" label="PlainTextEditingEffective"/>

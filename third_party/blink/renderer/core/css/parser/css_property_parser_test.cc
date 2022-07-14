@@ -639,20 +639,6 @@ TEST_F(CSSPropertyUseCounterTest, UnitlessPresentationAttributesNotCounted) {
   EXPECT_FALSE(IsCounted(feature));
 }
 
-TEST_F(CSSPropertyUseCounterTest, CSSPropertyDefaultAnimationNameUseCount) {
-  WebFeature feature = WebFeature::kDefaultInCustomIdent;
-  EXPECT_FALSE(IsCounted(feature));
-
-  ParseProperty(CSSPropertyID::kAnimationName, "initial");
-  EXPECT_FALSE(IsCounted(feature));
-
-  ParseProperty(CSSPropertyID::kAnimationName, "test");
-  EXPECT_FALSE(IsCounted(feature));
-
-  ParseProperty(CSSPropertyID::kAnimationName, "default");
-  EXPECT_TRUE(IsCounted(feature));
-}
-
 TEST_F(CSSPropertyUseCounterTest, CSSPropertyContainStyleUseCount) {
   WebFeature feature = WebFeature::kCSSValueContainStyle;
   EXPECT_FALSE(IsCounted(feature));

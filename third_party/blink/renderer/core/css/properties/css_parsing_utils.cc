@@ -1265,11 +1265,9 @@ CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenRange& range,
 CSSCustomIdentValue* ConsumeCustomIdentWithToken(
     const CSSParserToken& token,
     const CSSParserContext& context) {
-  if (token.GetType() != kIdentToken || IsCSSWideKeyword(token.Value()))
+  if (token.GetType() != kIdentToken || IsCSSWideKeyword(token.Id()) ||
+      token.Id() == CSSValueID::kDefault)
     return nullptr;
-
-  if (EqualIgnoringASCIICase(token.Value(), "default"))
-    context.Count(WebFeature::kDefaultInCustomIdent);
 
   return MakeGarbageCollected<CSSCustomIdentValue>(
       token.Value().ToAtomicString());
@@ -1278,7 +1276,8 @@ CSSCustomIdentValue* ConsumeCustomIdentWithToken(
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange& range,
                                         const CSSParserContext& context) {
   if (range.Peek().GetType() != kIdentToken ||
-      IsCSSWideKeyword(range.Peek().Value())) {
+      IsCSSWideKeyword(range.Peek().Id()) ||
+      range.Peek().Id() == CSSValueID::kDefault) {
     return nullptr;
   }
   return ConsumeCustomIdentWithToken(range.ConsumeIncludingWhitespace(),
@@ -1294,8 +1293,6 @@ CSSCustomIdentValue* ConsumeCustomIdentConservatively(
   if (range.Peek().GetType() != kIdentToken)
     return nullptr;
   switch (range.Peek().Id()) {
-    // TODO(crbug.com/882285): ConsumeCustomIdent should not allow "default".
-    case CSSValueID::kDefault:
     // TODO(crbug.com/1340852): Find out if we can make auto/none/normal
     // invalid generally.  For now, avoid allowing them on new custom idents.
     case CSSValueID::kNone:
@@ -4445,8 +4442,7 @@ CSSCustomIdentValue* ConsumeCustomIdentForGridLine(
     CSSParserTokenRange& range,
     const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kAuto ||
-      range.Peek().Id() == CSSValueID::kSpan ||
-      range.Peek().Id() == CSSValueID::kDefault) {
+      range.Peek().Id() == CSSValueID::kSpan) {
     return nullptr;
   }
   return ConsumeCustomIdent(range, context);

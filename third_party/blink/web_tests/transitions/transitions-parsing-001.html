@@ -101,12 +101,6 @@ test(() => {
   assert_equals(computedStyle.transitionProperty, 'solid');
   assert_equals(style.webkitTransitionProperty, 'solid');
   assert_equals(computedStyle.webkitTransitionProperty, 'solid');
-
-  style.transitionProperty = "default, top";
-  assert_equals(style.transitionProperty, 'default, top');
-  assert_equals(computedStyle.transitionProperty, 'default, top');
-  assert_equals(style.webkitTransitionProperty, 'default, top');
-  assert_equals(computedStyle.webkitTransitionProperty, 'default, top');
 }, "Unknown transition-property values.");
 
 test(() => {
@@ -167,6 +161,12 @@ test(() => {
   assert_equals(computedStyle.webkitTransitionProperty, 'all');
 
   style.transitionProperty = "none, width";
+  assert_equals(style.transitionProperty, '');
+  assert_equals(computedStyle.transitionProperty, 'all');
+  assert_equals(style.webkitTransitionProperty, '');
+  assert_equals(computedStyle.webkitTransitionProperty, 'all');
+
+  style.transitionProperty = "default, top";
   assert_equals(style.transitionProperty, '');
   assert_equals(computedStyle.transitionProperty, 'all');
   assert_equals(style.webkitTransitionProperty, '');
