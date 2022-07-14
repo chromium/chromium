@@ -108,7 +108,10 @@ input:checked + label::after {
 /* Strip out color and style when printing. We want dense B&W text. */
 @media print {
   .licence {
+    /* The licensing content is very verbose. Make it dense. */
     display: block;
+    font-size: smaller;
+    padding: 0;
   }
   .product,
   a,
