@@ -70,6 +70,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/shell_dialog_linux.h"
 #include "ui/views/window/window_button_order_provider.h"
 
 #if defined(USE_GIO)
@@ -210,6 +211,8 @@ GtkUi::GtkUi() : window_frame_actions_() {
 GtkUi::~GtkUi() {
   DCHECK_EQ(g_gtk_ui, this);
   g_gtk_ui = nullptr;
+
+  shell_dialog_linux::Finalize();
 }
 
 // static
@@ -238,7 +241,7 @@ bool GtkUi::Initialize() {
 
   // This creates an extra thread that may race against GtkInitFromCommandLine,
   // so this must be done after to avoid the race condition.
-  ShellDialogLinux::Initialize();
+  shell_dialog_linux::Initialize();
 
   using Action = ui::LinuxUi::WindowFrameAction;
   using ActionSource = ui::LinuxUi::WindowFrameActionSource;
@@ -476,9 +479,11 @@ void GtkUi::GetDefaultFontDescription(std::string* family_out,
 }
 
 ui::SelectFileDialog* GtkUi::CreateSelectFileDialog(
-    ui::SelectFileDialog::Listener* listener,
+    void* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
-  return new SelectFileDialogLinuxGtk(listener, std::move(policy));
+  return new SelectFileDialogLinuxGtk(
+      static_cast<ui::SelectFileDialog::Listener*>(listener),
+      std::move(policy));
 }
 
 ui::LinuxUi::WindowFrameAction GtkUi::GetWindowFrameAction(

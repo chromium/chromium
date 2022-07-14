@@ -90,7 +90,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
     virtual void FileSelectionCanceled(void* params) {}
 
    protected:
-    virtual ~Listener() {}
+    virtual ~Listener() = default;
   };
 
   // Sets the factory that creates SelectFileDialog objects, overriding default

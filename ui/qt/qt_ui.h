@@ -48,7 +48,7 @@ class QtUi : public ui::LinuxUi, QtInterface::Delegate {
 
   // ui::ShellDialogLinux:
   ui::SelectFileDialog* CreateSelectFileDialog(
-      ui::SelectFileDialog::Listener* listener,
+      void* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) const override;
 
   // ui::LinuxUi:

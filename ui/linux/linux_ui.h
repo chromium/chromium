@@ -25,10 +25,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_font_delegate.h"
 
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-#include "ui/shell_dialogs/shell_dialog_linux.h"
-#endif
-
 // The main entrypoint into Linux toolkit specific code. GTK/QT code should only
 // be executed behind this interface.
 
@@ -54,6 +50,8 @@ namespace ui {
 class DeviceScaleFactorObserver;
 class NativeTheme;
 class NavButtonProvider;
+class SelectFileDialog;
+class SelectFilePolicy;
 class WindowButtonOrderObserver;
 class WindowFrameProvider;
 
@@ -62,9 +60,6 @@ class WindowFrameProvider;
 class COMPONENT_EXPORT(LINUX_UI) LinuxUi
     : public ui::LinuxInputMethodContextFactory,
       public gfx::SkiaFontDelegate,
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-      public ui::ShellDialogLinux,
-#endif
       public ui::TextEditKeyBindingsDelegateAuraLinux,
       public ui::CursorThemeManager,
       public gfx::AnimationSettingsProviderLinux {
@@ -187,6 +182,14 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
   virtual gfx::Size GetPdfPaperSize(
       printing::PrintingContextLinux* context) = 0;
 #endif
+
+  // Returns a native file selection dialog.  `listener` is of type
+  // SelectFileDialog::Listener.  TODO(thomasanderson): Move
+  // SelectFileDialog::Listener to SelectFileDialogListener so that it can be
+  // forward declared.
+  virtual SelectFileDialog* CreateSelectFileDialog(
+      void* listener,
+      std::unique_ptr<SelectFilePolicy> policy) const = 0;
 
  protected:
   struct CmdLineArgs {

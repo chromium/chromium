@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/select_file_dialog_linux_kde.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -16,11 +17,25 @@
 #include "ui/shell_dialogs/select_file_dialog_linux_portal.h"
 #endif
 
+namespace shell_dialog_linux {
+
+void Initialize() {
+#if defined(USE_DBUS)
+  ui::SelectFileDialogLinuxPortal::StartAvailabilityTestInBackground();
+#endif
+}
+
+void Finalize() {
+#if defined(USE_DBUS)
+  ui::SelectFileDialogLinuxPortal::DestroyPortalConnection();
+#endif
+}
+
+}  // namespace shell_dialog_linux
+
 namespace ui {
 
 namespace {
-
-ShellDialogLinux* g_shell_dialog_linux = nullptr;
 
 enum FileDialogChoice {
   kUnknown,
@@ -69,40 +84,18 @@ FileDialogChoice GetFileDialogChoice() {
 
 }  // namespace
 
-ShellDialogLinux::ShellDialogLinux() = default;
-
-ShellDialogLinux::~ShellDialogLinux() {
-#if defined(USE_DBUS)
-  SelectFileDialogLinuxPortal::DestroyPortalConnection();
-#endif
-}
-
-void ShellDialogLinux::SetInstance(ShellDialogLinux* instance) {
-  g_shell_dialog_linux = instance;
-}
-
-const ShellDialogLinux* ShellDialogLinux::instance() {
-  return g_shell_dialog_linux;
-}
-
-void ShellDialogLinux::Initialize() {
-#if defined(USE_DBUS)
-  SelectFileDialogLinuxPortal::StartAvailabilityTestInBackground();
-#endif
-}
-
 SelectFileDialog* CreateSelectFileDialog(
     SelectFileDialog::Listener* listener,
     std::unique_ptr<SelectFilePolicy> policy) {
   if (dialog_choice_ == kUnknown)
     dialog_choice_ = GetFileDialogChoice();
 
-  const ShellDialogLinux* shell_dialogs = ShellDialogLinux::instance();
+  const LinuxUi* linux_ui = LinuxUi::instance();
   switch (dialog_choice_) {
     case kToolkit:
-      if (!shell_dialogs)
+      if (!linux_ui)
         break;
-      return shell_dialogs->CreateSelectFileDialog(listener, std::move(policy));
+      return linux_ui->CreateSelectFileDialog(listener, std::move(policy));
 #if defined(USE_DBUS)
     case kPortal:
       return new SelectFileDialogLinuxPortal(listener, std::move(policy));

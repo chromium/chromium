@@ -23,7 +23,6 @@ component("linux_ui") {
     "//build:chromecast_buildflags",
     "//ui/base/ime/linux",
     "//ui/native_theme",
-    "//ui/shell_dialogs",
   ]
   public_deps = [
     "//printing/buildflags",

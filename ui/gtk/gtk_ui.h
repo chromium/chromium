@@ -71,7 +71,7 @@ class GtkUi : public ui::LinuxUi {
 
   // ui::ShellDialogLinux:
   ui::SelectFileDialog* CreateSelectFileDialog(
-      ui::SelectFileDialog::Listener* listener,
+      void* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) const override;
 
   // ui::LinuxUi:

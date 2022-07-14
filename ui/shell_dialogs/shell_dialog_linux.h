@@ -5,39 +5,17 @@
 #ifndef UI_SHELL_DIALOGS_SHELL_DIALOG_LINUX_H_
 #define UI_SHELL_DIALOGS_SHELL_DIALOG_LINUX_H_
 
-#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
 
-namespace ui {
+namespace shell_dialog_linux {
 
-// An interface that lets different Linux platforms override the
-// CreateSelectFileDialog function declared here to return native file dialogs.
-class SHELL_DIALOGS_EXPORT ShellDialogLinux {
- public:
-  ShellDialogLinux();
-  virtual ~ShellDialogLinux();
+// TODO(thomasanderson): Remove Initialize() and Finalize().
 
-  // Sets the dynamically loaded singleton that draws the desktop native
-  // UI. This pointer is not owned, and if this method is called a second time,
-  // the first instance is not deleted.
-  static void SetInstance(ShellDialogLinux* instance);
+// Should be called before the first call to CreateSelectFileDialog.
+SHELL_DIALOGS_EXPORT void Initialize();
 
-  // Returns a LinuxUI instance for the toolkit used in the user's desktop
-  // environment.
-  //
-  // Can return NULL, in case no toolkit has been set. (For example, if we're
-  // running with the "--ash" flag.)
-  static const ShellDialogLinux* instance();
+SHELL_DIALOGS_EXPORT void Finalize();
 
-  // Should be called before the first call to CreateSelectFileDialog.
-  void Initialize();
-
-  // Returns a native file selection dialog.
-  virtual SelectFileDialog* CreateSelectFileDialog(
-      SelectFileDialog::Listener* listener,
-      std::unique_ptr<SelectFilePolicy> policy) const = 0;
-};
-
-}  // namespace ui
+}  // namespace shell_dialog_linux
 
 #endif  // UI_SHELL_DIALOGS_SHELL_DIALOG_LINUX_H_
