@@ -41,6 +41,9 @@ namespace {
 constexpr char kUrl[] = "https://www.example.com";
 constexpr char kOtherUrlWithSameDomain[] = "https://www.example.com/login";
 
+constexpr int kRevokationDescriptionId1 = 234;
+constexpr int kRevokationDescriptionId2 = 356;
+
 using consent_auditor::FakeConsentAuditor;
 
 class TestApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinatorImpl {
@@ -156,6 +159,9 @@ TEST_F(ApcOnboardingCoordinatorImplTest, PerformOnboardingAndAccept) {
   const sync_pb::UserConsentSpecifics& consent_specifics =
       consent_auditor()->recorded_consents().front();
   ASSERT_TRUE(consent_specifics.has_autofill_assistant_consent());
+  EXPECT_EQ(consent_specifics.autofill_assistant_consent().status(),
+            sync_pb::UserConsentTypes::ConsentStatus::
+                UserConsentTypes_ConsentStatus_GIVEN);
   EXPECT_TRUE(
       consent_specifics.autofill_assistant_consent().has_confirmation_grd_id());
   EXPECT_THAT(
@@ -256,4 +262,23 @@ TEST_F(ApcOnboardingCoordinatorImplTest,
   // No prompt is ever created if the navigation does not finish.
   EXPECT_CALL(*coordinator(), CreateOnboardingController).Times(0);
   EXPECT_CALL(*coordinator(), CreateOnboardingPrompt).Times(0);
+}
+
+TEST_F(ApcOnboardingCoordinatorImplTest, RevokeConsent) {
+  coordinator()->RevokeConsent(
+      {kRevokationDescriptionId1, kRevokationDescriptionId2});
+
+  // Consent is also recorded via the `ConsentAuditor`.
+  ASSERT_THAT(consent_auditor()->recorded_consents(), SizeIs(1));
+  const sync_pb::UserConsentSpecifics& consent_specifics =
+      consent_auditor()->recorded_consents().front();
+  ASSERT_TRUE(consent_specifics.has_autofill_assistant_consent());
+  EXPECT_EQ(consent_specifics.autofill_assistant_consent().status(),
+            sync_pb::UserConsentTypes::ConsentStatus::
+                UserConsentTypes_ConsentStatus_NOT_GIVEN);
+  EXPECT_FALSE(
+      consent_specifics.autofill_assistant_consent().has_confirmation_grd_id());
+  EXPECT_THAT(
+      consent_specifics.autofill_assistant_consent().description_grd_ids(),
+      SizeIs(2));
 }

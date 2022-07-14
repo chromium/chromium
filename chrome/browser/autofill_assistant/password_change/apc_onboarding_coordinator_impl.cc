@@ -64,6 +64,16 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
   }
 }
 
+void ApcOnboardingCoordinatorImpl::RevokeConsent(
+    const std::vector<int>& description_grd_ids) {
+  sync_pb::UserConsentTypes::AutofillAssistantConsent consent;
+  consent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
+                         UserConsentTypes_ConsentStatus_NOT_GIVEN);
+  consent.mutable_description_grd_ids()->Assign(description_grd_ids.cbegin(),
+                                                description_grd_ids.cend());
+  WriteToConsentAuditor(consent);
+}
+
 std::unique_ptr<AssistantOnboardingController>
 ApcOnboardingCoordinatorImpl::CreateOnboardingController(
     const AssistantOnboardingInformation& onboarding_information) {

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
@@ -21,9 +22,6 @@
 
 class ApcExternalActionDelegate;
 class ApcScrimManager;
-
-// TODO(crbug.com/1322419): Observe the SidePanel so that we can destruct
-// Onboarding, ScriptExecution, etc. on close.
 
 // Implementation of the ApcClient interface that attaches itself to a
 // `WebContents`.
@@ -43,6 +41,8 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
              ResultCallback callback) override;
   void Stop(bool success) override;
   bool IsRunning() const override;
+  void PromptForConsent() override;
+  void RevokeConsent(const std::vector<int>& description_grd_ids) override;
 
  protected:
   // The following protected methods are factory functions that may be

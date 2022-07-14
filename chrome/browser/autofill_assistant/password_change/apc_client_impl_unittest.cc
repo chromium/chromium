@@ -4,6 +4,9 @@
 
 #include "chrome/browser/autofill_assistant/password_change/apc_client_impl.h"
 
+#include <memory>
+#include <string>
+
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_move_support.h"
@@ -32,6 +35,9 @@ constexpr char kPasswordChangeSkipLoginParameter[] =
 constexpr char kSourceParameter[] = "SOURCE";
 constexpr char kSourcePasswordChangeLeakWarning[] = "10";
 constexpr char kSourcePasswordChangeSettings[] = "11";
+
+constexpr int kDescriptionId1 = 3;
+constexpr int kDescriptionId2 = 17;
 }  // namespace
 
 using ::testing::DoAll;
@@ -376,4 +382,29 @@ TEST_F(ApcClientImplTest, OnHidden_WithOngoingApcFlow) {
   side_panel_observer()->OnHidden();
 
   EXPECT_FALSE(apc_client()->IsRunning());
+}
+
+TEST_F(ApcClientImplTest, PromptForConsent) {
+  // `ApcClient` should forward the consent request to the onboarding
+  // coordinator.
+  ApcOnboardingCoordinator::Callback coordinator_callback;
+  EXPECT_CALL(*coordinator(), PerformOnboarding)
+      .Times(1)
+      .WillOnce(MoveArg<0>(&coordinator_callback));
+
+  apc_client()->PromptForConsent();
+  EXPECT_TRUE(apc_client()->IsRunning());
+  std::move(coordinator_callback).Run(true);
+  EXPECT_FALSE(apc_client()->IsRunning());
+}
+
+TEST_F(ApcClientImplTest, RevokeConsent) {
+  // `ApcClient` should forward the consent revokation to the onboarding
+  // coordinator.
+  ApcOnboardingCoordinator::Callback coordinator_callback;
+  EXPECT_CALL(
+      *coordinator(),
+      RevokeConsent(std::vector<int>({kDescriptionId1, kDescriptionId2})));
+
+  apc_client()->RevokeConsent({kDescriptionId1, kDescriptionId2});
 }

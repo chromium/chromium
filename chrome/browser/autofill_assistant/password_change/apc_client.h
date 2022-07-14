@@ -27,7 +27,7 @@ class ApcClient {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Static method that acts as a factory function. It is actually implemented
-  // |ApcClientImpl|.
+  // `ApcClientImpl`.
   static ApcClient* GetOrCreateForWebContents(
       content::WebContents* web_contents);
 
@@ -49,6 +49,21 @@ class ApcClient {
   // Returns whether a flow is currently running, regardless of whether it is
   // in the onboarding phase or the execution phase.
   virtual bool IsRunning() const = 0;
+
+  // The two methods below are supposed to be called from the UI to handle
+  // granting and revoking consent from outside of APC flows. At the moment,
+  // that can only happen in settings. If, at a later point, Autofill Assistant
+  // is used outside of password change on Desktop, it may make sense to move
+  // these methods out of `ApcClient` into a more global location.
+
+  // Prompts the user to give consent to use Autofill Assistant. Does nothing
+  // if consent has either been given already or there is an ongoing APC run in
+  // this `WebContents`.
+  virtual void PromptForConsent() = 0;
+
+  // Revokes consent to use Autofill Assistant, where `description_grd_ids` are
+  // the resource ids of the text on the description labels.
+  virtual void RevokeConsent(const std::vector<int>& description_grd_ids) = 0;
 
  protected:
   ApcClient() = default;

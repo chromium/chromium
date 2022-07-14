@@ -30,6 +30,7 @@ class ApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinator {
 
   // ApcOnboardingCoordinator:
   void PerformOnboarding(Callback callback) override;
+  void RevokeConsent(const std::vector<int>& description_grd_ids) override;
 
  protected:
   // These methods pass through their arguments to the respective factory

@@ -6,7 +6,7 @@
 
 #include <memory>
 #include <string>
-#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -76,11 +76,31 @@ void ApcClientImpl::Stop(bool success) {
   external_script_controller_.reset();
   scrim_manager_.reset();
   is_running_ = false;
-  std::exchange(result_callback_, base::DoNothing()).Run(success);
+  if (result_callback_)
+    std::move(result_callback_).Run(success);
 }
 
 bool ApcClientImpl::IsRunning() const {
   return is_running_;
+}
+
+void ApcClientImpl::PromptForConsent() {
+  if (is_running_)
+    return;
+  is_running_ = true;
+
+  onboarding_coordinator_ = CreateOnboardingCoordinator();
+  onboarding_coordinator_->PerformOnboarding(
+      base::BindOnce(&ApcClientImpl::Stop, base::Unretained(this)));
+}
+
+void ApcClientImpl::RevokeConsent(const std::vector<int>& description_grd_ids) {
+  if (is_running_)
+    Stop(false);
+
+  onboarding_coordinator_ = CreateOnboardingCoordinator();
+  onboarding_coordinator_->RevokeConsent(description_grd_ids);
+  onboarding_coordinator_.reset();
 }
 
 // `success` indicates whether onboarding was successful, i.e. whether consent
