@@ -49,24 +49,15 @@ namespace crash_reporter {
 
 namespace {
 
-void SetLogFatalCrashKey(const char* file,
-                         int line,
-                         const char* message_without_prefix) {
-  static crashpad::StringAnnotation<512> crash_key("LOG_FATAL");
-  crash_key.Set(logging::LogMessage::BuildCrashString(file, line,
-                                                      message_without_prefix));
-}
-
 void AbslAbortHook(const char* file,
                    int line,
                    const char* buf_start,
                    const char* prefix_end,
                    const char* buf_end) {
-  SetLogFatalCrashKey(file, line, prefix_end);
-
-  // IMMEDIATE_CRASH() generates better stack dumps than the abort() that absl::
-  // would trigger if this returns.
-  IMMEDIATE_CRASH();
+  // This simulates that a CHECK(false) was done at file:line instead of here.
+  // This is used instead of IMMEDIATE_CRASH() to give better error messages
+  // locally (printed stack for one).
+  logging::CheckError::Check(file, line, "false").stream() << prefix_end;
 }
 
 base::FilePath* g_database_path;
@@ -94,7 +85,9 @@ bool LogMessageHandler(int severity,
   base::AutoReset<bool> guard(&guarded, true);
 
   CHECK_LE(message_start, string.size());
-  SetLogFatalCrashKey(file, line, string.c_str() + message_start);
+  static crashpad::StringAnnotation<512> crash_key("LOG_FATAL");
+  crash_key.Set(logging::LogMessage::BuildCrashString(
+      file, line, string.c_str() + message_start));
 
   // Rather than including the code to force the crash here, allow the caller to
   // do it.
