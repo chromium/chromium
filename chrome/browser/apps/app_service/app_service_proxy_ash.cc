@@ -161,10 +161,8 @@ AppServiceProxyAsh::BrowserAppInstanceRegistry() {
 
 void AppServiceProxyAsh::RegisterCrosApiSubScriber(
     SubscriberCrosapi* subscriber) {
-  if (base::FeatureList::IsEnabled(kAppServiceCrosApiOnAppsWithoutMojom)) {
-    crosapi_subscriber_ = subscriber;
-    crosapi_subscriber_->OnApps(app_registry_cache_.GetAllApps());
-  }
+  crosapi_subscriber_ = subscriber;
+  crosapi_subscriber_->OnApps(app_registry_cache_.GetAllApps());
 
   // Initialise the Preferred Apps in the `crosapi_subscriber_` on register.
   if (preferred_apps_impl_ &&

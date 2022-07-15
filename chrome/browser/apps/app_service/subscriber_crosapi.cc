@@ -98,20 +98,8 @@ void SubscriberCrosapi::OnPreferredAppsChanged(PreferredAppChangesPtr changes) {
 void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                apps::mojom::AppType mojom_app_type,
                                bool should_notify_initialized) {
-  if (base::FeatureList::IsEnabled(kAppServiceCrosApiOnAppsWithoutMojom)) {
-    return;
-  }
-
-  auto app_type = ConvertMojomAppTypToAppType(mojom_app_type);
-  if (Accepts(app_type) && Accepts(deltas) && subscriber_.is_bound()) {
-    std::vector<AppPtr> apps;
-    for (const auto& mojom_app : deltas) {
-      if (mojom_app) {
-        apps.push_back(ConvertMojomAppToApp(mojom_app));
-      }
-    }
-    subscriber_->OnApps(std::move(apps), app_type, should_notify_initialized);
-  }
+  // The non mojom OnApps is used to publish apps.
+  return;
 }
 
 void SubscriberCrosapi::OnCapabilityAccesses(
