@@ -90,6 +90,7 @@ void LoginPinInput::OnModified(bool last_field_active, bool complete) {
   if (last_field_active && complete) {
     absl::optional<std::string> user_input = GetCode();
     DCHECK(on_submit_);
+    LOG(WARNING) << "crbug.com/1339004 : Submitting PIN " << IsReadOnly();
     SetReadOnly(true);
     on_submit_.Run(base::UTF8ToUTF16(user_input.value_or(std::string())));
   }
@@ -244,6 +245,10 @@ void LoginPinInputView::InsertDigit(int digit) {
 void LoginPinInputView::SetReadOnly(bool read_only) {
   is_read_only_ = read_only;
   code_input_->SetReadOnly(read_only);
+}
+
+bool LoginPinInputView::IsReadOnly() const {
+  return is_read_only_;
 }
 
 gfx::Size LoginPinInputView::CalculatePreferredSize() const {

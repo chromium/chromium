@@ -116,6 +116,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
     case ForceFailAuth::kDelayed:
       // Set a dummy authentication stage so that |IsAuthenticating| returns
       // true.
+      LOG(WARNING) << "crbug.com/1339004 : Dummy auth state";
       authentication_stage_ = AuthenticationStage::kDoAuthenticate;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
@@ -126,6 +127,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
       return;
   }
 
+  LOG(WARNING) << "crbug.com/1339004 : started authentication";
   authentication_stage_ = AuthenticationStage::kDoAuthenticate;
 
   // Checking if the password is only formed of numbers with base::StringToInt
@@ -466,8 +468,10 @@ void LoginScreenController::NotifyUserActivity() {
 void LoginScreenController::OnAuthenticateComplete(
     OnAuthenticateCallback callback,
     bool success) {
+  LOG(WARNING) << "crbug.com/1339004 : authentication complete";
   authentication_stage_ = AuthenticationStage::kUserCallback;
   std::move(callback).Run(absl::make_optional<bool>(success));
+  LOG(WARNING) << "crbug.com/1339004 : triggered callback";
   authentication_stage_ = AuthenticationStage::kIdle;
 
   // During smart card login flow, multiple security token requests can be made.

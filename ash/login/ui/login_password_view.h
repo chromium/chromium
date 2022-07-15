@@ -134,6 +134,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
 
   // Makes the textfield read-only and enables/disables submitting.
   void SetReadOnly(bool read_only);
+  bool IsReadOnly() const;
 
   // views::View:
   const char* GetClassName() const override;

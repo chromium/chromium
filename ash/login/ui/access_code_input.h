@@ -44,6 +44,7 @@ class AccessCodeInput : public views::View, public views::TextfieldController {
   // Makes the internal fields read only. In contrast to 'SetInputEnabled',
   // the focus remain on the element.
   virtual void SetReadOnly(bool read_only) = 0;
+  virtual bool IsReadOnly() const = 0;
 
   // Clears the input field(s).
   virtual void ClearInput() = 0;
@@ -88,6 +89,7 @@ class FlexCodeInput : public AccessCodeInput {
   void SetInputEnabled(bool input_enabled) override;
 
   void SetReadOnly(bool read_only) override;
+  bool IsReadOnly() const override;
 
   // Clears text in input text field.
   void ClearInput() override;
@@ -221,6 +223,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   void SetInputEnabled(bool input_enabled) override;
 
   void SetReadOnly(bool read_only) override;
+  bool IsReadOnly() const override;
 
   // Clears the PIN fields.
   void ClearInput() override;

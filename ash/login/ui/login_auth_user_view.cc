@@ -45,6 +45,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/user_manager/user.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1719,6 +1720,11 @@ void LoginAuthUserView::OnThemeChanged() {
 }
 
 void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
+  LOG(WARNING) << "crbug.com/1339004 : AuthSubmit "
+               << password_view_->IsReadOnly() << " / "
+               << pin_input_view_->IsReadOnly() << " /  "
+               << HasAuthMethod(AUTH_TAP);
+
   // Pressing enter when the password field is empty and tap-to-unlock is
   // enabled should attempt unlock.
   if (HasAuthMethod(AUTH_TAP) && password.empty()) {
@@ -1738,11 +1744,14 @@ void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
 }
 
 void LoginAuthUserView::OnAuthComplete(absl::optional<bool> auth_success) {
+  bool failed = !auth_success.value_or(false);
+  LOG(WARNING) << "crbug.com/1339004 : OnAuthComplete " << failed;
+
   // Clear the password only if auth fails. Make sure to keep the password
   // view disabled even if auth succeededs, as if the user submits a password
   // while animating the next lock screen will not work as expected. See
   // https://crbug.com/808486.
-  if (!auth_success.has_value() || !auth_success.value()) {
+  if (failed) {
     password_view_->Reset();
     password_view_->SetReadOnly(false);
     pin_input_view_->Reset();

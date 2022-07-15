@@ -121,6 +121,11 @@ void FlexCodeInput::SetReadOnly(bool read_only) {
   NOTIMPLEMENTED();
 }
 
+bool FlexCodeInput::IsReadOnly() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void FlexCodeInput::ClearInput() {
   code_field_->SetText(std::u16string());
   on_input_change_.Run(false);
@@ -453,6 +458,17 @@ void FixedLengthCodeInput::SetReadOnly(bool read_only) {
     field->SetReadOnly(read_only);
     field->SetCursorEnabled(!read_only);
   }
+}
+
+bool FixedLengthCodeInput::IsReadOnly() const {
+  if (!input_fields_.empty()) {
+    // As SetReadOnly above propagates flag to all fields, just
+    // check the first field here instead of implementing complex
+    // combining logic.
+    return static_cast<views::SelectionControllerDelegate*>(input_fields_[0])
+        ->IsReadOnly();
+  }
+  return false;
 }
 
 void FixedLengthCodeInput::ClearInput() {

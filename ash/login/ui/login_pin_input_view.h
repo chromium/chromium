@@ -83,6 +83,7 @@ class ASH_EXPORT LoginPinInputView : public views::View {
   // Sets the field as read only. The field is made read only during an
   // authentication request.
   void SetReadOnly(bool read_only);
+  bool IsReadOnly() const;
   // views::View
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;

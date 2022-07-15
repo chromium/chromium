@@ -795,6 +795,10 @@ void LoginPasswordView::SetReadOnly(bool read_only) {
   UpdateUiState();
 }
 
+bool LoginPasswordView::IsReadOnly() const {
+  return textfield_->GetReadOnly();
+}
+
 const char* LoginPasswordView::GetClassName() const {
   return kLoginPasswordViewName;
 }
