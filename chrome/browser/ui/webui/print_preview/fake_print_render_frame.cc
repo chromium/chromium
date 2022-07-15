@@ -23,7 +23,8 @@ FakePrintRenderFrame::~FakePrintRenderFrame() = default;
 
 void FakePrintRenderFrame::PrintRequestedPages() {}
 
-void FakePrintRenderFrame::PrintWithParams(mojom::PrintPagesParamsPtr params) {
+void FakePrintRenderFrame::PrintWithParams(mojom::PrintPagesParamsPtr params,
+                                           PrintWithParamsCallback callback) {
   NOTREACHED();
 }
 

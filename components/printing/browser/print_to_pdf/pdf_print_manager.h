@@ -60,22 +60,21 @@ class PdfPrintManager : public printing::PrintManager,
                   PrintToPdfCallback callback);
 
  private:
-  explicit PdfPrintManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PdfPrintManager>;
+
+  explicit PdfPrintManager(content::WebContents* web_contents);
+
+  void OnDidPrintWithParams(printing::mojom::PrintWithParamsResultPtr result);
 
   // WebContentsObserver overrides (via PrintManager):
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // printing::mojom::PrintManagerHost:
-  void DidPrintDocument(printing::mojom::DidPrintDocumentParamsPtr params,
-                        DidPrintDocumentCallback callback) override;
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
   void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
-  void PrintingFailed(int32_t cookie,
-                      printing::mojom::PrintFailureReason reason) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void UpdatePrintSettings(int32_t cookie,
                            base::Value::Dict job_settings,

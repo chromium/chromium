@@ -275,6 +275,11 @@ enum PrintFailureReason {
   kInvalidPageRange,
 };
 
+union PrintWithParamsResult {
+  DidPrintDocumentParams params;
+  PrintFailureReason failure_reason;
+};
+
 // Render process interface exposed to the browser to handle most of the
 // printing grunt work for RenderView.
 interface PrintRenderFrame {
@@ -289,7 +294,8 @@ interface PrintRenderFrame {
   // interactive print preview -- the final print settings are supplied by
   // the caller and printing is completed without further round-trips to the
   // browser.
-  PrintWithParams(PrintPagesParams params);
+  PrintWithParams(PrintPagesParams params)
+      => (PrintWithParamsResult result);
 
   // Tells the RenderFrame to switch the CSS to print media type, render every
   // requested page using the print preview document's frame/node, and then

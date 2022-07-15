@@ -26,7 +26,8 @@ class FakePrintRenderFrame : public mojom::PrintRenderFrame {
  private:
   // printing::mojom::PrintRenderFrame:
   void PrintRequestedPages() override;
-  void PrintWithParams(mojom::PrintPagesParamsPtr params) override;
+  void PrintWithParams(mojom::PrintPagesParamsPtr params,
+                       PrintWithParamsCallback callback) override;
   void PrintForSystemDialog() override;
   void SetPrintPreviewUI(
       mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> preview) override;

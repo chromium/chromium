@@ -256,7 +256,8 @@ class PrintRenderFrameHelper
 
   // printing::mojom::PrintRenderFrame:
   void PrintRequestedPages() override;
-  void PrintWithParams(mojom::PrintPagesParamsPtr params) override;
+  void PrintWithParams(mojom::PrintPagesParamsPtr params,
+                       PrintWithParamsCallback callback) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void PrintForSystemDialog() override;
   void SetPrintPreviewUI(
@@ -466,6 +467,9 @@ class PrintRenderFrameHelper
   // message gets a reply.
   void QuitScriptedPrintPreviewRunLoop();
   void QuitGetPrintSettingsFromUserRunLoop();
+
+  // Resets internal state
+  void Reset();
 
   // WebView used only to print the selection.
   std::unique_ptr<PrepareFrameAndViewForPrint> prep_frame_view_;
@@ -693,6 +697,9 @@ class PrintRenderFrameHelper
   //   called. This is a store for the RequestPrintPreview() call and its
   //   parameters so that it can be invoked after DidStopLoading.
   base::OnceClosure on_stop_loading_closure_;
+
+  // This is used to report PrintWithParams() call result.
+  PrintWithParamsCallback print_with_params_callback_;
 
   // Stores the quit closures of Mojo responses.
   scoped_refptr<ClosuresForMojoResponse> closures_for_mojo_responses_;

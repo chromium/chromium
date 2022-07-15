@@ -1334,19 +1334,26 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
 }
 
 void PrintRenderFrameHelper::PrintWithParams(
-    mojom::PrintPagesParamsPtr settings) {
+    mojom::PrintPagesParamsPtr settings,
+    PrintWithParamsCallback callback) {
   DCHECK(!settings->params->dpi.IsEmpty());
   DCHECK(settings->params->document_cookie);
 
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint) {
+    std::move(callback).Run(mojom::PrintWithParamsResult::NewFailureReason(
+        mojom::PrintFailureReason::kGeneralFailure));
     return;
+  }
 
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
   // Don't print if the RenderFrame is gone.
-  if (render_frame_gone_)
+  if (render_frame_gone_) {
+    std::move(callback).Run(mojom::PrintWithParamsResult::NewFailureReason(
+        mojom::PrintFailureReason::kGeneralFailure));
     return;
+  }
 
   // If we are printing a frame with an internal PDF plugin element, find the
   // plugin node and print that instead.
@@ -1361,6 +1368,10 @@ void PrintRenderFrameHelper::PrintWithParams(
   SetPrintPagesParams(*settings);
   prep_frame_view_ = std::make_unique<PrepareFrameAndViewForPrint>(
       *settings->params, frame, plugin_node, /* ignore_css_margins=*/false);
+
+  CHECK(!print_with_params_callback_);
+  print_with_params_callback_ = std::move(callback);
+
   PrintPages();
   FinishFramePrinting();
 
@@ -2126,6 +2137,19 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
 }
 
 void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
+  // Code in PrintPagesNative() handles the success case firing the callback,
+  // so if we get here with the pending callback it must be the failure case.
+  if (print_with_params_callback_) {
+    DCHECK_NE(result, OK);
+    std::move(print_with_params_callback_)
+        .Run(mojom::PrintWithParamsResult::NewFailureReason(
+            result == INVALID_PAGE_RANGE
+                ? mojom::PrintFailureReason::kInvalidPageRange
+                : mojom::PrintFailureReason::kGeneralFailure));
+    Reset();
+    return;
+  }
+
   int cookie =
       print_pages_params_ ? print_pages_params_->params->document_cookie : 0;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -2172,6 +2196,11 @@ void PrintRenderFrameHelper::DidFinishPrinting(PrintingResult result) {
       break;
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   }
+
+  Reset();
+}
+
+void PrintRenderFrameHelper::Reset() {
   prep_frame_view_.reset();
   print_pages_params_.reset();
   notify_browser_of_print_failure_ = true;
@@ -2285,6 +2314,13 @@ bool PrintRenderFrameHelper::PrintPagesNative(
 #if BUILDFLAG(IS_WIN)
   page_params->physical_offsets = printer_printable_area_.origin();
 #endif
+
+  if (print_with_params_callback_) {
+    std::move(print_with_params_callback_)
+        .Run(mojom::PrintWithParamsResult::NewParams(std::move(page_params)));
+    return true;
+  }
+
   bool completed = false;
   GetPrintManagerHost()->DidPrintDocument(std::move(page_params), &completed);
   return completed;
