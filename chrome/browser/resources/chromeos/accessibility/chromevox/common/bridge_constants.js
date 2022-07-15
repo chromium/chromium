@@ -11,15 +11,9 @@ goog.provide('BridgeConstants');
 goog.provide('BridgeTarget');
 goog.provide('BridgeTargets');
 
-/** @enum {string} */
-BridgeTargets = {
-  EVENT_STREAM_LOGGER: 'EventStreamLogger',
-  PANEL_BACKGROUND: 'PanelBackground',
-  USER_ACTION_MONITOR: 'UserActionMonitor',
-};
 /**
  * The class that a message is being sent to.
- * @typedef {BridgeTargets|string}
+ * @typedef {string}
  */
 BridgeTarget;
 
@@ -91,6 +85,15 @@ BridgeConstants = {
     },
   },
 
+  EventStreamLogger: {
+    /** @public {BridgeTarget} */
+    TARGET: 'EventStreamLogger',
+    /** @enum {string} */
+    Action: {
+      NOTIFY_EVENT_STREAM_FILTER_CHANGED: 'notifyEventStreamFilterChanged',
+    },
+  },
+
   GestureCommandHandler: {
     /** @public {BridgeTarget} */
     TARGET: 'GestureCommandHandler',
@@ -119,43 +122,54 @@ BridgeConstants = {
       ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
     },
   },
-};
 
-/**
- * @enum {string}
- */
-BridgeActions = {
-  CLEAR_SAVED_NODE: 'clearSavedNode',
-  CREATE: 'create',
-  CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
-  CREATE_NEW_I_SEARCH: 'createNewISearch',
-  DESTROY: 'destroy',
-  DESTROY_I_SEARCH: 'destroyISearch',
-  FOCUS_TAB: 'focusTab',
-  GET_ACTIONS_FOR_CURRENT_NODE: 'getActionsForCurrentNode',
-  GET_TAB_MENU_DATA: 'getTabMenuData',
-  INCREMENTAL_SEARCH: 'incrementalSearch',
-  NODE_MENU_CALLBACK: 'nodeMenuCallback',
-  NOTIFY_EVENT_STREAM_FILTER_CHANGED: 'notifyEventStreamFilterChanged',
-  PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
-  PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
-  SAVE_CURRENT_NODE: 'saveCurrentNode',
-  SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
-  WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
+  PanelBackground: {
+    /** @public {BridgeTarget} */
+    TARGET: 'PanelBackground',
+    /** @enum {string} */
+    Action: {
+      CLEAR_SAVED_NODE: 'clearSavedNode',
+      CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
+      CREATE_NEW_I_SEARCH: 'createNewISearch',
+      DESTROY_I_SEARCH: 'destroyISearch',
+      FOCUS_TAB: 'focusTab',
+      GET_ACTIONS_FOR_CURRENT_NODE: 'getActionsForCurrentNode',
+      GET_TAB_MENU_DATA: 'getTabMenuData',
+      INCREMENTAL_SEARCH: 'incrementalSearch',
+      NODE_MENU_CALLBACK: 'nodeMenuCallback',
+      PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
+      PERFORM_STANDARD_ACTION_ON_CURRENT_NODE:
+          'performStandardActionOnCurrentNode',
+      SAVE_CURRENT_NODE: 'saveCurrentNode',
+      SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
+      WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
+    },
+  },
+
+  UserActionMonitor: {
+    /** @public {BridgeTarget} */
+    TARGET: 'UserActionMonitor',
+    Action: {
+      CREATE: 'create',
+      DESTROY: 'destroy',
+    },
+  },
 };
 
 /**
  * The action that the message is requesting be performed.
- * @typedef {BridgeActions |
- *           BridgeConstants.BrailleBackground.Action |
+ * @typedef {BridgeConstants.BrailleBackground.Action |
  *           BridgeConstants.BrailleCommandHandler.Action |
  *           BridgeConstants.ChromeVoxBackground.Action |
  *           BridgeConstants.ChromeVoxPrefs.Action |
  *           BridgeConstants.ChromeVoxState.Action |
  *           BridgeConstants.CommandHandler.Action |
  *           BridgeConstants.EventSourceState.Action |
+ *           BridgeConstants.EventStreamLogger.Action |
  *           BridgeConstants.GestureCommandHandler.Action |
  *           BridgeConstants.LogStore.Action |
- *           BridgeConstants.Panel.Action}
+ *           BridgeConstants.Panel.Action |
+ *           BridgeConstants.PanelBackground.Action |
+ *           BridgeConstants.UserActionMonitor.Action}
  */
 BridgeAction;

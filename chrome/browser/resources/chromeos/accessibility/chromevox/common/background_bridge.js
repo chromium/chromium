@@ -9,7 +9,6 @@
 
 goog.provide('BackgroundBridge');
 
-goog.require('BridgeActions');
 goog.require('BridgeConstants');
 goog.require('BridgeHelper');
 goog.require('BridgeTargets');
@@ -167,8 +166,10 @@ BackgroundBridge.EventStreamLogger = {
    */
   async notifyEventStreamFilterChanged(name, enabled) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.EVENT_STREAM_LOGGER,
-        BridgeActions.NOTIFY_EVENT_STREAM_FILTER_CHANGED, {name, enabled});
+        BridgeConstants.EventStreamLogger.TARGET,
+        BridgeConstants.EventStreamLogger.Action
+            .NOTIFY_EVENT_STREAM_FILTER_CHANGED,
+        {name, enabled});
   },
 };
 
@@ -190,7 +191,8 @@ BackgroundBridge.LogStore = {
    */
   async getLogs() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.LOG_STORE, BridgeActions.GET_LOGS);
+        BridgeTargets.LOG_STORE,
+        BridgeConstants.PanelBackground.Action.GET_LOGS);
   },
 };
 
@@ -198,14 +200,16 @@ BackgroundBridge.PanelBackground = {
   /** @return {!Promise} */
   async clearSavedNode() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.CLEAR_SAVED_NODE);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.CLEAR_SAVED_NODE);
   },
 
   /** @param {string=} opt_activatedMenuTitle */
   async createAllNodeMenuBackgrounds(opt_activatedMenuTitle) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND,
-        BridgeActions.CREATE_ALL_NODE_MENU_BACKGROUNDS, opt_activatedMenuTitle);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.CREATE_ALL_NODE_MENU_BACKGROUNDS,
+        opt_activatedMenuTitle);
   },
 
   /**
@@ -215,7 +219,8 @@ BackgroundBridge.PanelBackground = {
    */
   async createNewISearch() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.CREATE_NEW_I_SEARCH);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.CREATE_NEW_I_SEARCH);
   },
 
   /**
@@ -224,7 +229,8 @@ BackgroundBridge.PanelBackground = {
    */
   async destroyISearch() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.DESTROY_I_SEARCH);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.DESTROY_I_SEARCH);
   },
 
   /**
@@ -234,8 +240,8 @@ BackgroundBridge.PanelBackground = {
    */
   async focusTab(windowId, tabId) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.FOCUS_TAB,
-        {windowId, tabId});
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.FOCUS_TAB, {windowId, tabId});
   },
 
   /**
@@ -246,14 +252,15 @@ BackgroundBridge.PanelBackground = {
    */
   async getActionsForCurrentNode() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND,
-        BridgeActions.GET_ACTIONS_FOR_CURRENT_NODE);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.GET_ACTIONS_FOR_CURRENT_NODE);
   },
 
   /** @return {!Promise<!Array<!PanelTabMenuItemData>>} */
   async getTabMenuData() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.GET_TAB_MENU_DATA);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.GET_TAB_MENU_DATA);
   },
 
   /**
@@ -264,7 +271,8 @@ BackgroundBridge.PanelBackground = {
    */
   async incrementalSearch(searchStr, dir, opt_nextObject) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.INCREMENTAL_SEARCH,
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.INCREMENTAL_SEARCH,
         {searchStr, dir, opt_nextObject});
   },
 
@@ -274,7 +282,8 @@ BackgroundBridge.PanelBackground = {
    */
   async nodeMenuCallback(callbackNodeIndex) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.NODE_MENU_CALLBACK,
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.NODE_MENU_CALLBACK,
         callbackNodeIndex);
   },
 
@@ -284,8 +293,10 @@ BackgroundBridge.PanelBackground = {
    */
   async performCustomActionOnCurrentNode(actionId) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND,
-        BridgeActions.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE, actionId);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action
+            .PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
+        actionId);
   },
 
   /**
@@ -294,14 +305,17 @@ BackgroundBridge.PanelBackground = {
    */
   async performStandardActionOnCurrentNode(action) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND,
-        BridgeActions.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE, action);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action
+            .PERFORM_STANDARD_ACTION_ON_CURRENT_NODE,
+        action);
   },
 
   /** @return {!Promise} */
   async saveCurrentNode() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.SAVE_CURRENT_NODE);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.SAVE_CURRENT_NODE);
   },
 
   /**
@@ -310,8 +324,8 @@ BackgroundBridge.PanelBackground = {
    */
   async setRangeToISearchNode() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND,
-        BridgeActions.SET_RANGE_TO_I_SEARCH_NODE);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.SET_RANGE_TO_I_SEARCH_NODE);
   },
 
   /**
@@ -319,7 +333,8 @@ BackgroundBridge.PanelBackground = {
    */
   async waitForPanelCollapse() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.PANEL_BACKGROUND, BridgeActions.WAIT_FOR_PANEL_COLLAPSE);
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.WAIT_FOR_PANEL_COLLAPSE);
   },
 };
 
@@ -336,7 +351,8 @@ BackgroundBridge.UserActionMonitor = {
    */
   async create(actions) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.USER_ACTION_MONITOR, BridgeActions.CREATE, actions);
+        BridgeConstants.UserActionMonitor.TARGET,
+        BridgeConstants.UserActionMonitor.Action.CREATE, actions);
   },
 
   /**
@@ -345,6 +361,7 @@ BackgroundBridge.UserActionMonitor = {
    */
   async destroy() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.USER_ACTION_MONITOR, BridgeActions.DESTROY);
+        BridgeConstants.UserActionMonitor.TARGET,
+        BridgeConstants.UserActionMonitor.Action.DESTROY);
   },
 };

@@ -353,9 +353,11 @@ UserActionMonitor.Action = class {
 UserActionMonitor.instance;
 
 BridgeHelper.registerHandler(
-    BridgeTargets.USER_ACTION_MONITOR, BridgeActions.CREATE,
+    BridgeConstants.UserActionMonitor.TARGET,
+    BridgeConstants.UserActionMonitor.Action.CREATE,
     actions =>
         new Promise(resolve => UserActionMonitor.create(actions, resolve)));
 BridgeHelper.registerHandler(
-    BridgeTargets.USER_ACTION_MONITOR, BridgeActions.DESTROY,
+    BridgeConstants.UserActionMonitor.TARGET,
+    BridgeConstants.UserActionMonitor.Action.DESTROY,
     () => UserActionMonitor.destroy());
