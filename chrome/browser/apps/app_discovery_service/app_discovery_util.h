@@ -29,10 +29,13 @@ enum class AppSource {
   kGames,
 };
 
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
 enum class DiscoveryError {
   kSuccess,             // Successfully got app data to return.
   kErrorRequestFailed,  // Failed to get requested data.
-  kErrorMalformedData   // Failed to parse received data.
+  kErrorMalformedData,  // Failed to parse received data.
+  kMaxValue = kErrorMalformedData,
 };
 
 using ResultCallback =

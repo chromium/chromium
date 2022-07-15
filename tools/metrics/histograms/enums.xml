@@ -25953,6 +25953,12 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="Success"/>
 </enum>
 
+<enum name="DiscoveryError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error, request failed"/>
+  <int value="2" label="Error, malformed data"/>
+</enum>
+
 <enum name="DiscoveryNetworkMonitorConnectionType">
   <int value="0" label="Wifi"/>
   <int value="1" label="Ethernet"/>
@@ -44303,6 +44309,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="781547301" label="ScufProduct7725"/>
   <int value="1717962343" label="PrototypeVendorProduct0667"/>
   <int value="1717998593" label="PrototypeVendorProduct9401"/>
+</enum>
+
+<enum name="GameProviderSearchStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Disabled by policy"/>
+  <int value="2" label="Empty index"/>
 </enum>
 
 <enum name="Gamma">

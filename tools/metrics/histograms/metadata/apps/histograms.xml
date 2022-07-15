@@ -568,6 +568,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.GameProvider.SearchStatus"
+    enum="GameProviderSearchStatus" expires_after="2023-02-28">
+  <owner>wrong@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <summary>
+    The outcome of a query for game results. Logged once per game search query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.GameProvider.UpdateStatus" enum="DiscoveryError"
+    expires_after="2023-02-28">
+  <owner>wrong@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <summary>
+    The outcome of an index update from the Discovery service. Logged once per
+    update.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.HelpAppProvider.ListSearchResultState"
     enum="HelpAppProviderListSearchResultState" expires_after="2022-10-19">
   <owner>tby@chromium.org</owner>
