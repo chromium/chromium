@@ -85,7 +85,14 @@ def _CompareApiDumpForFiles(input_api, output_api, aidl_files):
   from devil.android.sdk import build_tools
   devil_chromium.Initialize()
 
-  aidl_tool_path = build_tools.GetPath('aidl')
+  try:
+    aidl_tool_path = build_tools.GetPath('aidl')
+  except Exception as e:
+    if input_api.no_diffs:
+      # If we are running presubmits with --all or --files and the 'aidl' tool
+      # cannot be found then that probably means that target_os = 'android' is
+      # missing from .gclient and the failure is not interesting.
+      return []
   if not os.path.exists(aidl_tool_path):
     return [output_api.PresubmitError(
         'Android sdk does not contain aidl command ' + aidl_tool_path)]
