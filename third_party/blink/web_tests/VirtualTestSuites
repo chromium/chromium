@@ -1306,5 +1306,19 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
     "args": [ "--enable-features=CoopRestrictProperties" ]
+  },
+  {
+    "prefix": "prefetch",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/speculation-rules/prefetch",
+      "http/tests/inspector-protocol/prefetch"
+    ],
+    "args": [
+      "--enable-blink-features=SpeculationRulesPrefetchProxy",
+      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor",
+      "--bypass-prefetch-proxy-for-host=not-web-platform.test",
+      "--isolated-prerender-allow-all-domains"
+    ]
   }
 ]

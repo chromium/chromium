@@ -860,6 +860,12 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
   request->trusted_params = trusted_params;
   request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
 
+  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
+  if (devtools_observer && !prefetch_container->IsDecoy()) {
+    devtools_observer->OnStartSinglePrefetch(prefetch_container->RequestId(),
+                                             *request);
+  }
+
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("navigation_predictor_srp_prefetch",
                                           R"(
@@ -941,6 +947,21 @@ void PrefetchProxyTabHelper::OnPrefetchRedirect(
       original_url,
       PrefetchProxyPrefetchStatus::kPrefetchFailedRedirectsDisabled);
 
+  auto prefetch_container_iter = page_->prefetch_containers_.find(original_url);
+  if (prefetch_container_iter != page_->prefetch_containers_.end()) {
+    const auto& devtools_observer =
+        prefetch_container_iter->second->GetDevToolsObserver();
+    if (devtools_observer) {
+      devtools_observer->OnPrefetchResponseReceived(
+          original_url, prefetch_container_iter->second->RequestId(),
+          response_head);
+
+      devtools_observer->OnPrefetchRequestComplete(
+          prefetch_container_iter->second->RequestId(),
+          network::URLLoaderCompletionStatus{net::ERR_NOT_IMPLEMENTED});
+    }
+  }
+
   // Cancels the current request.
   DCHECK(page_->url_loaders_.find(loader) != page_->url_loaders_.end());
   page_->url_loaders_.erase(page_->url_loaders_.find(loader));
@@ -984,6 +1005,20 @@ void PrefetchProxyTabHelper::OnPrefetchComplete(
 
   base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.NetError",
                            std::abs(loader->NetError()));
+  const auto& devtools_observer =
+      prefetch_container_iter->second->GetDevToolsObserver();
+  if (devtools_observer) {
+    if (loader->ResponseInfo()) {
+      devtools_observer->OnPrefetchResponseReceived(
+          url, prefetch_container_iter->second->RequestId(),
+          *loader->ResponseInfo());
+    }
+
+    devtools_observer->OnPrefetchRequestComplete(
+        prefetch_container_iter->second->RequestId(),
+        loader->CompletionStatus().value_or(
+            network::URLLoaderCompletionStatus(loader->NetError())));
+  }
 
   if (loader->CompletionStatus()) {
     page_->prefetch_metrics_collector_->OnMainframeResourcePrefetched(
@@ -1269,7 +1304,8 @@ void PrefetchProxyTabHelper::StartSpareRenderer() {
 
 void PrefetchProxyTabHelper::PrefetchSpeculationCandidates(
     const std::vector<std::pair<GURL, PrefetchType>>& prefetches,
-    const GURL& source_document_url) {
+    const GURL& source_document_url,
+    base::WeakPtr<content::SpeculationHostDevToolsObserver> devtools_observer) {
   // Use navigation predictor by default.
   if (!PrefetchProxyUseSpeculationRules())
     return;
@@ -1296,7 +1332,7 @@ void PrefetchProxyTabHelper::PrefetchSpeculationCandidates(
     filtered_prefetches.erase(new_end, filtered_prefetches.end());
   }
 
-  PrefetchUrls(filtered_prefetches);
+  PrefetchUrls(filtered_prefetches, std::move(devtools_observer));
 }
 
 void PrefetchProxyTabHelper::OnPredictionUpdated(
@@ -1342,11 +1378,13 @@ void PrefetchProxyTabHelper::OnPredictionUpdated(
                                          /*use_prefetch_proxy=*/true,
                                          /*can_prefetch_subresources=*/true));
   }
-  PrefetchUrls(prefetches);
+  // TODO: we need to pass devtools observer here
+  PrefetchUrls(prefetches, nullptr);
 }
 
 void PrefetchProxyTabHelper::PrefetchUrls(
-    const std::vector<std::pair<GURL, PrefetchType>>& prefetch_targets) {
+    const std::vector<std::pair<GURL, PrefetchType>>& prefetch_targets,
+    base::WeakPtr<content::SpeculationHostDevToolsObserver> devtools_observer) {
   if (!PrefetchProxyIsEnabled()) {
     return;
   }
@@ -1379,14 +1417,19 @@ void PrefetchProxyTabHelper::PrefetchUrls(
       // the navigation predictor will issue multiple predictions during a
       // single page load. Additional predictions should be treated as appending
       // to the ordering of previous predictions.
+      auto prefetch_container = std::make_unique<PrefetchContainer>(
+          prefetch_with_type.first, prefetch_with_type.second,
+          page_->prefetch_containers_.size());
+      prefetch_container->SetDevToolsObserver(devtools_observer);
       page_->prefetch_containers_[prefetch_with_type.first] =
-          std::make_unique<PrefetchContainer>(
-              prefetch_with_type.first, prefetch_with_type.second,
-              page_->prefetch_containers_.size());
-    } else if (prefetch_with_type.second !=
-               prefetch_container_iter->second->GetPrefetchType()) {
-      prefetch_container_iter->second->ChangePrefetchType(
-          prefetch_with_type.second);
+          std::move(prefetch_container);
+    } else {
+      if (prefetch_with_type.second !=
+          prefetch_container_iter->second->GetPrefetchType()) {
+        prefetch_container_iter->second->ChangePrefetchType(
+            prefetch_with_type.second);
+      }
+      prefetch_container_iter->second->SetDevToolsObserver(devtools_observer);
     }
   }
 

@@ -52,7 +52,8 @@ PrefetchContainer::PrefetchContainer(
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       url_(url),
       prefetch_type_(prefetch_type),
-      prefetch_document_manager_(prefetch_document_manager) {}
+      prefetch_document_manager_(prefetch_document_manager),
+      request_id_(base::UnguessableToken::Create().ToString()) {}
 
 PrefetchContainer::~PrefetchContainer() = default;
 

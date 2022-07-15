@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "chrome/browser/prefetch/prefetch_proxy/chrome_speculation_host_delegate.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
@@ -118,6 +119,20 @@ class PrefetchContainer {
   }
   std::unique_ptr<PrefetchProxyNetworkContext> ReleaseNetworkContext();
 
+  // Returns request id to be used by DevTools
+  const std::string& RequestId() const { return request_id_; }
+
+  void SetDevToolsObserver(
+      base::WeakPtr<content::SpeculationHostDevToolsObserver>
+          devtools_observer) {
+    devtools_observer_ = std::move(devtools_observer);
+  }
+
+  const base::WeakPtr<content::SpeculationHostDevToolsObserver>&
+  GetDevToolsObserver() const {
+    return devtools_observer_;
+  }
+
  private:
   // The URL that will potentially be prefetched.
   // TODO(crbug.com/1266876): The container needs to track the entire redirect
@@ -160,6 +175,12 @@ class PrefetchContainer {
 
   // The network context used to prefetch |url_|.
   std::unique_ptr<PrefetchProxyNetworkContext> network_context_;
+
+  // Request identifier used by DevTools
+  std::string request_id_;
+
+  // Weak pointer to DevTools observer
+  base::WeakPtr<content::SpeculationHostDevToolsObserver> devtools_observer_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_CONTAINER_H_

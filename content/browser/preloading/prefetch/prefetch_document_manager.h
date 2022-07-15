@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
@@ -42,10 +43,14 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // prefetched. Any candidates that can be prefetched are removed from
   // |candidates|, and a prefetch for the URL of the candidate is started.
   void ProcessCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
+      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
   // Starts the process to prefetch |url| with the given |prefetch_type|.
-  void PrefetchUrl(const GURL& url, const PrefetchType& prefetch_type);
+  void PrefetchUrl(
+      const GURL& url,
+      const PrefetchType& prefetch_type,
+      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
   // Releases ownership of the |PrefetchContainer| associated with |url|. The
   // prefetch is removed from |owned_prefetches_|, but a pointer to it remains

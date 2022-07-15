@@ -4875,6 +4875,7 @@ domain Network
       TextTrack
       XHR
       Fetch
+      Prefetch
       EventSource
       WebSocket
       Manifest

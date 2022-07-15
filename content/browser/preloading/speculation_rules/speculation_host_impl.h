@@ -12,7 +12,6 @@
 #include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
 class RenderFrameHost;
@@ -23,7 +22,8 @@ class Page;
 // third_party/blink/renderer/core/speculation_rules/README.md
 class CONTENT_EXPORT SpeculationHostImpl final
     : public content::DocumentService<blink::mojom::SpeculationHost>,
-      public WebContentsObserver {
+      public WebContentsObserver,
+      public SpeculationHostDevToolsObserver {
  public:
   // Creates and binds an instance of this per-frame.
   static void Bind(
@@ -37,6 +37,17 @@ class CONTENT_EXPORT SpeculationHostImpl final
 
   // WebContentsObserver implementation:
   void PrimaryPageChanged(Page& page) override;
+
+  // SpeculationHostDevToolsObserver implementation:
+  void OnStartSinglePrefetch(const std::string& request_id,
+                             const network::ResourceRequest& request) override;
+  void OnPrefetchResponseReceived(
+      const GURL& url,
+      const std::string& request_id,
+      const network::mojom::URLResponseHead& response) override;
+  void OnPrefetchRequestComplete(
+      const std::string& request_id,
+      const network::URLLoaderCompletionStatus& status) override;
 
  private:
   SpeculationHostImpl(
@@ -61,6 +72,8 @@ class CONTENT_EXPORT SpeculationHostImpl final
   std::vector<PrerenderInfo> started_prerenders_;
 
   base::WeakPtr<PrerenderHostRegistry> registry_;
+
+  base::WeakPtrFactory<SpeculationHostImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

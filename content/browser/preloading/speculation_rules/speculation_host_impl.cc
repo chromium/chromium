@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading//preloading.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -142,12 +143,13 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(
             &render_frame_host());
 
-    prefetch_document_manager->ProcessCandidates(candidates);
+    prefetch_document_manager->ProcessCandidates(
+        candidates, weak_ptr_factory_.GetWeakPtr());
   }
 
   // Let `delegate_` process the candidates that it is interested in.
   if (delegate_)
-    delegate_->ProcessCandidates(candidates);
+    delegate_->ProcessCandidates(candidates, weak_ptr_factory_.GetWeakPtr());
 
   ProcessCandidatesForPrerender(candidates);
 }
@@ -299,6 +301,33 @@ void SpeculationHostImpl::CancelStartedPrerenders() {
     }
     started_prerenders_.clear();
   }
+}
+
+void SpeculationHostImpl::OnStartSinglePrefetch(
+    const std::string& request_id,
+    const network::ResourceRequest& request) {
+  auto* ftn = static_cast<RenderFrameHostImpl*>(&render_frame_host())
+                  ->frame_tree_node();
+  devtools_instrumentation::OnPrefetchRequestWillBeSent(
+      ftn, request_id, render_frame_host().GetLastCommittedURL(), request);
+}
+
+void SpeculationHostImpl::OnPrefetchResponseReceived(
+    const GURL& url,
+    const std::string& request_id,
+    const network::mojom::URLResponseHead& response) {
+  auto* ftn = static_cast<RenderFrameHostImpl*>(&render_frame_host())
+                  ->frame_tree_node();
+  devtools_instrumentation::OnPrefetchResponseReceived(ftn, request_id, url,
+                                                       response);
+}
+
+void SpeculationHostImpl::OnPrefetchRequestComplete(
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status) {
+  auto* ftn = static_cast<RenderFrameHostImpl*>(&render_frame_host())
+                  ->frame_tree_node();
+  devtools_instrumentation::OnPrefetchRequestComplete(ftn, request_id, status);
 }
 
 }  // namespace content

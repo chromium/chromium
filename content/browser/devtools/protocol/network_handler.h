@@ -210,6 +210,11 @@ class NetworkHandler : public DevToolsDomainHandler,
       bool* disable_cache,
       absl::optional<std::vector<net::SourceStream::SourceType>>*
           accepted_stream_types);
+  void PrefetchRequestWillBeSent(const std::string& request_id,
+                                 const network::ResourceRequest& request,
+                                 const GURL& initiator_url,
+                                 Maybe<std::string> frame_token,
+                                 base::TimeTicks timestamp);
   void NavigationRequestWillBeSent(const NavigationRequest& nav_request,
                                    base::TimeTicks timestamp);
   void RequestSent(const std::string& request_id,

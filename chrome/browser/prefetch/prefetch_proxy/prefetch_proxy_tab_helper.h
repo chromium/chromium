@@ -26,6 +26,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_type.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -177,7 +178,9 @@ class PrefetchProxyTabHelper
   // Fetches |prefetches| (up to a limit) with the given |PrefetchType|.
   void PrefetchSpeculationCandidates(
       const std::vector<std::pair<GURL, PrefetchType>>& prefetches,
-      const GURL& source_document_url);
+      const GURL& source_document_url,
+      base::WeakPtr<content::SpeculationHostDevToolsObserver>
+          devtools_observer);
 
   // content::WebContentsObserver implementation.
   void DidStartNavigation(
@@ -431,7 +434,9 @@ class PrefetchProxyTabHelper
 
   // Fetches the |prefetch_targets| with the given |PrefetchType|.
   void PrefetchUrls(
-      const std::vector<std::pair<GURL, PrefetchType>>& prefetch_targets);
+      const std::vector<std::pair<GURL, PrefetchType>>& prefetch_targets,
+      base::WeakPtr<content::SpeculationHostDevToolsObserver>
+          devtools_observer);
 
   // Used as a callback for when the eligibility of |url| is determined.
   void OnGotEligibilityResult(

@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/speculation_host_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -123,6 +124,22 @@ class CONTENT_EXPORT PrefetchContainer {
   std::unique_ptr<PrefetchedMainframeResponseContainer>
   ReleasePrefetchedResponse();
 
+  // Returns request id to be used by DevTools
+  const std::string& RequestId() const { return request_id_; }
+
+  // Sets DevTools observer
+  void SetDevToolsObserver(
+      base::WeakPtr<content::SpeculationHostDevToolsObserver>
+          devtools_observer) {
+    devtools_observer_ = std::move(devtools_observer);
+  }
+
+  // Returns DevTool observer
+  const base::WeakPtr<SpeculationHostDevToolsObserver>& GetDevToolsObserver()
+      const {
+    return devtools_observer_;
+  }
+
  private:
   // The ID of the render frame host that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
@@ -184,6 +201,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
   base::OnceClosure on_cookie_copy_complete_callback_;
+
+  // Request identifier used by DevTools
+  std::string request_id_;
+
+  // Weak pointer to DevTools observer
+  base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

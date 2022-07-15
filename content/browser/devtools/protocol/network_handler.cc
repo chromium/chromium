@@ -2031,6 +2031,51 @@ std::unique_ptr<protocol::Network::TrustTokenParams> BuildTrustTokenParams(
 
 }  // namespace
 
+void NetworkHandler::PrefetchRequestWillBeSent(
+    const std::string& request_id,
+    const network::ResourceRequest& request,
+    const GURL& initiator_url,
+    Maybe<std::string> frame_token,
+    base::TimeTicks timestamp) {
+  if (!enabled_)
+    return;
+
+  std::string url = request.url.is_valid() ? request.url.spec() : "";
+  double current_ticks = timestamp.since_origin().InSecondsF();
+  double current_wall_time = base::Time::Now().ToDoubleT();
+  auto initiator =
+      Network::Initiator::Create()
+          .SetType(Network::Initiator::TypeEnum::Script)
+          .SetUrl(initiator_url.is_valid() ? initiator_url.spec() : "")
+          .Build();
+  // TODO: for now redirect is empty
+  bool redirect_emitted_extra_info = false;
+  std::unique_ptr<Network::Response> redirect_response;
+
+  auto request_info =
+      Network::Request::Create()
+          .SetUrl(url)
+          .SetMethod(request.method)
+          .SetHeaders(BuildRequestHeaders(request.headers, request.referrer))
+          .SetInitialPriority(resourcePriority(request.priority))
+          .SetReferrerPolicy(referrerPolicy(request.referrer_policy))
+          .Build();
+
+  frontend_->RequestWillBeSent(
+      request_id, request_id, url, std::move(request_info), current_ticks,
+      current_wall_time, std::move(initiator), redirect_emitted_extra_info,
+      std::move(redirect_response),
+      std::string(Network::ResourceTypeEnum::Prefetch), std::move(frame_token),
+      request.has_user_gesture);
+
+  // TODO: cookies, security status and full list of headers should be
+  // implemented. https://crbug.com/1315706.
+  frontend_->RequestWillBeSentExtraInfo(
+      request_id, BuildProtocolAssociatedCookies({}),
+      BuildRequestHeaders(request.headers, request.referrer),
+      GetConnectTiming(timestamp), MaybeBuildClientSecurityState({}));
+}
+
 void NetworkHandler::NavigationRequestWillBeSent(
     const NavigationRequest& nav_request,
     base::TimeTicks timestamp) {
@@ -2298,7 +2343,6 @@ void NetworkHandler::LoadingComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (!enabled_)
     return;
-
   if (status.error_code != net::OK) {
     frontend_->LoadingFailed(
         request_id,

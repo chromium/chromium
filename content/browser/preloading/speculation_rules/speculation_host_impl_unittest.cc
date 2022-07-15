@@ -180,7 +180,10 @@ class TestSpeculationHostDelegate : public SpeculationHostDelegate {
 
   // SpeculationRulesDelegate implementation.
   void ProcessCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) override {
+      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+      base::WeakPtr<
+          content::SpeculationHostDevToolsObserver> /*devtools_observer*/)
+      override {
     candidates.clear();
   }
 };

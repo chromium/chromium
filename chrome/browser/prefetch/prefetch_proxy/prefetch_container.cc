@@ -19,7 +19,8 @@ PrefetchContainer::PrefetchContainer(const GURL& url,
                                      size_t original_prediction_index)
     : url_(url),
       prefetch_type_(prefetch_type),
-      original_prediction_index_(original_prediction_index) {}
+      original_prediction_index_(original_prediction_index),
+      request_id_(base::UnguessableToken::Create().ToString()) {}
 
 PrefetchContainer::~PrefetchContainer() = default;
 

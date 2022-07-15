@@ -581,6 +581,12 @@ void PrefetchService::StartSinglePrefetch(
   request->trusted_params = trusted_params;
   request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
 
+  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
+  if (devtools_observer && !prefetch_container->IsDecoy()) {
+    devtools_observer->OnStartSinglePrefetch(prefetch_container->RequestId(),
+                                             *request);
+  }
+
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("speculation_rules_prefetch",
                                           R"(
@@ -663,6 +669,18 @@ void PrefetchService::OnPrefetchRedirect(
   // Cancels current request.
   prefetch_container->ResetURLLoader();
 
+  // Send DevTools event
+  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
+  if (devtools_observer) {
+    devtools_observer->OnPrefetchResponseReceived(
+        prefetch_container->GetURL(), prefetch_container->RequestId(),
+        response_head);
+
+    devtools_observer->OnPrefetchRequestComplete(
+        prefetch_container->RequestId(),
+        network::URLLoaderCompletionStatus{net::ERR_NOT_IMPLEMENTED});
+  }
+
   // Continue prefetching other URLs.
   Prefetch();
 }
@@ -690,6 +708,21 @@ void PrefetchService::OnPrefetchComplete(
   base::UmaHistogramSparse(
       "PrefetchProxy.Prefetch.Mainframe.NetError",
       std::abs(prefetch_container->GetLoader()->NetError()));
+
+  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
+  if (devtools_observer) {
+    if (prefetch_container->GetLoader()->ResponseInfo()) {
+      devtools_observer->OnPrefetchResponseReceived(
+          prefetch_container->GetURL(), prefetch_container->RequestId(),
+          *prefetch_container->GetLoader()->ResponseInfo());
+    }
+
+    devtools_observer->OnPrefetchRequestComplete(
+        prefetch_container->RequestId(),
+        prefetch_container->GetLoader()->CompletionStatus().value_or(
+            network::URLLoaderCompletionStatus(
+                prefetch_container->GetLoader()->NetError())));
+  }
 
   if (prefetch_container->GetLoader()->NetError() != net::OK) {
     prefetch_container->SetPrefetchStatus(

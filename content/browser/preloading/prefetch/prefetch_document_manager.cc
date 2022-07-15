@@ -52,7 +52,8 @@ void PrefetchDocumentManager::DidStartNavigation(
 }
 
 void PrefetchDocumentManager::ProcessCandidates(
-    std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
+    std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+    base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   // Filter out candidates that can be handled by |PrefetchService| and
   // determine the type of prefetch required.
   // TODO(https://crbug.com/1299059): Once this code becomes enabled by default
@@ -91,12 +92,14 @@ void PrefetchDocumentManager::ProcessCandidates(
   candidates.erase(new_end, candidates.end());
 
   for (const auto& prefetch : prefetches) {
-    PrefetchUrl(prefetch.first, prefetch.second);
+    PrefetchUrl(prefetch.first, prefetch.second, devtools_observer);
   }
 }
 
-void PrefetchDocumentManager::PrefetchUrl(const GURL& url,
-                                          const PrefetchType& prefetch_type) {
+void PrefetchDocumentManager::PrefetchUrl(
+    const GURL& url,
+    const PrefetchType& prefetch_type,
+    base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   // Skip any prefetches that have already been requested.
   auto prefetch_container_iter = all_prefetches_.find(url);
   if (prefetch_container_iter != all_prefetches_.end() &&
@@ -110,14 +113,17 @@ void PrefetchDocumentManager::PrefetchUrl(const GURL& url,
   }
 
   // Create a new |PrefetchContainer| and take ownership of it
-  owned_prefetches_[url] = std::make_unique<PrefetchContainer>(
+  auto container = std::make_unique<PrefetchContainer>(
       render_frame_host().GetGlobalId(), url, prefetch_type,
       weak_method_factory_.GetWeakPtr());
-  all_prefetches_[url] = owned_prefetches_[url]->GetWeakPtr();
+  container->SetDevToolsObserver(std::move(devtools_observer));
+  base::WeakPtr<PrefetchContainer> weak_container = container->GetWeakPtr();
+  owned_prefetches_[url] = std::move(container);
+  all_prefetches_[url] = weak_container;
 
   // Send a reference of the new |PrefetchContainer| to |PrefetchService| to
   // start the prefetch process.
-  GetPrefetchService()->PrefetchUrl(owned_prefetches_[url]->GetWeakPtr());
+  GetPrefetchService()->PrefetchUrl(weak_container);
 
   // TODO(https://crbug.com/1299059): Track metrics about the prefetches.
 }

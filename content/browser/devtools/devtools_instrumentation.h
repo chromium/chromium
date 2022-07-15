@@ -142,6 +142,19 @@ bool WillCreateURLLoaderFactoryInternal(
         target_factory_receiver,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override);
 
+void OnPrefetchRequestWillBeSent(FrameTreeNode* frame_tree_node,
+                                 const std::string& request_id,
+                                 const GURL& initiator,
+                                 const network::ResourceRequest& request);
+void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const GURL& url,
+                                const network::mojom::URLResponseHead& head);
+void OnPrefetchRequestComplete(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status);
+
 void OnResetNavigationRequest(NavigationRequest* navigation_request);
 void OnNavigationRequestWillBeSent(const NavigationRequest& navigation_request);
 void OnNavigationResponseReceived(

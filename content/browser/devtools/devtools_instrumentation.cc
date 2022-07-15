@@ -925,6 +925,39 @@ bool WillCreateURLLoaderFactory(
   return true;
 }
 
+void OnPrefetchRequestWillBeSent(FrameTreeNode* frame_tree_node,
+                                 const std::string& request_id,
+                                 const GURL& initiator,
+                                 const network::ResourceRequest& request) {
+  auto timestamp = base::TimeTicks::Now();
+  std::string frame_token = frame_tree_node->devtools_frame_token().ToString();
+  DispatchToAgents(frame_tree_node,
+                   &protocol::NetworkHandler::PrefetchRequestWillBeSent,
+                   request_id, request, initiator, frame_token, timestamp);
+}
+
+void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
+                                const std::string& request_id,
+                                const GURL& url,
+                                const network::mojom::URLResponseHead& head) {
+  std::string frame_token = frame_tree_node->devtools_frame_token().ToString();
+
+  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+      network::ExtractDevToolsInfo(head);
+  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::ResponseReceived,
+                   request_id, request_id, url,
+                   protocol::Network::ResourceTypeEnum::Prefetch, *head_info,
+                   frame_token);
+}
+void OnPrefetchRequestComplete(
+    FrameTreeNode* frame_tree_node,
+    const std::string& request_id,
+    const network::URLLoaderCompletionStatus& status) {
+  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::LoadingComplete,
+                   request_id, protocol::Network::ResourceTypeEnum::Prefetch,
+                   status);
+}
+
 void OnNavigationRequestWillBeSent(
     const NavigationRequest& navigation_request) {
   // Note this intentionally deviates from the usual instrumentation signal

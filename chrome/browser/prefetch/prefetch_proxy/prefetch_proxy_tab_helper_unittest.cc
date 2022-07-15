@@ -166,7 +166,7 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
                             /*use_prefetch_proxy=*/true,
                             /*can_prefetch_subresources=*/false));
     }
-    tab_helper_->PrefetchSpeculationCandidates(prefetches, doc_url);
+    tab_helper_->PrefetchSpeculationCandidates(prefetches, doc_url, nullptr);
   }
 
   void TriggerRedirectHistogramRecording() {
