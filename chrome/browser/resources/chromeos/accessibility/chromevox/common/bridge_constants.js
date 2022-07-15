@@ -152,6 +152,7 @@ BridgeConstants = {
     Action: {
       CREATE: 'create',
       DESTROY: 'destroy',
+      ON_KEY_DOWN: 'onKeyDown',
     },
   },
 };

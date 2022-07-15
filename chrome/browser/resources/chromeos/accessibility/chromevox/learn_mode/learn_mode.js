@@ -81,8 +81,13 @@ export class LearnMode {
         return true;
       }
 
-      ChromeVoxKbHandler.basicKeyDownActionsListener(evt);
-      LearnMode.clearRange();
+      BackgroundBridge.UserActionMonitor.onKeyDown(evt).then(
+          (shouldPropagate) => {
+            if (shouldPropagate) {
+              ChromeVoxKbHandler.basicKeyDownActionsListener(evt);
+            }
+            LearnMode.clearRange();
+          });
     }
 
     evt.preventDefault();

@@ -364,4 +364,11 @@ BackgroundBridge.UserActionMonitor = {
         BridgeConstants.UserActionMonitor.TARGET,
         BridgeConstants.UserActionMonitor.Action.DESTROY);
   },
+
+  /** @return {!Promise<boolean>} */
+  async onKeyDown(event) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.UserActionMonitor.TARGET,
+        BridgeConstants.UserActionMonitor.Action.ON_KEY_DOWN, event);
+  },
 };
