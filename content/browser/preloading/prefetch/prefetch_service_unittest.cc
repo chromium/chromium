@@ -60,7 +60,7 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
         .WillByDefault(testing::Return(GURL(kPrefetchProxyAddress)));
     ON_CALL(*this, GetAPIKey).WillByDefault(testing::Return(kApiKey));
     ON_CALL(*this, IsOriginOutsideRetryAfterWindow(testing::_))
-        .WillByDefault(testing::Return(false));
+        .WillByDefault(testing::Return(true));
     ON_CALL(*this, DisableDecoysBasedOnUserSettings)
         .WillByDefault(testing::Return(false));
     ON_CALL(*this, IsSomePreloadingEnabled)
@@ -939,7 +939,7 @@ TEST_F(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
   EXPECT_CALL(*mock_prefetch_service_delegate,
               IsOriginOutsideRetryAfterWindow(GURL("https://example.com")))
       .Times(1)
-      .WillOnce(testing::Return(true));
+      .WillOnce(testing::Return(false));
 
   MakePrefetchService(std::move(mock_prefetch_service_delegate));
 

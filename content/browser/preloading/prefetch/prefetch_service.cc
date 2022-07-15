@@ -298,7 +298,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
 
   // If we have recently received a "retry-after" for the origin, then don't
   // send new prefetches.
-  if (delegate_ && delegate_->IsOriginOutsideRetryAfterWindow(
+  if (delegate_ && !delegate_->IsOriginOutsideRetryAfterWindow(
                        prefetch_container->GetURL())) {
     std::move(result_callback)
         .Run(prefetch_container, false,
