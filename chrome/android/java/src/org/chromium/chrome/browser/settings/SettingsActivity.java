@@ -212,7 +212,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // clang-format off
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
                 () -> mScrim, (sheet) -> {}, getWindow(),
-                KeyboardVisibilityDelegate.getInstance(), () -> sheetContainer);
+                KeyboardVisibilityDelegate.getInstance(), () -> sheetContainer,
+                () -> findViewById(android.R.id.content).getHeight());
         // clang-format on
     }
 

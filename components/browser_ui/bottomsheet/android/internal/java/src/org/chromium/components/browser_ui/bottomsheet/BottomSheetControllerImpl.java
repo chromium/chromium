@@ -102,16 +102,19 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      * @param window A means of accessing the screen size.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
+     * @param baseHeightProvider Provides the height of base app area the sheet content is drawn on.
      */
     public BottomSheetControllerImpl(final Supplier<ScrimCoordinator> scrim,
             Callback<View> initializedCallback, Window window,
-            KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
+            KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root,
+            Supplier<Integer> baseHeightProvider) {
         mScrimCoordinatorSupplier = scrim;
         mPendingSheetObservers = new ArrayList<>();
         mSuppressionTokens = new TokenHolder(() -> onSuppressionTokensChanged());
 
         mSheetInitializer = () -> {
-            initializeSheet(initializedCallback, window, keyboardDelegate, root);
+            initializeSheet(
+                    initializedCallback, window, keyboardDelegate, root, baseHeightProvider);
         };
 
         mBackPressHandler = new BackPressHandler() {
@@ -139,9 +142,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      * @param window A means of accessing the screen size.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
+     * @param baseHeightProvider Provides the height of base app area the sheet content is drawn on.
      */
     private void initializeSheet(Callback<View> initializedCallback, Window window,
-            KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
+            KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root,
+            Supplier<Integer> baseHeightProvider) {
         mBottomSheetContainer = root.get();
         mBottomSheetContainer.setVisibility(View.VISIBLE);
 
@@ -150,7 +155,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mBottomSheet = (BottomSheet) root.get().findViewById(R.id.bottom_sheet);
         initializedCallback.onResult(mBottomSheet);
 
-        mBottomSheet.init(window, keyboardDelegate);
+        mBottomSheet.init(window, keyboardDelegate, baseHeightProvider);
         mBottomSheet.setAccessibilityUtil(mAccessibilityUtil);
 
         // Initialize the queue with a comparator that checks content priority.

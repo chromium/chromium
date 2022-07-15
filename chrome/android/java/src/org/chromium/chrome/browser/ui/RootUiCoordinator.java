@@ -1325,7 +1325,8 @@ public class RootUiCoordinator
                         -> mScrimCoordinator,
                 sheetInitializedCallback, mActivity.getWindow(),
                 mWindowAndroid.getKeyboardDelegate(),
-                () -> mActivity.findViewById(R.id.sheet_container));
+                () -> mActivity.findViewById(R.id.sheet_container),
+                () -> mActivity.findViewById(R.id.coordinator).getHeight());
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable)
                         -> ChromePureJavaExceptionReporter.reportJavaException(

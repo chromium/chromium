@@ -22,13 +22,15 @@ public class BottomSheetControllerFactory {
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
+     * @param baseHeightProvider Provides the height of base app area the sheet content is drawn on.
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createBottomSheetController(
             final Supplier<ScrimCoordinator> scrim, Callback<View> initializedCallback,
-            Window window, KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
+            Window window, KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root,
+            Supplier<Integer> baseHeightProvider) {
         return new BottomSheetControllerImpl(
-                scrim, initializedCallback, window, keyboardDelegate, root);
+                scrim, initializedCallback, window, keyboardDelegate, root, baseHeightProvider);
     }
 
     // Redirect methods to provider to make them only accessible to classes that have access to the
