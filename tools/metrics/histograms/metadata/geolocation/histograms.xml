@@ -208,6 +208,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.WifiDataProviderCommon.WifiScanTaskTime"
+    units="ms" expires_after="2023-07-15">
+  <owner>reillyg@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records the time taken on Windows, macOS and Linux to query the operating
+    system for nearby access points.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

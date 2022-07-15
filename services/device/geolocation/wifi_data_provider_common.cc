@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -66,6 +67,9 @@ void WifiDataProviderCommon::DoWifiScanTask() {
   // Abort the wifi scan if the provider is already being torn down.
   if (!wlan_api_)
     return;
+
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Geolocation.WifiDataProviderCommon.WifiScanTaskTime");
 
   bool update_available = false;
   WifiData new_data;
