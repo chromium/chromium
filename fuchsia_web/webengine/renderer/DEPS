@@ -12,3 +12,10 @@ include_rules = [
   "+services/service_manager/public/cpp",
   "+third_party/blink/public",
 ]
+
+specific_include_rules = {
+  # Exceptions related to Cast Streaming.
+  "web_engine_content_renderer_client\.cc" : [
+    "+components/cast_streaming/renderer/public"
+  ]
+}

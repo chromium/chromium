@@ -1,7 +1,5 @@
 include_rules = [
   # Do NOT add components/cast or other Cast-specific code to this file.
-  "+components/cast/message_port",
-  "+components/cast_streaming",
   "+components/embedder_support",
   "+components/fuchsia_component_support",
   "+components/media_control",
