@@ -18,7 +18,8 @@
     /* Primary */
     primary: {
       light: '$cros.ref.primary40',
-      dark:  '$cros.ref.primary80',
+      dark: '$cros.ref.primary80',
+      generate_per_mode: true,
     },
     'on-primary': {
       light: '$cros.ref.primary100',
@@ -37,6 +38,7 @@
     secondary: {
       light: '$cros.ref.secondary40',
       dark:  '$cros.ref.secondary80',
+      generate_per_mode: true,
     },
     'on-secondary': {
       light: '$cros.ref.secondary100',
@@ -121,6 +123,7 @@
     'app-base-elevated': {
       light: '$cros.ref.neutralvariant100',
       dark:  'blend(rgba($black.rgb, 0.4), $cros.ref.neutral10)',
+      generate_per_mode: true,
     },
 
     /* Surfaces */
@@ -149,6 +152,7 @@
     'on-surface': {
       light: '$cros.ref.neutral10',
       dark: '$cros.ref.neutral90',
+      generate_per_mode: true,
     },
     'on-surface-bodytext': {
       light: '$cros.ref.neutral40',
