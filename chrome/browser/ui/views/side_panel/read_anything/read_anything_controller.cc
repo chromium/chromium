@@ -20,9 +20,7 @@ ReadAnythingController::ReadAnythingController(ReadAnythingModel* model,
 }
 
 ReadAnythingController::~ReadAnythingController() {
-  DCHECK(browser_);
-  if (browser_->tab_strip_model())
-    browser_->tab_strip_model()->RemoveObserver(this);
+  TabStripModelObserver::StopObservingAll(this);
   WebContentsObserver::Observe(nullptr);
 }
 
@@ -65,6 +63,15 @@ void ReadAnythingController::OnTabStripModelChanged(
   if (!selection.active_tab_changed())
     return;
   DistillAXTree();
+}
+
+void ReadAnythingController::OnTabStripModelDestroyed(
+    TabStripModel* tab_strip_model) {
+  // If the TabStripModel is destroyed before |this|, remove |this| as an
+  // observer and set |browser_| to nullptr.
+  DCHECK(browser_);
+  tab_strip_model->RemoveObserver(this);
+  browser_ = nullptr;
 }
 
 void ReadAnythingController::DidStopLoading() {

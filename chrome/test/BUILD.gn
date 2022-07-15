@@ -8511,6 +8511,7 @@ test("unit_tests") {
       "../browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view_unittest.cc",
       "../browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_view_unittest.cc",
       "../browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble_unittest.cc",
+      "../browser/ui/views/side_panel/read_anything/read_anything_controller_unittest.cc",
       "../browser/ui/views/side_panel/read_anything/read_anything_coordinator_unittest.cc",
       "../browser/ui/views/side_panel/read_anything/read_anything_model_unittest.cc",
       "../browser/ui/views/side_panel/side_panel_coordinator_unittest.cc",

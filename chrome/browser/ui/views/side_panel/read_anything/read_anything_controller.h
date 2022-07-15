@@ -50,6 +50,8 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   bool IsActiveForTesting() { return active_; }
 
  private:
+  friend class ReadAnythingControllerTest;
+
   // ReadAnythingToolbarView::Delegate:
   void OnFontSizeChanged(bool increase) override;
 
@@ -65,6 +67,7 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnTabStripModelDestroyed(TabStripModel* tab_strip_model) override;
 
   // content::WebContentsObserver:
   void DidStopLoading() override;
