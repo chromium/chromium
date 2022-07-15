@@ -172,6 +172,7 @@ NetworkServiceMemoryCache::~NetworkServiceMemoryCache() = default;
 
 void NetworkServiceMemoryCache::Clear() {
   entries_.Clear();
+  total_bytes_ = 0;
 }
 
 base::WeakPtr<NetworkServiceMemoryCache>

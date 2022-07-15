@@ -631,6 +631,7 @@ TEST_F(NetworkServiceMemoryCacheTest, Clear) {
 
   memory_cache().Clear();
 
+  ASSERT_EQ(memory_cache().total_bytes(), 0u);
   ASSERT_FALSE(CanServeFromMemoryCache(request1));
   ASSERT_FALSE(CanServeFromMemoryCache(request2));
   ASSERT_FALSE(CanServeFromMemoryCache(request3));
@@ -646,6 +647,7 @@ TEST_F(NetworkServiceMemoryCacheTest, ClearOnMemoryPressure) {
           MEMORY_PRESSURE_LEVEL_CRITICAL);
   task_environment().RunUntilIdle();
 
+  ASSERT_EQ(memory_cache().total_bytes(), 0u);
   ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 

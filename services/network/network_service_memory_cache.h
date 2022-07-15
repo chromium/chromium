@@ -52,6 +52,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
 
   base::WeakPtr<NetworkServiceMemoryCache> GetWeakPtr();
 
+  size_t total_bytes() const { return total_bytes_; }
+
   // Clears all cache entries.
   void Clear();
 
