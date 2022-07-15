@@ -243,15 +243,6 @@ ContentAnalysisDialog::ContentAnalysisDialog(
 
   constrained_window::ShowWebModalDialogViews(this, web_contents_);
 
-  // We need to UpdateDialog() right away if the dialog already has a result,
-  // because the dialog can only call UpdateDialog() after the dialog widget
-  // has been initialized by ShowWebModalDialogViews().
-  // We can't move it any earlier or it will crash when we try to get the
-  // color from the widget. (see b/232104687)
-  // if (!is_pending())
-  //  UpdateDialog();
-
-  // TODO(crbug.com/1337078): Remove if this doesn't fix the CQ
   if (is_warning() && bypass_requires_justification()) {
     bypass_justification_text_length_->SetEnabledColor(
         bypass_justification_text_length_->GetColorProvider()->GetColor(
@@ -381,7 +372,6 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     message_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
     message_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-    // TODO(crbug.com/1337078): Remove if this doesn't fix the CQ
     if (!is_pending())
       UpdateDialog();
   }
@@ -572,7 +562,6 @@ void ContentAnalysisDialog::Resize(int height_to_add) {
 }
 
 void ContentAnalysisDialog::SetupButtons() {
-  // TODO(domfc): Add "Learn more" button on scan failure.
   if (is_warning()) {
     // Include the Ok and Cancel buttons if there is a bypassable warning.
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
