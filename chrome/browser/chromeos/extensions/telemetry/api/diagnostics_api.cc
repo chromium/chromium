@@ -8,10 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
+#include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/remote_diagnostics_service_strategy.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 
 namespace chromeos {
@@ -19,9 +20,14 @@ namespace chromeos {
 // DiagnosticsApiFunctionBase --------------------------------------------------
 
 DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
-    : diagnostics_service_(ash::DiagnosticsService::Factory::Create(
-          remote_diagnostics_service_.BindNewPipeAndPassReceiver())) {}
+    : remote_diagnostics_service_strategy_(
+          RemoteDiagnosticsServiceStrategy::Create()) {}
 DiagnosticsApiFunctionBase::~DiagnosticsApiFunctionBase() = default;
+
+mojo::Remote<ash::health::mojom::DiagnosticsService>&
+DiagnosticsApiFunctionBase::GetRemoteService() {
+  return remote_diagnostics_service_strategy_->GetRemoteService();
+}
 
 // OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------
 
@@ -34,7 +40,7 @@ void OsDiagnosticsGetAvailableRoutinesFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsDiagnosticsGetAvailableRoutinesFunction::OnResult,
                            this);
 
-  remote_diagnostics_service_->GetAvailableRoutines(std::move(cb));
+  GetRemoteService()->GetAvailableRoutines(std::move(cb));
 }
 
 void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
@@ -70,7 +76,7 @@ void OsDiagnosticsGetRoutineUpdateFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&OsDiagnosticsGetRoutineUpdateFunction::OnResult, this);
 
-  remote_diagnostics_service_->GetRoutineUpdate(
+  GetRemoteService()->GetRoutineUpdate(
       params->request.id,
       converters::ConvertRoutineCommand(params->request.command),
       /* include_output= */ true, std::move(cb));
@@ -161,7 +167,7 @@ void OsDiagnosticsRunAcPowerRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunAcPowerRoutine(
+  GetRemoteService()->RunAcPowerRoutine(
       converters::ConvertAcPowerStatusRoutineType(
           params->request.expected_status),
       expected_power_type, std::move(cb));
@@ -178,7 +184,7 @@ void OsDiagnosticsRunBatteryCapacityRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunBatteryCapacityRoutine(std::move(cb));
+  GetRemoteService()->RunBatteryCapacityRoutine(std::move(cb));
 }
 
 // OsDiagnosticsRunBatteryChargeRoutineFunction --------------------------------
@@ -200,7 +206,7 @@ void OsDiagnosticsRunBatteryChargeRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunBatteryChargeRoutine(
+  GetRemoteService()->RunBatteryChargeRoutine(
       params->request.length_seconds,
       params->request.minimum_charge_percent_required, std::move(cb));
 }
@@ -225,7 +231,7 @@ void OsDiagnosticsRunBatteryDischargeRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunBatteryDischargeRoutine(
+  GetRemoteService()->RunBatteryDischargeRoutine(
       params->request.length_seconds,
       params->request.maximum_discharge_percent_allowed, std::move(cb));
 }
@@ -241,7 +247,7 @@ void OsDiagnosticsRunBatteryHealthRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunBatteryHealthRoutine(std::move(cb));
+  GetRemoteService()->RunBatteryHealthRoutine(std::move(cb));
 }
 
 // OsDiagnosticsRunCpuCacheRoutineFunction -------------------------------------
@@ -263,8 +269,8 @@ void OsDiagnosticsRunCpuCacheRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunCpuCacheRoutine(
-      params->request.length_seconds, std::move(cb));
+  GetRemoteService()->RunCpuCacheRoutine(params->request.length_seconds,
+                                         std::move(cb));
 }
 
 // OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction ---------------------
@@ -288,7 +294,7 @@ void OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunFloatingPointAccuracyRoutine(
+  GetRemoteService()->RunFloatingPointAccuracyRoutine(
       params->request.length_seconds, std::move(cb));
 }
 
@@ -311,8 +317,8 @@ void OsDiagnosticsRunCpuPrimeSearchRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunPrimeSearchRoutine(
-      params->request.length_seconds, std::move(cb));
+  GetRemoteService()->RunPrimeSearchRoutine(params->request.length_seconds,
+                                            std::move(cb));
 }
 
 // OsDiagnosticsRunCpuStressRoutineFunction ------------------------------------
@@ -334,8 +340,8 @@ void OsDiagnosticsRunCpuStressRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunCpuStressRoutine(
-      params->request.length_seconds, std::move(cb));
+  GetRemoteService()->RunCpuStressRoutine(params->request.length_seconds,
+                                          std::move(cb));
 }
 
 // OsDiagnosticsRunDiskReadRoutineFunction -------------------------------------
@@ -357,7 +363,7 @@ void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunDiskReadRoutine(
+  GetRemoteService()->RunDiskReadRoutine(
       converters::ConvertDiskReadRoutineType(params->request.type),
       params->request.length_seconds, params->request.file_size_mb,
       std::move(cb));
@@ -374,7 +380,7 @@ void OsDiagnosticsRunLanConnectivityRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunLanConnectivityRoutine(std::move(cb));
+  GetRemoteService()->RunLanConnectivityRoutine(std::move(cb));
 }
 
 // OsDiagnosticsRunMemoryRoutineFunction ---------------------------------------
@@ -388,7 +394,7 @@ void OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunMemoryRoutine(std::move(cb));
+  GetRemoteService()->RunMemoryRoutine(std::move(cb));
 }
 
 // OsDiagnosticsRunNvmeWearLevelRoutineFunction --------------------------------
@@ -410,7 +416,7 @@ void OsDiagnosticsRunNvmeWearLevelRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunNvmeWearLevelRoutine(
+  GetRemoteService()->RunNvmeWearLevelRoutine(
       params->request.wear_level_threshold, std::move(cb));
 }
 
@@ -425,7 +431,7 @@ void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
-  remote_diagnostics_service_->RunSmartctlCheckRoutine(std::move(cb));
+  GetRemoteService()->RunSmartctlCheckRoutine(std::move(cb));
 }
 
 }  // namespace chromeos
