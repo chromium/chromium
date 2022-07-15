@@ -249,87 +249,6 @@
         <div id="timer-tick-msg"></div>
       </div>
     </div>
-    <div id="view-review" class="review-views">
-      <div class="review-frame">
-        <img class="review-image" hidden>
-        <video class="review-video" hidden controls autoplay></video>
-      </div>
-    </div>
-    <div id="view-crop-document" class="review-views">
-      <div id="document-corner-move-desc" i18n-text="document_corner_move_desc">
-      </div>
-      <div class="review-frame">
-        <div class="review-image" hidden>
-          <svg class="crop-area-container">
-            <polygon class="crop-area"></polygon>
-          </svg>
-        </div>
-        <video class="review-video" hidden></video>
-      </div>
-      <div class="review-crop-rotation-button-group button-group">
-        <button class="icon-button dark inkdrop"
-          i18n-aria="rotate_clockwise_button" tabindex="0"></button>
-        <button class="icon-button dark inkdrop"
-          i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
-      </div>
-    </div>
-    <div id="view-option-panel">
-      <div id="option-panel" class="panel">
-        <div id="option-title" class="text"></div>
-        <div id="options-container"></div>
-      </div>
-    </div>
-    <div id="view-ptz-panel">
-      <div id="ptz-panel">
-        <div id="reset-all-container" class="panel">
-          <button id="ptz-reset-all" class="inkdrop" tabindex="0">
-            <div class="icon"></div>
-            <div class="text" i18n-text="ptz_reset_all_button"></div>
-          </button>
-        </div>
-        <div id="ptz-panel-container" class="panel">
-          <button id="tilt-up" class="inkdrop" i18n-label="tilt_up_button"
-            tabindex="0"></button>
-          <button id="pan-left" class="inkdrop" i18n-label="pan_left_button"
-            tabindex="0"></button>
-          <button id="zoom-out" class="inkdrop" i18n-label="zoom_out_button"
-            tabindex="0"></button>
-          <button id="zoom-in" class="inkdrop" i18n-label="zoom_in_button"
-            tabindex="0"></button>
-          <button id="pan-right" class="inkdrop" i18n-label="pan_right_button"
-            tabindex="0"></button>
-          <button id="tilt-down" class="inkdrop" i18n-label="tilt_down_button"
-            tabindex="0"></button>
-          <div id="ptz-divider1" class="ptz-divider"></div>
-          <div id="ptz-divider2" class="ptz-divider"></div>
-          <div id="ptz-divider3" class="ptz-divider"></div>
-          <div id="ptz-divider4" class="ptz-divider"></div>
-          <div id="ptz-zoom-divider" class="ptz-divider"></div>
-        </div>
-      </div>
-    </div>
-    <div id="view-document-mode-dialog">
-      <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg"
-           aria-live="polite">
-        <div id="icon-scan-area">
-          <div class="scan-line"></div>
-          <div class="scan-corner top left"></div>
-          <div class="scan-corner top right"></div>
-          <div class="scan-corner bottom right"></div>
-          <div class="scan-corner bottom left"></div>
-          <div id="icon-document-area">
-            <div id="icon-document-g"></div>
-          </div>
-        </div>
-        <div class="dialog-title dialog-msg-holder"></div>
-        <div class="dialog-description" i18n-text="document_mode_dialog_msg">
-        </div>
-        <button class="dialog-positive-button text-button pill primary dark
-                inkdrop" tabindex="0" i18n-text="document_mode_dialog_got_it">
-        </button>
-      </div>
-    </div>
-
     <div id="view-settings" class="settings">
       <div class="menu">
         <div class="menu-header circle">
@@ -390,19 +309,19 @@
         </div>
       </div>
     </div>
-    <div id="view-video-resolution-settings" class="settings">
-      <div class="menu" data-name="videores">
-        <div class="menu-header circle">
-          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
-          <div i18n-text="video_resolution_button"></div>
-        </div>
-      </div>
-    </div>
     <div id="view-photo-aspect-ratio-settings" class="settings">
       <div class="menu" data-name="aspectratios">
         <div class="menu-header circle">
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div i18n-text="photo_aspect_ratio_button"></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-video-resolution-settings" class="settings">
+      <div class="menu" data-name="videores">
+        <div class="menu-header circle">
+          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
+          <div i18n-text="video_resolution_button"></div>
         </div>
       </div>
     </div>
@@ -481,13 +400,92 @@
       </div>
       <div class="spinner centered-overlay"></div>
     </div>
+    <div id="view-option-panel">
+      <div id="option-panel" class="panel">
+        <div id="option-title" class="text"></div>
+        <div id="options-container"></div>
+      </div>
+    </div>
+    <div id="view-ptz-panel">
+      <div id="ptz-panel">
+        <div id="reset-all-container" class="panel">
+          <button id="ptz-reset-all" class="inkdrop" tabindex="0">
+            <div class="icon"></div>
+            <div class="text" i18n-text="ptz_reset_all_button"></div>
+          </button>
+        </div>
+        <div id="ptz-panel-container" class="panel">
+          <button id="tilt-up" class="inkdrop" i18n-label="tilt_up_button"
+            tabindex="0"></button>
+          <button id="pan-left" class="inkdrop" i18n-label="pan_left_button"
+            tabindex="0"></button>
+          <button id="zoom-out" class="inkdrop" i18n-label="zoom_out_button"
+            tabindex="0"></button>
+          <button id="zoom-in" class="inkdrop" i18n-label="zoom_in_button"
+            tabindex="0"></button>
+          <button id="pan-right" class="inkdrop" i18n-label="pan_right_button"
+            tabindex="0"></button>
+          <button id="tilt-down" class="inkdrop" i18n-label="tilt_down_button"
+            tabindex="0"></button>
+          <div id="ptz-divider1" class="ptz-divider"></div>
+          <div id="ptz-divider2" class="ptz-divider"></div>
+          <div id="ptz-divider3" class="ptz-divider"></div>
+          <div id="ptz-divider4" class="ptz-divider"></div>
+          <div id="ptz-zoom-divider" class="ptz-divider"></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-review" class="review-views">
+      <div class="review-frame">
+        <img class="review-image" hidden>
+        <video class="review-video" hidden controls autoplay></video>
+      </div>
+    </div>
+    <div id="view-crop-document" class="review-views">
+      <div id="document-corner-move-desc" i18n-text="document_corner_move_desc">
+      </div>
+      <div class="review-frame">
+        <div class="review-image" hidden>
+          <svg class="crop-area-container">
+            <polygon class="crop-area"></polygon>
+          </svg>
+        </div>
+        <video class="review-video" hidden></video>
+      </div>
+      <div class="review-crop-rotation-button-group button-group">
+        <button class="icon-button dark inkdrop"
+          i18n-aria="rotate_clockwise_button" tabindex="0"></button>
+        <button class="icon-button dark inkdrop"
+          i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
+      </div>
+    </div>
+    <div id="view-document-mode-dialog">
+      <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg"
+           aria-live="polite">
+        <div id="icon-scan-area">
+          <div class="scan-line"></div>
+          <div class="scan-corner top left"></div>
+          <div class="scan-corner top right"></div>
+          <div class="scan-corner bottom right"></div>
+          <div class="scan-corner bottom left"></div>
+          <div id="icon-document-area">
+            <div id="icon-document-g"></div>
+          </div>
+        </div>
+        <div class="dialog-title dialog-msg-holder"></div>
+        <div class="dialog-description" i18n-text="document_mode_dialog_msg">
+        </div>
+        <button class="dialog-positive-button text-button pill primary dark
+                inkdrop" tabindex="0" i18n-text="document_mode_dialog_got_it">
+        </button>
+      </div>
+    </div>
     <div id="view-flash">
       <div id="processing-indicator" class="centered-overlay">
         <div class="icon"></div>
         <div class="msg" tabindex="0" i18n-text="msg_processing_image"></div>
       </div>
     </div>
-    <div id="view-splash"></div>
     <div id="view-warning">
       <div id="error-msg" aria-live="polite"></div>
     </div>
@@ -502,6 +500,7 @@
         </div>
       </div>
     </div>
+    <div id="view-splash"></div>
     <div id="toast" class="centered-overlay" tabindex="-1"
          aria-live="polite"></div>
     <div id="tooltip" aria-hidden="true"></div>

@@ -714,6 +714,9 @@ body.should-handle-intent-result #open-settings {
   right: 0;
   top: 0;
   visibility: hidden;
+  /* Create stacking context for every view to prevent elements in former views
+  from covering latter views. */
+  z-index: 0;
 }
 
 body.view-camera #view-camera,
@@ -1283,7 +1286,6 @@ body.scan #settings-video-resolution {
   align-items: center;
   display: flex;
   justify-content: center;
-  z-index: 1;
 }
 
 #view-warning {
@@ -1384,7 +1386,6 @@ body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
 
 #view-splash {
   background: no-repeat center url(/images/camera_mode_photo.svg), var(--grey-900);
-  z-index: 2;
 }
 
 .hidden {
