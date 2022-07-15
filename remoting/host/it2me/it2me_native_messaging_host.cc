@@ -182,11 +182,12 @@ void It2MeNativeMessagingHost::ProcessHello(
 
   // No need to forward to the elevated process since no internal state is set.
 
-  base::Value features(base::Value::Type::LIST);
+  base::Value::List features;
   features.Append(kFeatureAccessTokenAuth);
   features.Append(kFeatureDelegatedSignaling);
 
-  ProcessNativeMessageHelloResponse(*response, std::move(features));
+  ProcessNativeMessageHelloResponse(*response,
+                                    base::Value(std::move(features)));
 
   SendMessageToClient(std::move(response));
 }

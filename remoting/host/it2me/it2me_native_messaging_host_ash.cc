@@ -110,18 +110,18 @@ void It2MeNativeMessageHostAsh::Connect(
   connected_callback_ = std::move(connected_callback);
   disconnected_callback_ = std::move(disconnected_callback);
 
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey(kMessageType, kConnectMessage);
+  base::Value::Dict message;
+  message.Set(kMessageType, kConnectMessage);
 
-  message.SetStringKey(kUserName, params->user_name);
-  message.SetStringKey(kAuthServiceWithToken, params->oauth_access_token);
-  message.SetBoolKey(kSuppressUserDialogs,
-                     ShouldSuppressUserDialog(*params, enterprise_params));
-  message.SetBoolKey(kSuppressNotifications,
-                     ShouldSuppressNotifications(*params, enterprise_params));
-  message.SetBoolKey(kTerminateUponInput,
-                     ShouldTerminateUponInput(*params, enterprise_params));
-  message.SetBoolKey(kIsEnterpriseAdminUser, enterprise_params.has_value());
+  message.Set(kUserName, params->user_name);
+  message.Set(kAuthServiceWithToken, params->oauth_access_token);
+  message.Set(kSuppressUserDialogs,
+              ShouldSuppressUserDialog(*params, enterprise_params));
+  message.Set(kSuppressNotifications,
+              ShouldSuppressNotifications(*params, enterprise_params));
+  message.Set(kTerminateUponInput,
+              ShouldTerminateUponInput(*params, enterprise_params));
+  message.Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
 
   std::string message_json;
   base::JSONWriter::Write(message, &message_json);
@@ -130,8 +130,8 @@ void It2MeNativeMessageHostAsh::Connect(
 
 void It2MeNativeMessageHostAsh::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey(kMessageType, kDisconnectMessage);
+  base::Value::Dict message;
+  message.Set(kMessageType, kDisconnectMessage);
 
   std::string message_json;
   base::JSONWriter::Write(message, &message_json);
