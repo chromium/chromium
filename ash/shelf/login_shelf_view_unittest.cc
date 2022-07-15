@@ -160,6 +160,27 @@ class LoginShelfViewTest : public LoginTestBase,
     return login_shelf_view_->GetViewByID(id)->GetEnabled();
   }
 
+  void FocusOnLoginShelfButton() {
+    // TODO(https://crbug.com/1343114): refactor the code below after the login
+    // shelf widget is ready.
+
+    ShelfWidget* shelf_widget = GetLoginShelfWidget();
+    shelf_widget->set_default_last_focusable_child(
+        /*default_last_focusable_child=*/false);
+    Shell::Get()->focus_cycler()->FocusWidget(shelf_widget);
+    ExpectFocused(shelf_widget->GetContentsView());
+  }
+
+  // Returns the widget where the login shelf view lives.
+  ShelfWidget* GetLoginShelfWidget() {
+    // TODO(https://crbug.com/1343114): refactor the code below after the login
+    // shelf widget is ready.
+
+    gfx::NativeWindow window =
+        login_shelf_view_->GetWidget()->GetNativeWindow();
+    return Shelf::ForWindow(window)->shelf_widget();
+  }
+
   TestTrayActionClient tray_action_client_;
 
   LoginShelfView* login_shelf_view_ = nullptr;  // Unowned.
@@ -626,39 +647,34 @@ TEST_P(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
 
   gfx::NativeWindow window = login_shelf_view_->GetWidget()->GetNativeWindow();
-  views::View* shelf =
-      Shelf::ForWindow(window)->shelf_widget()->GetContentsView();
   views::View* status_area = RootWindowController::ForWindow(window)
                                  ->GetStatusAreaWidget()
                                  ->GetContentsView();
 
   // Give focus to the shelf. The tabbing between lock screen and shelf is
   // verified by |LockScreenSanityTest::TabGoesFromLockToShelfAndBackToLock|.
-  Shelf::ForWindow(window)->shelf_widget()->set_default_last_focusable_child(
-      false /*reverse*/);
-  Shell::Get()->focus_cycler()->FocusWidget(
-      Shelf::ForWindow(window)->shelf_widget());
-  // The first shelf button has focus.
-  ExpectFocused(shelf);
+  FocusOnLoginShelfButton();
   ExpectNotFocused(status_area);
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kShutdown)->HasFocus());
 
   // Focus from the first button to the second button.
+  views::View* login_shelf_contents_view =
+      GetLoginShelfWidget()->GetContentsView();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
-  ExpectFocused(shelf);
+  ExpectFocused(login_shelf_contents_view);
   ExpectNotFocused(status_area);
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kSignOut)->HasFocus());
 
   // Focus from the second button to the status area.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
-  ExpectNotFocused(shelf);
+  ExpectNotFocused(login_shelf_contents_view);
   ExpectFocused(status_area);
 
   // A single shift+tab brings focus back to the second shelf button.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  ExpectFocused(shelf);
+  ExpectFocused(login_shelf_contents_view);
   ExpectNotFocused(status_area);
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kSignOut)->HasFocus());
@@ -719,11 +735,9 @@ TEST_P(LoginShelfViewTest, ShelfWidgetStackedAtBottomInActiveSession) {
   gfx::NativeWindow window = login_shelf_view_->GetWidget()->GetNativeWindow();
   ShelfWidget* shelf_widget = Shelf::ForWindow(window)->shelf_widget();
 
-  // Focus shelf widget (which could happen if user tabs to login shelf
-  // buttons).
-  shelf_widget->set_default_last_focusable_child(/*reverse=*/false);
-  Shell::Get()->focus_cycler()->FocusWidget(shelf_widget);
-  ExpectFocused(shelf_widget->GetContentsView());
+  // Focus on the login shelf button (which could happen if user tabs to move
+  // the focus).
+  FocusOnLoginShelfButton();
 
   // Verify that shelf widget is no longer focused, and is stacked at the bottom
   // of shelf container when the session is activated.
@@ -1118,14 +1132,9 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
 
   // Dismiss shutdown confirmation bubble.
   void DismissShutdown() {
-    // Focus shelf widget (which could happen if user tabs to login shelf
-    // buttons).
-    gfx::NativeWindow window =
-        login_shelf_view_->GetWidget()->GetNativeWindow();
-    ShelfWidget* shelf_widget = Shelf::ForWindow(window)->shelf_widget();
-    shelf_widget->set_default_last_focusable_child(/*reverse=*/false);
-    Shell::Get()->focus_cycler()->FocusWidget(shelf_widget);
-    ExpectFocused(shelf_widget->GetContentsView());
+    // Focus on the login shelf button (which could happen if user tabs to move
+    // the focus).
+    FocusOnLoginShelfButton();
 
     base::RunLoop().RunUntilIdle();
   }

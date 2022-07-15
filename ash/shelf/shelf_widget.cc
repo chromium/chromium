@@ -160,7 +160,9 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
       layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
-  void SetLoginShelfView(LoginShelfView* view) { login_shelf_view_ = view; }
+  void SetLoginShelfFromShelfWidget(LoginShelfView* view) {
+    login_shelf_from_shelf_widget_ = view;
+  }
 
   SkColor background_color() const { return background_color_; }
 
@@ -178,8 +180,10 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
     canvas->DrawRoundRect(gfx::Rect(layer()->size()), corner_radius_, flags);
 
     // Don't draw highlight border in login screen.
-    if (login_shelf_view_ && login_shelf_view_->GetVisible())
+    if (login_shelf_from_shelf_widget_ &&
+        login_shelf_from_shelf_widget_->GetVisible()) {
       return;
+    }
 
     if (corner_radius_ > 0) {
       views::HighlightBorder::PaintBorderToCanvas(
@@ -272,7 +276,7 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
   views::View* const owner_view_;
   const bool draw_highlight_border_;
 
-  LoginShelfView* login_shelf_view_ = nullptr;
+  LoginShelfView* login_shelf_from_shelf_widget_ = nullptr;
   SkColor background_color_;
   float corner_radius_ = 0.0f;
   views::HighlightBorder::Type highlight_border_type_ =
@@ -309,7 +313,7 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   LoginShelfView* AddLoginShelfView(
       std::unique_ptr<LoginShelfView> login_shelf_view) {
     login_shelf_view_ = AddChildView(std::move(login_shelf_view));
-    opaque_background_.SetLoginShelfView(login_shelf_view_);
+    opaque_background_.SetLoginShelfFromShelfWidget(login_shelf_view_);
     return login_shelf_view_;
   }
 
