@@ -509,7 +509,52 @@
     selection_outline: {
       light: "rgba($black.rgb, 0.1)",
       dark: "rgba($white.rgb, 0.12)",
-    }
+    },
+
+    /* Taken from go/ea-asset-palette. */
+    illustration_color_1: {
+      light: "$google_blue_500",
+      dark: "$google_blue_400",
+    },
+    illustration_color_2: {
+      light: "$google_green_500",
+      dark: "$google_green_400",
+    },
+    illustration_color_3: {
+      light: "$google_yellow_500",
+      dark: "$google_yellow_400",
+    },
+    illustration_color_4: "$google_red_500",
+    illustration_color_5: {
+      light: "#ee5ffa", /* magenta_400 */
+      dark: "#f882ff", /* magenta_300 */
+    },
+    illustration_color_6: {
+      light: "#30e2ea", /* electric_400 */
+      dark: "#5ef1f2", /* electric_300 */
+    },
+    illustration_base_color: {
+      light: "$white",
+      dark: "$google_grey_900",
+    },
+    illustration_secondary_color: {
+      light: "$google_grey_200",
+      dark: "blend(rgba($google_grey_200.rgb, 0.3), $google_grey_900)",
+    },
+    illustration_color_1_shade_1: {
+      light: "$google_blue_300",
+      dark: "blend(rgba($google_blue_600.rgb, 0.3), $google_grey_900)",
+    },
+    illustration_color_1_shade_2: {
+      light: "$google_blue_100",
+      dark: "blend(rgba($google_blue_300.rgb, 0.3), $google_grey_900)",
+    },
+    /* Elevated variants of dark mode colors for illustrations. These are only
+       used in dark mode, and so do not need a light mode variant. */
+    illustration_dark_elevation_color_1_shade_1: "blend(rgba($google_blue_300.rgb, 0.3), $google_grey_900)",
+    illustration_dark_elevation_color_1_shade_2: "blend(rgba($google_blue_300.rgb, 0.3), $google_grey_900)",
+    illustration_dark_elevation_base_color: "#323336",
+    illustration_dark_elevation_secondary_color: "$google_grey_700"
   },
   opacities: {
     disabled_opacity: 0.38,
