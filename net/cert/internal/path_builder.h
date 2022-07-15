@@ -139,6 +139,12 @@ class NET_EXPORT CertPathBuilder {
     // better than invalid, but otherwise nothing is guaranteed.
     size_t best_result_index = 0;
 
+    // The iteration count reached by path building.
+    uint32_t iteration_count = 0;
+
+    // The max depth seen while path building.
+    uint32_t max_depth_seen = 0;
+
     // True if the search stopped because it exceeded the iteration limit
     // configured with |SetIterationLimit|.
     bool exceeded_iteration_limit = false;

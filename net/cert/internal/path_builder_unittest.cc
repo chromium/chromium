@@ -256,6 +256,7 @@ TEST_F(PathBuilderMultiRootTest, TargetWithSameNameAsTrustAnchorFails) {
   auto result = path_builder.Run();
 
   EXPECT_FALSE(result.HasValidPath());
+  EXPECT_EQ(1U, result.max_depth_seen);
 }
 
 // Test a failed path building when the trust anchor is provided as a
@@ -681,10 +682,12 @@ TEST_F(PathBuilderMultiRootTest, TestIterationLimit) {
     EXPECT_EQ(insufficient_limit, result.exceeded_iteration_limit);
 
     if (insufficient_limit) {
+      EXPECT_EQ(2U, result.iteration_count);
       EXPECT_THAT(histogram_tester.GetAllSamples(
                       "Net.CertVerifier.PathBuilderIterationCount"),
                   ElementsAre(base::Bucket(/*sample=*/2, /*count=*/1)));
     } else {
+      EXPECT_EQ(3U, result.iteration_count);
       EXPECT_THAT(histogram_tester.GetAllSamples(
                       "Net.CertVerifier.PathBuilderIterationCount"),
                   ElementsAre(base::Bucket(/*sample=*/3, /*count=*/1)));
@@ -827,6 +830,11 @@ TEST_F(PathBuilderMultiRootTest, TestDepthLimit) {
     EXPECT_EQ(!insufficient_limit, result.HasValidPath());
     EXPECT_EQ(insufficient_limit,
               result.AnyPathContainsError(cert_errors::kDepthLimitExceeded));
+    if (insufficient_limit) {
+      EXPECT_EQ(2U, result.max_depth_seen);
+    } else {
+      EXPECT_EQ(4U, result.max_depth_seen);
+    }
   }
 }
 
@@ -1383,6 +1391,7 @@ TEST_F(PathBuilderKeyRolloverTest, ExploreAllPathsWithIterationLimit) {
       EXPECT_EQ(target_, path0.certs[0]);
       EXPECT_EQ(newintermediate_, path0.certs[1]);
       EXPECT_EQ(newroot_, path0.certs[2]);
+      EXPECT_EQ(3U, result.max_depth_seen);
     }
 
     if (expectation.expected_num_paths > 1) {
@@ -1393,6 +1402,7 @@ TEST_F(PathBuilderKeyRolloverTest, ExploreAllPathsWithIterationLimit) {
       EXPECT_EQ(target_, path1.certs[0]);
       EXPECT_EQ(newintermediate_, path1.certs[1]);
       EXPECT_EQ(oldroot_, path1.certs[2]);
+      EXPECT_EQ(3U, result.max_depth_seen);
     }
 
     if (expectation.expected_num_paths > 2) {
@@ -1403,6 +1413,7 @@ TEST_F(PathBuilderKeyRolloverTest, ExploreAllPathsWithIterationLimit) {
       EXPECT_EQ(target_, path2.certs[0]);
       EXPECT_EQ(oldintermediate_, path2.certs[1]);
       EXPECT_EQ(oldroot_, path2.certs[2]);
+      EXPECT_EQ(3U, result.max_depth_seen);
     }
 
     if (expectation.expected_num_paths > 3) {
@@ -1413,6 +1424,7 @@ TEST_F(PathBuilderKeyRolloverTest, ExploreAllPathsWithIterationLimit) {
       EXPECT_EQ(target_, path3.certs[0]);
       EXPECT_EQ(oldintermediate_, path3.certs[1]);
       EXPECT_EQ(newroot_, path3.certs[2]);
+      EXPECT_EQ(3U, result.max_depth_seen);
     }
   }
 }

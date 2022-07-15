@@ -783,6 +783,7 @@ CertPathBuilder::Result CertPathBuilder::Run() {
         }
         AddResultPath(std::move(result_path));
       }
+      out_result_.iteration_count = iteration_count;
       RecordIterationCountHistogram(iteration_count);
       return std::move(out_result_);
     }
@@ -814,6 +815,7 @@ CertPathBuilder::Result CertPathBuilder::Run() {
     AddResultPath(std::move(result_path));
 
     if (path_is_good && !explore_all_paths_) {
+      out_result_.iteration_count = iteration_count;
       RecordIterationCountHistogram(iteration_count);
       // Found a valid path, return immediately.
       return std::move(out_result_);
@@ -839,6 +841,9 @@ void CertPathBuilder::AddResultPath(
          old_best_path->last_cert_trust.HasUnspecifiedTrust())) {
       out_result_.best_result_index = out_result_.paths.size();
     }
+  }
+  if (result_path->certs.size() > out_result_.max_depth_seen) {
+    out_result_.max_depth_seen = result_path->certs.size();
   }
   out_result_.paths.push_back(std::move(result_path));
 }
