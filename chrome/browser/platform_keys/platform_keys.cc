@@ -275,7 +275,7 @@ bool GetPublicKey(const scoped_refptr<net::X509Certificate>& certificate,
     return false;
   }
 
-  switch (EVP_PKEY_type(pkey->type)) {
+  switch (EVP_PKEY_id(pkey.get())) {
     case EVP_PKEY_RSA: {
       if (!VerifyRSAPublicExponent(pkey.get())) {
         return false;

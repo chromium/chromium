@@ -621,7 +621,7 @@ void X509Certificate::GetPublicKeyInfo(const CRYPTO_BUFFER* cert_buffer,
   if (!pkey)
     return;
 
-  switch (pkey->type) {
+  switch (EVP_PKEY_id(pkey.get())) {
     case EVP_PKEY_RSA:
       *type = kPublicKeyTypeRSA;
       break;
