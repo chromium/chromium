@@ -104,15 +104,15 @@ static std::string NameForDisplay(base::StringPiece raw_name) {
 
 // DeletePairingByPublicKey erases any pairing with the given public key
 // from `list`.
-void DeletePairingByPublicKey(base::Value* list,
+void DeletePairingByPublicKey(base::Value::List& list,
                               const std::string& public_key_base64) {
-  list->EraseListValueIf([&public_key_base64](const auto& value) {
+  list.EraseIf([&public_key_base64](const auto& value) {
     if (!value.is_dict()) {
       return false;
     }
-    const base::Value* pref_public_key = value.FindKey(kPairingPrefPublicKey);
-    return pref_public_key && pref_public_key->is_string() &&
-           pref_public_key->GetString() == public_key_base64;
+    const std::string* pref_public_key =
+        value.GetDict().FindString(kPairingPrefPublicKey);
+    return pref_public_key && *pref_public_key == public_key_base64;
   });
 }
 
@@ -222,19 +222,18 @@ std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
       continue;
     }
 
+    const base::Value::Dict& dict = pairing.GetDict();
     auto out_pairing = std::make_unique<Pairing>();
-    if (!CopyString(&out_pairing->name,
-                    pairing.FindStringKey(kPairingPrefName)) ||
+    if (!CopyString(&out_pairing->name, dict.FindString(kPairingPrefName)) ||
         !CopyString(&out_pairing->tunnel_server_domain,
-                    pairing.FindStringKey(kPairingPrefTunnelServer)) ||
+                    dict.FindString(kPairingPrefTunnelServer)) ||
         !CopyBytestring(&out_pairing->contact_id,
-                        pairing.FindStringKey(kPairingPrefContactId)) ||
-        !CopyBytestring(&out_pairing->id,
-                        pairing.FindStringKey(kPairingPrefId)) ||
+                        dict.FindString(kPairingPrefContactId)) ||
+        !CopyBytestring(&out_pairing->id, dict.FindString(kPairingPrefId)) ||
         !CopyBytestring(&out_pairing->secret,
-                        pairing.FindStringKey(kPairingPrefSecret)) ||
+                        dict.FindString(kPairingPrefSecret)) ||
         !CopyBytestring(&out_pairing->peer_public_key_x962,
-                        pairing.FindStringKey(kPairingPrefPublicKey))) {
+                        dict.FindString(kPairingPrefPublicKey))) {
       continue;
     }
 
@@ -361,33 +360,30 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
   // key so it's not possible for an evil phone to displace another's pairing.
   std::string public_key_base64 =
       base::Base64Encode(pairing->peer_public_key_x962);
-  DeletePairingByPublicKey(update.Get(), public_key_base64);
+  DeletePairingByPublicKey(update->GetList(), public_key_base64);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kPairingPrefPublicKey, base::Value(std::move(public_key_base64)));
-  dict.SetKey(kPairingPrefTunnelServer,
-              base::Value(pairing->tunnel_server_domain));
+  base::Value::Dict dict;
+  dict.Set(kPairingPrefPublicKey, std::move(public_key_base64));
+  dict.Set(kPairingPrefTunnelServer, pairing->tunnel_server_domain);
   // `Names` is called without calling `MergeDevices` because that function will
   // discard linked entries with duplicate public keys, which can hide some
   // names that we would still like to avoid colliding with.
-  dict.SetKey(kPairingPrefName,
-              base::Value(FindUniqueName(
-                  pairing->name, KnownDevices::FromProfile(profile)->Names())));
-  dict.SetKey(kPairingPrefContactId,
-              base::Value(base::Base64Encode(pairing->contact_id)));
-  dict.SetKey(kPairingPrefId, base::Value(base::Base64Encode(pairing->id)));
-  dict.SetKey(kPairingPrefSecret,
-              base::Value(base::Base64Encode(pairing->secret)));
+  dict.Set(kPairingPrefName,
+           FindUniqueName(pairing->name,
+                          KnownDevices::FromProfile(profile)->Names()));
+  dict.Set(kPairingPrefContactId, base::Base64Encode(pairing->contact_id));
+  dict.Set(kPairingPrefId, base::Base64Encode(pairing->id));
+  dict.Set(kPairingPrefSecret, base::Base64Encode(pairing->secret));
 
   base::Time::Exploded now;
   base::Time::Now().UTCExplode(&now);
-  dict.SetKey(kPairingPrefTime,
-              // RFC 3339 time format.
-              base::Value(base::StringPrintf(
-                  "%04d-%02d-%02dT%02d:%02d:%02dZ", now.year, now.month,
-                  now.day_of_month, now.hour, now.minute, now.second)));
+  dict.Set(
+      kPairingPrefTime,
+      // RFC 3339 time format.
+      base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02dZ", now.year, now.month,
+                         now.day_of_month, now.hour, now.minute, now.second));
 
-  update->Append(std::move(dict));
+  update->GetList().Append(std::move(dict));
 }
 
 // DeletePairingByPublicKey erases any pairing with the given public key
@@ -396,7 +392,7 @@ void DeletePairingByPublicKey(
     PrefService* pref_service,
     std::array<uint8_t, device::kP256X962Length> public_key) {
   ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
-  DeletePairingByPublicKey(update.Get(), base::Base64Encode(public_key));
+  DeletePairingByPublicKey(update->GetList(), base::Base64Encode(public_key));
 }
 
 bool RenamePairing(
@@ -408,16 +404,16 @@ bool RenamePairing(
   const std::string public_key_base64 = base::Base64Encode(public_key);
 
   ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
-  base::Value::ListView list = update.Get()->GetListDeprecated();
 
-  for (base::Value& value : list) {
+  for (base::Value& value : update->GetList()) {
     if (!value.is_dict()) {
       continue;
     }
-    const std::string* pref_public_key =
-        value.FindStringKey(kPairingPrefPublicKey);
+
+    base::Value::Dict& dict = value.GetDict();
+    const std::string* pref_public_key = dict.FindString(kPairingPrefPublicKey);
     if (pref_public_key && *pref_public_key == public_key_base64) {
-      value.SetKey(kPairingPrefName, base::Value(std::move(name)));
+      dict.Set(kPairingPrefName, std::move(name));
       return true;
     }
   }

@@ -125,11 +125,11 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, IndividualAttestation) {
     PrefService* prefs =
         Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
     if (!test.permit_attestation_policy_values.empty()) {
-      std::vector<base::Value> policy_values;
+      base::Value::List policy_values;
       for (const std::string& v : test.permit_attestation_policy_values)
-        policy_values.emplace_back(v);
-      prefs->Set(prefs::kSecurityKeyPermitAttestation,
-                 base::Value(std::move(policy_values)));
+        policy_values.Append(v);
+      prefs->SetList(prefs::kSecurityKeyPermitAttestation,
+                     std::move(policy_values));
     } else {
       prefs->ClearPref(prefs::kSecurityKeyPermitAttestation);
     }
