@@ -26,7 +26,7 @@ public class ScrollingStripStacker extends StripStacker {
             if (tabStripImpEnabled) {
                 // When a tab is closed, drawX and width update will be animated so skip this.
                 if (!tabClosing) {
-                    tab.setDrawX(tab.getIdealX());
+                    tab.setDrawX(tab.getIdealX() + tab.getOffsetX());
                     tab.setWidth(cachedTabWidth);
                 }
             } else {

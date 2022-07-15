@@ -97,8 +97,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float TAB_STACK_WIDTH_DP = 4.f;
     private static final float TAB_OVERLAP_WIDTH_DP = 24.f;
     private static final float MAX_TAB_WIDTH_DP = 265.f;
-    // TODO(crbug.com/1308815): Replace placeholder value when specs are finalized.
-    private static final float TAB_MARGIN_WIDTH_DP = 76.f;
     private static final float REORDER_MOVE_START_THRESHOLD_DP = 50.f;
     private static final float REORDER_EDGE_SCROLL_MAX_SPEED_DP = 1000.f;
     private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
@@ -144,7 +142,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     // Layout Constants
     private final float mTabOverlapWidth;
-    private final float mTabMarginWidth;
     private final float mNewTabButtonWidth;
     private final float mMinTabWidth;
     private final float mMaxTabWidth;
@@ -161,6 +158,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private int mReorderState = REORDER_SCROLL_NONE;
     private boolean mInReorderMode;
     private float mLastReorderX;
+    private float mTabMarginWidth;
     private long mLastReorderScrollTime;
 
     // Tab switch efficiency
@@ -208,7 +206,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     public StripLayoutHelper(Context context, LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost, boolean incognito, CompositorButton modelSelectorButton) {
         mTabOverlapWidth = TAB_OVERLAP_WIDTH_DP;
-        mTabMarginWidth = TAB_MARGIN_WIDTH_DP;
         mNewTabButtonWidth = NEW_TAB_BUTTON_WIDTH_DP;
         mModelSelectorButton = modelSelectorButton;
         mTabStripImpEnabled =
@@ -1669,7 +1666,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     public void startReorderModeAtIndexForTesting(int index) {
         StripLayoutTab tab = mStripTabs[index];
-        computeTabInitialPositions();
+        updateStrip();
         startReorderMode(0L, 0f, tab.getDrawX() + (tab.getWidth() / 2));
     }
 
@@ -1695,6 +1692,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mLastReorderScrollTime = 0;
         mReorderState = REORDER_SCROLL_NONE;
         mLastReorderX = startX;
+        mTabMarginWidth = mCachedTabWidth / 2;
         mInReorderMode = true;
 
         // 4. Select this tab so that it is always in the foreground.
@@ -1709,7 +1707,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mScroller.startScroll(
                     mScrollOffset, 0, (int) fastExpandDelta, 0, time, getExpandDuration());
         } else if (isTabManagementImprovementsEnabled()) {
-            computeAndUpdateTabGroupMargins();
+            computeAndUpdateTabGroupMargins(true);
         }
 
         // 6. Request an update.
@@ -1739,8 +1737,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mUpdateHost.requestUpdate();
     }
 
-    private void computeAndUpdateTabGroupMargins() {
-        // 1. Calculate and set the trailing margins for each tab.
+    private void computeAndUpdateTabGroupMargins(boolean autoScroll) {
+        // 1.a. Calculate and set the trailing margins for each tab.
         //    TODO(crbug.com/1308812): Replace with equivalent animation.
         for (int i = 0; i < mStripTabs.length - 1; i++) {
             StripLayoutTab stripTab = mStripTabs[i];
@@ -1755,12 +1753,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             if (eitherTabInAGroup && !areRelatedTabs) {
                 mStripTabs[i].setTrailingMargin(mTabMarginWidth);
+            } else {
+                mStripTabs[i].setTrailingMargin(0f);
             }
         }
 
+        // 1.b. TODO(crbug.com/1330737): Set starting and trailing margin for tab strip.
+
         // 2. Compute the new tab positions and adjust the scroll offset accordingly to prevent the
         //    interacting tab from shifting away from where the user long-pressed.
-        updateScrollOffsetForMargins();
+        updateScrollOffsetForMargins(autoScroll);
     }
 
     private void resetTabGroupMargins() {
@@ -1772,16 +1774,44 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 2. Compute the new tab positions and attempt to adjust the scroll offset accordingly to
         //    prevent the interacting tab from shifting away from where the user long-pressed.
-        updateScrollOffsetForMargins();
+        updateScrollOffsetForMargins(true);
     }
 
-    private void updateScrollOffsetForMargins() {
+    private void updateScrollOffsetForMargins(boolean autoScroll) {
         // TODO(crbug.com/1308812): Replace with equivalent animation.
         float oldIdealX = mInteractingTab.getIdealX();
         computeTabInitialPositions();
-        int scrollDelta = (int) (mInteractingTab.getIdealX() - oldIdealX);
-        mScrollOffset -= MathUtils.flipSignIf(scrollDelta, LocalizationUtils.isLayoutRtl());
-        updateScrollOffsetLimits();
+        if (autoScroll) {
+            int scrollDelta = (int) (mInteractingTab.getIdealX() - oldIdealX);
+            mScrollOffset -= MathUtils.flipSignIf(scrollDelta, LocalizationUtils.isLayoutRtl());
+            updateScrollOffsetLimits();
+        }
+    }
+
+    private int maybeMoveOutOfGroup(float offset, int curIndex) {
+        if (Math.abs(offset) > mTabMarginWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE) {
+            mTabGroupModelFilter.moveTabOutOfGroupInDirection(mInteractingTab.getId(), offset > 0);
+            return curIndex;
+        }
+
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    private int maybeMovePastGroup(float offset, int curIndex, boolean towardEnd) {
+        int direction = towardEnd ? 1 : -1;
+        int groupId = mTabGroupModelFilter.getRootId(
+                getTabById(mStripTabs[curIndex + direction].getId()));
+        int numTabsToSkip = mTabGroupModelFilter.getRelatedTabCountForRootId(groupId);
+        float effectiveTabWidth = mCachedTabWidth - mTabOverlapWidth;
+        float threshold = (numTabsToSkip * effectiveTabWidth) + mTabMarginWidth
+                + (REORDER_OVERLAP_SWITCH_PERCENTAGE * mTabMarginWidth);
+
+        if (Math.abs(offset) > threshold) {
+            int destIndex = towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
+            return destIndex;
+        }
+
+        return TabModel.INVALID_TAB_INDEX;
     }
 
     private void updateReorderPosition(float deltaX) {
@@ -1796,39 +1826,74 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 2. Check if we should swap tabs and track the new destination index.
         int destIndex = TabModel.INVALID_TAB_INDEX;
-        boolean pastLeftThreshold = offset < -flipThreshold;
-        boolean pastRightThreshold = offset > flipThreshold;
-        boolean isNotRightMost = curIndex < mStripTabs.length - 1;
-        boolean isNotLeftMost = curIndex > 0;
+        boolean isFirstTab = curIndex == 0;
+        boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
+        boolean tabManagementImprovementsEnabled =
+                TabUiFeatureUtilities.isTabletTabManagementImprovementsEnabled(mContext);
+        boolean isInGroup = tabManagementImprovementsEnabled
+                && mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
+        boolean approachingMargin = tabManagementImprovementsEnabled && towardEnd
+                ? mInteractingTab.getTrailingMargin() > 0f
+                : (!isFirstTab && mStripTabs[curIndex - 1].getTrailingMargin() > 0f);
 
-        if (LocalizationUtils.isLayoutRtl()) {
-            boolean oldLeft = pastLeftThreshold;
-            pastLeftThreshold = pastRightThreshold;
-            pastRightThreshold = oldLeft;
-        }
+        if (approachingMargin) {
+            if (isInGroup) {
+                // 2.a. Tab is in a group and approaching a margin. Maybe drag out of group.
+                destIndex = maybeMoveOutOfGroup(offset, curIndex);
+            } else {
+                // 2.b. Tab is not in a group and approaching a margin. Maybe target tab group.
+                // TODO(crbug.com/1330740): Update internal hovering state.
 
-        if (pastRightThreshold && isNotRightMost) {
-            destIndex = curIndex + 2;
-        } else if (pastLeftThreshold && isNotLeftMost) {
-            destIndex = curIndex - 1;
+                // 2.c. Tab is not in a group and approaching a margin. Maybe drag past group.
+                destIndex = maybeMovePastGroup(offset, curIndex, towardEnd);
+            }
+        } else {
+            // 2.d Tab is not interacting with tab groups. Reorder as normal.
+            boolean pastLeftThreshold = offset < -flipThreshold;
+            boolean pastRightThreshold = offset > flipThreshold;
+            boolean isNotRightMost = curIndex < mStripTabs.length - 1;
+            boolean isNotLeftMost = curIndex > 0;
+
+            if (LocalizationUtils.isLayoutRtl()) {
+                boolean oldLeft = pastLeftThreshold;
+                pastLeftThreshold = pastRightThreshold;
+                pastRightThreshold = oldLeft;
+            }
+
+            if (pastRightThreshold && isNotRightMost) {
+                destIndex = curIndex + 2;
+            } else if (pastLeftThreshold && isNotLeftMost) {
+                destIndex = curIndex - 1;
+            }
         }
 
         // 3. If we should swap tabs, make the swap.
         if (destIndex != TabModel.INVALID_TAB_INDEX) {
-            // 3.a. Since we're about to move the tab we're dragging, adjust it's offset so it
-            // stays in the same apparent position.
-            boolean shouldFlip =
-                    LocalizationUtils.isLayoutRtl() ? destIndex < curIndex : destIndex > curIndex;
-            offset += MathUtils.flipSignIf(flipWidth, shouldFlip);
-
-            // 3.b. Swap the tabs.
+            // 3.a. Swap the tabs.
             reorderTab(mInteractingTab.getId(), curIndex, destIndex, true);
             mModel.moveTab(mInteractingTab.getId(), destIndex);
 
-            // 3.c. Update our curIndex as we have just moved the tab.
-            curIndex += destIndex > curIndex ? 1 : -1;
+            // 3.b. Re-compute tab group margins if necessary.
+            float oldIdealX = mInteractingTab.getIdealX();
+            if (tabManagementImprovementsEnabled) computeAndUpdateTabGroupMargins(false);
 
-            // 3.d. Update visual tab ordering.
+            // 3.c. Since we just moved the tab we're dragging, adjust its offset so it stays in
+            // the same apparent position.
+            if (approachingMargin) {
+                offset -= (mInteractingTab.getIdealX() - oldIdealX);
+                // When the strip is scrolling, deltaX is already accounted for by idealX. This is
+                // because idealX uses the scroll offset which has already been adjusted by deltaX.
+                if (mLastReorderScrollTime != 0) offset -= deltaX;
+            } else {
+                boolean shouldFlip = LocalizationUtils.isLayoutRtl() ? destIndex < curIndex
+                                                                     : destIndex > curIndex;
+                offset += MathUtils.flipSignIf(flipWidth, shouldFlip);
+            }
+
+            // 3.d. Update our curIndex as we have just moved the tab.
+            curIndex = destIndex > curIndex ? destIndex - 1 : destIndex;
+
+            // 3.e. Update visual tab ordering.
             updateVisualTabOrdering();
         }
 
@@ -1859,25 +1924,31 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // this case because we probably just already moved it.
         if (mInReorderMode && index != oldIndex && tab == mInteractingTab) return;
 
-        // 3. Swap the tabs.
-        moveElement(mStripTabs, index, newIndex);
-
-        // 4. Update newIndex to point to the proper element.
-        if (index < newIndex) newIndex--;
-
-        // 5. Animate if necessary.
+        // 3. Animate if necessary.
         if (animate && !mAnimationsDisabledForTesting) {
+            final boolean towardEnd = oldIndex <= newIndex;
             final float flipWidth = mCachedTabWidth - mTabOverlapWidth;
-            final int direction = oldIndex <= newIndex ? 1 : -1;
+            final int direction = towardEnd ? 1 : -1;
             final float animationLength =
                     MathUtils.flipSignIf(direction * flipWidth, LocalizationUtils.isLayoutRtl());
-            StripLayoutTab slideTab = mStripTabs[newIndex - direction];
 
             finishAnimationsAndPushTabUpdates();
-            mRunningAnimator = CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(),
-                    slideTab, StripLayoutTab.X_OFFSET, animationLength, 0f, ANIM_TAB_MOVE_MS);
+            ArrayList<Animator> slideAnimationList = new ArrayList<>();
+            for (int i = oldIndex + direction; towardEnd == i < newIndex; i += direction) {
+                StripLayoutTab slideTab = mStripTabs[i];
+                CompositorAnimator animator = CompositorAnimator.ofFloatProperty(
+                        mUpdateHost.getAnimationHandler(), slideTab, StripLayoutTab.X_OFFSET,
+                        animationLength, 0f, ANIM_TAB_MOVE_MS);
+                slideAnimationList.add(animator);
+            }
+            AnimatorSet set = new AnimatorSet();
+            set.playTogether(slideAnimationList);
+            mRunningAnimator = set;
             mRunningAnimator.start();
         }
+
+        // 4. Swap the tabs.
+        moveElement(mStripTabs, index, newIndex);
     }
 
     private void handleReorderAutoScrolling(long time) {
@@ -2276,6 +2347,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     protected boolean isInReorderModeForTesting() {
         return mInReorderMode;
+    }
+
+    @VisibleForTesting
+    protected float getLastReorderX() {
+        return mLastReorderX;
     }
 
     private void setAccessibilityDescription(StripLayoutTab stripTab, Tab tab) {

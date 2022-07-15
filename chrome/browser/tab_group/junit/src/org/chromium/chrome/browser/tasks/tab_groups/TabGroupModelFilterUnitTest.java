@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_groups;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -587,6 +588,23 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void moveTabOutOfGroupInDirection_NotTrailing() {
+        List<Tab> expectedTabModelBeforeUngroup =
+                new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
+        List<Tab> expectedTabModelAfterUngroup =
+                new ArrayList<>(Arrays.asList(mTab1, mTab3, mTab2, mTab4, mTab5, mTab6));
+        assertArrayEquals(mTabs.toArray(), expectedTabModelBeforeUngroup.toArray());
+
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB3_ID, false);
+
+        verify(mTabModel).moveTab(mTab3.getId(), POSITION2);
+        verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab3, POSITION3);
+        assertThat(CriticalPersistedTabData.from(mTab3).getRootId(), equalTo(TAB3_ID));
+        assertThat(CriticalPersistedTabData.from(mTab2).getRootId(), equalTo(TAB2_ID));
+        assertArrayEquals(mTabs.toArray(), expectedTabModelAfterUngroup.toArray());
+    }
+
+    @Test
     public void mergeTabToGroup_NoUpdateTabModel() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab2, mTab3, mTab4));
 
@@ -990,6 +1008,22 @@ public class TabGroupModelFilterUnitTest {
                 mTabGroupModelFilter.getRelatedTabListForRootId(TAB5_ROOT_ID).toArray(), group2);
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabListForRootId(TAB6_ROOT_ID).toArray(), group2);
+    }
+
+    @Test
+    public void testGetRelatedTabCountForRootId() {
+        assertEquals("Should have 1 related tab.", 1,
+                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ROOT_ID));
+        assertEquals("Should have 2 related tabs.", 2,
+                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB2_ROOT_ID));
+        assertEquals("Should have 2 related tabs.", 2,
+                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB3_ROOT_ID));
+        assertEquals("Should have 1 related tab.", 1,
+                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB4_ROOT_ID));
+        assertEquals("Should have 2 related tabs.", 2,
+                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB5_ROOT_ID));
+        assertEquals("Should have 2 related tabs.", 2,
+                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB6_ROOT_ID));
     }
 
     @Test
