@@ -122,8 +122,9 @@ void BindRemoteAppsFactory(
     mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
         pending_receiver) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // |remote_apps_manager| will be null in non-managed guest sessions, but this
-  // is already checked in |RemoteAppsImpl::IsAllowed()|.
+  // |remote_apps_manager| will be null for sessions that are not regular user
+  // sessions or managed guest sessions. This is checked in
+  // |RemoteAppsImpl::IsMojoPrivateApiAllowed()|.
   ash::RemoteAppsManager* remote_apps_manager =
       ash::RemoteAppsManagerFactory::GetForProfile(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
@@ -236,7 +237,8 @@ void PopulateChromeFrameBindersForExtension(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {
+  if (ash::RemoteAppsImpl::IsMojoPrivateApiAllowed(render_frame_host,
+                                                   extension)) {
     binder_map->Add<chromeos::remote_apps::mojom::RemoteAppsFactory>(
         base::BindRepeating(&BindRemoteAppsFactory));
   }

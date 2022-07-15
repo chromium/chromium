@@ -97,6 +97,7 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
     ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
   }
 
+  // TODO(b/239145899): Refactor to not use MGS setup any more.
   void SetUpDeviceLocalAccountPolicy() {
     enterprise_management::DeviceLocalAccountsProto* const
         device_local_accounts =

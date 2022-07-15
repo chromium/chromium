@@ -37,8 +37,9 @@ class RemoteAppsManager;
 // //chrome/browser/chromeos/extensions/remote_apps_apitest.cc
 class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
  public:
-  static bool IsAllowed(content::RenderFrameHost* render_frame_host,
-                        const extensions::Extension* extension);
+  static bool IsMojoPrivateApiAllowed(
+      content::RenderFrameHost* render_frame_host,
+      const extensions::Extension* extension);
 
   static void SetBypassChecksForTesting(bool bypass_checks_for_testing);
 

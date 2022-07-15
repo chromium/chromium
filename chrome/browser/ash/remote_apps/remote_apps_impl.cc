@@ -32,16 +32,10 @@ static bool g_bypass_checks_for_testing_ = false;
 }  // namespace
 
 // static
-bool RemoteAppsImpl::IsAllowed(content::RenderFrameHost* render_frame_host,
-                               const extensions::Extension* extension) {
+bool RemoteAppsImpl::IsMojoPrivateApiAllowed(
+    content::RenderFrameHost* render_frame_host,
+    const extensions::Extension* extension) {
   if (!render_frame_host || !extension)
-    return false;
-
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  DCHECK(profile);
-  // RemoteApps are not available for non-managed guest sessions.
-  if (!RemoteAppsManagerFactory::GetForProfile(profile))
     return false;
 
   if (g_bypass_checks_for_testing_)
@@ -51,7 +45,18 @@ bool RemoteAppsImpl::IsAllowed(content::RenderFrameHost* render_frame_host,
       extensions::FeatureProvider::GetBehaviorFeature(
           extensions::behavior_feature::kImprivataInSessionExtension);
   DCHECK(feature);
-  return feature->IsAvailableToExtension(extension).is_available();
+  if (!feature->IsAvailableToExtension(extension).is_available())
+    return false;
+
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  DCHECK(profile);
+  // RemoteApps are available for managed guest sessions and regular user
+  // sessions.
+  if (!RemoteAppsManagerFactory::GetForProfile(profile))
+    return false;
+
+  return true;
 }
 
 // static

@@ -49,8 +49,10 @@ KeyedService* RemoteAppsManagerFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
   user_manager::User* user = profile_helper->GetUserByProfile(profile);
-  if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
+  if (!user || (user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT &&
+                user->GetType() != user_manager::USER_TYPE_REGULAR)) {
     return nullptr;
+  }
 
   return new RemoteAppsManager(profile);
 }

@@ -43,7 +43,7 @@ namespace ash {
 class RemoteAppsImpl;
 
 // KeyedService which manages the logic for |AppType::kRemote| in AppService.
-// This service is only created for Managed Guest Sessions.
+// This service is created for Managed Guest Sessions and Regular User Sessions.
 // The IDs of the added apps and folders are GUIDs generated using
 // |base::GenerateGUID()|.
 // See crbug.com/1101208 for more details on Remote Apps.

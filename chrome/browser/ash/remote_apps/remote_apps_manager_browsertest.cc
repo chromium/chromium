@@ -201,6 +201,7 @@ class RemoteAppsManagerBrowsertest
     manager_->SetImageDownloaderForTesting(std::move(image_downloader));
   }
 
+  // TODO(b/239145899): Refactor to not use MGS setup any more.
   void SetUpDeviceLocalAccountPolicy() {
     enterprise_management::DeviceLocalAccountsProto* const
         device_local_accounts =
