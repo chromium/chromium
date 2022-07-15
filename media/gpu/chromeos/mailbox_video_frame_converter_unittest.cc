@@ -7,8 +7,11 @@
 #include "base/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 using ::testing::_;
 
@@ -20,9 +23,28 @@ VideoFrame* UnwrapVideoFrame(const VideoFrame& frame) {
   return const_cast<VideoFrame*>(&frame);
 }
 
-base::WeakPtr<gpu::GpuChannel> GetGpuChannel() {
-  return nullptr;
-}
+class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
+ public:
+  MOCK_METHOD0(Initialize, bool());
+  MOCK_METHOD10(CreateSharedImage,
+                gpu::SharedImageStub::SharedImageDestructionCallback(
+                    const gpu::Mailbox& mailbox,
+                    gfx::GpuMemoryBufferHandle handle,
+                    gfx::BufferFormat format,
+                    gfx::BufferPlane plane,
+                    gpu::SurfaceHandle surface_handle,
+                    const gfx::Size& size,
+                    const gfx::ColorSpace& color_space,
+                    GrSurfaceOrigin surface_origin,
+                    SkAlphaType alpha_type,
+                    uint32_t usage));
+  MOCK_METHOD2(UpdateSharedImage,
+               bool(const gpu::Mailbox& mailbox,
+                    gfx::GpuFenceHandle in_fence_handle));
+  MOCK_METHOD2(WaitOnSyncTokenAndReleaseFrame,
+               bool(scoped_refptr<VideoFrame> frame,
+                    const gpu::SyncToken& sync_token));
+};
 
 }  // anonymous namespace
 
@@ -32,7 +54,7 @@ class MailboxVideoFrameConverterTest : public testing::Test {
       : converter_(new MailboxVideoFrameConverter(
             base::BindRepeating(&UnwrapVideoFrame),
             base::ThreadTaskRunnerHandle::Get(),
-            base::BindRepeating(&GetGpuChannel),
+            std::make_unique<MockGpuDelegate>(),
             /*enable_unsafe_webgpu=*/false)) {}
 
   MailboxVideoFrameConverterTest(const MailboxVideoFrameConverterTest&) =
@@ -51,7 +73,6 @@ class MailboxVideoFrameConverterTest : public testing::Test {
   MOCK_METHOD1(OutputCB, void(scoped_refptr<VideoFrame>));
 
   base::test::TaskEnvironment task_environment_;
-
   std::unique_ptr<VideoFrameConverter> converter_;
 };
 

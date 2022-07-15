@@ -11,8 +11,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/ipc/common/surface_handle.h"
+#include "gpu/ipc/service/shared_image_stub.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
+#include "ui/gfx/buffer_types.h"
 
 namespace base {
 class Location;
@@ -20,9 +25,12 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace gpu {
-class GpuChannel;
 class CommandBufferStub;
 }  // namespace gpu
+
+namespace gfx {
+struct GpuFenceHandle;
+}  // namespace gfx
 
 namespace media {
 
@@ -38,8 +46,32 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
       base::RepeatingCallback<VideoFrame*(const VideoFrame& wrapped_frame)>;
   using GetCommandBufferStubCB =
       base::RepeatingCallback<gpu::CommandBufferStub*()>;
-  using GetGpuChannelCB =
-      base::RepeatingCallback<base::WeakPtr<gpu::GpuChannel>()>;
+
+  class GpuDelegate {
+   public:
+    GpuDelegate() = default;
+    GpuDelegate(const GpuDelegate&) = delete;
+    GpuDelegate& operator=(const GpuDelegate&) = delete;
+    virtual ~GpuDelegate() = default;
+
+    virtual bool Initialize() = 0;
+    virtual gpu::SharedImageStub::SharedImageDestructionCallback
+    CreateSharedImage(const gpu::Mailbox& mailbox,
+                      gfx::GpuMemoryBufferHandle handle,
+                      gfx::BufferFormat format,
+                      gfx::BufferPlane plane,
+                      gpu::SurfaceHandle surface_handle,
+                      const gfx::Size& size,
+                      const gfx::ColorSpace& color_space,
+                      GrSurfaceOrigin surface_origin,
+                      SkAlphaType alpha_type,
+                      uint32_t usage) = 0;
+    virtual bool UpdateSharedImage(const gpu::Mailbox& mailbox,
+                                   gfx::GpuFenceHandle in_fence_handle) = 0;
+    virtual bool WaitOnSyncTokenAndReleaseFrame(
+        scoped_refptr<VideoFrame> frame,
+        const gpu::SyncToken& sync_token) = 0;
+  };
 
   // Creates a MailboxVideoFrameConverter instance. The callers will send
   // wrapped VideoFrames to ConvertFrame(), |unwrap_frame_cb| is the callback
@@ -78,7 +110,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   MailboxVideoFrameConverter(
       UnwrapFrameCB unwrap_frame_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-      GetGpuChannelCB get_gpu_channel_cb,
+      std::unique_ptr<GpuDelegate> gpu_delegate,
       bool enable_unsafe_webgpu);
   // Destructor runs on the GPU main thread.
   ~MailboxVideoFrameConverter() override;
@@ -148,12 +180,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   UnwrapFrameCB unwrap_frame_cb_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
-  const GetGpuChannelCB get_gpu_channel_cb_;
-
-  // |gpu_channel_| will outlive CommandBufferStub, keep the former as a WeakPtr
-  // to guarantee proper resource cleanup. To be dereferenced on
-  // |gpu_task_runner_| only.
-  base::WeakPtr<gpu::GpuChannel> gpu_channel_;
+  const std::unique_ptr<GpuDelegate> gpu_delegate_;
 
   // Mapping from the unique id of the frame to its corresponding SharedImage.
   // Accessed only on |parent_task_runner_|. The ScopedSharedImages are owned by
