@@ -400,17 +400,13 @@
     "dependencies": ["manifest:mime_types_handler"],
     "contexts": ["blessed_extension"]
   },
-  "mojoPrivate": [{
-    "contexts": ["blessed_extension"],
-    "channel": "stable",
-    "extension_types": ["platform_app", "extension"]
-  }, {
+  "mojoPrivate": {
     "contexts": ["blessed_extension"],
     "dependencies": ["behavior:imprivata_in_session_extension"],
     "extension_types": ["extension"],
     "location": "policy",
     "platforms": ["chromeos", "lacros"]
-  }],
+  },
   "networking.onc": {
     "dependencies": ["permission:networking.onc"],
     "contexts": ["blessed_extension"],
