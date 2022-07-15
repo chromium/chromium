@@ -184,6 +184,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.NumberOfSupportedMethods.AndroidApp"
+    units="methods" expires_after="2023-07-14">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    The number of payment methods that an installed Android payment app declares
+    to support. Recorded when a website creates a new PaymentRequest JS object.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.PaymentHandlerInstallSuccess"
     enum="BooleanSuccess" expires_after="2023-01-01">
   <owner>rouslan@chromium.org</owner>
