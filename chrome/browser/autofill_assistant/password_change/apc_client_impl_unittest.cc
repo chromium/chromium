@@ -24,15 +24,20 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
 constexpr char kUrl1[] = "https://www.example.com";
 constexpr char kUsername1[] = "Lori";
+constexpr char kDebugBundleId[] = "testuser/123/password_change/example.com";
+constexpr char kDebugSocketId[] = "testuser";
 
 constexpr char kPasswordChangeSkipLoginParameter[] =
     "PASSWORD_CHANGE_SKIP_LOGIN";
 constexpr char kSourceParameter[] = "SOURCE";
+constexpr char kDebugBundleIdParameter[] = "DEBUG_BUNDLE_ID";
+constexpr char kDebugSocketIdParameter[] = "DEBUG_SOCKET_ID";
 constexpr char kSourcePasswordChangeLeakWarning[] = "10";
 constexpr char kSourcePasswordChangeSettings[] = "11";
 
@@ -234,7 +239,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
   // We cannot start a second flow.
   EXPECT_CALL(result_callback2, Run(false));
   client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
-                result_callback2.Get());
+                result_callback2.Get(),
+                /*debug_run_information=*/absl::nullopt);
 
   // Prepare to extract the callback to the external script controller.
   base::OnceCallback<void(
@@ -264,7 +270,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_fromSettings) {
       .WillOnce(MoveArg<0>(&coordinator_callback));
 
   apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/false,
-                      base::DoNothing());
+                      /*callback=*/base::DoNothing(),
+                      /*debug_run_information=*/absl::nullopt);
 
   // Prepare to extract the script_params to the external script
   // controller.
@@ -290,7 +297,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_fromLeakWarning) {
 
   // `skip_login = true` equals a trigger from leak warning.
   apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
-                      base::DoNothing());
+                      /*callback=*/base::DoNothing(),
+                      /*debug_run_information=*/absl::nullopt);
 
   // Prepare to extract the script_params to the external script
   // controller.
@@ -306,6 +314,32 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_fromLeakWarning) {
               StrEq(kSourcePasswordChangeLeakWarning));
 }
 
+TEST_F(ApcClientImplTest, CreateAndStartApcFlow_withDebugInformation) {
+  // Prepare to extract the callback to the coordinator.
+  ApcOnboardingCoordinator::Callback coordinator_callback;
+  EXPECT_CALL(*coordinator(), PerformOnboarding)
+      .Times(1)
+      .WillOnce(MoveArg<0>(&coordinator_callback));
+
+  apc_client()->Start(
+      GURL(kUrl1), kUsername1, /*skip_login=*/false,
+      /*callback=*/base::DoNothing(),
+      ApcClient::DebugRunInformation{.bundle_id = kDebugBundleId,
+                                     .socket_id = kDebugSocketId});
+
+  // Prepare to extract the script_params to the external script
+  // controller.
+  base::flat_map<std::string, std::string> params_map;
+  EXPECT_CALL(*external_script_controller(), StartScript)
+      .Times(1)
+      .WillOnce(MoveArg<0>(&params_map));
+
+  // Successful onboarding.
+  std::move(coordinator_callback).Run(true);
+  EXPECT_EQ(params_map[kDebugBundleIdParameter], kDebugBundleId);
+  EXPECT_EQ(params_map[kDebugSocketIdParameter], kDebugSocketId);
+}
+
 TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithFailedOnboarding) {
   // Prepare to extract the callback to the coordinator.
   ApcOnboardingCoordinator::Callback coordinator_callback;
@@ -314,7 +348,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithFailedOnboarding) {
       .WillOnce(MoveArg<0>(&coordinator_callback));
 
   apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
-                      base::DoNothing());
+                      /*callback=*/base::DoNothing(),
+                      /*debug_run_information=*/absl::nullopt);
 
   // Fail onboarding.
   std::move(coordinator_callback).Run(false);
@@ -339,7 +374,8 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithUnifiedSidePanelDisabled) {
 
   // Starting it does not work.
   client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
-                base::DoNothing());
+                /*callback=*/base::DoNothing(),
+                /*debug_run_information=*/absl::nullopt);
   EXPECT_FALSE(client->IsRunning());
 }
 
@@ -350,7 +386,7 @@ TEST_F(ApcClientImplTest, StopApcFlow) {
   base::MockCallback<ApcClient::ResultCallback> result_callback;
 
   client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
-                result_callback.Get());
+                result_callback.Get(), /*debug_run_information=*/absl::nullopt);
 
   // Calling `Stop()` twice only triggers the callback the first time around.
   EXPECT_CALL(result_callback, Run(false)).Times(1);
@@ -369,7 +405,8 @@ TEST_F(ApcClientImplTest, OnHidden_WithOngoingApcFlow) {
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kShown));
   apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
-                      base::DoNothing());
+                      /*callback=*/base::DoNothing(),
+                      /*debug_run_information=*/absl::nullopt);
   std::move(coordinator_callback).Run(true);
   EXPECT_TRUE(apc_client()->IsRunning());
 

@@ -81,9 +81,12 @@ const char kSendAnnotateDomModelVersion[] = "SEND_ANNOTATE_DOM_MODEL_VERSION";
 // autofill-assistant onboarding. Even so, please always reach out to Chrome
 // privacy when you plan to make use of this list, and/or adjust it.
 constexpr std::array<const char*, 6> kNonSensitiveScriptParameters = {
-    "DEBUG_BUNDLE_ID",         "DEBUG_BUNDLE_VERSION",
-    "DEBUG_SOCKET_ID",         "FALLBACK_BUNDLE_ID",
-    "FALLBACK_BUNDLE_VERSION", public_script_parameters::kIntentParamenterName};
+    public_script_parameters::kDebugBundleIdParameterName,
+    "DEBUG_BUNDLE_VERSION",
+    public_script_parameters::kDebugSocketIdParameterName,
+    "FALLBACK_BUNDLE_ID",
+    "FALLBACK_BUNDLE_VERSION",
+    public_script_parameters::kIntentParameterName};
 
 // Parameters to specify details before the first backend roundtrip.
 const char kDetailsShowInitialParameterName[] = "DETAILS_SHOW_INITIAL";
@@ -211,7 +214,7 @@ absl::optional<bool> ScriptParameters::GetTriggerScriptExperiment() const {
 }
 
 absl::optional<std::string> ScriptParameters::GetIntent() const {
-  return GetParameter(public_script_parameters::kIntentParamenterName);
+  return GetParameter(public_script_parameters::kIntentParameterName);
 }
 
 absl::optional<std::string> ScriptParameters::GetCallerEmail() const {

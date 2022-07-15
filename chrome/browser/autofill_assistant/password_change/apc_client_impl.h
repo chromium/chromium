@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class ApcExternalActionDelegate;
@@ -35,10 +36,12 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   ApcClientImpl& operator=(const ApcClientImpl&) = delete;
 
   // ApcClient:
-  void Start(const GURL& url,
-             const std::string& username,
-             bool skip_login,
-             ResultCallback callback) override;
+  void Start(
+      const GURL& url,
+      const std::string& username,
+      bool skip_login,
+      ResultCallback callback,
+      absl::optional<DebugRunInformation> debug_run_information) override;
   void Stop(bool success) override;
   bool IsRunning() const override;
   void PromptForConsent() override;
@@ -103,6 +106,9 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // Whether the login step of a script run should be skipped.
   // This is used during triggers from the leak warning.
   bool skip_login_;
+
+  // If set, contains the parameters for a debug run.
+  absl::optional<DebugRunInformation> debug_run_information_;
 
   // The state of the `ApcClient` to avoid that a run is started while
   // another is already ongoing in the tab.

@@ -11,7 +11,8 @@ namespace autofill_assistant::public_script_parameters {
 // |SESSION_USERNAME_PARAMETER| from
 // .../password_manager/PasswordChangeLauncher.java
 // TODO(b/151401974): Eliminate duplicate parameter definitions.
-const char kPasswordChangeUsernameParameterName[] = "PASSWORD_CHANGE_USERNAME";
+constexpr char kPasswordChangeUsernameParameterName[] =
+    "PASSWORD_CHANGE_USERNAME";
 
 // Whether the script should perform a login before changing the password.
 constexpr char kPasswordChangeSkipLoginParameterName[] =
@@ -21,26 +22,34 @@ constexpr char kPasswordChangeSkipLoginParameterName[] =
 // caller to either request immediate start of autofill assistant (if set to
 // true), or a delayed start using trigger scripts (if set to false). If this is
 // set to false, REQUEST_TRIGGER_SCRIPT or TRIGGER_SCRIPTS_BASE_64 must be set.
-const char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
+constexpr char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
 
 // Mandatory parameter that MUST be present and set to true in all intents.
-const char kEnabledParameterName[] = "ENABLED";
+constexpr char kEnabledParameterName[] = "ENABLED";
 
 // The original deeplink as indicated by the caller. Use this parameter instead
 // of the initial URL when available to avoid issues where the initial URL
 // points to a redirect rather than the actual deeplink.
-const char kOriginalDeeplinkParameterName[] = "ORIGINAL_DEEPLINK";
+constexpr char kOriginalDeeplinkParameterName[] = "ORIGINAL_DEEPLINK";
 
 // The intent parameter.
-const char kIntentParamenterName[] = "INTENT";
+constexpr char kIntentParameterName[] = "INTENT";
 
 // Parameter name of the CALLER script parameter. Note that the corresponding
 // values are integers, corresponding to the caller proto in the backend.
-const char kCallerParameterName[] = "CALLER";
+constexpr char kCallerParameterName[] = "CALLER";
 
 // Parameter name of the SOURCE script parameter. Note that the corresponding
 // values are integers, corresponding to the source proto in the backend.
-const char kSourceParameterName[] = "SOURCE";
+constexpr char kSourceParameterName[] = "SOURCE";
+
+// Name of the debug script bundle. It has the following format:
+// `{LDAP}/{BUNDLE_ID}/{INTENT_NAME}/{DOMAIN}`.
+constexpr char kDebugBundleIdParameterName[] = "DEBUG_BUNDLE_ID";
+
+// Name of the debug socket, e.g. for live debugging of the script run. It
+// typically defaults to the debugging user's LDAP.
+constexpr char kDebugSocketIdParameterName[] = "DEBUG_SOCKET_ID";
 
 }  // namespace autofill_assistant::public_script_parameters
 

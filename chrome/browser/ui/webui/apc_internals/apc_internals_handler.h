@@ -8,7 +8,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class APCInternalsLoginsRequest;
 
@@ -57,7 +59,7 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
   password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher();
 
   // Data gathering methods.
-  // Gathers information on all APC-related feature and feature parameters.
+  // Gathers information on all APC-related features and feature parameters.
   base::Value::List GetAPCRelatedFlags() const;
 
   // Gathers information about the script fetcher, e.g. chosen engine,
@@ -76,6 +78,9 @@ class APCInternalsHandler : public content::WebUIMessageHandler {
 
   // Removes finished requests from `pending_logins_requests_`.
   void OnLoginsRequestFinished(APCInternalsLoginsRequest* finished_request);
+
+  // Parameters for starting an APC script as a debug run.
+  absl::optional<ApcClient::DebugRunInformation> debug_run_information_;
 
   // Queue for pending requests fetching logins from password store.
   std::vector<std::unique_ptr<APCInternalsLoginsRequest>>

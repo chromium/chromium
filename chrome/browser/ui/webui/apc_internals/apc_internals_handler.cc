@@ -12,6 +12,9 @@
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_client.h"
@@ -27,6 +30,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/url_formatter/url_formatter.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -35,6 +39,9 @@
 using password_manager::PasswordScriptsFetcher;
 
 namespace {
+
+constexpr char kPasswordChangeIntentName[] = "password_change";
+constexpr char kBundleIdSeparator[] = "/";
 
 // TODO(1311324): Reduce the level of code duplication between
 // autofill_assistant::ClientAndroid and the helper method in
@@ -46,6 +53,25 @@ std::string GetCountryCode() {
   if (!variations_service || variations_service->GetLatestCountry().empty())
     return "ZZ";
   return base::ToUpperASCII(variations_service->GetLatestCountry());
+}
+
+// Builds the bundle id that Autofill Assistant takes as a parameter based on
+// the user's `ldap`, the `url` of the page, and the `id` of the bundle.
+std::string CreateBundleId(const std::string& ldap,
+                           const GURL& url,
+                           unsigned id) {
+  const std::u16string formatted_url = url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlTrimAfterHost,
+      base::UnescapeRule::SPACES, /*new_parsed=*/nullptr,
+      /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
+  // Autofill Assistant expects the following format:
+  // `{LDAP}/{BUNDLE_ID}/{INTENT_NAME}/{DOMAIN}`.
+  return base::StrCat({ldap, kBundleIdSeparator, base::NumberToString(id),
+                       kBundleIdSeparator, kPasswordChangeIntentName,
+                       kBundleIdSeparator, base::UTF16ToUTF8(formatted_url)});
 }
 
 }  // namespace
@@ -228,12 +254,26 @@ void APCInternalsHandler::GetLoginsAndTryLaunchScript(
   if (!profile_password_store_)
     return;
 
-  if (args.size() == 1 && args.front().is_string()) {
+  if (args.size() == 3 && base::ranges::all_of(args.cbegin(), args.cend(),
+                                               &base::Value::is_string)) {
     GURL url = GURL(args.front().GetString());
     url::Origin origin = url::Origin::Create(url);
     password_manager::PasswordFormDigest digest(
         password_manager::PasswordForm::Scheme::kHtml, origin.GetURL().spec(),
         GURL());
+
+    // Check whether to pass debug parameters.
+    const std::string& ldap = args[1].GetString();
+    const std::string& bundle_id_input = args[2].GetString();
+    unsigned bundle_id_number = 0u;
+    if (!ldap.empty() &&
+        base::StringToUint(bundle_id_input, &bundle_id_number)) {
+      debug_run_information_ = ApcClient::DebugRunInformation{
+          .bundle_id = CreateBundleId(ldap, url, bundle_id_number),
+          .socket_id = ldap};
+    } else {
+      debug_run_information_.reset();
+    }
 
     pending_logins_requests_.emplace_back(
         std::make_unique<APCInternalsLoginsRequest>(
@@ -275,7 +315,8 @@ void APCInternalsHandler::LaunchScript(const GURL& url,
     ApcClient* apc_client = ApcClient::GetOrCreateForWebContents(
         navigation_handle.get()->GetWebContents());
     apc_client->Start(url, username,
-                      /*skip_login=*/false);
+                      /*skip_login=*/false,
+                      /*callback=*/base::DoNothing(), debug_run_information_);
   }
 #endif  // !IS_ANDROID
 }

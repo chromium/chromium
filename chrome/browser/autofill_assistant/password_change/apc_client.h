@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -21,6 +22,16 @@ class WebContents;
 class ApcClient {
  public:
   using ResultCallback = base::OnceCallback<void(bool)>;
+
+  // Additional script parameters for scripts started in a debug mode. These
+  // runs can select a specific bundle and pass back live information about
+  // an ongoing run to a debugger.
+  struct DebugRunInformation {
+    // Value for Autofill Assistant's `DEBUG_BUNDLE_ID`.
+    std::string bundle_id;
+    // Value for Autofill Assistant's `DEBUG_SOCKET_ID`.
+    std::string socket_id;
+  };
 
   // Registers the prefs that are related to automated password change on
   // Desktop.
@@ -37,10 +48,14 @@ class ApcClient {
   // Starts the automated password change flow at `url` with `username`.
   // Calls `callback` at the termination of the flow with a boolean parameter
   // that indicates whether the credential was changed successfully.
+  // If `debug_run_information` is set, it passes the parameters contained
+  // within to start a run in debugger mode.
   virtual void Start(const GURL& url,
                      const std::string& username,
                      bool skip_login,
-                     ResultCallback callback = base::DoNothing()) = 0;
+                     ResultCallback callback = base::DoNothing(),
+                     absl::optional<DebugRunInformation> debug_run_information =
+                         absl::nullopt) = 0;
 
   // Terminates the current APC flow and sets the internal state to make itself
   // available for future calls to run.

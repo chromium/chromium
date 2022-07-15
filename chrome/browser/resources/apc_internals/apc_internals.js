@@ -61,6 +61,7 @@ function onAutofillAssistantInfoReceived(autofillAssistantInfo) {
 function hideScriptCache() {
   const element = $('script-cache-content');
   element.textContent = 'Cache not shown.';
+  $('script-start-parameters').style.display = 'none';
 }
 
 function showScriptCache() {
@@ -77,10 +78,12 @@ function setAutofillAssistantUrl() {
 }
 
 function launchScript(origin) {
-  chrome.send('launch-script', [origin]);
+  chrome.send('launch-script', [origin, $('ldap').value, $('bundle-id').value]);
 }
 
 function onScriptCacheReceived(scriptsCacheInfo) {
+  $('script-start-parameters').style.display = 'block';
+
   const element = $('script-cache-content');
   if (!scriptsCacheInfo.length) {
     element.textContent = 'Cache is empty.';
@@ -93,6 +96,7 @@ function onScriptCacheReceived(scriptsCacheInfo) {
     if ('has_script' in cacheEntry) {
       if (cacheEntry['has_script']) {
         columns.push('Available');
+
         const startButton = document.createElement('button');
         startButton.innerText = 'Start';
         startButton.addEventListener('click', function() {

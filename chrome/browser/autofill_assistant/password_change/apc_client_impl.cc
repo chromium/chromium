@@ -23,6 +23,7 @@
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -38,10 +39,12 @@ ApcClientImpl::ApcClientImpl(content::WebContents* web_contents)
 
 ApcClientImpl::~ApcClientImpl() = default;
 
-void ApcClientImpl::Start(const GURL& url,
-                          const std::string& username,
-                          bool skip_login,
-                          ResultCallback callback) {
+void ApcClientImpl::Start(
+    const GURL& url,
+    const std::string& username,
+    bool skip_login,
+    ResultCallback callback,
+    absl::optional<DebugRunInformation> debug_run_information) {
   // If the unified side panel is not enabled, trying to register an entry in it
   // later on will crash.
   if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
@@ -62,6 +65,7 @@ void ApcClientImpl::Start(const GURL& url,
   url_ = url;
   username_ = username;
   skip_login_ = skip_login;
+  debug_run_information_ = debug_run_information;
 
   // The coordinator takes care of checking whether a user has previously given
   // consent and, if not, prompts the user to give consent now.
@@ -118,7 +122,7 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
       {autofill_assistant::public_script_parameters::
            kPasswordChangeUsernameParameterName,
        username_},
-      {autofill_assistant::public_script_parameters::kIntentParamenterName,
+      {autofill_assistant::public_script_parameters::kIntentParameterName,
        kIntent},
       {autofill_assistant::public_script_parameters::
            kStartImmediatelyParameterName,
@@ -136,6 +140,15 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
       {autofill_assistant::public_script_parameters::kSourceParameterName,
        skip_login_ ? base::NumberToString(kSourcePasswordChangeLeakWarning)
                    : base::NumberToString(kSourcePasswordChangeSettings)}};
+
+  if (debug_run_information_.has_value()) {
+    params_map[autofill_assistant::public_script_parameters::
+                   kDebugBundleIdParameterName] =
+        debug_run_information_.value().bundle_id;
+    params_map[autofill_assistant::public_script_parameters::
+                   kDebugSocketIdParameterName] =
+        debug_run_information_.value().socket_id;
+  }
 
   external_script_controller_ = CreateHeadlessScriptController();
   scrim_manager_ = CreateApcScrimManager();

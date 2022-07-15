@@ -50,7 +50,7 @@ void FastCheckoutClientImpl::OnOnboardingComplete(bool success) {
   }
 
   base::flat_map<std::string, std::string> params_map{
-      {autofill_assistant::public_script_parameters::kIntentParamenterName,
+      {autofill_assistant::public_script_parameters::kIntentParameterName,
        kIntentValue},
       {autofill_assistant::public_script_parameters::
            kOriginalDeeplinkParameterName,
