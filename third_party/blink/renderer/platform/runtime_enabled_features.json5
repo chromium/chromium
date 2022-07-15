@@ -1848,10 +1848,6 @@
       status: "stable",
     },
     {
-      name: "PointerRawUpdate",
-      status: "stable",
-    },
-    {
       name: "Portals",
       // Portals must be enabled by blink::features::kPortals as we require the
       // support of the browser process to enable the feature. Enabling this

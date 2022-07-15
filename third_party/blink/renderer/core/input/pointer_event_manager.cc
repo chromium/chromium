@@ -548,8 +548,7 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
     const Vector<WebPointerEvent>& coalesced_events,
     const Vector<WebPointerEvent>& predicted_events) {
   if (event.GetType() == WebInputEvent::Type::kPointerRawUpdate) {
-    if (!RuntimeEnabledFeatures::PointerRawUpdateEnabled() ||
-        !frame_->GetEventHandlerRegistry().HasEventHandlers(
+    if (!frame_->GetEventHandlerRegistry().HasEventHandlers(
             EventHandlerRegistry::kPointerRawUpdateEvent))
       return WebInputEventResult::kHandledSystem;
 
@@ -861,7 +860,6 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
   if ((event_type == WebInputEvent::Type::kPointerDown ||
        event_type == WebInputEvent::Type::kPointerUp) &&
       pointer_event->type() == event_type_names::kPointermove &&
-      RuntimeEnabledFeatures::PointerRawUpdateEnabled() &&
       frame_->GetEventHandlerRegistry().HasEventHandlers(
           EventHandlerRegistry::kPointerRawUpdateEvent)) {
     // This is a chorded button move event. We need to also send a

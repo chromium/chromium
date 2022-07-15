@@ -118,7 +118,7 @@
     attribute EventHandler onlostpointercapture;
     attribute EventHandler onpointerdown;
     attribute EventHandler onpointermove;
-    [RuntimeEnabled=PointerRawUpdate] attribute EventHandler onpointerrawupdate;
+    attribute EventHandler onpointerrawupdate;
     attribute EventHandler onpointerup;
     attribute EventHandler onpointercancel;
     attribute EventHandler onpointerover;
