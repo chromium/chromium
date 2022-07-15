@@ -231,25 +231,23 @@ bool ParseSourceRegistrationHeader(
   source_data.destination = std::move(destination);
 
   // Treat invalid expiry, priority, and debug key as if they were not set.
-  String priority_string;
-  if (object->GetString("priority", &priority_string)) {
-    bool priority_is_valid = false;
-    int64_t priority = priority_string.ToInt64Strict(&priority_is_valid);
-    if (priority_is_valid)
+
+  if (String s; object->GetString("priority", &s)) {
+    bool valid = false;
+    int64_t priority = s.ToInt64Strict(&valid);
+    if (valid)
       source_data.priority = priority;
   }
 
-  String expiry_string;
-  if (object->GetString("expiry", &expiry_string)) {
-    bool expiry_is_valid = false;
-    int64_t expiry = expiry_string.ToInt64Strict(&expiry_is_valid);
-    if (expiry_is_valid)
-      source_data.expiry = base::Seconds(expiry);
+  if (String s; object->GetString("expiry", &s)) {
+    bool valid = false;
+    int64_t seconds = s.ToInt64Strict(&valid);
+    if (valid)
+      source_data.expiry = base::Seconds(seconds);
   }
 
-  String debug_key_string;
-  if (object->GetString("debug_key", &debug_key_string))
-    source_data.debug_key = ParseDebugKey(debug_key_string);
+  if (String s; object->GetString("debug_key", &s))
+    source_data.debug_key = ParseDebugKey(s);
 
   source_data.filter_data = mojom::blink::AttributionFilterData::New();
   if (!ParseAttributionFilterData(object->Get("filter_data"),
@@ -311,20 +309,18 @@ bool ParseEventTriggerData(
     event_trigger->data = trigger_data_is_valid ? trigger_data_value : 0;
 
     // Treat invalid priority and deduplication key as if they were not set.
-    String priority_string;
-    if (object_val->GetString("priority", &priority_string)) {
-      bool priority_is_valid = false;
-      int64_t priority = priority_string.ToInt64Strict(&priority_is_valid);
-      if (priority_is_valid)
+
+    if (String s; object_val->GetString("priority", &s)) {
+      bool valid = false;
+      int64_t priority = s.ToInt64Strict(&valid);
+      if (valid)
         event_trigger->priority = priority;
     }
 
-    // Treat invalid priority and deduplication_key as if they were not set.
-    String dedup_key_string;
-    if (object_val->GetString("deduplication_key", &dedup_key_string)) {
-      bool dedup_key_is_valid = false;
-      uint64_t dedup_key = dedup_key_string.ToUInt64Strict(&dedup_key_is_valid);
-      if (dedup_key_is_valid) {
+    if (String s; object_val->GetString("deduplication_key", &s)) {
+      bool valid = false;
+      uint64_t dedup_key = s.ToUInt64Strict(&valid);
+      if (valid) {
         event_trigger->dedup_key =
             mojom::blink::AttributionTriggerDedupKey::New(dedup_key);
       }
@@ -510,9 +506,8 @@ bool ParseTriggerRegistrationHeader(
     return false;
   }
 
-  String debug_key_string;
-  if (object->GetString("debug_key", &debug_key_string))
-    trigger_data.debug_key = ParseDebugKey(debug_key_string);
+  if (String s; object->GetString("debug_key", &s))
+    trigger_data.debug_key = ParseDebugKey(s);
 
   return true;
 }
