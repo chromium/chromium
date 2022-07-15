@@ -60,6 +60,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_dialog_demo.html',
             },
             {
+              name: 'Inputs',
+              path: 'inputs',
+              src: 'cr_input/cr_input_demo.html',
+            },
+            {
               name: 'Radio buttons and groups',
               path: 'radios',
               src: 'cr_radio_demo.html',
