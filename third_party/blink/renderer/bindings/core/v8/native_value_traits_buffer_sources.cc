@@ -13,51 +13,150 @@ namespace blink {
 
 namespace {
 
-DOMArrayBuffer* ToDOMArrayBuffer(v8::Isolate* isolate,
-                                 v8::Local<v8::Value> value) {
-  if (UNLIKELY(!value->IsArrayBuffer()))
-    return nullptr;
-
-  v8::Local<v8::ArrayBuffer> v8_array_buffer = value.As<v8::ArrayBuffer>();
-  if (DOMArrayBuffer* array_buffer =
-          ToScriptWrappable(v8_array_buffer)->ToImpl<DOMArrayBuffer>()) {
-    return array_buffer;
+bool DoesExceedSizeLimitSlow(v8::Isolate* isolate,
+                             ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          features::kDisableArrayBufferSizeLimitsForTesting)) {
+    return false;
   }
 
-  // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
-  // copying.
-  ArrayBufferContents contents(v8_array_buffer->GetBackingStore());
-  DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
-  v8::Local<v8::Object> wrapper = array_buffer->AssociateWithWrapper(
-      isolate, array_buffer->GetWrapperTypeInfo(), v8_array_buffer);
-  DCHECK(wrapper == v8_array_buffer);
-  return array_buffer;
+  UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
+                    WebFeature::kArrayBufferTooBigForWebAPI);
+  exception_state.ThrowRangeError(
+      "The ArrayBuffer/ArrayBufferView size exceeds the supported range.");
+  return true;
 }
 
-DOMSharedArrayBuffer* ToDOMSharedArrayBuffer(v8::Isolate* isolate,
-                                             v8::Local<v8::Value> value) {
-  if (UNLIKELY(!value->IsSharedArrayBuffer()))
-    return nullptr;
-
-  v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
-      value.As<v8::SharedArrayBuffer>();
-  if (DOMSharedArrayBuffer* shared_array_buffer =
-          ToScriptWrappable(v8_shared_array_buffer)
-              ->ToImpl<DOMSharedArrayBuffer>()) {
-    return shared_array_buffer;
+// Throws a RangeError and returns true if the given byte_length exceeds the
+// size limit.
+//
+// TODO(crbug.com/1201109): Remove check once Blink can handle bigger sizes.
+inline bool DoesExceedSizeLimit(v8::Isolate* isolate,
+                                size_t byte_length,
+                                ExceptionState& exception_state) {
+  if (LIKELY(byte_length <= ::partition_alloc::MaxDirectMapped())) {
+    return false;
   }
 
-  // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
-  // copying.
-  ArrayBufferContents contents(v8_shared_array_buffer->GetBackingStore());
-  DOMSharedArrayBuffer* shared_array_buffer =
-      DOMSharedArrayBuffer::Create(contents);
-  v8::Local<v8::Object> wrapper = shared_array_buffer->AssociateWithWrapper(
-      isolate, shared_array_buffer->GetWrapperTypeInfo(),
-      v8_shared_array_buffer);
-  DCHECK(wrapper == v8_shared_array_buffer);
-  return shared_array_buffer;
+  return DoesExceedSizeLimitSlow(isolate, exception_state);
 }
+
+enum class Nullablity {
+  kIsNotNullable,
+  kIsNullable,
+};
+
+enum class BufferSizeCheck {
+  kCheck,
+  kDoNotCheck,
+};
+
+// The basic recipe of NativeValueTraits<T>::NativeValue function
+// implementation for buffer source types.
+template <typename RecipeTrait,
+          auto(*ToBlinkValue)(v8::Isolate*, v8::Local<v8::Value>),
+          Nullablity nullablity,
+          BufferSizeCheck buffer_size_check,
+          typename ScriptWrappableOrBufferSourceTypeName,
+          bool (*IsSharedBuffer)(v8::Local<v8::Value>) = nullptr>
+auto NativeValueImpl(v8::Isolate* isolate,
+                     v8::Local<v8::Value> value,
+                     ExceptionState& exception_state) {
+  auto blink_value = ToBlinkValue(isolate, value);
+  if (LIKELY(RecipeTrait::IsNonNull(blink_value))) {
+    if constexpr (buffer_size_check == BufferSizeCheck::kCheck) {
+      if (DoesExceedSizeLimit(isolate, RecipeTrait::ByteLength(blink_value),
+                              exception_state)) {
+        return RecipeTrait::NullValue();
+      }
+    }
+    return RecipeTrait::ToReturnType(blink_value);
+  }
+
+  if constexpr (nullablity == Nullablity::kIsNullable) {
+    if (LIKELY(value->IsNullOrUndefined())) {
+      return RecipeTrait::NullValue();
+    }
+  }
+
+  const char* buffer_source_type_name = nullptr;
+  if constexpr (std::is_base_of_v<ScriptWrappable,
+                                  ScriptWrappableOrBufferSourceTypeName>) {
+    buffer_source_type_name =
+        ScriptWrappableOrBufferSourceTypeName::GetStaticWrapperTypeInfo()
+            ->interface_name;
+  } else {
+    buffer_source_type_name = ScriptWrappableOrBufferSourceTypeName::GetName();
+  }
+
+  if constexpr (IsSharedBuffer != nullptr) {
+    if (IsSharedBuffer(value)) {
+      exception_state.ThrowTypeError(
+          ExceptionMessages::SharedArrayBufferNotAllowed(
+              buffer_source_type_name));
+      return RecipeTrait::NullValue();
+    }
+  }
+
+  exception_state.ThrowTypeError(
+      ExceptionMessages::FailedToConvertJSValue(buffer_source_type_name));
+  return RecipeTrait::NullValue();
+}
+
+// The basic recipe of NativeValueTraits<T>::ArgumentValue function
+// implementation for buffer source types.
+template <typename RecipeTrait,
+          auto(*ToBlinkValue)(v8::Isolate*, v8::Local<v8::Value>),
+          Nullablity nullablity,
+          BufferSizeCheck buffer_size_check,
+          typename ScriptWrappableOrBufferSourceTypeName,
+          bool (*IsSharedBuffer)(v8::Local<v8::Value>) = nullptr>
+auto ArgumentValueImpl(v8::Isolate* isolate,
+                       int argument_index,
+                       v8::Local<v8::Value> value,
+                       ExceptionState& exception_state) {
+  auto blink_value = ToBlinkValue(isolate, value);
+  if (LIKELY(RecipeTrait::IsNonNull(blink_value))) {
+    if constexpr (buffer_size_check == BufferSizeCheck::kCheck) {
+      if (DoesExceedSizeLimit(isolate, RecipeTrait::ByteLength(blink_value),
+                              exception_state)) {
+        return RecipeTrait::NullValue();
+      }
+    }
+    return RecipeTrait::ToReturnType(blink_value);
+  }
+
+  if constexpr (nullablity == Nullablity::kIsNullable) {
+    if (LIKELY(value->IsNullOrUndefined())) {
+      return RecipeTrait::NullValue();
+    }
+  }
+
+  const char* buffer_source_type_name = nullptr;
+  if constexpr (std::is_base_of_v<ScriptWrappable,
+                                  ScriptWrappableOrBufferSourceTypeName>) {
+    buffer_source_type_name =
+        ScriptWrappableOrBufferSourceTypeName::GetStaticWrapperTypeInfo()
+            ->interface_name;
+  } else {
+    buffer_source_type_name = ScriptWrappableOrBufferSourceTypeName::GetName();
+  }
+
+  if constexpr (IsSharedBuffer != nullptr) {
+    if (IsSharedBuffer(value)) {
+      exception_state.ThrowTypeError(
+          ExceptionMessages::SharedArrayBufferNotAllowed(
+              buffer_source_type_name));
+      return RecipeTrait::NullValue();
+    }
+  }
+
+  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
+      argument_index, buffer_source_type_name));
+  return RecipeTrait::NullValue();
+}
+
+// ABVTrait implementation for type parameterization purposes
 
 template <typename T>
 struct ABVTrait;  // ABV = ArrayBufferView
@@ -114,6 +213,111 @@ struct ABVTrait<DOMDataView>
   }
 };
 
+// RecipeTrait implementation for the recipe functions
+
+template <typename T, typename unused = void>
+struct RecipeTrait {
+  static bool IsNonNull(const T* buffer) { return buffer; }
+  static T* NullValue() { return nullptr; }
+  static T* ToReturnType(T* buffer) { return buffer; }
+  static size_t ByteLength(const T* buffer) { return buffer->byteLength(); }
+};
+
+template <typename T>
+struct RecipeTrait<T,
+                   std::enable_if_t<std::is_base_of_v<DOMArrayBufferBase, T>>> {
+  static bool IsNonNull(const T* buffer) { return buffer; }
+  static T* NullValue() { return nullptr; }
+  static T* ToReturnType(T* buffer) { return buffer; }
+  static size_t ByteLength(const T* buffer) { return buffer->ByteLength(); }
+};
+
+template <typename T>
+struct RecipeTrait<NotShared<T>, void> : public RecipeTrait<T> {
+  static NotShared<T> NullValue() { return NotShared<T>(); }
+  static NotShared<T> ToReturnType(T* buffer) { return NotShared<T>(buffer); }
+};
+
+template <typename T>
+struct RecipeTrait<MaybeShared<T>, void> : public RecipeTrait<T> {
+  static MaybeShared<T> NullValue() { return MaybeShared<T>(); }
+  static MaybeShared<T> ToReturnType(T* buffer) {
+    return MaybeShared<T>(buffer);
+  }
+};
+
+template <typename T>
+struct RecipeTrait<
+    T,
+    std::enable_if_t<std::is_base_of_v<FlexibleArrayBufferView, T>>> {
+  static bool IsNonNull(v8::Local<v8::Value> buffer) {
+    return ABVTrait<T>::IsV8ViewType(buffer);
+  }
+  static T NullValue() { return T(); }
+  static T ToReturnType(v8::Local<v8::Value> buffer) {
+    return T(buffer.As<typename ABVTrait<T>::V8ViewType>());
+  }
+  static size_t ByteLength(v8::Local<v8::Value> buffer) {
+    return buffer.As<typename ABVTrait<T>::V8ViewType>()->ByteLength();
+  }
+};
+
+// ToBlinkValue implementation for the recipe functions
+
+DOMArrayBuffer* ToDOMArrayBuffer(v8::Isolate* isolate,
+                                 v8::Local<v8::Value> value) {
+  if (UNLIKELY(!value->IsArrayBuffer()))
+    return nullptr;
+
+  v8::Local<v8::ArrayBuffer> v8_array_buffer = value.As<v8::ArrayBuffer>();
+  if (DOMArrayBuffer* array_buffer =
+          ToScriptWrappable(v8_array_buffer)->ToImpl<DOMArrayBuffer>()) {
+    return array_buffer;
+  }
+
+  // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
+  // copying.
+  ArrayBufferContents contents(v8_array_buffer->GetBackingStore());
+  DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
+  v8::Local<v8::Object> wrapper = array_buffer->AssociateWithWrapper(
+      isolate, array_buffer->GetWrapperTypeInfo(), v8_array_buffer);
+  DCHECK(wrapper == v8_array_buffer);
+  return array_buffer;
+}
+
+DOMSharedArrayBuffer* ToDOMSharedArrayBuffer(v8::Isolate* isolate,
+                                             v8::Local<v8::Value> value) {
+  if (UNLIKELY(!value->IsSharedArrayBuffer()))
+    return nullptr;
+
+  v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
+      value.As<v8::SharedArrayBuffer>();
+  if (DOMSharedArrayBuffer* shared_array_buffer =
+          ToScriptWrappable(v8_shared_array_buffer)
+              ->ToImpl<DOMSharedArrayBuffer>()) {
+    return shared_array_buffer;
+  }
+
+  // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
+  // copying.
+  ArrayBufferContents contents(v8_shared_array_buffer->GetBackingStore());
+  DOMSharedArrayBuffer* shared_array_buffer =
+      DOMSharedArrayBuffer::Create(contents);
+  v8::Local<v8::Object> wrapper = shared_array_buffer->AssociateWithWrapper(
+      isolate, shared_array_buffer->GetWrapperTypeInfo(),
+      v8_shared_array_buffer);
+  DCHECK(wrapper == v8_shared_array_buffer);
+  return shared_array_buffer;
+}
+
+DOMArrayBufferBase* ToDOMArrayBufferBase(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> value) {
+  if (auto* buffer = ToDOMArrayBuffer(isolate, value)) {
+    return buffer;
+  }
+  return ToDOMSharedArrayBuffer(isolate, value);
+}
+
 constexpr bool kNotShared = false;
 constexpr bool kMaybeShared = true;
 
@@ -133,7 +337,7 @@ DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
 
   v8::Local<v8::Object> v8_buffer = v8_view->Buffer();
   DOMArrayBufferBase* blink_buffer = nullptr;
-  if (allow_shared) {
+  if constexpr (allow_shared) {
     if (v8_buffer->IsArrayBuffer())
       blink_buffer = ToDOMArrayBuffer(isolate, v8_buffer);
     else  // must be IsSharedArrayBuffer()
@@ -207,33 +411,16 @@ DOMArrayBufferView* ToDOMViewType<DOMArrayBufferView, kMaybeShared>(
   return ToDOMArrayBufferView<kMaybeShared>(isolate, value);
 }
 
-bool DoesExceedSizeLimitSlow(v8::Isolate* isolate,
-                             ExceptionState& exception_state) {
-  if (base::FeatureList::IsEnabled(
-          features::kDisableArrayBufferSizeLimitsForTesting)) {
-    return false;
-  }
-
-  UseCounter::Count(ExecutionContext::From(isolate->GetCurrentContext()),
-                    WebFeature::kArrayBufferTooBigForWebAPI);
-  exception_state.ThrowRangeError(
-      "The ArrayBuffer/ArrayBufferView size exceeds the supported range.");
-  return true;
+v8::Local<v8::Value> ToFlexibleArrayBufferView(v8::Isolate* isolate,
+                                               v8::Local<v8::Value> value) {
+  return value;
 }
 
-// Throws a RangeError and returns true if the given byte_length exceeds the
-// size limit.
-//
-// TODO(crbug.com/1201109): Remove check once Blink can handle bigger sizes.
-inline bool DoesExceedSizeLimit(v8::Isolate* isolate,
-                                size_t byte_length,
-                                ExceptionState& exception_state) {
-  if (LIKELY(byte_length <= ::partition_alloc::MaxDirectMapped())) {
-    return false;
-  }
+// ScriptWrappableOrBufferSourceTypeName implementation for the recipe functions
 
-  return DoesExceedSizeLimitSlow(isolate, exception_state);
-}
+struct BufferSourceTypeNameAllowSharedArrayBuffer {
+  static constexpr const char* GetName() { return "[AllowShared] ArrayBuffer"; }
+};
 
 }  // namespace
 
@@ -243,18 +430,9 @@ DOMArrayBuffer* NativeValueTraits<DOMArrayBuffer>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return array_buffer;
-  }
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::FailedToConvertJSValue("ArrayBuffer"));
-  return nullptr;
+  return NativeValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
+                         Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                         DOMArrayBuffer>(isolate, value, exception_state);
 }
 
 DOMArrayBuffer* NativeValueTraits<DOMArrayBuffer>::ArgumentValue(
@@ -262,18 +440,10 @@ DOMArrayBuffer* NativeValueTraits<DOMArrayBuffer>::ArgumentValue(
     int argument_index,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return array_buffer;
-  }
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::ArgumentNotOfType(argument_index, "ArrayBuffer"));
-  return nullptr;
+  return ArgumentValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
+                           Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                           DOMArrayBuffer>(isolate, argument_index, value,
+                                           exception_state);
 }
 
 // Nullable ArrayBuffer
@@ -282,21 +452,9 @@ DOMArrayBuffer* NativeValueTraits<IDLNullable<DOMArrayBuffer>>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return array_buffer;
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return nullptr;
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::FailedToConvertJSValue("ArrayBuffer"));
-  return nullptr;
+  return NativeValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
+                         Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                         DOMArrayBuffer>(isolate, value, exception_state);
 }
 
 DOMArrayBuffer* NativeValueTraits<IDLNullable<DOMArrayBuffer>>::ArgumentValue(
@@ -304,21 +462,10 @@ DOMArrayBuffer* NativeValueTraits<IDLNullable<DOMArrayBuffer>>::ArgumentValue(
     int argument_index,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return array_buffer;
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return nullptr;
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::ArgumentNotOfType(argument_index, "ArrayBuffer"));
-  return nullptr;
+  return ArgumentValueImpl<RecipeTrait<DOMArrayBuffer>, ToDOMArrayBuffer,
+                           Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                           DOMArrayBuffer>(isolate, argument_index, value,
+                                           exception_state);
 }
 
 // SharedArrayBuffer
@@ -327,19 +474,10 @@ DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMSharedArrayBuffer* shared_array_buffer =
-      ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, shared_array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return shared_array_buffer;
-  }
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::FailedToConvertJSValue("SharedArrayBuffer"));
-  return nullptr;
+  return NativeValueImpl<RecipeTrait<DOMSharedArrayBuffer>,
+                         ToDOMSharedArrayBuffer, Nullablity::kIsNotNullable,
+                         BufferSizeCheck::kCheck, DOMSharedArrayBuffer>(
+      isolate, value, exception_state);
 }
 
 DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::ArgumentValue(
@@ -347,19 +485,10 @@ DOMSharedArrayBuffer* NativeValueTraits<DOMSharedArrayBuffer>::ArgumentValue(
     int argument_index,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMSharedArrayBuffer* shared_array_buffer =
-      ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, shared_array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return shared_array_buffer;
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index, "SharedArrayBuffer"));
-  return nullptr;
+  return ArgumentValueImpl<RecipeTrait<DOMSharedArrayBuffer>,
+                           ToDOMSharedArrayBuffer, Nullablity::kIsNotNullable,
+                           BufferSizeCheck::kCheck, DOMSharedArrayBuffer>(
+      isolate, argument_index, value, exception_state);
 }
 
 // Nullable SharedArrayBuffer
@@ -369,22 +498,10 @@ NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMSharedArrayBuffer* shared_array_buffer =
-      ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, shared_array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return shared_array_buffer;
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return nullptr;
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::FailedToConvertJSValue("SharedArrayBuffer"));
-  return nullptr;
+  return NativeValueImpl<RecipeTrait<DOMSharedArrayBuffer>,
+                         ToDOMSharedArrayBuffer, Nullablity::kIsNullable,
+                         BufferSizeCheck::kCheck, DOMSharedArrayBuffer>(
+      isolate, value, exception_state);
 }
 
 DOMSharedArrayBuffer*
@@ -393,22 +510,10 @@ NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::ArgumentValue(
     int argument_index,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMSharedArrayBuffer* shared_array_buffer =
-      ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, shared_array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return shared_array_buffer;
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return nullptr;
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index, "SharedArrayBuffer"));
-  return nullptr;
+  return ArgumentValueImpl<RecipeTrait<DOMSharedArrayBuffer>,
+                           ToDOMSharedArrayBuffer, Nullablity::kIsNullable,
+                           BufferSizeCheck::kCheck, DOMSharedArrayBuffer>(
+      isolate, argument_index, value, exception_state);
 }
 
 // [AllowShared] ArrayBuffer
@@ -417,28 +522,10 @@ DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return array_buffer;
-  }
-
-  DOMSharedArrayBuffer* shared_array_buffer =
-      ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, shared_array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return shared_array_buffer;
-  }
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::FailedToConvertJSValue("[AllowShared] ArrayBuffer"));
-  return nullptr;
+  return NativeValueImpl<RecipeTrait<DOMArrayBufferBase>, ToDOMArrayBufferBase,
+                         Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                         BufferSourceTypeNameAllowSharedArrayBuffer>(
+      isolate, value, exception_state);
 }
 
 DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::ArgumentValue(
@@ -446,28 +533,11 @@ DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::ArgumentValue(
     int argument_index,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return array_buffer;
-  }
-
-  DOMSharedArrayBuffer* shared_array_buffer =
-      ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, shared_array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return shared_array_buffer;
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index, "[AllowShared] ArrayBuffer"));
-  return nullptr;
+  return ArgumentValueImpl<RecipeTrait<DOMArrayBufferBase>,
+                           ToDOMArrayBufferBase, Nullablity::kIsNotNullable,
+                           BufferSizeCheck::kCheck,
+                           BufferSourceTypeNameAllowSharedArrayBuffer>(
+      isolate, argument_index, value, exception_state);
 }
 
 // Nullable [AllowShared] ArrayBuffer
@@ -477,31 +547,10 @@ NativeValueTraits<IDLNullable<DOMArrayBufferBase>>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return array_buffer;
-  }
-
-  DOMSharedArrayBuffer* shared_array_buffer =
-      ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, shared_array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return shared_array_buffer;
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return nullptr;
-
-  exception_state.ThrowTypeError(
-      ExceptionMessages::FailedToConvertJSValue("[AllowShared] ArrayBuffer"));
-  return nullptr;
+  return NativeValueImpl<RecipeTrait<DOMArrayBufferBase>, ToDOMArrayBufferBase,
+                         Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                         BufferSourceTypeNameAllowSharedArrayBuffer>(
+      isolate, value, exception_state);
 }
 
 DOMArrayBufferBase*
@@ -510,31 +559,11 @@ NativeValueTraits<IDLNullable<DOMArrayBufferBase>>::ArgumentValue(
     int argument_index,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
-  if (LIKELY(array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return array_buffer;
-  }
-
-  DOMSharedArrayBuffer* shared_array_buffer =
-      ToDOMSharedArrayBuffer(isolate, value);
-  if (LIKELY(shared_array_buffer)) {
-    if (DoesExceedSizeLimit(isolate, shared_array_buffer->ByteLength(),
-                            exception_state)) {
-      return nullptr;
-    }
-    return shared_array_buffer;
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return nullptr;
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index, "[AllowShared] ArrayBuffer"));
-  return nullptr;
+  return ArgumentValueImpl<RecipeTrait<DOMArrayBufferBase>,
+                           ToDOMArrayBufferBase, Nullablity::kIsNullable,
+                           BufferSizeCheck::kCheck,
+                           BufferSourceTypeNameAllowSharedArrayBuffer>(
+      isolate, argument_index, value, exception_state);
 }
 
 // ArrayBufferView
@@ -546,25 +575,11 @@ NotShared<T> NativeValueTraits<
     NativeValue(v8::Isolate* isolate,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
-  T* blink_view = ToDOMViewType<T, kNotShared>(isolate, value);
-  if (LIKELY(blink_view)) {
-    if (DoesExceedSizeLimit(isolate, blink_view->byteLength(),
-                            exception_state)) {
-      return NotShared<T>();
-    }
-    return NotShared<T>(blink_view);
-  }
-
-  if (ABVTrait<T>::IsShared(value)) {
-    exception_state.ThrowTypeError(
-        ExceptionMessages::SharedArrayBufferNotAllowed(
-            T::GetStaticWrapperTypeInfo()->interface_name));
-    return NotShared<T>();
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::FailedToConvertJSValue(
-      T::GetStaticWrapperTypeInfo()->interface_name));
-  return NotShared<T>();
+  return NativeValueImpl<RecipeTrait<NotShared<T>>,
+                         ToDOMViewType<T, kNotShared>,
+                         Nullablity::kIsNotNullable, BufferSizeCheck::kCheck, T,
+                         ABVTrait<T>::IsShared>(isolate, value,
+                                                exception_state);
 }
 
 template <typename T>
@@ -575,25 +590,11 @@ NotShared<T> NativeValueTraits<
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  T* blink_view = ToDOMViewType<T, kNotShared>(isolate, value);
-  if (LIKELY(blink_view)) {
-    if (DoesExceedSizeLimit(isolate, blink_view->byteLength(),
-                            exception_state)) {
-      return NotShared<T>();
-    }
-    return NotShared<T>(blink_view);
-  }
-
-  if (ABVTrait<T>::IsShared(value)) {
-    exception_state.ThrowTypeError(
-        ExceptionMessages::SharedArrayBufferNotAllowed(
-            T::GetStaticWrapperTypeInfo()->interface_name));
-    return NotShared<T>();
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index, T::GetStaticWrapperTypeInfo()->interface_name));
-  return NotShared<T>();
+  return ArgumentValueImpl<RecipeTrait<NotShared<T>>,
+                           ToDOMViewType<T, kNotShared>,
+                           Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                           T, ABVTrait<T>::IsShared>(isolate, argument_index,
+                                                     value, exception_state);
 }
 
 // [AllowShared] ArrayBufferView
@@ -605,18 +606,10 @@ MaybeShared<T> NativeValueTraits<
     NativeValue(v8::Isolate* isolate,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
-  T* blink_view = ToDOMViewType<T, kMaybeShared>(isolate, value);
-  if (LIKELY(blink_view)) {
-    if (DoesExceedSizeLimit(isolate, blink_view->byteLength(),
-                            exception_state)) {
-      return MaybeShared<T>();
-    }
-    return MaybeShared<T>(blink_view);
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::FailedToConvertJSValue(
-      T::GetStaticWrapperTypeInfo()->interface_name));
-  return MaybeShared<T>();
+  return NativeValueImpl<
+      RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck, T>(isolate, value,
+                                                              exception_state);
 }
 
 template <typename T>
@@ -627,18 +620,10 @@ MaybeShared<T> NativeValueTraits<
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  T* blink_view = ToDOMViewType<T, kMaybeShared>(isolate, value);
-  if (LIKELY(blink_view)) {
-    if (DoesExceedSizeLimit(isolate, blink_view->byteLength(),
-                            exception_state)) {
-      return MaybeShared<T>();
-    }
-    return MaybeShared<T>(blink_view);
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index, T::GetStaticWrapperTypeInfo()->interface_name));
-  return MaybeShared<T>();
+  return ArgumentValueImpl<
+      RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
+      Nullablity::kIsNotNullable, BufferSizeCheck::kCheck, T>(
+      isolate, argument_index, value, exception_state);
 }
 
 // Nullable ArrayBufferView
@@ -650,28 +635,10 @@ NotShared<T> NativeValueTraits<
     NativeValue(v8::Isolate* isolate,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
-  T* blink_view = ToDOMViewType<T, kNotShared>(isolate, value);
-  if (LIKELY(blink_view)) {
-    if (DoesExceedSizeLimit(isolate, blink_view->byteLength(),
-                            exception_state)) {
-      return NotShared<T>();
-    }
-    return NotShared<T>(blink_view);
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return NotShared<T>();
-
-  if (ABVTrait<T>::IsShared(value)) {
-    exception_state.ThrowTypeError(
-        ExceptionMessages::SharedArrayBufferNotAllowed(
-            T::GetStaticWrapperTypeInfo()->interface_name));
-    return NotShared<T>();
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::FailedToConvertJSValue(
-      T::GetStaticWrapperTypeInfo()->interface_name));
-  return NotShared<T>();
+  return NativeValueImpl<RecipeTrait<NotShared<T>>,
+                         ToDOMViewType<T, kNotShared>, Nullablity::kIsNullable,
+                         BufferSizeCheck::kCheck, T, ABVTrait<T>::IsShared>(
+      isolate, value, exception_state);
 }
 
 template <typename T>
@@ -682,28 +649,11 @@ NotShared<T> NativeValueTraits<
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  T* blink_view = ToDOMViewType<T, kNotShared>(isolate, value);
-  if (LIKELY(blink_view)) {
-    if (DoesExceedSizeLimit(isolate, blink_view->byteLength(),
-                            exception_state)) {
-      return NotShared<T>();
-    }
-    return NotShared<T>(blink_view);
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return NotShared<T>();
-
-  if (ABVTrait<T>::IsShared(value)) {
-    exception_state.ThrowTypeError(
-        ExceptionMessages::SharedArrayBufferNotAllowed(
-            T::GetStaticWrapperTypeInfo()->interface_name));
-    return NotShared<T>();
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index, T::GetStaticWrapperTypeInfo()->interface_name));
-  return NotShared<T>();
+  return ArgumentValueImpl<RecipeTrait<NotShared<T>>,
+                           ToDOMViewType<T, kNotShared>,
+                           Nullablity::kIsNullable, BufferSizeCheck::kCheck, T,
+                           ABVTrait<T>::IsShared>(isolate, argument_index,
+                                                  value, exception_state);
 }
 
 // Nullable [AllowShared] ArrayBufferView
@@ -715,21 +665,10 @@ MaybeShared<T> NativeValueTraits<
     NativeValue(v8::Isolate* isolate,
                 v8::Local<v8::Value> value,
                 ExceptionState& exception_state) {
-  T* blink_view = ToDOMViewType<T, kMaybeShared>(isolate, value);
-  if (LIKELY(blink_view)) {
-    if (DoesExceedSizeLimit(isolate, blink_view->byteLength(),
-                            exception_state)) {
-      return MaybeShared<T>();
-    }
-    return MaybeShared<T>(blink_view);
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return MaybeShared<T>();
-
-  exception_state.ThrowTypeError(ExceptionMessages::FailedToConvertJSValue(
-      T::GetStaticWrapperTypeInfo()->interface_name));
-  return MaybeShared<T>();
+  return NativeValueImpl<RecipeTrait<MaybeShared<T>>,
+                         ToDOMViewType<T, kMaybeShared>,
+                         Nullablity::kIsNullable, BufferSizeCheck::kCheck, T>(
+      isolate, value, exception_state);
 }
 
 template <typename T>
@@ -740,21 +679,10 @@ MaybeShared<T> NativeValueTraits<
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  T* blink_view = ToDOMViewType<T, kMaybeShared>(isolate, value);
-  if (LIKELY(blink_view)) {
-    if (DoesExceedSizeLimit(isolate, blink_view->byteLength(),
-                            exception_state)) {
-      return MaybeShared<T>();
-    }
-    return MaybeShared<T>(blink_view);
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return MaybeShared<T>();
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index, T::GetStaticWrapperTypeInfo()->interface_name));
-  return MaybeShared<T>();
+  return ArgumentValueImpl<RecipeTrait<MaybeShared<T>>,
+                           ToDOMViewType<T, kMaybeShared>,
+                           Nullablity::kIsNullable, BufferSizeCheck::kCheck, T>(
+      isolate, argument_index, value, exception_state);
 }
 
 // [AllowShared, FlexibleArrayBufferView] ArrayBufferView
@@ -767,19 +695,10 @@ T NativeValueTraits<T,
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  if (LIKELY(ABVTrait<T>::IsV8ViewType(value))) {
-    if (DoesExceedSizeLimit(
-            isolate, value.As<typename ABVTrait<T>::V8ViewType>()->ByteLength(),
-            exception_state)) {
-      return T();
-    }
-    return T(value.As<typename ABVTrait<T>::V8ViewType>());
-  }
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index,
-      ABVTrait<T>::DOMViewType::GetStaticWrapperTypeInfo()->interface_name));
-  return T();
+  return ArgumentValueImpl<RecipeTrait<T>, ToFlexibleArrayBufferView,
+                           Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
+                           typename ABVTrait<T>::DOMViewType>(
+      isolate, argument_index, value, exception_state);
 }
 
 // Nullable [AllowShared, FlexibleArrayBufferView] ArrayBufferView
@@ -792,22 +711,10 @@ T NativeValueTraits<IDLNullable<T>,
                   int argument_index,
                   v8::Local<v8::Value> value,
                   ExceptionState& exception_state) {
-  if (LIKELY(ABVTrait<T>::IsV8ViewType(value))) {
-    if (DoesExceedSizeLimit(
-            isolate, value.As<typename ABVTrait<T>::V8ViewType>()->ByteLength(),
-            exception_state)) {
-      return T();
-    }
-    return T(value.As<typename ABVTrait<T>::V8ViewType>());
-  }
-
-  if (LIKELY(value->IsNullOrUndefined()))
-    return T();
-
-  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
-      argument_index,
-      ABVTrait<T>::DOMViewType::GetStaticWrapperTypeInfo()->interface_name));
-  return T();
+  return ArgumentValueImpl<RecipeTrait<T>, ToFlexibleArrayBufferView,
+                           Nullablity::kIsNullable, BufferSizeCheck::kCheck,
+                           typename ABVTrait<T>::DOMViewType>(
+      isolate, argument_index, value, exception_state);
 }
 
 #define INSTANTIATE_NVT(type) \
