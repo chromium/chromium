@@ -118,7 +118,7 @@ export class OnboardingSelectComponentsPageElement extends
           identifier: item.identifier,
           name: this.i18n(ComponentTypeToId[item.component]),
           checked: item.state === ComponentRepairStatus.kReplaced,
-          disabled: item.state === ComponentRepairStatus.kMissing
+          disabled: item.state === ComponentRepairStatus.kMissing,
         };
       });
     });

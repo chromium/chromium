@@ -153,7 +153,7 @@ export class ReimagingCalibrationFailedPage extends
         component: item.component,
         status: item.checked ? CalibrationStatus.kCalibrationWaiting :
                                CalibrationStatus.kCalibrationSkip,
-        progress: 0.0
+        progress: 0.0,
       };
     });
   }
@@ -167,7 +167,7 @@ export class ReimagingCalibrationFailedPage extends
       return {
         component: item.component,
         status: CalibrationStatus.kCalibrationSkip,
-        progress: 0.0
+        progress: 0.0,
       };
     });
     return this.shimlessRmaService_.startCalibration(skippedComponents);

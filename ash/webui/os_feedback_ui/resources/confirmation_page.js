@@ -98,7 +98,7 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
     this.dispatchEvent(new CustomEvent('go-back-click', {
       composed: true,
       bubbles: true,
-      detail: {currentState: FeedbackFlowState.CONFIRMATION}
+      detail: {currentState: FeedbackFlowState.CONFIRMATION},
     }));
   }
 

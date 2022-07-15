@@ -53,7 +53,7 @@ export class AcceleratorSubsectionElement extends PolymerElement {
       acceleratorContainer: {
         type: Array,
         value: [],
-      }
+      },
     };
   }
 

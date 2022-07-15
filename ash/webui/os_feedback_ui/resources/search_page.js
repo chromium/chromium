@@ -62,7 +62,7 @@ export class SearchPageElement extends SearchPageElementBase {
       descriptionTemplate: {
         type: String,
         readonly: true,
-        observer: SearchPageElement.prototype.descriptionTemplateChanged_
+        observer: SearchPageElement.prototype.descriptionTemplateChanged_,
       },
     };
   }
@@ -182,7 +182,7 @@ export class SearchPageElement extends SearchPageElementBase {
           isPopularContent ? this.popularHelpContentList_ :
                              response.response.results),
       isQueryEmpty: isQueryEmpty,
-      isPopularContent: isPopularContent
+      isPopularContent: isPopularContent,
     };
 
     // Wait for the iframe to complete loading before postMessage.
@@ -270,7 +270,8 @@ export class SearchPageElement extends SearchPageElementBase {
       this.dispatchEvent(new CustomEvent('continue-click', {
         composed: true,
         bubbles: true,
-        detail: {currentState: FeedbackFlowState.SEARCH, description: textInput}
+        detail:
+            {currentState: FeedbackFlowState.SEARCH, description: textInput},
       }));
     }
   }

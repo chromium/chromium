@@ -51,7 +51,7 @@ Polymer({
         return [
           RoutineType.kMemory,
         ];
-      }
+      },
     },
 
     /** @private {!MemoryUsage} */

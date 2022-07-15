@@ -12,7 +12,7 @@ import {MessagePipe} from './message_pipe.m.js';
 import {Message} from './message_types.js';
 
 const help_app = {
-  handler: new ash.helpApp.mojom.PageHandlerRemote()
+  handler: new ash.helpApp.mojom.PageHandlerRemote(),
 };
 
 // Set up a page handler to talk to the browser process.

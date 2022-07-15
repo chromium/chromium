@@ -59,7 +59,7 @@ export class HelpContentElement extends HelpContentElementBase {
     this.searchResult = {
       contentList: [],
       isQueryEmpty: true,
-      isPopularContent: true
+      isPopularContent: true,
     };
   }
 

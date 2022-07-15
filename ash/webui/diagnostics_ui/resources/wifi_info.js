@@ -38,7 +38,7 @@ Polymer({
      */
     security_: {
       type: String,
-      computed: 'computeSecurity_(network.typeProperties.wifi.security)'
+      computed: 'computeSecurity_(network.typeProperties.wifi.security)',
     },
 
     /**
@@ -48,8 +48,8 @@ Polymer({
     signalStrength_: {
       type: String,
       computed:
-          'computeSignalStrength_(network.typeProperties.wifi.signalStrength)'
-    }
+          'computeSignalStrength_(network.typeProperties.wifi.signalStrength)',
+    },
   },
 
   /**
@@ -105,5 +105,5 @@ Polymer({
       return getSignalStrength(this.network.typeProperties.wifi.signalStrength);
     }
     return '';
-  }
+  },
 });

@@ -28,7 +28,7 @@ class PersonalizationAppBrowserTest extends testing.Test {
       enabled: [
         'ash::features::kPersonalizationHub',
         'chromeos::features::kDarkLightMode',
-      ]
+      ],
     };
   }
 

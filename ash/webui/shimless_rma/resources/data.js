@@ -28,5 +28,5 @@ export const ComponentTypeToId = {
   [ComponentType.kLidGyroscope]: 'componentLidGyroscope',
   [ComponentType.kScreen]: 'componentScreen',
   [ComponentType.kKeyboard]: 'componentKeyboard',
-  [ComponentType.kPowerButton]: 'componentPowerButton'
+  [ComponentType.kPowerButton]: 'componentPowerButton',
 };

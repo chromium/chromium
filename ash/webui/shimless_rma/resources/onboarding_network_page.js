@@ -339,7 +339,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
         {
           bubbles: true,
           composed: true,
-          detail: this.isOnline_ ? 'nextButtonLabel' : 'skipButtonLabel'
+          detail: this.isOnline_ ? 'nextButtonLabel' : 'skipButtonLabel',
         },
         ));
   }

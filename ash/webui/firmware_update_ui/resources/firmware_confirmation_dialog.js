@@ -82,7 +82,7 @@ export class FirmwareConfirmationDialogElement extends
     this.dispatchEvent(new CustomEvent('open-update-dialog', {
       bubbles: true,
       composed: true,
-      detail: {update: this.update, inflight: false}
+      detail: {update: this.update, inflight: false},
     }));
   }
 

@@ -104,8 +104,8 @@ export class AcceleratorRowElement extends PolymerElement {
             description: this.description,
             accelerators: this.acceleratorInfos,
             action: this.action,
-            source: this.source
-          }
+            source: this.source,
+          },
         },
         ));
   }

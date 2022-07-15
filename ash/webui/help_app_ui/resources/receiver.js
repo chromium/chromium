@@ -68,7 +68,7 @@ const DELEGATE = {
   async maybeShowReleaseNotesNotification() {
     await parentMessagePipe.sendMessage(
         Message.MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION);
-  }
+  },
 };
 
 window.customLaunchData = {

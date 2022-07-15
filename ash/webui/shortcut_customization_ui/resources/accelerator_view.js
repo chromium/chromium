@@ -528,7 +528,7 @@ export class AcceleratorViewElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('request-update-accelerator', {
       bubbles: true,
       composed: true,
-      detail: {source: this.source, action: this.action}
+      detail: {source: this.source, action: this.action},
     }));
 
     // Always end input capturing if an update event was fired.

@@ -29,10 +29,12 @@ export const fakeSubCategories = new Map([
 /* @type {!AcceleratorConfig} */
 export const fakeAcceleratorConfig = new Map([
   [
-    AcceleratorSource.kAsh, new Map([
+    AcceleratorSource.kAsh,
+    new Map([
       // Snap Window Left
       [
-        0, [{
+        0,
+        [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
           locked: true,
@@ -40,12 +42,13 @@ export const fakeAcceleratorConfig = new Map([
             modifiers: Modifier.ALT,
             key: 219,
             key_display: '[',
-          }
-        }]
+          },
+        }],
       ],
       // Snap Window Right
       [
-        1, [{
+        1,
+        [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
           locked: false,
@@ -53,12 +56,13 @@ export const fakeAcceleratorConfig = new Map([
             modifiers: Modifier.ALT,
             key: 221,
             key_display: ']',
-          }
-        }]
+          },
+        }],
       ],
       // New Desk
       [
-        2, [{
+        2,
+        [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
           locked: false,
@@ -66,12 +70,13 @@ export const fakeAcceleratorConfig = new Map([
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             key: 187,
             key_display: '+',
-          }
-        }]
+          },
+        }],
       ],
       // Remove Desk
       [
-        3, [{
+        3,
+        [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
           locked: false,
@@ -79,16 +84,18 @@ export const fakeAcceleratorConfig = new Map([
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
             key: 189,
             key_display: '-',
-          }
-        }]
+          },
+        }],
       ],
-    ])
+    ]),
   ],
   [
-    AcceleratorSource.kBrowser, new Map([
+    AcceleratorSource.kBrowser,
+    new Map([
       // New Tab
       [
-        1001, [{
+        1001,
+        [{
           type: AcceleratorType.kDefault,
           state: AcceleratorState.kEnabled,
           locked: true,
@@ -96,10 +103,10 @@ export const fakeAcceleratorConfig = new Map([
             modifiers: Modifier.CONTROL,
             key: 84,
             key_display: 't',
-          }
-        }]
+          },
+        }],
       ],
-    ])
+    ]),
   ],
 ]);
 

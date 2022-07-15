@@ -48,5 +48,5 @@ Polymer({
    */
   getAdjustedValue_() {
     return this.value <= this.max ? this.value : this.max;
-  }
+  },
 });

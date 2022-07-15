@@ -101,7 +101,7 @@ export class TrustedAppRequestHandler extends RequestHandler {
       if (!values || values.length != 5) {
         return {
           success: false,
-          error: 'INVALID_ARGUMENTS'
+          error: 'INVALID_ARGUMENTS',
         };
       }
       return this.browserProxy_.sendXhr(

@@ -345,5 +345,5 @@ Polymer({
                 ExternalPowerSource.kAc) ?
         'remove-stroke' :
         '';
-  }
+  },
 });

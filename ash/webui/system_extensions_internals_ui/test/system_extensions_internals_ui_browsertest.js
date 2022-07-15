@@ -26,7 +26,7 @@ var SystemExtensionsInternalsUIBrowserTest = class extends testing.Test {
     return {
       enabled: [
         'ash::features::kSystemExtensions',
-      ]
+      ],
     };
   }
 

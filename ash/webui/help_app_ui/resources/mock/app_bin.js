@@ -31,7 +31,7 @@ async function doBackgroundTasks() {
     mainCategoryName: 'Help',
     tags: ['verycomplicatedsearchquery'],
     urlPathWithParameters: 'help/sub/3399763/',
-    locale: ''
+    locale: '',
   }]);
   window.customLaunchData.delegate.closeBackgroundPage();
 }
@@ -51,6 +51,6 @@ async function doBackgroundTasks() {
       body: 'Test body',
       mainCategoryName: 'Help',
       locale: 'en-US',
-    }
+    },
   ]);
 }

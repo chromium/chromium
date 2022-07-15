@@ -32,7 +32,7 @@ const testing = {
     get featureList() {}
     get typedefCppFixture() {}
     setUp() {}
-  }
+  },
 };
 function testDone() {}
 function assertEquals(expected, actual, message = undefined) {}

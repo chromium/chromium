@@ -118,7 +118,11 @@ const CLIENT_DELEGATE = {
   sendXhr(url, method, requestBody, useCredentials, headers) {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'sendXhr', [
-          url, method, requestBody ? requestBody : '', !!useCredentials, headers
+          url,
+          method,
+          requestBody ? requestBody : '',
+          !!useCredentials,
+          headers,
         ]);
   },
 

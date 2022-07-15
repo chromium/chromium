@@ -26,7 +26,7 @@ const inactiveDialogStates = [UpdateState.kUnknown, UpdateState.kIdle];
 const initialDialogContent = {
   title: '',
   body: '',
-  footer: ''
+  footer: '',
 };
 
 /**

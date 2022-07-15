@@ -34,7 +34,7 @@ var HelpAppUIGtestBrowserTest = class extends testing.Test {
     return {
       enabled: [
         'ash::features::kHelpAppLauncherSearch',
-      ]
+      ],
     };
   }
 
@@ -54,7 +54,7 @@ var HelpAppUIWithDarkLightModeGtestBrowserTest =
       enabled: [
         ...super.featureList.enabled,
         'chromeos::features::kDarkLightMode',
-      ]
+      ],
     };
   }
 

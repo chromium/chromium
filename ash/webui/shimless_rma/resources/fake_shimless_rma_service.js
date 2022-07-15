@@ -860,63 +860,63 @@ export class FakeShimlessRmaService {
           {
             component: ComponentType.kBaseAccelerometer,
             status: CalibrationStatus.kCalibrationWaiting,
-            progress: 0.0
+            progress: 0.0,
           },
           1000);
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseAccelerometer,
             status: CalibrationStatus.kCalibrationInProgress,
-            progress: 0.2
+            progress: 0.2,
           },
           2000);
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseAccelerometer,
             status: CalibrationStatus.kCalibrationInProgress,
-            progress: 0.4
+            progress: 0.4,
           },
           3000);
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseAccelerometer,
             status: CalibrationStatus.kCalibrationInProgress,
-            progress: 0.6
+            progress: 0.6,
           },
           4000);
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseAccelerometer,
             status: CalibrationStatus.kCalibrationInProgress,
-            progress: 0.8
+            progress: 0.8,
           },
           5000);
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kLidAccelerometer,
             status: CalibrationStatus.kCalibrationWaiting,
-            progress: 0.0
+            progress: 0.0,
           },
           6000);
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseAccelerometer,
             status: CalibrationStatus.kCalibrationComplete,
-            progress: 0.5
+            progress: 0.5,
           },
           7000);
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseAccelerometer,
             status: CalibrationStatus.kCalibrationFailed,
-            progress: 1.0
+            progress: 1.0,
           },
           8000);
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseGyroscope,
             status: CalibrationStatus.kCalibrationSkip,
-            progress: 1.0
+            progress: 1.0,
           },
           9000);
       this.triggerCalibrationOverallObserver(
@@ -1434,8 +1434,8 @@ export class FakeShimlessRmaService {
             state: state,
             canExit: canExit,
             canGoBack: canGoBack,
-            error: error
-          }
+            error: error,
+          },
         }));
   }
 }

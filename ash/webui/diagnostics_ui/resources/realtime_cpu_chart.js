@@ -128,15 +128,15 @@ Polymer({
     graphWidth_: {
       readOnly: true,
       type: Number,
-      computed: 'getGraphDimension_(width_, padding_.left, padding_.right)'
+      computed: 'getGraphDimension_(width_, padding_.left, padding_.right)',
     },
 
     /** @private {number} */
     graphHeight_: {
       readOnly: true,
       type: Number,
-      computed: 'getGraphDimension_(height_, padding_.top, padding_.bottom)'
-    }
+      computed: 'getGraphDimension_(height_, padding_.top, padding_.bottom)',
+    },
   },
 
   observers: ['setScaling_(graphWidth_)'],
@@ -209,7 +209,8 @@ Polymer({
     // 2) to smooth out the curve function.
     this.xAxisScaleFn_ =
         d3.scaleLinear().domain([0, this.numDataPoints_ - 2]).range([
-          0, this.graphWidth_
+          0,
+          this.graphWidth_,
         ]);
 
     // Draw the y-axis legend and also draw the horizontal gridlines by
@@ -221,8 +222,8 @@ Polymer({
                 .tickValues(this.yAxisTicks_)
                 .tickFormat((y) => this.getPercentageLabel_(y))
                 .tickPadding(this.padding_.tick)
-                .tickSize(-this.graphWidth_)  // Extend the ticks into the
-                                              // entire graph as gridlines.
+                .tickSize(-this.graphWidth_),  // Extend the ticks into the
+                                               // entire graph as gridlines.
         );
   },
 
@@ -335,5 +336,5 @@ Polymer({
    */
   getPercentageLabel_(value) {
     return loadTimeData.getStringF('percentageLabel', value);
-  }
+  },
 });

@@ -46,7 +46,7 @@ export class ShortcutInputElement extends PolymerElement {
       capturing_: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 

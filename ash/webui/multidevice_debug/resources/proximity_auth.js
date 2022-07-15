@@ -55,7 +55,7 @@ const ProximityAuth = {
     ProximityAuth.remoteDevicesController_ = new DeviceListController(
         document.querySelector('#remote-devices-control'));
     WebUI.getLocalState();
-  }
+  },
 };
 
 /**
@@ -351,7 +351,7 @@ const LocalStateInterface = {
   /** @param {!Array<!RemoteDevice>} remoteDevices */
   onRemoteDevicesChanged: function(remoteDevices) {
     ProximityAuth.remoteDevicesController_.updateRemoteDevices(remoteDevices);
-  }
+  },
 };
 
 document.addEventListener('DOMContentLoaded', function() {

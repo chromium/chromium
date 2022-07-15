@@ -32,6 +32,6 @@ const impl = {
   getString: (id) => /** @type{string} */ (impl.data_[id]),
   getBoolean: (id) => /** @type{boolean} */ (impl.data_[id]),
   getInteger: (id) => /** @type{number} */ (impl.data_[id]),
-  valueExists: (id) => impl.data_[id] !== undefined
+  valueExists: (id) => impl.data_[id] !== undefined,
 };
 window['loadTimeData'] = impl;

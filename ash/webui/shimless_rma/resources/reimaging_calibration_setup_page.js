@@ -21,7 +21,7 @@ const INSRUCTION_MESSAGE_KEY_MAP = {
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceBaseOnFlatSurface]:
       'calibrateBaseInstructionsText',
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface]:
-      'calibrateLidInstructionsText'
+      'calibrateLidInstructionsText',
 };
 
 /** @type {!Object<!CalibrationSetupInstruction, string>} */

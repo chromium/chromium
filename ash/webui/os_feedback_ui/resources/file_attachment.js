@@ -112,7 +112,7 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
     /** @type {!AttachedFile} */
     const attachedFile = {
       fileName: {path: {path: this.selectedFile_.name}},
-      fileData: fileData
+      fileData: fileData,
     };
 
     return attachedFile;

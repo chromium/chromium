@@ -30,7 +30,7 @@ Polymer({
     /** @private */
     shouldDisableClearButton_: {
       type: Boolean,
-      value: false
+      value: false,
     },
   },
 

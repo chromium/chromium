@@ -15,13 +15,13 @@ export const fakePopularHelpContentList = [
   {
     title: stringToMojoString16('fake article'),
     url: {url: 'https://support.google.com/chromebook/?q=article'},
-    contentType: HelpContentType.kArticle
+    contentType: HelpContentType.kArticle,
   },
   {
     title: stringToMojoString16('fake forum'),
     url: {url: 'https://support.google.com/chromebook/?q=forum'},
-    contentType: HelpContentType.kForum
-  }
+    contentType: HelpContentType.kForum,
+  },
 ];
 
 /** @type {!HelpContentList} */
@@ -29,30 +29,30 @@ export const fakeHelpContentList = [
   {
     title: stringToMojoString16('Fix connection problems'),
     url: {url: 'https://support.google.com/chromebook/?q=6318213'},
-    contentType: HelpContentType.kArticle
+    contentType: HelpContentType.kArticle,
   },
   {
     title: stringToMojoString16(
         'Why won\'t my wireless mouse with a USB piece wor...?'),
     url: {url: 'https://support.google.com/chromebook/?q=123920509'},
-    contentType: HelpContentType.kForum
+    contentType: HelpContentType.kForum,
   },
   {
     title: stringToMojoString16('Wifi Issues - only on Chromebooks'),
     url: {url: 'https://support.google.com/chromebook/?q=114174470'},
-    contentType: HelpContentType.kForum
+    contentType: HelpContentType.kForum,
   },
   {
     title: stringToMojoString16('Network Connectivity Fault'),
     url: {url: 'https://support.google.com/chromebook/?q=131459420'},
-    contentType: HelpContentType.kForum
+    contentType: HelpContentType.kForum,
   },
   {
     title: stringToMojoString16(
         'Connected to WiFi but can\'t connect to the internet'),
     url: {url: 'https://support.google.com/chromebook/?q=22864239'},
-    contentType: HelpContentType.kUnknown
-  }
+    contentType: HelpContentType.kUnknown,
+  },
 ];
 
 /** @type {!SearchRequest} */
@@ -86,5 +86,5 @@ export const fakePngData = [
   220, 0,   0,  0,   34,  73, 68, 65,  84, 8,  215, 99,  120, 173, 168, 135,
   21,  49,  0,  241, 255, 15, 90, 104, 8,  33, 129, 83,  7,   97,  163, 136,
   214, 129, 93, 2,   43,  2,  0,  181, 31, 90, 179, 225, 252, 176, 37,  0,
-  0,   0,   0,  73,  69,  78, 68, 174, 66, 96, 130
+  0,   0,   0,  73,  69,  78, 68, 174, 66, 96, 130,
 ];

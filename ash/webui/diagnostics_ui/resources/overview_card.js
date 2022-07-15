@@ -37,7 +37,7 @@ Polymer({
       type: String,
       value: '',
       computed: 'getDeviceInfo_(systemInfo_.versionInfo.fullVersionString,' +
-          'systemInfo_.boardName)'
+          'systemInfo_.boardName)',
     },
   },
 

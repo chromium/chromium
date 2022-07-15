@@ -220,7 +220,7 @@ Polymer({
   observers: [
     'routineStatusChanged_(executionStatus_, currentTestName_,' +
         'additionalMessage)',
-    'onActivePageChanged_(isActive)'
+    'onActivePageChanged_(isActive)',
   ],
 
   /** @override */
@@ -550,7 +550,7 @@ Polymer({
   setBadgeAndStatusText_(badgeType, statusText) {
     this.setProperties({
       badgeType_: badgeType,
-      statusText_: statusText
+      statusText_: statusText,
     });
   },
 
@@ -610,7 +610,7 @@ Polymer({
     this.dispatchEvent(new CustomEvent('show-caution-banner', {
       bubbles: true,
       composed: true,
-      detail: {message: this.bannerMessage}
+      detail: {message: this.bannerMessage},
     }));
   },
 

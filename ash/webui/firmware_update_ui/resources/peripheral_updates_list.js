@@ -94,7 +94,7 @@ export class PeripheralUpdateListElement extends
           this.dispatchEvent(new CustomEvent('open-update-dialog', {
             bubbles: true,
             composed: true,
-            detail: {update: result.update, inflight: true}
+            detail: {update: result.update, inflight: true},
           }));
         }
         this.hasCheckedInitialInflightProgress_ = true;
@@ -116,7 +116,7 @@ export class PeripheralUpdateListElement extends
     this.dispatchEvent(new CustomEvent('iron-announce', {
       bubbles: true,
       composed: true,
-      detail: {text: this.i18n('numUpdatesText', this.firmwareUpdates_.length)}
+      detail: {text: this.i18n('numUpdatesText', this.firmwareUpdates_.length)},
     }));
   }
 }

@@ -169,5 +169,5 @@ Polymer({
             /* @type {string} */ (pluralString) => {
               this.editButtonLabel_ = pluralString;
             });
-  }
+  },
 });

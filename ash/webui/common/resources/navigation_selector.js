@@ -56,7 +56,7 @@ export class NavigationSelectorElement extends PolymerElement {
       selectorItems: {
         type: Array,
         value: () => [],
-      }
+      },
     };
   }
 

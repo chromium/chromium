@@ -52,7 +52,7 @@ Polymer({
           RoutineType.kCpuFloatingPoint,
           RoutineType.kCpuPrime,
         ];
-      }
+      },
     },
 
     /** @private {!CpuUsage} */

@@ -131,7 +131,7 @@ export class AcceleratorEditViewElement extends PolymerElement {
             this.dispatchEvent(new CustomEvent('request-update-accelerator', {
               bubbles: true,
               composed: true,
-              detail: {source: this.source, action: this.action}
+              detail: {source: this.source, action: this.action},
             }));
           }
         });

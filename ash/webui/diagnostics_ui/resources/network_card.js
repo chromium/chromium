@@ -312,7 +312,8 @@ Polymer({
     const isDisabled = this.network.state === NetworkState.kDisabled;
     // Show the not connected state for the Not Connected/Portal states.
     const isNotConnected = [
-      NetworkState.kNotConnected, NetworkState.kPortal
+      NetworkState.kNotConnected,
+      NetworkState.kPortal,
     ].includes(this.network.state);
     // Override the |troubleshootingState| value if necessary since the
     // disabled and not connected states take precedence.

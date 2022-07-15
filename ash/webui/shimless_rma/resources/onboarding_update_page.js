@@ -36,7 +36,7 @@ const operationNameKeys = {
   [OsUpdateOperation.kReportingErrorEvent]: 'onboardingUpdateError',
   [OsUpdateOperation.kAttemptingRollback]: 'onboardingUpdateRollback',
   [OsUpdateOperation.kDisabled]: 'onboardingUpdateDisabled',
-  [OsUpdateOperation.kNeedPermissionToUpdate]: 'onboardingUpdatePermission'
+  [OsUpdateOperation.kNeedPermissionToUpdate]: 'onboardingUpdatePermission',
 };
 
 /**

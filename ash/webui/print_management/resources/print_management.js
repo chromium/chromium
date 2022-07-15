@@ -150,7 +150,7 @@ Polymer({
       type: Boolean,
       computed: 'computeShouldDisableClearAllButton_(printJobs_,' +
           'deletePrintJobHistoryAllowedByPolicy_)',
-    }
+    },
   },
 
   listeners: {
@@ -311,10 +311,9 @@ Polymer({
           loadTimeData.getString('printJobHistorySingleDay');
         break;
       default:
-        this.printJobHistoryExpirationPeriod_ =
-          loadTimeData.getStringF(
-          'printJobHistoryExpirationPeriod',
-          expirationPeriod
+        this.printJobHistoryExpirationPeriod_ = loadTimeData.getStringF(
+            'printJobHistoryExpirationPeriod',
+            expirationPeriod,
         );
     }
   },
@@ -353,7 +352,7 @@ Polymer({
    */
   getIndexOfOngoingPrintJob_(expectedId) {
     return this.ongoingPrintJobs_.findIndex(
-        arr_job => arr_job.id === expectedId
+        arr_job => arr_job.id === expectedId,
     );
   },
 
@@ -372,5 +371,5 @@ Polymer({
         'delete-enabled', !this.shouldDisableClearAllButton_);
     this.$.deleteIcon.classList.toggle(
         'delete-disabled', this.shouldDisableClearAllButton_);
-  }
+  },
 });

@@ -41,7 +41,7 @@ import {ErrorObserverInterface, ErrorObserverReceiver, RmadErrorCode, ShimlessRm
 export const ButtonState = {
   VISIBLE: 'visible',
   DISABLED: 'disabled',
-  HIDDEN: 'hidden'
+  HIDDEN: 'hidden',
 };
 
 /** @type {number} */
@@ -515,8 +515,8 @@ export class ShimlessRma extends ShimlessRmaBase {
           state: State.kUnknown,
           canExit: false,
           canGoBack: false,
-          error: RmadErrorCode.kRmaNotRequired
-        }
+          error: RmadErrorCode.kRmaNotRequired,
+        },
       };
       this.showState_(errorState);
       return true;

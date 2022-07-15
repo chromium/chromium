@@ -119,7 +119,7 @@ TEST_F('MessagePipeBrowserTest', 'ReceivesNoHandlerError', async () => {
     'Error from chrome-untrusted://system-app-test',
     'Error: No handler registered for message type \'unknown-message\'',
     'at MessagePipe.receiveMessage_ \\(chrome-untrusted://system-app-test/',
-    'at MessagePipe.messageListener_ \\(chrome-untrusted://system-app-test/'
+    'at MessagePipe.messageListener_ \\(chrome-untrusted://system-app-test/',
   ]);
   testDone();
 });
@@ -150,7 +150,7 @@ TEST_F('MessagePipeBrowserTest', 'ReceivesProxiedError', async () => {
     'at chrome-untrusted://system-app-test/test_data/message_pipe_browsertest_untrusted.js',
     'at MessagePipe.callHandlerForMessageType_ \\(chrome-untrusted://system-app-test/',
     'at MessagePipe.receiveMessage_ \\(chrome-untrusted://system-app-test/',
-    'at MessagePipe.messageListener_ \\(chrome-untrusted://system-app-test/'
+    'at MessagePipe.messageListener_ \\(chrome-untrusted://system-app-test/',
   ]);
   testDone();
 });
@@ -190,9 +190,11 @@ TEST_F('MessagePipeBrowserTest', 'CrossContextErrors', async () => {
     'at async MessagePipe.callHandlerForMessageType_ \\(chrome-untrusted://system-app-test/',
     // Error stack of the trusted context.
     'Error from chrome://system-app-test',
-    'Error: This is an error from trusted', 'at .*message_pipe_browsertest.js',
+    'Error: This is an error from trusted',
+    'at .*message_pipe_browsertest.js',
     'at MessagePipe.callHandlerForMessageType_',
-    'at MessagePipe.receiveMessage_', 'at MessagePipe.messageListener_'
+    'at MessagePipe.receiveMessage_',
+    'at MessagePipe.messageListener_',
   ]);
   testDone();
 });
