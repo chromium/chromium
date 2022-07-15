@@ -59,7 +59,19 @@ enum SharedImageUsage : uint32_t {
   // set a single (duplicated) fence for bunch of tiles instead of having the SI
   // framework creating fences for each single message when write access ends.
   SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 16,
+
+  // Start service side only usage flags after this entry. They must be larger
+  // than `LAST_CLIENT_USAGE`.
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING,
+
+  // Image will have pixels uploaded from CPU. The backing must implement
+  // `UploadFromMemory()` if it supports this usage. Clients should specify
+  // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 17,
 };
+
+// Returns true if usage is a valid client usage.
+GPU_EXPORT bool IsValidClientUsage(uint32_t usage);
 
 // Create a string to label SharedImageUsage.
 GPU_EXPORT std::string CreateLabelForSharedImageUsage(uint32_t usage);

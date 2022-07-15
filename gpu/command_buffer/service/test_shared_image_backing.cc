@@ -208,6 +208,10 @@ TestSharedImageBacking::~TestSharedImageBacking() {
     glDeleteTextures(1, &service_id_);
 }
 
+bool TestSharedImageBacking::GetUploadFromMemoryCalledAndReset() {
+  return std::exchange(upload_from_memory_called_, false);
+}
+
 SharedImageBackingType TestSharedImageBacking::GetType() const {
   return SharedImageBackingType::kTest;
 }
@@ -218,6 +222,11 @@ gfx::Rect TestSharedImageBacking::ClearedRect() const {
 
 void TestSharedImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
+}
+
+bool TestSharedImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+  upload_from_memory_called_ = true;
+  return true;
 }
 
 bool TestSharedImageBacking::ProduceLegacyMailbox(

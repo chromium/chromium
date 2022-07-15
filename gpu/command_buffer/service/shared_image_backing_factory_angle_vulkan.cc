@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
-#include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
@@ -136,23 +135,6 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     return true;
   }
 
-  bool InitializeFromGMB(
-      const SharedImageBackingFactoryAngleVulkan::FormatInfo& format_info,
-      gfx::GpuMemoryBufferHandle handle) {
-    SharedMemoryRegionWrapper shared_memory_wrapper;
-    if (!shared_memory_wrapper.Initialize(handle, size(), format()))
-      return false;
-
-    if (!Initialize(format_info, {}))
-      return false;
-
-    shared_memory_wrapper_ = std::move(shared_memory_wrapper);
-    Update(nullptr);
-    SetCleared();
-
-    return true;
-  }
-
  protected:
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override {
@@ -164,9 +146,18 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     return false;
   }
 
+  bool UploadFromMemory(const SkPixmap& pixmap) override {
+    PrepareBackendTexture();
+    DCHECK(backend_texture_.isValid());
+
+    bool result = gr_context()->updateBackendTexture(backend_texture_, pixmap);
+    DCHECK(result);
+    SyncImageLayoutFromBackendTexture();
+    return result;
+  }
+
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {
-    DCHECK(!in_fence);
-    need_copy_pixels_from_shm_ = true;
+    NOTREACHED();
   }
 
   void OnMemoryDump(const std::string& dump_name,
@@ -230,8 +221,6 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
         return false;
       }
 
-      // Sync pixels data from SHM to VkImage
-      CopyPixelsFromSHMIfNecessary();
       // Need to submit recorded work in skia's command buffer to the GPU.
       // TODO(penghuang): only call submit() if it is necessary.
       gr_context()->submit();
@@ -260,8 +249,6 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     ++gl_reads_in_process_;
     if (gl_reads_in_process_ == 1) {
       // For the first GL access.
-      // Sync pixels data from SHM to VkImage
-      CopyPixelsFromSHMIfNecessary();
       // Need to submit recorded work in skia's command buffer to the GPU.
       // TODO(penghuang): only call submit() if it is necessary.
       gr_context()->submit();
@@ -354,8 +341,6 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
         LOG(DFATAL) << "The backing is being written by Skia";
         return false;
       }
-      // Sync pixels data from SHM to VkImage
-      CopyPixelsFromSHMIfNecessary();
       PrepareBackendTexture();
       is_skia_write_in_process_ = true;
       return true;
@@ -374,8 +359,6 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     if (skia_reads_in_process_ == 0) {
       // The first skia access.
       if (gl_reads_in_process_ == 0) {
-        // Sync pixels data from SHM to VkImage
-        CopyPixelsFromSHMIfNecessary();
       } else {
         if (!gl::GLContext::GetCurrent())
           context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
@@ -454,28 +437,12 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   }
 
   void WritePixels(const base::span<const uint8_t>& pixel_data, size_t stride) {
-    PrepareBackendTexture();
-    DCHECK(backend_texture_.isValid());
-
     auto info = SkImageInfo::Make(size().width(), size().height(),
                                   ResourceFormatToClosestSkColorType(
                                       /*gpu_compositing=*/true, format()),
                                   kOpaque_SkAlphaType);
     SkPixmap pixmap(info, pixel_data.data(), stride);
-    auto result = gr_context()->updateBackendTexture(backend_texture_, pixmap);
-    DCHECK(result);
-    SyncImageLayoutFromBackendTexture();
-  }
-
-  void CopyPixelsFromSHMIfNecessary() {
-    if (need_copy_pixels_from_shm_) {
-      // Set need_copy_pixels_from_shm_ to false before call WritePixels(),
-      // because it will call BeginAccessSkia() which will call
-      // CopyPixelsFromSHMIfNecessary() again.
-      need_copy_pixels_from_shm_ = false;
-      WritePixels(shared_memory_wrapper_.GetMemoryAsSpan(),
-                  shared_memory_wrapper_.GetStride());
-    }
+    UploadFromMemory(pixmap);
   }
 
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
@@ -490,8 +457,6 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   bool is_gl_write_in_process_ = false;
   int skia_reads_in_process_ = 0;
   int gl_reads_in_process_ = 0;
-  SharedMemoryRegionWrapper shared_memory_wrapper_;
-  bool need_copy_pixels_from_shm_ = false;
 };
 
 class AngleVulkanBacking::SkiaRepresentation
@@ -671,32 +636,8 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  if (plane != gfx::BufferPlane::DEFAULT) {
-    LOG(DFATAL) << "Invalid plane";
-    return nullptr;
-  }
-
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
-    LOG(DFATAL) << "Invalid image size for format.";
-    return nullptr;
-  }
-
-  auto format = viz::GetResourceFormat(buffer_format);
-
-  const FormatInfo& format_info = format_info_[format];
-  if (!CanCreateSharedImage(size, /*pixel_data=*/{}, format_info,
-                            GL_TEXTURE_2D)) {
-    return nullptr;
-  }
-
-  auto backing = std::make_unique<AngleVulkanBacking>(
-      context_state_, mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage);
-
-  if (!backing->InitializeFromGMB(format_info, std::move(handle)))
-    return nullptr;
-
-  return backing;
+  NOTREACHED();
+  return nullptr;
 }
 
 bool SharedImageBackingFactoryAngleVulkan::CanUseAngleVulkanBacking(
@@ -712,7 +653,7 @@ bool SharedImageBackingFactoryAngleVulkan::CanUseAngleVulkanBacking(
 #endif
       SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
       SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_DISPLAY |
-      SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
   if (usage & ~kSupportedUsages)
     return false;
@@ -738,12 +679,8 @@ bool SharedImageBackingFactoryAngleVulkan::IsSupported(
   if (thread_safe)
     return false;
 
-  switch (gmb_type) {
-    case gfx::EMPTY_BUFFER:
-    case gfx::SHARED_MEMORY_BUFFER:
-      break;
-    default:
-      return false;
+  if (gmb_type != gfx::EMPTY_BUFFER) {
+    return false;
   }
 
   *allow_legacy_mailbox = false;

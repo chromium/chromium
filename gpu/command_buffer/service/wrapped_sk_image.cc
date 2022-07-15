@@ -27,7 +27,6 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
-#include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/buildflags.h"
@@ -159,23 +158,17 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   }
 
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {
-    if (shared_memory_wrapper_.IsValid()) {
-      DCHECK(!in_fence);
+    NOTREACHED();
+  }
 
-      if (context_state_->context_lost())
-        return;
+  bool UploadFromMemory(const SkPixmap& pixmap) override {
+    if (context_state_->context_lost())
+      return false;
 
-      DCHECK(context_state_->IsCurrent(nullptr));
+    DCHECK(context_state_->IsCurrent(nullptr));
 
-      SkImageInfo info = MakeSkImageInfo(size(), format());
-      SkPixmap pixmap(info, shared_memory_wrapper_.GetMemory(),
-                      shared_memory_wrapper_.GetStride());
-
-      if (!context_state_->gr_context()->updateBackendTexture(
-              backend_texture_, &pixmap, /*numLevels=*/1, nullptr, nullptr)) {
-        DLOG(ERROR) << "Failed to update WrappedSkImage texture";
-      }
-    }
+    return context_state_->gr_context()->updateBackendTexture(
+        backend_texture_, &pixmap, /*numLevels=*/1, nullptr, nullptr);
   }
 
   void OnMemoryDump(const std::string& dump_name,
@@ -252,19 +245,11 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
 
   sk_sp<SkPromiseImageTexture> promise_texture() { return promise_texture_; }
 
-  const SharedMemoryRegionWrapper& shared_memory_wrapper() {
-    return shared_memory_wrapper_;
-  }
-
  protected:
   std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
-
-  std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker) override;
 
  private:
   friend class gpu::raster::WrappedSkImageFactory;
@@ -365,23 +350,11 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     return true;
   }
 
-  bool InitializeWithGMB(SharedMemoryRegionWrapper shm_wrapper) {
-    if (InitializeWithData(shm_wrapper.GetMemoryAsSpan(),
-                           shm_wrapper.GetStride())) {
-      shared_memory_wrapper_ = std::move(shm_wrapper);
-      return true;
-    }
-    return false;
-  }
-
   scoped_refptr<SharedContextState> context_state_;
 
   GrBackendTexture backend_texture_;
   sk_sp<SkPromiseImageTexture> promise_texture_;
   int surface_msaa_count_ = 0;
-
-  // Set for shared memory GMB.
-  SharedMemoryRegionWrapper shared_memory_wrapper_;
 
   uint64_t tracing_id_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -453,29 +426,6 @@ class WrappedSkImage::RepresentationSkia
 
   raw_ptr<SkSurface> write_surface_ = nullptr;
   scoped_refptr<SharedContextState> context_state_;
-};
-
-class WrappedSkImage::RepresentationMemory
-    : public SharedImageRepresentationMemory {
- public:
-  RepresentationMemory(SharedImageManager* manager,
-                       SharedImageBacking* backing,
-                       MemoryTypeTracker* tracker)
-      : SharedImageRepresentationMemory(manager, backing, tracker) {}
-
- protected:
-  SkPixmap BeginReadAccess() override {
-    SkImageInfo info = MakeSkImageInfo(wrapped_sk_image()->size(),
-                                       wrapped_sk_image()->format());
-    return SkPixmap(info,
-                    wrapped_sk_image()->shared_memory_wrapper().GetMemory(),
-                    wrapped_sk_image()->shared_memory_wrapper().GetStride());
-  }
-
- private:
-  WrappedSkImage* wrapped_sk_image() {
-    return static_cast<WrappedSkImage*>(backing());
-  }
 };
 
 }  // namespace
@@ -550,47 +500,8 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  DCHECK_EQ(handle.type, gfx::SHARED_MEMORY_BUFFER);
-
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
-    DLOG(ERROR) << "Invalid image size for format.";
-    return nullptr;
-  }
-
-  if (gfx::NumberOfPlanesForLinearBufferFormat(buffer_format) != 1) {
-    DLOG(ERROR) << "Invalid image format.";
-    return nullptr;
-  }
-  if (plane != gfx::BufferPlane::DEFAULT) {
-    DLOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
-    return nullptr;
-  }
-
-  viz::ResourceFormat format = viz::GetResourceFormat(buffer_format);
-
-  // The Skia API to handle compressed texture is limited and not compatible
-  // with updating the texture or custom strides.
-  DCHECK_NE(format, viz::ResourceFormat::ETC1);
-
-  SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, format))
-    return nullptr;
-
-  auto info = MakeSkImageInfo(size, format);
-  auto texture = std::make_unique<WrappedSkImage>(
-      base::PassKey<WrappedSkImageFactory>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, info.computeMinByteSize(),
-      context_state_, /*is_thread_safe=*/context_state_->GrContextIsVulkan() &&
-                          is_drdc_enabled_);
-  if (!texture->InitializeWithGMB(std::move(shm_wrapper)))
-    return nullptr;
-
-  return texture;
-}
-
-bool WrappedSkImageFactory::CanImportGpuMemoryBuffer(
-    gfx::GpuMemoryBufferType memory_buffer_type) {
-  return memory_buffer_type == gfx::SHARED_MEMORY_BUFFER;
+  NOTREACHED();
+  return nullptr;
 }
 
 bool WrappedSkImageFactory::CanUseWrappedSkImage(
@@ -598,9 +509,9 @@ bool WrappedSkImageFactory::CanUseWrappedSkImage(
     GrContextType gr_context_type) const {
   // Ignore for mipmap usage.
   usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
-  auto kWrappedSkImageUsage = SHARED_IMAGE_USAGE_DISPLAY |
-                              SHARED_IMAGE_USAGE_RASTER |
-                              SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  auto kWrappedSkImageUsage =
+      SHARED_IMAGE_USAGE_DISPLAY | SHARED_IMAGE_USAGE_RASTER |
+      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_CPU_UPLOAD;
   return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
 }
 
@@ -634,7 +545,7 @@ bool WrappedSkImageFactory::IsSupported(uint32_t usage,
   if (!CanUseWrappedSkImage(usage, gr_context_type)) {
     return false;
   }
-  if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
+  if (gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }
 
@@ -651,15 +562,6 @@ std::unique_ptr<SharedImageRepresentationSkia> WrappedSkImage::ProduceSkia(
 
   return std::make_unique<RepresentationSkia>(manager, this, tracker,
                                               std::move(context_state));
-}
-
-std::unique_ptr<SharedImageRepresentationMemory> WrappedSkImage::ProduceMemory(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker) {
-  if (!shared_memory_wrapper_.IsValid())
-    return nullptr;
-
-  return std::make_unique<RepresentationMemory>(manager, this, tracker);
 }
 
 }  // namespace raster

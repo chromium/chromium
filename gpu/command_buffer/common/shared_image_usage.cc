@@ -8,6 +8,11 @@
 
 namespace gpu {
 
+bool IsValidClientUsage(uint32_t usage) {
+  constexpr int32_t kClientMax = (LAST_CLIENT_USAGE << 1) - 1;
+  return 0 < usage && usage <= kClientMax;
+}
+
 std::string CreateLabelForSharedImageUsage(uint32_t usage) {
   if (!usage)
     return "";
@@ -67,6 +72,9 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
   }
   if (usage & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) {
     label += "|RasterDelegatedCompositing";
+  }
+  if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD) {
+    label += "|CpuUpload";
   }
 
   DCHECK(!label.empty());

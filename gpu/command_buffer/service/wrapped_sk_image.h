@@ -72,7 +72,6 @@ class GPU_GLES2_EXPORT WrappedSkImageFactory
                    bool is_pixel_used) override;
 
  private:
-  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
   bool CanUseWrappedSkImage(uint32_t usage,
                             GrContextType gr_context_type) const;
 

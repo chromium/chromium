@@ -167,9 +167,12 @@ bool ExternalVkImageFactory::IsSupported(uint32_t usage,
   if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
     return false;
   }
+
   // TODO(crbug.com/969114): Not all shared image factory implementations
   // support concurrent read/write usage.
-  if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+  constexpr uint32_t kInvalidUsages =
+      SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  if (usage & kInvalidUsages) {
     return false;
   }
   if (thread_safe) {

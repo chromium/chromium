@@ -143,12 +143,18 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
  private:
   bool IsSharedBetweenThreads(uint32_t usage);
+
+  // If `use_compound_backing` is not null and `gmb_type` is
+  // gfx::SHARED_MEMORY_BUFFER then we'll see if factory can be used with a
+  // compound backing. This is temporary until all backing types support
+  // compound backings.
   SharedImageBackingFactory* GetFactoryByUsage(
       uint32_t usage,
       viz::ResourceFormat format,
       bool* allow_legacy_mailbox,
       bool is_pixel_used,
-      gfx::GpuMemoryBufferType gmb_type = gfx::EMPTY_BUFFER);
+      gfx::GpuMemoryBufferType gmb_type,
+      bool* use_compound_backing = nullptr);
 
   raw_ptr<MailboxManager> mailbox_manager_;
   raw_ptr<SharedImageManager> shared_image_manager_;

@@ -35,11 +35,14 @@ class TestSharedImageBacking : public SharedImageBacking {
                          GLuint texture_id);
   ~TestSharedImageBacking() override;
 
+  bool GetUploadFromMemoryCalledAndReset();
+
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {}
+  bool UploadFromMemory(const SkPixmap& pixmap) override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDump* dump,
@@ -79,6 +82,8 @@ class TestSharedImageBacking : public SharedImageBacking {
   raw_ptr<gles2::Texture> texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   bool can_access_ = true;
+
+  bool upload_from_memory_called_ = false;
 };
 
 }  // namespace gpu

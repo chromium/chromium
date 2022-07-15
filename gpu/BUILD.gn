@@ -561,6 +561,7 @@ test("gpu_unittests") {
     "command_buffer/service/shader_translator_cache_unittest.cc",
     "command_buffer/service/shader_translator_unittest.cc",
     "command_buffer/service/shared_context_state_unittest.cc",
+    "command_buffer/service/shared_image_backing_compound_unittest.cc",
     "command_buffer/service/sync_point_manager_unittest.cc",
     "command_buffer/service/texture_manager_unittest.cc",
     "command_buffer/service/transfer_buffer_manager_unittest.cc",

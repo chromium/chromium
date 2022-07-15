@@ -66,6 +66,8 @@ enum class RepresentationAccessMode {
 // api.
 class GPU_GLES2_EXPORT SharedImageRepresentation {
  public:
+  using AccessMode = RepresentationAccessMode;
+
   // Used by derived classes.
   enum class AllowUnclearedAccess { kYes, kNo };
 
@@ -165,6 +167,8 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
 class GPU_GLES2_EXPORT SharedImageRepresentationGLTextureBase
     : public SharedImageRepresentation {
  public:
+  static constexpr GLenum kReadAccessMode = 0x8AF6;
+
   class ScopedAccess
       : public ScopedAccessBase<SharedImageRepresentationGLTextureBase> {
    public:
@@ -220,6 +224,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTexture
   gpu::TextureBase* GetTextureBase() override;
 
  protected:
+  friend class WrappedGLTextureRepresentation;
+
   void UpdateClearedStateOnBeginAccess() override;
   void UpdateClearedStateOnEndAccess() override;
 };
@@ -237,6 +243,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationGLTexturePassthrough
   GetTexturePassthrough() = 0;
 
   gpu::TextureBase* GetTextureBase() override;
+
+ private:
+  friend class WrappedGLTexturePassthroughRepresentation;
 };
 
 class GPU_GLES2_EXPORT SharedImageRepresentationSkia
@@ -317,6 +326,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
   virtual bool SupportsMultipleConcurrentReadAccess();
 
  protected:
+  friend class WrappedSkiaRepresentation;
+
   // Begin the write access. The implementations should insert semaphores into
   // begin_semaphores vector which client will wait on before writing the
   // backing. The ownership of begin_semaphores is not passed to client.
@@ -368,6 +379,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkia
 class GPU_GLES2_EXPORT SharedImageRepresentationDawn
     : public SharedImageRepresentation {
  public:
+  static constexpr uint32_t kWriteUsage =
+      WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment;
+
   SharedImageRepresentationDawn(SharedImageManager* manager,
                                 SharedImageBacking* backing,
                                 MemoryTypeTracker* tracker)
@@ -397,6 +411,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationDawn
       AllowUnclearedAccess allow_uncleared);
 
  private:
+  friend class WrappedDawnRepresentation;
+
   // This can return null in case of a Dawn validation error, for example if
   // usage is invalid.
   virtual WGPUTexture BeginAccess(WGPUTextureUsage usage) = 0;
@@ -450,6 +466,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(bool needs_gl_image);
 
  protected:
+  friend class WrappedOverlayRepresentation;
+
   // Notifies the backing that an access will start. Returns false if there is a
   // conflict. Otherwise, returns true and:
   // - Set a gpu fence to |acquire_fence| that should be waited on before the
@@ -576,6 +594,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationVaapi
   std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
 
  private:
+  friend class WrappedVaapiRepresentation;
+
   raw_ptr<VaapiDependencies> vaapi_deps_;
   virtual void EndAccess() = 0;
   virtual void BeginAccess() = 0;

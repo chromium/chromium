@@ -136,24 +136,9 @@ SharedImageBackingType SharedImageBackingOzone::GetType() const {
 }
 
 void SharedImageBackingOzone::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  if (shared_memory_wrapper_.IsValid()) {
-    DCHECK(!in_fence);
-    if (context_state_->context_lost())
-      return;
-
-    DCHECK(context_state_->IsCurrent(nullptr));
-    if (!WritePixels(shared_memory_wrapper_.GetMemoryAsSpan(),
-                     context_state_.get(), format(), size(), alpha_type())) {
-      DLOG(ERROR) << "Failed to write pixels.";
-    }
-  } else if (in_fence) {
+  if (in_fence) {
     external_write_fence_ = in_fence->GetGpuFenceHandle().Clone();
   }
-}
-
-void SharedImageBackingOzone::SetSharedMemoryWrapper(
-    SharedMemoryRegionWrapper wrapper) {
-  shared_memory_wrapper_ = std::move(wrapper);
 }
 
 bool SharedImageBackingOzone::ProduceLegacyMailbox(
@@ -326,21 +311,16 @@ bool SharedImageBackingOzone::VaSync() {
   return !has_pending_va_writes_;
 }
 
-bool SharedImageBackingOzone::WritePixels(
-    base::span<const uint8_t> pixel_data,
-    SharedContextState* const shared_context_state,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    SkAlphaType alpha_type) {
-  auto representation =
-      ProduceSkia(nullptr, shared_context_state->memory_type_tracker(),
-                  shared_context_state);
+bool SharedImageBackingOzone::UploadFromMemory(const SkPixmap& pixmap) {
+  DCHECK(!pixmap.info().isEmpty());
 
-  SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
-                                       ResourceFormatToClosestSkColorType(
-                                           /*gpu_compositing=*/true, format),
-                                       alpha_type);
-  SkPixmap sk_pixmap(info, pixel_data.data(), info.minRowBytes());
+  if (context_state_->context_lost())
+    return false;
+
+  DCHECK(context_state_->IsCurrent(nullptr));
+
+  auto representation = ProduceSkia(
+      nullptr, context_state_->memory_type_tracker(), context_state_);
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
@@ -353,20 +333,21 @@ bool SharedImageBackingOzone::WritePixels(
     return false;
   }
   if (!begin_semaphores.empty()) {
-    bool result = shared_context_state->gr_context()->wait(
+    bool result = context_state_->gr_context()->wait(
         begin_semaphores.size(), begin_semaphores.data(),
         /*deleteSemaphoresAfterWait=*/false);
     DCHECK(result);
   }
 
-  DCHECK_EQ(size, representation->size());
-  bool written = shared_context_state->gr_context()->updateBackendTexture(
-      dest_scoped_access->promise_image_texture()->backendTexture(), &sk_pixmap,
+  DCHECK_EQ(size(), representation->size());
+  bool written = context_state_->gr_context()->updateBackendTexture(
+      dest_scoped_access->promise_image_texture()->backendTexture(), &pixmap,
       /*numLevels=*/1, representation->surface_origin(), nullptr, nullptr);
 
-  FlushAndSubmitIfNecessary(std::move(end_semaphores), shared_context_state);
+  FlushAndSubmitIfNecessary(std::move(end_semaphores), context_state_.get());
   if (written && !representation->IsCleared()) {
-    representation->SetClearedRect(gfx::Rect(info.width(), info.height()));
+    representation->SetClearedRect(
+        gfx::Rect(pixmap.info().width(), pixmap.info().height()));
   }
   return written;
 }

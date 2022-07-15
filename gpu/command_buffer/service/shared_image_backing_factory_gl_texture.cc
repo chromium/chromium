@@ -135,6 +135,14 @@ bool SharedImageBackingFactoryGLTexture::IsSupported(
     return false;
   }
 
+  constexpr uint32_t kInvalidUsages = SHARED_IMAGE_USAGE_VIDEO_DECODE |
+                                      SHARED_IMAGE_USAGE_SCANOUT |
+                                      SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+  if (usage & kInvalidUsages) {
+    return false;
+  }
+
   // Doesn't support contexts other than GL for OOPR Canvas
   if (gr_context_type != GrContextType::kGL &&
       ((usage & SHARED_IMAGE_USAGE_DISPLAY) ||
@@ -152,12 +160,6 @@ bool SharedImageBackingFactoryGLTexture::IsSupported(
 #else
     return false;
 #endif
-  }
-
-  // Needs interop factory
-  if ((usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
-      (usage & SHARED_IMAGE_USAGE_SCANOUT)) {
-    return false;
   }
 
   *allow_legacy_mailbox = gr_context_type == GrContextType::kGL;

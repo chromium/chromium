@@ -128,10 +128,15 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
   if (!backing) {
     return nullptr;
   }
-  if (!pixel_data.empty() &&
-      !backing->WritePixels(pixel_data, shared_context_state_.get(), format,
-                            size, alpha_type)) {
-    return nullptr;
+  if (!pixel_data.empty()) {
+    SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
+                                         ResourceFormatToClosestSkColorType(
+                                             /*gpu_compositing=*/true, format),
+                                         alpha_type);
+    SkPixmap pixmap(info, pixel_data.data(), info.minRowBytes());
+
+    if (!backing->UploadFromMemory(pixmap))
+      return nullptr;
   }
 
   return backing;
@@ -150,47 +155,26 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  viz::ResourceFormat format = viz::GetResourceFormat(buffer_format);
-  std::unique_ptr<SharedImageBackingOzone> backing;
-  if (handle.type == gfx::NATIVE_PIXMAP) {
-    ui::SurfaceFactoryOzone* surface_factory =
-        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-    scoped_refptr<gfx::NativePixmap> pixmap =
-        surface_factory->CreateNativePixmapFromHandle(
-            surface_handle, size, buffer_format,
-            std::move(handle.native_pixmap_handle));
-    if (!pixmap) {
-      return nullptr;
-    }
+  DCHECK_EQ(handle.type, gfx::NATIVE_PIXMAP);
 
-    const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
-    const viz::ResourceFormat plane_format =
-        viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
-    backing = std::make_unique<SharedImageBackingOzone>(
-        mailbox, plane_format, plane, plane_size, color_space, surface_origin,
-        alpha_type, usage, shared_context_state_.get(), std::move(pixmap),
-        dawn_procs_, workarounds_);
-    backing->SetCleared();
-  } else if (handle.type == gfx::SHARED_MEMORY_BUFFER) {
-    SharedMemoryRegionWrapper shm_wrapper;
-    if (!shm_wrapper.Initialize(handle, size, format)) {
-      return nullptr;
-    }
-
-    backing = CreateSharedImageInternal(mailbox, format, surface_handle, size,
-                                        color_space, surface_origin, alpha_type,
-                                        usage);
-    if (!backing) {
-      return nullptr;
-    }
-    if (!backing->WritePixels(shm_wrapper.GetMemoryAsSpan(),
-                              shared_context_state_.get(), format, size,
-                              alpha_type)) {
-      DLOG(ERROR) << "Failed to write pixels for shared memory.";
-      return nullptr;
-    }
-    backing->SetSharedMemoryWrapper(std::move(shm_wrapper));
+  ui::SurfaceFactoryOzone* surface_factory =
+      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      surface_factory->CreateNativePixmapFromHandle(
+          surface_handle, size, buffer_format,
+          std::move(handle.native_pixmap_handle));
+  if (!pixmap) {
+    return nullptr;
   }
+
+  const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
+  const viz::ResourceFormat plane_format =
+      viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
+  auto backing = std::make_unique<SharedImageBackingOzone>(
+      mailbox, plane_format, plane, plane_size, color_space, surface_origin,
+      alpha_type, usage, shared_context_state_.get(), std::move(pixmap),
+      dawn_procs_, workarounds_);
+  backing->SetCleared();
 
   return backing;
 }
@@ -203,8 +187,7 @@ bool SharedImageBackingFactoryOzone::IsSupported(
     GrContextType gr_context_type,
     bool* allow_legacy_mailbox,
     bool is_pixel_used) {
-  if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP &&
-      gmb_type != gfx::SHARED_MEMORY_BUFFER) {
+  if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP) {
     return false;
   }
 

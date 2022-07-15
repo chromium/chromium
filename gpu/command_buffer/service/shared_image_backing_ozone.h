@@ -20,7 +20,6 @@
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
-#include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/buffer_types.h"
@@ -60,14 +59,9 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   // gpu::SharedImageBacking:
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  bool UploadFromMemory(const SkPixmap& pixmap) override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
-  bool WritePixels(base::span<const uint8_t> pixel_data,
-                   SharedContextState* const shared_context_state,
-                   viz::ResourceFormat format,
-                   const gfx::Size& size,
-                   SkAlphaType alpha_type);
-  void SetSharedMemoryWrapper(SharedMemoryRegionWrapper wrapper);
 
   enum class AccessStream { kGL, kVulkan, kWebGPU, kOverlay, kLast };
 
@@ -131,8 +125,6 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   gfx::GpuFenceHandle write_fence_;
   base::flat_map<AccessStream, gfx::GpuFenceHandle> read_fences_;
   AccessStream last_write_stream_;
-  // Set for shared memory GMB.
-  SharedMemoryRegionWrapper shared_memory_wrapper_;
   scoped_refptr<SharedContextState> context_state_;
   const GpuDriverBugWorkarounds workarounds_;
 };

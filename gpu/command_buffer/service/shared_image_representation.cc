@@ -27,7 +27,9 @@ SharedImageRepresentation::SharedImageRepresentation(
   // TODO(hitawala): Rewrite the reference counting so that
   // SharedImageRepresentation does not need manager and manager attaches to
   // backing in Register().
-  if (manager_) {
+  // If mailbox is zero this is owned by a compound backing and not reference
+  // counted.
+  if (manager_ && !backing_->mailbox().IsZero()) {
     backing_->AddRef(this);
   }
 }
@@ -37,7 +39,9 @@ SharedImageRepresentation::~SharedImageRepresentation() {
   // error is.
   CHECK(!has_scoped_access_) << "Destroying a SharedImageRepresentation with "
                                 "outstanding Scoped*Access objects.";
-  if (manager_) {
+  // If mailbox is zero this is owned by a compound backing and not reference
+  // counted.
+  if (manager_ && !backing_->mailbox().IsZero()) {
     manager_->OnRepresentationDestroyed(backing_->mailbox(), this);
   }
 }
@@ -56,8 +60,7 @@ SharedImageRepresentationGLTextureBase::BeginScopedAccess(
 
   UpdateClearedStateOnBeginAccess();
 
-  constexpr GLenum kReadAccess = 0x8AF6;
-  if (mode == kReadAccess)
+  if (mode == kReadAccessMode)
     backing()->OnReadSucceeded();
   else
     backing()->OnWriteSucceeded();
@@ -360,9 +363,6 @@ SharedImageRepresentationDawn::BeginScopedAccess(
   WGPUTexture texture = BeginAccess(usage);
   if (!texture)
     return nullptr;
-
-  constexpr auto kWriteUsage =
-      WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment;
 
   if (usage & kWriteUsage) {
     backing()->OnWriteSucceeded();

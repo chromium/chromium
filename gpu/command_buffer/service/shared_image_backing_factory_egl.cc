@@ -105,10 +105,10 @@ bool SharedImageBackingFactoryEGL::IsSupported(
        (usage & SHARED_IMAGE_USAGE_RASTER))) {
     return false;
   }
-  if ((usage & SHARED_IMAGE_USAGE_WEBGPU) ||
-      (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE) ||
-      (usage & SHARED_IMAGE_USAGE_SCANOUT)) {
-    // return false if it needs interop factory
+  constexpr uint32_t kInvalidUsage =
+      SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_VIDEO_DECODE |
+      SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  if (usage & kInvalidUsage) {
     return false;
   }
   *allow_legacy_mailbox = false;

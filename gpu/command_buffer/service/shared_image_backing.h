@@ -20,6 +20,7 @@
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -68,7 +69,8 @@ enum class SharedImageBackingType {
   kRawDraw = 9,
   kSharedMemory = 10,
   kVideo = 11,
-  kWrappedSkImage = 12
+  kWrappedSkImage = 12,
+  kCompound = 13,
 };
 
 // Represents the actual storage (GL texture, VkImage, GMB) for a SharedImage.
@@ -98,6 +100,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   size_t estimated_size() const { return estimated_size_; }
   bool is_thread_safe() const { return !!lock_; }
   void OnContextLost();
+
+  // Creates SkImageInfo matching backing size, format, alpha and color space.
+  SkImageInfo AsSkImageInfo() const;
 
   // Concrete functions to manage a ref count.
   void AddRef(SharedImageRepresentation* representation);
@@ -130,6 +135,10 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual void SetClearedRect(const gfx::Rect& cleared_rect) = 0;
 
   virtual void Update(std::unique_ptr<gfx::GpuFence> in_fence) = 0;
+
+  // Uploads pixels from memory into GPU texture. Backings must implement this
+  // if they support `SHARED_IMAGE_USAGE_CPU_UPLOAD`.
+  virtual bool UploadFromMemory(const SkPixmap& pixmap);
 
   // Copy from the backing's GPU texture to its GpuMemoryBuffer if present. This
   // is needed on Windows where the renderer process can only create shared
@@ -170,6 +179,8 @@ class GPU_GLES2_EXPORT SharedImageBacking {
  protected:
   // Used by SharedImageManager.
   friend class SharedImageManager;
+  friend class SharedImageBackingCompound;
+
   virtual std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);

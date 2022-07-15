@@ -9,6 +9,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
@@ -193,6 +194,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     gpu::SurfaceHandle surface_handle) {
+  DCHECK(gpu::IsValidClientUsage(usage));
   auto mailbox = Mailbox::GenerateForSharedImage();
   {
     base::AutoLock lock(lock_);
@@ -247,6 +249,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
+  DCHECK(gpu::IsValidClientUsage(usage));
   auto mailbox = Mailbox::GenerateForSharedImage();
   std::vector<uint8_t> pixel_data_copy(pixel_data.begin(), pixel_data.end());
   {
@@ -303,6 +306,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
+  DCHECK(gpu::IsValidClientUsage(usage));
   DCHECK(gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP ||
          gpu_memory_buffer->GetType() == gfx::ANDROID_HARDWARE_BUFFER ||
          gpu_memory_buffer_manager);

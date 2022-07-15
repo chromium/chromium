@@ -4,12 +4,14 @@
 
 #include "gpu/command_buffer/service/shared_image_backing.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
-#include "gpu/command_buffer/service/texture_manager.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace gpu {
 namespace {
@@ -42,6 +44,8 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "SharedImageVideo";
     case SharedImageBackingType::kWrappedSkImage:
       return "WrappedSkImage";
+    case SharedImageBackingType::kCompound:
+      return "SharedImageBackingCompound";
   }
   NOTREACHED();
 };
@@ -79,7 +83,19 @@ void SharedImageBacking::OnContextLost() {
   have_context_ = false;
 }
 
+SkImageInfo SharedImageBacking::AsSkImageInfo() const {
+  return SkImageInfo::Make(size_.width(), size_.height(),
+                           viz::ResourceFormatToClosestSkColorType(
+                               /*gpu_compositing=*/true, format_),
+                           alpha_type_, color_space_.ToSkColorSpace());
+}
+
 bool SharedImageBacking::CopyToGpuMemoryBuffer() {
+  return false;
+}
+
+bool SharedImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+  NOTREACHED();
   return false;
 }
 
