@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.components.feature_engagement.FeatureConstants;
 
 /**
  * Responsible for providing UI resources for showing price tracking action on optional toolbar
@@ -79,6 +81,10 @@ public class PriceTrackingButtonController implements ButtonDataProvider {
             return;
         }
 
-        // TODO(shaktisahu): Implement IPH and update button data.
+        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
+                FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING,
+                /* stringId = */ R.string.iph_price_tracking_menu_item,
+                /* accessibilityStringId = */ R.string.iph_price_tracking_menu_item);
+        mButtonData.updateIPHCommandBuilder(iphCommandBuilder);
     }
 }

@@ -116,7 +116,7 @@ public class AdaptiveToolbarFeatures {
     /** @return Whether the contextual page actions should show the action chip version. */
     public static boolean shouldShowActionChip() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", true);
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", false);
     }
 
     /**
