@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/gnubby/fake_gnubby_client.h"
+#include "chromeos/ash/components/dbus/gnubby/fake_gnubby_client.h"
 
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
-#include "chromeos/dbus/gnubby/gnubby_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -56,4 +56,4 @@ TEST_F(FakeGnubbyClientTest, NotificationSent) {
   EXPECT_EQ(observer.calls(), 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

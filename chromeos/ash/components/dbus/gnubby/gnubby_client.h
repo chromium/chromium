@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_GNUBBY_GNUBBY_CLIENT_H_
-#define CHROMEOS_DBUS_GNUBBY_GNUBBY_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_GNUBBY_GNUBBY_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_GNUBBY_GNUBBY_CLIENT_H_
 
 #include "base/component_export.h"
 #include "chromeos/dbus/common/dbus_client.h"
@@ -11,9 +11,9 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/u2f/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 // GnubbyClient is used to communicate with the Gnubby service.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) GnubbyClient : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_GNUBBY) GnubbyClient : public DBusClient {
  public:
   // Interface for observing changes in Gnubby Client
   class Observer {
@@ -51,6 +51,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) GnubbyClient : public DBusClient {
   GnubbyClient();
   ~GnubbyClient() override;
 };
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_GNUBBY_GNUBBY_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_GNUBBY_GNUBBY_CLIENT_H_

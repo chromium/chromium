@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_GNUBBY_FAKE_GNUBBY_CLIENT_H_
-#define CHROMEOS_DBUS_GNUBBY_FAKE_GNUBBY_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_GNUBBY_FAKE_GNUBBY_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_GNUBBY_FAKE_GNUBBY_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/gnubby/gnubby_client.h"
+#include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of GnubbyClient used for tests.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) FakeGnubbyClient
-    : public GnubbyClient {
+class COMPONENT_EXPORT(ASH_DBUS_GNUBBY) FakeGnubbyClient : public GnubbyClient {
  public:
   FakeGnubbyClient();
 
@@ -37,6 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) FakeGnubbyClient
   base::WeakPtrFactory<FakeGnubbyClient> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_GNUBBY_FAKE_GNUBBY_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_GNUBBY_FAKE_GNUBBY_CLIENT_H_

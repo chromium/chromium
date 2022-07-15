@@ -18,6 +18,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/authpolicy",
     "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
     "//chromeos/ash/components/dbus/biod:test_support",
+    "//chromeos/ash/components/dbus/gnubby:unit_tests",
     "//chromeos/ash/components/dbus/hermes:test_support",
     "//chromeos/ash/components/dbus/hiberman",
     "//chromeos/ash/components/dbus/ip_peripheral:test_support",

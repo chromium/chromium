@@ -9,7 +9,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chromeos/dbus/gnubby/gnubby_client.h"
+#include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 
 namespace message_center {
 class Notification;
@@ -20,7 +20,7 @@ namespace ash {
 // U2FD Authentication.  It is responsible for both creating, showing, and
 // closing the notification.
 
-class GnubbyNotification : public chromeos::GnubbyClient::Observer {
+class GnubbyNotification : public GnubbyClient::Observer {
  public:
   GnubbyNotification();
 

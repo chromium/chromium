@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/gnubby/gnubby_client.h"
+#include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/gnubby/fake_gnubby_client.h"
+#include "chromeos/ash/components/dbus/gnubby/fake_gnubby_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -103,4 +103,4 @@ GnubbyClient::~GnubbyClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash
