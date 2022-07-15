@@ -154,6 +154,7 @@ source_set("common") {
   ]
 
   public_deps = [
+    ":main_frame_counter",
     ":mojo_bindings",
     "//cc",
     "//cc/ipc",
@@ -393,6 +394,16 @@ source_set("common") {
   if (use_clang_profiling_inside_sandbox) {
     sources += [ "profiling_utils.cc" ]
   }
+}
+
+# this is used by content_browsertests as well, which we don't want to depend
+# on the entire content/common.
+source_set("main_frame_counter") {
+  sources = [
+    "main_frame_counter.cc",
+    "main_frame_counter.h",
+  ]
+  deps = [ "//base:base" ]
 }
 
 if (is_linux || is_chromeos) {

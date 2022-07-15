@@ -532,6 +532,11 @@ const base::Feature kLogJsConsoleMessages {
 #endif
 };
 
+// Configures whether we set a lower limit for renderers that do not have a main
+// frame, similar to the limit that is already done for backgrounded renderers.
+const base::Feature kLowerMemoryLimitForNonMainRenderers{
+    "LowerMemoryLimitForNonMainRenderers", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The MBI mode controls whether or not communication over the
 // AgentSchedulingGroup is ordered with respect to the render-process-global
 // legacy IPC channel, as well as the granularity of AgentSchedulingGroup
