@@ -1699,17 +1699,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       // In this example "A" should be clipped if the filter was not present.
       // With the filter, "A" will be rastered without clipping, but instead
       // the blurred result will be clipped.
-      // On the other hand, "B" should not be clipped because the overflow clip
-      // is not in its containing block chain, but as the filter output will be
-      // clipped, so a blurred "B" may still be invisible.
+      // "B" should be also clipped because a filter always creates a containing
+      // block for all descendants.
       if (!state.filter.IsEmpty() ||
           (full_context_.direct_compositing_reasons &
            CompositingReason::kActiveFilterAnimation))
         state.output_clip = context_.current.clip;
-
-      // TODO(trchen): A filter may contain spatial operations such that an
-      // output pixel may depend on an input pixel outside of the output clip.
-      // We should generate a special clip node to represent this expansion.
 
       // We may begin to composite our subtree prior to an animation starts,
       // but a compositor element ID is only needed when an animation is
@@ -1727,24 +1722,37 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       state.compositor_element_id =
           GetCompositorElementId(CompositorElementIdNamespace::kEffectFilter);
 
+      // This must be computed before std::move(state) below.
+      bool needs_pixel_moving_filter_clip_expander =
+          state.direct_compositing_reasons != CompositingReason::kNone ||
+          state.filter.HasFilterThatMovesPixels();
+
       EffectPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_filter_animation_on_compositor =
           object_.StyleRef().IsRunningFilterAnimationOnCompositor();
       OnUpdateEffect(properties_->UpdateFilter(
           *context_.current_effect, std::move(state), animation_state));
+
+      if (needs_pixel_moving_filter_clip_expander) {
+        OnUpdateClip(properties_->UpdatePixelMovingFilterClipExpander(
+            *context_.current.clip,
+            ClipPaintPropertyNode::State(context_.current.transform,
+                                         properties_->Filter())));
+      } else {
+        OnClearClip(properties_->ClearPixelMovingFilterClipExpander());
+      }
     } else {
       OnClearEffect(properties_->ClearFilter());
+      OnClearClip(properties_->ClearPixelMovingFilterClipExpander());
     }
   }
 
   if (properties_->Filter()) {
     context_.current_effect = properties_->Filter();
-    // TODO(trchen): Change input clip to expansion hint once implemented.
-    if (const auto* input_clip = properties_->Filter()->OutputClip()) {
-      DCHECK_EQ(input_clip, context_.current.clip);
-      context_.absolute_position.clip = context_.fixed_position.clip =
-          input_clip;
-    }
+    if (const auto* input_clip = properties_->PixelMovingFilterClipExpander())
+      context_.current.clip = input_clip;
+  } else {
+    DCHECK(!properties_->PixelMovingFilterClipExpander());
   }
 }
 

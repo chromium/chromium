@@ -189,7 +189,6 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
   const ClipPaintPropertyNodeOrAlias& PreClip() const;
   const ClipPaintPropertyNodeOrAlias& PostOverflowClip() const;
   const EffectPaintPropertyNodeOrAlias& PreEffect() const;
-  const EffectPaintPropertyNodeOrAlias& PreFilter() const;
   const EffectPaintPropertyNodeOrAlias& PostIsolationEffect() const;
 
   ~FragmentData() = default;

@@ -216,6 +216,10 @@ class CORE_EXPORT ObjectPaintProperties {
   // [ FragmentClip ]
   // |    Clips to a fragment's bounds.
   // |    This is only present for content under a fragmentation container.
+  // +-[ PixelMovingFilterClipExpander ]
+  //   | Clip created by pixel-moving filter. Instead of intersecting with the
+  //  /  current clip, this clip expands the current clip to include all pixels
+  // /   in the filtered content that may affect the pixels in the current clip.
   // +-[ ClipPathClip ]
   //   |  Clip created by path-based CSS clip-path. Only exists if the
   //  /   clip-path is "simple" that can be applied geometrically. This and
@@ -251,11 +255,13 @@ class CORE_EXPORT ObjectPaintProperties {
   //       paint element.
  public:
   bool HasClipNode() const {
-    return fragment_clip_ || clip_path_clip_ || mask_clip_ || css_clip_ ||
+    return fragment_clip_ || pixel_moving_filter_clip_expaner_ ||
+           clip_path_clip_ || mask_clip_ || css_clip_ ||
            overflow_controls_clip_ || inner_border_radius_clip_ ||
            overflow_clip_ || clip_isolation_node_;
   }
   ADD_CLIP(FragmentClip, fragment_clip_);
+  ADD_CLIP(PixelMovingFilterClipExpander, pixel_moving_filter_clip_expaner_);
   ADD_CLIP(ClipPathClip, clip_path_clip_);
   ADD_CLIP(MaskClip, mask_clip_);
   ADD_CLIP(CssClip, css_clip_);

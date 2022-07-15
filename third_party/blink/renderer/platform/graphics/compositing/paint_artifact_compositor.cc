@@ -685,9 +685,9 @@ void PaintArtifactCompositor::Update(
     const auto& effect = property_state.Effect();
     int transform_id =
         property_tree_manager.EnsureCompositorTransformNode(transform);
-    int clip_id = property_tree_manager.EnsureCompositorClipNode(clip);
     int effect_id = property_tree_manager.SwitchToEffectNodeWithSynthesizedClip(
         effect, clip, layer.draws_content());
+    int clip_id = property_tree_manager.EnsureCompositorClipNode(clip);
 
     // We need additional bookkeeping for backdrop-filter mask.
     if (effect.RequiresCompositingForBackdropFilterMask() &&

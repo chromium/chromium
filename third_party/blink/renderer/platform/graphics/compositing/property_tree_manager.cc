@@ -51,7 +51,10 @@ PropertyTreeManager::~PropertyTreeManager() {
 void PropertyTreeManager::Finalize() {
   while (effect_stack_.size())
     CloseCcEffect();
+
   DCHECK(effect_stack_.IsEmpty());
+
+  UpdatePixelMovingFilterClipExpanders();
 }
 
 static void UpdateCcTransformLocalMatrix(
@@ -532,6 +535,11 @@ int PropertyTreeManager::EnsureCompositorClipNode(
   compositor_node.clip = clip_node.PaintClipRect().Rect();
   compositor_node.transform_id =
       EnsureCompositorTransformNode(clip_node.LocalTransformSpace().Unalias());
+  if (clip_node.PixelMovingFilter()) {
+    // We have to wait until the cc effect node for the filter is ready before
+    // setting compositor_node.pixel_moving_filter_id.
+    pixel_moving_filter_clip_expanders_.push_back(&clip_node);
+  }
 
   clip_node.SetCcNodeId(new_sequence_number_, id);
   clip_tree_.set_needs_update(true);
@@ -1252,6 +1260,21 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
     effect_layer_counts[id] = -1;
 #endif
   }
+}
+
+// This is called after all property nodes have been converted and we know
+// pixel_moving_filter_id for the pixel-moving clip expanders.
+void PropertyTreeManager::UpdatePixelMovingFilterClipExpanders() {
+  for (auto* clip : pixel_moving_filter_clip_expanders_) {
+    DCHECK(clip->PixelMovingFilter());
+    cc::ClipNode* cc_clip =
+        clip_tree_.Node(clip->CcNodeId(new_sequence_number_));
+    DCHECK(cc_clip);
+    cc_clip->pixel_moving_filter_id =
+        clip->PixelMovingFilter()->CcNodeId(new_sequence_number_);
+    DCHECK(!cc_clip->AppliesLocalClip());
+  }
+  pixel_moving_filter_clip_expanders_.clear();
 }
 
 }  // namespace blink

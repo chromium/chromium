@@ -325,11 +325,23 @@ TEST_F(CullRectUpdateOnPaintPropertyChangeTest, Opacity) {
                    false, false, false);
 }
 
-TEST_F(CullRectUpdateOnPaintPropertyChangeTest, Filter) {
+TEST_F(CullRectUpdateOnPaintPropertyChangeTest, NonPixelMovingFilter) {
+  TestTargetChange("filter: invert(5%)", "filter: invert(8%)", false, false,
+                   false);
+  TestTargetChange("filter: invert(5%)", "", true, false, true);
+  TestTargetChange("", "filter: invert(5%)", true, false, true);
+  TestTargetChange("will-change: filter; filter: invert(5%)",
+                   "will-change: filter", false, false, false);
+  TestTargetChange("will-change: filter",
+                   "will-change: filter; filter: invert(5%)", false, false,
+                   false);
+}
+
+TEST_F(CullRectUpdateOnPaintPropertyChangeTest, PixelMovingFilter) {
   TestTargetChange("filter: blur(5px)", "filter: blur(8px)", false, false,
                    false);
-  TestTargetChange("filter: blur(5px)", "", true, false, true);
-  TestTargetChange("", "filter: blur(5px)", true, false, true);
+  TestTargetChange("filter: blur(5px)", "", true, true, true);
+  TestTargetChange("", "filter: blur(5px)", true, true, true);
   TestTargetChange("will-change: filter; filter: blur(5px)",
                    "will-change: filter", false, false, false);
   TestTargetChange("will-change: filter",

@@ -21,6 +21,7 @@
 
 namespace blink {
 
+class EffectPaintPropertyNode;
 class GeometryMapperClipCache;
 class PropertyTreeState;
 
@@ -86,11 +87,23 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
         : local_transform_space(std::move(local_transform_space)) {
       SetClipRect(layout_clip_rect, paint_clip_rect);
     }
+    State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
+              local_transform_space,
+          const EffectPaintPropertyNode* pixel_moving_filter)
+        : local_transform_space(std::move(local_transform_space)),
+          pixel_moving_filter(pixel_moving_filter) {
+      DCHECK(layout_clip_rect_.IsInfinite());
+      paint_clip_rect_ = FloatRoundedRect(layout_clip_rect_.Rect());
+    }
 
     scoped_refptr<const TransformPaintPropertyNodeOrAlias>
         local_transform_space;
     absl::optional<FloatClipRect> layout_clip_rect_excluding_overlay_scrollbars;
     absl::optional<Path> clip_path;
+    // If this is not nullptr, this clip node will generate a cc clip node to
+    // expand clip rect for a pixel-moving filter.
+    // TODO(wangxianzhu): Use this to simplify visual rect mapping in blink.
+    const EffectPaintPropertyNode* pixel_moving_filter = nullptr;
 
     void SetClipRect(const gfx::RectF& layout_clip_rect_arg,
                      const FloatRoundedRect& paint_clip_rect_arg) {
@@ -160,6 +173,10 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   const absl::optional<Path>& ClipPath() const { return state_.clip_path; }
   bool ClipPathEquals(const absl::optional<Path>& p) const {
     return state_.ClipPathEquals(p);
+  }
+
+  const EffectPaintPropertyNode* PixelMovingFilter() const {
+    return state_.pixel_moving_filter;
   }
 
   std::unique_ptr<JSONObject> ToJSON() const;

@@ -4920,9 +4920,35 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleFilter) {
       GetLayoutObjectByElementId("filter")->FirstFragment().PaintProperties();
   EXPECT_FALSE(filter_properties->PaintOffsetTranslation());
   EXPECT_TRUE(filter_properties->Filter()->Parent()->IsRoot());
+  EXPECT_FALSE(filter_properties->PixelMovingFilterClipExpander());
   EXPECT_EQ(DocScrollTranslation(),
             &filter_properties->Filter()->LocalTransformSpace());
   EXPECT_EQ(DocContentClip(), filter_properties->Filter()->OutputClip());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, PixelMovingFilter) {
+  SetBodyInnerHTML(
+      "<div id='filter' style='filter:blur(10px); height:1000px;'>"
+      "</div>");
+  const ObjectPaintProperties* filter_properties =
+      GetLayoutObjectByElementId("filter")->FirstFragment().PaintProperties();
+  EXPECT_FALSE(filter_properties->PaintOffsetTranslation());
+
+  auto* filter = filter_properties->Filter();
+  ASSERT_TRUE(filter);
+  EXPECT_TRUE(filter->Parent()->IsRoot());
+  EXPECT_TRUE(filter->HasFilterThatMovesPixels());
+  EXPECT_EQ(DocScrollTranslation(), &filter->LocalTransformSpace());
+  EXPECT_EQ(DocContentClip(), filter->OutputClip());
+
+  auto* clip = filter_properties->PixelMovingFilterClipExpander();
+  ASSERT_TRUE(clip);
+  EXPECT_EQ(filter->OutputClip(), clip->Parent());
+  EXPECT_EQ(&clip->LocalTransformSpace(), &filter->LocalTransformSpace());
+  EXPECT_EQ(filter, clip->PixelMovingFilter());
+  EXPECT_TRUE(clip->LayoutClipRect().IsInfinite());
+  EXPECT_EQ(gfx::RectF(LayoutRect::InfiniteIntRect()),
+            clip->PaintClipRect().Rect());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FilterReparentClips) {

@@ -303,6 +303,8 @@ class PropertyTreeManager {
       const ScrollPaintPropertyNode&,
       const cc::TransformNode& scroll_offset_translation);
 
+  void UpdatePixelMovingFilterClipExpanders();
+
   PropertyTreeManagerClient& client_;
 
   // Property trees which should be updated by the manager.
@@ -338,6 +340,10 @@ class PropertyTreeManager {
   // A set of synthetic clips masks which will be applied if a layer under them
   // is encountered which draws content (and thus necessitates the mask).
   HashSet<int> pending_synthetic_mask_layers_;
+
+  // EnsureCompositorClipNode() collects pixel moving filter clips. We'll set
+  // clip_expander of their cc nodes after all effect nodes have been converted.
+  Vector<const ClipPaintPropertyNode*> pixel_moving_filter_clip_expanders_;
 };
 
 }  // namespace blink
