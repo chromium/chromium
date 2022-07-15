@@ -1,4 +1,4 @@
-# Enterprise Enrollment on Chrome OS
+# Enterprise Enrollment on ChromeOS
 
 Enterprise Enrollment is a process that marks a device as belonging to
 particular organization and enables [management](management.md) of the device

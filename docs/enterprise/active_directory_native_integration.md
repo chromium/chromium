@@ -1,6 +1,6 @@
-# Manage Chrome OS devices with Active Directory®
+# Manage ChromeOS devices with Active Directory®
 
-Enterprise customers may integrate their Chrome OS devices into a Microsoft®
+Enterprise customers may integrate their ChromeOS devices into a Microsoft®
 Active Directory® (AD) environment. This integration joins devices to the AD
 domain. Users do not need Gaia identities; they sign in using their AD
 credentials. Admins manage sessions and push policies to users and devices from
@@ -27,7 +27,7 @@ an additional
 for Active Directory® domain join.
 
 ## Active Directory® sign-in
-If a device was joined to an AD domain, Chrome OS shows a custom
+If a device was joined to an AD domain, ChromeOS shows a custom
 [dialog](https://cs.chromium.org/chromium/src/chrome/browser/resources/chromeos/login/screen_gaia_signin.html?rcl=298d950825cb079fbd6b05c3b84b2806c287afa5&l=23)
 for user sign-in.
 

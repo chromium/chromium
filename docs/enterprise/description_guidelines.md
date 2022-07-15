@@ -2,7 +2,7 @@ To ensure consistency in policy descriptions, the following is a mapping of
 how various product names and the like should be referenced.
 
 * Chrome: `<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>`
-* Chrome OS: `<ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>`
+* ChromeOS: `<ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>`
 * Chrome Browser Cloud Management: `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`
 * Chrome Cleanup: `<ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph>`
 * Chrome Sync: `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>`

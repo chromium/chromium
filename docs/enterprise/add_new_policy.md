@@ -48,7 +48,7 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
             See **Launch a policy** below for more information.
         -   `default_for_enterprise_users`: Its value is applied as a mandatory
             (unless `default_policy_level` is set) policy for managed users on
-            Chrome OS unless a different setting is explicitly set.
+            ChromeOS unless a different setting is explicitly set.
             - `default_policy_level`: If set to "recommended" the
             `default_for_enterprise_users` is applied as a recommended policy.
         -   `dynamic_refresh`: It tells the admin whether the policy value can
@@ -107,17 +107,17 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
     -   We strongly encourage developers to make their policies support this
         attribute. It means the admin can change the policy value and Chrome
         will honor the change at run-time without requiring a restart of the
-        browser. Chrome OS does not always support non-dynamic profile policies.
-        Please verify with a Chrome OS policy owner if your profile policy does
-        not support dynamic refresh on Chrome OS.
+        browser. ChromeOS does not always support non-dynamic profile policies.
+        Please verify with a ChromeOS policy owner if your profile policy does
+        not support dynamic refresh on ChromeOS.
     -   Most of the time, this requires a
         [PrefChangeRegistrar](https://cs.chromium.org/chromium/src/components/prefs/pref_change_registrar.h)
         to listen to the preference change notification and update UI or
         browser behavior right away.
-6.  Adding a device policy for Chrome OS.
+6.  Adding a device policy for ChromeOS.
     -   Most policies that are used by the browser can be shared between desktop
-        and Chrome OS. However, you need a few additional steps for a device
-        policy on Chrome OS.
+        and ChromeOS. However, you need a few additional steps for a device
+        policy on ChromeOS.
         -   Add a message for your policy in
             `components/policy/proto/chrome_device_policy.proto`. Please note
             that all proto fields are optional.
@@ -144,12 +144,12 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
     -   Linux: See
         [Linux Quick Start](https://www.chromium.org/administrators/linux-quick-start)
         (section "Set Up Policies")
-    -   Chrome OS and Android are more complex to test, as a full end-to-end
+    -   ChromeOS and Android are more complex to test, as a full end-to-end
         test requires network transactions to the policy test server.
         Instructions on how to set up the policy test server and have the
         browser talk to it are here:
         [Running the cloud policy test server](https://www.chromium.org/developers/how-tos/enterprise/running-the-cloud-policy-test-server).
-        If you'd just like to do a quick test for Chrome OS, the Linux code is
+        If you'd just like to do a quick test for ChromeOS, the Linux code is
         also functional on CrOS, see
         [Linux Quick Start](https://www.chromium.org/administrators/linux-quick-start).
 9.  If you are adding a new policy that supersedes an older one, verify that the

@@ -31,9 +31,9 @@ directories are treated as JSON files containing policies.
 
 On these systems it is also possible to set machine-wide cloud-based policies.
 
-** Chrome OS **
+** ChromeOS **
 
-Chrome OS devices can be either cloud-managed or Active Directory managed
+ChromeOS devices can be either cloud-managed or Active Directory managed
 ([AdManagement](https://support.google.com/chrome/a?p=ad)).
 
 The cloud source is usually called DMServer (device management server).
@@ -43,13 +43,13 @@ https://admin.google.com.
 On an Active Directory managed device policies are set via GPO from the Active
 Directory server.
 
-When Chrome OS is in development mode with writeable rootfs, it would also
+When ChromeOS is in development mode with writeable rootfs, it would also
 apply use `Linux` policy mechanism, that can be handy for testing during
 development.
 
 ## Policy types (ChromeOS)
 
-There are two main types of policies on Chrome OS: User policies, that define
+There are two main types of policies on ChromeOS: User policies, that define
 the browser behavior for a particular user, and Device policies, that control
 the whole device.
 
@@ -79,7 +79,7 @@ an enterprise-owned account on a personal device would only be affected by user
 policy for that account.
 
 ### ChromeOS
-Chrome OS has some specific enterprise-only account types ([Kiosk, public
+ChromeOS has some specific enterprise-only account types ([Kiosk, public
 accounts](kiosk_public_session.md)) that are controlled via policies. Those
 policies are usual user policies, though they have their own user ID namespace
 when retrieved from DMServer.
@@ -95,7 +95,7 @@ Organization admins can [configure particular extensions](https://www.chromium.o
 for the user. Such extensions have to define the schema of the configuration
 in their manifest.
 
-When a Chrome OS device is cloud-managed, there is a limit on policy size.
+When a ChromeOS device is cloud-managed, there is a limit on policy size.
 As such configuration can be relatively large, it is not provided as a part
 of user policy. Instead, user policy will only include URL and hash signature
 for external data, and browser will fetch that data, validate its signature,
