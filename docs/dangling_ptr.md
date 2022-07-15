@@ -1,4 +1,4 @@
-# Danling pointer detector.
+# Dangling pointer detector.
 
 Dangling pointers are not a problem unless they are dereferenced and used.
 However, they are a source of UaF bugs and highly discouraged unless you are
