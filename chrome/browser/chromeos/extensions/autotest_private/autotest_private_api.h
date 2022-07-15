@@ -411,6 +411,8 @@ class AutotestPrivateIsSystemWebAppOpenFunction : public ExtensionFunction {
  private:
   ~AutotestPrivateIsSystemWebAppOpenFunction() override;
   ResponseAction Run() override;
+
+  void OnSystemWebAppsInstalled();
 };
 
 class AutotestPrivateLaunchArcAppFunction : public ExtensionFunction {
@@ -441,6 +443,8 @@ class AutotestPrivateLaunchSystemWebAppFunction : public ExtensionFunction {
  private:
   ~AutotestPrivateLaunchSystemWebAppFunction() override;
   ResponseAction Run() override;
+
+  void OnSystemWebAppsInstalled();
 };
 
 class AutotestPrivateLaunchFilesAppToPathFunction : public ExtensionFunction {

@@ -2163,7 +2163,7 @@ ExtensionFunction::ResponseAction
 AutotestPrivateWaitForSystemWebAppsInstallFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   ash::SystemWebAppManager* swa_manager =
-      ash::SystemWebAppManager::GetForTest(profile);
+      ash::SystemWebAppManager::Get(profile);
 
   if (!swa_manager)
     return RespondNow(Error("System Web Apps are not available for profile."));
@@ -2190,7 +2190,7 @@ ExtensionFunction::ResponseAction
 AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   ash::SystemWebAppManager* swa_manager =
-      ash::SystemWebAppManager::GetForTest(profile);
+      ash::SystemWebAppManager::Get(profile);
 
   if (!swa_manager)
     return RespondNow(Error("System Web Apps are not available for profile."));
@@ -2207,7 +2207,7 @@ void AutotestPrivateGetRegisteredSystemWebAppsFunction::
     OnSystemWebAppsInstalled() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   ash::SystemWebAppManager* swa_manager =
-      ash::SystemWebAppManager::GetForTest(profile);
+      ash::SystemWebAppManager::Get(profile);
   std::vector<api::autotest_private::SystemWebApp> result;
   for (const auto& type_and_info : swa_manager->system_app_delegates()) {
     api::autotest_private::SystemWebApp system_web_app;
@@ -2220,10 +2220,11 @@ void AutotestPrivateGetRegisteredSystemWebAppsFunction::
     absl::optional<web_app::AppId> app_id =
         swa_manager->GetAppIdForSystemApp(type_and_info.first);
     if (app_id) {
-      system_web_app.start_url = web_app::WebAppProvider::GetForTest(profile)
-                                     ->registrar()
-                                     .GetAppLaunchUrl(*app_id)
-                                     .spec();
+      system_web_app.start_url =
+          ash::SystemWebAppManager::GetWebAppProvider(profile)
+              ->registrar()
+              .GetAppLaunchUrl(*app_id)
+              .spec();
     }
     result.push_back(std::move(system_web_app));
   }
@@ -2246,22 +2247,37 @@ AutotestPrivateIsSystemWebAppOpenFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateIsSystemWebAppOpenFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForTest(profile);
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::Get(profile);
 
-  if (!provider)
-    return RespondNow(Error("Web Apps are not available for profile."));
+  if (!swa_manager)
+    return RespondNow(Error("System web Apps are not available for profile."));
 
   std::unique_ptr<api::autotest_private::IsSystemWebAppOpen::Params> params(
       api::autotest_private::IsSystemWebAppOpen::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   DVLOG(1) << "AutotestPrivateIsSystemWebAppOpenFunction " << params->app_id;
+
+  swa_manager->on_apps_synchronized().Post(
+      FROM_HERE,
+      base::BindOnce(
+          &AutotestPrivateIsSystemWebAppOpenFunction::OnSystemWebAppsInstalled,
+          this));
+  return RespondLater();
+}
+
+void AutotestPrivateIsSystemWebAppOpenFunction::OnSystemWebAppsInstalled() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  std::unique_ptr<api::autotest_private::IsSystemWebAppOpen::Params> params(
+      api::autotest_private::IsSystemWebAppOpen::Params::Create(args()));
   absl::optional<ash::SystemWebAppType> app_type =
       ash::GetSystemWebAppTypeForAppId(profile, params->app_id);
-  if (!app_type)
-    return RespondNow(Error("No system web app is found by given app id."));
+  if (!app_type) {
+    Respond(Error("No system web app is found by given app id."));
+    return;
+  }
 
-  return RespondNow(OneArgument(base::Value(
+  Respond(OneArgument(base::Value(
       ash::FindSystemWebAppBrowser(profile, *app_type) != nullptr)));
 }
 
@@ -2330,25 +2346,44 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   ash::SystemWebAppManager* swa_manager =
       ash::SystemWebAppManager::GetForTest(profile);
-  if (!swa_manager)
-    return RespondNow(Error("System Web Apps not enabled for profile."));
 
+  if (!swa_manager)
+    return RespondNow(Error("System Web Apps are not available for profile."));
+
+  swa_manager->on_apps_synchronized().Post(
+      FROM_HERE,
+      base::BindOnce(
+          &AutotestPrivateLaunchSystemWebAppFunction::OnSystemWebAppsInstalled,
+          this));
+  return RespondLater();
+}
+
+void AutotestPrivateLaunchSystemWebAppFunction::OnSystemWebAppsInstalled() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::Get(profile);
+
+  std::unique_ptr<api::autotest_private::LaunchSystemWebApp::Params> params(
+      api::autotest_private::LaunchSystemWebApp::Params::Create(args()));
   absl::optional<ash::SystemWebAppType> app_type;
+
   for (const auto& type_and_info : swa_manager->system_app_delegates()) {
     if (type_and_info.second->GetInternalName() == params->app_name) {
       app_type = type_and_info.first;
       break;
     }
   }
-  if (!app_type.has_value())
-    return RespondNow(Error("No mapped system web app found"));
+  if (!app_type.has_value()) {
+    Respond(Error("No mapped system web app found"));
+    return;
+  }
 
   ash::SystemAppLaunchParams swa_params;
   swa_params.url = GURL(params->url);
   ash::LaunchSystemWebAppAsync(profile, *app_type, swa_params);
   ash::FlushSystemWebAppLaunchesForTesting(profile);
 
-  return RespondNow(NoArguments());
+  Respond(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
