@@ -7143,7 +7143,6 @@ crbug.com/1344175 [ Mac12 ] external/wpt/dom/events/non-cancelable-when-passive/
 crbug.com/1344277 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Crash Failure Pass ]
 
 # Sheriff 2022-07-15
-crbug.com/1344652 [ Mac10.15 ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
-crbug.com/1344652 [ Mac12 ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
+crbug.com/1344652 [ Mac ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
 
 crbug.com/1344771 [ Win ] virtual/force-defer-script/external/wpt/html/semantics/scripting-1/the-script-element/defer-script/document-write.html [ Failure Pass ]
