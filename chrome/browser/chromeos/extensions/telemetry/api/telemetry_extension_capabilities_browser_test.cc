@@ -35,7 +35,34 @@ class TelemetryExtensionCapabilitiesBrowserTest
       const TelemetryExtensionCapabilitiesBrowserTest&) = delete;
   ~TelemetryExtensionCapabilitiesBrowserTest() override = default;
 
-  // BaseTelemetryExtensionBrowserTest:
+  GURL GetPwaGURL() const {
+    return embedded_test_server()->GetURL("/simple.html");
+  }
+
+  // BaseTelemetryExtensionBrowserTest overrides:
+  std::string pwa_page_url() const override { return GetPwaGURL().spec(); }
+  std::string matches_origin() const override { return GetPwaGURL().spec(); }
+
+  // BaseTelemetryExtensionBrowserTest override:
+  void SetUp() override {
+    // setup the test server
+    embedded_test_server()->ServeFilesFromDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+
+    BaseTelemetryExtensionBrowserTest::SetUp();
+  }
+
+  // BaseTelemetryExtensionBrowserTest override:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BaseTelemetryExtensionBrowserTest::SetUpCommandLine(command_line);
+
+    // Make sure the PWA origin is allowed.
+    command_line->AppendSwitchASCII(
+        chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
+        pwa_page_url());
+  }
+
+  // BaseTelemetryExtensionBrowserTest override:
   void SetUpOnMainThread() override {
     BaseTelemetryExtensionBrowserTest::SetUpOnMainThread();
 
@@ -44,6 +71,8 @@ class TelemetryExtensionCapabilitiesBrowserTest
     // BrowserTestBase::InitializeNetworkProcess() is called because host
     // changes will be disabled afterwards.
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    embedded_test_server()->StartAcceptingConnections();
   }
 };
 
@@ -64,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
           function runtimeOnMessageExternal() {
             chrome.runtime.onMessageExternal.addListener(
               (message, sender, sendResponse) => {
-                chrome.test.assertEq("%s", sender.origin);
+                chrome.test.assertEq("%s", sender.url);
                 chrome.test.assertEq("ping", message);
                 chrome.test.sendMessage('success');
             });
@@ -92,8 +121,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
       "window.chrome.runtime.sendMessage('%s', 'ping', (result) => {});",
       extension_id().c_str());
 
-  auto* pwa_page_rfh =
-      ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url()));
+  auto* pwa_page_rfh = ui_test_utils::NavigateToURL(browser(), GetPwaGURL());
   ASSERT_TRUE(pwa_page_rfh);
   pwa_page_rfh->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
                                           base::NullCallback());
@@ -136,76 +164,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
   // Wait until the extension's options page is loaded.
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("done", listener.message());
-}
-
-namespace {
-
-constexpr char kPwaOriginOverride[] = "*://pwa.website.com/*";
-constexpr char kPwaPageUrl[] = "http://pwa.website.com";
-
-}  // namespace
-
-class TelemetryExtensionCapabilitiesWithCmdBrowserTest
-    : public TelemetryExtensionCapabilitiesBrowserTest {
- public:
-  TelemetryExtensionCapabilitiesWithCmdBrowserTest() = default;
-  TelemetryExtensionCapabilitiesWithCmdBrowserTest(
-      const TelemetryExtensionCapabilitiesWithCmdBrowserTest&) = delete;
-  TelemetryExtensionCapabilitiesWithCmdBrowserTest& operator=(
-      const TelemetryExtensionCapabilitiesWithCmdBrowserTest&) = delete;
-  ~TelemetryExtensionCapabilitiesWithCmdBrowserTest() override = default;
-
-  // extensions::ExtensionBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-
-    command_line->AppendSwitchASCII(
-        chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
-        kPwaOriginOverride);
-  }
-};
-
-// Tests that the extension's PWA origin is overridden in tests using the
-// command line switch |kTelemetryExtensionPwaOriginOverrideForTesting|. The
-// test also makes sure the command line switch is copied across processes.
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesWithCmdBrowserTest,
-                       CanOverridePwaOriginForTesting) {
-  // Make sure the PWA origin is overridden.
-  const auto extension_info = GetChromeOSExtensionInfoForId(extension_id());
-  EXPECT_EQ(kPwaOriginOverride, extension_info.pwa_origin);
-
-  // Open the PWA page url to bypass IsPwaUiOpenAndSecure() check.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kPwaPageUrl)));
-
-  // Start listening on the extension.
-  ExtensionTestMessageListener listener;
-
-  // Must outlive the extension.
-  extensions::TestExtensionDir test_dir_receiver;
-  test_dir_receiver.WriteManifest(GetManifestFile(kPwaOriginOverride));
-  test_dir_receiver.WriteFile(FILE_PATH_LITERAL("options.html"), "");
-  test_dir_receiver.WriteFile("sw.js", R"(
-    chrome.test.runTests([
-      // Choose a candidate API function that doesn't require any setup.
-      async function runBatteryHealthRoutine() {
-        const response =
-          await chrome.os.diagnostics.runBatteryHealthRoutine();
-        chrome.test.assertEq({id: 0, status: "ready"}, response);
-        chrome.test.sendMessage('ready');
-      }
-    ]);
-  )");
-
-  // Load and run the extenion (chromeos_system_extension). If the extension has
-  // been installed and run, then the command line switch must have been copied
-  // across processes.
-  const extensions::Extension* receiver =
-      LoadExtension(test_dir_receiver.UnpackedPath());
-  ASSERT_TRUE(receiver);
-
-  // Make sure the sw.js was being run.
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-  EXPECT_EQ("ready", listener.message());
 }
 
 }  // namespace chromeos
