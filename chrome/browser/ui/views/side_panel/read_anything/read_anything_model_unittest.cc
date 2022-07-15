@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,6 +54,10 @@ class ReadAnythingModelTest : public TestWithBrowserView {
   MockReadAnythingModelObserver model_observer_2_;
   MockReadAnythingModelObserver model_observer_3_;
 };
+
+// TODO(crbug.com/1344891): Fix the memory leak on destruction observed on these
+// tests on asan mac.
+#if !BUILDFLAG(IS_MAC) || !defined(ADDRESS_SANITIZER)
 
 TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
@@ -166,3 +171,5 @@ TEST_F(ReadAnythingModelTest, FontModelGetCurrentFontName) {
   EXPECT_EQ("Webdings", GetFontModel()->GetFontNameAt(7));
   EXPECT_EQ("Impact", GetFontModel()->GetFontNameAt(8));
 }
+
+#endif  // !defined(ADDRESS_SANITIZER)
