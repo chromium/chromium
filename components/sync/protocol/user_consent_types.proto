@@ -173,7 +173,7 @@ message UserConsentTypes {
   // performing automated flows on the web.
   message AutofillAssistantConsent {
     // Ids of the strings of the consent text presented to the user.
-    repeated int32 description_grd_ids = 1;
+    repeated int32 description_grd_ids = 1 [packed = true];
 
     // Id of the string of the UI element the user clicked in order to confirm
     // the consent dialog.
