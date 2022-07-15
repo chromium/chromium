@@ -731,11 +731,6 @@ class MEDIA_GPU_EXPORT V4L2Device
                               gfx::Size* min_resolution,
                               gfx::Size* max_resolution);
 
-  // Get the supported bitrate control modes. This function should be called
-  // when V4L2Device opens an encoder driver node.
-  VideoEncodeAccelerator::SupportedRateControlMode
-  GetSupportedRateControlMode();
-
   std::vector<uint32_t> EnumerateSupportedPixelformats(v4l2_buf_type buf_type);
 
   // NOTE: The below methods to query capabilities have a side effect of

@@ -32,7 +32,6 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/media_log.h"
-#include "media/base/media_switches.h"
 #include "media/base/scopedfd_helper.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
@@ -174,6 +173,7 @@ V4L2VideoEncodeAccelerator::V4L2VideoEncodeAccelerator(
       native_input_mode_(false),
       output_buffer_byte_size_(0),
       output_format_fourcc_(0),
+      current_bitrate_(0),
       current_framerate_(0),
       encoder_state_(kUninitialized),
       device_(std::move(device)),
@@ -350,37 +350,6 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
   }
 
   encoder_state_ = kInitialized;
-  uint32_t bitrate_mode = V4L2_MPEG_VIDEO_BITRATE_MODE_CBR;
-  switch (config.bitrate.mode()) {
-    case Bitrate::Mode::kConstant:
-      current_bitrate_ = Bitrate::ConstantBitrate(0u);
-      bitrate_mode = V4L2_MPEG_VIDEO_BITRATE_MODE_CBR;
-      break;
-    case Bitrate::Mode::kVariable:
-      if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding)) {
-        VLOGF(1) << "VBR encoding is disabled";
-        NOTIFY_ERROR(kPlatformFailureError);
-        return;
-      }
-      current_bitrate_ = Bitrate::VariableBitrate(0u, 0u);
-      bitrate_mode = V4L2_MPEG_VIDEO_BITRATE_MODE_VBR;
-      break;
-    default:
-      VLOGF(1) << "Invalid bitrate mode: "
-               << base::strict_cast<int>(config.bitrate.mode());
-      NOTIFY_ERROR(kInvalidArgumentError);
-      return;
-  }
-
-  if (!device_->SetExtCtrls(
-          V4L2_CID_MPEG_CLASS,
-          {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE_MODE, bitrate_mode)})) {
-    VLOGF(1) << "Failed to configure bitrate mode: "
-             << base::strict_cast<int>(config.bitrate.mode());
-    NOTIFY_ERROR(kPlatformFailureError);
-    return;
-  }
-
   RequestEncodingParametersChangeTask(
       config.bitrate, config.initial_framerate.value_or(
                           VideoEncodeAccelerator::kDefaultFramerate));
@@ -1523,42 +1492,37 @@ void V4L2VideoEncodeAccelerator::SetErrorState(Error error) {
 void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     const Bitrate& bitrate,
     uint32_t framerate) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  if (current_bitrate_ == bitrate && current_framerate_ == framerate)
+  // If this is changed to use variable bitrate encoding, change this to check
+  // that the mode matches the current mode.
+  if (bitrate.mode() != Bitrate::Mode::kConstant)
+    return;
+
+  // Set bitrate control to CBR
+  // Not all devices support multiple bitrate control algorithms,
+  // so this control can't be mandatory and therefore the return
+  // value is not checked.
+  device_->SetExtCtrls(V4L2_CID_MPEG_CLASS,
+                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE_MODE,
+                                    V4L2_MPEG_VIDEO_BITRATE_MODE_CBR)});
+
+  if (current_bitrate_ == bitrate.target_bps() &&
+      current_framerate_ == framerate) {
+    return;
+  }
+  if (bitrate.target_bps() == 0 || framerate == 0)
     return;
 
   VLOGF(2) << "bitrate=" << bitrate.ToString() << ", framerate=" << framerate;
-  if (bitrate.mode() != current_bitrate_.mode()) {
-    VLOGF(1) << "Bitrate mode changed during encoding";
-    NOTIFY_ERROR(kInvalidArgumentError);
-    return;
-  }
-
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   TRACE_EVENT2("media,gpu", "V4L2VEA::RequestEncodingParametersChangeTask",
                "bitrate", bitrate.ToString(), "framerate", framerate);
-  if (current_bitrate_ != bitrate) {
-    switch (bitrate.mode()) {
-      case Bitrate::Mode::kVariable:
-        if (!device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
-                                  {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE_PEAK,
-                                               bitrate.peak_bps())})) {
-          VLOGF(1) << "Failed to change peak bitrate";
-          NOTIFY_ERROR(kPlatformFailureError);
-          return;
-        }
-
-        // Both the average and peak bitrate are to be set in VBR.
-        // Only the average bitrate are to be set in CBR.
-        [[fallthrough]];
-      case Bitrate::Mode::kConstant:
-        if (!device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
-                                  {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE,
-                                               bitrate.target_bps())})) {
-          VLOGF(1) << "Failed to change average bitrate";
-          NOTIFY_ERROR(kPlatformFailureError);
-          return;
-        }
-    }
+  if (current_bitrate_ != bitrate.target_bps() &&
+      !device_->SetExtCtrls(
+          V4L2_CTRL_CLASS_MPEG,
+          {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE, bitrate.target_bps())})) {
+    VLOGF(1) << "Failed changing bitrate";
+    NOTIFY_ERROR(kPlatformFailureError);
+    return;
   }
 
   if (current_framerate_ != framerate) {
@@ -1572,7 +1536,7 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     IOCTL_OR_ERROR_RETURN(VIDIOC_S_PARM, &parms);
   }
 
-  current_bitrate_ = bitrate;
+  current_bitrate_ = bitrate.target_bps();
   current_framerate_ = framerate;
 }
 

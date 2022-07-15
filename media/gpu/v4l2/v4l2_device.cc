@@ -20,7 +20,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,7 +27,6 @@
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/color_plane_layout.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -2004,45 +2002,6 @@ void V4L2Device::GetSupportedResolution(uint32_t pixelformat,
   }
 }
 
-VideoEncodeAccelerator::SupportedRateControlMode
-V4L2Device::GetSupportedRateControlMode() {
-  auto rate_control_mode = VideoEncodeAccelerator::kNoMode;
-  v4l2_queryctrl query_ctrl;
-  memset(&query_ctrl, 0, sizeof(query_ctrl));
-  query_ctrl.id = V4L2_CID_MPEG_VIDEO_BITRATE_MODE;
-  if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl)) {
-    DPLOG(WARNING) << "QUERYCTRL for bitrate mode failed";
-    return rate_control_mode;
-  }
-
-  v4l2_querymenu query_menu;
-  memset(&query_menu, 0, sizeof(query_menu));
-  query_menu.id = query_ctrl.id;
-  for (query_menu.index = query_ctrl.minimum;
-       base::checked_cast<int>(query_menu.index) <= query_ctrl.maximum;
-       query_menu.index++) {
-    if (Ioctl(VIDIOC_QUERYMENU, &query_menu) == 0) {
-      switch (query_menu.index) {
-        case V4L2_MPEG_VIDEO_BITRATE_MODE_CBR:
-          rate_control_mode |= VideoEncodeAccelerator::kConstantMode;
-          break;
-        case V4L2_MPEG_VIDEO_BITRATE_MODE_VBR:
-          if (!base::FeatureList::IsEnabled(kChromeOSHWVBREncoding)) {
-            DVLOGF(3) << "Skip VBR capability";
-            break;
-          }
-          rate_control_mode |= VideoEncodeAccelerator::kVariableMode;
-          break;
-        default:
-          DVLOGF(4) << "Skip bitrate mode: " << query_menu.index;
-          break;
-      }
-    }
-  }
-
-  return rate_control_mode;
-}
-
 std::vector<uint32_t> V4L2Device::EnumerateSupportedPixelformats(
     v4l2_buf_type buf_type) {
   std::vector<uint32_t> pixelformats;
@@ -2104,16 +2063,12 @@ V4L2Device::EnumerateSupportedEncodeProfiles() {
     VideoEncodeAccelerator::SupportedProfile profile;
     profile.max_framerate_numerator = 30;
     profile.max_framerate_denominator = 1;
-
-    profile.rate_control_modes = GetSupportedRateControlMode();
-    if (profile.rate_control_modes == VideoEncodeAccelerator::kNoMode) {
-      DLOG(ERROR) << "Skipped because no bitrate mode is supported for "
-                  << FourccToString(pixelformat);
-      continue;
-    }
+    // TODO(b/182240945): remove hard-coding when VBR is supported
+    profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
     gfx::Size min_resolution;
     GetSupportedResolution(pixelformat, &min_resolution,
                            &profile.max_resolution);
+
     const auto video_codec_profiles =
         V4L2PixFmtToVideoCodecProfiles(pixelformat);
 
