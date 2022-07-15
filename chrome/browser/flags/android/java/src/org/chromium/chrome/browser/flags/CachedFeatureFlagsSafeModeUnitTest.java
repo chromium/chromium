@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.flags.CachedFlagsSafeMode.Behavior;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Unit Tests for the Safe Mode mechanism for {@link CachedFeatureFlags}.
@@ -36,23 +35,19 @@ import java.util.Map;
 public class CachedFeatureFlagsSafeModeUnitTest {
     private static final String CRASHY_FEATURE = "CrashyFeature";
     private static final String OK_FEATURE = "OkFeature";
-
-    Map<String, Boolean> mDefaultsSwapped;
+    private static final CachedFlag sCrashyFeature = new CachedFlag(CRASHY_FEATURE, false);
+    private static final CachedFlag sOkFeature = new CachedFlag(OK_FEATURE, false);
 
     @Before
     public void setUp() {
         CachedFeatureFlags.setSafeModeExperimentEnabledForTesting(true);
         CachedFeatureFlags.resetFlagsForTesting();
-        Map<String, Boolean> defaults = makeFeatureMap(false, false);
-        mDefaultsSwapped = CachedFeatureFlags.swapDefaultsForTesting(defaults);
     }
 
     @After
     public void tearDown() {
         CachedFeatureFlags.setSafeModeExperimentEnabledForTesting(null);
         CachedFeatureFlags.resetFlagsForTesting();
-        CachedFeatureFlags.swapDefaultsForTesting(mDefaultsSwapped);
-
         FeatureList.setTestFeatures(null);
         CachedFlagsSafeMode.clearDiskForTesting();
     }
@@ -65,8 +60,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // There are no cached flag values, so the defaults false/false are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertFalse(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
         endCleanRun(false, true);
         // Safe values became false/false.
         // Cached values became false/true.
@@ -77,8 +72,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached flag values are false/true, from previous run.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCleanRun(true, true);
         // Safe values became false/true.
         // Cached values became true(crashy)/true.
@@ -89,8 +84,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached values remain true(crashy)/true and are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCrashyRun();
         // Cached values remain true(crashy)/true.
 
@@ -100,8 +95,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached values remain true(crashy)/true and are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCrashyRun();
         // Cached values remain true(crashy)/true.
 
@@ -245,8 +240,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // There are no cached flag values, so the defaults false/false are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertFalse(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
         endCleanRun(true, true);
         // Safe values became false/false.
         // Cached values became true(flaky)/true.
@@ -257,8 +252,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached flag values are true(flaky)/true.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCrashyRun();
         // Cached values remain true(crashy)/true.
 
@@ -269,8 +264,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         // Cached flag values are the flaky ones cached from native.
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCleanRun(true, true);
         // Safe values became true(flaky)/true.
         // Cached values remain true(flaky)/true.
@@ -281,8 +276,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached flag values are true(flaky)/true.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
     }
 
     /**
@@ -297,8 +292,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // There are no cached flag values, so the defaults false/false are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertFalse(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
         endFirstRunWithKill();
 
         startRun();
@@ -307,8 +302,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // There are no cached flag values, so the defaults false/false are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertFalse(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
         endFirstRunWithKill();
 
         startRun();
@@ -317,8 +312,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // There are no cached flag values, so the defaults false/false are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertFalse(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
     }
 
     @Test
@@ -327,7 +322,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // implemented and will become rare as clients start writing safe values.
         // Cache a crashy value.
         FeatureList.setTestFeatures(makeFeatureMap(true, true));
-        CachedFeatureFlags.cacheNativeFlags(Arrays.asList(CRASHY_FEATURE, OK_FEATURE));
+        CachedFeatureFlags.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
         CachedFeatureFlags.resetFlagsForTesting();
         // Cached values became true(crashy)/true.
 
@@ -337,8 +332,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached values are true(crashy)/true.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCrashyRun();
         // Cached values remain true(crashy)/true.
 
@@ -348,8 +343,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached values are true(crashy)/true.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCrashyRun();
         // Cached values remain true(crashy)/true.
 
@@ -371,8 +366,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // There are no cached flag values, so the defaults false/false are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertFalse(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
         endCleanRun(false, true);
         // Safe values became false/false.
         // Cached values became false/true.
@@ -383,8 +378,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached flag values are false/true, from previous run.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCleanRun(true, true);
         // Safe values became false/true.
         // Cached values became true(crashy)/true.
@@ -401,8 +396,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached values are true(crashy)/true.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCrashyRun();
         // Cached values remain true(crashy)/true.
 
@@ -412,8 +407,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached values are true(crashy)/true.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCrashyRun();
         // Cached values remain true(crashy)/true.
 
@@ -435,8 +430,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // There are no cached flag values, so the defaults false/false are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertFalse(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertFalse(sCrashyFeature.isEnabled());
+        assertFalse(sOkFeature.isEnabled());
         endCleanRun(true, true);
         // Safe values became false/false.
         // Cached values became true(flaky)/true.
@@ -450,8 +445,8 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Cached flag values are true(flaky)/true.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(CachedFeatureFlags.isEnabled(CRASHY_FEATURE));
-        assertTrue(CachedFeatureFlags.isEnabled(OK_FEATURE));
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
         endCrashyRun();
         // Cached values remain true(crashy)/true.
 
@@ -462,7 +457,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     }
 
     private void startRun() {
-        CachedFeatureFlags.isEnabled(CRASHY_FEATURE);
+        sCrashyFeature.isEnabled();
         CachedFeatureFlags.onStartOrResumeCheckpoint();
     }
 
@@ -477,7 +472,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
 
     private void endCleanRun(boolean crashyFeatureValue, boolean okFeatureValue) {
         FeatureList.setTestFeatures(makeFeatureMap(crashyFeatureValue, okFeatureValue));
-        CachedFeatureFlags.cacheNativeFlags(Arrays.asList(CRASHY_FEATURE, OK_FEATURE));
+        CachedFeatureFlags.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
 
         CachedFeatureFlags.onEndCheckpoint();
         // Async task writing values should have run synchronously because of ShadowPostTask.

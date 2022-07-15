@@ -240,13 +240,9 @@ public class CachedFeatureFlags {
     /**
      * Caches flags that must take effect on startup but are set via native code.
      */
-    public static void cacheNativeFlags(List<String> featuresToCache) {
-        for (String featureName : featuresToCache) {
-            if (!sDefaults.containsKey(featureName)) {
-                throw new IllegalArgumentException(
-                        "Feature " + featureName + " has no default in CachedFeatureFlags.");
-            }
-            cacheFeature(featureName);
+    public static void cacheNativeFlags(List<CachedFlag> featuresToCache) {
+        for (CachedFlag feature : featuresToCache) {
+            feature.cacheFeature();
         }
     }
 

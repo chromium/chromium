@@ -24,6 +24,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.CachedFlag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
@@ -69,9 +70,9 @@ public class TabUiFeatureUtilitiesUnitTest {
     }
 
     private void cacheFeatureFlags() {
-        List<String> featuresToCache = Arrays.asList(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                ChromeFeatureList.TAB_GROUPS_ANDROID,
-                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID);
+        List<CachedFlag> featuresToCache = Arrays.asList(ChromeFeatureList.sTabGridLayoutAndroid,
+                ChromeFeatureList.sTabGroupsAndroid,
+                ChromeFeatureList.sTabGroupsContinuationAndroid);
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
     }
 
