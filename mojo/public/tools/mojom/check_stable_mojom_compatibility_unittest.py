@@ -321,3 +321,19 @@ class CheckStableMojomCompatibilityTest(unittest.TestCase):
                [Stable] struct T { foo.S s; };
                """)
     ])
+
+  def testNewEnumDefault(self):
+    # Should be backwards compatible since it does not affect the wire format.
+    # This specific case also checks that the backwards compatibility checker
+    # does not throw an error due to the older version of the enum not
+    # specifying [Default].
+    self.assertBackwardCompatible([
+        Change('foo/foo.mojom',
+               old='[Extensible] enum E { One };',
+               new='[Extensible] enum E { [Default] One };')
+    ])
+    self.assertBackwardCompatible([
+        Change('foo/foo.mojom',
+               old='[Extensible] enum E { [Default] One, Two, };',
+               new='[Extensible] enum E { One, [Default] Two, };')
+    ])
