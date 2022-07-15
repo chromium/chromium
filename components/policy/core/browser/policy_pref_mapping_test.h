@@ -26,6 +26,16 @@ struct PrefMappingChunkInfo {
   size_t num_chunks;
 };
 
+// The name of the switch to filter the testcases by
+// ${policy_name}[.optionalTestNameSuffix]. Several names could be passed
+// separated by colon. (For example --test_policy_to_pref_mappings_filter=\
+// AuthNegotiateDelegateByKdcPolicy:\
+// BuiltInDnsClientEnabled.FeatureEnabledByDefault
+// Run with --gtest_filter=*PolicyToPrefsMapping/0. When the filter is specified
+// - the number of chunks is set to 1.
+inline constexpr char kPolicyToPrefMappingsFilterSwitch[] =
+    "test_policy_to_pref_mappings_filter";
+
 // Verifies that all of the policies have a test case listed in the JSON file at
 // |test_case_path|.
 void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path);

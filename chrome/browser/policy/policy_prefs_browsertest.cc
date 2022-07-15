@@ -56,6 +56,15 @@ base::FilePath GetTestCasePath() {
       .Append(FILE_PATH_LITERAL("policy_test_cases.json"));
 }
 
+size_t GetNumChunks() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kPolicyToPrefMappingsFilterSwitch)) {
+    // Run as one chunk when test filter specified.
+    return 1;
+  }
+  return kNumChunks;
+}
+
 }  // namespace
 
 typedef PlatformBrowserTest PolicyPrefsTestCoverageTest;
@@ -126,7 +135,7 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
   ~ChunkedPolicyPrefsTest() override = default;
 
  protected:
-  PrefMappingChunkInfo chunk_info_{GetParam(), kNumChunks};
+  PrefMappingChunkInfo chunk_info_{GetParam(), GetNumChunks()};
 };
 
 // Verifies that policies make their corresponding preferences become managed,
@@ -155,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
 INSTANTIATE_TEST_SUITE_P(Chunked,
                          ChunkedPolicyPrefsTest,
                          ::testing::Range(/* start= */ static_cast<size_t>(0),
-                                          /* end= */ kNumChunks));
+                                          /* end= */ GetNumChunks()));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

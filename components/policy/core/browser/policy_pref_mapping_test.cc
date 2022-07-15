@@ -41,14 +41,6 @@ namespace {
 // to be parsed.
 const char kInstructionKeyName[] = "-- Instructions --";
 
-// The name of the switch to filter the testcases by
-// ${policy_name}[.optionalTestNameSuffix]. Several names could be passed
-// separated by colon. (For example --test_policy_to_pref_mappings_filter=\
-// AuthNegotiateDelegateByKdcPolicy:\
-// BuiltInDnsClientEnabled.FeatureEnabledByDefault
-const char kPolicyToPrefMappingsFilterSwitch[] =
-    "test_policy_to_pref_mappings_filter";
-
 enum class PrefLocation {
   kUserProfile,
   kSigninProfile,
