@@ -88,6 +88,7 @@ AppServiceAppItem::AppServiceAppItem(
   } else {
     // Handle the case that the app under construction is a remote app.
     if (app_type_ == apps::AppType::kRemote) {
+      SetIsEphemeral(true);
       ash::RemoteAppsManager* remote_manager =
           ash::RemoteAppsManagerFactory::GetForProfile(profile);
       if (remote_manager->ShouldAddToFront(app_update.AppId())) {

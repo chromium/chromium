@@ -18,6 +18,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -43,6 +45,7 @@
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
+#include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1646,6 +1649,108 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
   EXPECT_TRUE(AreAllAppAtributesEqualInAppList(webstore_item, youtube_item));
   EXPECT_TRUE(
       AreAllAppAtributesEqualInSync(webstore_sync_item, youtube_sync_item));
+}
+
+TEST_F(AppListSyncableServiceTest, EphemeralAppsNotSynced) {
+  RemoveAllExistingItems();
+
+  std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_processor =
+      std::make_unique<syncer::FakeSyncChangeProcessor>();
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, {},
+      std::unique_ptr<syncer::SyncChangeProcessor>(
+          new syncer::SyncChangeProcessorWrapperForTest(sync_processor.get())),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  const std::string ephemeral_app_id =
+      CreateNextAppId(extensions::kWebStoreAppId);
+  auto* model_updater = GetModelUpdater();
+  auto* app_item = model_updater->FindItem(ephemeral_app_id);
+  EXPECT_FALSE(app_item);
+  EXPECT_FALSE(GetSyncItem(ephemeral_app_id));
+
+  std::unique_ptr<ChromeAppListItem> ephemeral_app_item =
+      std::make_unique<ChromeAppListItem>(profile_.get(), ephemeral_app_id,
+                                          model_updater);
+  ephemeral_app_item->SetIsEphemeral(true);
+  // Can't use InstallExtension() because it calls AppRegistryCache::OnApps()
+  // with the same app ID but type kChromeApp.
+  app_list_syncable_service()->AddItem(std::move(ephemeral_app_item));
+
+  app_item = model_updater->FindItem(ephemeral_app_id);
+  ASSERT_TRUE(app_item);
+  EXPECT_TRUE(app_item->is_ephemeral());
+
+  auto* sync_item = GetSyncItem(ephemeral_app_id);
+  ASSERT_TRUE(sync_item);
+  EXPECT_TRUE(sync_item->is_ephemeral);
+
+  // Ephemeral sync items are not added to the local storage.
+  const base::Value* local_items =
+      profile_->GetPrefs()->GetDictionary(prefs::kAppListLocalState);
+  const base::Value* dict_item = local_items->FindKeyOfType(
+      ephemeral_app_id, base::Value::Type::DICTIONARY);
+  EXPECT_FALSE(dict_item);
+
+  // Ephemeral sync items are not uploaded to sync data.
+  for (auto sync_change : sync_processor->changes()) {
+    const std::string item_id =
+        sync_change.sync_data().GetSpecifics().app_list().item_id();
+    EXPECT_NE(item_id, ephemeral_app_id);
+  }
+}
+
+TEST_F(AppListSyncableServiceTest, EphemeralFoldersNotSynced) {
+  RemoveAllExistingItems();
+
+  std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_processor =
+      std::make_unique<syncer::FakeSyncChangeProcessor>();
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, {},
+      std::unique_ptr<syncer::SyncChangeProcessor>(
+          new syncer::SyncChangeProcessorWrapperForTest(sync_processor.get())),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  const std::string ephemeral_folder_id = GenerateId("folder_id");
+  auto* model_updater = GetModelUpdater();
+  auto* folder_item = model_updater->FindItem(ephemeral_folder_id);
+  EXPECT_FALSE(folder_item);
+  EXPECT_FALSE(GetSyncItem(ephemeral_folder_id));
+
+  syncer::StringOrdinal position =
+      syncer::StringOrdinal::CreateInitialOrdinal();
+  std::unique_ptr<ChromeAppListItem> ephemeral_folder_item =
+      std::make_unique<ChromeAppListItem>(profile_.get(), ephemeral_folder_id,
+                                          model_updater);
+  ephemeral_folder_item->SetChromeIsFolder(true);
+  ephemeral_folder_item->SetChromeName("Folder");
+  ephemeral_folder_item->SetIsSystemFolder(true);
+  ephemeral_folder_item->SetIsEphemeral(true);
+  app_list_syncable_service()->AddItem(std::move(ephemeral_folder_item));
+
+  folder_item = model_updater->FindItem(ephemeral_folder_id);
+  ASSERT_TRUE(folder_item);
+  EXPECT_TRUE(folder_item->is_ephemeral());
+
+  auto* sync_item = GetSyncItem(ephemeral_folder_id);
+  ASSERT_TRUE(sync_item);
+  EXPECT_TRUE(sync_item->is_ephemeral);
+
+  // Ephemeral sync items are not added to the local storage.
+  const base::Value* local_items =
+      profile_->GetPrefs()->GetDictionary(prefs::kAppListLocalState);
+  const base::Value* dict_item = local_items->FindKeyOfType(
+      ephemeral_folder_id, base::Value::Type::DICTIONARY);
+  EXPECT_FALSE(dict_item);
+
+  // Ephemeral sync items are not uploaded to sync data.
+  for (auto sync_change : sync_processor->changes()) {
+    const std::string item_id =
+        sync_change.sync_data().GetSpecifics().app_list().item_id();
+    EXPECT_NE(item_id, ephemeral_folder_id);
+  }
 }
 
 class ProductivityLauncherAppListSyncableServiceTest

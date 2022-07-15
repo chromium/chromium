@@ -149,6 +149,10 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
 
   // The item's icon color.
   IconColor icon_color;
+
+  // Whether the item is ephemeral - i.e. an app or a folder that does not
+  // persist across sessions.
+  bool is_ephemeral = false;
 };
 
 // Where an app list item is being shown. Used for context menu.

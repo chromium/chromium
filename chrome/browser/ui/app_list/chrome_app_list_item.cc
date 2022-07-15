@@ -244,6 +244,10 @@ void ChromeAppListItem::SetChromePosition(
   metadata_->position = position;
 }
 
+void ChromeAppListItem::SetIsEphemeral(bool is_ephemeral) {
+  metadata_->is_ephemeral = is_ephemeral;
+}
+
 bool ChromeAppListItem::CompareForTest(const ChromeAppListItem* other) const {
   return id() == other->id() && folder_id() == other->folder_id() &&
          name() == other->name() && GetItemType() == other->GetItemType() &&

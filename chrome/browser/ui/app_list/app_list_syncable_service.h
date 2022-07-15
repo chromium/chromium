@@ -88,6 +88,14 @@ class AppListSyncableService : public syncer::SyncableService,
     // https://crbug.com/1306913.
     bool empty_item_ordinal_fixable = true;
 
+    // Indicates whether the sync item is ephemeral - i.e. an app or a folder
+    // that does not persist across sessions. These items have a uniquely
+    // generated ID per-session.
+    // Sync items that are marked as ephemeral will not persist to local state,
+    // nor be synced, in order to avoid growing the App List indefinitely with
+    // IDs of obsolete ephemeral items.
+    bool is_ephemeral = false;
+
     std::string ToString() const;
   };
 

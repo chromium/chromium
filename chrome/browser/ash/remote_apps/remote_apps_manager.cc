@@ -208,6 +208,7 @@ void RemoteAppsManager::MaybeAddFolder(const std::string& folder_id) {
     remote_folder->SetMetadata(
         app_list::GenerateItemMetadataFromSyncItem(*sync_item));
     remote_folder->SetIsSystemFolder(true);
+    remote_folder->SetIsEphemeral(true);
     app_list_syncable_service_->AddItem(std::move(remote_folder));
     return;
   }
@@ -217,6 +218,7 @@ void RemoteAppsManager::MaybeAddFolder(const std::string& folder_id) {
   const RemoteAppsModel::FolderInfo& info = model_->GetFolderInfo(folder_id);
   remote_folder->SetChromeName(info.name);
   remote_folder->SetIsSystemFolder(true);
+  remote_folder->SetIsEphemeral(true);
   remote_folder->SetChromeIsFolder(true);
   syncer::StringOrdinal position =
       info.add_to_front ? model_updater_->GetPositionBeforeFirstItem()

@@ -69,6 +69,7 @@ class ChromeAppListItem {
   const ash::IconColor& icon_color() const { return metadata_->icon_color; }
   bool is_page_break() const { return metadata_->is_page_break; }
   bool is_new_install() const { return metadata_->is_new_install; }
+  bool is_ephemeral() const { return metadata_->is_ephemeral; }
 
   void SetMetadata(std::unique_ptr<ash::AppListItemMetadata> metadata);
   std::unique_ptr<ash::AppListItemMetadata> CloneMetadata() const;
@@ -93,6 +94,7 @@ class ChromeAppListItem {
   void SetChromeIsFolder(bool is_folder);
   void SetChromeName(const std::string& name);
   void SetChromePosition(const syncer::StringOrdinal& position);
+  void SetIsEphemeral(bool is_ephemeral);
 
   // Call |Activate()| and dismiss launcher if necessary.
   void PerformActivate(int event_flags);

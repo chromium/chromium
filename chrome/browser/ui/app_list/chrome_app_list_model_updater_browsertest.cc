@@ -580,6 +580,93 @@ IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
       filtered_top_level_id_list);
 }
 
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
+                       PRE_UserAppsInEphemeralFoldersMovedToRootAfterRestart) {
+  // Install 2 apps.
+  const std::string app1_id =
+      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
+  ASSERT_FALSE(app1_id.empty());
+  const std::string app2_id =
+      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
+  ASSERT_FALSE(app2_id.empty());
+
+  // Create the app list view and show the apps grid.
+  ShowAppList();
+
+  app_list::AppListSyncableService* app_list_syncable_service =
+      app_list::AppListSyncableServiceFactory::GetForProfile(profile());
+  AppListModelUpdater* app_list_model_updater =
+      app_list_syncable_service->GetModelUpdater();
+  app_list_model_updater->SetActive(true);
+
+  // Create ephemeral folder.
+  const std::string kEphemeralFolderId = "ephemeral_folder_id";
+  syncer::StringOrdinal position =
+      syncer::StringOrdinal::CreateInitialOrdinal();
+  std::unique_ptr<ChromeAppListItem> ephemeral_folder_item =
+      std::make_unique<ChromeAppListItem>(profile(), kEphemeralFolderId,
+                                          app_list_model_updater);
+  ephemeral_folder_item->SetChromeIsFolder(true);
+  ephemeral_folder_item->SetChromeName("Folder");
+  ephemeral_folder_item->SetIsSystemFolder(true);
+  ephemeral_folder_item->SetIsEphemeral(true);
+  app_list_syncable_service->AddItem(std::move(ephemeral_folder_item));
+
+  ash::AppListModel* model = app_list_test_api_.GetAppListModel();
+
+  ash::AppListItem* folder_item = model->FindItem(kEphemeralFolderId);
+  ASSERT_TRUE(folder_item);
+  EXPECT_TRUE(folder_item->GetMetadata()->is_ephemeral);
+
+  // Move apps to ephemeral folder.
+  ash::AppListItem* app1_item = model->FindItem(app1_id);
+  ASSERT_TRUE(app1_item);
+  model->MoveItemToFolder(app1_item, kEphemeralFolderId);
+
+  ash::AppListItem* app2_item = model->FindItem(app2_id);
+  ASSERT_TRUE(app2_item);
+  model->MoveItemToFolder(app2_item, kEphemeralFolderId);
+
+  // User apps have the ephemeral folder as a parent.
+  app1_item = model->FindItem(app1_id);
+  ASSERT_TRUE(app1_item);
+  EXPECT_EQ(app1_item->folder_id(), kEphemeralFolderId);
+
+  app2_item = model->FindItem(app2_id);
+  ASSERT_TRUE(app2_item);
+  EXPECT_EQ(app2_item->folder_id(), kEphemeralFolderId);
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
+                       UserAppsInEphemeralFoldersMovedToRootAfterRestart) {
+  // Create the app list view and show the apps grid.
+  ShowAppList();
+
+  const std::string app1_id =
+      GetExtensionByPath(extension_registry()->enabled_extensions(),
+                         test_data_dir_.AppendASCII("app1"))
+          ->id();
+  const std::string app2_id =
+      GetExtensionByPath(extension_registry()->enabled_extensions(),
+                         test_data_dir_.AppendASCII("app2"))
+          ->id();
+
+  ash::AppListModel* model = app_list_test_api_.GetAppListModel();
+
+  // Ephemeral folder was not synced.
+  ash::AppListItem* folder_item = model->FindItem("ephemeral_folder_id");
+  ASSERT_FALSE(folder_item);
+
+  // User apps are moved to root after restart.
+  ash::AppListItem* app1_item = model->FindItem(app1_id);
+  ASSERT_TRUE(app1_item);
+  EXPECT_FALSE(app1_item->IsInFolder());
+
+  ash::AppListItem* app2_item = model->FindItem(app2_id);
+  ASSERT_TRUE(app2_item);
+  EXPECT_FALSE(app2_item->IsInFolder());
+}
+
 IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterProductivityLauncherTest,
                        IsNewInstall) {
   AppListClientImpl* client = AppListClientImpl::GetInstance();
