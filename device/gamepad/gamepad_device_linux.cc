@@ -75,8 +75,9 @@ bool HasRumbleCapability(const base::ScopedFD& fd) {
   unsigned long evbit[BITS_TO_LONGS(EV_MAX)];
   unsigned long ffbit[BITS_TO_LONGS(FF_MAX)];
 
-  if (HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(0, EV_MAX), evbit)) < 0 ||
-      HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(EV_FF, FF_MAX), ffbit)) < 0) {
+  if (HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(0, sizeof(evbit)), evbit)) < 0 ||
+      HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(EV_FF, sizeof(ffbit)), ffbit)) <
+          0) {
     return false;
   }
 
@@ -99,8 +100,9 @@ size_t CheckSpecialKeys(const base::ScopedFD& fd,
   size_t found_special_keys = 0;
 
   has_special_key->clear();
-  if (HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(0, EV_MAX), evbit)) < 0 ||
-      HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(EV_KEY, KEY_MAX), keybit)) < 0) {
+  if (HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(0, sizeof(evbit)), evbit)) < 0 ||
+      HANDLE_EINTR(ioctl(fd.get(), EVIOCGBIT(EV_KEY, sizeof(keybit)), keybit)) <
+          0) {
     return 0;
   }
 
