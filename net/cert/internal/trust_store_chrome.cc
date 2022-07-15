@@ -73,10 +73,12 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
   for (const auto& cert_info : certs) {
     bssl::UniquePtr<CRYPTO_BUFFER> cert;
     if (certs_are_static) {
-      // TODO(mattm,hchao): When the component updater is implemented, ensure
-      // the static data crypto_buffers for the compiled-in roots are kept
-      // alive, so that roots from the component updater data will de-dupe
-      // against them.
+      // TODO(mattm,hchao): Ensure the static data crypto_buffers for the
+      // compiled-in roots are kept alive, so that roots from the component
+      // updater data will de-dupe against them. This currently works if the
+      // new components roots are the same as the compiled in roots, but
+      // fails if a component update drops a root and then the next component
+      // update readds the root without a restart.
       cert = x509_util::CreateCryptoBufferFromStaticDataUnsafe(
           cert_info.root_cert_der);
     } else {
@@ -86,8 +88,6 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
     auto parsed = ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
     DCHECK(parsed);
-    // TODO(hchao): Figure out how to fail gracefully when the Chrome Root Store
-    // gets a bad component update.
     trust_store_.AddTrustAnchor(parsed);
   }
   version_ = version;
@@ -128,6 +128,22 @@ std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
 
 int64_t CompiledChromeRootStoreVersion() {
   return kRootStoreVersion;
+}
+
+ParsedCertificateList CompiledChromeRootStoreAnchors() {
+  ParsedCertificateList parsed_cert_list;
+  for (const auto& cert_info : kChromeRootCertList) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert =
+        x509_util::CreateCryptoBufferFromStaticDataUnsafe(
+            cert_info.root_cert_der);
+    CertErrors errors;
+    auto parsed = ParsedCertificate::Create(
+        std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
+    DCHECK(parsed);
+    parsed_cert_list.push_back(parsed);
+  }
+
+  return parsed_cert_list;
 }
 
 }  // namespace net

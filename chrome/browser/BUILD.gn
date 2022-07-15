@@ -7635,6 +7635,13 @@ static_library("browser") {
     ]
   }
 
+  if (chrome_root_store_supported) {
+    sources += [
+      "feedback/system_logs/log_sources/chrome_root_store_log_source.cc",
+      "feedback/system_logs/log_sources/chrome_root_store_log_source.h",
+    ]
+  }
+
   if (use_udev) {
     deps += [ "//device/udev_linux" ]
   }

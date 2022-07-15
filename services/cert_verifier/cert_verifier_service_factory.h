@@ -51,6 +51,7 @@ class CertVerifierServiceFactoryImpl
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // mojom::CertVerifierServiceFactory implementation:
   void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store) override;
+  void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
 #endif
 
   // Remove a CertVerifyService from needing updates to the Chrome Root Store.
