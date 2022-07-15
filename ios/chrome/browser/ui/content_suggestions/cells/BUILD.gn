@@ -100,7 +100,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "content_suggestions_header_item_unittest.mm",
-    "content_suggestions_most_visited_item_unittest.mm",
     "content_suggestions_tile_layout_util_unittest.mm",
     "content_suggestions_whats_new_item_unittest.mm",
   ]
