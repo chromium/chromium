@@ -42,6 +42,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull FaviconFetcher mFaviconFetcher;
     private final int mMinCarouselItemViewHeight;
     private boolean mShouldWrapTitleText;
+    private boolean mEnableOrganicRepeatableQueries;
 
     /**
      * Constructor.
@@ -84,6 +85,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     public void onNativeInitialized() {
         mShouldWrapTitleText = ChromeFeatureList.isEnabled(
                 ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND);
+        mEnableOrganicRepeatableQueries =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             final SuggestTile tile = tiles.get(elementIndex);
             final String title = tile.title;
             final GURL url = tile.url;
-            final boolean isSearch = tile.isSearch;
+            final boolean isSearch = tile.isSearch && mEnableOrganicRepeatableQueries;
             final int itemIndex = elementIndex;
 
             tileModel.set(TileViewProperties.TITLE, title);

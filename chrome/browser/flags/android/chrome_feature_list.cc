@@ -39,6 +39,7 @@
 #include "components/embedder_support/android/util/cdn_utils.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
@@ -155,6 +156,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kWebFeedOnboarding,
     &feed::kWebFeedSort,
     &feed::kXsurfaceMetricsReporting,
+    &history::kOrganicRepeatableQueries,
     &history_clusters::internal::kJourneys,
     &kAdaptiveButtonInTopToolbar,
     &kAdaptiveButtonInTopToolbarCustomizationV2,

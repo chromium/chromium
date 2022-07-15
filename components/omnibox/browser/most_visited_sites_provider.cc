@@ -150,6 +150,12 @@ void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
   }
 
   done_ = false;
+
+  // TODO(ender): Relocate this to StartPrefetch() when additional prefetch
+  // contexts are available.
+  // TopSites updates itself after a delay. To ensure up-to-date results,
+  // force an update now.
+  top_sites->SyncWithHistory();
   top_sites->GetMostVisitedURLs(
       base::BindRepeating(&MostVisitedSitesProvider::OnMostVisitedUrlsAvailable,
                           request_weak_ptr_factory_.GetWeakPtr()));
@@ -167,6 +173,13 @@ MostVisitedSitesProvider::MostVisitedSitesProvider(
     AutocompleteProviderListener* listener)
     : AutocompleteProvider(TYPE_MOST_VISITED_SITES), client_{client} {
   AddListener(listener);
+
+  // TopSites updates itself after a delay. To ensure up-to-date results,
+  // force an update now.
+  scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
+  if (top_sites) {
+    top_sites->SyncWithHistory();
+  }
 }
 
 MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;

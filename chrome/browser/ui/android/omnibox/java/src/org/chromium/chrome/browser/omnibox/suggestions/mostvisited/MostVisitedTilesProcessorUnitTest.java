@@ -66,6 +66,8 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures({ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND,
+        ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
 public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
@@ -110,6 +112,7 @@ public final class MostVisitedTilesProcessorUnitTest {
      */
     private List<ListItem> populateTilePropertiesForTiles(
             int placement, AutocompleteMatch.SuggestTile... tiles) {
+        mProcessor.onNativeInitialized();
         mMatch = new AutocompleteMatchBuilder().setSuggestTiles(Arrays.asList(tiles)).build();
         mProcessor.populateModel(mMatch, mPropertyModel, placement);
 
@@ -295,7 +298,6 @@ public final class MostVisitedTilesProcessorUnitTest {
         assertEquals(1, tileModel.get(TileViewProperties.TITLE_LINES));
     }
 
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND)
     @Test
     public void testDescriptionWrapping_wrappingLine() {
         mProcessor.onNativeInitialized();
@@ -306,5 +308,30 @@ public final class MostVisitedTilesProcessorUnitTest {
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
         assertEquals(2, tileModel.get(TileViewProperties.TITLE_LINES));
+    }
+
+    // The test below confirm that Repeatable Query appears like URL navigation if the feature is
+    // disabled. This is needed because in some cases a single Search query may be reported as a
+    // most visited site. This is WAI, but may be confusing.
+    // Note that the opposite is already tested by a different test in the suite - see:
+    // testDecorations_searchTile, which tests that decoration used for search tile is a magnifying
+    // glass when the feature is enabled.
+    @Test
+    @DisableFeatures({ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES})
+    public void testRepeatableQuery_featureDisabled() {
+        List<ListItem> tileList =
+                populateTilePropertiesForTiles(0, new SuggestTile("title", SEARCH_URL, true));
+        verify(mFaviconFetcher, times(1))
+                .fetchFaviconWithBackoff(eq(SEARCH_URL), anyBoolean(), any());
+        mIconCallbackCaptor.getValue().onFaviconFetchComplete(mFaviconBitmap, 0);
+        assertEquals(1, tileList.size());
+        ListItem tileItem = tileList.get(0);
+        PropertyModel tileModel = tileItem.model;
+        // Feature is disabled: this should not be shown as a search tile.
+        Drawable drawable = tileModel.get(TileViewProperties.ICON);
+        assertEquals(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileItem.type);
+        assertThat(drawable, instanceOf(BitmapDrawable.class));
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        assertEquals(mFaviconBitmap, bitmap);
     }
 }

@@ -387,6 +387,7 @@ public abstract class ChromeFeatureList {
     public static final String INTEREST_FEED_V2_AUTOPLAY = "InterestFeedV2Autoplay";
     public static final String IS_VOICE_SEARCH_ENABLED_CACHE = "IsVoiceSearchEnabledCache";
     public static final String HISTORY_JOURNEYS = "Journeys";
+    public static final String HISTORY_ORGANIC_REPEATABLE_QUERIES = "OrganicRepeatableQueries";
     public static final String KITKAT_SUPPORTED = "KitKatSupported";
     public static final String LEAK_DETECTION_UNAUTHENTICATED = "LeakDetectionUnauthenticated";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
