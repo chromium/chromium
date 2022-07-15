@@ -864,7 +864,15 @@ bool IsShortcutExpandingEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kShortcutExpanding);
 }
 
-// Local history zero-prefix (aka zero-suggest) and prefix suggestions.
+// Local history zero-prefix (aka zero-suggest) and prefix suggestions:
+
+// The relevance score for remote zero-suggest ranges from 550-1400. A default
+// value of 500 places local history zero-suggest below the remote zero-suggest.
+const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore(
+    &omnibox::kAdjustLocalHistoryZeroSuggestRelevanceScore,
+    "LocalHistoryZeroSuggestRelevanceScore",
+    500);
+
 const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
     &omnibox::kLocalHistorySuggestRevamp,
     "ZeroSuggestIgnoreDuplicateVisits",

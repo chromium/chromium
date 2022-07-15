@@ -518,6 +518,9 @@ extern const base::FeatureParam<int>
 // Shortcut Expanding.
 bool IsShortcutExpandingEnabled();
 
+// Determines the relevance score for the local history zero-prefix suggestions.
+extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
+
 // Whether duplicative visits should be ignored for local history zero-suggest.
 // A duplicative visit is a visit to the same search term in an interval smaller
 // than kAutocompleteDuplicateVisitIntervalThreshold.

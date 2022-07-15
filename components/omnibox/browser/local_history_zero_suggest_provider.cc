@@ -39,16 +39,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "url/gurl.h"
 
-using metrics::OmniboxEventProto;
-
-// Default relevance for the LocalHistoryZeroSuggestProvider query suggestions
-// for authenticated and unauthenticated scenarios respectively. These values
-// are chosen to place local history zero-prefix suggestions below server
-// provided zps when the user is signed in (e.g., pSuggest) and above server
-// provided zps when the user is signed out (e.g., trending).
-// Server provided relevance for zps is expected to range from 550-1400.
-const int kLocalHistoryZPSAuthenticatedRelevance = 500;
-const int kLocalHistoryZPSUnauthenticatedRelevance = 1450;
+using metrics::OmniboxInputType;
 
 namespace {
 
@@ -75,7 +66,7 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
   // Allow local history query suggestions only when the omnibox is empty and is
   // focused from the NTP.
   if (input.focus_type() == OmniboxFocusType::DEFAULT ||
-      input.type() != metrics::OmniboxInputType::EMPTY ||
+      input.type() != OmniboxInputType::EMPTY ||
       !BaseSearchProvider::IsNTPPage(input.current_page_classification())) {
     return false;
   }
@@ -234,9 +225,8 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
   }
   RecordDBMetrics(db_query_time, results.size());
 
-  int relevance = client_->IsAuthenticated()
-                      ? kLocalHistoryZPSAuthenticatedRelevance
-                      : kLocalHistoryZPSUnauthenticatedRelevance;
+  int relevance =
+      OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore.Get();
   for (const auto& result : results) {
     SearchSuggestionParser::SuggestResult suggestion(
         /*suggestion=*/result->normalized_term,

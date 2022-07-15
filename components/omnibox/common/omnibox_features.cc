@@ -89,6 +89,13 @@ const base::Feature kOmniboxMaxURLMatches{"OmniboxMaxURLMatches",
 const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
                                             enabled_by_default_desktop_android};
 
+// Used to adjust the relevance for the local history zero-prefix suggestions.
+// If enabled, the relevance is determined by this feature's companion
+// parameter, OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore.
+const base::Feature kAdjustLocalHistoryZeroSuggestRelevanceScore{
+    "AdjustLocalHistoryZeroSuggestRelevanceScore",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable on-clobber (i.e., when the user clears the whole omnibox text)
 // zero-prefix suggestions on the Open Web, that are contextual to the current
 // URL. Will only work if user is signed-in and syncing, or is otherwise

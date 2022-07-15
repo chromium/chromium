@@ -36,6 +36,7 @@ extern const base::Feature kDynamicMaxAutocomplete;
 extern const base::Feature kRetainSuggestionsWithHeaders;
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
+extern const base::Feature kAdjustLocalHistoryZeroSuggestRelevanceScore;
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
 extern const base::Feature kClobberTriggersSRPZeroSuggest;
 extern const base::Feature kFocusTriggersContextualWebZeroSuggest;
