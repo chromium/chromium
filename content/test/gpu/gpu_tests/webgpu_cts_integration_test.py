@@ -310,9 +310,11 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                       log_str)
       elif status == 'fail':
         self.fail(log_str)
-    finally:
+    except asyncio.TimeoutError:
       if JAVASCRIPT_DURATION not in self.additionalTags:
         self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % timeout
+      raise
+    finally:
       WebGpuCtsIntegrationTest.total_tests_run += 1
 
   @classmethod
