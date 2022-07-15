@@ -774,7 +774,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8045012663542226664">Desactivar micrófono</translation>
 <translation id="8063022551652308521">A protección contra a escritura aínda está desactivada. Actívaa para continuar.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
-<translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións Android</translation>
+<translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións para Android</translation>
 <translation id="8083281199617904460">Este proceso de reparación debe efectualo un técnico cualificado, e só se debe iniciar despois de substituír os compoñentes que non funcionen correctamente.</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
 <translation id="8104083085214006426">Estás usando unha rede aberta e non segura</translation>
@@ -824,7 +824,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8475690821716466388">A rede wifi está protexida co protocolo WEP PSK, que non é moi seguro</translation>
 <translation id="8477551185774834963">A latencia do DNS supera lixeiramente o límite permitido</translation>
 <translation id="8483248364096924578">Enderezo IP</translation>
-<translation id="8491311378305535241">Non se puido establecer conexión con sitios web HTTP desde aplicacións Android a través do firewall</translation>
+<translation id="8491311378305535241">Non se puido establecer conexión con sitios web HTTP desde aplicacións para Android a través do firewall</translation>
 <translation id="8498220429738806196">Contadores de tráfico</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
@@ -911,7 +911,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9149391708638971077">Realizar proba de memoria</translation>
 <translation id="9173638680043580060">Queda menos dun minuto</translation>
 <translation id="917720651393141712">Probar</translation>
-<translation id="9204237731135241582">Non se puido establecer contacto coa pasarela desde aplicacións Android</translation>
+<translation id="9204237731135241582">Non se puido establecer contacto coa pasarela desde aplicacións para Android</translation>
 <translation id="9211490828691860325">Todos os ordenadores</translation>
 <translation id="922179502584117429">A versión actual (<ph name="VERSION_NUMBER" />) está desactualizada</translation>
 <translation id="932327136139879170">Inicio</translation>
