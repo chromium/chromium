@@ -20,13 +20,13 @@ class PlatformDelegate {
 
   // Wrapper functions around implementation in base/files/file_util.h to allow
   // mocking in tests.
-  virtual bool PathExists(const base::FilePath& file_path) const = 0;
   virtual bool PathIsReadable(const base::FilePath& file_path) const = 0;
   virtual bool DirectoryExists(const base::FilePath& file_path) const = 0;
 
   // Resolves environment variables and relative markers in `file_path`, and
   // returns the absolute path via `resolved_file_path`. Returns true if
-  // successful.
+  // successful. For consistency on all platforms, this method will return false
+  // if no file system item resides at the end path.
   virtual bool ResolveFilePath(const base::FilePath& file_path,
                                base::FilePath* resolved_file_path) = 0;
 

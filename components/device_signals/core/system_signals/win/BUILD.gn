@@ -50,6 +50,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "win_platform_delegate_unittest.cc",
     "wmi_client_impl_unittest.cc",
     "wsc_client_impl_unittest.cc",
   ]

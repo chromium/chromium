@@ -56,11 +56,6 @@ class FileSystemServiceTest : public testing::Test {
             }));
   }
 
-  void ExpectPathExists(const base::FilePath& path) {
-    EXPECT_CALL(*mock_platform_delegate_, PathExists(path))
-        .WillOnce(Return(true));
-  }
-
   void ExpectPathIsReadable(const base::FilePath& path) {
     EXPECT_CALL(*mock_platform_delegate_, PathIsReadable(path))
         .WillOnce(Return(true));
@@ -78,20 +73,11 @@ TEST_F(FileSystemServiceTest, GetSignals_Presence) {
               ResolveFilePath(unresolvable_file_path, _))
       .WillOnce(Return(false));
 
-  base::FilePath not_found_path =
-      base::FilePath::FromUTF8Unsafe("/cannot/find");
-  base::FilePath not_found_path_resolved =
-      base::FilePath::FromUTF8Unsafe("/cannot/find/resolved");
-  ExpectResolvablePath(not_found_path, not_found_path_resolved);
-  EXPECT_CALL(*mock_platform_delegate_, PathExists(not_found_path_resolved))
-      .WillOnce(Return(false));
-
   base::FilePath access_denied_path =
       base::FilePath::FromUTF8Unsafe("/cannot/access");
   base::FilePath access_denied_path_resolved =
       base::FilePath::FromUTF8Unsafe("/cannot/access/resolved");
   ExpectResolvablePath(access_denied_path, access_denied_path_resolved);
-  ExpectPathExists(access_denied_path_resolved);
   EXPECT_CALL(*mock_platform_delegate_,
               PathIsReadable(access_denied_path_resolved))
       .WillOnce(Return(false));
@@ -100,18 +86,16 @@ TEST_F(FileSystemServiceTest, GetSignals_Presence) {
   base::FilePath found_path_resolved =
       base::FilePath::FromUTF8Unsafe("/found/resolved");
   ExpectResolvablePath(found_path, found_path_resolved);
-  ExpectPathExists(found_path_resolved);
   ExpectPathIsReadable(found_path_resolved);
 
   std::vector<GetFileSystemInfoOptions> options;
   options.push_back(CreateOptions(unresolvable_file_path, false, false));
-  options.push_back(CreateOptions(not_found_path, false, false));
   options.push_back(CreateOptions(access_denied_path, false, false));
   options.push_back(CreateOptions(found_path, false, false));
 
   std::array<PresenceValue, 4> expected_presence_values{
-      PresenceValue::kUnspecified, PresenceValue::kNotFound,
-      PresenceValue::kAccessDenied, PresenceValue::kFound};
+      PresenceValue::kNotFound, PresenceValue::kAccessDenied,
+      PresenceValue::kFound};
 
   auto file_system_items = file_system_service_->GetSignals(options);
 

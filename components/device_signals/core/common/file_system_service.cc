@@ -67,16 +67,12 @@ PresenceValue FileSystemServiceImpl::ResolveFileSystemItem(
   base::FilePath local_resolved_path;
   if (delegate_->ResolveFilePath(original_file_path, &local_resolved_path)) {
     *resolved_file_path = local_resolved_path;
-    if (delegate_->PathExists(local_resolved_path)) {
-      if (delegate_->PathIsReadable(local_resolved_path)) {
-        return PresenceValue::kFound;
-      }
-      return PresenceValue::kAccessDenied;
+    if (delegate_->PathIsReadable(local_resolved_path)) {
+      return PresenceValue::kFound;
     }
-    return PresenceValue::kNotFound;
+    return PresenceValue::kAccessDenied;
   }
-
-  return PresenceValue::kUnspecified;
+  return PresenceValue::kNotFound;
 }
 
 }  // namespace device_signals

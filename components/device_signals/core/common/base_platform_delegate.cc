@@ -13,10 +13,6 @@ namespace device_signals {
 BasePlatformDelegate::BasePlatformDelegate() = default;
 BasePlatformDelegate::~BasePlatformDelegate() = default;
 
-bool BasePlatformDelegate::PathExists(const base::FilePath& file_path) const {
-  return base::PathExists(file_path);
-}
-
 bool BasePlatformDelegate::PathIsReadable(
     const base::FilePath& file_path) const {
   return base::PathIsReadable(file_path);

@@ -17,7 +17,6 @@ class MockPlatformDelegate : public PlatformDelegate {
   MockPlatformDelegate();
   ~MockPlatformDelegate() override;
 
-  MOCK_METHOD(bool, PathExists, (const base::FilePath&), (const override));
   MOCK_METHOD(bool, PathIsReadable, (const base::FilePath&), (const override));
   MOCK_METHOD(bool, DirectoryExists, (const base::FilePath&), (const override));
   MOCK_METHOD(bool,

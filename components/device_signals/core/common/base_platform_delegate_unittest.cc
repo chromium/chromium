@@ -51,7 +51,6 @@ class BasePlatformDelegateTest : public testing::Test {
 // Sanity checks for functions that wrap base namespace functions. Only tests
 // success cases as underlying functions are tested on their own.
 TEST_F(BasePlatformDelegateTest, SanityChecks) {
-  EXPECT_TRUE(platform_delegate_.PathExists(file_path_));
   EXPECT_TRUE(platform_delegate_.PathIsReadable(file_path_));
   EXPECT_FALSE(platform_delegate_.DirectoryExists(file_path_));
   EXPECT_TRUE(platform_delegate_.DirectoryExists(scoped_dir_.GetPath()));

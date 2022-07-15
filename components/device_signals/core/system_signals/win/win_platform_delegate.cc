@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,7 +50,12 @@ bool WinPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
     return false;
   }
 
-  *resolved_file_path = base::FilePath(expanded_path_wstring.value());
+  auto expanded_file_path = base::FilePath(expanded_path_wstring.value());
+  if (!base::PathExists(expanded_file_path)) {
+    return false;
+  }
+
+  *resolved_file_path = base::MakeAbsoluteFilePath(expanded_file_path);
   return true;
 }
 

@@ -16,7 +16,6 @@ class BasePlatformDelegate : public PlatformDelegate {
   ~BasePlatformDelegate() override;
 
   // PlatformDelegate:
-  bool PathExists(const base::FilePath& file_path) const override;
   bool PathIsReadable(const base::FilePath& file_path) const override;
   bool DirectoryExists(const base::FilePath& file_path) const override;
 
