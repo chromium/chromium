@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/apps_grid_row_change_animator.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -61,6 +62,8 @@ class PageFlipWaiter : public PaginationModelObserver {
   PaginationModel* model_ = nullptr;
 };
 
+}  // namespace
+
 class PagedAppsGridViewTestBase : public AshTestBase {
  public:
   PagedAppsGridViewTestBase()
@@ -106,6 +109,15 @@ class PagedAppsGridViewTestBase : public AshTestBase {
     EXPECT_FALSE(aborted);
     EXPECT_EQ(AppListGridAnimationStatus::kReorderFadeIn, status);
     std::move(closure).Run();
+  }
+
+  int GetNumberOfRowChangeLayersForTest() {
+    return GetPagedAppsGridView()
+        ->row_change_animator_->GetNumberOfRowChangeLayersForTest();
+  }
+
+  bool IsRowChangeAnimatorAnimating() {
+    return GetPagedAppsGridView()->row_change_animator_->IsAnimating();
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
@@ -800,6 +812,8 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
   generator->MoveMouseBy(100, 100);
   generator->ReleaseLeftButton();
 
+  EXPECT_FALSE(IsRowChangeAnimatorAnimating());
+
   // Wait for each item's layer animation to complete.
   LayerAnimationStoppedWaiter animation_waiter;
   for (size_t i = 0; i < view_model->view_size(); i++) {
@@ -820,5 +834,69 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
   EXPECT_EQ(1, number_of_times_cardified_state_ended);
 }
 
-}  // namespace
+// When quickly dragging and dropping an item from one row to another, test that
+// row change animations are not interrupted during cardified state exit.
+TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  app_list_test_model_->PopulateApps(10);
+  UpdateLayout();
+
+  auto* generator = GetEventGenerator();
+
+  // Set the callback to count how many times the cardified state is ended.
+  int number_of_times_cardified_state_ended = 0;
+  GetPagedAppsGridView()->SetCardifiedStateEndedTestCallback(
+      base::BindLambdaForTesting(
+          [&]() { number_of_times_cardified_state_ended++; }));
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      GetPagedAppsGridView()->view_model();
+  AppListItemView* item_view = view_model->view_at(1);
+  generator->MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+
+  // Begin drag.
+  generator->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+
+  // Quickly drag the item from the first row to the second row, which should
+  // cause a row change animation when the drag is released.
+  gfx::Point second_row_drag_point =
+      view_model->view_at(5)->GetBoundsInScreen().right_center();
+  second_row_drag_point.Offset(50, 0);
+  generator->MoveMouseTo(second_row_drag_point);
+  generator->ReleaseLeftButton();
+
+  // There should be a row change animation happening.
+  EXPECT_TRUE(IsRowChangeAnimatorAnimating());
+  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest());
+
+  // Fast forward and make sure that the row change animator was not interrupted
+  // and is still animating.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(IsRowChangeAnimatorAnimating());
+  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest());
+
+  // Wait for each item's layer animation to complete.
+  LayerAnimationStoppedWaiter animation_waiter;
+  for (size_t i = 0; i < view_model->view_size(); i++) {
+    if (view_model->view_at(i)->layer())
+      animation_waiter.Wait(view_model->view_at(i)->layer());
+  }
+
+  // When each item's layer animation is complete, their layers should have been
+  // removed.
+  for (size_t i = 0; i < view_model->view_size(); i++)
+    EXPECT_FALSE(view_model->view_at(i)->layer());
+  EXPECT_EQ(0,
+            GetPagedAppsGridView()
+                ->GetBoundsAnimationForCardifiedStateInProgressCountForTest());
+  EXPECT_FALSE(IsRowChangeAnimatorAnimating());
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
+
+  // Now that cardified item animations are complete, make sure that
+  // `OnCardifiedStateEnded()` is only called once.
+  EXPECT_EQ(1, number_of_times_cardified_state_ended);
+}
+
 }  // namespace ash

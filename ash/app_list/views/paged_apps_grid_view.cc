@@ -9,6 +9,7 @@
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
+#include "ash/app_list/apps_grid_row_change_animator.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -1145,6 +1146,13 @@ void PagedAppsGridView::AnimateCardifiedState() {
     GetWidget()->LayoutRootViewIfNecessary();
   }
 
+  // Resizing of AppListItemView icons can invalidate layout and cause a layout
+  // while exiting cardified state. Keep ignoring layouts when exiting
+  // cardified state, so that any row change animations that need to take place
+  // while exiting do not get interrupted by a layout.
+  if (!cardified_state_)
+    ignore_layout_ = true;
+
   CalculateIdealBounds();
 
   // Cache the current item container position, as RecenterItemsContainer() may
@@ -1230,8 +1238,13 @@ void PagedAppsGridView::AnimateAppListItemsForCardifiedState(
     }
   }
 
-  if (!items_need_animating)
+  // When no items need animating, make sure that OnCardifiedStateEnded() gets
+  // called because MaybeCallOnBoundsAnimatorDone() is not called.
+  if (!items_need_animating) {
+    if (!cardified_state_)
+      OnCardifiedStateEnded();
     return;
+  }
 
   views::AnimationBuilder item_animations;
   item_animations
@@ -1260,6 +1273,14 @@ void PagedAppsGridView::AnimateAppListItemsForCardifiedState(
       entry_view->ExitCardifyState();
 
     gfx::Rect target_bounds(view_model()->ideal_bounds(i));
+
+    if (entry_view->has_pending_row_change()) {
+      entry_view->reset_has_pending_row_change();
+      row_change_animator_->AnimateBetweenRows(entry_view, current_bounds,
+                                               target_bounds);
+      continue;
+    }
+
     entry_view->SetBoundsRect(target_bounds);
 
     // Skip animating the item view if it is already hidden.
@@ -1286,14 +1307,17 @@ void PagedAppsGridView::MaybeCallOnBoundsAnimatorDone() {
   if (bounds_animation_for_cardified_state_in_progress_ == 0) {
     DestroyLayerItemsIfNotNeeded();
 
-    // Notify container that cardified state has ended once ending animations
-    // are complete.
-    if (!cardified_state_) {
-      if (cardified_state_ended_test_callback_)
-        cardified_state_ended_test_callback_.Run();
-      container_delegate_->OnCardifiedStateEnded();
-    }
+    if (!cardified_state_)
+      OnCardifiedStateEnded();
   }
+}
+
+void PagedAppsGridView::OnCardifiedStateEnded() {
+  ignore_layout_ = false;
+
+  if (cardified_state_ended_test_callback_)
+    cardified_state_ended_test_callback_.Run();
+  container_delegate_->OnCardifiedStateEnded();
 }
 
 void PagedAppsGridView::RecenterItemsContainer() {

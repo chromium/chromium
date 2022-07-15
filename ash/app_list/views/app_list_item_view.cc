@@ -151,6 +151,18 @@ class DotView : public views::View {
   }
 };
 
+// Returns whether the `index` is considered on the left edge of a grid with
+// `cols` columns.
+bool IsIndexOnLeftEdge(GridIndex index, int cols) {
+  return (index.slot % cols) == 0;
+}
+
+// Returns whether the `index` is considered on the right edge of a grid with
+// `cols` columns.
+bool IsIndexOnRightEdge(GridIndex index, int cols) {
+  return ((index.slot + 1) % cols) == 0;
+}
+
 }  // namespace
 
 // The badge which is activated when the app corresponding with this
@@ -1128,14 +1140,12 @@ void AppListItemView::SetMostRecentGridIndex(GridIndex new_grid_index,
   }
 
   if (most_recent_grid_index_.IsValid()) {
-    // Set row change only for items which move to a new row and a new column.
-    // This is done because row change animations should not be shown when
-    // animating items up from the next page into a new row but on the same
-    // column, which could happen when closing a reorder toast.
-    if ((most_recent_grid_index_.slot / columns !=
-         new_grid_index.slot / columns) &&
-        (most_recent_grid_index_.slot % columns !=
-         new_grid_index.slot % columns)) {
+    // Pending row changes are only flagged when the item index changes from one
+    // edge of the grid to the other.
+    if ((IsIndexOnLeftEdge(new_grid_index, columns) &&
+         IsIndexOnRightEdge(most_recent_grid_index_, columns)) ||
+        (IsIndexOnLeftEdge(most_recent_grid_index_, columns) &&
+         IsIndexOnRightEdge(new_grid_index, columns))) {
       has_pending_row_change_ = true;
     } else {
       has_pending_row_change_ = false;

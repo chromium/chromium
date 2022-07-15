@@ -259,29 +259,43 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // The cardified state scales down apps and is shown when the user drags an
   // app in the AppList.
   void StartAppsGridCardifiedView();
+
   // Ends the Apps Grid Cardified state and sets it to normal.
   void EndAppsGridCardifiedView();
+
   // Animates individual elements of the apps grid to and from cardified state.
   void AnimateCardifiedState();
+
   // Animate app list items in the app grid to and from cardified state.
   void AnimateAppListItemsForCardifiedState(
       const gfx::Vector2d& translate_offset);
+
   // Call OnBoundsAnimatorDone when all layer animations finish.
   void MaybeCallOnBoundsAnimatorDone();
+
+  // Called when app item animations are completed for ending cardified state.
+  void OnCardifiedStateEnded();
+
   // Translates the items container view to center the current page in the apps
   // grid.
   void RecenterItemsContainer();
+
   // Calculates the background bounds for the grid depending on the value of
   // |cardified_state_|
   gfx::Rect BackgroundCardBounds(int new_page_index);
+
   // Appends a background card to the back of |background_cards_|.
   void AppendBackgroundCard();
+
   // Removes the background card at the end of |background_cards_|.
   void RemoveBackgroundCard();
+
   // Masks the apps grid container to background cards bounds.
   void MaskContainerToBackgroundBounds();
+
   // Removes all background cards from |background_cards_|.
   void RemoveAllBackgroundCards();
+
   // Updates the highlighted background card. Used only for cardified state.
   void SetHighlightedBackgroundCard(int new_highlighted_page);
 
