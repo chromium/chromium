@@ -106,8 +106,8 @@
 #include "chrome/test/base/test_switches.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -2055,15 +2055,13 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
         crostini::ContainerInfo(crostini::kCrostiniDefaultContainerName,
                                 "testuser", "/home/testuser",
                                 "PLACEHOLDER_IP"));
-    chromeos::DBusThreadManager* dbus_thread_manager =
-        chromeos::DBusThreadManager::Get();
     static_cast<chromeos::FakeCrosDisksClient*>(
-        dbus_thread_manager->GetCrosDisksClient())
+        chromeos::CrosDisksClient::Get())
         ->AddCustomMountPointCallback(
             base::BindRepeating(&FileManagerBrowserTestBase::MaybeMountCrostini,
                                 base::Unretained(this)));
     static_cast<chromeos::FakeCrosDisksClient*>(
-        dbus_thread_manager->GetCrosDisksClient())
+        chromeos::CrosDisksClient::Get())
         ->AddCustomMountPointCallback(
             base::BindRepeating(&FileManagerBrowserTestBase::MaybeMountGuestOs,
                                 base::Unretained(this)));
@@ -3164,10 +3162,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "blockMounts") {
-    chromeos::DBusThreadManager* dbus_thread_manager =
-        chromeos::DBusThreadManager::Get();
     static_cast<chromeos::FakeCrosDisksClient*>(
-        dbus_thread_manager->GetCrosDisksClient())
+        chromeos::CrosDisksClient::Get())
         ->BlockMount();
     return;
   }

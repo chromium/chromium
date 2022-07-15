@@ -15,7 +15,6 @@
 namespace chromeos {
 
 // Style Note: Clients are sorted by names.
-class CrosDisksClient;
 class DBusClientsBrowser;
 class DBusThreadManagerSetter;
 class DebugDaemonClient;
@@ -56,7 +55,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   // pointers after DBusThreadManager has been shut down.
   // TODO(jamescook): Replace this with calls to FooClient::Get().
   // http://crbug.com/647367
-  CrosDisksClient* GetCrosDisksClient();
   DebugDaemonClient* GetDebugDaemonClient();
   EasyUnlockClient* GetEasyUnlockClient();
 
@@ -77,7 +75,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
 // TODO(jamescook): Replace these with FooClient::InitializeForTesting().
 class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
  public:
-  void SetCrosDisksClient(std::unique_ptr<CrosDisksClient> client);
   void SetDebugDaemonClient(std::unique_ptr<DebugDaemonClient> client);
 
  private:
@@ -89,7 +86,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
       delete;
   ~DBusThreadManagerSetter();
 
-  std::unique_ptr<CrosDisksClient> cros_disks_client_;
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
 };
 

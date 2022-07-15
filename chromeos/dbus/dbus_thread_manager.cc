@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_clients_browser.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
@@ -36,10 +35,6 @@ DBusThreadManager::~DBusThreadManager() {
   return (g_setter && g_setter->name) \
              ? g_setter->name.get()   \
              : (clients_browser_ ? clients_browser_->name.get() : nullptr)
-
-CrosDisksClient* DBusThreadManager::GetCrosDisksClient() {
-  RETURN_DBUS_CLIENT(cros_disks_client_);
-}
 
 DebugDaemonClient* DBusThreadManager::GetDebugDaemonClient() {
   RETURN_DBUS_CLIENT(debug_daemon_client_);
@@ -116,11 +111,6 @@ DBusThreadManager* DBusThreadManager::Get() {
 DBusThreadManagerSetter::DBusThreadManagerSetter() = default;
 
 DBusThreadManagerSetter::~DBusThreadManagerSetter() = default;
-
-void DBusThreadManagerSetter::SetCrosDisksClient(
-    std::unique_ptr<CrosDisksClient> client) {
-  cros_disks_client_ = std::move(client);
-}
 
 void DBusThreadManagerSetter::SetDebugDaemonClient(
     std::unique_ptr<DebugDaemonClient> client) {

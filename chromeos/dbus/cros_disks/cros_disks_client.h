@@ -341,10 +341,20 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) CrosDisksClient
                                    const std::string& device_path) = 0;
   };
 
+  // Returns the global instance if initialized. May return null.
+  static CrosDisksClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   CrosDisksClient(const CrosDisksClient&) = delete;
   CrosDisksClient& operator=(const CrosDisksClient&) = delete;
-
-  ~CrosDisksClient() override;
 
   // Registers the given |observer| to listen D-Bus signals.
   virtual void AddObserver(Observer* observer) = 0;
@@ -408,10 +418,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) CrosDisksClient
                                    GetDevicePropertiesCallback callback,
                                    base::OnceClosure error_callback) = 0;
 
-  // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<CrosDisksClient> Create();
-
   // Returns the path of the mount point for archive files.
   static base::FilePath GetArchiveMountPoint();
 
@@ -426,8 +432,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) CrosDisksClient
       RemountOption remount);
 
  protected:
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   CrosDisksClient();
+  ~CrosDisksClient() override;
 };
 
 }  // namespace chromeos

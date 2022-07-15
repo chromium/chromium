@@ -71,6 +71,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -129,13 +130,16 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   if (bus) {
     ash::hermes_clients::Initialize(bus);
     ash::CrasAudioClient::Initialize(bus);
+    chromeos::CrosDisksClient::Initialize(bus);
     chromeos::PowerManagerClient::Initialize(bus);
   } else {
     ash::hermes_clients::InitializeFakes();
     ash::CrasAudioClient::InitializeFake();
+    chromeos::CrosDisksClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
   }
 
+  // Depends on CrosDisksClient.
   ash::disks::DiskMountManager::Initialize();
 
   chromeos::NetworkHandler::Initialize();
@@ -306,6 +310,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   chromeos::NetworkHandler::Shutdown();
   ash::disks::DiskMountManager::Shutdown();
   chromeos::PowerManagerClient::Shutdown();
+  chromeos::CrosDisksClient::Shutdown();
   ash::CrasAudioClient::Shutdown();
 #endif
 

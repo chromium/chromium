@@ -14,8 +14,8 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -64,10 +64,7 @@ FakeDriveFsLauncherClient::FakeDriveFsLauncherClient(
       base::BindOnce(&ConnectAsync, launcher_.BindNewPipeAndPassReceiver(),
                      socket_path_.value()));
 
-  chromeos::DBusThreadManager* dbus_thread_manager =
-      chromeos::DBusThreadManager::Get();
-  static_cast<chromeos::FakeCrosDisksClient*>(
-      dbus_thread_manager->GetCrosDisksClient())
+  static_cast<chromeos::FakeCrosDisksClient*>(chromeos::CrosDisksClient::Get())
       ->AddCustomMountPointCallback(
           base::BindRepeating(&FakeDriveFsLauncherClient::MaybeMountDriveFs,
                               base::Unretained(this)));

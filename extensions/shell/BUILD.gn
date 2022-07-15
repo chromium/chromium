@@ -234,6 +234,7 @@ source_set("app_shell_lib") {
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/ash/components/dbus/hermes",
       "//chromeos/dbus",
+      "//chromeos/dbus/cros_disks",
       "//chromeos/dbus/power",
       "//chromeos/login/login_state",
       "//chromeos/network",

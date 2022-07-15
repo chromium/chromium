@@ -27,7 +27,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace ash::disks {
 namespace {
@@ -70,8 +69,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                              public CrosDisksClient::Observer {
  public:
   DiskMountManagerImpl() {
-    DBusThreadManager* dbus_thread_manager = DBusThreadManager::Get();
-    cros_disks_client_ = dbus_thread_manager->GetCrosDisksClient();
+    cros_disks_client_ = chromeos::CrosDisksClient::Get();
     suspend_unmount_manager_ = std::make_unique<SuspendUnmountManager>(this);
 
     cros_disks_client_->AddObserver(this);

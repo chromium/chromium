@@ -71,6 +71,7 @@
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -146,6 +147,7 @@ void InitializeDBus() {
   // ConciergeClient depends on CiceroneClient.
   InitializeDBusClient<ConciergeClient>(bus);
   InitializeDBusClient<CrasAudioClient>(bus);
+  InitializeDBusClient<CrosDisksClient>(bus);
   InitializeDBusClient<cros_healthd::CrosHealthdClient>(bus);
   InitializeDBusClient<CryptohomeMiscClient>(bus);
   InitializeDBusClient<CryptohomePkcs11Client>(bus);
@@ -295,6 +297,7 @@ void ShutdownDBus() {
   CryptohomePkcs11Client::Shutdown();
   CryptohomeMiscClient::Shutdown();
   cros_healthd::CrosHealthdClient::Shutdown();
+  CrosDisksClient::Shutdown();
   CrasAudioClient::Shutdown();
   ConciergeClient::Shutdown();
   CiceroneClient::Shutdown();

@@ -23,8 +23,8 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -267,10 +267,7 @@ FakeDriveFs::~FakeDriveFs() = default;
 
 void FakeDriveFs::RegisterMountingForAccountId(
     base::RepeatingCallback<std::string()> account_id_getter) {
-  chromeos::DBusThreadManager* dbus_thread_manager =
-      chromeos::DBusThreadManager::Get();
-  static_cast<chromeos::FakeCrosDisksClient*>(
-      dbus_thread_manager->GetCrosDisksClient())
+  static_cast<chromeos::FakeCrosDisksClient*>(chromeos::CrosDisksClient::Get())
       ->AddCustomMountPointCallback(base::BindRepeating(&MaybeMountDriveFs));
 
   GetRegisteredFakeDriveFsIntances().emplace_back(std::move(account_id_getter),

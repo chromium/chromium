@@ -46,6 +46,8 @@ constexpr char kReadWriteOption[] = "rw";
 constexpr char kRemountOption[] = "remount";
 constexpr char kMountLabelOption[] = "mountlabel";
 
+CrosDisksClient* g_instance = nullptr;
+
 // Checks if retrieved media type is in boundaries of DeviceMediaType.
 bool IsValidMediaType(uint32_t type) {
   return type < static_cast<uint32_t>(cros_disks::DEVICE_MEDIA_NUM_VALUES);
@@ -301,7 +303,6 @@ class CrosDisksClientImpl : public CrosDisksClient {
                        std::move(callback), std::move(error_callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         cros_disks::kCrosDisksServiceName,
@@ -814,18 +815,42 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
 ////////////////////////////////////////////////////////////////////////////////
 // CrosDisksClient
 
-CrosDisksClient::CrosDisksClient() = default;
-
-CrosDisksClient::~CrosDisksClient() = default;
+// static
+CrosDisksClient* CrosDisksClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<CrosDisksClient> CrosDisksClient::Create() {
+void CrosDisksClient::Initialize(dbus::Bus* bus) {
+  // See ArcDataSnapshotdManager for code that sets this flag.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kCrosDisksFake)) {
-    return std::make_unique<FakeCrosDisksClient>();
-  } else {
-    return std::make_unique<CrosDisksClientImpl>();
+    InitializeFake();
+    return;
   }
+  CHECK(bus);
+  (new CrosDisksClientImpl())->Init(bus);
+}
+
+// static
+void CrosDisksClient::InitializeFake() {
+  (new FakeCrosDisksClient())->Init(nullptr);
+}
+
+// static
+void CrosDisksClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+CrosDisksClient::CrosDisksClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+CrosDisksClient::~CrosDisksClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 // static
