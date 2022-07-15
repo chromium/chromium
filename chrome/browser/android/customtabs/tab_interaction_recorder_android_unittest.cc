@@ -82,12 +82,11 @@ class AutofillObserverImplTest : public testing::Test {
     manager_ = std::make_unique<MockAutofillManager>(driver_.get(), &client_);
   }
 
-  void TearDown() override {
-    manager_.reset();
-    driver_.reset();
-  }
+  void TearDown() override { driver_.reset(); }
 
   MockAutofillManager* autofill_manager() { return manager_.get(); }
+
+  void DestroyManager() { manager_.release(); }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -111,6 +110,16 @@ TEST_F(AutofillObserverImplTest, TestFormInteraction) {
 TEST_F(AutofillObserverImplTest, TestNoFormInteraction) {
   base::MockOnceCallback<void()> callback;
   auto* observer = new AutofillObserverImpl(autofill_manager(), callback.Get());
+
+  EXPECT_CALL(callback, Run()).Times(0);
+  delete observer;
+}
+
+TEST_F(AutofillObserverImplTest, TestAutofillManagerDestroy) {
+  base::MockOnceCallback<void()> callback;
+  auto* observer = new AutofillObserverImpl(autofill_manager(), callback.Get());
+
+  DestroyManager();
 
   EXPECT_CALL(callback, Run()).Times(0);
   delete observer;
