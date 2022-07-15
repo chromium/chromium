@@ -32,6 +32,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AppLauncher.AppURLHasChromeLaunchScheme" enum="Boolean"
+    expires_after="2023-07-04">
+  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    This histogram counts the frequency of app launch attempts where the target
+    app is Chrome itself. This logged once per app launch attempt.
+  </summary>
+</histogram>
+
 <histogram name="IOS.BackgroundTimeBeforeColdStart" units="minutes"
     expires_after="2023-04-27">
   <owner>thegreenfrog@chromium.org</owner>
