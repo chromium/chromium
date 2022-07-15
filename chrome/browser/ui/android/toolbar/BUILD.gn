@@ -292,8 +292,13 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonViewTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/HomeButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainerTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarSnapshotStateTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarTabletUnitTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarInteractabilityManagerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediatorTest.java",
   ]
 

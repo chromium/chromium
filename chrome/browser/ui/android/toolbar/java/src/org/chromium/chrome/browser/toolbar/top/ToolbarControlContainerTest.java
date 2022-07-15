@@ -20,6 +20,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
@@ -45,6 +46,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @DisabledTest(message = "Temporarily disabled due to https://crbug.com/1344612")
     public void testIsDirty() {
         ToolbarViewResourceAdapter adapter =
                 new ToolbarViewResourceAdapter(mToolbarContainer, false);

@@ -31,7 +31,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -840,9 +839,8 @@ public class ToolbarTablet
     }
 
     private boolean isTabletGridTabSwitcherPolishEnabled() {
-        return new BooleanCachedFieldTrialParameter(
-                ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, "enable_launch_polish", false)
-                .getValue();
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, "enable_launch_polish", false);
     }
 
     @VisibleForTesting
