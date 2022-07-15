@@ -97,6 +97,28 @@ std::unique_ptr<net::test_server::HttpResponse> CacheableResponseHandler(
   return response;
 }
 
+// Similar to above, but doesn't send Content-Length header.
+std::unique_ptr<net::test_server::HttpResponse>
+CacheableWithoutContentLengthHandler(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path_piece() != "/cacheable_without_content_length")
+    return nullptr;
+
+  uint64_t body_size = 64;
+  std::string query_body_size;
+  if (net::GetValueForKeyInQuery(request.GetURL(), "body-size",
+                                 &query_body_size)) {
+    EXPECT_TRUE(base::StringToUint64(query_body_size, &body_size));
+  }
+
+  constexpr const char kHeader[] =
+      "HTTP/1.1 200 OK\n"
+      "Content-Type: text/plain\n";
+  auto response = std::make_unique<net::test_server::RawHttpResponse>(
+      kHeader, std::string(body_size, 'a'));
+  return response;
+}
+
 // Used for cross origin read blocking check.
 std::unique_ptr<net::test_server::HttpResponse> CorbCheckHandler(
     const net::test_server::HttpRequest& request) {
@@ -143,6 +165,8 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
     test_server_.AddDefaultHandlers();
     test_server_.RegisterRequestHandler(
         base::BindRepeating(&CacheableResponseHandler));
+    test_server_.RegisterRequestHandler(
+        base::BindRepeating(&CacheableWithoutContentLengthHandler));
     test_server_.RegisterRequestHandler(base::BindRepeating(&CorbCheckHandler));
     ASSERT_TRUE(test_server_.Start());
 
@@ -439,6 +463,15 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_Expired) {
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_ResponseTooLarge) {
   ResourceRequest request = CreateRequest(
       base::StringPrintf("/cacheable?body-size=%d", kMaxPerEntrySize + 1));
+  StoreResponseToMemoryCache(request);
+
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
+TEST_F(NetworkServiceMemoryCacheTest,
+       CanServe_ResponseTooLargeWithoutContentLength) {
+  ResourceRequest request = CreateRequest(base::StringPrintf(
+      "/cacheable_without_content_length?body-size=%d", kMaxPerEntrySize + 1));
   StoreResponseToMemoryCache(request);
 
   ASSERT_FALSE(CanServeFromMemoryCache(request));

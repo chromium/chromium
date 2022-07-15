@@ -1751,9 +1751,12 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
   DCHECK(read_in_progress_);
   read_in_progress_ = false;
 
-  if (memory_cache_writer_ && pending_write_) {
-    memory_cache_writer_->OnDataRead(
-        pending_write_->buffer() + pending_write_buffer_offset_, num_bytes);
+  if (memory_cache_writer_ && pending_write_ && num_bytes > 0) {
+    if (!memory_cache_writer_->OnDataRead(
+            pending_write_->buffer() + pending_write_buffer_offset_,
+            num_bytes)) {
+      memory_cache_writer_.reset();
+    }
   }
 
   size_t new_data_offset = pending_write_buffer_offset_;

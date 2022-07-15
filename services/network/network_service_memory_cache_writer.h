@@ -32,6 +32,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCacheWriter {
   NetworkServiceMemoryCacheWriter(
       base::WeakPtr<NetworkServiceMemoryCache> cache,
       uint64_t trace_id,
+      size_t max_bytes,
       std::string cache_key,
       net::URLRequest* request,
       mojom::RequestDestination request_destination,
@@ -39,8 +40,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCacheWriter {
 
   ~NetworkServiceMemoryCacheWriter();
 
-  // Called when the owner received response content.
-  void OnDataRead(const char* buf, int result);
+  // Called when the owner received response content. Returns false when `this`
+  // doesn't want to duplicate the response any longer (e.g. the content is too
+  // large).
+  bool OnDataRead(const char* buf, int result);
 
   // Called when the owner completed.
   void OnCompleted(const URLLoaderCompletionStatus& status);
@@ -50,6 +53,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCacheWriter {
 
   // Used for tracing.
   const uint64_t trace_id_;
+
+  // The maximum size of `received_data_`.
+  const size_t max_bytes_;
 
   std::string cache_key_;
 

@@ -15,12 +15,14 @@ namespace network {
 NetworkServiceMemoryCacheWriter::NetworkServiceMemoryCacheWriter(
     base::WeakPtr<NetworkServiceMemoryCache> cache,
     uint64_t trace_id,
+    size_t max_bytes,
     std::string cache_key,
     net::URLRequest* url_request,
     mojom::RequestDestination request_destination,
     const mojom::URLResponseHeadPtr& response_head)
     : cache_(std::move(cache)),
       trace_id_(trace_id),
+      max_bytes_(max_bytes),
       cache_key_(std::move(cache_key)),
       url_request_(url_request),
       request_destination_(request_destination),
@@ -37,13 +39,18 @@ NetworkServiceMemoryCacheWriter::~NetworkServiceMemoryCacheWriter() {
                                   TRACE_ID_LOCAL(trace_id_));
 }
 
-void NetworkServiceMemoryCacheWriter::OnDataRead(const char* buf, int result) {
+bool NetworkServiceMemoryCacheWriter::OnDataRead(const char* buf, int result) {
+  DCHECK_GT(result, 0);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
       "loading", "NetworkServiceMemoryCacheWriter::OnDataRead",
       TRACE_ID_LOCAL(trace_id_), "result", result);
 
-  if (result > 0)
-    received_data_.insert(received_data_.end(), buf, buf + result);
+  DCHECK_GE(max_bytes_, received_data_.size());
+  if (static_cast<size_t>(result) > max_bytes_ - received_data_.size())
+    return false;
+
+  received_data_.insert(received_data_.end(), buf, buf + result);
+  return true;
 }
 
 void NetworkServiceMemoryCacheWriter::OnCompleted(

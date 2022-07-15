@@ -5,6 +5,7 @@
 #include "services/network/network_service_memory_cache.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "base/bit_cast.h"
 #include "base/memory/ref_counted_memory.h"
@@ -162,6 +163,9 @@ NetworkServiceMemoryCache::NetworkServiceMemoryCache(
       max_per_entry_bytes_(kNetworkServiceMemoryCacheMaxPerEntrySize.Get()) {
   DCHECK(network_context_);
   DCHECK_GE(max_total_bytes_, max_per_entry_bytes_);
+  DCHECK_GE(static_cast<size_t>(std::numeric_limits<int>::max()),
+            max_per_entry_bytes_);
+
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE,
       base::BindRepeating(&NetworkServiceMemoryCache::OnMemoryPressure,
@@ -222,6 +226,9 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
     return nullptr;
   }
 
+  if (response->content_length > static_cast<int>(max_per_entry_bytes_))
+    return nullptr;
+
   net::ValidationType validation_type = response->headers->RequiresValidation(
       response->request_time, response->response_time, GetCurrentTime());
   if (validation_type != net::VALIDATION_NONE)
@@ -237,8 +244,8 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
       /*single_key_checksum=*/"");
 
   return std::make_unique<NetworkServiceMemoryCacheWriter>(
-      weak_ptr_factory_.GetWeakPtr(), GetNextTraceId(), std::move(cache_key),
-      url_request, request_destination, response);
+      weak_ptr_factory_.GetWeakPtr(), GetNextTraceId(), max_per_entry_bytes_,
+      std::move(cache_key), url_request, request_destination, response);
 }
 
 void NetworkServiceMemoryCache::StoreResponse(
@@ -248,6 +255,8 @@ void NetworkServiceMemoryCache::StoreResponse(
     const net::HttpVaryData& vary_data,
     mojom::URLResponseHeadPtr response_head,
     std::vector<unsigned char> data) {
+  DCHECK_GE(max_per_entry_bytes_, data.size());
+
   // TODO(https://crbug.com/1339708): Consider caching a response that doesn't
   // have contents.
   if (status.error_code != net::OK || data.size() == 0)
@@ -260,9 +269,6 @@ void NetworkServiceMemoryCache::StoreResponse(
       base::saturated_cast<base::Histogram::Sample>(data.size()),
       /*min=*/1, /*exclusive_max=*/50000000,
       /*buckets=*/50);
-
-  if (max_per_entry_bytes_ < data.size())
-    return;
 
   // Record fresness of the response in seconds.
   net::HttpResponseHeaders::FreshnessLifetimes lifetimes =
