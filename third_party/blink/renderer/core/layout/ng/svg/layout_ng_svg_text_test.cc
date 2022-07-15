@@ -109,6 +109,7 @@ TEST_F(LayoutNGSVGTextTest, SubtreeLayout) {
   ASSERT_FALSE(view.NeedsLayout());
 
   GetElementById("t")->setAttribute("transform", "scale(0.5)");
+  GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
   EXPECT_TRUE(frame_view->IsSubtreeLayout());
 
   uint32_t pre_layout_count = AllLayoutCallCount();

@@ -149,8 +149,6 @@ void SVGGraphicsElement::SvgAttributeChanged(
     // away with removing the InvalidationGuard?
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::FromAttribute(attr_name));
-    if (LayoutObject* object = GetLayoutObject())
-      MarkForLayoutAndParentResourceInvalidation(*object);
     return;
   }
 
