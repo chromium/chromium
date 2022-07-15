@@ -13,6 +13,10 @@
 
 namespace chromeos {
 
+namespace {
+constexpr char kSelectedTheme[] = "selectedTheme";
+}
+
 constexpr StaticOobeScreenId ThemeSelectionScreenView::kScreenId;
 
 ThemeSelectionScreenHandler::ThemeSelectionScreenHandler()
@@ -20,8 +24,10 @@ ThemeSelectionScreenHandler::ThemeSelectionScreenHandler()
 
 ThemeSelectionScreenHandler::~ThemeSelectionScreenHandler() = default;
 
-void ThemeSelectionScreenHandler::Show() {
-  ShowInWebUI();
+void ThemeSelectionScreenHandler::Show(const std::string& mode) {
+  base::Value::Dict data;
+  data.Set(kSelectedTheme, mode);
+  ShowInWebUI(std::move(data));
 }
 
 void ThemeSelectionScreenHandler::DeclareLocalizedValues(

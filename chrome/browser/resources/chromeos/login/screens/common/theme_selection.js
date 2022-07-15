@@ -88,6 +88,10 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     this.selectedTheme = 'auto';
   }
 
+  onBeforeShow(data) {
+    this.selectedTheme = 'selectedTheme' in data && data.selectedTheme;
+  }
+
   getOobeUIInitialState() {
     return OOBE_UI_STATE.THEME_SELECTION;
   }

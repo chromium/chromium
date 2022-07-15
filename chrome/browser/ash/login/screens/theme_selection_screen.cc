@@ -19,6 +19,19 @@ namespace ash {
 namespace {
 constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionSelect[] = "select";
+
+std::string GetSelectedTheme(Profile* profile) {
+  if (profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType) ==
+      static_cast<int>(ScheduleType::kSunsetToSunrise)) {
+    return ThemeSelectionScreenView::kAutoMode;
+  }
+
+  if (profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled)) {
+    return ThemeSelectionScreenView::kDarkMode;
+  }
+  return ThemeSelectionScreenView::kLightMode;
+}
+
 }  // namespace
 
 // static
@@ -61,8 +74,10 @@ bool ThemeSelectionScreen::MaybeSkip(WizardContext* context) {
 }
 
 void ThemeSelectionScreen::ShowImpl() {
-  if (view_)
-    view_->Show();
+  if (!view_)
+    return;
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  view_->Show(GetSelectedTheme(profile));
 }
 
 void ThemeSelectionScreen::HideImpl() {}
