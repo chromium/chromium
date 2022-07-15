@@ -7,8 +7,10 @@
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
+#include "content/browser/preloading//preloading.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -113,6 +115,28 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   if (render_frame_host().GetParent())
     return;
 
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+
+  for (const auto& candidate : candidates) {
+    // Create new PreloadingPrediction class and pass all fields for all
+    // candidates.
+
+    // In case of speculation rules, the confidence is set as 100 as the URL
+    // was not predicted and confidence in this case is not defined.
+    int64_t confidence = 100;
+    PreloadingURLMatchCallback same_url_matcher =
+        PreloadingData::GetSameURLMatcher(candidate->url);
+
+    auto* preloading_data =
+        PreloadingData::GetOrCreateForWebContents(web_contents);
+    // TODO(crbug.com/1341019): Pass the action requested by speculation rules
+    // to PreloadingPrediction.
+    preloading_data->AddPreloadingPrediction(
+        ToPreloadingPredictor(ContentPreloadingPredictor::kSpeculationRules),
+        confidence, std::move(same_url_matcher));
+  }
+
   if (base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
     PrefetchDocumentManager* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(
@@ -209,8 +233,23 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
 
   // Actually start the candidates once the diffing is done.
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host());
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
   for (const auto& it : candidates_to_start) {
     DCHECK_EQ(it->action, blink::mojom::SpeculationAction::kPrerender);
+
+    auto* preloading_data =
+        PreloadingData::GetOrCreateForWebContents(web_contents);
+
+    // Create new PreloadingAttempt and pass all the values corresponding to
+    // this prerendering attempt.
+    PreloadingURLMatchCallback same_url_matcher =
+        PreloadingData::GetSameURLMatcher(it->url);
+    PreloadingAttempt* preloading_attempt =
+        preloading_data->AddPreloadingAttempt(
+            ToPreloadingPredictor(
+                ContentPreloadingPredictor::kSpeculationRules),
+            PreloadingType::kPrerender, std::move(same_url_matcher));
 
     auto [begin, end] = base::ranges::equal_range(
         started_prerenders_.begin(), started_prerenders_.end(), it->url,
@@ -235,10 +274,6 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     }
 
     Referrer referrer(*(it->referrer));
-    WebContents* web_contents =
-        WebContents::FromRenderFrameHost(&render_frame_host());
-    // TODO(crbug.com/1325073): Update the PreloadingAttempt when integrating
-    // speculation rules logging with Preloading APIs.
     int prerender_host_id = registry_->CreateAndStartHost(
         PrerenderAttributes(it->url, PrerenderTriggerType::kSpeculationRule,
                             /*embedder_histogram_suffix=*/"", referrer,
@@ -248,7 +283,7 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
                             rfhi.GetFrameTreeNodeId(),
                             rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
                             /*url_match_predicate=*/absl::nullopt),
-        *web_contents, /*preloading_attempt=*/nullptr);
+        *web_contents, /*preloading_attempt=*/preloading_attempt);
     started_prerenders_.insert(end, {.url = it->url,
                                      .referrer = referrer,
                                      .prerender_host_id = prerender_host_id});

@@ -1412,6 +1412,8 @@ source_set("browser") {
     "preloading/prefetch/prefetch_url_loader_interceptor.h",
     "preloading/prefetch/prefetched_mainframe_response_container.cc",
     "preloading/prefetch/prefetched_mainframe_response_container.h",
+    "preloading/preloading.cc",
+    "preloading/preloading.h",
     "preloading/preloading_attempt_impl.cc",
     "preloading/preloading_attempt_impl.h",
     "preloading/preloading_data_impl.cc",

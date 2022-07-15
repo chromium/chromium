@@ -66,7 +66,9 @@ bool AreHttpRequestHeadersCompatible(
 PreloadingFailureReason ToPreloadingFailureReason(
     PrerenderHost::FinalStatus status) {
   return static_cast<PreloadingFailureReason>(
-      static_cast<int>(status) + kPreloadingFailureReasonCommonEnd);
+      static_cast<int>(status) +
+      static_cast<int>(
+          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
 }
 
 }  // namespace

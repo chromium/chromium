@@ -20,12 +20,16 @@ enum class ChromePreloadingPredictor {
   // When the preloading URL is predicted from the Omnibox Direct URL Input
   // (DUI). This is used to perform various preloading operations like prefetch
   // and prerender to load Omnibox predicted URLs faster.
-  kOmniboxDirectURLInput = content::kPreloadingPredictorContentEnd,
+  kOmniboxDirectURLInput = static_cast<int>(
+      content::PreloadingPredictor::kPreloadingPredictorContentEnd),
 
   // When a pointerdown (e.g. mousedown or touchstart) event happens on an
   // anchor element with an href value pointing to an HTTP(S) origin, we may
   // attempt to preload the link.
-  kPointerDownOnAnchor = content::kPreloadingPredictorContentEnd + 1,
+  kPointerDownOnAnchor =
+      static_cast<int>(
+          content::PreloadingPredictor::kPreloadingPredictorContentEnd) +
+      1,
 
   // TODO(crbug.com/1309934): Integrate more Preloading predictors with
   // Preloading logging APIs.
@@ -44,7 +48,8 @@ enum class ChromePreloadingEligibility {
   // element.
 
   // Chrome was unable to get a LoadingPredictor object for the user profile.
-  kUnableToGetLoadingPredictor = content::kPreloadingEligibilityContentEnd,
+  kUnableToGetLoadingPredictor = static_cast<int>(
+      content::PreloadingEligibility::kPreloadingEligibilityContentEnd),
 };
 
 // Helper method to convert ChromePreloadingEligibility to
