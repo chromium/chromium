@@ -99,6 +99,18 @@ public class Clipboard {
     }
 
     /**
+     * Resets the clipboard instance for testing.
+     *
+     * Particularly relevant for robolectric tests where the application context is not shared
+     * across test runs and the Clipboard instance would hold onto an older no longer used
+     * application context instance.
+     */
+    @VisibleForTesting
+    public static void resetForTesting() {
+        sInstance = null;
+    }
+
+    /**
      * Emulates the behavior of the now-deprecated
      * {@link android.text.ClipboardManager#getText()} by invoking
      * {@link android.content.ClipData.Item#coerceToText(Context)} on the first
