@@ -144,7 +144,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static bool IsPortalsEnabled();
   BLINK_PLATFORM_EXPORT static void EnablePreciseMemoryInfo(bool);
   BLINK_PLATFORM_EXPORT static void EnablePrerender2(bool);
-  BLINK_PLATFORM_EXPORT static bool IsPrerender2Enabled();
   BLINK_PLATFORM_EXPORT static void EnablePrerender2RelatedFeatures(bool);
   BLINK_PLATFORM_EXPORT static void EnablePresentationAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnablePushMessaging(bool);

@@ -507,9 +507,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
         features::kSpeculationRulesPrefetchProxy);
   }
 
-  if (trial_name == "Prerender2")
-    return base::FeatureList::IsEnabled(features::kPrerender2);
-
   return true;
 }
 

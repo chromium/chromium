@@ -258,7 +258,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kSetOnlyIfOverridden},
     {wf::EnablePointerLockOptions, features::kPointerLockOptions},
     {wf::EnablePortals, blink::features::kPortals, kSetOnlyIfOverridden},
-    {wf::EnablePrerender2, blink::features::kPrerender2, kSetOnlyIfOverridden},
+    {wf::EnablePrerender2, blink::features::kPrerender2},
     {wf::EnablePushSubscriptionChangeEvent,
      features::kPushSubscriptionChangeEvent},
     {wf::EnableRestrictGamepadAccess, features::kRestrictGamepadAccess},
@@ -613,17 +613,6 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "=" << blink::features::kPortals.name
         << " instead.";
     WebRuntimeFeatures::EnablePortals(false);
-  }
-
-  // blink::features::kPrerender2 controls the browser side implementation of
-  // the Prerender2. To use the feature, both blink::features::kPrerender2 and
-  // WebRuntimeFeatures are enabled.
-  if (!blink::features::IsPrerender2Enabled()) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsPrerender2Enabled())
-        << "Prerender2 cannot be enabled in this configuration. Use --"
-        << switches::kEnableFeatures << "=" << blink::features::kPrerender2.name
-        << " instead.";
-    WebRuntimeFeatures::EnablePrerender2(false);
   }
 
   // Fenced frames, like Portals, cannot be enabled without the support of the

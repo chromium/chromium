@@ -1908,10 +1908,6 @@
     {
       name: "Prerender2",
       status: {"Android": "stable"},
-      // TODO(https://crbug.com/1319296): Remove the origin trial infra for
-      // Prerender2.
-      origin_trial_feature_name: "Prerender2",
-      origin_trial_os: ["android"],
     },
     // This RTE feature is used to indicate the status of RTE feature Prerender2
     // and an embedder feature flag that enables the Prerender2. With this flag
