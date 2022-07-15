@@ -7779,6 +7779,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.AllocatedObjects"
       label="Only counting objects allocated using the malloc allocator. The
              measurement is only accurate on Linux and MacOS."/>
+  <suffix name="Malloc.CommittedSize"
+      label="Committed memory size for malloc(). Recorded only when
+             PartitionAlloc is used as malloc()."/>
   <suffix name="Malloc.Fragmentation"
       label="Fragmentation of Partition allocator."/>
   <suffix name="Malloc.Fragmentation.After1H"
@@ -7866,6 +7869,14 @@ chromium-metrics-reviews@google.com.
              uptime is 24H+."/>
   <suffix name="PartitionAlloc.AllocatedObjects"
       label="Only counting objects allocated using Partition allocator."/>
+  <suffix name="PartitionAlloc.CommittedSize.ArrayBuffer"
+      label="Committed memory size for the ArrayBuffer partition."/>
+  <suffix name="PartitionAlloc.CommittedSize.Buffer"
+      label="Committed memory size for the Buffer partition."/>
+  <suffix name="PartitionAlloc.CommittedSize.FastMalloc"
+      label="Committed memory size for the FastMalloc partition."/>
+  <suffix name="PartitionAlloc.CommittedSize.Layout"
+      label="Committed memory size for the Layout partition."/>
   <suffix name="PartitionAlloc.Fragmentation.ArrayBuffer"
       label="Fragmentation of ArrayBuffer partition."/>
   <suffix name="PartitionAlloc.Fragmentation.ArrayBuffer.After1H"

@@ -196,6 +196,14 @@ void CheckExperimentalMemoryMetricsForProcessType(
                     histogram_tester, count, ValueRestriction::NONE,
                     number_of_processes);
   CheckMemoryMetric(std::string("Memory.Experimental.") + process_type +
+                        "2.Malloc.CommittedSize",
+                    histogram_tester, count, ValueRestriction::ABOVE_ZERO,
+                    number_of_processes);
+  CheckMemoryMetric(std::string("Memory.Experimental.") + process_type +
+                        "2.Malloc.MaxCommittedSize",
+                    histogram_tester, count, ValueRestriction::ABOVE_ZERO,
+                    number_of_processes);
+  CheckMemoryMetric(std::string("Memory.Experimental.") + process_type +
                         "2.Malloc.Fragmentation",
                     histogram_tester, count, ValueRestriction::NONE,
                     number_of_processes);
