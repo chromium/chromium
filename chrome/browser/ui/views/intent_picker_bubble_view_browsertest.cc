@@ -440,8 +440,8 @@ class IntentPickerDialogTest : public DialogBrowserTest {
       animation_mode_reset_;
 };
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Flaky on Mac and Win. See https://crbug.com/1330302.
+#if BUILDFLAG(IS_MAC)
+// Flaky on Mac. See https://crbug.com/1330302.
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default
