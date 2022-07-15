@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_accelerators.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/common/features/feature_session_type.h"
@@ -656,6 +658,11 @@ void LoginDisplayHostCommon::AddWizardCreatedObserverForTests(
 
 base::WeakPtr<quick_start::TargetDeviceBootstrapController>
 LoginDisplayHostCommon::GetQuickStartBootstrapController() {
+  DCHECK(features::IsOobeQuickStartEnabled());
+  if (!bootstrap_controller_) {
+    bootstrap_controller_ =
+        std::make_unique<ash::quick_start::TargetDeviceBootstrapController>();
+  }
   return bootstrap_controller_->GetAsWeakPtrForClient();
 }
 
