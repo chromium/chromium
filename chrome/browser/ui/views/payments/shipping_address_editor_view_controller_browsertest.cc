@@ -187,7 +187,7 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
     autofill::CountryComboboxModel* country_model =
         static_cast<autofill::CountryComboboxModel*>(
             country_combobox->GetModel());
-    int i = 0;
+    size_t i = 0;
     for (; i < country_model->GetItemCount(); i++) {
       if (country_model->GetItemAt(i) == country_name)
         break;
@@ -390,11 +390,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
           static_cast<autofill::RegionComboboxModel*>(
               region_combobox->GetModel());
       if (use_regions1) {
-        ASSERT_EQ(2, region_model->GetItemCount());
+        ASSERT_EQ(2u, region_model->GetItemCount());
         EXPECT_EQ(u"---", region_model->GetItemAt(0));
         EXPECT_EQ(u"region1a", region_model->GetItemAt(1));
       } else {
-        ASSERT_EQ(3, region_model->GetItemCount());
+        ASSERT_EQ(3u, region_model->GetItemCount());
         EXPECT_EQ(u"---", region_model->GetItemAt(0));
         EXPECT_EQ(u"region2a", region_model->GetItemAt(1));
         EXPECT_EQ(u"region2b", region_model->GetItemAt(2));

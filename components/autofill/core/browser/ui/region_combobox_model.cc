@@ -37,18 +37,15 @@ void RegionComboboxModel::LoadRegionData(const std::string& country_code,
                           weak_factory_.GetWeakPtr()));
 }
 
-int RegionComboboxModel::GetItemCount() const {
+size_t RegionComboboxModel::GetItemCount() const {
   // The combobox view needs to always have at least one item. If the regions
   // have not been completely loaded yet, we display a single "loading" item.
-  if (regions_.size() == 0)
-    return 1;
-  return regions_.size();
+  return std::max(regions_.size(), size_t{1});
 }
 
-std::u16string RegionComboboxModel::GetItemAt(int index) const {
-  DCHECK_GE(index, 0);
+std::u16string RegionComboboxModel::GetItemAt(size_t index) const {
   // This might happen because of the asynchronous nature of the data.
-  if (static_cast<size_t>(index) >= regions_.size())
+  if (index >= regions_.size())
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_LOADING_REGIONS);
 
   if (!regions_[index].second.empty())
@@ -59,12 +56,8 @@ std::u16string RegionComboboxModel::GetItemAt(int index) const {
   return u"---";
 }
 
-bool RegionComboboxModel::IsItemSeparatorAt(int index) const {
-  // This might happen because of the asynchronous nature of the data.
-  DCHECK_GE(index, 0);
-  if (static_cast<size_t>(index) >= regions_.size())
-    return false;
-  return regions_[index].first.empty();
+bool RegionComboboxModel::IsItemSeparatorAt(size_t index) const {
+  return index < regions_.size() && regions_[index].first.empty();
 }
 
 void RegionComboboxModel::OnRegionDataLoaded(

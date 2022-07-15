@@ -93,8 +93,8 @@ enum {
 class DummyComboboxModel : public ui::ComboboxModel {
  public:
   // Overridden from ui::ComboboxModel:
-  int GetItemCount() const override { return 10; }
-  std::u16string GetItemAt(int index) const override {
+  size_t GetItemCount() const override { return 10; }
+  std::u16string GetItemAt(size_t index) const override {
     return u"Item " + base::NumberToString16(index);
   }
 };

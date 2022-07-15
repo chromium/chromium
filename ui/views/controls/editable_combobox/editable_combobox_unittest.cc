@@ -909,17 +909,17 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
   }
 
   // ui::ComboboxModel:
-  int GetItemCount() const override { return item_count_; }
-  std::u16string GetItemAt(int index) const override {
+  size_t GetItemCount() const override { return item_count_; }
+  std::u16string GetItemAt(size_t index) const override {
     DCHECK_LT(index, item_count_);
     return base::NumberToString16(index);
   }
 
-  void SetItemCount(int item_count) { item_count_ = item_count; }
+  void SetItemCount(size_t item_count) { item_count_ = item_count; }
 
  private:
   const raw_ptr<bool> destroyed_;
-  int item_count_ = 0;
+  size_t item_count_ = 0;
 };
 
 }  // namespace

@@ -773,8 +773,8 @@ class TestComboboxModel : public ui::ComboboxModel {
   TestComboboxModel& operator=(const TestComboboxModel&) = delete;
 
   // ui::ComboboxModel:
-  int GetItemCount() const override { return 2; }
-  std::u16string GetItemAt(int index) const override {
+  size_t GetItemCount() const override { return 2; }
+  std::u16string GetItemAt(size_t index) const override {
     return index == 0 ? base::SysNSStringToUTF16(kTestStringValue)
                       : u"Second Item";
   }

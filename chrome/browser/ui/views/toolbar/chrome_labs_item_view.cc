@@ -51,20 +51,20 @@ class LabsComboboxModel : public ui::ComboboxModel {
  public:
   explicit LabsComboboxModel(const LabInfo& lab,
                              const flags_ui::FeatureEntry* feature_entry,
-                             int default_index)
+                             size_t default_index)
       : lab_(lab),
         feature_entry_(feature_entry),
         default_index_(default_index) {}
 
   // ui::ComboboxModel:
-  int GetItemCount() const override { return feature_entry_->NumOptions(); }
+  size_t GetItemCount() const override { return feature_entry_->NumOptions(); }
 
   // The order in which these descriptions are returned is the same in
   // flags_ui::FeatureEntry::DescriptionForOption(..). If there are changes to
   // this, the same changes must be made in
   // flags_ui::FeatureEntry::DescriptionForOption(..).
-  std::u16string GetItemAt(int index) const override {
-    DCHECK_LT(index, feature_entry_->NumOptions());
+  std::u16string GetItemAt(size_t index) const override {
+    DCHECK_LT(index, static_cast<size_t>(feature_entry_->NumOptions()));
     int description_translation_id = IDS_CHROMELABS_DEFAULT;
     if (feature_entry_->type ==
         flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
@@ -72,14 +72,14 @@ class LabsComboboxModel : public ui::ComboboxModel {
         description_translation_id = IDS_CHROMELABS_DEFAULT;
       } else if (index == 1) {
         description_translation_id = IDS_CHROMELABS_ENABLED;
-      } else if (index < feature_entry_->NumOptions() - 1) {
+      } else if (index + 1 <
+                 static_cast<size_t>(feature_entry_->NumOptions())) {
         // First two options do not have variations params.
-        int variation_index = index - 2;
+        size_t variation_index = index - 2;
         return l10n_util::GetStringFUTF16(
             IDS_CHROMELABS_ENABLED_WITH_VARIATION_NAME,
             lab_.translated_feature_variation_descriptions[variation_index]);
       } else {
-        DCHECK_EQ(feature_entry_->NumOptions() - 1, index);
         description_translation_id = IDS_CHROMELABS_DISABLED;
       }
     } else {
@@ -100,7 +100,7 @@ class LabsComboboxModel : public ui::ComboboxModel {
  private:
   const LabInfo& lab_;
   raw_ptr<const flags_ui::FeatureEntry> feature_entry_;
-  int default_index_;
+  size_t default_index_;
 };
 
 ChromeLabsItemView::ChromeLabsItemView(

@@ -68,7 +68,7 @@ TEST_F(RecentlyUsedFoldersComboModelTest, NoDups) {
       bookmark_model->bookmark_bar_node(), 0, u"a", GURL("http://a"));
   RecentlyUsedFoldersComboModel model(bookmark_model.get(), new_node);
   std::set<std::u16string> items;
-  for (int i = 0; i < model.GetItemCount(); ++i) {
+  for (size_t i = 0; i < model.GetItemCount(); ++i) {
     if (!model.IsItemSeparatorAt(i))
       EXPECT_EQ(0u, items.count(model.GetItemAt(i)));
   }
@@ -87,11 +87,11 @@ TEST_F(RecentlyUsedFoldersComboModelTest, NotifyObserver) {
   TestComboboxModelObserver observer;
   model.AddObserver(&observer);
 
-  const int initial_count = model.GetItemCount();
+  const size_t initial_count = model.GetItemCount();
   // Remove a folder, it should remove an item from the model too.
   bookmark_model->Remove(sub_folder);
   EXPECT_TRUE(observer.GetAndClearChanged());
-  const int updated_count = model.GetItemCount();
+  const size_t updated_count = model.GetItemCount();
   EXPECT_LT(updated_count, initial_count);
 
   // Remove all, which should remove a folder too.

@@ -34,24 +34,24 @@ SimpleComboboxModel::SimpleComboboxModel(std::vector<Item> items)
 
 SimpleComboboxModel::~SimpleComboboxModel() = default;
 
-int SimpleComboboxModel::GetItemCount() const {
+size_t SimpleComboboxModel::GetItemCount() const {
   return items_.size();
 }
 
-std::u16string SimpleComboboxModel::GetItemAt(int index) const {
+std::u16string SimpleComboboxModel::GetItemAt(size_t index) const {
   return items_[index].text;
 }
 
 std::u16string SimpleComboboxModel::GetDropDownSecondaryTextAt(
-    int index) const {
+    size_t index) const {
   return items_[index].dropdown_secondary_text;
 }
 
-ui::ImageModel SimpleComboboxModel::GetIconAt(int index) const {
+ui::ImageModel SimpleComboboxModel::GetIconAt(size_t index) const {
   return items_[index].icon;
 }
 
-bool SimpleComboboxModel::IsItemSeparatorAt(int index) const {
+bool SimpleComboboxModel::IsItemSeparatorAt(size_t index) const {
   return items_[index].text.empty();
 }
 

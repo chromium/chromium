@@ -10,16 +10,16 @@ namespace views {
 namespace examples {
 
 ExampleComboboxModel::ExampleComboboxModel(const char* const* strings,
-                                           int count)
+                                           size_t count)
     : strings_(strings), count_(count) {}
 
 ExampleComboboxModel::~ExampleComboboxModel() = default;
 
-int ExampleComboboxModel::GetItemCount() const {
+size_t ExampleComboboxModel::GetItemCount() const {
   return count_;
 }
 
-std::u16string ExampleComboboxModel::GetItemAt(int index) const {
+std::u16string ExampleComboboxModel::GetItemAt(size_t index) const {
   return base::ASCIIToUTF16(strings_[index]);
 }
 

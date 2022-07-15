@@ -59,24 +59,21 @@ class TestComboboxModel : public ui::ComboboxModel {
 
   ~TestComboboxModel() override = default;
 
-  enum { kItemCount = 10 };
+  static constexpr size_t kItemCount = 10;
 
   // ui::ComboboxModel:
-  int GetItemCount() const override { return item_count_; }
-  std::u16string GetItemAt(int index) const override {
-    if (IsItemSeparatorAt(index)) {
-      NOTREACHED();
-      return u"SEPARATOR";
-    }
+  size_t GetItemCount() const override { return item_count_; }
+  std::u16string GetItemAt(size_t index) const override {
+    DCHECK(!IsItemSeparatorAt(index));
     return ASCIIToUTF16(index % 2 == 0 ? "PEANUT BUTTER" : "JELLY");
   }
-  bool IsItemSeparatorAt(int index) const override {
+  bool IsItemSeparatorAt(size_t index) const override {
     return separators_.find(index) != separators_.end();
   }
 
   absl::optional<size_t> GetDefaultIndex() const override {
     // Return the first index that is not a separator.
-    for (int index = 0; index < kItemCount; ++index) {
+    for (size_t index = 0; index < kItemCount; ++index) {
       if (separators_.find(index) == separators_.end())
         return index;
     }
@@ -84,12 +81,12 @@ class TestComboboxModel : public ui::ComboboxModel {
     return 0;
   }
 
-  void SetSeparators(const std::set<int>& separators) {
+  void SetSeparators(const std::set<size_t>& separators) {
     separators_ = separators;
     OnModelChanged();
   }
 
-  void set_item_count(int item_count) {
+  void set_item_count(size_t item_count) {
     item_count_ = item_count;
     OnModelChanged();
   }
@@ -100,8 +97,8 @@ class TestComboboxModel : public ui::ComboboxModel {
       observer.OnComboboxModelChanged(this);
   }
 
-  std::set<int> separators_;
-  int item_count_ = kItemCount;
+  std::set<size_t> separators_;
+  size_t item_count_ = kItemCount;
 };
 
 // A combobox model which refers to a vector.
@@ -115,16 +112,16 @@ class VectorComboboxModel : public ui::ComboboxModel {
 
   ~VectorComboboxModel() override = default;
 
-  void set_default_index(int default_index) { default_index_ = default_index; }
+  void set_default_index(size_t default_index) {
+    default_index_ = default_index;
+  }
 
   // ui::ComboboxModel:
-  int GetItemCount() const override {
-    return static_cast<int>(values_->size());
+  size_t GetItemCount() const override { return values_->size(); }
+  std::u16string GetItemAt(size_t index) const override {
+    return ASCIIToUTF16((*values_)[index]);
   }
-  std::u16string GetItemAt(int index) const override {
-    return ASCIIToUTF16(values_->at(index));
-  }
-  bool IsItemSeparatorAt(int index) const override { return false; }
+  bool IsItemSeparatorAt(size_t index) const override { return false; }
   absl::optional<size_t> GetDefaultIndex() const override {
     return default_index_;
   }
@@ -135,7 +132,7 @@ class VectorComboboxModel : public ui::ComboboxModel {
   }
 
  private:
-  int default_index_ = 0;
+  size_t default_index_ = 0;
   const raw_ptr<std::vector<std::string>> values_;
 };
 
@@ -203,7 +200,7 @@ class ComboboxTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  void InitCombobox(const std::set<int>* separators) {
+  void InitCombobox(const std::set<size_t>* separators) {
     model_ = std::make_unique<TestComboboxModel>();
 
     if (separators)
@@ -362,8 +359,7 @@ TEST_F(ComboboxTest, DisabilityTest) {
 TEST_F(ComboboxTest, KeyTest) {
   InitCombobox(nullptr);
   PressKey(ui::VKEY_END);
-  EXPECT_EQ(static_cast<size_t>(model_->GetItemCount()) - 1,
-            combobox_->GetSelectedIndex());
+  EXPECT_EQ(model_->GetItemCount() - 1, combobox_->GetSelectedIndex());
   PressKey(ui::VKEY_HOME);
   EXPECT_EQ(0u, combobox_->GetSelectedIndex());
   PressKey(ui::VKEY_DOWN);
@@ -378,14 +374,13 @@ TEST_F(ComboboxTest, KeyTest) {
   PressKey(ui::VKEY_PRIOR);
   EXPECT_EQ(0u, combobox_->GetSelectedIndex());
   PressKey(ui::VKEY_NEXT);
-  EXPECT_EQ(static_cast<size_t>(model_->GetItemCount()) - 1,
-            combobox_->GetSelectedIndex());
+  EXPECT_EQ(model_->GetItemCount() - 1, combobox_->GetSelectedIndex());
 }
 
 // Verifies that we don't select a separator line in combobox when navigating
 // through keyboard.
 TEST_F(ComboboxTest, SkipSeparatorSimple) {
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(2);
   InitCombobox(&separators);
   EXPECT_EQ(0u, combobox_->GetSelectedIndex());
@@ -406,7 +401,7 @@ TEST_F(ComboboxTest, SkipSeparatorSimple) {
 // Verifies that we never select the separator that is in the beginning of the
 // combobox list when navigating through keyboard.
 TEST_F(ComboboxTest, SkipSeparatorBeginning) {
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(0);
   InitCombobox(&separators);
   EXPECT_EQ(1u, combobox_->GetSelectedIndex());
@@ -427,7 +422,7 @@ TEST_F(ComboboxTest, SkipSeparatorBeginning) {
 // Verifies that we never select the separator that is in the end of the
 // combobox list when navigating through keyboard.
 TEST_F(ComboboxTest, SkipSeparatorEnd) {
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(TestComboboxModel::kItemCount - 1);
   InitCombobox(&separators);
   combobox_->SetSelectedIndex(8);
@@ -443,7 +438,7 @@ TEST_F(ComboboxTest, SkipSeparatorEnd) {
 // consecutive) that appear in the beginning of the combobox list when
 // navigating through keyboard.
 TEST_F(ComboboxTest, SkipMultipleSeparatorsAtBeginning) {
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(0);
   separators.insert(1);
   separators.insert(2);
@@ -467,7 +462,7 @@ TEST_F(ComboboxTest, SkipMultipleSeparatorsAtBeginning) {
 // consecutive) that appear in the middle of the combobox list when navigating
 // through keyboard.
 TEST_F(ComboboxTest, SkipMultipleAdjacentSeparatorsAtMiddle) {
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(4);
   separators.insert(5);
   separators.insert(6);
@@ -483,7 +478,7 @@ TEST_F(ComboboxTest, SkipMultipleAdjacentSeparatorsAtMiddle) {
 // consecutive) that appear in the end of the combobox list when navigating
 // through keyboard.
 TEST_F(ComboboxTest, SkipMultipleSeparatorsAtEnd) {
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(7);
   separators.insert(8);
   separators.insert(9);
@@ -505,7 +500,7 @@ TEST_F(ComboboxTest, SkipMultipleSeparatorsAtEnd) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(ComboboxTest, GetTextForRowTest) {
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(0);
   separators.insert(1);
   separators.insert(9);
@@ -768,7 +763,7 @@ TEST_F(ComboboxTest, ModelChanged) {
   EXPECT_EQ(2u, combobox_->GetSelectedRow());
 
   // Make the selected index a separator.
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(2);
   model_->SetSeparators(separators);
   EXPECT_EQ(4u, combobox_->GetRowCount());
@@ -827,13 +822,14 @@ TEST_F(ComboboxTest, TypingPrefixNotifiesListener) {
 // Test properties on the Combobox menu model.
 TEST_F(ComboboxTest, MenuModel) {
   const int kSeparatorIndex = 3;
-  std::set<int> separators;
+  std::set<size_t> separators;
   separators.insert(kSeparatorIndex);
   InitCombobox(&separators);
 
   ui::MenuModel* menu_model = test_api_->menu_model();
 
-  EXPECT_EQ(TestComboboxModel::kItemCount, menu_model->GetItemCount());
+  EXPECT_EQ(TestComboboxModel::kItemCount,
+            static_cast<size_t>(menu_model->GetItemCount()));
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
             menu_model->GetTypeAt(kSeparatorIndex));
 
@@ -904,8 +900,8 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
   }
 
   // ui::ComboboxModel:
-  int GetItemCount() const override { return item_count_; }
-  std::u16string GetItemAt(int index) const override {
+  size_t GetItemCount() const override { return item_count_; }
+  std::u16string GetItemAt(size_t index) const override {
     DCHECK_LT(index, item_count_);
     return base::NumberToString16(index);
   }
@@ -913,14 +909,14 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
     return default_index_;
   }
 
-  void SetItemCount(int item_count) { item_count_ = item_count; }
+  void SetItemCount(size_t item_count) { item_count_ = item_count; }
 
-  void SetDefaultIndex(int default_index) { default_index_ = default_index; }
+  void SetDefaultIndex(size_t default_index) { default_index_ = default_index; }
 
  private:
   const raw_ptr<bool> destroyed_;
-  int item_count_ = 0;
-  int default_index_ = -1;
+  size_t item_count_ = 0;
+  absl::optional<size_t> default_index_;
 };
 
 }  // namespace

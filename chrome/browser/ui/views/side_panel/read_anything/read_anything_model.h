@@ -30,25 +30,25 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   ReadAnythingFontModel& operator=(const ReadAnythingFontModel&) = delete;
   ~ReadAnythingFontModel() override;
 
-  std::string GetFontNameAt(int index);
+  std::string GetFontNameAt(size_t index);
   bool IsValidFontName(const std::string& font_name);
-  bool IsValidFontIndex(int index);
+  bool IsValidFontIndex(size_t index);
   void SetDefaultIndexFromPrefsFontName(std::string prefs_font_name);
-  std::string GetLabelFontListAt(int index);
+  std::string GetLabelFontListAt(size_t index);
 
  protected:
   // ui::Combobox implementation:
   absl::optional<size_t> GetDefaultIndex() const override;
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
-  std::u16string GetDropDownTextAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
+  std::u16string GetDropDownTextAt(size_t index) const override;
 
  private:
   // Styled font names for the drop down options in front-end.
   std::vector<std::u16string> font_choices_;
 
   // Default index for drop down, either zero or populated from prefs.
-  int default_index_ = 0;
+  size_t default_index_ = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ class ReadAnythingModel {
   void SetDistilledAXTree(ui::AXTreeUpdate snapshot,
                           std::vector<ui::AXNodeID> content_node_ids);
 
-  void SetSelectedFontByIndex(int new_index);
+  void SetSelectedFontByIndex(size_t new_index);
   void DecreaseTextSize();
   void IncreaseTextSize();
 

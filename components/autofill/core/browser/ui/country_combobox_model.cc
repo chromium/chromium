@@ -75,11 +75,11 @@ void CountryComboboxModel::SetCountries(
             std::back_inserter(countries_));
 }
 
-int CountryComboboxModel::GetItemCount() const {
+size_t CountryComboboxModel::GetItemCount() const {
   return countries_.size();
 }
 
-std::u16string CountryComboboxModel::GetItemAt(int index) const {
+std::u16string CountryComboboxModel::GetItemAt(size_t index) const {
   AutofillCountry* country = countries_[index].get();
   if (country)
     return countries_[index]->name();
@@ -89,7 +89,7 @@ std::u16string CountryComboboxModel::GetItemAt(int index) const {
   return u"---";
 }
 
-bool CountryComboboxModel::IsItemSeparatorAt(int index) const {
+bool CountryComboboxModel::IsItemSeparatorAt(size_t index) const {
   return !countries_[index];
 }
 

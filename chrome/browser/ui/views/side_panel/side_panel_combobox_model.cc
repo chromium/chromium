@@ -73,14 +73,14 @@ int SidePanelComboboxModel::GetIndexForId(SidePanelEntry::Id id) {
   return 0;
 }
 
-int SidePanelComboboxModel::GetItemCount() const {
+size_t SidePanelComboboxModel::GetItemCount() const {
   return entries_.size();
 }
 
-std::u16string SidePanelComboboxModel::GetItemAt(int index) const {
+std::u16string SidePanelComboboxModel::GetItemAt(size_t index) const {
   return entries_[index].text;
 }
 
-ui::ImageModel SidePanelComboboxModel::GetIconAt(int index) const {
+ui::ImageModel SidePanelComboboxModel::GetIconAt(size_t index) const {
   return entries_[index].icon;
 }

@@ -17,11 +17,11 @@ SourceLanguageComboboxModel::SourceLanguageComboboxModel(
 
 SourceLanguageComboboxModel::~SourceLanguageComboboxModel() = default;
 
-int SourceLanguageComboboxModel::GetItemCount() const {
+size_t SourceLanguageComboboxModel::GetItemCount() const {
   return model_->GetNumberOfSourceLanguages();
 }
 
-std::u16string SourceLanguageComboboxModel::GetItemAt(int index) const {
+std::u16string SourceLanguageComboboxModel::GetItemAt(size_t index) const {
   return model_->GetSourceLanguageNameAt(index);
 }
 

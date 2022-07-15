@@ -34,9 +34,9 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   ~RecentlyUsedFoldersComboModel() override;
 
   // Overridden from ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
-  bool IsItemSeparatorAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
+  bool IsItemSeparatorAt(size_t index) const override;
   absl::optional<size_t> GetDefaultIndex() const override;
 
   // Overriden from bookmarks::BookmarkModelObserver:
@@ -73,11 +73,11 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   // If necessary this function moves |node| into the corresponding folder for
   // the given |selected_index|.
   void MaybeChangeParent(const bookmarks::BookmarkNode* node,
-                         int selected_index);
+                         size_t selected_index);
 
  private:
   // Returns the node at the specified |index|.
-  const bookmarks::BookmarkNode* GetNodeAt(int index);
+  const bookmarks::BookmarkNode* GetNodeAt(size_t index);
 
   // Removes |node| from |items_|. Does nothing if |node| is not in |items_|.
   void RemoveNode(const bookmarks::BookmarkNode* node);

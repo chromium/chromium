@@ -21,7 +21,7 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
  public:
   PublicAccountComboboxModel(
       const std::vector<PublicAccountMenuView::Item>& items,
-      const size_t default_index)
+      size_t default_index)
       : items_(items), default_index_(default_index) {}
 
   PublicAccountComboboxModel(const PublicAccountComboboxModel&) = delete;
@@ -31,10 +31,10 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   ~PublicAccountComboboxModel() override = default;
 
   // ui::ComboboxModel:
-  int GetItemCount() const override { return items_.size(); }
+  size_t GetItemCount() const override { return items_.size(); }
 
   // ui::ComboboxModel:
-  std::u16string GetItemAt(int index) const override {
+  std::u16string GetItemAt(size_t index) const override {
     return base::UTF8ToUTF16(items_[index].title);
   }
 
@@ -43,7 +43,7 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   // group items are considered as some sort of separators. We choose to
   // represent them as disabled items because they were presented in a similar
   // fashion before (i.e. the group name was visible but unclickable).
-  bool IsItemEnabledAt(int index) const override {
+  bool IsItemEnabledAt(size_t index) const override {
     return !items_[index].is_group;
   }
 
@@ -54,7 +54,7 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
 
  private:
   const std::vector<PublicAccountMenuView::Item>& items_;
-  const int default_index_;
+  const size_t default_index_;
 };
 
 }  // namespace
@@ -62,7 +62,7 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
 PublicAccountMenuView::Item::Item() = default;
 
 PublicAccountMenuView::PublicAccountMenuView(const std::vector<Item>& items,
-                                             const size_t selected_index,
+                                             size_t selected_index,
                                              const OnSelect& on_select)
     : views::Combobox(
           std::make_unique<PublicAccountComboboxModel>(items, selected_index)),

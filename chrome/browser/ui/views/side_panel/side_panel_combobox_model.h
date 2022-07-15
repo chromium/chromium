@@ -48,9 +48,9 @@ class SidePanelComboboxModel : public ui::ComboboxModel {
   int GetIndexForId(SidePanelEntry::Id id);
 
   // ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
-  ui::ImageModel GetIconAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
+  ui::ImageModel GetIconAt(size_t index) const override;
 
  private:
   std::vector<Item> entries_;

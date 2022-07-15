@@ -103,10 +103,9 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   }
 
   void OnComboboxAction() {
-    if (dialog_model()
-                ->GetComboboxByUniqueId(kBookmarkFolder)
-                ->selected_index() +
-            1 ==
+    const auto* combobox =
+        dialog_model()->GetComboboxByUniqueId(kBookmarkFolder);
+    if (static_cast<size_t>(combobox->selected_index()) + 1 ==
         GetFolderModel()->GetItemCount()) {
       base::RecordAction(UserMetricsAction("BookmarkBubble_EditFromCombobox"));
       ShowEditor();

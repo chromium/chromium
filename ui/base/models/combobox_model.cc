@@ -16,23 +16,23 @@ ComboboxModel::~ComboboxModel() {
     observer.OnComboboxModelDestroying(this);
 }
 
-std::u16string ComboboxModel::GetDropDownTextAt(int index) const {
+std::u16string ComboboxModel::GetDropDownTextAt(size_t index) const {
   return GetItemAt(index);
 }
 
-std::u16string ComboboxModel::GetDropDownSecondaryTextAt(int index) const {
+std::u16string ComboboxModel::GetDropDownSecondaryTextAt(size_t index) const {
   return std::u16string();
 }
 
-ImageModel ComboboxModel::GetIconAt(int index) const {
+ImageModel ComboboxModel::GetIconAt(size_t index) const {
   return ui::ImageModel();
 }
 
-ImageModel ComboboxModel::GetDropDownIconAt(int index) const {
+ImageModel ComboboxModel::GetDropDownIconAt(size_t index) const {
   return GetIconAt(index);
 }
 
-bool ComboboxModel::IsItemSeparatorAt(int index) const {
+bool ComboboxModel::IsItemSeparatorAt(size_t index) const {
   return false;
 }
 
@@ -40,7 +40,7 @@ absl::optional<size_t> ComboboxModel::GetDefaultIndex() const {
   return 0;
 }
 
-bool ComboboxModel::IsItemEnabledAt(int index) const {
+bool ComboboxModel::IsItemEnabledAt(size_t index) const {
   return true;
 }
 

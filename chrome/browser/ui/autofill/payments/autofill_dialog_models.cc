@@ -63,20 +63,20 @@ MonthComboboxModel::MonthComboboxModel() {}
 
 MonthComboboxModel::~MonthComboboxModel() {}
 
-int MonthComboboxModel::GetItemCount() const {
+size_t MonthComboboxModel::GetItemCount() const {
   // 12 months plus the empty entry.
   return 13;
 }
 
-std::u16string MonthComboboxModel::GetItemAt(int index) const {
+std::u16string MonthComboboxModel::GetItemAt(size_t index) const {
   return index == 0 ? l10n_util::GetStringUTF16(
                           IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH)
-                    : FormatMonth(index);
+                    : FormatMonth(static_cast<int>(index));
 }
 
 void MonthComboboxModel::SetDefaultIndexByMonth(int month) {
   if (month >= 1 && month <= 12)
-    default_index_ = month;
+    default_index_ = static_cast<size_t>(month);
 }
 
 absl::optional<size_t> MonthComboboxModel::GetDefaultIndex() const {
@@ -92,7 +92,7 @@ YearComboboxModel::~YearComboboxModel() {}
 
 void YearComboboxModel::SetDefaultIndexByYear(int year) {
   const std::u16string& year_value = base::NumberToString16(year);
-  for (int i = 1; i < GetItemCount(); i++) {
+  for (size_t i = 1; i < GetItemCount(); i++) {
     if (year_value == GetItemAt(i)) {
       default_index_ = i;
       return;

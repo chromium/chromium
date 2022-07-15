@@ -13,7 +13,7 @@ namespace examples {
 
 class ExampleComboboxModel : public ui::ComboboxModel {
  public:
-  ExampleComboboxModel(const char* const* strings, int count);
+  ExampleComboboxModel(const char* const* strings, size_t count);
 
   ExampleComboboxModel(const ExampleComboboxModel&) = delete;
   ExampleComboboxModel& operator=(const ExampleComboboxModel&) = delete;
@@ -21,12 +21,12 @@ class ExampleComboboxModel : public ui::ComboboxModel {
   ~ExampleComboboxModel() override;
 
   // ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
 
  private:
   const raw_ptr<const char* const> strings_;
-  const int count_;
+  const size_t count_;
 };
 
 }  // namespace examples

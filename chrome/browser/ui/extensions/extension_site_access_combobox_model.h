@@ -29,16 +29,16 @@ class ExtensionSiteAccessComboboxModel : public ui::ComboboxModel {
   ~ExtensionSiteAccessComboboxModel() override;
 
   // Handles the action corresponding to the `selected_index`.
-  void HandleSelection(int selected_index);
+  void HandleSelection(size_t selected_index);
 
   // Gets the combobox item index corresponding to the current site access.
-  int GetCurrentSiteAccessIndex() const;
+  size_t GetCurrentSiteAccessIndex() const;
 
   // ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
   absl::optional<size_t> GetDefaultIndex() const override;
-  bool IsItemEnabledAt(int index) const override;
+  bool IsItemEnabledAt(size_t index) const override;
 
  private:
   // Checks if `extension_` is still valid by checking its

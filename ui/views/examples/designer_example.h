@@ -144,8 +144,8 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // ui::ComboboxModel overrides
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
   absl::optional<size_t> GetDefaultIndex() const override;
 
   BoxLayoutView* designer_container_ = nullptr;

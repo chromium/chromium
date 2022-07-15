@@ -38,9 +38,9 @@ class CountryComboboxModel : public ui::ComboboxModel {
       const std::string& app_locale);
 
   // ui::ComboboxModel implementation:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
-  bool IsItemSeparatorAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
+  bool IsItemSeparatorAt(size_t index) const override;
 
   // The list of countries always has the default country at the top as well as
   // within the sorted vector.

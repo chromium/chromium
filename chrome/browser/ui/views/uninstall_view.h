@@ -33,8 +33,8 @@ class UninstallView : public views::DialogDelegateView,
   ~UninstallView() override;
 
   // Overridden from ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
 
  private:
   typedef std::map<std::wstring, std::wstring> BrowsersMap;

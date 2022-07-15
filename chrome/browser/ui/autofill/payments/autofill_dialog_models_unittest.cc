@@ -24,7 +24,7 @@ TEST(YearComboboxModelTest, ExpirationYear) {
   test_clock.SetNow(kJune2017);
 
   YearComboboxModel model;
-  ASSERT_EQ(11, model.GetItemCount());  // Placeholder + 2017-2026.
+  ASSERT_EQ(11u, model.GetItemCount());  // Placeholder + 2017-2026.
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR),
       model.GetItemAt(0));
@@ -46,7 +46,7 @@ TEST(YearComboboxModelTest, ShowAdditionalYear) {
   test_clock.SetNow(kJune2017);
 
   YearComboboxModel model(2016);
-  ASSERT_EQ(12, model.GetItemCount());  // Placeholder + 2016 + 2017-2026.
+  ASSERT_EQ(12u, model.GetItemCount());  // Placeholder + 2016 + 2017-2026.
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR),
       model.GetItemAt(0));
@@ -70,7 +70,7 @@ TEST(YearComboboxModelTest, ExpirationYear_ShowFarFutureYear) {
   test_clock.SetNow(kJune2017);
 
   YearComboboxModel model(2042);
-  ASSERT_EQ(12, model.GetItemCount());  // Placeholder + 2017-2026 + 2042.
+  ASSERT_EQ(12u, model.GetItemCount());  // Placeholder + 2017-2026 + 2042.
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR),
       model.GetItemAt(0));

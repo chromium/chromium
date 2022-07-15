@@ -19,8 +19,8 @@ class EmptyComboboxModel final : public ui::ComboboxModel {
   ~EmptyComboboxModel() override;
 
   // ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
   absl::optional<size_t> GetDefaultIndex() const override;
 };
 

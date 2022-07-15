@@ -14,11 +14,11 @@ namespace internal {
 EmptyComboboxModel::EmptyComboboxModel() = default;
 EmptyComboboxModel::~EmptyComboboxModel() = default;
 
-int EmptyComboboxModel::GetItemCount() const {
+size_t EmptyComboboxModel::GetItemCount() const {
   return 0;
 }
 
-std::u16string EmptyComboboxModel::GetItemAt(int index) const {
+std::u16string EmptyComboboxModel::GetItemAt(size_t index) const {
   NOTREACHED();
   return std::u16string();
 }

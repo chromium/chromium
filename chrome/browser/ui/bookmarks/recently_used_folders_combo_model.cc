@@ -93,11 +93,11 @@ RecentlyUsedFoldersComboModel::~RecentlyUsedFoldersComboModel() {
   bookmark_model_->RemoveObserver(this);
 }
 
-int RecentlyUsedFoldersComboModel::GetItemCount() const {
-  return static_cast<int>(items_.size());
+size_t RecentlyUsedFoldersComboModel::GetItemCount() const {
+  return items_.size();
 }
 
-std::u16string RecentlyUsedFoldersComboModel::GetItemAt(int index) const {
+std::u16string RecentlyUsedFoldersComboModel::GetItemAt(size_t index) const {
   switch (items_[index].type) {
     case Item::TYPE_NODE:
       return items_[index].node->GetTitle();
@@ -113,7 +113,7 @@ std::u16string RecentlyUsedFoldersComboModel::GetItemAt(int index) const {
   return std::u16string();
 }
 
-bool RecentlyUsedFoldersComboModel::IsItemSeparatorAt(int index) const {
+bool RecentlyUsedFoldersComboModel::IsItemSeparatorAt(size_t index) const {
   return items_[index].type == Item::TYPE_SEPARATOR;
 }
 
@@ -214,10 +214,9 @@ void RecentlyUsedFoldersComboModel::BookmarkAllUserNodesRemoved(
   }
 }
 
-void RecentlyUsedFoldersComboModel::MaybeChangeParent(
-    const BookmarkNode* node,
-    int selected_index) {
-  DCHECK_LT(selected_index, static_cast<int>(items_.size()));
+void RecentlyUsedFoldersComboModel::MaybeChangeParent(const BookmarkNode* node,
+                                                      size_t selected_index) {
+  DCHECK_LT(selected_index, items_.size());
   if (items_[selected_index].type != Item::TYPE_NODE)
     return;
 
@@ -228,10 +227,8 @@ void RecentlyUsedFoldersComboModel::MaybeChangeParent(
   }
 }
 
-const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(int index) {
-  if (index < 0 || index >= static_cast<int>(items_.size()))
-    return nullptr;
-  return items_[index].node;
+const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(size_t index) {
+  return (index < items_.size()) ? items_[index].node : nullptr;
 }
 
 void RecentlyUsedFoldersComboModel::RemoveNode(const BookmarkNode* node) {

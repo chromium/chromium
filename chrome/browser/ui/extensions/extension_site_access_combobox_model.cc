@@ -27,12 +27,12 @@ ExtensionSiteAccessComboboxModel::ExtensionSiteAccessComboboxModel(
 
 ExtensionSiteAccessComboboxModel::~ExtensionSiteAccessComboboxModel() = default;
 
-void ExtensionSiteAccessComboboxModel::HandleSelection(int new_index) {
+void ExtensionSiteAccessComboboxModel::HandleSelection(size_t new_index) {
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!web_contents || !ExtensionIsValid())
     return;
-  DCHECK_LT(static_cast<size_t>(new_index), items_.size());
+  DCHECK_LT(new_index, items_.size());
 
   LogSiteAccessAction(items_[new_index]);
 
@@ -40,7 +40,7 @@ void ExtensionSiteAccessComboboxModel::HandleSelection(int new_index) {
       .UpdateSiteAccess(*extension_, web_contents, items_[new_index]);
 }
 
-int ExtensionSiteAccessComboboxModel::GetCurrentSiteAccessIndex() const {
+size_t ExtensionSiteAccessComboboxModel::GetCurrentSiteAccessIndex() const {
   DCHECK(ExtensionIsValid());
 
   content::WebContents* web_contents =
@@ -53,14 +53,14 @@ int ExtensionSiteAccessComboboxModel::GetCurrentSiteAccessIndex() const {
   auto item_it = std::find(items_.begin(), items_.end(), current_access);
   DCHECK(item_it != items_.end());
 
-  return item_it - items_.begin();
+  return static_cast<size_t>(item_it - items_.begin());
 }
 
-int ExtensionSiteAccessComboboxModel::GetItemCount() const {
+size_t ExtensionSiteAccessComboboxModel::GetItemCount() const {
   return items_.size();
 }
 
-std::u16string ExtensionSiteAccessComboboxModel::GetItemAt(int index) const {
+std::u16string ExtensionSiteAccessComboboxModel::GetItemAt(size_t index) const {
   int label_id = 0;
   switch (items_[index]) {
     case extensions::SitePermissionsHelper::SiteAccess::kOnClick:
@@ -81,7 +81,7 @@ absl::optional<size_t> ExtensionSiteAccessComboboxModel::GetDefaultIndex()
   return GetCurrentSiteAccessIndex();
 }
 
-bool ExtensionSiteAccessComboboxModel::IsItemEnabledAt(int index) const {
+bool ExtensionSiteAccessComboboxModel::IsItemEnabledAt(size_t index) const {
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!web_contents || !ExtensionIsValid())

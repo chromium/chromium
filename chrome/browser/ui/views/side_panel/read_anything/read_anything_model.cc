@@ -42,7 +42,7 @@ void ReadAnythingModel::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void ReadAnythingModel::SetSelectedFontByIndex(int new_index) {
+void ReadAnythingModel::SetSelectedFontByIndex(size_t new_index) {
   // Check that the index is valid.
   DCHECK(font_model_->IsValidFontIndex(new_index));
 
@@ -114,38 +114,38 @@ bool ReadAnythingFontModel::IsValidFontName(const std::string& font_name) {
                    base::UTF8ToUTF16(font_name)) != font_choices_.end();
 }
 
-bool ReadAnythingFontModel::IsValidFontIndex(int index) {
-  return index >= 0 && index <= GetItemCount();
+bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
+  return index < GetItemCount();
 }
 
 void ReadAnythingFontModel::SetDefaultIndexFromPrefsFontName(
     std::string prefs_font_name) {
   auto it = std::find(font_choices_.begin(), font_choices_.end(),
                       base::UTF8ToUTF16(prefs_font_name));
-  default_index_ = it - font_choices_.begin();
+  default_index_ = static_cast<size_t>(it - font_choices_.begin());
 }
 
 absl::optional<size_t> ReadAnythingFontModel::GetDefaultIndex() const {
   return default_index_;
 }
 
-int ReadAnythingFontModel::GetItemCount() const {
+size_t ReadAnythingFontModel::GetItemCount() const {
   return font_choices_.size();
 }
 
-std::u16string ReadAnythingFontModel::GetItemAt(int index) const {
+std::u16string ReadAnythingFontModel::GetItemAt(size_t index) const {
   // TODO(1266555): Placeholder text, replace when finalized.
   return u"Default font";
 }
 
-std::u16string ReadAnythingFontModel::GetDropDownTextAt(int index) const {
-  DCHECK(index >= 0 && index < GetItemCount());
-  return font_choices_.at(index);
+std::u16string ReadAnythingFontModel::GetDropDownTextAt(size_t index) const {
+  DCHECK_LT(index, GetItemCount());
+  return font_choices_[index];
 }
 
-std::string ReadAnythingFontModel::GetFontNameAt(int index) {
-  DCHECK(index >= 0 && index < GetItemCount());
-  return base::UTF16ToUTF8(font_choices_.at(index));
+std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
+  DCHECK_LT(index, GetItemCount());
+  return base::UTF16ToUTF8(font_choices_[index]);
 }
 
 // This method uses the text from the drop down at |index| and creates the
@@ -155,7 +155,7 @@ std::string ReadAnythingFontModel::GetFontNameAt(int index) {
 // the chosen font does not work for some reason.
 // E.g. User chooses 'Roboto', this method returns 'Roboto, Arial, 18px'.
 // TODO(1266555): Finalize font choices and approach with UI/UX.
-std::string ReadAnythingFontModel::GetLabelFontListAt(int index) {
+std::string ReadAnythingFontModel::GetLabelFontListAt(size_t index) {
   std::string font_label = base::UTF16ToUTF8(GetDropDownTextAt(index));
   base::StringAppendF(&font_label, "%s", ", Arial, 18px");
   return font_label;

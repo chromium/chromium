@@ -17,11 +17,11 @@ TargetLanguageComboboxModel::TargetLanguageComboboxModel(
 
 TargetLanguageComboboxModel::~TargetLanguageComboboxModel() = default;
 
-int TargetLanguageComboboxModel::GetItemCount() const {
+size_t TargetLanguageComboboxModel::GetItemCount() const {
   return model_->GetNumberOfTargetLanguages();
 }
 
-std::u16string TargetLanguageComboboxModel::GetItemAt(int index) const {
+std::u16string TargetLanguageComboboxModel::GetItemAt(size_t index) const {
   return model_->GetTargetLanguageNameAt(index);
 }
 

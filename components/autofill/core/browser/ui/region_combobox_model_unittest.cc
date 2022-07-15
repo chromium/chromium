@@ -38,7 +38,7 @@ TEST(RegionComboboxModelTest, QuebecOntarioRegions) {
 
   test_region_data_loader.SendAsynchronousData(regions);
 
-  EXPECT_EQ(3, model.GetItemCount());
+  EXPECT_EQ(3u, model.GetItemCount());
   EXPECT_EQ(u"---", model.GetItemAt(0));
   EXPECT_EQ(kQuebecName16, model.GetItemAt(1));
   EXPECT_EQ(kOntarioName16, model.GetItemAt(2));
@@ -54,7 +54,7 @@ TEST(RegionComboboxModelTest, FailingSource) {
       std::vector<std::pair<std::string, std::string>>());
 
   // There's always 1 item, even in failure cases.
-  EXPECT_EQ(1, model.GetItemCount());
+  EXPECT_EQ(1u, model.GetItemCount());
   EXPECT_TRUE(model.failed_to_load_data());
 }
 

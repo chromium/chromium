@@ -156,12 +156,11 @@ class EditableCombobox::EditableComboboxMenuModel
       return;
     items_shown_.clear();
     if (show_on_empty_ || !owner_->GetText().empty()) {
-      for (int i = 0; i < combobox_model_->GetItemCount(); ++i) {
+      for (size_t i = 0; i < combobox_model_->GetItemCount(); ++i) {
         if (!filter_on_edit_ ||
             base::StartsWith(combobox_model_->GetItemAt(i), owner_->GetText(),
                              base::CompareCase::INSENSITIVE_ASCII)) {
-          items_shown_.push_back(
-              {static_cast<size_t>(i), combobox_model_->IsItemEnabledAt(i)});
+          items_shown_.push_back({i, combobox_model_->IsItemEnabledAt(i)});
         }
       }
     }

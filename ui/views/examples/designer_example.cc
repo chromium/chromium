@@ -160,8 +160,8 @@ class ClassRegistration<Combobox> : public BaseClassRegistration,
   }
 
   // ui::ComboboxModel
-  int GetItemCount() const override { return 1; }
-  std::u16string GetItemAt(int index) const override { return u"<empty>"; }
+  size_t GetItemCount() const override { return 1; }
+  std::u16string GetItemAt(size_t index) const override { return u"<empty>"; }
   absl::optional<size_t> GetDefaultIndex() const override { return 0; }
 };
 
@@ -624,11 +624,11 @@ void DesignerExample::SetObserver(ui::TableModelObserver* observer) {
   model_observer_ = observer;
 }
 
-int DesignerExample::GetItemCount() const {
+size_t DesignerExample::GetItemCount() const {
   return class_registrations_.size();
 }
 
-std::u16string DesignerExample::GetItemAt(int index) const {
+std::u16string DesignerExample::GetItemAt(size_t index) const {
   return class_registrations_[index]->GetViewClassName();
 }
 

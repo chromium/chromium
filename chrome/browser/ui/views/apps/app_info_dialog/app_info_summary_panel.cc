@@ -45,8 +45,8 @@ class LaunchOptionsComboboxModel : public ui::ComboboxModel {
   int GetIndexForLaunchType(extensions::LaunchType launch_type) const;
 
   // Overridden from ui::ComboboxModel:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
 
  private:
   // A list of the launch types available in the combobox, in order.
@@ -88,11 +88,11 @@ int LaunchOptionsComboboxModel::GetIndexForLaunchType(
   return 0;
 }
 
-int LaunchOptionsComboboxModel::GetItemCount() const {
+size_t LaunchOptionsComboboxModel::GetItemCount() const {
   return launch_types_.size();
 }
 
-std::u16string LaunchOptionsComboboxModel::GetItemAt(int index) const {
+std::u16string LaunchOptionsComboboxModel::GetItemAt(size_t index) const {
   return launch_type_messages_[index];
 }
 

@@ -50,7 +50,7 @@ TEST_F(CountryComboboxModelTest, DefaultCountryCode) {
 TEST_F(CountryComboboxModelTest, AllCountriesHaveComponents) {
   ::i18n::addressinput::Localization localization;
   std::string unused;
-  for (int i = 0; i < model()->GetItemCount(); ++i) {
+  for (size_t i = 0; i < model()->GetItemCount(); ++i) {
     if (model()->IsItemSeparatorAt(i))
       continue;
 

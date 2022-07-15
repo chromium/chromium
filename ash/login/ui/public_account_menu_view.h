@@ -26,7 +26,7 @@ class ASH_EXPORT PublicAccountMenuView : public views::Combobox {
   using OnSelect = base::RepeatingCallback<void(const std::string& value)>;
 
   PublicAccountMenuView(const std::vector<Item>& items,
-                        const size_t selected_index,
+                        size_t selected_index,
                         const OnSelect& on_select);
   PublicAccountMenuView(const PublicAccountMenuView&) = delete;
   PublicAccountMenuView& operator=(const PublicAccountMenuView&) = delete;
