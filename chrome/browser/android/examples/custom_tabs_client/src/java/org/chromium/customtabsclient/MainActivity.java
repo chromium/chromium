@@ -34,6 +34,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
@@ -105,6 +107,15 @@ public class MainActivity
         @Override
         public void onNavigationEvent(int navigationEvent, Bundle extras) {
             Log.w(TAG, "onNavigationEvent: Code = " + navigationEvent);
+        }
+
+        @Override
+        public void extraCallback(@NonNull String callbackName, @Nullable Bundle args) {
+            if (callbackName.equals("onVerticalScrollEvent") && args != null) {
+                Log.w(TAG,
+                        "onVerticalScrollEvent: isDirectionUp = "
+                                + args.getBoolean("isDirectionUp"));
+            }
         }
     }
 
