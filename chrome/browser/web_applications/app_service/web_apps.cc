@@ -161,7 +161,8 @@ void WebApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::LaunchSource launch_source,
                      apps::WindowInfoPtr window_info) {
-  // TODO(crbug.com/1253250): Add the implementation.
+  publisher_helper().Launch(app_id, event_flags, launch_source,
+                            std::move(window_info));
 }
 
 void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
@@ -191,8 +192,10 @@ void WebApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::mojom::LaunchSource launch_source,
                      apps::mojom::WindowInfoPtr window_info) {
-  publisher_helper().Launch(app_id, event_flags, launch_source,
-                            std::move(window_info));
+  publisher_helper().Launch(
+      app_id, event_flags,
+      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
+      apps::ConvertMojomWindowInfoToWindowInfo(window_info));
 }
 
 void WebApps::LaunchAppWithFiles(const std::string& app_id,

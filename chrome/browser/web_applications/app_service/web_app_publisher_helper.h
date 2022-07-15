@@ -33,6 +33,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -205,8 +206,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   content::WebContents* Launch(const std::string& app_id,
                                int32_t event_flags,
-                               apps::mojom::LaunchSource launch_source,
-                               apps::mojom::WindowInfoPtr window_info);
+                               apps::LaunchSource launch_source,
+                               apps::WindowInfoPtr window_info);
 
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,

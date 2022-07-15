@@ -69,7 +69,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -773,8 +772,8 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
 content::WebContents* WebAppPublisherHelper::Launch(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
+    apps::LaunchSource launch_source,
+    apps::WindowInfoPtr window_info) {
   if (IsShuttingDown()) {
     return nullptr;
   }
@@ -785,56 +784,55 @@ content::WebContents* WebAppPublisherHelper::Launch(
   }
 
   switch (launch_source) {
-    case apps::mojom::LaunchSource::kUnknown:
-    case apps::mojom::LaunchSource::kFromParentalControls:
+    case apps::LaunchSource::kUnknown:
+    case apps::LaunchSource::kFromParentalControls:
       break;
-    case apps::mojom::LaunchSource::kFromAppListGrid:
-    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
+    case apps::LaunchSource::kFromAppListGrid:
+    case apps::LaunchSource::kFromAppListGridContextMenu:
       UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
                                 extension_misc::APP_LAUNCH_APP_LIST_MAIN,
                                 extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
 
       break;
-    case apps::mojom::LaunchSource::kFromAppListQuery:
-    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
+    case apps::LaunchSource::kFromAppListQuery:
+    case apps::LaunchSource::kFromAppListQueryContextMenu:
       UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
                                 extension_misc::APP_LAUNCH_APP_LIST_SEARCH,
                                 extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
       break;
-    case apps::mojom::LaunchSource::kFromAppListRecommendation:
-    case apps::mojom::LaunchSource::kFromShelf:
-    case apps::mojom::LaunchSource::kFromFileManager:
-    case apps::mojom::LaunchSource::kFromLink:
-    case apps::mojom::LaunchSource::kFromOmnibox:
-    case apps::mojom::LaunchSource::kFromChromeInternal:
-    case apps::mojom::LaunchSource::kFromKeyboard:
-    case apps::mojom::LaunchSource::kFromOtherApp:
-    case apps::mojom::LaunchSource::kFromMenu:
-    case apps::mojom::LaunchSource::kFromInstalledNotification:
-    case apps::mojom::LaunchSource::kFromTest:
-    case apps::mojom::LaunchSource::kFromArc:
-    case apps::mojom::LaunchSource::kFromSharesheet:
-    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
-    case apps::mojom::LaunchSource::kFromFullRestore:
-    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
-    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
-    case apps::mojom::LaunchSource::kFromManagementApi:
-    case apps::mojom::LaunchSource::kFromKiosk:
-    case apps::mojom::LaunchSource::kFromCommandLine:
-    case apps::mojom::LaunchSource::kFromBackgroundMode:
-    case apps::mojom::LaunchSource::kFromNewTabPage:
-    case apps::mojom::LaunchSource::kFromIntentUrl:
-    case apps::mojom::LaunchSource::kFromOsLogin:
-    case apps::mojom::LaunchSource::kFromProtocolHandler:
-    case apps::mojom::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromAppListRecommendation:
+    case apps::LaunchSource::kFromShelf:
+    case apps::LaunchSource::kFromFileManager:
+    case apps::LaunchSource::kFromLink:
+    case apps::LaunchSource::kFromOmnibox:
+    case apps::LaunchSource::kFromChromeInternal:
+    case apps::LaunchSource::kFromKeyboard:
+    case apps::LaunchSource::kFromOtherApp:
+    case apps::LaunchSource::kFromMenu:
+    case apps::LaunchSource::kFromInstalledNotification:
+    case apps::LaunchSource::kFromTest:
+    case apps::LaunchSource::kFromArc:
+    case apps::LaunchSource::kFromSharesheet:
+    case apps::LaunchSource::kFromReleaseNotesNotification:
+    case apps::LaunchSource::kFromFullRestore:
+    case apps::LaunchSource::kFromSmartTextContextMenu:
+    case apps::LaunchSource::kFromDiscoverTabNotification:
+    case apps::LaunchSource::kFromManagementApi:
+    case apps::LaunchSource::kFromKiosk:
+    case apps::LaunchSource::kFromCommandLine:
+    case apps::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromNewTabPage:
+    case apps::LaunchSource::kFromIntentUrl:
+    case apps::LaunchSource::kFromOsLogin:
+    case apps::LaunchSource::kFromProtocolHandler:
+    case apps::LaunchSource::kFromUrlHandler:
       break;
   }
 
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
 
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      web_app->app_id(), event_flags,
-      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
+      web_app->app_id(), event_flags, launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
