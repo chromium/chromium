@@ -1474,11 +1474,6 @@ bool operator==(const Value& lhs, const Value::List& rhs) {
   return lhs.is_list() && lhs.GetList() == rhs;
 }
 
-bool Value::Equals(const Value* other) const {
-  DCHECK(other);
-  return *this == *other;
-}
-
 size_t Value::EstimateMemoryUsage() const {
   switch (type()) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)

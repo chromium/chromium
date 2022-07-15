@@ -1144,13 +1144,6 @@ class BASE_EXPORT GSL_OWNER Value {
     return !(lhs == rhs);
   }
 
-  // Compares if two Value objects have equal contents.
-  // DEPRECATED, use `operator==(const Value& lhs, const Value& rhs)` instead.
-  // TODO(crbug.com/646113): Delete this and migrate callsites.
-  //
-  // DEPRECATED: prefer direct use of the equality operator instead.
-  bool Equals(const Value* other) const;
-
   // Estimates dynamic memory usage. Requires tracing support
   // (enable_base_tracing gn flag), otherwise always returns 0. See
   // base/trace_event/memory_usage_estimator.h for more info.

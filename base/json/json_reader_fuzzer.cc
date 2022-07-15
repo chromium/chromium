@@ -35,7 +35,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     absl::optional<Value> deserialized =
         JSONReader::Read(StringPiece(serialized));
     CHECK(deserialized);
-    CHECK(value.Equals(&deserialized.value()));
+    CHECK_EQ(value, deserialized.value());
   }
 
   return 0;
