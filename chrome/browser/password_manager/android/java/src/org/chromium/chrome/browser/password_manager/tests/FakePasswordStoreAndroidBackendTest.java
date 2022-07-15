@@ -91,6 +91,7 @@ public class FakePasswordStoreAndroidBackendTest {
     @Before
     public void setUp() {
         mBackend = new FakePasswordStoreAndroidBackend();
+        mBackend.setSyncingAccount(sTestAccount.get());
     }
 
     @Test

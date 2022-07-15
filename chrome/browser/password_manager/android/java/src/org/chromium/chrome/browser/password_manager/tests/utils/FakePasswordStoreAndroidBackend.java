@@ -23,6 +23,7 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +39,14 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
 
     public static final Account sLocalDefaultAccount = new Account("Test user", "Local");
 
+    public FakePasswordStoreAndroidBackend() {
+        mSavedPasswords.put(sLocalDefaultAccount, new LinkedList<>());
+    }
+
+    public void setSyncingAccount(Account syncingAccount) {
+        mSavedPasswords.put(syncingAccount, new LinkedList<>());
+    }
+
     @Override
     public void getAllLogins(Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
             Callback<Exception> failureCallback) {
@@ -51,6 +60,22 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             loginsReply.onResult(allLogins.toByteArray());
         });
     }
+
+    @Override
+    public void getAllLoginsBetween(Date createdAfter, Date createdBefore,
+            Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback) {
+        mTaskRunner.postTask(() -> {
+            Account account = getAccountOrFail(syncingAccount, failureCallback);
+            if (account == null) return;
+            ListPasswordsResult allLogins =
+                    ListPasswordsResult.newBuilder()
+                            .addAllPasswordData(filterPasswords(mSavedPasswords.get(account),
+                                    pwd -> hasDateBetween(pwd, createdAfter, createdBefore)))
+                            .build();
+            loginsReply.onResult(allLogins.toByteArray());
+        });
+    };
 
     @Override
     public void getAutofillableLogins(Optional<Account> syncingAccount,
@@ -86,15 +111,14 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
     public void addLogin(byte[] pwdWithLocalData, Optional<Account> syncingAccount,
             Runnable successCallback, Callback<Exception> failureCallback) {
         mTaskRunner.postTask(() -> {
-            Account account =
-                    syncingAccount.isPresent() ? syncingAccount.get() : sLocalDefaultAccount;
+            Account account = getAccountOrFail(syncingAccount, failureCallback);
+            if (account == null) return;
             PasswordWithLocalData parsedPassword =
                     parsePwdWithLocalDataOrFail(pwdWithLocalData, failureCallback);
             if (parsedPassword == null) return;
-            if (!mSavedPasswords.containsKey(account)) {
-                mSavedPasswords.put(account, new LinkedList<>());
-            }
-            assert !containsPasswordWithSameUniqueKey(mSavedPasswords.get(account), parsedPassword);
+            assert !containsPasswordWithSameUniqueKey(mSavedPasswords.get(account), parsedPassword)
+                : "Trying to add password with the same unique key,"
+                  + " updateLogin() should be called.";
             mSavedPasswords.get(account).add(parsedPassword);
             successCallback.run();
         });
@@ -178,6 +202,13 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             failureCallback.onResult(parsingError);
             return null;
         }
+    }
+
+    private static boolean hasDateBetween(
+            PasswordWithLocalData pwd, Date createdAfter, Date createdBefore) {
+        return pwd.getPasswordSpecificsData().hasDateCreated()
+                && pwd.getPasswordSpecificsData().getDateCreated() >= createdAfter.getTime()
+                && pwd.getPasswordSpecificsData().getDateCreated() <= createdBefore.getTime();
     }
 
     private static boolean hasSignonRealm(PasswordWithLocalData pwd, String signonRealm) {

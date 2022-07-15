@@ -71,9 +71,9 @@ public interface PasswordStoreAndroidBackend {
      *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void getAllLoginsBetween(Date createdAfter, Date createdBefore,
+    void getAllLoginsBetween(Date createdAfter, Date createdBefore,
             Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
-            Callback<Exception> failureCallback){};
+            Callback<Exception> failureCallback);
 
     /**
      * Triggers an async list call to retrieve autofillable logins.
