@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
+#include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
@@ -663,8 +664,8 @@ HRESULT ShellExecuteAndWait(const base::FilePath& file_path,
   DCHECK(!file_path.empty());
   DCHECK(exit_code);
 
-  HWND hwnd = CreateForegroundParentWindowForUAC();
-  base::ScopedClosureRunner destroy_window(base::BindOnce(
+  const HWND hwnd = CreateForegroundParentWindowForUAC();
+  const base::ScopedClosureRunner destroy_window(base::BindOnce(
       [](HWND hwnd) {
         if (hwnd)
           ::DestroyWindow(hwnd);
@@ -685,18 +686,28 @@ HRESULT ShellExecuteAndWait(const base::FilePath& file_path,
   shell_execute_info.hInstApp = NULL;
 
   if (!::ShellExecuteEx(&shell_execute_info)) {
-    HRESULT hr = HRESULTFromLastError();
-    VLOG(1) << "::ShellExecuteEx failed: " << std::hex << hr;
+    const HRESULT hr = HRESULTFromLastError();
+    VLOG(1) << __func__ << ": ::ShellExecuteEx failed: " << std::hex << hr;
     return hr;
   }
 
-  base::win::ScopedHandle process(shell_execute_info.hProcess);
+  if (!shell_execute_info.hProcess) {
+    VLOG(1) << __func__ << ": Started process, PID unknown";
+    return S_OK;
+  }
 
-  if (::WaitForSingleObject(process.Get(), INFINITE) == WAIT_FAILED)
-    return HRESULTFromLastError();
+  const base::Process process(shell_execute_info.hProcess);
+  const DWORD pid = process.Pid();
+  VLOG(1) << __func__ << ": Started process, PID: " << pid;
 
-  DWORD ret_val = 0;
-  if (!::GetExitCodeProcess(process.Get(), &ret_val))
+  // Allow the spawned process to show windows in the foreground.
+  if (!::AllowSetForegroundWindow(pid)) {
+    LOG(WARNING) << __func__
+                 << ": ::AllowSetForegroundWindow failed: " << ::GetLastError();
+  }
+
+  int ret_val = 0;
+  if (!process.WaitForExit(&ret_val))
     return HRESULTFromLastError();
 
   *exit_code = ret_val;
