@@ -121,6 +121,10 @@ interface DriveFs {
 
   // Tells DriveFS to update its cached pin states of hosted files (once).
   PollHostedFilePinStates();
+
+  // Returns the total and free space available in the user's Drive and their
+  // organization's, if they belong to one.
+  GetPooledQuotaUsage() => (FileError error, PooledQuotaUsage quota);
 };
 
 // Implemented by Chrome, used from DriveFS.
@@ -295,6 +299,7 @@ struct DriveError {
   [Extensible] enum Type {
     kCantUploadStorageFull,
     kPinningFailedDiskFull,
+    kCantUploadStorageFullOrganization,
   };
 
   Type type;
@@ -597,6 +602,30 @@ struct ExtensionConnectionParams {
 union FilePathOrError {
   FileError error;
   mojo_base.mojom.FilePath path;
+};
+
+enum UserType {
+  // User doesn't belong to any organization.
+  kUnmanaged,
+  // User is a member of an organization.
+  kOrganization,
+};
+
+// Free and total space available in Drive relative to both the user and their
+// organization, if they belong to one.
+struct PooledQuotaUsage {
+  UserType user_type;
+
+  // How much space the individual user has used.
+  int64 used_user_bytes;
+  // The individual limit of a user. -1 means infinite.
+  int64 total_user_bytes = -1;
+
+  // The following two fields only have meaning if user_type is kOrganization.
+  // Whether the organization has exceeded its storage limit.
+  bool organization_limit_exceeded = false;
+  // Name of the organization the user belongs to.
+  string organization_name;
 };
 
 // Free and total space available in Drive.

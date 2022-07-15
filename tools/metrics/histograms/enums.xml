@@ -35144,6 +35144,7 @@ Called by update_extension_histograms.py.-->
   <int value="1686" label="SIDEPANEL_GETOPTIONS"/>
   <int value="1687" label="SIDEPANEL_SETOPTIONS"/>
   <int value="1688" label="ENTERPRISEREPORTINGPRIVATE_GETFILESYSTEMINFO"/>
+  <int value="1689" label="FILEMANAGERPRIVATE_GETDRIVEQUOTAMETADATA"/>
 </enum>
 
 <enum name="ExtensionIconState">

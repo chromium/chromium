@@ -1253,6 +1253,18 @@ void DriveIntegrationService::GetQuotaUsage(
           std::move(callback), drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr));
 }
 
+void DriveIntegrationService::GetPooledQuotaUsage(
+    drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback) {
+  if (!IsMounted() || !GetDriveFsInterface()) {
+    std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr);
+    return;
+  }
+
+  GetDriveFsInterface()->GetPooledQuotaUsage(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr));
+}
+
 void DriveIntegrationService::RestartDrive() {
   MaybeRemountFileSystem(base::TimeDelta(), false);
 }

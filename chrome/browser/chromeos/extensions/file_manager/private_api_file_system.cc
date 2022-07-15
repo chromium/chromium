@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -766,6 +767,43 @@ void FileManagerPrivateGetSizeStatsFunction::OnGetSizeStats(
   sizes->SetDoubleKey("remainingSize", static_cast<double>(*remaining_size));
 
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(sizes))));
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateGetDriveQuotaMetadataFunction::Run() {
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  drive::DriveIntegrationService* integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile);
+  if (!integration_service) {
+    return RespondNow(Error("Drive not available"));
+  }
+  integration_service->GetPooledQuotaUsage(base::BindOnce(
+      &FileManagerPrivateGetDriveQuotaMetadataFunction::OnGetDriveQuotaMetadata,
+      this));
+
+  return RespondLater();
+}
+
+void FileManagerPrivateGetDriveQuotaMetadataFunction::OnGetDriveQuotaMetadata(
+    drive::FileError error,
+    drivefs::mojom::PooledQuotaUsagePtr usage) {
+  if (error != drive::FileError::FILE_ERROR_OK) {
+    Respond(NoArguments());
+    return;
+  }
+
+  base::Value::Dict quotaMetadata;
+
+  quotaMetadata.Set("userType", static_cast<int>(usage->user_type));
+  quotaMetadata.Set("usedUserBytes",
+                    static_cast<double>(usage->used_user_bytes));
+  quotaMetadata.Set("totalUserBytes",
+                    static_cast<double>(usage->total_user_bytes));
+  quotaMetadata.Set("organizationLimitExceeded",
+                    usage->organization_limit_exceeded);
+  quotaMetadata.Set("organizationName", usage->organization_name);
+
+  Respond(OneArgument(base::Value(std::move(quotaMetadata))));
 }
 
 ExtensionFunction::ResponseAction

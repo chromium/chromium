@@ -79,6 +79,16 @@ export async function getSizeStats(volumeId) {
 }
 
 /**
+ * Wrap the chrome.fileManagerPrivate.getDriveQuotaMetadata function in an
+ * async/await compatible style.
+ * @returns {!Promise<(
+ * !chrome.fileManagerPrivate.DriveQuotaMetadata|undefined)>}
+ */
+export async function getDriveQuotaMetadata() {
+  return promisify(chrome.fileManagerPrivate.getDriveQuotaMetadata);
+}
+
+/**
  * Retrieves the current holding space state, for example the list of items the
  * holding space currently contains.
  *  @returns {!Promise<(!chrome.fileManagerPrivate.HoldingSpaceState|undefined)>}

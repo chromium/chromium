@@ -199,6 +199,12 @@ class DriveIntegrationService : public KeyedService,
   // Returns the total and free space available in the user's Drive.
   void GetQuotaUsage(drivefs::mojom::DriveFs::GetQuotaUsageCallback callback);
 
+  // Returns the total and free space available in the user's Drive.
+  // Additionally, if the user belongs to an organization, whether the
+  // organization quota is full or not, and the name of the organization.
+  void GetPooledQuotaUsage(
+      drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback);
+
   void RestartDrive();
 
   // Sets the arguments to be parsed by DriveFS on startup. Should only be

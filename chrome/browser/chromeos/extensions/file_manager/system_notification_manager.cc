@@ -397,6 +397,12 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
             l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE);
         notification = CreateNotification(id, title, message);
         break;
+      case file_manager_private::
+          DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE_ORGANIZATION:
+        message = l10n_util::GetStringUTF16(
+            IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION);
+        notification = CreateNotification(id, title, message);
+        break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE:
         notification =
             CreateNotification(id, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,

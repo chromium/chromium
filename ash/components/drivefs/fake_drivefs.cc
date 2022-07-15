@@ -532,6 +532,12 @@ void FakeDriveFs::GetQuotaUsage(
                           mojom::QuotaUsage::New());
 }
 
+void FakeDriveFs::GetPooledQuotaUsage(
+    drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback) {
+  std::move(callback).Run(drive::FileError::FILE_ERROR_SERVICE_UNAVAILABLE,
+                          mojom::PooledQuotaUsage::New());
+}
+
 void FakeDriveFs::ToggleMirroring(
     bool enabled,
     drivefs::mojom::DriveFs::ToggleMirroringCallback callback) {

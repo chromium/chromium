@@ -175,6 +175,7 @@ chrome.fileManagerPrivate.DriveSyncErrorType = {
   DELETE_WITHOUT_PERMISSION: 'delete_without_permission',
   SERVICE_UNAVAILABLE: 'service_unavailable',
   NO_SERVER_SPACE: 'no_server_space',
+  NO_SERVER_SPACE_ORGANIZATION: 'no_server_space_organization',
   NO_LOCAL_SPACE: 'no_local_space',
   MISC: 'misc',
 };
@@ -346,6 +347,12 @@ chrome.fileManagerPrivate.VmType = {
   ARCVM: 'arcvm',
 };
 
+/** @enum {string} */
+chrome.fileManagerPrivate.UserType = {
+  UNMANAGED: 'kUnmanaged',
+  ORGANIZATION: 'kOrganization'
+};
+
 /**
  * @typedef {{
  *   appId: string,
@@ -411,6 +418,17 @@ chrome.fileManagerPrivate.EntryProperties;
  * }}
  */
 chrome.fileManagerPrivate.MountPointSizeStats;
+
+/**
+ * @typedef {{
+ *   userType: !chrome.fileManagerPrivate.UserType,
+ *   usedUserBytes: number,
+ *   totalUserBytes: number,
+ *   organizationLimitExceeded: boolean,
+ *   organizationName: string
+ * }}
+ */
+chrome.fileManagerPrivate.DriveQuotaMetadata;
 
 /**
  * @typedef {{
@@ -994,6 +1012,14 @@ chrome.fileManagerPrivate.cancelCopy = function(copyId, callback) {};
  *     not be determined.
  */
 chrome.fileManagerPrivate.getSizeStats = function(volumeId, callback) {};
+
+/**
+ * Retrieves drive quota metadata.
+ * @param {function((!chrome.fileManagerPrivate.DriveQuotaMetadata|undefined))}
+ *     callback Name/value pairs of drive quota metadata. Will be undefined if
+ *     quota metadata could not be determined.
+ */
+chrome.fileManagerPrivate.getDriveQuotaMetadata = function(callback) {};
 
 /**
  * Formats a mounted volume. |volumeId| ID of the volume to be formatted.

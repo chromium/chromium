@@ -349,10 +349,17 @@ export class DriveSyncHandlerImpl extends EventTarget {
           item.message = str('SYNC_SERVICE_UNAVAILABLE_ERROR');
           break;
         case 'no_server_space':
-          item.message = strf('SYNC_NO_SERVER_SPACE', name);
+          item.message = strf('SYNC_NO_SERVER_SPACE');
           // This error will reappear every time sync is retried, so we use
           // a fixed ID to avoid spamming the user.
           item.id = DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_PREFIX +
+              this.driveErrorIdOutOfQuota_;
+          break;
+        case 'no_server_space_organization':
+          item.message = strf('SYNC_NO_SERVER_SPACE_ORGANIZATION');
+          // This error will reappear every time sync is retried, so we use
+          // a fixed ID to avoid spamming the user.
+          item.id = DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_ORGANIZATION_PREFIX +
               this.driveErrorIdOutOfQuota_;
           break;
         case 'no_local_space':
@@ -569,9 +576,18 @@ DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_ =
 
 
 /**
- * Drive sync error prefix.
+ * Drive sync error prefix for expired individual quotas.
  * @type {string}
  * @private
  * @const
  */
 DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_PREFIX = 'drive-sync-error-';
+
+/**
+ * Drive sync error prefix for expired organization quotas.
+ * @type {string}
+ * @private
+ * @const
+ */
+DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_ORGANIZATION_PREFIX =
+    'drive-sync-error-organization';

@@ -158,7 +158,6 @@ class FileManagerPrivateInternalAddFileWatchFunction
       base::WeakPtr<file_manager::EventRouter> event_router) override;
 };
 
-
 // Implements the chrome.fileManagerPrivate.removeFileWatch method.
 // Stops watching changes in directories.
 class FileManagerPrivateInternalRemoveFileWatchFunction
@@ -206,6 +205,24 @@ class FileManagerPrivateGetSizeStatsFunction : public LoggedExtensionFunction {
 
   void OnGetSizeStats(const uint64_t* total_size,
                       const uint64_t* remaining_size);
+};
+
+// Implements the chrome.fileManagerPrivate.getDriveQuotaMetadata method.
+class FileManagerPrivateGetDriveQuotaMetadataFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getDriveQuotaMetadata",
+                             FILEMANAGERPRIVATE_GETDRIVEQUOTAMETADATA)
+
+ protected:
+  ~FileManagerPrivateGetDriveQuotaMetadataFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnGetDriveQuotaMetadata(drive::FileError error,
+                               drivefs::mojom::PooledQuotaUsagePtr usage);
 };
 
 // Implements the chrome.fileManagerPrivate.validatePathNameLength method.

@@ -145,6 +145,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void GetQuotaUsage(
       drivefs::mojom::DriveFs::GetQuotaUsageCallback callback) override;
 
+  void GetPooledQuotaUsage(
+      drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback) override;
+
   void ToggleMirroring(
       bool enabled,
       drivefs::mojom::DriveFs::ToggleMirroringCallback callback) override;
