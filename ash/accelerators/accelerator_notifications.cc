@@ -41,8 +41,6 @@ namespace {
 constexpr char kNotifierAccelerator[] = "ash.accelerator-controller";
 constexpr char kSpokenFeedbackToggleAccelNotificationId[] =
     "chrome://settings/accessibility/spokenfeedback";
-constexpr char kStartupNewShortcutNotificationId[] =
-    "accelerator_controller.new_shortcuts_in_release";
 
 // Ensures that there are no word breaks at the "+"s in the shortcut texts such
 // as "Ctrl+Shift+Space".
@@ -191,45 +189,6 @@ void ShowDeprecatedAcceleratorNotification(const char* notification_id,
   CreateAndShowNotification(
       notification_id, NotificationCatalogName::kDeprecatedAccelerator, title,
       message, kNotificationKeyboardIcon, on_click_handler);
-}
-
-void ShowShortcutsChangedNotification() {
-  const std::u16string title = l10n_util::GetStringUTF16(
-      IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_TITLE);
-  const std::u16string message = l10n_util::GetStringUTF16(
-      IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_BODY);
-
-  // The notification only has one button, "Learn more".
-  RichNotificationData rich_data;
-  rich_data.buttons.push_back(ButtonInfo(l10n_util::GetStringUTF16(
-      IDS_SHORTCUT_CHANGES_IN_RELEASE_NOTIFICATION_LEARN_MORE_BUTTON_TEXT)));
-
-  // When the learn more button is clicked, open the keyboard shortcuts help
-  // page. Otherwise if the body is clicked, open the shortcut viewer app.
-  auto on_click_handler = base::MakeRefCounted<HandleNotificationClickDelegate>(
-      base::BindRepeating([](absl::optional<int> button_index) {
-        if (Shell::Get()->session_controller()->IsUserSessionBlocked())
-          return;
-
-        if (button_index.has_value()) {
-          DCHECK_EQ(0, button_index.value());
-          NewWindowDelegate::GetInstance()->OpenUrl(
-              GURL(kKeyboardShortcutHelpPageUrl),
-              NewWindowDelegate::OpenUrlFrom::kUserInteraction);
-        } else {
-          NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
-        }
-      }));
-
-  CreateAndShowNotification(kStartupNewShortcutNotificationId,
-                            NotificationCatalogName::kShortcutsChanged, title,
-                            message, kNotificationKeyboardIcon,
-                            on_click_handler, rich_data);
-}
-
-Notification* FindShortcutsChangedNotificationForTest() {
-  return MessageCenter::Get()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
 }
 
 void ShowDockedMagnifierNotification() {

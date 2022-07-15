@@ -7,10 +7,6 @@
 
 #include "ash/ash_export.h"
 
-namespace message_center {
-class Notification;
-}
-
 namespace ash {
 
 // Identifiers for toggling accessibility notifications.
@@ -27,11 +23,6 @@ ASH_EXPORT void ShowDeprecatedAcceleratorNotification(
     int message_id,
     int old_shortcut_id,
     int new_shortcut_id);
-
-ASH_EXPORT void ShowShortcutsChangedNotification();
-
-ASH_EXPORT message_center::Notification*
-FindShortcutsChangedNotificationForTest();
 
 ASH_EXPORT void ShowDockedMagnifierNotification();
 

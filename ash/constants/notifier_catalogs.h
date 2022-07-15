@@ -9,7 +9,7 @@ namespace ash {
 
 // A living catalog that registers notifications.
 // Current values should not be renumbered or removed.
-// To deprecate add a 'DEPRECATED_' prefix to the entry.
+// To deprecate comment out the entry.
 enum class NotificationCatalogName {
   kNone = 0,
   kTestCatalogName = 1,
@@ -23,7 +23,7 @@ enum class NotificationCatalogName {
   kDockThunderboltError = 9,
   kLowPowerCharger = 10,
   kDeprecatedAccelerator = 11,
-  kShortcutsChanged = 12,
+  // [Deprecated] kShortcutsChanged = 12,
   kDockedMagnifierEnabled = 13,
   kHighContrastEnabled = 14,
   kFullScreenMagnifierEnabled = 15,
@@ -154,7 +154,7 @@ enum class NotificationCatalogName {
 // A living catalog that registers toasts.
 // Current values should not be renumbered or removed. Please keep in sync with
 // "ToastCatalogName" in tools/metrics/histograms/enums.xml.
-// To deprecate add a 'DEPRECATED_' prefix to the entry.
+// To deprecate comment out the entry.
 enum class ToastCatalogName {
   kVirtualDesksLimitMax = 0,
   kVirtualDesksLimitMin = 1,
