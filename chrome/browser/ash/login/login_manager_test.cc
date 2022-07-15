@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "ash/components/login/auth/key.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"

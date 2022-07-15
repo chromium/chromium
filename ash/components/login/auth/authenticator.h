@@ -16,6 +16,7 @@ class AccountId;
 
 namespace ash {
 
+class AuthFailure;
 class UserContext;
 
 // An interface for objects that will authenticate a Chromium OS user.

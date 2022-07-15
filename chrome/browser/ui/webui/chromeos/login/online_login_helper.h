@@ -10,9 +10,9 @@
 
 #include "ash/components/login/auth/cryptohome_authenticator.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/login/auth/sync_trusted_vault_keys.h"
+#include "ash/components/login/auth/public/sync_trusted_vault_keys.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"

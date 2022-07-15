@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/components/login/auth/public/challenge_response_key.h"
 
 namespace ash {
 

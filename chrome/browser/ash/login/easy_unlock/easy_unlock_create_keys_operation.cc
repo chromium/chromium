@@ -12,7 +12,7 @@
 #include "ash/components/cryptohome/cryptohome_util.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/cryptohome/userdataauth_util.h"
-#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/public/key.h"
 #include "ash/components/multidevice/logging/logging.h"
 #include "base/base64url.h"
 #include "base/bind.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
-#include "ash/components/login/auth/key.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"

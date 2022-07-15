@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_STORAGE_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_QUICK_UNLOCK_STORAGE_H_
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"

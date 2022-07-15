@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

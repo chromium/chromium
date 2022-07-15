@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_AUTH_FACTORS_DATA_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_AUTH_FACTORS_DATA_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_FACTORS_DATA_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_FACTORS_DATA_H_
 
 #include <string>
 
@@ -50,4 +50,4 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorsData {
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_AUTH_FACTORS_DATA_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_FACTORS_DATA_H_

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/login_pref_names.h"

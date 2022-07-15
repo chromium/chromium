@@ -11,7 +11,8 @@
 #include <string>
 
 #include "ash/components/login/auth/login_performer.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/auth_failure.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"

@@ -7,7 +7,7 @@
 
 #include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/components/login/auth/cryptohome_authenticator.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/values.h"
 #include "components/login/base_screen_handler_utils.h"
 

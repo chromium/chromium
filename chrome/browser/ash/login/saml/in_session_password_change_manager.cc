@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"

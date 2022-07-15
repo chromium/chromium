@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/components/login/auth/saml_password_attributes.h"
+#include "ash/components/login/auth/public/saml_password_attributes.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"

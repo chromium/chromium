@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"

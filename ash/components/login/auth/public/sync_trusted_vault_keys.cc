@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/login/auth/sync_trusted_vault_keys.h"
+#include "ash/components/login/auth/public/sync_trusted_vault_keys.h"
 
 #include "base/bind.h"
 #include "base/callback.h"

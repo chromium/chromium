@@ -9,7 +9,7 @@
 #include <string>
 
 #include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"

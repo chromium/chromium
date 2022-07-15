@@ -6,8 +6,8 @@
 
 #include <vector>
 
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/login/auth/stub_authenticator_builder.h"
-#include "ash/components/login/auth/user_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "components/account_id/account_id.h"
 #include "net/dns/mock_host_resolver.h"

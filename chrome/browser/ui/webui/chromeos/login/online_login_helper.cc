@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/online_login_helper.h"
 
 #include "ash/components/login/auth/challenge_response/cert_utils.h"
-#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"

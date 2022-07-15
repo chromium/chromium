@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 
-#include "ash/components/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"

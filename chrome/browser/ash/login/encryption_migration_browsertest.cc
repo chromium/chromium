@@ -4,8 +4,8 @@
 
 #include <string>
 
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/login/auth/stub_authenticator_builder.h"
-#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"

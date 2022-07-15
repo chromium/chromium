@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/public/key.h"
 
 #include <memory>
 
@@ -24,18 +24,15 @@ const int kKeySizeInBits = 256;
 
 }  // namespace
 
-Key::Key() : key_type_(KEY_TYPE_PASSWORD_PLAIN) {
-}
+Key::Key() : key_type_(KEY_TYPE_PASSWORD_PLAIN) {}
 
 Key::Key(const Key& other) = default;
 
 Key::Key(const std::string& plain_text_password)
-    : key_type_(KEY_TYPE_PASSWORD_PLAIN), secret_(plain_text_password) {
-}
+    : key_type_(KEY_TYPE_PASSWORD_PLAIN), secret_(plain_text_password) {}
 
 Key::Key(KeyType key_type, const std::string& salt, const std::string& secret)
-    : key_type_(key_type), salt_(salt), secret_(secret) {
-}
+    : key_type_(key_type), salt_(salt), secret_(secret) {}
 
 Key::~Key() = default;
 

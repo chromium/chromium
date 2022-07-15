@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ref_counted.h"
 #include "net/cert/x509_certificate.h"

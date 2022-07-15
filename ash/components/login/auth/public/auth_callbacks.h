@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_AUTH_CALLBACKS_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_AUTH_CALLBACKS_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_CALLBACKS_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_CALLBACKS_H_
 
 #include <memory>
 
-#include "ash/components/login/auth/cryptohome_error.h"
+#include "ash/components/login/auth/public/cryptohome_error.h"
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,4 +29,4 @@ using NoContextOperationCallback =
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_AUTH_CALLBACKS_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_CALLBACKS_H_

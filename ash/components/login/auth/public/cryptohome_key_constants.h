@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_CRYPTOHOME_KEY_CONSTANTS_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_CRYPTOHOME_KEY_CONSTANTS_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_CRYPTOHOME_KEY_CONSTANTS_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_CRYPTOHOME_KEY_CONSTANTS_H_
 
 #include "base/component_export.h"
 
@@ -34,4 +34,4 @@ namespace chromeos {
 using ::ash::kCryptohomeGaiaKeyLabel;
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_CRYPTOHOME_KEY_CONSTANTS_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_CRYPTOHOME_KEY_CONSTANTS_H_

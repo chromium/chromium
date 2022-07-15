@@ -5,9 +5,9 @@
 #ifndef ASH_COMPONENTS_LOGIN_AUTH_AUTH_FACTOR_EDITOR_H_
 #define ASH_COMPONENTS_LOGIN_AUTH_AUTH_FACTOR_EDITOR_H_
 
-#include "ash/components/login/auth/auth_callbacks.h"
-#include "ash/components/login/auth/cryptohome_error.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/auth_callbacks.h"
+#include "ash/components/login/auth/public/cryptohome_error.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"

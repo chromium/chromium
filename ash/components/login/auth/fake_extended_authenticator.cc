@@ -5,6 +5,7 @@
 #include "ash/components/login/auth/fake_extended_authenticator.h"
 
 #include "ash/components/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "base/notreached.h"
 #include "components/account_id/account_id.h"
 

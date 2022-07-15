@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/saml_password_attributes.h"
+#include "ash/components/login/auth/public/saml_password_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"

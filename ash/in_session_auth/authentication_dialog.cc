@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "ash/components/login/auth/auth_performer.h"
-#include "ash/components/login/auth/cryptohome_error.h"
-#include "ash/components/login/auth/cryptohome_key_constants.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/cryptohome_error.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/shelf_config.h"

@@ -10,10 +10,10 @@
 #include <utility>
 
 #include "ash/components/login/auth/challenge_response/cert_utils.h"
-#include "ash/components/login/auth/cryptohome_key_constants.h"
-#include "ash/components/login/auth/saml_password_attributes.h"
-#include "ash/components/login/auth/sync_trusted_vault_keys.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/saml_password_attributes.h"
+#include "ash/components/login/auth/public/sync_trusted_vault_keys.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
-#include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"

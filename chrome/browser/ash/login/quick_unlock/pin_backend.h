@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/public/key.h"
 #include "base/callback.h"
 #include "components/prefs/pref_service.h"
 

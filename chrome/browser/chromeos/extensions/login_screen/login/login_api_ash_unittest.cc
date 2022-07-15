@@ -9,9 +9,9 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/login/auth/cryptohome_key_constants.h"
-#include "ash/components/login/auth/key.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"

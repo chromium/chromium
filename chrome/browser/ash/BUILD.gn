@@ -1517,7 +1517,6 @@ source_set("ash") {
     "//ash/components/enhanced_network_tts/mojom",
     "//ash/components/geolocation",
     "//ash/components/login/auth",
-    "//ash/components/login/auth:challenge_response_key",
     "//ash/components/multidevice",
     "//ash/components/proximity_auth",
     "//ash/components/settings",

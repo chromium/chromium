@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "ash/components/proximity_auth/proximity_auth_profile_pref_manager.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_OPERATION_CHAIN_RUNNER_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_OPERATION_CHAIN_RUNNER_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_OPERATION_CHAIN_RUNNER_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_OPERATION_CHAIN_RUNNER_H_
 
 #include <memory>
 #include <vector>
 
-#include "ash/components/login/auth/auth_callbacks.h"
+#include "ash/components/login/auth/public/auth_callbacks.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 
@@ -26,4 +26,4 @@ void COMPONENT_EXPORT(ASH_LOGIN_AUTH)
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_OPERATION_CHAIN_RUNNER_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_OPERATION_CHAIN_RUNNER_H_

@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/challenge_response_key.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/challenge_response_key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"

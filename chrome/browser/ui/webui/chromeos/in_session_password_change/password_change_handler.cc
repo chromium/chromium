@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/components/login/auth/saml_password_attributes.h"
+#include "ash/components/login/auth/public/saml_password_attributes.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"

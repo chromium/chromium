@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/cryptohome_key_constants.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"

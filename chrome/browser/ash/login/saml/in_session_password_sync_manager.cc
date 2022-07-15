@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/components/login/auth/extended_authenticator.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_switches.h"
 #include "base/callback.h"

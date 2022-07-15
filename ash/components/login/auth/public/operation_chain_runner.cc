@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/login/auth/operation_chain_runner.h"
+#include "ash/components/login/auth/public/operation_chain_runner.h"
 
 #include <memory>
 #include <vector>
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/auth_callbacks.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "base/containers/stack.h"
 

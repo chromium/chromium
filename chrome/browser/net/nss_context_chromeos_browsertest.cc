@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"

@@ -10,6 +10,7 @@
 
 #include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"

@@ -4084,7 +4084,6 @@ if (!is_android) {
         "//ash/components/hid_detection:hid_detection",
         "//ash/components/hid_detection:test_support",
         "//ash/components/login/auth",
-        "//ash/components/login/auth:challenge_response_key",
         "//ash/components/login/auth:test_support",
         "//ash/components/smbfs",
         "//ash/components/timezone",

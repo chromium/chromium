@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/login/auth/key.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"

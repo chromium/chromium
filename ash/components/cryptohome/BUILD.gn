@@ -10,7 +10,7 @@ assert(is_chromeos_ash)
 component("cryptohome") {
   defines = [ "IS_ASH_COMPONENTS_CRYPTOHOME_IMPL" ]
   deps = [
-    "//ash/components/login/auth:challenge_response_key",
+    "//ash/components/login/auth/public:challenge_response_key",
     "//base",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
@@ -37,7 +37,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":cryptohome",
-    "//ash/components/login/auth:challenge_response_key",
+    "//ash/components/login/auth/public:challenge_response_key",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth",

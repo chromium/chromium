@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/login/auth/stub_authenticator_builder.h"
-#include "ash/components/login/auth/user_context.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"

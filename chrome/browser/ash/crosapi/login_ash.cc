@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/login_ash.h"
 
-#include "ash/components/login/auth/cryptohome_key_constants.h"
-#include "ash/components/login/auth/key.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"

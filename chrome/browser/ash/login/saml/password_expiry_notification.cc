@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/login/auth/saml_password_attributes.h"
+#include "ash/components/login/auth/public/saml_password_attributes.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_activation_observer.h"

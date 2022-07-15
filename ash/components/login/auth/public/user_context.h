@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_USER_CONTEXT_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_USER_CONTEXT_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_USER_CONTEXT_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_USER_CONTEXT_H_
 
 #include <string>
 
-#include "ash/components/login/auth/auth_factors_data.h"
-#include "ash/components/login/auth/challenge_response_key.h"
-#include "ash/components/login/auth/key.h"
-#include "ash/components/login/auth/saml_password_attributes.h"
-#include "ash/components/login/auth/sync_trusted_vault_keys.h"
+#include "ash/components/login/auth/public/auth_factors_data.h"
+#include "ash/components/login/auth/public/challenge_response_key.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/saml_password_attributes.h"
+#include "ash/components/login/auth/public/sync_trusted_vault_keys.h"
 #include "base/component_export.h"
 #include "components/account_id/account_id.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -215,4 +215,4 @@ namespace chromeos {
 using ::ash::UserContext;
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_USER_CONTEXT_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_USER_CONTEXT_H_

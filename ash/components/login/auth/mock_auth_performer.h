@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_LOGIN_AUTH_MOCK_AUTH_PERFORMER_H_
 
 #include "ash/components/login/auth/auth_performer.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

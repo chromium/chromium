@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_KEY_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_KEY_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_KEY_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_KEY_H_
 
 #include <string>
 
@@ -68,4 +68,4 @@ namespace chromeos {
 using ::ash::Key;
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_KEY_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_KEY_H_

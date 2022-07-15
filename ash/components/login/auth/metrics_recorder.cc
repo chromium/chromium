@@ -4,8 +4,8 @@
 
 #include "ash/components/login/auth/metrics_recorder.h"
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/auth_failure.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"

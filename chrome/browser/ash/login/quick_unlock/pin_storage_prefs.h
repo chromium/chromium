@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/public/key.h"
 #include "base/gtest_prod_util.h"
 
 class PrefRegistrySimple;

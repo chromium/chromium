@@ -15,7 +15,7 @@
 // unmanaged user case and the managed user with/without network policy cases.
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/bind_internal.h"

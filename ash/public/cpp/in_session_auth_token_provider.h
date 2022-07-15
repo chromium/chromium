@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_IN_SESSION_AUTH_TOKEN_PROVIDER_H_
 #define ASH_PUBLIC_CPP_IN_SESSION_AUTH_TOKEN_PROVIDER_H_
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 #include "base/time/time.h"

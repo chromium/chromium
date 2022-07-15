@@ -13,7 +13,7 @@
 #include "ash/components/login/auth/extended_authenticator.h"
 #include "ash/components/login/auth/login_performer.h"
 #include "ash/components/login/auth/metrics_recorder.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
 #include "components/user_manager/user_type.h"

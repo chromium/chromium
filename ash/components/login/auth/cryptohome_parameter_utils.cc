@@ -6,8 +6,8 @@
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/challenge_response/key_label_utils.h"
-#include "ash/components/login/auth/key.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/check_op.h"
 
 using cryptohome::KeyDefinition;

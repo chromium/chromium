@@ -10,7 +10,10 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("auth") {
   defines = [ "IS_ASH_LOGIN_AUTH_IMPL" ]
-  public_deps = [ ":challenge_response_key" ]
+  public_deps = [
+    "//ash/components/login/auth/public:authpublic",
+    "//ash/components/login/auth/public:challenge_response_key",
+  ]
   deps = [
     "//ash/components/cryptohome",
     "//ash/constants",
@@ -42,11 +45,8 @@ component("auth") {
   sources = [
     "auth_attempt_state.cc",
     "auth_attempt_state.h",
-    "auth_callbacks.h",
     "auth_factor_editor.cc",
     "auth_factor_editor.h",
-    "auth_factors_data.cc",
-    "auth_factors_data.h",
     "auth_performer.cc",
     "auth_performer.h",
     "auth_session_authenticator.cc",
@@ -63,41 +63,27 @@ component("auth") {
     "challenge_response/known_user_pref_utils.h",
     "cryptohome_authenticator.cc",
     "cryptohome_authenticator.h",
-    "cryptohome_error.cc",
-    "cryptohome_error.h",
-    "cryptohome_key_constants.cc",
-    "cryptohome_key_constants.h",
     "cryptohome_parameter_utils.cc",
     "cryptohome_parameter_utils.h",
     "extended_authenticator.cc",
     "extended_authenticator.h",
     "extended_authenticator_impl.cc",
     "extended_authenticator_impl.h",
-    "key.cc",
-    "key.h",
     "login_performer.cc",
     "login_performer.h",
     "metrics_recorder.cc",
     "metrics_recorder.h",
     "mount_performer.cc",
     "mount_performer.h",
-    "operation_chain_runner.cc",
-    "operation_chain_runner.h",
     "password_visibility_utils.cc",
     "password_visibility_utils.h",
     "safe_mode_delegate.h",
-    "saml_password_attributes.cc",
-    "saml_password_attributes.h",
     "stub_authenticator.cc",
     "stub_authenticator.h",
     "stub_authenticator_builder.cc",
     "stub_authenticator_builder.h",
-    "sync_trusted_vault_keys.cc",
-    "sync_trusted_vault_keys.h",
     "test_attempt_state.cc",
     "test_attempt_state.h",
-    "user_context.cc",
-    "user_context.h",
   ]
 }
 
@@ -122,17 +108,6 @@ source_set("test_support") {
     "mock_auth_performer.h",
     "mock_auth_status_consumer.cc",
     "mock_auth_status_consumer.h",
-  ]
-}
-
-# This is a separate targat to avoid a circular dependency with
-# ash/components/cryptohome.
-source_set("challenge_response_key") {
-  defines = [ "IS_ASH_LOGIN_AUTH_IMPL" ]
-  deps = [ "//base" ]
-  sources = [
-    "challenge_response_key.cc",
-    "challenge_response_key.h",
   ]
 }
 
@@ -165,9 +140,9 @@ source_set("unit_tests") {
   sources = [
     "auth_performer_unittest.cc",
     "challenge_response/cert_utils_unittest.cc",
-    "key_unittest.cc",
-    "operation_chain_runner_unittest.cc",
-    "saml_password_attributes_unittest.cc",
-    "sync_trusted_vault_keys_unittest.cc",
+    "public/key_unittest.cc",
+    "public/operation_chain_runner_unittest.cc",
+    "public/saml_password_attributes_unittest.cc",
+    "public/sync_trusted_vault_keys_unittest.cc",
   ]
 }

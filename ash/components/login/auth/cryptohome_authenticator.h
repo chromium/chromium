@@ -10,6 +10,7 @@
 
 #include "ash/components/login/auth/auth_attempt_state.h"
 #include "ash/components/login/auth/authenticator.h"
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "ash/components/login/auth/safe_mode_delegate.h"
 #include "ash/components/login/auth/test_attempt_state.h"
 #include "base/compiler_specific.h"

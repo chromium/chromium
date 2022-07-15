@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/components/login/auth/challenge_response/cert_utils.h"
-#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"

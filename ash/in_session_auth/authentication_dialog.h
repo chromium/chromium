@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/components/login/auth/auth_performer.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"

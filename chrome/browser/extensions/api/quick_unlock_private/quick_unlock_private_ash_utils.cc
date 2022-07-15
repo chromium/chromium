@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/components/login/auth/extended_authenticator.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"

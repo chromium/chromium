@@ -8,8 +8,8 @@
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
-#include "ash/components/login/auth/auth_factors_data.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/auth_factors_data.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"

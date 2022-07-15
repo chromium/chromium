@@ -25,6 +25,9 @@ class UserEventReporterHelper;
 }  // namespace reporting
 
 namespace ash {
+
+class AuthFailure;
+
 namespace reporting {
 
 class LoginLogoutReporter : public policy::ManagedSessionService::Observer {

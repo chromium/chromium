@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_LOGIN_AUTH_FAKE_EXTENDED_AUTHENTICATOR_H_
 
 #include "ash/components/login/auth/extended_authenticator.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/component_export.h"
 
 namespace ash {

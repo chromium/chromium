@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/cryptohome_key_constants.h"
-#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/key.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"

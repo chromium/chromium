@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"

@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
-#include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

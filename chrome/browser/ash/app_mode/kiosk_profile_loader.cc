@@ -7,8 +7,8 @@
 #include <memory>
 #include <tuple>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/auth_failure.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"

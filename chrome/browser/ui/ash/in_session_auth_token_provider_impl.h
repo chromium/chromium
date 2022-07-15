@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_TOKEN_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_IN_SESSION_AUTH_TOKEN_PROVIDER_IMPL_H_
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/callback_forward.h"

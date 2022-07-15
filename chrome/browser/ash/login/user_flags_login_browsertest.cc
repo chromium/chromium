@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "chrome/browser/about_flags.h"

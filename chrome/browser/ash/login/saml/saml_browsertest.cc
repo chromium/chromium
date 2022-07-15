@@ -9,8 +9,8 @@
 
 #include "ash/components/attestation/mock_attestation_flow.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
-#include "ash/components/login/auth/key.h"
-#include "ash/components/login/auth/saml_password_attributes.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/saml_password_attributes.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/tpm/stub_install_attributes.h"
 #include "ash/constants/ash_features.h"

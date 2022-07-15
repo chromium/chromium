@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/scoped_testing_local_state.h"

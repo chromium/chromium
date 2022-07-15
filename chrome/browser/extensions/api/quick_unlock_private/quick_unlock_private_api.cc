@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "ash/components/login/auth/extended_authenticator.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"

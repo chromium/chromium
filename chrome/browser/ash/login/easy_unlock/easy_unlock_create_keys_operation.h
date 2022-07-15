@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"

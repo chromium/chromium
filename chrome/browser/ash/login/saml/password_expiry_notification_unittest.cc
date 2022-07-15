@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 
-#include "ash/components/login/auth/saml_password_attributes.h"
+#include "ash/components/login/auth/public/saml_password_attributes.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/strings/utf_string_conversions.h"

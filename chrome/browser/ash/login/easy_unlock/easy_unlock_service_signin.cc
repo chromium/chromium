@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/multidevice/remote_device.h"
 #include "ash/components/multidevice/remote_device_cache.h"

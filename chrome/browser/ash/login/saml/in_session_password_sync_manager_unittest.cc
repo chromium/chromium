@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include <memory>
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_clock.h"

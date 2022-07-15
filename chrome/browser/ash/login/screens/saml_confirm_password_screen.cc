@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
-#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/values.h"

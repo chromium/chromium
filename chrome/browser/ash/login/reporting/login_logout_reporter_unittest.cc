@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
 
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "ash/components/login/session/session_termination_manager.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"

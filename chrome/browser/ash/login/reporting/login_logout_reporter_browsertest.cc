@@ -6,10 +6,10 @@
 #include <tuple>
 #include <vector>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/public/auth_failure.h"
+#include "ash/components/login/auth/public/key.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/login/auth/stub_authenticator_builder.h"
-#include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"

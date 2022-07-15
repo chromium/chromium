@@ -7,7 +7,7 @@
 
 #include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/components/login/auth/extended_authenticator.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"

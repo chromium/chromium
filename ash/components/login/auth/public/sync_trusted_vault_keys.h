@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_SYNC_TRUSTED_VAULT_KEYS_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_SYNC_TRUSTED_VAULT_KEYS_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SYNC_TRUSTED_VAULT_KEYS_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SYNC_TRUSTED_VAULT_KEYS_H_
 
 #include <string>
 #include <vector>
@@ -58,4 +58,4 @@ namespace chromeos {
 using ::ash::SyncTrustedVaultKeys;
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_SYNC_TRUSTED_VAULT_KEYS_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SYNC_TRUSTED_VAULT_KEYS_H_

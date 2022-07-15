@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_user_login_flow.h"
 
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

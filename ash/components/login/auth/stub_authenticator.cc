@@ -4,6 +4,7 @@
 
 #include "ash/components/login/auth/stub_authenticator.h"
 
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"

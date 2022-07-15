@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 
-#include "ash/components/login/auth/cryptohome_key_constants.h"
-#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/key.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"

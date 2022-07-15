@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"

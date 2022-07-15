@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_SAML_PASSWORD_ATTRIBUTES_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_SAML_PASSWORD_ATTRIBUTES_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SAML_PASSWORD_ATTRIBUTES_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SAML_PASSWORD_ATTRIBUTES_H_
 
 #include <string>
 
@@ -75,4 +75,4 @@ namespace chromeos {
 using ::ash::SamlPasswordAttributes;
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_SAML_PASSWORD_ATTRIBUTES_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SAML_PASSWORD_ATTRIBUTES_H_

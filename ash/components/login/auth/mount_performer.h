@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/auth_callbacks.h"
-#include "ash/components/login/auth/cryptohome_error.h"
+#include "ash/components/login/auth/public/auth_callbacks.h"
+#include "ash/components/login/auth/public/cryptohome_error.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"

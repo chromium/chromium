@@ -5,8 +5,8 @@
 #ifndef ASH_COMPONENTS_LOGIN_AUTH_METRICS_RECORDER_H_
 #define ASH_COMPONENTS_LOGIN_AUTH_METRICS_RECORDER_H_
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/auth_failure.h"
+#include "ash/components/login/auth/public/user_context.h"
 
 namespace ash {
 

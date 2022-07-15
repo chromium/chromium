@@ -9,6 +9,7 @@
 #include "ash/components/audio/sounds.h"
 #include "ash/components/login/auth/authenticator.h"
 #include "ash/components/login/auth/extended_authenticator.h"
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "ash/components/login/session/session_termination_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"

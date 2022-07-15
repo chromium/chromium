@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/login/auth/auth_factors_data.h"
+#include "ash/components/login/auth/public/auth_factors_data.h"
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
-#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "base/check_op.h"
 
 namespace ash {

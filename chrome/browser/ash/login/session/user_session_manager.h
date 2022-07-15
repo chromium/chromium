@@ -14,7 +14,7 @@
 
 #include "ash/components/arc/net/always_on_vpn_manager.h"
 #include "ash/components/login/auth/authenticator.h"
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"

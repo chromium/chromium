@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
+#include "ash/components/login/auth/public/auth_failure.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -118,7 +119,7 @@ class ManagedSessionServiceTest : public ::testing::Test,
   }
   void OnKioskLoginFailure() override { ++observed_kiosk_login_failure_count_; }
 
-  ash::AuthFailure auth_failure_ = ash::AuthFailure::AuthFailureNone();
+  ash::AuthFailure auth_failure_ = ash::AuthFailure(ash::AuthFailure::NONE);
   Profile* logged_in_ = nullptr;
   Profile* logged_out_ = nullptr;
   bool locked_ = false;

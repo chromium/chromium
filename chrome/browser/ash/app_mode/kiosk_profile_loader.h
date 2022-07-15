@@ -19,6 +19,7 @@ class Profile;
 
 namespace ash {
 
+class AuthFailure;
 enum class KioskAppType;
 class UserContext;
 

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/user_context.h"
+#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/tpm/stub_install_attributes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
