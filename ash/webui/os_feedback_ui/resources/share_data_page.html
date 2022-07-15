@@ -97,6 +97,7 @@
 
   #pageUrl {
     display: flex;
+    margin-bottom: 8px;
     white-space: nowrap;
   }
 
@@ -133,9 +134,15 @@
     width: 68px;
   }
 
+  #sysInfoContainer,
+  #userConsent {
+    display: flex;
+  }
+
   cr-checkbox {
     --cr-checkbox-label-padding-start: 0;
     --cr-checkbox-size: 20px;
+    margin-inline-end: 12px;
   }
 </style>
 <div id="container">
@@ -175,8 +182,7 @@
     </div>
     <!-- User consent -->
     <div id="userConsent" class="checkbox-field-container">
-      <input id="userConsentCheckbox" type="checkbox"
-          aria-labelledby="userConsentLabel">
+      <cr-checkbox id="userConsentCheckbox" aria-labelledby="userConsentLabel"></cr-checkbox>
       <label id="userConsentLabel">[[i18n('userConsentLabel')]]</label>
     </div>
     <!-- Diagnostic data -->
@@ -184,8 +190,7 @@
       <h2 id="shareDiagnosticDataLabel">[[i18n('shareDiagnosticDataLabel')]]</h2>
       <!-- URL -->
       <div id="pageUrl" class="checkbox-field-container">
-        <input id="pageUrlCheckbox" type="checkbox" aria-labelledby="pageUrlLabel"
-            checked>
+        <cr-checkbox id="pageUrlCheckbox" aria-labelledby="pageUrlLabel" checked></cr-checkbox>
         <label id="pageUrlLabel">[[i18n('sharePageUrlLabel')]]&nbsp;</label>
         <a href="[[feedbackContext.pageUrl.url]]" class="overflow-text" id="pageUrlText" target="_blank">
           [[feedbackContext.pageUrl.url]]
@@ -196,8 +201,8 @@
       </div>
       <!-- System Information -->
       <div id="sysInfoContainer" class="checkbox-field-container">
-        <input id="sysInfoCheckbox" type="checkbox" aria-labelledby="sysInfoCheckboxLabel"
-            checked>
+        <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
+        </cr-checkbox>
         <label id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"></label>
       </div>
     </div>
