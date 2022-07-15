@@ -89,6 +89,7 @@ CalendarDateCellView::CalendarDateCellView(
       grayed_out_(is_grayed_out_date),
       row_index_(row_index),
       is_fetched_(is_fetched),
+      is_today_(calendar_utils::IsToday(date)),
       time_difference_(time_difference),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -150,7 +151,7 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
     canvas->DrawCircle(center, kBorderRadius, highlight_border);
   }
 
-  if (calendar_utils::IsToday(date_)) {
+  if (is_today_) {
     cc::PaintFlags highlight_background;
     highlight_background.setColor(bg_color);
     highlight_background.setStyle(cc::PaintFlags::kFill_Style);
@@ -254,6 +255,8 @@ void CalendarDateCellView::UpdateFetchStatus(bool is_fetched) {
       return;
 
     event_number_ = event_number;
+    if (is_today_)
+      calendar_view_controller_->OnTodaysEventFetchComplete();
   }
 
   is_fetched_ = is_fetched;
@@ -272,7 +275,7 @@ void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
     return;
 
   const AshColorProvider* color_provider = AshColorProvider::Get();
-  if (calendar_utils::IsToday(date_)) {
+  if (is_today_) {
     const SkColor text_color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
     SetEnabledTextColors(text_color);
@@ -317,11 +320,10 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
     return;
 
   const SkColor indicator_color =
-      calendar_utils::IsToday(date_)
-          ? AshColorProvider::Get()->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kTransparent90)
-          : AshColorProvider::Get()->GetControlsLayerColor(
-                AshColorProvider::ControlsLayerType::kFocusRingColor);
+      is_today_ ? AshColorProvider::Get()->GetBaseLayerColor(
+                      AshColorProvider::BaseLayerType::kTransparent90)
+                : AshColorProvider::Get()->GetControlsLayerColor(
+                      AshColorProvider::ControlsLayerType::kFocusRingColor);
 
   const float indicator_radius = is_selected_ ? kEventsPresentRoundedRadius * 2
                                               : kEventsPresentRoundedRadius;
@@ -404,13 +406,13 @@ CalendarMonthView::CalendarMonthView(
     }
     // If this row has today, updates today's row number and replaces today to
     // the last element in the `focused_cells_`.
-    if (calendar_utils::IsToday(current_date)) {
+    if (cell->is_today()) {
       calendar_view_controller_->set_row_height(
           cell->GetPreferredSize().height());
       calendar_view_controller_->set_today_row(row_number);
       focused_cells_.back() = cell;
-      DCHECK(calendar_view_controller_->todays_date_cell_view() == nullptr);
       has_today_ = true;
+      DCHECK(calendar_view_controller_->todays_date_cell_view() == nullptr);
       calendar_view_controller_->set_todays_date_cell_view(cell);
     }
     MoveToNextDay(column, current_date, current_date_local,

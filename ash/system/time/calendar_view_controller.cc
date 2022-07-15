@@ -216,6 +216,17 @@ void CalendarViewController::OnCalendarEventWillLaunch() {
   user_journey_time_recorded_ = true;
 }
 
+void CalendarViewController::OnTodaysEventFetchComplete() {
+  // Only record this once per lifetime of the CalendarView (and therefore the
+  // controller).
+  if (todays_date_cell_fetch_recorded_)
+    return;
+
+  UmaHistogramMediumTimes("Ash.Calendar.TimeToSeeTodaysEventDots",
+                          base::TimeTicks::Now() - calendar_open_time_);
+  todays_date_cell_fetch_recorded_ = true;
+}
+
 bool CalendarViewController::IsSelectedDateInCurrentMonth() {
   if (!selected_date_.has_value())
     return false;

@@ -66,6 +66,10 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // The row index in the date's month view.
   int row_index() const { return row_index_; }
 
+  // Whether this CalendarDateCellView represents today, when the view was
+  // constructed.
+  bool is_today() const { return is_today_; }
+
  protected:
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
@@ -96,6 +100,10 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 
   // If the current cell is selected.
   bool is_selected_ = false;
+
+  // Whether this CalendarDateCellView represented today when the view was
+  // constructed.
+  const bool is_today_;
 
   // The number of event for `date_`.
   int event_number_ = 0;

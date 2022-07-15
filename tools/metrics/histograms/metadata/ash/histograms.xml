@@ -859,6 +859,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Calendar.TimeToSeeTodaysEventDots" units="ms"
+    expires_after="2022-11-10">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Measures the time from open of CalendarView, to CalendarDateCellView
+    representing today receives events. Recorded once per lifetime of
+    CalendarViewController (once per show), when todays CalendarDateCellView
+    receives event data.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.{CalendarChildView}.Activated"
     enum="CalendarEventSource" expires_after="2022-11-10">
   <owner>newcomer@google.com</owner>
