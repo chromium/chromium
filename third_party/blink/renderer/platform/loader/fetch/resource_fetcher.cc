@@ -38,8 +38,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -973,10 +975,7 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
 void ResourceFetcher::AttachWebBundleTokenIfNeeded(
     ResourceRequest& resource_request) const {
-  if (!subresource_web_bundles_)
-    return;
-  SubresourceWebBundle* bundle =
-      subresource_web_bundles_->GetMatchingBundle(resource_request.Url());
+  SubresourceWebBundle* bundle = GetMatchingBundle(resource_request.Url());
   if (!bundle)
     return;
   resource_request.SetWebBundleTokenParams(
@@ -2232,14 +2231,27 @@ String ResourceFetcher::GetCacheIdentifier(const KURL& url) const {
   if (archive_)
     return archive_->GetCacheIdentifier();
 
-  if (subresource_web_bundles_) {
-    SubresourceWebBundle* bundle =
-        subresource_web_bundles_->GetMatchingBundle(url);
-    if (bundle)
-      return bundle->GetCacheIdentifier();
-  }
+  SubresourceWebBundle* bundle = GetMatchingBundle(url);
+  if (bundle)
+    return bundle->GetCacheIdentifier();
 
   return MemoryCache::DefaultCacheIdentifier();
+}
+
+absl::optional<base::UnguessableToken>
+ResourceFetcher::GetSubresourceBundleToken(const KURL& url) const {
+  SubresourceWebBundle* bundle = GetMatchingBundle(url);
+  if (!bundle)
+    return absl::nullopt;
+  return bundle->WebBundleToken();
+}
+
+absl::optional<KURL> ResourceFetcher::GetSubresourceBundleSourceUrl(
+    const KURL& url) const {
+  SubresourceWebBundle* bundle = GetMatchingBundle(url);
+  if (!bundle)
+    return absl::nullopt;
+  return bundle->GetBundleUrl();
 }
 
 void ResourceFetcher::EmulateLoadStartedForInspector(
@@ -2389,6 +2401,13 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
   info->SetInitialURL(initial_url);
   info->SetFinalResponse(resource->GetResponse());
   info->SetLoadResponseEnd(response_end);
+}
+
+SubresourceWebBundle* ResourceFetcher::GetMatchingBundle(
+    const KURL& url) const {
+  return subresource_web_bundles_
+             ? subresource_web_bundles_->GetMatchingBundle(url)
+             : nullptr;
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {

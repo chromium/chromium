@@ -31,7 +31,9 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
@@ -70,6 +72,7 @@ class Resource;
 class ResourceError;
 class ResourceLoadObserver;
 class ResourceTimingInfo;
+class SubresourceWebBundle;
 class SubresourceWebBundleList;
 class WebBackForwardCacheLoaderHelper;
 class WebCodeCacheLoader;
@@ -250,6 +253,13 @@ class PLATFORM_EXPORT ResourceFetcher
   blink::mojom::ControllerServiceWorkerMode IsControlledByServiceWorker() const;
 
   String GetCacheIdentifier(const KURL& url) const;
+
+  // If `url` exists as a resource in a subresource bundle in this frame,
+  // returns its UnguessableToken; otherwise, returns absl::nullopt.
+  absl::optional<base::UnguessableToken> GetSubresourceBundleToken(
+      const KURL& url) const;
+
+  absl::optional<KURL> GetSubresourceBundleSourceUrl(const KURL& url) const;
 
   enum IsImageSet { kImageNotImageSet, kImageIsImageSet };
 
@@ -434,6 +444,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void PopulateAndAddResourceTimingInfo(Resource* resource,
                                         scoped_refptr<ResourceTimingInfo> info,
                                         base::TimeTicks response_end);
+  SubresourceWebBundle* GetMatchingBundle(const KURL& url) const;
 
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
