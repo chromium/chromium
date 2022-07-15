@@ -43,14 +43,20 @@ public class ContextualPageActionController {
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
         profileSupplier.addObserver(profile -> {
             if (profile.isOffTheRecord()) return;
+
+            // The profile supplier observer will be invoked every time the profile is changed.
+            // Ignore the subsequent calls since we are only interested in initializing tab
+            // observers once.
+            if (mCurrentTabObserver != null) return;
+
             if (!AdaptiveToolbarFeatures.isContextualPageActionsEnabled()) return;
 
             // TODO(shaktisahu): Observe the right method to handle tab switch, same-page
             // navigations. Also handle chrome:// URLs if not already handled.
             mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
                 @Override
-                public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                    maybeShowContextualPageAction();
+                public void onPageLoadFinished(Tab tab, GURL url) {
+                    if (tab != null) maybeShowContextualPageAction();
                 }
             }, this::activeTabChanged);
         });
@@ -62,16 +68,22 @@ public class ContextualPageActionController {
     }
 
     private void activeTabChanged(Tab tab) {
-        maybeShowContextualPageAction();
+        // If the tab is loading or if it's going to load later then we'll also get a call to
+        // onPageLoadFinished.
+        if (tab != null && !tab.isLoading() && !tab.isFrozen()) {
+            maybeShowContextualPageAction();
+        }
     }
 
     private void maybeShowContextualPageAction() {
         Tab tab = mTabSupplier.get();
         // TODO(shaktisahu): Maybe hide the action.
-        if (tab == null) return;
+        if (tab == null || tab.isIncognito() || tab.isDestroyed()) return;
+
         ContextualPageActionControllerJni.get().computeContextualPageAction(
                 mProfileSupplier.get(), tab.getUrl(), result -> {
-                    if (tab.isDestroyed() || tab.isHidden()) return;
+                    if (tab.isDestroyed()) return;
+
                     boolean isSameTab =
                             mTabSupplier.get() != null && mTabSupplier.get().getId() == tab.getId();
                     if (!isSameTab) return;
