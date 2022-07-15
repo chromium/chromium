@@ -221,8 +221,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
                                  const PropertyTreeState& guest_state,
                                  bool prefers_lcd_text,
                                  bool dry_run) {
-  if (&Chunks().GetPaintArtifact() != &guest.Chunks().GetPaintArtifact())
-    return false;
+  DCHECK_EQ(&Chunks().GetPaintArtifact(), &guest.Chunks().GetPaintArtifact());
   if (ChunkRequiresOwnLayer() || guest.ChunkRequiresOwnLayer())
     return false;
   if (&GetPropertyTreeState().Effect() != &guest_state.Effect())

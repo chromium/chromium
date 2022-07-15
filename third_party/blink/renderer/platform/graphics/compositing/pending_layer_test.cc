@@ -256,20 +256,6 @@ TEST(PendingLayerTest, KnownOpaque) {
             pending_layer.RectKnownToBeOpaque());
 }
 
-TEST(PendingLayerTest, CanNotMergeAcrossPaintArtifacts) {
-  TestPaintArtifact test_artifact_a;
-  test_artifact_a.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite);
-  PaintChunkSubset chunks_a(test_artifact_a.Build());
-  PendingLayer layer_a(chunks_a, chunks_a.begin());
-
-  TestPaintArtifact test_artifact_b;
-  test_artifact_b.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kGray);
-  PaintChunkSubset chunks_b(test_artifact_b.Build());
-  PendingLayer layer_b(chunks_b, chunks_b.begin());
-
-  EXPECT_FALSE(layer_a.Merge(layer_b));
-}
-
 class PendingLayerTextOpaquenessTest
     : public testing::Test,
       public testing::WithParamInterface<bool> {
