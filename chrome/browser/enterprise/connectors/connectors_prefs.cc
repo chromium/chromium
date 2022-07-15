@@ -34,10 +34,10 @@ const char kOnSecurityEventPref[] = "enterprise_connectors.on_security_event";
 
 const char kContextAwareAccessSignalsAllowlistPref[] =
     "enterprise_connectors.device_trust.origins";
-const char kDeviceTrustPrivateKeyPref[] =
-    "enterprise_connectors.device_trust.private_key";
-const char kDeviceTrustPublicKeyPref[] =
-    "enterprise_connectors.device_trust.public_key";
+#if BUILDFLAG(IS_MAC)
+const char kDeviceTrustDisableKeyCreationPref[] =
+    "enterprise_connectors.device_trust.disable_key_creation";
+#endif
 
 const char kOnFileAttachedScopePref[] =
     "enterprise_connectors.scope.on_file_attached";
@@ -90,9 +90,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   RegisterFileSystemPrefs(registry);
 }
 
+#if BUILDFLAG(IS_MAC)
 void RegisterLocalPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(kDeviceTrustPrivateKeyPref, std::string());
-  registry->RegisterStringPref(kDeviceTrustPublicKeyPref, std::string());
+  registry->RegisterBooleanPref(kDeviceTrustDisableKeyCreationPref, false);
 }
+#endif
 
 }  // namespace enterprise_connectors

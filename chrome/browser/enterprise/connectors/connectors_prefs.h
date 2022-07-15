@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 class PrefRegistrySimple;
@@ -48,18 +49,20 @@ extern const char kOnFileTransferScopePref[];
 #endif
 extern const char kOnSecurityEventScopePref[];
 
-// The pref name where this class stores the encrypted private key.
-// If the machine supports storage in TPM, the private key will be
-// stored there; otherwise, it will be stored in the local state.
-extern const char kDeviceTrustPrivateKeyPref[];
-// The pref name where this class stores the public key;
-// If the machine supports storage in TPM, the public key will be
-// stored there; owtherwise, it will be stored in the local state.
-extern const char kDeviceTrustPublicKeyPref[];
+#if BUILDFLAG(IS_MAC)
+// The pref on whether the device trust key creation is disabled for the
+// current user. The device trust key creation is disabled when a key for
+// the device is already present on the Server but a key upload is
+// requested with a another key not signed by the previous one. The key
+// creation is enabled by default.
+extern const char kDeviceTrustDisableKeyCreationPref[];
+#endif
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+#if BUILDFLAG(IS_MAC)
 void RegisterLocalPrefs(PrefRegistrySimple* registry);
+#endif
 
 }  // namespace enterprise_connectors
 
