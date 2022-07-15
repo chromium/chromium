@@ -1699,6 +1699,23 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.SystemTray.Network.{NetworkType}.Toggled"
+    enum="BooleanToggled" expires_after="2023-06-20">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>tjohnsonkanu@chromium.org</owner>
+  <owner>chadduffin@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the new value of the WiFi/Mobile toggle button in system tray.
+    Metric emitted each time a user clicks on the enable/disable WiFi or Mobile
+    toggle.
+  </summary>
+  <token key="NetworkType">
+    <variant name="Mobile"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.SystemTray.NotificationsRemovedByClearAll"
     units="notifications" expires_after="2023-04-01">
   <owner>amehfooz@chromium.org</owner>

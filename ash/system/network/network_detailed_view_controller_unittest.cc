@@ -12,6 +12,7 @@
 #include "ash/system/network/network_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,6 +54,9 @@ constexpr char kNetworkConnectConfigured[] =
     "StatusArea_Network_ConnectConfigured";
 constexpr char kNetworkConnectionDetails[] =
     "StatusArea_Network_ConnectionDetails";
+
+const std::string kNetworkTechnologyWiFi = "WiFi";
+const std::string kNetworkTechnologyMobile = "Mobile";
 
 class NetworkConnectTestDelegate : public chromeos::NetworkConnect::Delegate {
  public:
@@ -120,13 +124,27 @@ class NetworkDetailedViewControllerTest : public AshTestBase {
     network_connect_delegate_.reset();
   }
 
-  void CheckHistogramBuckets(NetworkRowClickedAction action,
-                             size_t count,
-                             size_t total_count) {
+  void CheckRowClickedActionHistogramBuckets(NetworkRowClickedAction action,
+                                             size_t count,
+                                             size_t total_count) {
     histogram_tester_.ExpectBucketCount(
         "ChromeOS.SystemTray.Network.RowClickedAction", action, count);
     histogram_tester_.ExpectTotalCount(
         "ChromeOS.SystemTray.Network.RowClickedAction", total_count);
+  }
+
+  void CheckNetworkTypeToggledHistogramBuckets(const std::string& network_type,
+                                               bool new_state,
+                                               size_t count,
+                                               size_t total_count) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat(
+            {"ChromeOS.SystemTray.Network.", network_type, ".Toggled"}),
+        new_state, count);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat(
+            {"ChromeOS.SystemTray.Network.", network_type, ".Toggled"}),
+        total_count);
   }
 
   void SelectNetworkListItem(const NetworkStatePropertiesPtr& network) {
@@ -266,8 +284,9 @@ TEST_F(NetworkDetailedViewControllerTest,
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectionDetails));
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/0u, /*total_count=*/0u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/0u, /*total_count=*/0u);
 
   NetworkStatePropertiesPtr cellular_network =
       CreateStandaloneNetworkProperties(kCellular, NetworkType::kCellular,
@@ -281,8 +300,9 @@ TEST_F(NetworkDetailedViewControllerTest,
   SelectNetworkListItem(cellular_network);
   EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
   EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/0u, /*total_count=*/0u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/0u, /*total_count=*/0u);
 
   // Show network details page for a connected cellular network.
   GetSessionControllerClient()->SetSessionState(
@@ -292,8 +312,9 @@ TEST_F(NetworkDetailedViewControllerTest,
   EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/1u, /*total_count=*/1u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/1u, /*total_count=*/1u);
 }
 
 TEST_F(NetworkDetailedViewControllerTest, EmptyNetworkListItemSelected) {
@@ -303,16 +324,18 @@ TEST_F(NetworkDetailedViewControllerTest, EmptyNetworkListItemSelected) {
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
   EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
   EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/0u, /*total_count=*/0u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/0u, /*total_count=*/0u);
 
   SelectNetworkListItem(/*network=*/nullptr);
   EXPECT_EQ(1, GetSystemTrayClient()->show_network_settings_count());
   EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/1u, /*total_count=*/1u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/1u, /*total_count=*/1u);
 }
 
 TEST_F(NetworkDetailedViewControllerTest, CellularNetworkListItemSelected) {
@@ -323,10 +346,12 @@ TEST_F(NetworkDetailedViewControllerTest, CellularNetworkListItemSelected) {
   EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
   EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/0u, /*total_count=*/0u);
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenSimUnlockDialog,
-                        /*count=*/0u, /*total_count=*/0u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/0u, /*total_count=*/0u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenSimUnlockDialog,
+      /*count=*/0u, /*total_count=*/0u);
 
   NetworkStatePropertiesPtr cellular_network =
       CreateStandaloneNetworkProperties(kCellular, NetworkType::kCellular,
@@ -343,10 +368,12 @@ TEST_F(NetworkDetailedViewControllerTest, CellularNetworkListItemSelected) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/1u, /*total_count=*/1u);
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenSimUnlockDialog,
-                        /*count=*/0u, /*total_count=*/1u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/1u, /*total_count=*/1u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenSimUnlockDialog,
+      /*count=*/0u, /*total_count=*/1u);
 
   // When cellular network is SIM locked, we show the SIM unlock settings page.
   cellular_network->type_state->get_cellular()->sim_locked = true;
@@ -356,10 +383,12 @@ TEST_F(NetworkDetailedViewControllerTest, CellularNetworkListItemSelected) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectionDetails));
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/1u, /*total_count=*/2u);
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenSimUnlockDialog,
-                        /*count=*/1u, /*total_count=*/2u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/1u, /*total_count=*/2u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenSimUnlockDialog,
+      /*count=*/1u, /*total_count=*/2u);
 }
 
 TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
@@ -370,10 +399,12 @@ TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
   EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
   EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/0u, /*total_count=*/0u);
-  CheckHistogramBuckets(NetworkRowClickedAction::kConnectToNetwork,
-                        /*count=*/0u, /*total_count=*/0u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/0u, /*total_count=*/0u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kConnectToNetwork,
+      /*count=*/0u, /*total_count=*/0u);
 
   // Clicking on an already connected network opens settings page.
   // Since this network is already connected, selecting this network
@@ -389,10 +420,12 @@ TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
   EXPECT_EQ(shill::kStateIdle, GetWifiNetworkState());
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/1u, /*total_count=*/1u);
-  CheckHistogramBuckets(NetworkRowClickedAction::kConnectToNetwork,
-                        /*count=*/0u, /*total_count=*/1u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/1u, /*total_count=*/1u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kConnectToNetwork,
+      /*count=*/0u, /*total_count=*/1u);
 
   // Set to be connectable and make sure network is connected to.
   wifi_network->connection_state = ConnectionStateType::kNotConnected;
@@ -407,10 +440,12 @@ TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNetworkConnectConfigured));
   EXPECT_EQ(shill::kStateOnline, GetWifiNetworkState());
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/1u, /*total_count=*/2u);
-  CheckHistogramBuckets(NetworkRowClickedAction::kConnectToNetwork,
-                        /*count=*/1u, /*total_count=*/2u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/1u, /*total_count=*/2u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kConnectToNetwork,
+      /*count=*/1u, /*total_count=*/2u);
 
   // Reset network state to idle.
   DisconnectWifiNetwork();
@@ -431,10 +466,12 @@ TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
   EXPECT_EQ(2, user_action_tester.GetActionCount(kNetworkConnectConfigured));
   EXPECT_EQ(shill::kStateOnline, GetWifiNetworkState());
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/1u, /*total_count=*/3u);
-  CheckHistogramBuckets(NetworkRowClickedAction::kConnectToNetwork,
-                        /*count=*/2u, /*total_count=*/3u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/1u, /*total_count=*/3u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kConnectToNetwork,
+      /*count=*/2u, /*total_count=*/3u);
 
   // Reset network to idle.
   DisconnectWifiNetwork();
@@ -455,20 +492,30 @@ TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
   EXPECT_EQ(2, user_action_tester.GetActionCount(kNetworkConnectConfigured));
   EXPECT_EQ(shill::kStateIdle, GetWifiNetworkState());
 
-  CheckHistogramBuckets(NetworkRowClickedAction::kOpenNetworkSettingsPage,
-                        /*count=*/2u, /*total_count=*/4u);
-  CheckHistogramBuckets(NetworkRowClickedAction::kConnectToNetwork,
-                        /*count=*/2u, /*total_count=*/4u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kOpenNetworkSettingsPage,
+      /*count=*/2u, /*total_count=*/4u);
+  CheckRowClickedActionHistogramBuckets(
+      NetworkRowClickedAction::kConnectToNetwork,
+      /*count=*/2u, /*total_count=*/4u);
 }
 
 TEST_F(NetworkDetailedViewControllerTest, WifiStateChange) {
   // By default ash test instantiates WiFi networks and enables them.
   EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             GetTechnologyState(chromeos::NetworkTypePattern::WiFi()));
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyWiFi,
+      /*new_state=*/false, /*count=*/0u,
+      /*total_count=*/0u);
 
   // Disable wifi.
   ToggleWifiState(/*new_state=*/false);
 
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyWiFi,
+      /*new_state=*/false, /*count=*/1u,
+      /*total_count=*/1u);
   EXPECT_EQ(
       chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
       GetTechnologyState(chromeos::NetworkTypePattern::WiFi()));
@@ -476,6 +523,10 @@ TEST_F(NetworkDetailedViewControllerTest, WifiStateChange) {
   // Renable wifi.
   ToggleWifiState(/*new_state=*/true);
 
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyWiFi,
+      /*new_state=*/true, /*count=*/1u,
+      /*total_count=*/2u);
   EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             GetTechnologyState(chromeos::NetworkTypePattern::WiFi()));
 }
@@ -483,11 +534,19 @@ TEST_F(NetworkDetailedViewControllerTest, WifiStateChange) {
 TEST_F(NetworkDetailedViewControllerTest, MobileToggleClicked) {
   AddCellularDevice();
 
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyMobile,
+      /*new_state=*/false, /*count=*/0u,
+      /*total_count=*/0u);
   EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             GetTechnologyState(chromeos::NetworkTypePattern::Cellular()));
 
   ToggleMobileState(/*new_state=*/false);
 
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyMobile,
+      /*new_state=*/false, /*count=*/1u,
+      /*total_count=*/1u);
   EXPECT_EQ(
       chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
       GetTechnologyState(chromeos::NetworkTypePattern::Cellular()));
@@ -501,6 +560,10 @@ TEST_F(NetworkDetailedViewControllerTest, MobileToggleClicked) {
   EXPECT_EQ(
       chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
       GetTechnologyState(chromeos::NetworkTypePattern::Cellular()));
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyMobile,
+      /*new_state=*/true, /*count=*/1u,
+      /*total_count=*/2u);
 
   // When Cellular and Tether are both available toggle should control cellular.
   AddTetherDevice();
@@ -520,6 +583,10 @@ TEST_F(NetworkDetailedViewControllerTest, MobileToggleClicked) {
       GetTechnologyState(chromeos::NetworkTypePattern::Tether()));
   EXPECT_EQ(chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             GetTechnologyState(chromeos::NetworkTypePattern::Cellular()));
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyMobile,
+      /*new_state=*/true, /*count=*/2u,
+      /*total_count=*/3u);
 
   ClearDevices();
   AddTetherDevice();
@@ -533,6 +600,10 @@ TEST_F(NetworkDetailedViewControllerTest, MobileToggleClicked) {
   EXPECT_EQ(
       chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
       GetTechnologyState(chromeos::NetworkTypePattern::Tether()));
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyMobile,
+      /*new_state=*/false, /*count=*/2u,
+      /*total_count=*/4u);
 
   // When Tether is uninitialized and Bluetooth is disabled, toggling Mobile on
   // should enable Bluetooth.
@@ -546,6 +617,10 @@ TEST_F(NetworkDetailedViewControllerTest, MobileToggleClicked) {
   EXPECT_EQ(
       chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
       GetTechnologyState(chromeos::NetworkTypePattern::Tether()));
+  CheckNetworkTypeToggledHistogramBuckets(
+      /*network_type=*/kNetworkTechnologyMobile,
+      /*new_state=*/true, /*count=*/3u,
+      /*total_count=*/5u);
 
   // Simulate Bluetooth adapter being enabled. Note that when testing Bluetooth
   // will be set to kEnabling and needs to be manually changed to kEnabled using

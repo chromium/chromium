@@ -196,6 +196,8 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
 }
 
 void NetworkDetailedViewController::OnMobileToggleClicked(bool new_state) {
+  RecordNetworkTypeToggled(NetworkType::kMobile, new_state);
+
   const DeviceStateType cellular_state =
       model_->GetDeviceState(NetworkType::kCellular);
 
@@ -231,6 +233,7 @@ void NetworkDetailedViewController::OnMobileToggleClicked(bool new_state) {
 }
 
 void NetworkDetailedViewController::OnWifiToggleClicked(bool new_state) {
+  RecordNetworkTypeToggled(NetworkType::kWiFi, new_state);
   model_->SetNetworkTypeEnabledState(NetworkType::kWiFi, new_state);
 }
 

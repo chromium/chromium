@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_NETWORK_NETWORK_UTILS_H_
 
 #include "ash/ash_export.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace ash {
 
@@ -33,6 +34,10 @@ enum class DetailedViewSection {
 ASH_EXPORT void RecordNetworkRowClickedAction(NetworkRowClickedAction action);
 
 ASH_EXPORT void RecordDetailedViewSection(DetailedViewSection section);
+
+ASH_EXPORT void RecordNetworkTypeToggled(
+    chromeos::network_config::mojom::NetworkType network_type,
+    bool new_state);
 
 }  // namespace ash
 
