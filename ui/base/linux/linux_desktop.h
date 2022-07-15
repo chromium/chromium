@@ -5,15 +5,13 @@
 #ifndef UI_BASE_LINUX_LINUX_DESKTOP_H_
 #define UI_BASE_LINUX_LINUX_DESKTOP_H_
 
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/values.h"
 
 namespace ui {
 
 // Returns desktop environment info as list of values.
-COMPONENT_EXPORT(UI_BASE) std::vector<base::Value> GetDesktopEnvironmentInfo();
+COMPONENT_EXPORT(UI_BASE) base::Value::List GetDesktopEnvironmentInfo();
 
 }  // namespace ui
 

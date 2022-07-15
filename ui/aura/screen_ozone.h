@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/aura_export.h"
 #include "ui/display/screen.h"
@@ -53,7 +54,7 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;
-  std::vector<base::Value> GetGpuExtraInfo(
+  base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
 
   // Returns the NativeWindow associated with the AcceleratedWidget.

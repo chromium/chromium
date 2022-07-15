@@ -258,7 +258,7 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
       "Window system binding extensions", gpu_info.gl_ws_extensions));
 
   {
-    base::Value::DeprecatedListStorage gpu_extra_info_values =
+    base::Value::List gpu_extra_info_values =
         display::Screen::GetScreen()->GetGpuExtraInfo(gpu_extra_info);
     for (auto& pair : gpu_extra_info_values) {
       if (!pair.GetDict().FindString("description") ||

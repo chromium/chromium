@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
 
   // Returns human readable description of the window manager, desktop, and
   // other system properties related to the compositing.
-  virtual std::vector<base::Value> GetGpuExtraInfo(
+  virtual base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
   // Sets device scale factor received from external sources such as toolkits.
@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   virtual void SetDeviceScaleFactor(float scale);
 
  protected:
-  void StorePlatformNameIntoListOfValues(std::vector<base::Value>& values,
+  void StorePlatformNameIntoListOfValues(base::Value::List& values,
                                          const std::string& platform_name);
 };
 

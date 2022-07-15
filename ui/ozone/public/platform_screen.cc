@@ -45,20 +45,20 @@ base::TimeDelta PlatformScreen::CalculateIdleTime() const {
   return base::Seconds(0);
 }
 
-std::vector<base::Value> PlatformScreen::GetGpuExtraInfo(
+base::Value::List PlatformScreen::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  return std::vector<base::Value>();
+  return base::Value::List();
 }
 
 void PlatformScreen::SetDeviceScaleFactor(float scale) {}
 
 void PlatformScreen::StorePlatformNameIntoListOfValues(
-    std::vector<base::Value>& values,
+    base::Value::List& values,
     const std::string& platform_name) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("description", base::Value("Ozone platform"));
-  dict.SetKey("value", base::Value(platform_name));
-  values.push_back(std::move(dict));
+  base::Value::Dict dict;
+  dict.Set("description", "Ozone platform");
+  dict.Set("value", platform_name);
+  values.Append(std::move(dict));
 }
 
 }  // namespace ui

@@ -395,7 +395,7 @@ void WaylandScreen::RemoveObserver(display::DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
 }
 
-std::vector<base::Value> WaylandScreen::GetGpuExtraInfo(
+base::Value::List WaylandScreen::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   auto values = GetDesktopEnvironmentInfo();
   std::vector<std::string> protocols;
@@ -404,7 +404,7 @@ std::vector<base::Value> WaylandScreen::GetGpuExtraInfo(
                                            protocol_and_version.first.c_str(),
                                            protocol_and_version.second));
   }
-  values.push_back(
+  values.Append(
       display::BuildGpuInfoEntry("Interfaces exposed by the Wayland compositor",
                                  base::JoinString(protocols, " ")));
   StorePlatformNameIntoListOfValues(values, "wayland");

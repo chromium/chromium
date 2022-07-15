@@ -197,7 +197,7 @@ class DISPLAY_EXPORT Screen {
 
   // Returns human readable description of the window manager, desktop, and
   // other system properties related to the compositing.
-  virtual std::vector<base::Value> GetGpuExtraInfo(
+  virtual base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
  protected:

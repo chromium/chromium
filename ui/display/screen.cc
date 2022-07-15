@@ -152,9 +152,9 @@ std::string Screen::GetCurrentWorkspace() {
   return {};
 }
 
-std::vector<base::Value> Screen::GetGpuExtraInfo(
+base::Value::List Screen::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  return std::vector<base::Value>();
+  return base::Value::List();
 }
 
 void Screen::SetScopedDisplayForNewWindows(int64_t display_id) {

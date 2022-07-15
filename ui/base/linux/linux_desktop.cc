@@ -14,21 +14,21 @@
 
 namespace ui {
 
-std::vector<base::Value> GetDesktopEnvironmentInfo() {
-  std::vector<base::Value> result;
+base::Value::List GetDesktopEnvironmentInfo() {
+  base::Value::List result;
   auto env(base::Environment::Create());
   std::string value;
   if (env->GetVar(base::nix::kXdgCurrentDesktopEnvVar, &value)) {
-    result.push_back(
+    result.Append(
         display::BuildGpuInfoEntry(base::nix::kXdgCurrentDesktopEnvVar, value));
   }
   if (env->GetVar(base::nix::kXdgSessionTypeEnvVar, &value)) {
-    result.push_back(
+    result.Append(
         display::BuildGpuInfoEntry(base::nix::kXdgSessionTypeEnvVar, value));
   }
   constexpr char kGDMSession[] = "GDMSESSION";
   if (env->GetVar(kGDMSession, &value))
-    result.push_back(display::BuildGpuInfoEntry(kGDMSession, value));
+    result.Append(display::BuildGpuInfoEntry(kGDMSession, value));
   return result;
 }
 
