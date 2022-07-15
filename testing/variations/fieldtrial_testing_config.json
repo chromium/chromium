@@ -8936,6 +8936,28 @@
             ]
         }
     ],
+    "UseSyncInvalidations": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseSyncInvalidations",
+                        "UseSyncInvalidationsForWalletAndOffer"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseThreadPriorityLowest": [
         {
             "platforms": [
