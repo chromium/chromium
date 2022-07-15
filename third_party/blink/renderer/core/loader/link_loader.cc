@@ -111,19 +111,24 @@ Resource* LinkLoader::GetResourceForTesting() {
 
 bool LinkLoader::LoadLink(const LinkLoadParameters& params,
                           Document& document) {
-  // If any loading process is in progress, abort it.
-  Abort();
-
-  if (!client_->ShouldLoadLink())
+  if (!client_->ShouldLoadLink()) {
+    Abort();
     return false;
+  }
+
+  if (params.reason != LinkLoadParameters::Reason::kMediaChange ||
+      (pending_preload_ && !pending_preload_->MatchesMedia())) {
+    Abort();
+    pending_preload_ = MakeGarbageCollected<PendingLinkPreload>(document, this);
+  }
+
+  // If any loading process is in progress, abort it.
 
   PreloadHelper::DnsPrefetchIfNeeded(params, &document, document.GetFrame(),
                                      PreloadHelper::kLinkCalledFromMarkup);
 
   PreloadHelper::PreconnectIfNeeded(params, &document, document.GetFrame(),
                                     PreloadHelper::kLinkCalledFromMarkup);
-
-  pending_preload_ = MakeGarbageCollected<PendingLinkPreload>(document, this);
 
   PreloadHelper::PreloadIfNeeded(
       params, document, NullURL(), PreloadHelper::kLinkCalledFromMarkup,

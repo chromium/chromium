@@ -241,7 +241,7 @@ void LinkStyle::SetDisabledState(bool disabled) {
   }
 
   if (disabled_state_ == kEnabledViaScript && owner_->ShouldProcessStyle())
-    Process();
+    Process(LinkLoadParameters::Reason::kDefault);
 }
 
 LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
@@ -309,7 +309,7 @@ LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
   return kLoaded;
 }
 
-void LinkStyle::Process() {
+void LinkStyle::Process(LinkLoadParameters::Reason reason) {
   DCHECK(owner_->ShouldProcessStyle());
   const LinkLoadParameters params(
       owner_->RelAttribute(),
@@ -323,7 +323,7 @@ void LinkStyle::Process() {
       owner_->GetNonEmptyURLAttribute(html_names::kHrefAttr),
       owner_->FastGetAttribute(html_names::kImagesrcsetAttr),
       owner_->FastGetAttribute(html_names::kImagesizesAttr),
-      owner_->FastGetAttribute(html_names::kBlockingAttr));
+      owner_->FastGetAttribute(html_names::kBlockingAttr), reason);
 
   WTF::TextEncoding charset = GetCharset();
 

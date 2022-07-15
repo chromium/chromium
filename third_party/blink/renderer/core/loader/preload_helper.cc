@@ -288,14 +288,32 @@ Resource* PreloadHelper::PreloadIfNeeded(
     return nullptr;
   }
 
-  // Preload only if media matches
+  bool media_matches = true;
+
   if (!params.media.IsEmpty()) {
     if (!media_values)
       media_values = CreateMediaValues(document, viewport_description);
-    if (!MediaMatches(params.media, media_values,
-                      document.GetExecutionContext()))
-      return nullptr;
+    media_matches = MediaMatches(params.media, media_values,
+                                 document.GetExecutionContext());
   }
+
+  DCHECK(pending_preload);
+
+  if (params.reason == LinkLoadParameters::Reason::kMediaChange) {
+    if (!media_matches) {
+      // Media attribute does not match environment, abort existing preload.
+      pending_preload->Dispose();
+    } else if (pending_preload->MatchesMedia()) {
+      // Media still matches, no need to re-fetch.
+      return nullptr;
+    }
+  }
+
+  pending_preload->SetMatchesMedia(media_matches);
+
+  // Preload only if media matches
+  if (!media_matches)
+    return nullptr;
 
   if (caller == kLinkCalledFromHeader)
     UseCounter::Count(document, WebFeature::kLinkHeaderPreload);

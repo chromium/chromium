@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/link_resource.h"
 #include "third_party/blink/renderer/core/html/link_style.h"
 #include "third_party/blink/renderer/core/html/rel_list.h"
+#include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/link_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -124,7 +125,8 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   LinkStyle* GetLinkStyle() const;
   LinkResource* LinkResourceToProcess();
 
-  void Process();
+  void Process(
+      LinkLoadParameters::Reason reason = LinkLoadParameters::Reason::kDefault);
   static void ProcessCallback(Node*);
 
   // Always call this asynchronously because this can cause synchronous

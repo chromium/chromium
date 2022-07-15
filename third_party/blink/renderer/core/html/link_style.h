@@ -31,7 +31,7 @@ class LinkStyle final : public LinkResource, ResourceClient {
   ~LinkStyle() override;
 
   LinkResourceType GetType() const override { return kStyle; }
-  void Process() override;
+  void Process(LinkLoadParameters::Reason reason) override;
   void OwnerRemoved() override;
   bool HasLoaded() const override { return loaded_sheet_; }
   void Trace(Visitor*) const override;

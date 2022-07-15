@@ -27,6 +27,8 @@ class PendingLinkPreload final : public SingleModuleClient {
   void AddResource(Resource*);
 
   bool HasResource() const { return finish_observer_.Get(); }
+  bool MatchesMedia() const { return matches_media_; }
+  void SetMatchesMedia(bool matches) { matches_media_ = matches; }
   Resource* GetResourceForTesting();
 
   void Trace(Visitor*) const override;
@@ -44,6 +46,7 @@ class PendingLinkPreload final : public SingleModuleClient {
   Member<Document> document_;
   Member<LinkLoader> loader_;
   Member<FinishObserver> finish_observer_;
+  bool matches_media_{false};
 };
 
 }  // namespace blink

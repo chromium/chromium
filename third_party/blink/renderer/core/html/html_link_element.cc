@@ -117,7 +117,7 @@ void HTMLLinkElement::ParseAttribute(
     Process();
   } else if (name == html_names::kMediaAttr) {
     media_ = value.LowerASCII();
-    Process();
+    Process(LinkLoadParameters::Reason::kMediaChange);
   } else if (name == html_names::kIntegrityAttr) {
     integrity_ = value;
   } else if (name == html_names::kFetchpriorityAttr &&
@@ -216,9 +216,9 @@ LinkStyle* HTMLLinkElement::GetLinkStyle() const {
   return static_cast<LinkStyle*>(link_.Get());
 }
 
-void HTMLLinkElement::Process() {
+void HTMLLinkElement::Process(LinkLoadParameters::Reason reason) {
   if (LinkResource* link = LinkResourceToProcess())
-    link->Process();
+    link->Process(reason);
 }
 
 Node::InsertionNotificationRequest HTMLLinkElement::InsertedInto(

@@ -19,6 +19,8 @@ namespace blink {
 class LinkHeader;
 
 struct CORE_EXPORT LinkLoadParameters {
+  enum class Reason { kDefault, kMediaChange };
+
   LinkLoadParameters(const LinkRelAttribute&,
                      const CrossOriginAttributeValue&,
                      const String& type,
@@ -31,7 +33,8 @@ struct CORE_EXPORT LinkLoadParameters {
                      const KURL& href,
                      const String& image_srcset,
                      const String& image_sizes,
-                     const String& blocking);
+                     const String& blocking,
+                     Reason reason = Reason::kDefault);
   LinkLoadParameters(const LinkHeader&, const KURL& base_url);
 
   LinkRelAttribute rel;
@@ -48,6 +51,7 @@ struct CORE_EXPORT LinkLoadParameters {
   String image_sizes;
   String blocking;
   absl::optional<base::UnguessableToken> recursive_prefetch_token;
+  Reason reason;
 };
 
 }  // namespace blink

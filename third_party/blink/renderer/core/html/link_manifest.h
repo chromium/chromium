@@ -19,7 +19,7 @@ class LinkManifest final : public LinkResource {
   ~LinkManifest() override;
 
   // LinkResource
-  void Process() override;
+  void Process(LinkLoadParameters::Reason reason) override;
   LinkResourceType GetType() const override { return kManifest; }
   bool HasLoaded() const override;
   void OwnerRemoved() override;
