@@ -110,6 +110,9 @@ class ExtractIOTask : public IOTask {
   // Counter of the number of archives needing extraction.
   size_t extractCount_;
 
+  // Reference to the unpacker service instances.
+  std::map<base::FilePath, scoped_refptr<unzip::ZipFileUnpacker>> unpackers_;
+
   base::WeakPtrFactory<ExtractIOTask> weak_ptr_factory_{this};
 };
 

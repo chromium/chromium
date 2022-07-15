@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_UNZIP_PUBLIC_CPP_UNZIP_H_
 
 #include "base/callback_forward.h"
+#include "base/task/thread_pool.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/ced/src/util/encodings/encodings.h"
@@ -50,6 +51,45 @@ using GetExtractedInfoCallback = base::OnceCallback<void(mojom::InfoPtr)>;
 void GetExtractedInfo(mojo::PendingRemote<mojom::Unzipper> unzipper,
                       const base::FilePath& zip_file,
                       GetExtractedInfoCallback result_callback);
+
+namespace {
+class UnzipParams;
+}
+
+// Class that wraps the unzip service to manage the lifetime of its
+// mojo conncections to enable cancellation, etc.
+class ZipFileUnpacker : public base::RefCountedThreadSafe<ZipFileUnpacker> {
+ public:
+  ZipFileUnpacker();
+  void Unpack(mojo::PendingRemote<mojom::Unzipper> unzipper,
+              const base::FilePath& zip_file,
+              const base::FilePath& output_dir,
+              mojom::UnzipOptionsPtr options,
+              UnzipListenerCallback listener_callback,
+              UnzipCallback result_callback);
+
+  void Stop();
+
+  bool CancelDone();
+
+  void CleanUp();
+
+ private:
+  friend class base::RefCountedThreadSafe<ZipFileUnpacker>;
+
+  ~ZipFileUnpacker();
+
+  const scoped_refptr<base::SequencedTaskRunner> runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  base::File zip_file_;
+  scoped_refptr<UnzipParams> params_;
+  mojo::PendingRemote<filesystem::mojom::Directory> directory_remote_;
+  mojo::PendingRemote<unzip::mojom::UnzipFilter> filter_remote_;
+  mojo::PendingRemote<unzip::mojom::UnzipListener> listener_remote_;
+};
 
 }  // namespace unzip
 

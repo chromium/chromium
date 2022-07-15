@@ -150,7 +150,10 @@ std::string GetRawFileNamesFromZip(const base::File& zip_file) {
 UnzipperImpl::UnzipperImpl() = default;
 
 UnzipperImpl::UnzipperImpl(mojo::PendingReceiver<mojom::Unzipper> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &UnzipperImpl::OnReceiverDisconnect, weak_ptr_factory_.GetWeakPtr()));
+}
 
 UnzipperImpl::~UnzipperImpl() = default;
 
@@ -202,15 +205,13 @@ bool DoUnzip(base::File zip_file,
        .password = std::move(password)});
 }
 
-void UnzipperImpl::Unzip(
+bool RunUnzip(
     base::File zip_file,
     mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
-    mojom::UnzipOptionsPtr set_options,
+    std::string encoding_name,
+    std::string password,
     mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
-    mojo::PendingRemote<mojom::UnzipListener> listener_remote,
-    UnzipCallback callback) {
-  DCHECK(zip_file.IsValid());
-
+    mojo::PendingRemote<mojom::UnzipListener> listener_remote) {
   mojo::Remote<filesystem::mojom::Directory> output_dir(
       std::move(output_dir_remote));
 
@@ -226,6 +227,24 @@ void UnzipperImpl::Unzip(
     progress_cb =
         base::BindRepeating(&UnzipperImpl::Listener, std::move(listener));
   }
+  return zip::Unzip(
+      zip_file.GetPlatformFile(),
+      base::BindRepeating(&MakeFileWriterDelegate, output_dir.get()),
+      base::BindRepeating(&CreateDirectory, output_dir.get()),
+      {.encoding = std::move(encoding_name),
+       .filter = std::move(filter_cb),
+       .progress = std::move(progress_cb),
+       .password = std::move(password)});
+}
+
+void UnzipperImpl::Unzip(
+    base::File zip_file,
+    mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
+    mojom::UnzipOptionsPtr set_options,
+    mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
+    mojo::PendingRemote<mojom::UnzipListener> listener_remote,
+    UnzipCallback callback) {
+  DCHECK(zip_file.IsValid());
 
   std::string encoding_name;
   if (set_options->encoding == "auto") {
@@ -237,11 +256,12 @@ void UnzipperImpl::Unzip(
     encoding_name = set_options->encoding;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+  runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DoUnzip, std::move(zip_file), std::move(output_dir),
-                     std::move(encoding_name), std::move(set_options->password),
-                     std::move(filter_cb), std::move(progress_cb)),
+      base::BindOnce(&RunUnzip, std::move(zip_file),
+                     std::move(output_dir_remote), std::move(encoding_name),
+                     std::move(set_options->password), std::move(filter_remote),
+                     std::move(listener_remote)),
       base::BindOnce(std::move(callback)));
 }
 
@@ -292,6 +312,11 @@ void UnzipperImpl::GetExtractedInfo(base::File zip_file,
   unzip::mojom::InfoPtr info =
       unzip::mojom::Info::New(valid, size, has_encrypted_content);
   std::move(callback).Run(std::move(info));
+}
+
+void UnzipperImpl::OnReceiverDisconnect() {
+  DCHECK(receiver_.is_bound());
+  receiver_.reset();
 }
 
 }  // namespace unzip

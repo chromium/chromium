@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -68,6 +69,9 @@ class UnzipParams : public base::RefCounted<UnzipParams>,
   mojo::Receiver<unzip::mojom::UnzipListener>* GetListenerReceiver() {
     return &listener_receiver_;
   }
+
+  // Set when the task runner completes cancellation work.
+  base::AtomicFlag cancel_is_done;
 
  private:
   friend class base::RefCounted<UnzipParams>;
@@ -157,6 +161,44 @@ class GetExtractedInfoParams : public base::RefCounted<GetExtractedInfoParams> {
   GetExtractedInfoCallback callback_;
 };
 
+bool CheckZipFileValid(const base::FilePath& zip_path,
+                       const base::File& zip_file) {
+  if (!zip_file.IsValid()) {
+    LOG(ERROR) << "Cannot open ZIP archive " << Redact(zip_path) << ": "
+               << base::File::ErrorToString(zip_file.error_details());
+    return false;
+  }
+  return true;
+}
+
+void PrepareUnzipParams(
+    scoped_refptr<UnzipParams> unzip_params,
+    const base::FilePath& output_dir,
+    UnzipFilterCallback filter_callback,
+    UnzipListenerCallback listener_callback,
+    mojo::PendingRemote<filesystem::mojom::Directory>& directory_remote,
+    mojo::PendingRemote<unzip::mojom::UnzipFilter>& filter_remote,
+    mojo::PendingRemote<unzip::mojom::UnzipListener>& listener_remote) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<filesystem::DirectoryImpl>(output_dir, nullptr, nullptr),
+      directory_remote.InitWithNewPipeAndPassReceiver());
+
+  unzip_params->unzipper().set_disconnect_handler(
+      base::BindOnce(&UnzipParams::InvokeCallback, unzip_params, false));
+
+  if (filter_callback) {
+    unzip_params->SetFilter(filter_remote.InitWithNewPipeAndPassReceiver(),
+                            std::move(filter_callback));
+  }
+
+  if (listener_callback) {
+    mojo::Receiver<unzip::mojom::UnzipListener>* listener =
+        unzip_params->GetListenerReceiver();
+    unzip_params->SetListener(std::move(listener_callback));
+    listener_remote = listener->BindNewPipeAndPassRemote();
+  }
+}
+
 void DoUnzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
              const base::FilePath& zip_path,
              const base::FilePath& output_dir,
@@ -165,17 +207,10 @@ void DoUnzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
              mojom::UnzipOptionsPtr options,
              UnzipCallback result_callback) {
   base::File zip_file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!zip_file.IsValid()) {
-    LOG(ERROR) << "Cannot open ZIP archive " << Redact(zip_path) << ": "
-               << base::File::ErrorToString(zip_file.error_details());
+  if (!CheckZipFileValid(zip_path, zip_file)) {
     std::move(result_callback).Run(false);
     return;
   }
-
-  mojo::PendingRemote<filesystem::mojom::Directory> directory_remote;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<filesystem::DirectoryImpl>(output_dir, nullptr, nullptr),
-      directory_remote.InitWithNewPipeAndPassReceiver());
 
   // |result_callback| is shared between the connection error handler and the
   // Unzip call using a refcounted UnzipParams object that owns
@@ -183,22 +218,12 @@ void DoUnzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
   auto unzip_params = base::MakeRefCounted<UnzipParams>(
       std::move(unzipper), std::move(result_callback));
 
-  unzip_params->unzipper().set_disconnect_handler(
-      base::BindOnce(&UnzipParams::InvokeCallback, unzip_params, false));
-
+  mojo::PendingRemote<filesystem::mojom::Directory> directory_remote;
   mojo::PendingRemote<unzip::mojom::UnzipFilter> filter_remote;
-  if (filter_callback) {
-    unzip_params->SetFilter(filter_remote.InitWithNewPipeAndPassReceiver(),
-                            std::move(filter_callback));
-  }
-
   mojo::PendingRemote<unzip::mojom::UnzipListener> listener_remote;
-  if (listener_callback) {
-    mojo::Receiver<unzip::mojom::UnzipListener>* listener =
-        unzip_params->GetListenerReceiver();
-    unzip_params->SetListener(std::move(listener_callback));
-    listener_remote = listener->BindNewPipeAndPassRemote();
-  }
+  PrepareUnzipParams(unzip_params, output_dir, filter_callback,
+                     listener_callback, directory_remote, filter_remote,
+                     listener_remote);
 
   unzip_params->unzipper()->Unzip(
       std::move(zip_file), std::move(directory_remote), std::move(options),
@@ -336,6 +361,93 @@ void GetExtractedInfo(mojo::PendingRemote<mojom::Unzipper> unzipper,
       base::BindOnce(&DoGetExtractedInfo, std::move(unzipper), zip_path,
                      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
                                         std::move(result_callback))));
+}
+
+ZipFileUnpacker::ZipFileUnpacker() = default;
+
+ZipFileUnpacker::~ZipFileUnpacker() = default;
+
+void DoUnzipWithParams(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                       scoped_refptr<UnzipParams>& unzip_params,
+                       const base::FilePath& zip_path,
+                       const base::FilePath& output_dir,
+                       UnzipFilterCallback filter_callback,
+                       UnzipListenerCallback listener_callback,
+                       mojom::UnzipOptionsPtr options,
+                       UnzipCallback result_callback) {
+  base::File zip_file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!CheckZipFileValid(zip_path, zip_file)) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+
+  // |result_callback| is shared between the connection error handler and the
+  // Unzip call using a refcounted UnzipParams object that owns
+  // |result_callback|.
+  unzip_params = base::MakeRefCounted<UnzipParams>(std::move(unzipper),
+                                                   std::move(result_callback));
+
+  mojo::PendingRemote<filesystem::mojom::Directory> directory_remote;
+  mojo::PendingRemote<unzip::mojom::UnzipFilter> filter_remote;
+  mojo::PendingRemote<unzip::mojom::UnzipListener> listener_remote;
+  PrepareUnzipParams(unzip_params, output_dir, filter_callback,
+                     listener_callback, directory_remote, filter_remote,
+                     listener_remote);
+
+  unzip_params->unzipper()->Unzip(
+      std::move(zip_file), std::move(directory_remote), std::move(options),
+      std::move(filter_remote), std::move(listener_remote),
+      base::BindOnce(&UnzipParams::InvokeCallback, unzip_params));
+}
+
+void ZipFileUnpacker::Unpack(mojo::PendingRemote<mojom::Unzipper> unzipper,
+                             const base::FilePath& zip_file,
+                             const base::FilePath& output_dir,
+                             mojom::UnzipOptionsPtr options,
+                             UnzipListenerCallback listener_callback,
+                             UnzipCallback result_callback) {
+  DCHECK(!result_callback.is_null());
+
+  runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&::unzip::DoUnzipWithParams, std::move(unzipper),
+                     std::ref(params_), zip_file, output_dir,
+                     UnzipFilterCallback(),
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(listener_callback)),
+                     std::move(options),
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(result_callback))));
+}
+
+void ReleaseParams(scoped_refptr<UnzipParams>& unzip_params) {
+  if (unzip_params) {
+    unzip_params.reset();
+  }
+}
+
+void EndUnpack(scoped_refptr<UnzipParams>& unzip_params) {
+  if (unzip_params) {
+    unzip_params->InvokeCallback(false);
+    unzip_params->cancel_is_done.Set();
+    ReleaseParams(unzip_params);
+  }
+}
+
+void ZipFileUnpacker::Stop() {
+  runner_->PostTask(FROM_HERE, base::BindOnce(&EndUnpack, std::ref(params_)));
+}
+
+bool ZipFileUnpacker::CancelDone() {
+  if (params_) {
+    return params_->cancel_is_done.IsSet();
+  }
+  return true;
+}
+
+void ZipFileUnpacker::CleanUp() {
+  runner_->PostTask(FROM_HERE,
+                    base::BindOnce(&ReleaseParams, std::ref(params_)));
 }
 
 }  // namespace unzip

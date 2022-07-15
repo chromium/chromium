@@ -6,6 +6,8 @@
 #define COMPONENTS_SERVICES_UNZIP_UNZIPPER_IMPL_H_
 
 #include "base/files/file.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/thread_pool.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -26,6 +28,9 @@ class UnzipperImpl : public mojom::Unzipper {
   UnzipperImpl(const UnzipperImpl&) = delete;
   UnzipperImpl& operator=(const UnzipperImpl&) = delete;
 
+  static void Listener(const mojo::Remote<mojom::UnzipListener>& listener,
+                       uint64_t bytes);
+
   ~UnzipperImpl() override;
 
  private:
@@ -44,10 +49,19 @@ class UnzipperImpl : public mojom::Unzipper {
   void GetExtractedInfo(base::File zip_file,
                         GetExtractedInfoCallback callback) override;
 
-  static void Listener(const mojo::Remote<mojom::UnzipListener>& listener,
-                       uint64_t bytes);
+  // Disconnect handler for the receiver.
+  void OnReceiverDisconnect();
+
+  // Task runner for ZIP extraction.
+  using RunnerPtr = scoped_refptr<base::SequencedTaskRunner>;
+  const RunnerPtr runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   mojo::Receiver<mojom::Unzipper> receiver_{this};
+
+  base::WeakPtrFactory<UnzipperImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace unzip
