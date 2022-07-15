@@ -4272,6 +4272,8 @@ static_library("ui") {
       "views/chrome_web_dialog_view.h",
       "views/collected_cookies_views.cc",
       "views/collected_cookies_views.h",
+      "views/color_provider_browser_helper.cc",
+      "views/color_provider_browser_helper.h",
       "views/commander_frontend_views.cc",
       "views/commander_frontend_views.h",
       "views/commerce/ntp_discount_consent_dialog_view.cc",
