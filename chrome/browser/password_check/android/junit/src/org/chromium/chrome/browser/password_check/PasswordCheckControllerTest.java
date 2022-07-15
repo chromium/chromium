@@ -56,10 +56,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
@@ -108,9 +106,6 @@ public class PasswordCheckControllerTest {
     private static final boolean USE_LAST_VALID_AUTH = true;
 
     @Rule
-    public final JniMocker mJniMocker = new JniMocker();
-
-    @Rule
     public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Mock
@@ -127,8 +122,6 @@ public class PasswordCheckControllerTest {
     private SettingsLauncher mSettingsLauncher;
     @Mock
     private PasswordCheckIconHelper mIconHelper;
-    @Mock
-    private RecordHistogram.Natives mRecordHistogramBridge;
     @Captor
     private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
 
@@ -140,7 +133,6 @@ public class PasswordCheckControllerTest {
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mRecordHistogramBridge);
         mModel = PasswordCheckProperties.createDefaultModel();
         mMediator = new PasswordCheckMediator(mChangePasswordDelegate, mReauthenticationHelper,
                 mReauthenticatorBridge, mSettingsLauncher, mIconHelper);

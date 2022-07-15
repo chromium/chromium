@@ -42,11 +42,9 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -72,15 +70,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class PasswordAccessorySheetControllerTest {
     @Rule
-    public JniMocker mocker = new JniMocker();
-    @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock
     private RecyclerView mMockView;
     @Mock
     private ListObservable.ListObserver<Void> mMockItemListObserver;
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogramNatives;
 
     private PasswordAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabModel mSheetDataPieces;
@@ -89,7 +83,6 @@ public class PasswordAccessorySheetControllerTest {
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        mocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogramNatives);
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mCoordinator = new PasswordAccessorySheetCoordinator(RuntimeEnvironment.application, null);
         assertNotNull(mCoordinator);

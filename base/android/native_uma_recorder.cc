@@ -281,6 +281,20 @@ jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
   return actual_count;
 }
 
+jlong JNI_NativeUmaRecorder_CreateHistogramSnapshotForTesting(JNIEnv* env) {
+  HistogramsSnapshot* snapshot = new HistogramsSnapshot();
+  for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
+    (*snapshot)[histogram->histogram_name()] = histogram->SnapshotSamples();
+  }
+  return reinterpret_cast<intptr_t>(snapshot);
+}
+
+void JNI_NativeUmaRecorder_DestroyHistogramSnapshotForTesting(
+    JNIEnv* env,
+    jlong snapshot_ptr) {
+  delete reinterpret_cast<HistogramsSnapshot*>(snapshot_ptr);
+}
+
 static jlong JNI_NativeUmaRecorder_AddActionCallbackForTesting(
     JNIEnv* env,
     const JavaParamRef<jobject>& callback) {

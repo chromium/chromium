@@ -9,7 +9,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.metrics.NativeUmaRecorderJni;
-import org.chromium.base.metrics.RecordHistogramJni;
 
 /**
  * A {@link TestRule} to test histograms. Returns the amount of recorded samples during a test run.
@@ -38,11 +37,11 @@ public class HistogramTestRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 assert mSnapShotPtr == 0;
-                mSnapShotPtr = RecordHistogramJni.get().createHistogramSnapshotForTesting();
+                mSnapShotPtr = NativeUmaRecorderJni.get().createHistogramSnapshotForTesting();
                 try {
                     base.evaluate();
                 } finally {
-                    RecordHistogramJni.get().destroyHistogramSnapshotForTesting(mSnapShotPtr);
+                    NativeUmaRecorderJni.get().destroyHistogramSnapshotForTesting(mSnapShotPtr);
                     mSnapShotPtr = 0;
                 }
             }

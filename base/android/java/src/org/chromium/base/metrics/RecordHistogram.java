@@ -8,14 +8,11 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Java API for recording UMA histograms.
  * */
-@JNINamespace("base::android")
 @MainDex
 public class RecordHistogram {
     /**
@@ -288,14 +285,5 @@ public class RecordHistogram {
     @VisibleForTesting
     public static int getHistogramTotalCountForTesting(String name) {
         return UmaRecorderHolder.get().getHistogramTotalCountForTesting(name);
-    }
-
-    /**
-     * Natives API to read metrics reported when testing.
-     */
-    @NativeMethods
-    public interface Natives {
-        long createHistogramSnapshotForTesting();
-        void destroyHistogramSnapshotForTesting(long snapshotPtr);
     }
 }

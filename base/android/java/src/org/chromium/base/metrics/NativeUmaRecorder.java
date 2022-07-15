@@ -145,6 +145,9 @@ import java.util.Map;
         int getHistogramValueCountForTesting(String name, int sample, long snapshotPtr);
         int getHistogramTotalCountForTesting(String name, long snapshotPtr);
 
+        long createHistogramSnapshotForTesting();
+        void destroyHistogramSnapshotForTesting(long snapshotPtr);
+
         long addActionCallbackForTesting(Callback<String> callback);
         void removeActionCallbackForTesting(long callbackId);
     }

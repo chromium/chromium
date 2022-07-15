@@ -28,7 +28,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import com.google.android.material.tabs.TabLayout;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -38,11 +37,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryBarContents;
@@ -71,9 +68,6 @@ import java.util.HashMap;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 public class KeyboardAccessoryControllerTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
-
     @Mock
     private PropertyObserver<PropertyKey> mMockPropertyObserver;
     @Mock
@@ -88,8 +82,6 @@ public class KeyboardAccessoryControllerTest {
     private KeyboardAccessoryCoordinator.TabSwitchingDelegate mMockTabSwitchingDelegate;
     @Mock
     private AutofillDelegate mMockAutofillDelegate;
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogram;
 
     private final KeyboardAccessoryData.Tab mTestTab =
             new KeyboardAccessoryData.Tab("Passwords", null, null, 0, 0, null);
@@ -103,7 +95,6 @@ public class KeyboardAccessoryControllerTest {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         setAutofillFeature(false);
-        mocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogram);
         when(mMockView.getTabLayout()).thenReturn(mock(TabLayout.class));
         when(mMockTabLayout.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
         mCoordinator = new KeyboardAccessoryCoordinator(

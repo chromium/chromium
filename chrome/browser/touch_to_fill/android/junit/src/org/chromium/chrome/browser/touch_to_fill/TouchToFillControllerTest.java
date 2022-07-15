@@ -46,7 +46,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -98,9 +97,6 @@ public class TouchToFillControllerTest {
     @Mock
     private LargeIconBridge mMockIconBridge;
 
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogram;
-
     // Can't be local, as it has to be initialized by initMocks.
     @Captor
     private ArgumentCaptor<LargeIconBridge.LargeIconCallback> mCallbackArgumentCaptor;
@@ -114,7 +110,6 @@ public class TouchToFillControllerTest {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogram);
         when(mUrlFormatterJniMock.formatUrlForDisplayOmitScheme(anyString()))
                 .then(inv -> format(inv.getArgument(0)));
         when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(

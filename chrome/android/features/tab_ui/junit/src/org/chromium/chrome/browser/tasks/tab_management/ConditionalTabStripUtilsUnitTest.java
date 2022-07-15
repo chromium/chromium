@@ -14,15 +14,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.FeatureStatus;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.UserStatus;
@@ -36,20 +33,14 @@ import org.chromium.chrome.test.util.browser.Features;
 public class ConditionalTabStripUtilsUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
 
     private SharedPreferences mSharedPreference;
-
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogramNatives;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mSharedPreference = ContextUtils.getAppSharedPreferences();
-        mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogramNatives);
 
         // Initialize the feature status.
         ConditionalTabStripUtils.setFeatureStatus(FeatureStatus.DEFAULT);
