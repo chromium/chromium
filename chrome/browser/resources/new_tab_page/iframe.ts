@@ -25,6 +25,11 @@ export class IframeElement extends PolymerElement {
 
   static get properties() {
     return {
+      allow: {
+        reflectToAttribute: true,
+        type: String,
+      },
+
       src: {
         reflectToAttribute: true,
         type: String,
@@ -37,6 +42,7 @@ export class IframeElement extends PolymerElement {
     };
   }
 
+  allow: string;
   src: string;
   private src_: string;
 
