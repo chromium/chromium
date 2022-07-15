@@ -30,9 +30,7 @@ namespace logging {
 
 namespace {
 
-// DCHECK_IS_CONFIGURABLE and ENABLE_LOG_ERROR_NOT_REACHED are both interested
-// in non-FATAL DCHECK()/NOTREACHED() reports.
-#if defined(DCHECK_IS_CONFIGURABLE) || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+#if defined(DCHECK_IS_CONFIGURABLE)
 void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
   // Best-effort gate to prevent multiple DCHECKs from being dumped. This will
   // race if multiple threads DCHECK at the same time, but we'll eventually stop
@@ -57,21 +55,6 @@ void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
       has_dumped.store(true, std::memory_order_relaxed);
   }
 }
-
-class NotReachedLogMessage : public LogMessage {
- public:
-  using LogMessage::LogMessage;
-  ~NotReachedLogMessage() override {
-    if (severity() != logging::LOGGING_FATAL)
-      DCheckDumpOnceWithoutCrashing(this);
-  }
-};
-#else
-using NotReachedLogMessage = LogMessage;
-#endif  // defined(DCHECK_IS_CONFIGURABLE) ||
-        // BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
-
-#if defined(DCHECK_IS_CONFIGURABLE)
 
 class DCheckLogMessage : public LogMessage {
  public:
@@ -103,11 +86,11 @@ class DCheckErrnoLogMessage : public ErrnoLogMessage {
 #endif  // BUILDFLAG(IS_WIN)
 #else
 static_assert(logging::LOGGING_DCHECK == logging::LOGGING_FATAL);
-using DCheckLogMessage = LogMessage;
+typedef LogMessage DCheckLogMessage;
 #if BUILDFLAG(IS_WIN)
-using DCheckWin32ErrorLogMessage = Win32ErrorLogMessage;
+typedef Win32ErrorLogMessage DCheckWin32ErrorLogMessage;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-using DCheckErrnoLogMessage = ErrnoLogMessage;
+typedef ErrnoLogMessage DCheckErrnoLogMessage;
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
@@ -188,17 +171,6 @@ CheckError CheckError::NotImplemented(const char* file,
                                       const char* function) {
   auto* const log_message = new LogMessage(file, line, LOGGING_ERROR);
   log_message->stream() << "Not implemented reached in " << function;
-  return CheckError(log_message);
-}
-
-CheckError CheckError::NotReached(const char* file, int line) {
-  // Outside DCHECK builds NOTREACHED() should not be FATAL. For now.
-  const LogSeverity severity = DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR;
-  auto* const log_message = new NotReachedLogMessage(file, line, severity);
-
-  // TODO(pbos): Consider a better message for NotReached(), this is here to
-  // match existing behavior + test expectations.
-  log_message->stream() << "Check failed: false. ";
   return CheckError(log_message);
 }
 

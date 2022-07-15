@@ -508,6 +508,7 @@ mixed_component("base") {
     "native_library.cc",
     "native_library.h",
     "no_destructor.h",
+    "notreached.cc",
     "notreached.h",
     "observer_list.h",
     "observer_list_internal.cc",
