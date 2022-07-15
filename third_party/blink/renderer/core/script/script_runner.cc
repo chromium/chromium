@@ -64,6 +64,13 @@ ScriptRunner::DelayReasons ScriptRunner::DetermineDelayReasonsToWait(
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kForceDeferScriptIntervention)) {
+    if (active_delay_reasons_ &
+        static_cast<DelayReasons>(DelayReason::kForceDefer)) {
+      reasons |= static_cast<DelayReasons>(DelayReason::kForceDefer);
+    }
+  }
+
   return reasons;
 }
 

@@ -734,6 +734,10 @@ enum class DelayAsyncScriptDelayType {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
     kDelayAsyncScriptExecutionDelayParam;
 
+// If enabled, parser-blocking scripts are force-deferred.
+// https://crbug.com/1339112
+BLINK_COMMON_EXPORT extern const base::Feature kForceDeferScriptIntervention;
+
 // If enabled, allows MediaStreamVideoSource objects to be restarted by a
 // successful source switch. Normally, switching the source would only allowed
 // on streams that are in started state. However, changing the source also first

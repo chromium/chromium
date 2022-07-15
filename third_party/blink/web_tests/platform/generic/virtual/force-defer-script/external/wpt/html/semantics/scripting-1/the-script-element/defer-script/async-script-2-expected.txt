@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Async Script Execution Order Uncaught Error: assert_array_equals: Execution order expected property 0 to be "Inline1" but got "EndOfBody" (expected array ["Inline1", "Sync1", "Async1", "Sync2", "EndOfBody", "DOMContentLoaded"] got ["EndOfBody", "Inline1", "Sync1", "Sync2", "DOMContentLoaded", "Async1"])
+Harness: the test ran to completion.
+

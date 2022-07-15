@@ -88,6 +88,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   bool WillExecuteWhenDocumentFinishedParsing() const {
     return will_execute_when_document_finished_parsing_;
   }
+  bool IsForceDeferred() const { return force_deferred_; }
   bool IsParserInserted() const { return parser_inserted_; }
   bool AlreadyStarted() const { return already_started_; }
   bool IsNonBlocking() const { return non_blocking_; }
@@ -181,6 +182,9 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   bool will_be_parser_executed_ = false;
 
   bool will_execute_when_document_finished_parsing_ = false;
+
+  // The script will be force deferred (https://crbug.com/1339112).
+  bool force_deferred_ = false;
 
   // A PendingScript is first created in PrepareScript() and stored in
   // |prepared_pending_script_|.

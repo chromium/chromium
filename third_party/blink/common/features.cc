@@ -1493,6 +1493,9 @@ const base::FeatureParam<DelayAsyncScriptDelayType>
         DelayAsyncScriptDelayType::kFinishedParsing,
         &delay_async_script_execution_delay_types};
 
+const base::Feature kForceDeferScriptIntervention{
+    "ForceDeferScriptIntervention", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kAllowSourceSwitchOnPausedVideoMediaStream{
     "AllowSourceSwitchOnPausedVideoMediaStream",
     base::FEATURE_ENABLED_BY_DEFAULT};

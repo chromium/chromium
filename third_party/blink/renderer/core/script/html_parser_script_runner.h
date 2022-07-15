@@ -42,6 +42,7 @@ class Document;
 class Element;
 class HTMLParserScriptRunnerHost;
 class ScriptLoader;
+class ScriptRunnerDelayer;
 
 // HTMLParserScriptRunner is responsible for for arranging the execution of
 // script elements inserted by the parser, according to the rules for
@@ -92,7 +93,8 @@ class HTMLParserScriptRunner final
   // to execute parsing-blocking scripts.
   void ExecuteScriptsWaitingForResources();
 
-  // Invoked when parsing is stopping, to execute any developer deferred
+  // Invoked when parsing is stopping, to execute any deferred scripts.
+  // This includes forced deferred scripts as well as developer deferred
   // scripts.
   bool ExecuteScriptsWaitingForParsing();
 
@@ -100,6 +102,10 @@ class HTMLParserScriptRunner final
   bool IsExecutingScript() const {
     return !!reentry_permit_->ScriptNestingLevel();
   }
+
+  // Records metrics related to the parsing phase. To be called when parsing
+  // is preparing to stop but before `ExecuteScriptsWaitingForParsing()`.
+  void RecordMetricsAtParseEnd() const;
 
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override {
@@ -116,6 +122,7 @@ class HTMLParserScriptRunner final
 
   void RequestParsingBlockingScript(ScriptLoader*);
   void RequestDeferredScript(ScriptLoader*);
+  void RequestForceDeferredScript(ScriptLoader*);
 
   // Processes the provided script element, but does not execute any
   // parsing-blocking scripts that may remain after execution.
@@ -143,9 +150,20 @@ class HTMLParserScriptRunner final
   // https://html.spec.whatwg.org/C/#pending-parsing-blocking-script
   Member<PendingScript> parser_blocking_script_;
 
+  // Scripts that were force deferred by the defer all script optimization.
+  // These scripts will be executed after parsing but before
+  // |scripts_to_execute_after_parsing_|.  This is an ordered list.
+  // https://crbug.com/1339112
+  HeapDeque<Member<PendingScript>> force_deferred_scripts_;
+
   // Scripts that were deferred by the web developer. This is an ordered list.
   // https://html.spec.whatwg.org/C/#list-of-scripts-that-will-execute-when-the-document-has-finished-parsing
   HeapDeque<Member<PendingScript>> scripts_to_execute_after_parsing_;
+
+  // Suspend async script execution while |force_deferred_scripts_| is not empty
+  // in order to let the force deferred scripts execute before any async
+  // scripts.
+  Member<ScriptRunnerDelayer> delayer_for_force_defer_;
 };
 
 }  // namespace blink
