@@ -1805,6 +1805,20 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2()
             .FilesSwa(),
+        TestCase("recentsEmptyFolderMessage")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2(),
+        TestCase("recentsEmptyFolderMessage")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
+            .FilesSwa(),
+        TestCase("recentsEmptyFolderMessageAfterDeletion")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2(),
+        TestCase("recentsEmptyFolderMessageAfterDeletion")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
+            .FilesSwa(),
         TestCase("recentsDownloads"),
         TestCase("recentsDownloads").FilesSwa(),
         TestCase("recentsDownloads").EnableFiltersInRecents(),

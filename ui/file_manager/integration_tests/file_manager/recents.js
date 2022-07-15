@@ -329,6 +329,31 @@ async function cutFileAndPasteTo(appId, fileName, newFolder) {
 }
 
 /**
+ * Wait for the empty folder element to show and assert the content to
+ * match the expected message.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {string} expectedMessage The expected empty folder message
+ */
+async function waitForEmptyFolderMessage(appId, expectedMessage) {
+  const caller = getCaller();
+  // Use repeatUntil() here because when we switch between different filters,
+  // the message changes but the element itself will always show there.
+  await repeatUntil(async () => {
+    const emptyMessage = await remoteCall.waitForElement(
+        appId, '#empty-folder:not(.hidden) > .label');
+    if (emptyMessage.text === expectedMessage) {
+      return;
+    }
+
+    return pending(
+        caller,
+        `Expected empty folder message: "${expectedMessage}", got "${
+            emptyMessage.text}"`);
+  });
+}
+
+/**
  * Tests that file entries populated in the Downloads folder recently will be
  * displayed in Recent folder.
  */
@@ -1003,4 +1028,45 @@ testcase.recentsTimePeriodHeadings = async () => {
   chrome.test.assertEq('Yesterday', groupTitles[1].text);
   chrome.test.assertEq(
       yesterdayFile.nameText, gridItems[1].attributes['file-name']);
+};
+
+/**
+ * Tests message will show in Recents for empty folder.
+ */
+testcase.recentsEmptyFolderMessage = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.directoryA], []);
+  await navigateToRecent(appId);
+  // All filter is on by default.
+  await waitForEmptyFolderMessage(appId, 'Your recent files will appear here');
+  // Activates to audio filter.
+  await remoteCall.waitAndClickElement(appId, [`[file-type-filter="audio"]`]);
+  await waitForEmptyFolderMessage(
+      appId, 'Your recent audio files will appear here');
+  // Activates to documents filter.
+  await remoteCall.waitAndClickElement(
+      appId, [`[file-type-filter="document"]`]);
+  await waitForEmptyFolderMessage(
+      appId, 'Your recent documents will appear here');
+  // Activates to images filter.
+  await remoteCall.waitAndClickElement(appId, [`[file-type-filter="image"]`]);
+  await waitForEmptyFolderMessage(appId, 'Your recent images will appear here');
+  // Activates to videos filter.
+  await remoteCall.waitAndClickElement(appId, [`[file-type-filter="video"]`]);
+  await waitForEmptyFolderMessage(appId, 'Your recent videos will appear here');
+};
+
+
+/**
+ * Tests message will show in Recents after the last file is
+ * deleted.
+ */
+testcase.recentsEmptyFolderMessageAfterDeletion = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  await navigateToRecent(appId);
+  const files = TestEntryInfo.getExpectedRows([ENTRIES.beautiful]);
+  await remoteCall.waitForFiles(appId, files);
+  await deleteFile(appId, ENTRIES.beautiful.nameText);
+  await waitForEmptyFolderMessage(appId, 'Your recent files will appear here');
 };
