@@ -205,7 +205,8 @@ bool BlinkGCMemoryDumpProvider::OnMemoryDump(
       dump_base_name_ + "/allocated_objects");
   for (size_t i = 0; i < global_object_stats.size(); i++) {
     auto* details = process_memory_dump->CreateAllocatorDump(
-        "blink_objects/blink_gc/" + GetUniqueName(stats.type_names[i], i));
+        "blink_objects/" + dump_base_name_ + "/" +
+        GetUniqueName(stats.type_names[i], i));
     details->AddScalar("allocated_objects_size",
                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                        global_object_stats[i].allocated_bytes);
